@@ -1,0 +1,54 @@
+{
+    "openbindings": "0.1.0",
+    "name": "OpenBindings Software",
+    "version": "0.1.0",
+    "description": "Base contract for software participating in the OpenBindings delegation ecosystem. Defines the getInfo operation and SoftwareInfo schema for self-identification. Any delegate interface (e.g., binding-format-handler) imports this interface so that its getInfo operation can satisfy the canonical definition here.",
+    "schemas": {
+        "SoftwareInfo": {
+            "type": "object",
+            "description": "Identity and metadata for a piece of software.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable display name (e.g., 'Model Context Protocol')."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Software implementation version (e.g., '0.3.0'). Independent of any format spec version."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description of what this software does."
+                },
+                "homepage": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to documentation or project page."
+                },
+                "repository": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to source code repository."
+                },
+                "maintainer": {
+                    "type": "string",
+                    "description": "Author or maintaining organization."
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "operations": {
+        "getInfo": {
+            "kind": "method",
+            "description": "Return identity and metadata about this software.",
+            "idempotent": true,
+            "output": {
+                "$ref": "#/schemas/SoftwareInfo"
+            }
+        }
+    }
+}

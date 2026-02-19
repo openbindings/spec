@@ -1,0 +1,205 @@
+{
+    "openbindings": "0.1.0",
+    "name": "OpenBindings Binding Context Provider",
+    "version": "0.1.0",
+    "description": "Unbound interface for OpenBindings binding context provider delegates. A binding context provider produces the runtime context (credentials, headers, environment, etc.) needed to execute a binding. ob calls getContext before executeOperation on the binding format handler, passing the returned context along. This interface defines the contract without bindings — implementations import it and add their own bindings.",
+    "imports": {
+        "openbindings.software": "./openbindings.software.json"
+    },
+    "schemas": {
+        "SoftwareInfo": {
+            "type": "object",
+            "description": "Identity and metadata for a piece of software. Canonical definition is in openbindings.software.json.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable display name."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Software implementation version."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description of what this software does."
+                },
+                "homepage": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to documentation or project page."
+                },
+                "repository": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to source code repository."
+                },
+                "maintainer": {
+                    "type": "string",
+                    "description": "Author or maintaining organization."
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
+        "BasicCredentials": {
+            "type": "object",
+            "description": "Username/password credentials for HTTP Basic authentication.",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "Username."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Password."
+                }
+            },
+            "required": [
+                "username",
+                "password"
+            ],
+            "additionalProperties": false
+        },
+        "Credentials": {
+            "type": "object",
+            "description": "Well-known credential fields. All optional — providers supply whichever credentials are relevant to the target.",
+            "properties": {
+                "bearerToken": {
+                    "type": "string",
+                    "description": "Bearer token for HTTP Authorization header."
+                },
+                "apiKey": {
+                    "type": "string",
+                    "description": "API key. Where the key is placed (header, query, etc.) is binding-format-specific."
+                },
+                "basic": {
+                    "$ref": "#/schemas/BasicCredentials",
+                    "description": "HTTP Basic credentials."
+                },
+                "custom": {
+                    "type": "object",
+                    "description": "Provider-defined credential fields not covered by the well-known fields above.",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "BindingContext": {
+            "type": "object",
+            "description": "Runtime context for a binding execution. Produced by a binding context provider and consumed by a binding format handler. All fields are optional — providers supply whichever context is relevant to the target.",
+            "properties": {
+                "credentials": {
+                    "$ref": "#/schemas/Credentials",
+                    "description": "Authentication credentials for the target."
+                },
+                "headers": {
+                    "type": "object",
+                    "description": "HTTP headers to include in the request. Keys are header names, values are header values.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "cookies": {
+                    "type": "object",
+                    "description": "Cookies to include in the request. Keys are cookie names, values are cookie values.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "environment": {
+                    "type": "object",
+                    "description": "Environment variables to set for the execution. Keys are variable names, values are variable values.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "metadata": {
+                    "type": "object",
+                    "description": "Open map for provider-specific or delegate-specific context not covered by the well-known fields above.",
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": false
+        },
+        "ContextSource": {
+            "type": "object",
+            "description": "Identifies the binding source that context is being requested for.",
+            "properties": {
+                "format": {
+                    "type": "string",
+                    "description": "Format token (e.g., openapi@3.1, usage@2.13.1)."
+                },
+                "location": {
+                    "type": "string",
+                    "description": "Location of the binding source (path or URL)."
+                },
+                "content": {
+                    "description": "Binding source content directly."
+                }
+            },
+            "required": [
+                "format"
+            ],
+            "oneOf": [
+                {
+                    "required": [
+                        "location"
+                    ]
+                },
+                {
+                    "required": [
+                        "content"
+                    ]
+                }
+            ],
+            "additionalProperties": false
+        },
+        "GetContextInput": {
+            "type": "object",
+            "description": "Input for getContext. Identifies the binding target — where the call is going, not what the payload contains. The operation input is intentionally excluded to avoid leaking business data to credential-management delegates.",
+            "properties": {
+                "source": {
+                    "$ref": "#/schemas/ContextSource",
+                    "description": "The binding source that will be executed."
+                },
+                "ref": {
+                    "type": "string",
+                    "description": "Reference to the binding within the source."
+                }
+            },
+            "required": [
+                "source",
+                "ref"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "operations": {
+        "getInfo": {
+            "kind": "method",
+            "description": "Return identity and metadata about this context provider.",
+            "idempotent": true,
+            "satisfies": [
+                {
+                    "interface": "openbindings.software",
+                    "operation": "getInfo"
+                }
+            ],
+            "output": {
+                "$ref": "#/schemas/SoftwareInfo"
+            }
+        },
+        "getContext": {
+            "kind": "method",
+            "description": "Produce runtime context for a binding execution. Given a binding target (source and ref), return the credentials, headers, environment, and other context needed by the format handler to execute the operation.",
+            "input": {
+                "$ref": "#/schemas/GetContextInput"
+            },
+            "output": {
+                "$ref": "#/schemas/BindingContext"
+            }
+        }
+    }
+}

@@ -1,0 +1,348 @@
+{
+  "$comment": "OpenBindings v0.1 conformance suite: normalization cases. Each case tests the normalization rules from the spec's Normalization (profile v0.1) section. Fields: name (descriptive), input (schema before normalization), expected (schema after normalization) or error (string for fail-closed/schema-error cases).",
+  "cases": [
+
+    { "$comment": "=== Canonical type form ===" },
+
+    {
+      "name": "canonicalize type: string to sorted array",
+      "input": { "type": "string" },
+      "expected": { "type": ["string"] }
+    },
+    {
+      "name": "canonicalize type: array already canonical",
+      "input": { "type": ["integer", "string"] },
+      "expected": { "type": ["integer", "string"] }
+    },
+    {
+      "name": "canonicalize type: unsorted array",
+      "input": { "type": ["string", "integer"] },
+      "expected": { "type": ["integer", "string"] }
+    },
+
+    { "$comment": "=== Canonical required form ===" },
+
+    {
+      "name": "canonicalize required: unsorted to sorted",
+      "input": {
+        "type": "object",
+        "properties": { "b": { "type": "string" }, "a": { "type": "string" } },
+        "required": ["b", "a"]
+      },
+      "expected": {
+        "type": ["object"],
+        "properties": { "a": { "type": ["string"] }, "b": { "type": ["string"] } },
+        "required": ["a", "b"]
+      }
+    },
+    {
+      "name": "canonicalize required: duplicates removed",
+      "input": {
+        "type": "object",
+        "required": ["a", "b", "a"]
+      },
+      "expected": {
+        "type": ["object"],
+        "required": ["a", "b"]
+      }
+    },
+
+    { "$comment": "=== Canonical union ordering ===" },
+
+    {
+      "name": "canonicalize anyOf: variants sorted by JCS",
+      "input": {
+        "anyOf": [
+          { "type": "number" },
+          { "type": "string" }
+        ]
+      },
+      "expected": {
+        "anyOf": [
+          { "type": ["number"] },
+          { "type": ["string"] }
+        ]
+      }
+    },
+    {
+      "name": "canonicalize oneOf: variants sorted by JCS",
+      "input": {
+        "oneOf": [
+          { "type": "object", "properties": { "z": { "type": "string" } } },
+          { "type": "object", "properties": { "a": { "type": "string" } } }
+        ]
+      },
+      "expected": {
+        "oneOf": [
+          { "type": ["object"], "properties": { "a": { "type": ["string"] } } },
+          { "type": ["object"], "properties": { "z": { "type": ["string"] } } }
+        ]
+      }
+    },
+
+    { "$comment": "=== allOf flattening ===" },
+
+    {
+      "name": "allOf: merge two simple object schemas",
+      "input": {
+        "allOf": [
+          { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] },
+          { "type": "object", "properties": { "name": { "type": "string" } }, "required": ["name"] }
+        ]
+      },
+      "expected": {
+        "type": ["object"],
+        "properties": { "id": { "type": ["string"] }, "name": { "type": ["string"] } },
+        "required": ["id", "name"]
+      }
+    },
+    {
+      "name": "allOf: type intersection",
+      "input": {
+        "allOf": [
+          { "type": ["string", "number"] },
+          { "type": ["number", "integer"] }
+        ]
+      },
+      "expected": {
+        "type": ["number"]
+      }
+    },
+    {
+      "name": "allOf: type intersection yields integer (integer is subtype of number)",
+      "input": {
+        "allOf": [
+          { "type": "integer" },
+          { "type": ["number", "integer"] }
+        ]
+      },
+      "expected": {
+        "type": ["integer"]
+      }
+    },
+    {
+      "name": "allOf: type intersection — number and integer yields integer (subtype rule)",
+      "$comment": "integer is a subtype of number; intersecting number-only with integer-only should produce integer",
+      "input": {
+        "allOf": [
+          { "type": "number" },
+          { "type": "integer" }
+        ]
+      },
+      "expected": {
+        "type": ["integer"]
+      }
+    },
+    {
+      "name": "allOf: type intersection — empty intersection is schema error",
+      "input": {
+        "allOf": [
+          { "type": "string" },
+          { "type": "number" }
+        ]
+      },
+      "error": "schema_error"
+    },
+    {
+      "name": "allOf: required is union",
+      "input": {
+        "allOf": [
+          { "type": "object", "required": ["a"] },
+          { "type": "object", "required": ["b"] }
+        ]
+      },
+      "expected": {
+        "type": ["object"],
+        "required": ["a", "b"]
+      }
+    },
+    {
+      "name": "allOf: properties union with overlapping keys — recursive merge",
+      "input": {
+        "allOf": [
+          { "type": "object", "properties": { "p": { "type": "object", "properties": { "x": { "type": "string" } } } } },
+          { "type": "object", "properties": { "p": { "type": "object", "properties": { "y": { "type": "number" } } } } }
+        ]
+      },
+      "expected": {
+        "type": ["object"],
+        "properties": {
+          "p": {
+            "type": ["object"],
+            "properties": { "x": { "type": ["string"] }, "y": { "type": ["number"] } }
+          }
+        }
+      }
+    },
+    {
+      "name": "allOf: additionalProperties — any branch false wins",
+      "input": {
+        "allOf": [
+          { "type": "object", "properties": { "id": { "type": "string" } }, "additionalProperties": true },
+          { "type": "object", "properties": { "id": { "type": "string" } }, "additionalProperties": false }
+        ]
+      },
+      "expected": {
+        "type": ["object"],
+        "properties": { "id": { "type": ["string"] } },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "allOf: additionalProperties — schema merge",
+      "input": {
+        "allOf": [
+          { "type": "object", "additionalProperties": { "type": "string" } },
+          { "type": "object", "additionalProperties": { "type": ["string", "number"] } }
+        ]
+      },
+      "expected": {
+        "type": ["object"],
+        "additionalProperties": { "type": ["string"] }
+      }
+    },
+    {
+      "name": "allOf: enum intersection",
+      "input": {
+        "allOf": [
+          { "type": "string", "enum": ["a", "b", "c"] },
+          { "type": "string", "enum": ["b", "c", "d"] }
+        ]
+      },
+      "expected": {
+        "type": ["string"],
+        "enum": ["b", "c"]
+      }
+    },
+    {
+      "name": "allOf: enum intersection — empty is schema error",
+      "input": {
+        "allOf": [
+          { "type": "string", "enum": ["a"] },
+          { "type": "string", "enum": ["b"] }
+        ]
+      },
+      "error": "schema_error"
+    },
+    {
+      "name": "allOf: items — recursive merge",
+      "input": {
+        "allOf": [
+          { "type": "array", "items": { "type": "object", "properties": { "x": { "type": "string" } } } },
+          { "type": "array", "items": { "type": "object", "properties": { "y": { "type": "number" } } } }
+        ]
+      },
+      "expected": {
+        "type": ["array"],
+        "items": {
+          "type": ["object"],
+          "properties": { "x": { "type": ["string"] }, "y": { "type": ["number"] } }
+        }
+      }
+    },
+    {
+      "name": "allOf: numeric bounds — most restrictive wins",
+      "input": {
+        "allOf": [
+          { "type": "integer", "minimum": 0, "maximum": 100 },
+          { "type": "integer", "minimum": 5, "maximum": 50 }
+        ]
+      },
+      "expected": {
+        "type": ["integer"],
+        "minimum": 5,
+        "maximum": 50
+      }
+    },
+    {
+      "name": "allOf: string bounds — most restrictive wins",
+      "input": {
+        "allOf": [
+          { "type": "string", "minLength": 1, "maxLength": 100 },
+          { "type": "string", "minLength": 3, "maxLength": 50 }
+        ]
+      },
+      "expected": {
+        "type": ["string"],
+        "minLength": 3,
+        "maxLength": 50
+      }
+    },
+    {
+      "name": "allOf: array bounds — most restrictive wins",
+      "input": {
+        "allOf": [
+          { "type": "array", "items": { "type": "string" }, "minItems": 0, "maxItems": 100 },
+          { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 10 }
+        ]
+      },
+      "expected": {
+        "type": ["array"],
+        "items": { "type": ["string"] },
+        "minItems": 1,
+        "maxItems": 10
+      }
+    },
+    {
+      "name": "allOf: oneOf inside allOf branch — fail closed (outside profile)",
+      "input": {
+        "allOf": [
+          { "type": "object" },
+          { "oneOf": [{ "type": "string" }, { "type": "number" }] }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "allOf: anyOf inside allOf branch — fail closed (outside profile)",
+      "input": {
+        "allOf": [
+          { "type": "object" },
+          { "anyOf": [{ "type": "string" }, { "type": "number" }] }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "allOf: out-of-profile keyword in branch — fail closed",
+      "input": {
+        "allOf": [
+          { "type": "string" },
+          { "type": "string", "pattern": "^[a-z]+$" }
+        ]
+      },
+      "error": "outside_profile"
+    },
+
+    { "$comment": "=== Annotations stripped ===" },
+
+    {
+      "name": "annotations: title and description stripped during normalization",
+      "input": { "type": "string", "title": "Name", "description": "User name" },
+      "expected": { "type": ["string"] }
+    },
+    {
+      "name": "annotations: default, deprecated, examples stripped",
+      "input": { "type": "integer", "default": 0, "deprecated": true, "examples": [1, 2] },
+      "expected": { "type": ["integer"] }
+    },
+
+    { "$comment": "=== $ref cycles ===" },
+
+    {
+      "name": "$ref cycle: cyclic reference detected — fail closed",
+      "input": {
+        "$ref": "#/$defs/node",
+        "$defs": {
+          "node": {
+            "type": "object",
+            "properties": {
+              "child": { "$ref": "#/$defs/node" }
+            }
+          }
+        }
+      },
+      "error": "ref_cycle"
+    }
+  ]
+}
