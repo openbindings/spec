@@ -3,7 +3,6 @@
 </p>
 
 <p align="center">
-  <strong>One interface. Any binding.</strong><br>
   An open standard for portable service interfaces with pluggable binding specifications.
 </p>
 
@@ -46,19 +45,19 @@ A single OpenBindings Interface (OBI) can reference bindings in OpenAPI, AsyncAP
 
 ## Read the spec
 
-| Document | Description |
-|----------|-------------|
-| [`openbindings.md`](openbindings.md) | Working draft (open for PRs) |
-| [`versions/0.1.0/`](versions/0.1.0/) | Latest released snapshot (immutable) |
+| Document                                               | Description                             |
+| ------------------------------------------------------ | --------------------------------------- |
+| [`openbindings.md`](openbindings.md)                   | Working draft (open for PRs)            |
+| [`versions/0.1.0/`](versions/0.1.0/)                   | Latest released snapshot (immutable)    |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for OBI document validation |
 
 ## Ecosystem
 
-| Repository | Description |
-|------------|-------------|
-| [openbindings/cli](https://github.com/openbindings/cli) | `ob` — the OpenBindings CLI for browsing, syncing, and executing OBIs |
-| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading and writing OBI documents |
-| [openbindings/demo](https://github.com/openbindings/demo) | Demo server with OpenAPI, AsyncAPI, and MCP bindings |
+| Repository                                                                      | Description                                                           |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| [openbindings/cli](https://github.com/openbindings/cli)                         | `ob` — the OpenBindings CLI for browsing, syncing, and executing OBIs |
+| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading and writing OBI documents                          |
+| [openbindings/demo](https://github.com/openbindings/demo)                       | Demo server with OpenAPI, AsyncAPI, and MCP bindings                  |
 
 ## Repository structure
 
