@@ -1,38 +1,100 @@
-# OpenBindings Specification
+<p align="center">
+  <img src="logo.png" alt="OpenBindings" width="600">
+</p>
 
-OpenBindings is an open-source standard for defining **service interfaces** as a set of named **operations** (meaning, schemas, compatibility), while allowing **flexible access** via pluggable **binding specifications** (e.g., OpenAPI, AsyncAPI, gRPC/proto) without redefining the contract.
+<p align="center">
+  <strong>One interface. Any binding.</strong><br>
+  An open standard for portable service interfaces with pluggable binding specifications.
+</p>
+
+<p align="center">
+  <a href="https://openbindings.com">Website</a> &middot;
+  <a href="openbindings.md">Read the Spec</a> &middot;
+  <a href="https://github.com/openbindings/cli">CLI</a> &middot;
+  <a href="https://demo.openbindings.com">Live Demo</a>
+</p>
+
+---
+
+## What is OpenBindings?
+
+OpenBindings defines a standard way to describe **what a service does** — its operations, schemas, and compatibility guarantees — separately from **how you access it**.
+
+A single OpenBindings Interface (OBI) can reference bindings in OpenAPI, AsyncAPI, MCP, gRPC, or any other binding specification, without redefining the contract for each one.
+
+```
+┌─────────────────────────────────────┐
+│         OpenBindings Interface      │
+│                                     │
+│  operations:                        │
+│    echo   (method)                  │
+│    greet  (method)                  │
+│    tick   (event)                   │
+│                                     │
+│  bindings:                          │
+│    echo  → OpenAPI  POST /api/echo  │
+│    echo  → MCP      tools/echo      │
+│    tick  → AsyncAPI  SSE /events    │
+└─────────────────────────────────────┘
+```
+
+### Core concepts
+
+- **Operations** are the contract — named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples).
+- **Bindings** map operations to concrete binding specifications without redefining the contract.
+- **Sources** reference external binding artifacts (OpenAPI documents, AsyncAPI specs, MCP servers) by format and location.
 
 ## Read the spec
 
-- **Working copy (open for PRs)**: `openbindings.md`
-- **Latest released spec**: `versions/0.1.0/openbindings.md`
-- **All released snapshots**: `versions/` (immutable, versioned for stable citation)
-- **JSON Schema (working copy)**: `openbindings.schema.json`
+| Document | Description |
+|----------|-------------|
+| [`openbindings.md`](openbindings.md) | Working draft (open for PRs) |
+| [`versions/0.1.0/`](versions/0.1.0/) | Latest released snapshot (immutable) |
+| [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for OBI document validation |
 
-## What OpenBindings is (at a glance)
+## Ecosystem
 
-- **Operations are the contract**: operation names + input/output/payload schemas define meaning.
-- **Bindings are exposures**: bindings reference external binding artifacts via `sources` + `format` + optional `ref`.
-- **Interfaces are reusable**: composition and compatibility are built into the model (`composes`, `aliases`, `satisfies`).
+| Repository | Description |
+|------------|-------------|
+| [openbindings/cli](https://github.com/openbindings/cli) | `ob` — the OpenBindings CLI for browsing, syncing, and executing OBIs |
+| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading and writing OBI documents |
+| [openbindings/demo](https://github.com/openbindings/demo) | Demo server with OpenAPI, AsyncAPI, and MCP bindings |
 
-## Repo structure
+## Repository structure
 
-- **`openbindings.md`**: working copy of the specification
-- **`openbindings.schema.json`**: JSON Schema for the OpenBindings document shape
-- **`versions/`**: immutable released snapshots
-- **`examples/`**: spec examples (intentionally empty for now)
-- **`interfaces/`**: unbound OpenBindings interfaces published by the project for interoperability
-- **`EDITORS.md`**: current editors/maintainers (working copy)
-- **`scripts/release.sh`**: helper to create a new snapshot directory
+```
+openbindings.md              Specification (working draft)
+openbindings.schema.json     JSON Schema
+versions/                    Immutable released snapshots
+interfaces/                  Standard OBI interfaces published by the project
+conformance/                 Conformance test fixtures
+examples/                    Spec examples
+scripts/                     Release tooling
+```
 
-## Contributing & project docs
+## Contributing
 
-- **Contributing**: `CONTRIBUTING.md`
-- **Releases**: `RELEASING.md`
-- **Governance**: `GOVERNANCE.md`
-- **Code of Conduct**: `CODE_OF_CONDUCT.md`
-- **Security**: `SECURITY.md`
+OpenBindings is developed in the open. Contributions, feedback, and discussion are welcome.
 
-## Canonical home
+- [Contributing Guide](CONTRIBUTING.md)
+- [Governance](GOVERNANCE.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+- [Releasing](RELEASING.md)
+- [Editors](EDITORS.md)
 
-For the canonical spec home, see `openbindings.com`.
+## Sponsors
+
+OpenBindings is a community-driven project. Sponsorship helps fund development, infrastructure, and outreach.
+
+**Interested in sponsoring?** Reach out at [openbindings.com](https://openbindings.com) or open a [discussion](https://github.com/openbindings/spec/discussions).
+
+<table>
+  <tr>
+    <td align="center" width="200"><em>Your logo here</em></td>
+  </tr>
+</table>
+
+## License
+
+This specification is released under the [Apache 2.0 License](LICENSE).
