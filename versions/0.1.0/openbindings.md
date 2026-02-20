@@ -52,7 +52,7 @@ OpenBindings uses one document shape: an **interface**.
 Serialization:
 
 - The OpenBindings data model is defined over JSON. JSON is the normative representation.
-- Tools MAY support YAML as an alternate serialization. If so, the YAML document MUST be interpreted as the same JSON data model and all OpenBindings rules apply to that model.
+- Tools MAY support YAML as an alternate serialization. If so, the YAML document MUST be interpreted as the same JSON data model and all OpenBindings rules apply to that model. Tools supporting YAML MUST use YAML 1.2 (which aligns with JSON's type system) and MUST NOT use YAML 1.1 implicit type coercion (e.g., interpreting `no` as `false`).
 
 Interfaces are expected to be distributed in a few common ways as the ecosystem develops, including:
 
@@ -68,12 +68,12 @@ This distinction matters for tooling and UX, but it does not create different in
 - **Bound interface**: an interface with bindings. Bound interfaces are actionable—tools can construct concrete interaction targets for the operations. A discovered interface (from `/.well-known/openbindings`) is typically bound.
 - **Compatibility**: whether a **candidate interface** is compatible with a **target interface** under the rules in [Compatibility](#compatibility). Compatibility depends on operation matching, `kind`, and schema comparison—not on bindings. Compatibility checking does not guarantee runtime interoperability.
 - **Actionability**: whether a tool can construct concrete interaction targets for an interface in a given context. Actionability depends on bindings being present and **resolvable** (and on the tool supporting the referenced `format`s). See [Binding coverage (actionability)](#binding-coverage-actionability).
-- **Binding format driver** (or just **driver**): a tool or service that interprets a binding format to make bindings actionable (e.g., OpenAPI/AsyncAPI/Usage). Analogous to a database driver—implements a standard interface for a specific format backend.
+- **Delegate**: a tool or service that implements an OpenBindings interface contract to receive delegated work. The reference implementation delegates binding format handling to **binding format handler** delegates, but the pattern extends to any delegatable concern. See the `interfaces/` directory for published delegate contracts.
 - **OBI**: shorthand for “OpenBindings interface” (used sparingly).
 
 ### Project-published interfaces (non-normative)
 
-The OpenBindings project publishes a set of **unbound interfaces** for interoperability and development velocity (e.g., the binding format driver interface).
+The OpenBindings project publishes a set of **unbound interfaces** for interoperability and development velocity (e.g., the binding format handler interface, the software contract).
 
 - These interfaces are not required by the core spec.
 - Each is a normal OpenBindings document, intended for composition or binding like any other interface.
@@ -300,6 +300,7 @@ All operations (regardless of `kind`) support:
 - `kind` (REQUIRED): `"method"` or `"event"`.
 - `description` (OPTIONAL): a human-readable description of the operation.
 - `deprecated` (OPTIONAL): if `true`, the operation is deprecated and consumers SHOULD migrate to an alternative. Deprecation is documentation metadata; it MUST NOT affect compatibility checking or binding resolution.
+- `tags` (OPTIONAL): an array of string labels for grouping and filtering. Tags are documentation metadata; they MUST NOT affect compatibility checking or binding resolution. Consumers and tooling MAY use tags for display grouping, search, and filtering.
 - `aliases` (OPTIONAL): alternate names for compatibility matching. See [Operation matching](#operation-matching-aliases-and-satisfies).
 - `satisfies` (OPTIONAL): explicit conformance mappings to other interfaces. See [Operation matching](#operation-matching-aliases-and-satisfies).
 - `examples` (OPTIONAL): named examples. See [Operation examples](#operation-examples).
@@ -418,6 +419,7 @@ Any operation MAY declare:
 Rules:
 
 - Within a document, aliases MUST NOT be shared across different operations (otherwise matching becomes ambiguous).
+- An alias MUST NOT collide with the primary key of any other operation in the same document.
 - When validating compatibility, a required operation name MAY match either an operation’s primary key or one of its `aliases`.
 
 #### `satisfies`
@@ -738,9 +740,20 @@ Each binding entry declares how an operation is exposed using a binding specific
 Normatively:
 
 - The meaning of `ref` is **binding-format-specific** (determined by `sources[*].format`).
-- For JSON-based binding specifications (including YAML representations), tools SHOULD support URI fragments that are JSON Pointer references per RFC 6901 (e.g., `#/paths/~1logs~1{id}/get`).
-- For non-JSON binding specifications, the binding format ecosystem determines the ref convention. Providers for the same format SHOULD use consistent ref conventions to enable interoperability.
 - If a tool cannot resolve `ref` for a supported `format`, that binding MUST be treated as **unresolvable** (and thus contributes no coverage).
+
+##### Ref conventions
+
+To promote interoperability across tools for the same binding format, format ecosystems SHOULD document named **ref conventions** that define the structure and resolution rules for `ref` values.
+
+Where a well-known path syntax exists for the source format, refs SHOULD use it:
+
+- For JSON and YAML sources, refs SHOULD use JSON Pointer (RFC 6901) URI fragments (e.g., `#/paths/~1weather/get`). JSON and YAML share a data model, so JSON Pointer applies to both.
+- For XML sources, refs SHOULD use XPath expressions where applicable.
+
+Where no standard path syntax exists, the format ecosystem defines the convention (e.g., a command name, a fully qualified method name, a node path). Format ecosystems SHOULD document their chosen convention to enable interoperability across tools.
+
+Tools MAY record the ref convention in use via the extension field `x-ref-pattern` on the source or binding entry (e.g., `"x-ref-pattern": "jsonPointer"`). This field is advisory; its absence MUST NOT affect resolution. When present, it allows tools to determine whether they can resolve the refs in a binding without attempting resolution.
 
 #### Priority
 
@@ -752,15 +765,15 @@ Normatively:
 
 ### Sources
 
-`sources` is a top-level registry of binding artifacts. Each entry declares:
+`sources` is a top-level registry of binding specifications. Each entry declares:
 
 - `format` (REQUIRED): the binding specification and version (e.g., `openapi@3.1`, `asyncapi@3.0`). See [`format`](#format-identifier) below.
 - One of:
-  - `location`: a URI/path to an external binding artifact.
-  - `content`: the binding artifact content embedded directly. For JSON-based binding specifications, this is typically a JSON object. For non-JSON binding specifications, this MAY be a string containing the raw content.
+  - `location`: a URI or path to an external binding specification.
+  - `content`: the binding specification content embedded directly. For JSON-based formats, this is typically a JSON object. For text-based formats (e.g., KDL, protobuf), this is a string containing the raw content.
 - `description` (OPTIONAL): a human-readable description of this source.
 
-A conforming source MUST include either `location` or `content`, but not both. If a non-conforming document includes both, implementations SHOULD prefer `content` (the embedded content is authoritative; the location is advisory).
+A conforming source MUST include either `location` or `content`, but not both. If a non-conforming document includes both, implementations MUST prefer `content` (the embedded content is authoritative; the location is advisory).
 
 #### `format` (identifier)
 
@@ -772,7 +785,8 @@ Normatively:
   - `<name>` SHOULD be lowercase and SHOULD be stable over time (e.g., `openapi`, `asyncapi`).
   - `<version>` SHOULD be a SemVer-like string (e.g., `3.1`, `3.0.0`).
 - Tools MUST treat `format` matching as **case-insensitive** for `<name>` (tools SHOULD normalize `<name>` to lowercase).
-- Tools MAY support aliases (e.g., treating `openapi@3.1` and `openapi@3.1.0` as equivalent), but any aliasing MUST be deterministic.
+- Tools MUST treat trailing `.0` segments as insignificant when comparing `<version>`: `openapi@3.1` and `openapi@3.1.0` identify the same format. Tools SHOULD normalize versions by stripping trailing `.0` segments (e.g., `3.1.0` → `3.1`).
+- `<version>` matching is otherwise **exact** (string equality after normalization). Tools MUST NOT infer compatibility between different version strings (e.g., `3.1` and `3.2` are distinct formats).
 
 Tools that do not support a binding `format` MUST ignore bindings that reference it (or surface a capability diagnostic) without failing the entire OpenBindings document.
 
@@ -796,7 +810,7 @@ Examples of well-known `format` identifiers (illustrative, not exhaustive):
 
 #### `location` and resolution
 
-`location` is a string that identifies where to obtain the binding artifact.
+`location` is a string that identifies where to obtain the binding specification.
 
 Normatively:
 
@@ -932,7 +946,7 @@ OpenBindings v0.1 uses **JSONata** as the transform language.
 - Declarative (expressions describe the output structure)
 - Widely implemented (libraries available for JavaScript, Go, Python, Java, and other languages)
 
-Tools claiming OpenBindings v0.1 support MUST implement JSONata for transform evaluation.
+Tools claiming OpenBindings v0.1 support MUST implement JSONata for transform evaluation. Implementations SHOULD target [JSONata 2.x](https://docs.jsonata.org/) semantics; if an implementation uses a different major version, it MUST document the version it supports.
 
 Future versions of OpenBindings MAY support additional transform languages via a `type` field (see [Transform definition](#transform-definition)).
 
@@ -1240,7 +1254,7 @@ OpenBindings documents have two distinct version concepts:
 
 ### `openbindings` (spec version)
 
-`openbindings` identifies the OpenBindings document format version. Tooling MUST refuse to parse documents that declare a higher major version than it supports.
+`openbindings` identifies the OpenBindings document format version. The value MUST be a [Semantic Versioning 2.0.0](https://semver.org/) string (e.g., `"0.1.0"`, `"1.0.0"`). Tooling MUST refuse to parse documents that declare a higher major version than it supports.
 
 Within the same major version:
 

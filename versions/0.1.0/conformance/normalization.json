@@ -121,6 +121,19 @@
       }
     },
     {
+      "name": "allOf: type intersection — number and integer yields integer (subtype rule)",
+      "$comment": "integer is a subtype of number; intersecting number-only with integer-only should produce integer",
+      "input": {
+        "allOf": [
+          { "type": "number" },
+          { "type": "integer" }
+        ]
+      },
+      "expected": {
+        "type": ["integer"]
+      }
+    },
+    {
       "name": "allOf: type intersection — empty intersection is schema error",
       "input": {
         "allOf": [

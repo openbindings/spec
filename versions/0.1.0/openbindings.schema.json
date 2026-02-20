@@ -107,6 +107,13 @@
           "type": "boolean",
           "description": "Whether the operation is deprecated."
         },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Organizational labels for grouping and filtering."
+        },
         "aliases": {
           "type": "array",
           "description": "Alternate names for matching compatibility.",
