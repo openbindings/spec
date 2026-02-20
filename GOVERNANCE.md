@@ -23,6 +23,10 @@ The goal is to keep the OpenBindings specification vendor-neutral, implementable
 - Released versions under `versions/<x.y.z>/` are immutable.
 - See `RELEASING.md` for the release process.
 
+## Sponsorship
+
+Infrastructure and hosting for the OpenBindings project are currently sponsored by [Endpin LLC](https://endpin.io). The specification itself is governed independently under the editors model described above.
+
 ## Trademarks (intent)
 
-“OpenBindings” is intended to be a community standard name. Trademark policy may be published as the project grows.
+"OpenBindings" is intended to be a community standard name. Trademark policy may be published as the project grows.

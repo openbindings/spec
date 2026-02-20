@@ -11,8 +11,9 @@ We want OpenBindings to be an enjoyable, professional place to collaborate.
 
 ## Reporting
 
-If you experience or witness unacceptable behavior, report it to the project maintainers:
+If you experience or witness unacceptable behavior, report it to:
 
+- hello@openbindings.com
 - Matthew Clevenger [@clevengermatt](https://github.com/clevengermatt)
 
 We will review reports promptly and take appropriate action.

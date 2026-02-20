@@ -1,16 +1,16 @@
 # Security Policy
 
-OpenBindings is primarily a **specification repository**. There is no hosted service to “attack” here, but security issues can still arise from:
+OpenBindings is primarily a **specification repository**. There is no hosted service to "attack" here, but security issues can still arise from:
 
 - ambiguous or unsafe guidance that could lead to vulnerable implementations
 - scripts or other executable assets in this repo
 
 ## Reporting a vulnerability
 
-If you believe you’ve found a security issue that should be handled privately:
+If you believe you've found a security issue that should be handled privately:
 
-- Contact the maintainers:
-  - Matthew Clevenger [@clevengermatt](https://github.com/clevengermatt)
+- Email: hello@openbindings.com
+- GitHub: Matthew Clevenger [@clevengermatt](https://github.com/clevengermatt)
 
 If the issue is not sensitive, you can open a public issue instead.
 

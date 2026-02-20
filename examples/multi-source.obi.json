@@ -1,0 +1,104 @@
+{
+  "openbindings": "0.1.0",
+  "name": "User Service",
+  "version": "2.0.0",
+  "description": "A user service available through two OpenAPI sources — a public API and an internal admin API — unified under one interface.",
+  "schemas": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "email", "name", "role"]
+    },
+    "GetUserInput": {
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "CreateUserInput": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
+      },
+      "required": ["email", "name"]
+    },
+    "ListUsersOutput": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": { "$ref": "#/schemas/User" }
+        }
+      }
+    }
+  },
+  "operations": {
+    "getUser": {
+      "kind": "method",
+      "description": "Retrieve a user by ID.",
+      "idempotent": true,
+      "input": { "$ref": "#/schemas/GetUserInput" },
+      "output": { "$ref": "#/schemas/User" }
+    },
+    "createUser": {
+      "kind": "method",
+      "description": "Create a new user account.",
+      "input": { "$ref": "#/schemas/CreateUserInput" },
+      "output": { "$ref": "#/schemas/User" }
+    },
+    "listUsers": {
+      "kind": "method",
+      "description": "List all users. Only available through the admin API.",
+      "idempotent": true,
+      "output": { "$ref": "#/schemas/ListUsersOutput" }
+    }
+  },
+  "sources": {
+    "publicApi": {
+      "format": "openapi@3.1",
+      "location": "https://api.example.com/openapi.json",
+      "description": "Public-facing REST API"
+    },
+    "adminApi": {
+      "format": "openapi@3.1",
+      "location": "https://admin.example.com/openapi.json",
+      "description": "Internal admin REST API"
+    }
+  },
+  "bindings": {
+    "getUser.publicApi": {
+      "operation": "getUser",
+      "source": "publicApi",
+      "ref": "#/paths/~1users~1{userId}/get"
+    },
+    "getUser.adminApi": {
+      "operation": "getUser",
+      "source": "adminApi",
+      "ref": "#/paths/~1admin~1users~1{userId}/get"
+    },
+    "createUser.publicApi": {
+      "operation": "createUser",
+      "source": "publicApi",
+      "ref": "#/paths/~1users/post"
+    },
+    "createUser.adminApi": {
+      "operation": "createUser",
+      "source": "adminApi",
+      "ref": "#/paths/~1admin~1users/post"
+    },
+    "listUsers.adminApi": {
+      "operation": "listUsers",
+      "source": "adminApi",
+      "ref": "#/paths/~1admin~1users/get"
+    }
+  }
+}
