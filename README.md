@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="logo.png" alt="OpenBindings" width="600">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo-dark.svg">
+    <img alt="OpenBindings" src="logo.svg" width="600">
+  </picture>
 </p>
 
 <p align="center">
@@ -90,7 +93,13 @@ OpenBindings is a community-driven project. Sponsorship helps fund development, 
 
 <table>
   <tr>
-    <td align="center" width="200"><em>Your logo here</em></td>
+    <td align="center" width="200">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="icon-dark.svg">
+        <img src="icon.svg" alt="" width="40">
+      </picture><br>
+      <em>Your logo here</em>
+    </td>
   </tr>
 </table>
 
