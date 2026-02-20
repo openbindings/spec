@@ -96,7 +96,7 @@ OpenBindings is a community-driven project. Sponsorship helps fund development, 
     <td align="center" width="200">
       <a href="https://endpin.io">
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="sponsors/endpin_dark.svg">
+          <source media="(prefers-color-scheme: dark)" srcset="sponsors/endpin-dark.svg">
           <img src="sponsors/endpin.svg" alt="Endpin LLC" height="32">
         </picture><br>
         <strong>Endpin LLC</strong>
