@@ -1,0 +1,220 @@
+{
+  "openbindings": "0.1.0",
+  "name": "Blend Coffee Shop",
+  "version": "1.0.0",
+  "description": "A coffee shop with four bindings: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), and internal RPC (gRPC). One interface, four binding specifications.",
+  "schemas": {
+    "MenuItem": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "sizes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "price": { "type": "number" }
+            },
+            "required": ["label", "price"]
+          }
+        }
+      },
+      "required": ["id", "name", "sizes"]
+    },
+    "Menu": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/schemas/MenuItem" }
+        }
+      }
+    },
+    "PlaceOrderInput": {
+      "type": "object",
+      "properties": {
+        "drink": { "type": "string", "description": "Menu item ID" },
+        "size": { "type": "string", "description": "Size label (v1, v2, or v3)" },
+        "customer": { "type": "string", "description": "Customer name" }
+      },
+      "required": ["drink", "size", "customer"]
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "drink": { "type": "string" },
+        "size": { "type": "string" },
+        "customer": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "drink", "size", "customer", "status", "createdAt"]
+    },
+    "OrderStatusInput": {
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" }
+      },
+      "required": ["orderId"]
+    },
+    "CancelOrderInput": {
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" }
+      },
+      "required": ["orderId"]
+    },
+    "CancelOrderOutput": {
+      "type": "object",
+      "properties": {
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    },
+    "OrderUpdate": {
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "status", "updatedAt"]
+    }
+  },
+  "operations": {
+    "getMenu": {
+      "kind": "method",
+      "description": "Returns the full menu with drinks, sizes, and prices.",
+      "idempotent": true,
+      "output": { "$ref": "#/schemas/Menu" }
+    },
+    "placeOrder": {
+      "kind": "method",
+      "description": "Place a new order. Returns the order with its ID and initial status.",
+      "input": { "$ref": "#/schemas/PlaceOrderInput" },
+      "output": { "$ref": "#/schemas/Order" }
+    },
+    "getOrderStatus": {
+      "kind": "method",
+      "description": "Check the current status of an order by ID.",
+      "idempotent": true,
+      "input": { "$ref": "#/schemas/OrderStatusInput" },
+      "output": { "$ref": "#/schemas/Order" }
+    },
+    "cancelOrder": {
+      "kind": "method",
+      "description": "Cancel a pending order. Only works if the order has not started preparation.",
+      "input": { "$ref": "#/schemas/CancelOrderInput" },
+      "output": { "$ref": "#/schemas/CancelOrderOutput" }
+    },
+    "orderUpdates": {
+      "kind": "event",
+      "description": "Stream of order state transitions. Emitted whenever an order changes status.",
+      "payload": { "$ref": "#/schemas/OrderUpdate" }
+    }
+  },
+  "sources": {
+    "rest": {
+      "format": "openapi@3.1",
+      "location": "https://blend.openbindings.com/openapi.json",
+      "description": "REST API for the ordering app"
+    },
+    "events": {
+      "format": "asyncapi@3.0",
+      "location": "https://blend.openbindings.com/asyncapi.json",
+      "description": "SSE event stream for the barista dashboard"
+    },
+    "mcp": {
+      "format": "mcp@2025-11-25",
+      "location": "https://blend.openbindings.com/mcp",
+      "description": "MCP tools for AI assistants"
+    },
+    "grpc": {
+      "format": "grpc",
+      "location": "blend.openbindings.com:9090",
+      "description": "gRPC service for backend microservices"
+    }
+  },
+  "bindings": {
+    "getMenu.rest": {
+      "operation": "getMenu",
+      "source": "rest",
+      "ref": "#/paths/~1api~1menu/get"
+    },
+    "getMenu.mcp": {
+      "operation": "getMenu",
+      "source": "mcp",
+      "ref": "tools/getMenu"
+    },
+    "getMenu.grpc": {
+      "operation": "getMenu",
+      "source": "grpc",
+      "ref": "blend.CoffeeShop/GetMenu"
+    },
+    "placeOrder.rest": {
+      "operation": "placeOrder",
+      "source": "rest",
+      "ref": "#/paths/~1api~1orders/post"
+    },
+    "placeOrder.mcp": {
+      "operation": "placeOrder",
+      "source": "mcp",
+      "ref": "tools/placeOrder"
+    },
+    "placeOrder.grpc": {
+      "operation": "placeOrder",
+      "source": "grpc",
+      "ref": "blend.CoffeeShop/PlaceOrder"
+    },
+    "getOrderStatus.rest": {
+      "operation": "getOrderStatus",
+      "source": "rest",
+      "ref": "#/paths/~1api~1orders~1{orderId}/get"
+    },
+    "getOrderStatus.mcp": {
+      "operation": "getOrderStatus",
+      "source": "mcp",
+      "ref": "tools/getOrderStatus"
+    },
+    "getOrderStatus.grpc": {
+      "operation": "getOrderStatus",
+      "source": "grpc",
+      "ref": "blend.CoffeeShop/GetOrderStatus"
+    },
+    "cancelOrder.rest": {
+      "operation": "cancelOrder",
+      "source": "rest",
+      "ref": "#/paths/~1api~1orders~1{orderId}~1cancel/post"
+    },
+    "cancelOrder.mcp": {
+      "operation": "cancelOrder",
+      "source": "mcp",
+      "ref": "tools/cancelOrder"
+    },
+    "cancelOrder.grpc": {
+      "operation": "cancelOrder",
+      "source": "grpc",
+      "ref": "blend.CoffeeShop/CancelOrder"
+    },
+    "orderUpdates.events": {
+      "operation": "orderUpdates",
+      "source": "events",
+      "ref": "#/operations/onOrderUpdate"
+    },
+    "orderUpdates.grpc": {
+      "operation": "orderUpdates",
+      "source": "grpc",
+      "ref": "blend.CoffeeShop/OrderUpdates"
+    }
+  }
+}

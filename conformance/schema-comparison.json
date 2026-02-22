@@ -1,0 +1,777 @@
+{
+  "$comment": "OpenBindings v0.1 conformance suite: schema comparison cases. Each case tests the compatibility comparison rules from the spec's Schema Comparison Rules section. Fields: name (descriptive), direction ('input' or 'output'), target (I), candidate (D), compatible (boolean) or error (string for fail-closed/schema-error cases).",
+  "cases": [
+
+    { "$comment": "=== Trivial schemas ===" },
+
+    {
+      "name": "trivial: both empty schemas, input",
+      "direction": "input",
+      "target": {},
+      "candidate": {},
+      "compatible": true
+    },
+    {
+      "name": "trivial: both empty schemas, output",
+      "direction": "output",
+      "target": {},
+      "candidate": {},
+      "compatible": true
+    },
+    {
+      "name": "trivial: candidate empty schema accepts anything, input",
+      "direction": "input",
+      "target": { "type": "string" },
+      "candidate": {},
+      "compatible": true
+    },
+    {
+      "name": "trivial: candidate empty schema on output, target is not empty",
+      "direction": "output",
+      "target": { "type": "string" },
+      "candidate": {},
+      "compatible": false
+    },
+
+    { "$comment": "=== type ===" },
+
+    {
+      "name": "type: identical types, input",
+      "direction": "input",
+      "target": { "type": "string" },
+      "candidate": { "type": "string" },
+      "compatible": true
+    },
+    {
+      "name": "type: identical types, output",
+      "direction": "output",
+      "target": { "type": "string" },
+      "candidate": { "type": "string" },
+      "compatible": true
+    },
+    {
+      "name": "type: candidate accepts superset of types, input",
+      "direction": "input",
+      "target": { "type": "string" },
+      "candidate": { "type": ["string", "number"] },
+      "compatible": true
+    },
+    {
+      "name": "type: candidate accepts superset of types, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "string" },
+      "candidate": { "type": ["string", "number"] },
+      "compatible": false
+    },
+    {
+      "name": "type: candidate accepts subset of types, input (incompatible)",
+      "direction": "input",
+      "target": { "type": ["string", "number"] },
+      "candidate": { "type": "string" },
+      "compatible": false
+    },
+    {
+      "name": "type: candidate accepts subset of types, output",
+      "direction": "output",
+      "target": { "type": ["string", "number"] },
+      "candidate": { "type": "string" },
+      "compatible": true
+    },
+    {
+      "name": "type: absent type treated as unconstrained, input",
+      "direction": "input",
+      "target": { "type": "string" },
+      "candidate": { "minLength": 1 },
+      "compatible": true
+    },
+    {
+      "name": "type: absent type treated as unconstrained, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "string" },
+      "candidate": { "minLength": 1 },
+      "compatible": false
+    },
+
+    { "$comment": "=== const / enum ===" },
+
+    {
+      "name": "enum: identical enums, input",
+      "direction": "input",
+      "target": { "type": "string", "enum": ["a", "b", "c"] },
+      "candidate": { "type": "string", "enum": ["a", "b", "c"] },
+      "compatible": true
+    },
+    {
+      "name": "enum: identical enums, output",
+      "direction": "output",
+      "target": { "type": "string", "enum": ["a", "b", "c"] },
+      "candidate": { "type": "string", "enum": ["a", "b", "c"] },
+      "compatible": true
+    },
+    {
+      "name": "enum: candidate superset, input (compatible)",
+      "direction": "input",
+      "target": { "type": "string", "enum": ["a", "b"] },
+      "candidate": { "type": "string", "enum": ["a", "b", "c"] },
+      "compatible": true
+    },
+    {
+      "name": "enum: candidate superset, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "string", "enum": ["a", "b"] },
+      "candidate": { "type": "string", "enum": ["a", "b", "c"] },
+      "compatible": false
+    },
+    {
+      "name": "enum: candidate subset, input (incompatible)",
+      "direction": "input",
+      "target": { "type": "string", "enum": ["a", "b", "c"] },
+      "candidate": { "type": "string", "enum": ["a", "b"] },
+      "compatible": false
+    },
+    {
+      "name": "enum: candidate subset, output (compatible)",
+      "direction": "output",
+      "target": { "type": "string", "enum": ["a", "b", "c"] },
+      "candidate": { "type": "string", "enum": ["a", "b"] },
+      "compatible": true
+    },
+    {
+      "name": "const: identical const, input",
+      "direction": "input",
+      "target": { "type": "string", "const": "fixed" },
+      "candidate": { "type": "string", "const": "fixed" },
+      "compatible": true
+    },
+    {
+      "name": "const: different const, input",
+      "direction": "input",
+      "target": { "type": "string", "const": "fixed" },
+      "candidate": { "type": "string", "const": "other" },
+      "compatible": false
+    },
+    {
+      "name": "const: candidate enum includes target const, input",
+      "direction": "input",
+      "target": { "type": "string", "const": "fixed" },
+      "candidate": { "type": "string", "enum": ["fixed", "other"] },
+      "compatible": true
+    },
+    {
+      "name": "const: candidate enum missing target const, input",
+      "direction": "input",
+      "target": { "type": "string", "const": "fixed" },
+      "candidate": { "type": "string", "enum": ["other", "another"] },
+      "compatible": false
+    },
+
+    { "$comment": "=== Objects: properties, required, additionalProperties ===" },
+
+    {
+      "name": "objects: identical schemas, input",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: candidate drops required field, input (compatible — accepts more)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } },
+        "required": ["id", "name"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } },
+        "required": ["id"]
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: candidate drops required field, output (incompatible — must provide all)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } },
+        "required": ["id", "name"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } },
+        "required": ["id"]
+      },
+      "compatible": false
+    },
+    {
+      "name": "objects: candidate adds required field, input (incompatible — requires more)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "extra": { "type": "string" } },
+        "required": ["id", "extra"]
+      },
+      "compatible": false
+    },
+    {
+      "name": "objects: candidate adds optional property, input (compatible)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "extra": { "type": "string" } },
+        "required": ["id"]
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: candidate adds property, output with additionalProperties=false on target (incompatible)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "extra": { "type": "string" } }
+      },
+      "compatible": false
+    },
+    {
+      "name": "objects: candidate adds property, output with additionalProperties=true on target (compatible)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } }
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "extra": { "type": "string" } }
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: additionalProperties(I)=false, additionalProperties(D)=false, output (compatible)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: additionalProperties(I)=false, additionalProperties(D) absent, output (incompatible)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "additionalProperties": false
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } }
+      },
+      "compatible": false
+    },
+    {
+      "name": "objects: additionalProperties as schema, output — recursive comparison",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      },
+      "candidate": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: additionalProperties(I) as schema, additionalProperties(D)=false, output (compatible — more restrictive)",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "additionalProperties": { "type": "string" }
+      },
+      "candidate": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: candidate property type mismatch, input",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "count": { "type": "integer" } }
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "count": { "type": "string" } }
+      },
+      "compatible": false
+    },
+    {
+      "name": "objects: candidate missing property that target defines, input (unconstrained = compatible)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } }
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } }
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: required order should not matter (normalization)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "a": { "type": "string" }, "b": { "type": "string" } },
+        "required": ["b", "a"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "a": { "type": "string" }, "b": { "type": "string" } },
+        "required": ["a", "b"]
+      },
+      "compatible": true
+    },
+    {
+      "name": "objects: different property names in required, input (incompatible)",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": { "title": { "type": "string" } },
+        "required": ["title"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "task_name": { "type": "string" } },
+        "required": ["task_name"]
+      },
+      "compatible": false
+    },
+
+    { "$comment": "=== Arrays: items ===" },
+
+    {
+      "name": "arrays: identical items schema, input",
+      "direction": "input",
+      "target": { "type": "array", "items": { "type": "string" } },
+      "candidate": { "type": "array", "items": { "type": "string" } },
+      "compatible": true
+    },
+    {
+      "name": "arrays: candidate items wider type, input (compatible)",
+      "direction": "input",
+      "target": { "type": "array", "items": { "type": "string" } },
+      "candidate": { "type": "array", "items": { "type": ["string", "number"] } },
+      "compatible": true
+    },
+    {
+      "name": "arrays: candidate items wider type, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "array", "items": { "type": "string" } },
+      "candidate": { "type": "array", "items": { "type": ["string", "number"] } },
+      "compatible": false
+    },
+    {
+      "name": "arrays: candidate items narrower type, output (compatible)",
+      "direction": "output",
+      "target": { "type": "array", "items": { "type": ["string", "number"] } },
+      "candidate": { "type": "array", "items": { "type": "string" } },
+      "compatible": true
+    },
+
+    { "$comment": "=== Numeric bounds ===" },
+
+    {
+      "name": "numeric: identical bounds, input",
+      "direction": "input",
+      "target": { "type": "integer", "minimum": 1, "maximum": 100 },
+      "candidate": { "type": "integer", "minimum": 1, "maximum": 100 },
+      "compatible": true
+    },
+    {
+      "name": "numeric: candidate wider range, input (compatible)",
+      "direction": "input",
+      "target": { "type": "integer", "minimum": 1, "maximum": 100 },
+      "candidate": { "type": "integer", "minimum": 0, "maximum": 200 },
+      "compatible": true
+    },
+    {
+      "name": "numeric: candidate wider range, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "integer", "minimum": 1, "maximum": 100 },
+      "candidate": { "type": "integer", "minimum": 0, "maximum": 200 },
+      "compatible": false
+    },
+    {
+      "name": "numeric: candidate narrower range, input (incompatible)",
+      "direction": "input",
+      "target": { "type": "integer", "minimum": 0, "maximum": 100 },
+      "candidate": { "type": "integer", "minimum": 5, "maximum": 50 },
+      "compatible": false
+    },
+    {
+      "name": "numeric: candidate narrower range, output (compatible)",
+      "direction": "output",
+      "target": { "type": "integer", "minimum": 0, "maximum": 100 },
+      "candidate": { "type": "integer", "minimum": 5, "maximum": 50 },
+      "compatible": true
+    },
+    {
+      "name": "numeric: candidate no bound where target has one, input (unconstrained = compatible)",
+      "direction": "input",
+      "target": { "type": "integer", "minimum": 1 },
+      "candidate": { "type": "integer" },
+      "compatible": true
+    },
+    {
+      "name": "numeric: candidate no bound where target has one, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "integer", "minimum": 1 },
+      "candidate": { "type": "integer" },
+      "compatible": false
+    },
+    {
+      "name": "numeric: exclusiveMinimum vs minimum, input",
+      "direction": "input",
+      "target": { "type": "integer", "minimum": 0 },
+      "candidate": { "type": "integer", "exclusiveMinimum": 0 },
+      "compatible": false
+    },
+    {
+      "name": "numeric: exclusiveMaximum vs maximum, output (candidate stricter = compatible)",
+      "direction": "output",
+      "target": { "type": "integer", "maximum": 100 },
+      "candidate": { "type": "integer", "exclusiveMaximum": 100 },
+      "compatible": true
+    },
+
+    { "$comment": "=== String bounds ===" },
+
+    {
+      "name": "string: identical bounds, input",
+      "direction": "input",
+      "target": { "type": "string", "minLength": 1, "maxLength": 255 },
+      "candidate": { "type": "string", "minLength": 1, "maxLength": 255 },
+      "compatible": true
+    },
+    {
+      "name": "string: candidate wider range, input (compatible)",
+      "direction": "input",
+      "target": { "type": "string", "minLength": 1, "maxLength": 100 },
+      "candidate": { "type": "string", "minLength": 0, "maxLength": 200 },
+      "compatible": true
+    },
+    {
+      "name": "string: candidate wider range, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "string", "minLength": 1, "maxLength": 100 },
+      "candidate": { "type": "string", "minLength": 0, "maxLength": 200 },
+      "compatible": false
+    },
+    {
+      "name": "string: candidate no maxLength where target has one, input (unconstrained = compatible)",
+      "direction": "input",
+      "target": { "type": "string", "maxLength": 255 },
+      "candidate": { "type": "string" },
+      "compatible": true
+    },
+    {
+      "name": "string: candidate no maxLength where target has one, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "string", "maxLength": 255 },
+      "candidate": { "type": "string" },
+      "compatible": false
+    },
+
+    { "$comment": "=== Array bounds ===" },
+
+    {
+      "name": "array-bounds: identical bounds, input",
+      "direction": "input",
+      "target": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 10 },
+      "candidate": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 10 },
+      "compatible": true
+    },
+    {
+      "name": "array-bounds: candidate wider range, input (compatible)",
+      "direction": "input",
+      "target": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 10 },
+      "candidate": { "type": "array", "items": { "type": "string" }, "minItems": 0, "maxItems": 20 },
+      "compatible": true
+    },
+    {
+      "name": "array-bounds: candidate wider range, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 10 },
+      "candidate": { "type": "array", "items": { "type": "string" }, "minItems": 0, "maxItems": 20 },
+      "compatible": false
+    },
+    {
+      "name": "array-bounds: candidate no maxItems where target has one, output (incompatible)",
+      "direction": "output",
+      "target": { "type": "array", "items": { "type": "string" }, "maxItems": 100 },
+      "candidate": { "type": "array", "items": { "type": "string" } },
+      "compatible": false
+    },
+
+    { "$comment": "=== Unions: oneOf / anyOf ===" },
+
+    {
+      "name": "anyOf: identical variants, input",
+      "direction": "input",
+      "target": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "candidate": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "compatible": true
+    },
+    {
+      "name": "anyOf: order should not matter (normalization), input",
+      "direction": "input",
+      "target": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "candidate": { "anyOf": [{ "type": "number" }, { "type": "string" }] },
+      "compatible": true
+    },
+    {
+      "name": "anyOf: candidate superset of variants, input (compatible — covers all target variants)",
+      "direction": "input",
+      "target": { "anyOf": [{ "type": "string" }] },
+      "candidate": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "compatible": true
+    },
+    {
+      "name": "anyOf: candidate superset of variants, output (incompatible — may return type not in target)",
+      "direction": "output",
+      "target": { "anyOf": [{ "type": "string" }] },
+      "candidate": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "compatible": false
+    },
+    {
+      "name": "anyOf: candidate subset of variants, input (incompatible — doesn't cover all target variants)",
+      "direction": "input",
+      "target": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "candidate": { "anyOf": [{ "type": "string" }] },
+      "compatible": false
+    },
+    {
+      "name": "anyOf: candidate subset of variants, output (compatible — only returns types target describes)",
+      "direction": "output",
+      "target": { "anyOf": [{ "type": "string" }, { "type": "number" }] },
+      "candidate": { "anyOf": [{ "type": "string" }] },
+      "compatible": true
+    },
+    {
+      "name": "oneOf: same behavior as anyOf for comparison, input",
+      "direction": "input",
+      "target": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+      "candidate": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+      "compatible": true
+    },
+
+    { "$comment": "=== Fail closed: out-of-profile keywords ===" },
+
+    {
+      "name": "fail-closed: pattern keyword on target",
+      "direction": "input",
+      "target": { "type": "string", "pattern": "^[a-z]+$" },
+      "candidate": { "type": "string" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: pattern keyword on candidate",
+      "direction": "input",
+      "target": { "type": "string" },
+      "candidate": { "type": "string", "pattern": "^[a-z]+$" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: not keyword",
+      "direction": "input",
+      "target": { "not": { "type": "string" } },
+      "candidate": { "type": "number" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: if/then/else",
+      "direction": "input",
+      "target": { "if": { "type": "string" }, "then": { "minLength": 1 } },
+      "candidate": { "type": "string" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: patternProperties",
+      "direction": "input",
+      "target": { "type": "object", "patternProperties": { "^S_": { "type": "string" } } },
+      "candidate": { "type": "object" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: format keyword (annotation in JSON Schema but outside profile)",
+      "direction": "input",
+      "target": { "type": "string", "format": "email" },
+      "candidate": { "type": "string" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: multipleOf",
+      "direction": "input",
+      "target": { "type": "integer", "multipleOf": 5 },
+      "candidate": { "type": "integer" },
+      "error": "outside_profile"
+    },
+    {
+      "name": "fail-closed: uniqueItems",
+      "direction": "input",
+      "target": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+      "candidate": { "type": "array", "items": { "type": "string" } },
+      "error": "outside_profile"
+    },
+
+    { "$comment": "=== Annotation-only keywords (must be ignored) ===" },
+
+    {
+      "name": "annotations: title and description ignored, input",
+      "direction": "input",
+      "target": { "type": "string", "title": "Name", "description": "The user's name" },
+      "candidate": { "type": "string", "title": "Different", "description": "Something else" },
+      "compatible": true
+    },
+    {
+      "name": "annotations: default and deprecated ignored, output",
+      "direction": "output",
+      "target": { "type": "string", "default": "foo", "deprecated": true },
+      "candidate": { "type": "string" },
+      "compatible": true
+    },
+    {
+      "name": "annotations: examples ignored, input",
+      "direction": "input",
+      "target": { "type": "integer", "examples": [1, 2, 3] },
+      "candidate": { "type": "integer" },
+      "compatible": true
+    },
+
+    { "$comment": "=== Keyword combinations ===" },
+
+    {
+      "name": "combination: type + enum both apply, input — type compatible but enum not",
+      "direction": "input",
+      "target": { "type": "string", "enum": ["a", "b", "c"] },
+      "candidate": { "type": "string", "enum": ["a", "b"] },
+      "compatible": false
+    },
+    {
+      "name": "combination: type + required + properties, output",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": { "id": { "type": "integer" } },
+        "required": ["id"]
+      },
+      "compatible": false
+    },
+
+    { "$comment": "=== Recursive / nested schemas ===" },
+
+    {
+      "name": "nested: array of objects, output — inner object enum widens",
+      "direction": "output",
+      "target": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "enum": ["a", "b"] } },
+              "required": ["status"]
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "candidate": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "enum": ["a", "b", "c"] } },
+              "required": ["status"]
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "compatible": false
+    },
+    {
+      "name": "nested: array of objects, input — inner object enum widens",
+      "direction": "input",
+      "target": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "enum": ["a", "b"] } },
+              "required": ["status"]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "enum": ["a", "b", "c"] } },
+              "required": ["status"]
+            }
+          }
+        }
+      },
+      "compatible": true
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/openbindings-0.1.0.json",
+  "title": "OpenBindings Interface Document (v0.1.0)",
+  "description": "Canonical JSON Schema for the OpenBindings interface document.",
+  "type": "object",
+  "required": [
+    "openbindings",
+    "operations"
+  ],
+  "properties": {
+    "openbindings": {
+      "type": "string",
+      "description": "OpenBindings document format version (e.g., 0.1.0)."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-friendly interface name."
+    },
+    "version": {
+      "type": "string",
+      "description": "Interface contract version."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the interface."
+    },
+    "contact": {
+      "type": "object",
+      "description": "Contact information (structure is free-form).",
+      "additionalProperties": true
+    },
+    "license": {
+      "type": "object",
+      "description": "License information (structure is free-form).",
+      "additionalProperties": true
+    },
+    "schemas": {
+      "type": "object",
+      "description": "Named JSON Schemas referenced by operations.",
+      "additionalProperties": {
+        "$ref": "#/$defs/JSONSchema"
+      }
+    },
+    "operations": {
+      "type": "object",
+      "description": "Operation registry keyed by operation name.",
+      "additionalProperties": {
+        "$ref": "#/$defs/Operation"
+      }
+    },
+    "imports": {
+      "type": "object",
+      "description": "Import table mapping local aliases to URLs/paths of other OpenBindings interfaces.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "object",
+      "description": "Registry of binding artifacts (e.g., OpenAPI/AsyncAPI/proto).",
+      "additionalProperties": {
+        "$ref": "#/$defs/Source"
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "description": "Binding entries keyed by binding name, mapping operations to binding sources.",
+      "additionalProperties": {
+        "$ref": "#/$defs/BindingEntry"
+      }
+    },
+    "transforms": {
+      "type": "object",
+      "description": "Named transforms that can be referenced by bindings.",
+      "additionalProperties": {
+        "$ref": "#/$defs/Transform"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "JSONSchema": {
+      "type": "object",
+      "description": "JSON Schema object (dialect defined by the OpenBindings spec).",
+      "additionalProperties": true
+    },
+    "Operation": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "method",
+            "event"
+          ],
+          "description": "Operation kind: method (request/response) or event (emission)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the operation."
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "Whether the operation is deprecated."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Organizational labels for grouping and filtering."
+        },
+        "aliases": {
+          "type": "array",
+          "description": "Alternate names for matching compatibility.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "satisfies": {
+          "type": "array",
+          "description": "Explicit mappings to operations in other interfaces.",
+          "items": {
+            "$ref": "#/$defs/Satisfies"
+          }
+        },
+        "idempotent": {
+          "type": "boolean",
+          "description": "Whether the method operation is idempotent."
+        },
+        "input": {
+          "$ref": "#/$defs/JSONSchema",
+          "description": "Input schema (method only)."
+        },
+        "output": {
+          "$ref": "#/$defs/JSONSchema",
+          "description": "Output schema (method only)."
+        },
+        "payload": {
+          "$ref": "#/$defs/JSONSchema",
+          "description": "Payload schema (event only)."
+        },
+        "examples": {
+          "type": "object",
+          "description": "Named examples for this operation.",
+          "additionalProperties": {
+            "$ref": "#/$defs/OperationExample"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "OperationExample": {
+      "type": "object",
+      "description": "An example input/output pair for an operation.",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of this example."
+        },
+        "input": {
+          "description": "Example input value (method only, must validate against input schema)."
+        },
+        "output": {
+          "description": "Example output value (method only, must validate against output schema)."
+        },
+        "payload": {
+          "description": "Example payload value (event only, must validate against payload schema)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "Satisfies": {
+      "type": "object",
+      "required": [
+        "interface",
+        "operation"
+      ],
+      "properties": {
+        "interface": {
+          "type": "string",
+          "description": "Import key referencing an entry in the document's imports map."
+        },
+        "operation": {
+          "type": "string",
+          "description": "Operation key or alias within the target interface."
+        }
+      },
+      "additionalProperties": true
+    },
+    "Source": {
+      "type": "object",
+      "required": [
+        "format"
+      ],
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "Binding format token (e.g., openapi@3.1)."
+        },
+        "location": {
+          "type": "string",
+          "description": "URI or path to the binding specification."
+        },
+        "content": {
+          "oneOf": [
+            { "type": "object" },
+            { "type": "string" }
+          ],
+          "description": "Binding specification content, embedded directly. Object for JSON-based formats, string for text formats (e.g. KDL, protobuf). If both location and content are present, implementations SHOULD prefer content."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of this binding source."
+        }
+      },
+      "additionalProperties": true
+    },
+    "BindingEntry": {
+      "type": "object",
+      "required": [
+        "operation",
+        "source"
+      ],
+      "properties": {
+        "operation": {
+          "type": "string",
+          "description": "Operation key referenced by this binding."
+        },
+        "source": {
+          "type": "string",
+          "description": "Binding source key from sources."
+        },
+        "ref": {
+          "type": "string",
+          "description": "Pointer into the binding artifact."
+        },
+        "priority": {
+          "type": "number",
+          "description": "Relative binding preference (lower is more preferred)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of this binding."
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "If true, this binding is deprecated and an alternative should be preferred."
+        },
+        "inputTransform": {
+          "$ref": "#/$defs/TransformOrRef",
+          "description": "Transform from operation input schema to binding input structure."
+        },
+        "outputTransform": {
+          "$ref": "#/$defs/TransformOrRef",
+          "description": "Transform from binding output structure to operation output schema."
+        }
+      },
+      "additionalProperties": true
+    },
+    "Transform": {
+      "type": "object",
+      "required": [
+        "type",
+        "expression"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Transform language identifier (e.g., 'jsonata')."
+        },
+        "expression": {
+          "type": "string",
+          "description": "Transform expression in the specified language."
+        }
+      },
+      "additionalProperties": true
+    },
+    "TransformOrRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Transform"
+        },
+        {
+          "type": "object",
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "description": "JSON Pointer reference to a named transform (e.g., '#/transforms/myTransform')."
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "description": "Either an inline transform definition or a reference to a named transform."
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "openbindings": "0.1.0",
+  "name": "Echo Service",
+  "version": "1.0.0",
+  "description": "A minimal OpenBindings interface with a single operation and one binding.",
+  "operations": {
+    "echo": {
+      "kind": "method",
+      "description": "Echo a message back unchanged.",
+      "idempotent": true,
+      "input": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The message to echo back"
+          }
+        },
+        "required": ["message"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "sources": {
+    "restApi": {
+      "format": "openapi@3.1",
+      "location": "./openapi.json"
+    }
+  },
+  "bindings": {
+    "echo.restApi": {
+      "operation": "echo",
+      "source": "restApi",
+      "ref": "#/paths/~1echo/post"
+    }
+  }
+}
