@@ -19,7 +19,7 @@
     },
     "version": {
       "type": "string",
-      "description": "Interface contract version."
+      "description": "Author-chosen label for the interface contract version. Not an identifier; does not participate in compatibility checking."
     },
     "description": {
       "type": "string",

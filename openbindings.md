@@ -222,7 +222,7 @@ This document defines how interface compatibility works under the **operations**
 
 An interface document contains:
 
-- **metadata**: `openbindings` (required), `name` (optional), `version` (optional), `description` (optional), plus optional `contact`, `license`
+- **metadata**: `openbindings` (required), `name` (optional), `version` (optional), `description` (optional), plus optional `contact`, `license`. `name`, `version`, and `description` are author-chosen labels; they are not identifiers and do not participate in compatibility checking. Interface identity is location-based (see [Interface identity](#interface-identity-location-based)).
 - **schemas** (optional but recommended): canonical JSON Schemas used by operations. See [Schemas](#schemas) below.
 - **operations** (required): the contract surface area
 - **sources** (optional): registry of binding artifacts (only needed if using bindings)
