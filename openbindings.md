@@ -789,6 +789,8 @@ Normatively:
 - Tools MUST treat trailing `.0` segments as insignificant when comparing `<version>`: `openapi@3.1` and `openapi@3.1.0` identify the same format. Tools SHOULD normalize versions by stripping trailing `.0` segments (e.g., `3.1.0` → `3.1`).
 - `<version>` matching is otherwise **exact** (string equality after normalization). Tools MUST NOT infer compatibility between different version strings (e.g., `3.1` and `3.2` are distinct formats).
 
+These rules define how **tools compare** format tokens, not how format ecosystems must version their specifications. Format ecosystems are free to use any version scheme; the normalization rules ensure that tools do not treat trivially different representations of the same format as distinct.
+
 Tools that do not support a binding `format` MUST ignore bindings that reference it (or surface a capability diagnostic) without failing the entire OpenBindings document.
 
 #### `format` registry (non-normative guidance)
