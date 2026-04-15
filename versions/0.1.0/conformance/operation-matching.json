@@ -1,0 +1,883 @@
+{
+  "$comment": "OpenBindings v0.1 conformance suite: operation matching cases. Each case tests the operation matching algorithm and overall compatibility assessment defined in the spec. Fields: name (descriptive), target (partial OBI with optional location + operations), candidate (partial OBI with optional imports + operations), result (object with per-operation outcomes and overall compatible boolean).",
+  "cases": [
+    {
+      "$comment": "=== Basic matching ==="
+    },
+    {
+      "name": "exact match: single method, identical schemas",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title"
+              ]
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title"
+              ]
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "missing operation: target has op that candidate lacks",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          },
+          "task.delete": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": false,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible"
+          },
+          "task.delete": {
+            "match": "missing"
+          }
+        }
+      }
+    },
+    {
+      "name": "disjoint schemas: target has only input, candidate has only output — slots skipped",
+      "target": {
+        "operations": {
+          "task.created": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.created": {
+            "output": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.created": {
+            "match": "primary_key",
+            "input": "unspecified",
+            "output": "unspecified"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== Schema slot handling ==="
+    },
+    {
+      "name": "unspecified slots: target has no output, candidate has output — slot skipped",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "unspecified"
+          }
+        }
+      }
+    },
+    {
+      "name": "unspecified slots: both omit output — slot skipped",
+      "target": {
+        "operations": {
+          "ping": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "ping": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "ping": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "unspecified"
+          }
+        }
+      }
+    },
+    {
+      "name": "null is same as absent: target output is null, candidate has no output",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            },
+            "output": null
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "unspecified"
+          }
+        }
+      }
+    },
+    {
+      "name": "output-only operation: output schema comparison",
+      "target": {
+        "operations": {
+          "task.completed": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.completed": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.completed": {
+            "match": "primary_key",
+            "input": "unspecified",
+            "output": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "null is same as absent: target input is null, candidate has no input",
+      "target": {
+        "operations": {
+          "notify": {
+            "input": null,
+            "output": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "notify": {
+            "output": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "notify": {
+            "match": "primary_key",
+            "input": "unspecified",
+            "output": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "empty schema ({}) is not absent: input {} enters compatibility check",
+      "target": {
+        "operations": {
+          "ping": {
+            "input": {},
+            "output": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "ping": {
+            "input": {},
+            "output": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "ping": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "empty schema ({}) vs absent: target has input {}, candidate omits input — candidate unspecified, slot skipped",
+      "target": {
+        "operations": {
+          "ping": {
+            "input": {}
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "ping": {}
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "ping": {
+            "match": "primary_key",
+            "input": "unspecified",
+            "output": "unspecified"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== Aliases ==="
+    },
+    {
+      "name": "alias match: candidate operation matched via alias",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "tasks.new": {
+            "aliases": [
+              "task.create"
+            ],
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "alias",
+            "input": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "alias conflict: two candidate operations alias the same target name — error",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "tasks.new": {
+            "aliases": [
+              "task.create"
+            ],
+            "input": {
+              "type": "object"
+            }
+          },
+          "tasks.add": {
+            "aliases": [
+              "task.create"
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": false,
+        "operations": {
+          "task.create": {
+            "match": "ambiguous"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== satisfies ==="
+    },
+    {
+      "name": "satisfies: explicit match via satisfies mapping",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "satisfies: resolves against alias of target operation",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "aliases": [
+              "createTask"
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com/target.json"
+        },
+        "operations": {
+          "acme.new": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "createTask"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "satisfies preferred over fallback: satisfies wins when both could match",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com/target.json"
+        },
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== Candidate extra operations ==="
+    },
+    {
+      "name": "candidate has extra operations beyond target — still compatible",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          },
+          "task.delete": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": true,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== Schema incompatibility ==="
+    },
+    {
+      "name": "schema incompatibility: input type mismatch",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": false,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "incompatible"
+          }
+        }
+      }
+    },
+    {
+      "name": "schema incompatibility: output widens enum",
+      "target": {
+        "operations": {
+          "task.get": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "closed"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.get": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            },
+            "output": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "closed",
+                    "archived"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": false,
+        "operations": {
+          "task.get": {
+            "match": "primary_key",
+            "input": "compatible",
+            "output": "incompatible"
+          }
+        }
+      }
+    },
+    {
+      "$comment": "=== Multiple operations ==="
+    },
+    {
+      "name": "multiple operations: one compatible, one incompatible — overall incompatible",
+      "target": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "task.list": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "items"
+              ]
+            }
+          }
+        }
+      },
+      "candidate": {
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "task.list": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              },
+              "required": [
+                "results"
+              ]
+            }
+          }
+        }
+      },
+      "result": {
+        "compatible": false,
+        "operations": {
+          "task.create": {
+            "match": "primary_key",
+            "input": "compatible"
+          },
+          "task.list": {
+            "match": "primary_key",
+            "output": "incompatible"
+          }
+        }
+      }
+    }
+  ]
+}

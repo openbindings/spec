@@ -1,0 +1,23 @@
+name: Spec change proposal
+description: Propose a change to the specification
+labels: ["proposal"]
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why should the spec change? What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What specifically should change? Include proposed spec text if you have it.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What existing behavior or implementations would this affect?

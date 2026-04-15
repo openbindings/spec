@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ajv-cli
+        run: npm install -g ajv-cli ajv-formats
+
+      - name: Validate examples against schema
+        run: |
+          for f in examples/*.obi.json; do
+            echo "Validating $f..."
+            ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
+          done
+
+      - name: Validate interface files against schema
+        run: |
+          for f in interfaces/*.json; do
+            echo "Validating $f..."
+            ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
+          done
+
+      - name: Validate conformance fixtures are valid JSON
+        run: |
+          for f in conformance/*.json; do
+            echo "Checking $f..."
+            python3 -m json.tool "$f" > /dev/null
+          done
+
+      - name: Validate operation-graph schema is valid JSON
+        run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null

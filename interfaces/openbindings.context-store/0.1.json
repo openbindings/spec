@@ -1,0 +1,96 @@
+{
+    "openbindings": "0.1.0",
+    "name": "OpenBindings Context Store",
+    "version": "0.1.0",
+    "description": "Interface for managing stored credentials and context. Implementations provide CRUD operations over an opaque key-value store where keys are normalized API origins and values are credential maps using well-known field names.",
+    "schemas": {
+        "ContextEntry": {
+            "type": "object",
+            "description": "A stored context entry.",
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "Context store key (typically a normalized API host, e.g., 'api.example.com')."
+                },
+                "context": {
+                    "type": "object",
+                    "description": "Opaque credential map. Structure is executor-managed; well-known fields include 'bearerToken', 'apiKey', 'basic'.",
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "key"
+            ]
+        }
+    },
+    "operations": {
+        "listContexts": {
+            "description": "List all stored context entries.",
+            "idempotent": true,
+            "output": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/schemas/ContextEntry"
+                }
+            }
+        },
+        "getContext": {
+            "description": "Get a stored context entry by key.",
+            "idempotent": true,
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Context store key."
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "additionalProperties": false
+            },
+            "output": {
+                "$ref": "#/schemas/ContextEntry"
+            }
+        },
+        "setContext": {
+            "description": "Set or update a context entry.",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Context store key."
+                    },
+                    "context": {
+                        "type": "object",
+                        "description": "Credential map to store.",
+                        "additionalProperties": true
+                    }
+                },
+                "required": [
+                    "key",
+                    "context"
+                ],
+                "additionalProperties": false
+            }
+        },
+        "deleteContext": {
+            "description": "Delete a stored context entry.",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "Context store key."
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "additionalProperties": false
+            }
+        }
+    }
+}

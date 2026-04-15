@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Design discussion
+    url: https://github.com/openbindings/spec/discussions/categories/design
+    about: Open-ended architecture and design questions
+  - name: Implementor Q&A
+    url: https://github.com/openbindings/spec/discussions/categories/implementor-q-a
+    about: Questions about implementing the spec

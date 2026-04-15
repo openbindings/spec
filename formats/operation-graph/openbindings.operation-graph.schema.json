@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/openbindings.operation-graph-0.1.0.json",
+  "title": "OpenBindings OperationGraph Source Document (v0.1.0)",
+  "description": "JSON Schema for openbindings.operation-graph binding source documents. Companion to the OpenBindings Specification.",
+  "type": "object",
+  "required": [
+    "openbindings.operation-graph",
+    "graphs"
+  ],
+  "properties": {
+    "openbindings.operation-graph": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Operation graph format version (semver, e.g., 0.1.0)."
+    },
+    "graphs": {
+      "type": "object",
+      "description": "Named operation graphs, each defining a node graph.",
+      "additionalProperties": {
+        "$ref": "#/$defs/OperationGraph"
+      }
+    }
+  },
+  "patternProperties": { "^x-": {} },
+  "additionalProperties": false,
+  "$defs": {
+    "OperationGraph": {
+      "type": "object",
+      "description": "A named operation graph defining a directed graph of typed nodes connected by edges.",
+      "required": [
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "A human-readable description of what the operation graph does."
+        },
+        "nodes": {
+          "type": "object",
+          "description": "Map of named nodes. Each key is a node identifier.",
+          "additionalProperties": {
+            "$ref": "#/$defs/Node"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "description": "Array of edges connecting nodes.",
+          "items": {
+            "$ref": "#/$defs/Edge"
+          }
+        }
+      },
+      "patternProperties": { "^x-": {} },
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "description": "A typed node in an operation graph. The 'type' field determines the node's behavior and valid fields.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The node type. Determines behavior and which other fields are valid."
+        },
+        "onError": {
+          "type": "string",
+          "description": "Node key to route error events to if this node fails. If not set, errors are dropped."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "input" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "output" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "operation" } }
+          },
+          "then": {
+            "required": ["operation"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "operation": {
+                "type": "string",
+                "description": "Operation key in the containing OBI to invoke."
+              },
+              "maxIterations": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Maximum times this node may be invoked per event lineage. Required if the node is part of a cycle."
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Maximum time in milliseconds to wait for the operation to complete."
+              }
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "buffer" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true,
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Flush after accumulating this many events. Resets and continues (windowing)."
+              },
+              "until": {
+                "type": "object",
+                "description": "JSON Schema. Flush when an event matches (exclusive — matching event not included and dropped)."
+              },
+              "through": {
+                "type": "object",
+                "description": "JSON Schema. Flush when an event matches (inclusive — matching event is included)."
+              }
+            },
+            "not": {
+              "required": ["until", "through"]
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "filter" } }
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": ["schema"],
+                "properties": {
+                  "type": true,
+                  "onError": true,
+                  "schema": {
+                    "type": "object",
+                    "description": "JSON Schema. Events that validate pass; others are dropped."
+                  }
+                },
+                "patternProperties": { "^x-": {} },
+                "additionalProperties": false
+              },
+              {
+                "required": ["transform"],
+                "properties": {
+                  "type": true,
+                  "onError": true,
+                  "transform": {
+                    "$ref": "#/$defs/Transform",
+                    "description": "Transform expression. Events where the expression evaluates truthy pass; others are dropped."
+                  }
+                },
+                "patternProperties": { "^x-": {} },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "transform" } }
+          },
+          "then": {
+            "required": ["transform"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "transform": {
+                "$ref": "#/$defs/Transform",
+                "description": "Transform expression. The result replaces the event."
+              }
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "map" } }
+          },
+          "then": {
+            "required": ["transform"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "transform": {
+                "$ref": "#/$defs/Transform",
+                "description": "Transform expression. The result MUST be an array; each element is emitted as a separate event."
+              }
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "combine" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "exit" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true,
+              "error": {
+                "type": "boolean",
+                "description": "If true, the operation graph terminates with an error. If false (default), the event is emitted to output before termination."
+              }
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    "Edge": {
+      "type": "object",
+      "description": "A connection between two nodes. Edges carry no logic.",
+      "required": ["from", "to"],
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "The key of the source node."
+        },
+        "to": {
+          "type": "string",
+          "description": "The key of the target node."
+        }
+      },
+      "patternProperties": { "^x-": {} },
+      "additionalProperties": false
+    },
+    "Transform": {
+      "type": "object",
+      "description": "A transform expression using the core OpenBindings Transform model.",
+      "required": ["type", "expression"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Transform language identifier (e.g., jsonata)."
+        },
+        "expression": {
+          "type": "string",
+          "description": "The transform expression string."
+        }
+      },
+      "patternProperties": { "^x-": {} },
+      "additionalProperties": false
+    }
+  }
+}

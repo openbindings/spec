@@ -1,0 +1,25 @@
+name: Bug in spec text
+description: Typo, broken cross-reference, or normative/non-normative mismatch
+labels: ["bug"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Section, line, or heading where the issue is.
+      placeholder: "e.g., openbindings.md, line 195"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong?
+      description: Describe the error and what the text should say.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Spec version
+      description: Which version are you reading?
+      placeholder: "e.g., 0.1.0 or working draft"
