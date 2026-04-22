@@ -9,9 +9,9 @@ This is a **working draft toward version 0.2.0** of the OpenBindings specificati
 
 OpenBindings (OBI) is a **portable interface description format**. Services publish an OBI document describing their operations and how to reach them; tools consume OBIs to drive protocol-specific clients, power registries, feed agents, and so on.
 
-This spec defines **what an OBI document is**: its shape, its identity, its discovery convention, its reference-resolution rules, its forward-compatibility rules. This spec **does not define what tools do** with OBIs. Comparison, transform execution, security method resolution, binding invocation, and registry semantics are all tool concerns.
+This spec defines **what an OBI document is**: its shape, identity, discovery convention, reference-resolution rules, and forward-compatibility rules. It also defines **a minimum conformance floor for tools** that preserves document portability across implementations. It does not define **higher-level tool behavior**. Comparison, matching, transform execution semantics, security method resolution, binding invocation, and registry semantics are tool concerns.
 
-The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`, `openbindings-ts`) whose behavior serves as the ecosystem's reference. Third-party tools are free to adopt those conventions or publish their own.
+The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`, `openbindings-ts`) as one implementation of this spec. Third-party tools are free to adopt their conventions or publish their own.
 
 ## Table of contents
 
@@ -26,10 +26,12 @@ The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`,
   - [Security](#security)
   - [Roles](#roles)
 - [Discovery](#discovery)
+- [Binding sufficiency](#binding-sufficiency)
 - [Interface identity](#interface-identity)
 - [Location equality](#location-equality)
 - [Reference resolution](#reference-resolution)
 - [Versioning](#versioning)
+- [IANA considerations](#iana-considerations)
 - [Security considerations](#security-considerations)
 - [Conformance](#conformance)
 - [Extensions](#extensions)
@@ -39,7 +41,7 @@ The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`,
 
 ## Overview
 
-OpenBindings separates what a service does (operations with input/output schemas) from how you access it (bindings to OpenAPI, AsyncAPI, gRPC, MCP, Usage, or any other binding specification). A single OBI document can reference bindings in multiple protocols without redefining the operation contract. Services can publish their OBI at a well-known location so tools can discover and act on it.
+OpenBindings separates what a service does (operations with input/output schemas) from how you access it (bindings to OpenAPI, AsyncAPI, gRPC, MCP, or any other binding specification). A single OBI document can reference bindings in multiple protocols without redefining the operation contract. Services can publish their OBI at a well-known location so tools can discover and act on it.
 
 OBI documents are JSON.
 
@@ -132,8 +134,10 @@ A more realistic OBI showing multi-protocol exposure, schema reuse, a transform,
 
 - **OBI**: shorthand for "OpenBindings interface document."
 - **Operation**: a named unit of capability with optional input/output schemas. Stored under a key in the document's `operations` map.
-- **Binding**: a mapping from an operation to a specific entry in a binding-specification artifact (OpenAPI, AsyncAPI, gRPC, MCP, Usage, etc.).
+- **Binding**: a mapping from an operation to a specific entry in a binding-specification artifact (OpenAPI, AsyncAPI, gRPC, MCP, etc.).
+- **Binding artifact**: the protocol-specific specification document or endpoint referenced by a source (e.g., an OpenAPI document, a `.proto` file, an MCP endpoint).
 - **Source**: a reference to a binding-specification artifact, identified by a format token and either a location or embedded content.
+- **Transform**: a shape mapping between an operation's `input`/`output` schemas and a source's expected wire shape. Stored under a key in the document's `transforms` map, or inline on a binding.
 - **Role**: another OBI document referenced as a shared interface contract (its operations and schemas define the contract; any bindings it carries are ignored in the role context).
 - **Location**: the URI from which a document was retrieved, or a caller-supplied base URI for documents loaded without a canonical retrieval URI.
 
@@ -163,6 +167,10 @@ Operation keys MUST be unique within a document. Binding, source, transform, rol
 
 ### Operations
 
+Operations do not prescribe execution pattern. Whether an operation is request/response, streaming, bidirectional, or pub/sub is determined by the binding, not by the operation definition. The operation model is shaped to accommodate any of these patterns that its binding implements.
+
+Operations whose output varies in shape (e.g., distinct success and error variants, or multiple event types in a streaming binding) express the variants as alternatives in `output`, typically via `oneOf` or `anyOf`. Discrimination between variants is a binding-format and tool concern.
+
 An operation object MAY contain:
 
 | Field | Type | Purpose |
@@ -179,6 +187,8 @@ An operation object MAY contain:
 
 `input` and `output` are optional. Absent and `null` are equivalent; both mean "unspecified." `{}` (the empty schema) is NOT equivalent to absent; it means "documented as accepting any JSON value." This three-way distinction preserves author intent: "unspecified" lets downstream tools reject the operation or prompt for clarification, while `{}` signals that the author has chosen to accept any value and codegen tools can generate a pass-through type.
 
+The `input` and `output` schemas are caller-facing contracts that run in opposite directions. A service implementing the operation accepts at minimum every value validating against `input` and may accept more; a caller sending any value validating against `input` is honoring the input contract. A service implementing the operation produces only values validating against `output` and may produce a narrower set; a caller receiving a successful result can rely on it validating against `output`.
+
 `aliases` declares alternate names the author considers equivalent to the operation's key. Common cases include a prior name kept for continuity after a rename, or a vendor-specific name that some consumers look up by. Tools comparing or matching operations across documents MAY treat an operation's key and its aliases interchangeably. The spec defines only the declaration; matching semantics are a tool concern. An alias MUST NOT duplicate any operation's key or alias elsewhere in the document; a name that resolves to multiple operations doesn't identify any of them.
 
 `aliases` and `satisfies` are both author declarations that can inform cross-contract recognition, but they declare different things. `aliases` are additional names this operation is known by; a consumer holding an alias and a consumer holding the key refer to the same operation. `satisfies` is a claim of correspondence to a named operation in a different contract; it is not a name this operation is known by, and a consumer cannot refer to this operation by the name of what it satisfies. An operation MAY use both independently.
@@ -187,7 +197,7 @@ An operation object MAY contain:
 
 `examples` holds author-supplied sample input/output pairs for an operation. The spec defines only the structural shape; consumers such as generated docs, SDK codegen, test harnesses, and agent few-shot material apply them as they see fit. Each example's `input` SHOULD validate against the operation's `input` schema, and each `output` SHOULD validate against the `output` schema.
 
-Operation `schemas` may be inlined or referenced via `$ref` into the document's `schemas` map or into an external schema document.
+An operation's `input` and `output` schemas may be inlined or referenced via `$ref` into the document's `schemas` map or into an external schema document.
 
 ### Schemas
 
@@ -220,9 +230,9 @@ And MAY contain:
 
 `ref` identifies a specific entry within the source artifact. Its syntax depends on the source's `format`. For formats whose artifacts are JSON or YAML structures (e.g., `openapi`, `asyncapi`), `ref` is conventionally an [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) JSON Pointer as a URI fragment (`#/paths/~1tasks/post`). Other formats adopt whatever addressing scheme is idiomatic for that format, such as a tool name for `mcp`, or a fully-qualified method name for `grpc`. The spec does not enumerate these; format communities converge on shared conventions. When `ref` is absent, the binding targets the source artifact as a whole; what "whole-artifact targeting" means is a format-community concern.
 
-Multiple bindings MAY reference the same operation (for example, exposing the same operation over REST, gRPC, and MCP). Multi-protocol exposure is a core OBI use case; a single operation definition becomes the portable contract while bindings describe protocol-specific reachability.
+Multiple bindings MAY reference the same operation. The operation's `input` and `output` schemas form a portable contract, and each binding for that operation is an alternative target authored to honor that contract over a specific protocol. A caller invokes the operation through any one of its bindings; using one binding is a complete invocation of the operation. Selection among alternatives is a tool concern; see `priority`.
 
-`priority` (on bindings, and on sources in the next section) is a preference signal for selecting among multiple bindings for the same operation; lower values are more preferred. The spec does not prescribe what the preference means; authors encode their own axis, such as canonical vs mirror, stable vs experimental, cheap vs expensive, or newer protocol vs fallback. Source-level priority provides a default for every binding using that source; binding-level priority, when present, overrides that default for a specific binding rather than combining with it. This keeps the common case ergonomic (set once per source) while allowing per-binding exceptions. Whether and how tools consume priority is a tool concern.
+`priority` (on bindings, and on sources in the next section) is a preference signal for selecting among multiple bindings for the same operation; lower values are more preferred. The spec does not prescribe what the preference means; authors encode their own axis, such as canonical vs mirror, stable vs experimental, cheap vs expensive, or newer protocol vs fallback. Source-level priority provides a default for every binding using that source; binding-level priority, when present, overrides that default for a specific binding rather than combining with it. This keeps the common case ergonomic (set once per source) while allowing per-binding exceptions. Whether and how tools consume priority is a tool concern. When multiple bindings share the lowest priority (or omit priority entirely), selection is tool-defined; authors who want deterministic ordering set distinct priorities.
 
 ### Sources
 
@@ -246,7 +256,7 @@ And MAY contain:
 | `description` | string | Human-readable description. |
 | `priority` | number | Preference hint applied to all bindings using this source. |
 
-When `content` is a string, it holds the UTF-8 source text of the binding artifact (for example, a `.proto` file's source, or a KDL document). When `content` is an object, it holds the parsed JSON representation of the artifact. Format communities determine which textual or structural representation is canonical for a given format; a format may accept only one form, or both. If both `location` and `content` are present for the same source, `content` is authoritative and `location` is informational only. Authors may choose to set both when they want a self-contained document (the embedded `content` makes processing independent of network fetches) while preserving the canonical origin URL for documentation, provenance, or downstream tools that prefer a live fetch.
+When `content` is a string, it holds the UTF-8 source text of the binding artifact (for example, a `.proto` file's source, or a KDL document). When `content` is an object, it holds the parsed JSON representation of the artifact. Binary artifacts MUST be carried via `location` rather than embedded; `content` is for textual and JSON-structured forms only. Format communities determine which textual or structural representation is canonical for a given format; a format may accept only one form, or both. If both `location` and `content` are present for the same source, `content` is authoritative and `location` is informational only. Authors may choose to set both when they want a self-contained document (the embedded `content` makes processing independent of network fetches) while preserving the canonical origin URL for documentation, provenance, or downstream tools that prefer a live fetch.
 
 **Format tokens.** The `format` field is a string that identifies the binding specification for a source. Format tokens are community-extensible; what characters appear in them and how different strings relate to one another (equivalence, compatibility, ordering) is determined by each format's own community. The openbindings project recommends the convention `<name>@<version>` (e.g., `openapi@3.1`, `mcp@2025-11-25`) as an interoperable default and MAY publish a registry of well-known tokens at `openbindings.com`.
 
@@ -254,9 +264,11 @@ When `content` is a string, it holds the UTF-8 source text of the binding artifa
 
 ### Transforms
 
-Transforms map between operation schemas and binding-source schemas when the two differ in shape. They exist so a single operation contract can be reused across bindings whose wire shapes diverge (the operation presents a clean domain model; the bound OpenAPI path wraps requests in envelopes; the MCP tool returns content blocks). Declaring transforms in the OBI keeps shape-translation intent with the interface rather than scattered across per-tool configuration.
+Transforms map between operation schemas and source schemas when the two differ in shape. They exist so a single operation contract can be reused across bindings whose wire shapes diverge (the operation presents a clean domain model; the bound OpenAPI path wraps requests in envelopes; the MCP tool returns content blocks). Declaring transforms in the OBI keeps shape-translation intent with the interface rather than scattered across per-tool configuration.
 
-This spec defines only the structural form of a transform; execution semantics (including which `type` values are meaningful, how they evaluate, and how errors propagate) are tool concerns.
+The transform fields carry directional meaning. `inputTransform`, when declared, applies to caller-provided input on its way to the binding's source, transforming the operation's `input` shape into the source's expected input shape. `outputTransform`, when declared, applies to the binding's output on its way to the caller, transforming the source's output shape into the operation's `output` shape.
+
+This spec defines the structural form of a transform plus a minimum interop floor for the `type` field. Tools that execute transforms SHOULD support `type: "jsonata"` so that documents using it are portable across execution tools. Other `type` values MAY be supported. Tools that do not execute transforms (validators, indexers, doc generators) MAY ignore `type` entirely. Execution semantics, including how expressions evaluate, how errors propagate, and which additional `type` values are meaningful, are tool concerns.
 
 A transform object has:
 
@@ -317,7 +329,7 @@ The top-level `roles` map declares the roles this document claims to satisfy. Ea
 The `satisfies` fields on operations (see [Operations]) reference `role` keys in this map plus a target operation name. For each `satisfies` entry:
 
 - The `role` field MUST reference a key that exists in the document's top-level `roles` map. An operation that declares `satisfies` with a `role` value not present in `roles` is an invalid document.
-- The `operation` field MUST be a non-empty string that names an operation within the role interface by its key or by any of its declared aliases. The spec does not require the named operation to exist at the role URI (verification is a tool concern); it requires only that the claim be structurally well-formed.
+- The `operation` field MUST be a non-empty string. The author claims it names an operation in the role interface by its key or by any of its declared aliases; the spec does not require the named operation to exist at the role URI (verification is a tool concern). It requires only that the claim be structurally well-formed.
 - An operation's `satisfies` array MAY contain multiple entries, each declaring satisfaction of a different role's operation. An operation's `satisfies` array MUST NOT contain duplicate entries (same `role` + `operation` pair appearing twice).
 
 A `satisfies` declaration is a *claim* by the document author that the declaring operation is intended to fulfill the named role's operation. It is an affirmative assertion of semantic correspondence, not a mere documentation hint: the author is stating that this operation does the job the role's operation describes. Codifying the claim as a structured field (rather than leaving it to free-form prose) makes it machine-readable, so registries, matchers, and agent routing layers can treat role correspondence as first-class metadata. The spec makes no assertion about whether the claim is accurate. Verification of satisfaction (structural, semantic, or otherwise) is a tool concern.
@@ -333,8 +345,21 @@ A service MAY publish its OBI document at the URI path `/.well-known/openbinding
 When serving an OBI at `/.well-known/openbindings`:
 
 - The method is `GET`.
-- A successful response returns `200 OK` with `Content-Type: application/json` and a body containing a valid OBI document.
+- A successful response returns `200 OK` with a body containing a valid OBI document.
+- The response `Content-Type` SHOULD be `application/vnd.openbindings+json`. `application/json` MAY be used and MUST be accepted by clients.
 - If the service does not publish an OBI at this path, the response is `404 Not Found`.
+- Any other response (including `3xx`, other `4xx`, `5xx`, or `200` whose body is not a valid OBI) is outside the scope of this spec; clients MAY treat such responses as if no OBI is published at this path.
+- Discovery endpoints MAY require authentication or authorization. Whether to publish an OBI to unauthenticated clients is a deployment decision; this spec does not mandate public discovery.
+
+---
+
+## Binding sufficiency
+
+Each binding in an OBI document identifies a concrete interaction target. The information required to make that identification MUST be contained in the binding itself, its referenced source, and the document's discovery context (the base URI used for relative reference resolution per [Reference resolution], plus any content the document embeds). A consumer that understands the source's format can identify the target from that information alone.
+
+Sufficiency does not extend to reachability. Whether the identified target is currently reachable, accepts a caller's credentials, or succeeds at call time are properties of the running service and its deployment, not of the document. An OBI is conformant whether or not the target it identifies is callable at any given moment.
+
+Format communities define the syntax and addressing semantics of `ref` values for their format, including conventions for the absent-`ref` case. If resolving a `ref` requires information beyond the OBI document and its discovery context (for example, external registries, vendor catalogs, or environment configuration), a binding using that source does not satisfy the sufficiency rule above and is non-conformant.
 
 ---
 
@@ -410,19 +435,48 @@ OBI documents carry two independent version concepts.
 
 The `openbindings` field identifies which version of this specification the document is declared against. The value MUST be a [Semantic Versioning 2.0.0](https://semver.org/) string (e.g., `0.2.0`, `1.0.0`).
 
-Tools MUST refuse to parse documents that declare a higher major version than the tool supports. Within the same major version:
+Tools MUST refuse to parse documents that declare a higher major version than the tool supports. Within the same major version (1.0.0 and later):
 
 - New minor versions MAY add optional fields.
 - Existing fields MUST NOT change meaning.
 - Existing fields MUST NOT be removed.
 
-Major-version refusal is mandatory because a major bump may change the meaning of existing fields; a tool that silently processed a newer-major document using older rules would risk applying pre-break meanings to post-break fields and produce wrong output. Minor bumps only add optional fields, so older tools safely ignore unknown additions.
+Major-version refusal is mandatory because a major bump may change the meaning of existing fields; a tool that silently processed a newer-major document using older rules would risk applying pre-break meanings to post-break fields and produce wrong output. Post-1.0 minor bumps only add optional fields, so older tools safely ignore unknown additions.
 
-Pre-1.0: minor versions MAY include breaking changes, per pre-1.0 convention.
+Pre-1.0 (major version 0): minor versions MAY include breaking changes, per pre-1.0 SemVer convention. The same refusal principle applies at finer granularity: tools MUST refuse to parse pre-1.0 documents that declare a higher minor version than the tool supports.
 
 ### `version` field (contract version)
 
 The optional `version` field describes the author's own notion of the interface's contract version. It is opaque to this spec; no tool behavior is defined in terms of it. Authors MAY use SemVer, dates, or any other convention.
+
+---
+
+## IANA considerations
+
+This specification defines two registrations for IANA. Both are provisional while the spec is pre-1.0 and become permanent upon 1.0 release.
+
+### Well-known URI suffix
+
+Per [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615):
+
+- **URI suffix:** `openbindings`
+- **Change controller:** openbindings project
+- **Reference:** this specification
+- **Related information:** see [Discovery](#discovery)
+
+### Media type
+
+Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
+
+- **Type/subtype:** `application/vnd.openbindings+json`
+- **Required parameters:** none
+- **Encoding considerations:** 8-bit UTF-8 per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)
+- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)
+- **Security considerations:** see [Security considerations](#security-considerations)
+- **Interoperability considerations:** see [Conformance](#conformance)
+- **Applications that use this media type:** tools that produce or consume OpenBindings documents
+- **Change controller:** openbindings project
+- **Published specification:** this specification
 
 ---
 
@@ -488,4 +542,10 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 - `openbindings.schema.json` — JSON Schema for document validity.
 - `guides/` — tutorials, format-specific conventions, author guidance.
 - `interfaces/` — role interfaces published by the openbindings project.
-- `formats/` — companion format specifications (e.g., `openbindings.operation-graph`).
+- `formats/` — companion format specifications.
+- `CHANGELOG.md` — version history and diffs between spec versions.
+
+[Operations]: #operations
+[Transforms]: #transforms
+[Location equality]: #location-equality
+[Reference resolution]: #reference-resolution
