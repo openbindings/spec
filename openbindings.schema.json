@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://openbindings.com/schema/openbindings-0.1.0.json",
-  "title": "OpenBindings Interface Document (v0.1.0)",
+  "$id": "https://openbindings.com/schema/openbindings-0.2.0.json",
+  "title": "OpenBindings Interface Document (v0.2.0-draft)",
   "description": "Canonical JSON Schema for the OpenBindings interface document.",
   "type": "object",
   "required": [

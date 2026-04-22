@@ -1,5 +1,5 @@
 {
-  "$comment": "OpenBindings v0.1 conformance suite: normalization cases. Each case tests the normalization rules from the spec's Normalization (profile v0.1) section. Fields: name (descriptive), input (schema before normalization), expected (schema after normalization) or error (string for fail-closed/schema-error cases).",
+  "$comment": "OpenBindings v0.2 conformance suite: normalization cases. Each case tests the normalization rules from the spec's Normalization (profile v0.1) section, including oneOf disjointness conversion to anyOf. Fields: name (descriptive), input (schema before normalization), expected (schema after normalization) or error (string for fail-closed/schema-error cases).",
   "cases": [
 
     { "$comment": "=== Canonical type form ===" },
@@ -64,20 +64,186 @@
         ]
       }
     },
+
+    { "$comment": "=== oneOf disjointness and conversion to anyOf ===" },
+
     {
-      "name": "canonicalize oneOf: variants sorted by JCS",
+      "name": "oneOf with distinct types: converted to sorted anyOf",
       "input": {
         "oneOf": [
-          { "type": "object", "properties": { "z": { "type": "string" } } },
-          { "type": "object", "properties": { "a": { "type": "string" } } }
+          { "type": "string" },
+          { "type": "number" }
         ]
       },
       "expected": {
-        "oneOf": [
-          { "type": ["object"], "properties": { "a": { "type": ["string"] } } },
-          { "type": ["object"], "properties": { "z": { "type": ["string"] } } }
+        "anyOf": [
+          { "type": ["number"] },
+          { "type": ["string"] }
         ]
       }
+    },
+    {
+      "name": "oneOf with distinct top-level const: converted to sorted anyOf",
+      "input": {
+        "oneOf": [
+          { "const": "b" },
+          { "const": "a" }
+        ]
+      },
+      "expected": {
+        "anyOf": [
+          { "const": "a" },
+          { "const": "b" }
+        ]
+      }
+    },
+    {
+      "name": "oneOf with disjoint top-level enum: converted to anyOf",
+      "input": {
+        "oneOf": [
+          { "enum": ["a", "b"] },
+          { "enum": ["c"] }
+        ]
+      },
+      "expected": {
+        "anyOf": [
+          { "enum": ["a", "b"] },
+          { "enum": ["c"] }
+        ]
+      }
+    },
+    {
+      "name": "oneOf with discriminator property (const, required on both): converted to anyOf",
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "kind": { "const": "a" }, "payload": { "type": "string" } },
+            "required": ["kind"]
+          },
+          {
+            "type": "object",
+            "properties": { "kind": { "const": "b" }, "payload": { "type": "integer" } },
+            "required": ["kind"]
+          }
+        ]
+      },
+      "expected": {
+        "anyOf": [
+          {
+            "type": ["object"],
+            "properties": { "kind": { "const": "a" }, "payload": { "type": ["string"] } },
+            "required": ["kind"]
+          },
+          {
+            "type": ["object"],
+            "properties": { "kind": { "const": "b" }, "payload": { "type": ["integer"] } },
+            "required": ["kind"]
+          }
+        ]
+      }
+    },
+    {
+      "name": "oneOf with discriminator property (disjoint enum, required on both): converted to anyOf",
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "kind": { "enum": ["a", "b"] } },
+            "required": ["kind"]
+          },
+          {
+            "type": "object",
+            "properties": { "kind": { "enum": ["c"] } },
+            "required": ["kind"]
+          }
+        ]
+      },
+      "expected": {
+        "anyOf": [
+          {
+            "type": ["object"],
+            "properties": { "kind": { "enum": ["a", "b"] } },
+            "required": ["kind"]
+          },
+          {
+            "type": ["object"],
+            "properties": { "kind": { "enum": ["c"] } },
+            "required": ["kind"]
+          }
+        ]
+      }
+    },
+    {
+      "name": "oneOf with overlapping types (integer + number): fail closed",
+      "input": {
+        "oneOf": [
+          { "type": "integer" },
+          { "type": "number" }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "oneOf with same type, no discriminator: fail closed",
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "x": { "type": "string" } }
+          },
+          {
+            "type": "object",
+            "properties": { "y": { "type": "string" } }
+          }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "oneOf with discriminator but overlapping enum values: fail closed",
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "kind": { "enum": ["a", "b"] } },
+            "required": ["kind"]
+          },
+          {
+            "type": "object",
+            "properties": { "kind": { "enum": ["b", "c"] } },
+            "required": ["kind"]
+          }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "oneOf with discriminator property but not required in both variants: fail closed",
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "kind": { "const": "a" } },
+            "required": ["kind"]
+          },
+          {
+            "type": "object",
+            "properties": { "kind": { "const": "b" } }
+          }
+        ]
+      },
+      "error": "outside_profile"
+    },
+    {
+      "name": "oneOf with numeric-bound-only disjointness (outside v0.1 profile): fail closed",
+      "input": {
+        "oneOf": [
+          { "type": "integer", "minimum": 0, "maximum": 10 },
+          { "type": "integer", "minimum": 20, "maximum": 30 }
+        ]
+      },
+      "error": "outside_profile"
     },
 
     { "$comment": "=== allOf flattening ===" },

@@ -213,6 +213,14 @@ These limits are **structural** to the v0.1 OBI model, not bugs in any individua
 
 ---
 
+## Field naming across protocol locations (non-normative)
+
+Many binding formats present parameters from multiple protocol locations (path, query, headers, body) as a single object-shaped view for schema comparison and execution tooling. In that flattened representation, each field name maps to at most one value. If a binding source reuses the same name in more than one protocol location (for example, `id` as both a path parameter and a body field), the flattened view cannot distinguish which value belongs where.
+
+Object-shaped operation schemas have a related constraint: within a JSON object, property names are unique keys. OpenBindings works best when a binding source can be represented with unique field names across the effective input/output surface. When collisions are unavoidable, binding-format-specific or executor-specific handling is required.
+
+---
+
 ## Conventions for new formats
 
 If you're building an executor for a new binding format, you should define and document:

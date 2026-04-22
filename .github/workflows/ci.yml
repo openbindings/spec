@@ -30,9 +30,9 @@ jobs:
             ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
           done
 
-      - name: Validate conformance fixtures are valid JSON
+      - name: Validate reference-test fixtures are valid JSON
         run: |
-          for f in conformance/*.json; do
+          for f in reference-tests/*.json; do
             echo "Checking $f..."
             python3 -m json.tool "$f" > /dev/null
           done

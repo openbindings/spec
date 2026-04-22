@@ -1,5 +1,5 @@
 {
-  "$comment": "OpenBindings v0.1 conformance suite: operation matching cases. Each case tests the operation matching algorithm and overall compatibility assessment defined in the spec. Fields: name (descriptive), target (partial OBI with optional location + operations), candidate (partial OBI with optional imports + operations), result (object with per-operation outcomes and overall compatible boolean).",
+  "$comment": "OpenBindings v0.2 conformance suite: operation matching cases. Each case tests the operation matching algorithm and aggregated verdict derivation. Fields: name (descriptive), target (partial OBI with optional location), candidate (partial OBI with optional roles, optional location), result (per-operation outcomes with match kind and per-slot verdicts, plus document-level verdict). Per-slot verdicts: 'aligned', 'partial', 'misaligned', 'undecidable', or 'silent' (schema absent on one or both sides). Document-level verdict: 'aligned', 'partial', 'misaligned', 'undecidable'.",
   "cases": [
     {
       "$comment": "=== Basic matching ==="
@@ -63,14 +63,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "compatible"
+            "input": "aligned",
+            "output": "aligned"
           }
-        }
+        },
+        "verdict": "aligned"
       }
     },
     {
@@ -107,20 +107,20 @@
         }
       },
       "result": {
-        "compatible": false,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible"
+            "input": "aligned"
           },
           "task.delete": {
             "match": "missing"
           }
-        }
+        },
+        "verdict": "misaligned"
       }
     },
     {
-      "name": "disjoint schemas: target has only input, candidate has only output — slots skipped",
+      "name": "disjoint schemas: target has only input, candidate has only output \u2014 slots skipped",
       "target": {
         "operations": {
           "task.created": {
@@ -140,21 +140,21 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.created": {
             "match": "primary_key",
-            "input": "unspecified",
-            "output": "unspecified"
+            "input": "silent",
+            "output": "silent"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
       "$comment": "=== Schema slot handling ==="
     },
     {
-      "name": "unspecified slots: target has no output, candidate has output — slot skipped",
+      "name": "unspecified slots: target has no output, candidate has output \u2014 slot skipped",
       "target": {
         "operations": {
           "task.create": {
@@ -192,18 +192,18 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "unspecified"
+            "input": "aligned",
+            "output": "silent"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
-      "name": "unspecified slots: both omit output — slot skipped",
+      "name": "unspecified slots: both omit output \u2014 slot skipped",
       "target": {
         "operations": {
           "ping": {
@@ -223,14 +223,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "ping": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "unspecified"
+            "input": "aligned",
+            "output": "silent"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -255,14 +255,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "unspecified"
+            "input": "aligned",
+            "output": "silent"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -310,14 +310,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.completed": {
             "match": "primary_key",
-            "input": "unspecified",
-            "output": "compatible"
+            "input": "silent",
+            "output": "aligned"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -342,14 +342,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "notify": {
             "match": "primary_key",
-            "input": "unspecified",
-            "output": "compatible"
+            "input": "silent",
+            "output": "aligned"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -375,18 +375,18 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "ping": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "compatible"
+            "input": "aligned",
+            "output": "aligned"
           }
-        }
+        },
+        "verdict": "aligned"
       }
     },
     {
-      "name": "empty schema ({}) vs absent: target has input {}, candidate omits input — candidate unspecified, slot skipped",
+      "name": "empty schema ({}) vs absent: target has input {}, candidate omits input \u2014 candidate unspecified, slot skipped",
       "target": {
         "operations": {
           "ping": {
@@ -400,14 +400,14 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "ping": {
             "match": "primary_key",
-            "input": "unspecified",
-            "output": "unspecified"
+            "input": "silent",
+            "output": "silent"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -447,17 +447,17 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "alias",
-            "input": "compatible"
+            "input": "partial"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
-      "name": "alias conflict: two candidate operations alias the same target name — error",
+      "name": "alias conflict: two candidate operations alias the same target name \u2014 error",
       "target": {
         "operations": {
           "task.create": {
@@ -488,12 +488,12 @@
         }
       },
       "result": {
-        "compatible": false,
         "operations": {
           "task.create": {
             "match": "ambiguous"
           }
-        }
+        },
+        "verdict": "misaligned"
       }
     },
     {
@@ -540,13 +540,13 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "satisfies",
-            "input": "compatible"
+            "input": "partial"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -583,13 +583,13 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "satisfies",
-            "input": "compatible"
+            "input": "partial"
           }
-        }
+        },
+        "verdict": "partial"
       }
     },
     {
@@ -633,20 +633,342 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "satisfies",
-            "input": "compatible"
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "$comment": "=== satisfies: Location equality ==="
+    },
+    {
+      "name": "satisfies: role URI differs in scheme/host case \u2014 equal after normalization",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
           }
         }
+      },
+      "candidate": {
+        "roles": {
+          "target": "HTTPS://Example.COM/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "name": "satisfies: role URI differs in default port \u2014 equal after normalization",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com:443/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "name": "satisfies: role URI has fragment \u2014 equal after normalization strips fragment",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com/target.json#section"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "name": "satisfies: role URI differs by trailing slash \u2014 NOT equal, satisfies unmatched, falls back to primary key (unmatched)",
+      "target": {
+        "location": "https://example.com/target.json/",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "https://example.com/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "unmatched"
+          }
+        },
+        "verdict": "misaligned"
+      }
+    },
+    {
+      "name": "satisfies: role URI differs by scheme (http vs https) \u2014 NOT equal, satisfies unmatched",
+      "target": {
+        "location": "https://example.com/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "http://example.com/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "unmatched"
+          }
+        },
+        "verdict": "misaligned"
+      }
+    },
+    {
+      "name": "satisfies: relative role value resolves against candidate base URI \u2014 equal to target location",
+      "target": {
+        "location": "https://example.com/interfaces/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "location": "https://example.com/interfaces/candidate.json",
+        "roles": {
+          "target": "./target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "name": "satisfies: relative role value with parent-directory traversal resolves correctly",
+      "target": {
+        "location": "https://example.com/other/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "location": "https://example.com/interfaces/candidate.json",
+        "roles": {
+          "target": "../other/target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "satisfies",
+            "input": "partial"
+          }
+        },
+        "verdict": "partial"
+      }
+    },
+    {
+      "name": "satisfies: relative role value but candidate has no base URI \u2014 unresolvable, satisfies unmatched",
+      "target": {
+        "location": "https://example.com/interfaces/target.json",
+        "operations": {
+          "task.create": {
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "candidate": {
+        "roles": {
+          "target": "./target.json"
+        },
+        "operations": {
+          "acme.createTask": {
+            "satisfies": [
+              {
+                "role": "target",
+                "operation": "task.create"
+              }
+            ],
+            "input": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "result": {
+        "operations": {
+          "task.create": {
+            "match": "unmatched"
+          }
+        },
+        "verdict": "misaligned"
       }
     },
     {
       "$comment": "=== Candidate extra operations ==="
     },
     {
-      "name": "candidate has extra operations beyond target — still compatible",
+      "name": "candidate has extra operations beyond target \u2014 still compatible",
       "target": {
         "operations": {
           "task.create": {
@@ -676,13 +998,13 @@
         }
       },
       "result": {
-        "compatible": true,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible"
+            "input": "aligned"
           }
-        }
+        },
+        "verdict": "aligned"
       }
     },
     {
@@ -719,13 +1041,13 @@
         }
       },
       "result": {
-        "compatible": false,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "incompatible"
+            "input": "misaligned"
           }
-        }
+        },
+        "verdict": "misaligned"
       }
     },
     {
@@ -790,21 +1112,21 @@
         }
       },
       "result": {
-        "compatible": false,
         "operations": {
           "task.get": {
             "match": "primary_key",
-            "input": "compatible",
-            "output": "incompatible"
+            "input": "aligned",
+            "output": "misaligned"
           }
-        }
+        },
+        "verdict": "misaligned"
       }
     },
     {
       "$comment": "=== Multiple operations ==="
     },
     {
-      "name": "multiple operations: one compatible, one incompatible — overall incompatible",
+      "name": "multiple operations: one compatible, one incompatible \u2014 overall incompatible",
       "target": {
         "operations": {
           "task.create": {
@@ -866,17 +1188,17 @@
         }
       },
       "result": {
-        "compatible": false,
         "operations": {
           "task.create": {
             "match": "primary_key",
-            "input": "compatible"
+            "input": "aligned"
           },
           "task.list": {
             "match": "primary_key",
-            "output": "incompatible"
+            "output": "misaligned"
           }
-        }
+        },
+        "verdict": "misaligned"
       }
     }
   ]

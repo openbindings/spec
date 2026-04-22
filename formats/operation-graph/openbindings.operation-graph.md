@@ -28,7 +28,7 @@ This format is versioned independently via its format token (`openbindings.opera
 
 ## Overview
 
-An operation graph is a **binding**. It defines how to fulfill an operation's contract by orchestrating other operations as a directed graph of typed nodes connected by edges. The `openbindings.operation-graph` format is a native binding source format — the `openbindings.` prefix signals that conforming SDKs provide built-in support without requiring a third-party binding executor.
+An operation graph is a **binding**. It defines how to fulfill an operation's contract by orchestrating other operations as a directed graph of typed nodes connected by edges. The `openbindings.operation-graph` format is maintained by the OpenBindings project, as indicated by the `openbindings.` prefix.
 
 Operation graphs are streaming operations. Each event is processed independently as it arrives at each node: an event enters at an input node, passes through operation, filter, transform, map, buffer, combine, and exit nodes as determined by the edges, and exits at an output node. An operation graph's output is itself a stream — the sequence of all events that reach the output node.
 
@@ -60,7 +60,7 @@ This token is used in the `format` field of an OpenBindings `sources` entry:
 }
 ```
 
-The `openbindings.` prefix is reserved for native formats maintained by the OpenBindings project. Tools claiming OpenBindings support SHOULD provide built-in execution support for `openbindings.operation-graph`.
+The `openbindings.` prefix indicates formats governed by the OpenBindings project. Third-party formats SHOULD use their own prefix to avoid misrepresenting governance.
 
 ## Source document shape
 

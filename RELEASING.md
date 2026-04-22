@@ -14,10 +14,10 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
-- `conformance/` — the conformance test suite
 
 **Not snapshotted:**
 
+- `reference.md` and `reference-tests/` — non-normative reference-tool material. These are not part of the OBI spec; they describe what the openbindings project's reference tooling does and are versioned independently. Snapshotting them alongside the spec would imply a coupling the spec deliberately avoids.
 - `interfaces/` — role interfaces are independently versioned and use location-based identity. Each interface lives at a stable, versioned path (e.g., `interfaces/openbindings.host/0.1.json`) that IS its identity. Copying interfaces into a version snapshot would create a second URL for the same contract, fragmenting identity. See the spec's [Interface identity](#interface-identity-location-based) section.
 - `formats/` — companion format specs carry their own version in their format token (e.g., `openbindings.operation-graph@0.1.0`) and are independently versioned. They live at their canonical path and are referenced by format token, not by release version.
 
@@ -35,7 +35,6 @@ A release snapshot captures the normative core spec at the time of release:
      - `openbindings.md` → `versions/<next>/openbindings.md`
      - `openbindings.schema.json` → `versions/<next>/openbindings.schema.json`
      - `EDITORS.md` → `versions/<next>/editors.md`
-     - `conformance/` → `versions/<next>/conformance/`
    - Update `versions/README.md` to include the new version.
    - (Optional) Use the helper script: `scripts/release.sh <next>`
 
