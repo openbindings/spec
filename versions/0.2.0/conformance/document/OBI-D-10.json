@@ -1,0 +1,28 @@
+{
+  "rule": "OBI-D-10",
+  "section": "16.2",
+  "description": "Has every bindings[*].source value present as a key in the document's sources map.",
+  "tests": [
+    {
+      "description": "binding references an existing source key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding references a non-existent source key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "missingSource" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    }
+  ]
+}

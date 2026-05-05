@@ -1,8 +1,8 @@
-# `openbindings.operation-graph` Format Specification (v0.1.0)
+# `openbindings.operation-graph` Format Specification (v0.2.0)
 
-**Status**: Released as part of OpenBindings v0.1.0.
+**Status**: Released as part of OpenBindings v0.2.0.
 
-This document defines the `openbindings.operation-graph` binding source format. It is a companion specification to the [OpenBindings Specification v0.1.0](../../versions/0.1.0/openbindings.md) and depends on concepts defined there (operations, sources, bindings, transforms).
+This document defines the `openbindings.operation-graph` binding source format. It is a companion specification to the [OpenBindings Specification v0.2.0](../../openbindings.md) and depends on concepts defined there (operations, sources, bindings, transforms).
 
 This format is versioned independently via its format token (`openbindings.operation-graph@<version>`).
 
@@ -44,7 +44,7 @@ This separation keeps each primitive focused: nodes are processors, edges are pl
 The format token for this specification is:
 
 ```
-openbindings.operation-graph@0.1.0
+openbindings.operation-graph@0.2.0
 ```
 
 This token is used in the `format` field of an OpenBindings `sources` entry:
@@ -53,7 +53,7 @@ This token is used in the `format` field of an OpenBindings `sources` entry:
 {
   "sources": {
     "myGraph": {
-      "format": "openbindings.operation-graph@0.1.0",
+      "format": "openbindings.operation-graph@0.2.0",
       "content": { ... }
     }
   }
@@ -68,7 +68,7 @@ An operation graph source document is a JSON object with the following top-level
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "<graphKey>": { ... }
   }
@@ -76,7 +76,7 @@ An operation graph source document is a JSON object with the following top-level
 ```
 
 - `openbindings.operation-graph` (REQUIRED): format version string.
-- `graphs` (REQUIRED): a map of named operation graphs. Each key is an operation graph identifier; each value is a [Operation graph definition](#operation-graph-definition).
+- `graphs` (REQUIRED): a map of named operation graphs. Each key is an operation graph identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is an [Operation graph definition](#operation-graph-definition).
 
 A single source document MAY contain multiple operation graphs. Each operation graph is referenced via the binding's `ref` field (e.g., `"ref": "paginateAll"`).
 
@@ -100,7 +100,7 @@ An operation graph defines a directed graph of typed nodes connected by edges:
 ```
 
 - `description` (OPTIONAL, string): a human-readable description of what the operation graph does.
-- `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier; each value is a [Node](#node-definitions). Node keys MUST be unique within the operation graph (enforced by JSON object semantics).
+- `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is a [Node](#node-definitions). Node keys MUST be unique within the operation graph (enforced by JSON object semantics).
 - `edges` (REQUIRED): an array of [Edge](#edge-definition) objects defining the connections between nodes.
 
 There is no explicit `entry` field. The entry point is the `input` node (identified by `"type": "input"`), and the exit point is the `output` node (identified by `"type": "output"`). See [Validation rules](#validation-rules) for structural constraints.
@@ -195,18 +195,18 @@ Two mechanisms are available (mutually exclusive):
 }
 ```
 
-- `schema` (object): a [JSON Schema 2020-12](../../versions/0.1.0/openbindings.md#json-schema-dialect) object. The event is validated against it. If the event validates, it passes; otherwise it is dropped.
+- `schema` (object): a [JSON Schema 2020-12](../../openbindings.md#62-schemas) object. The event is validated against it. If the event validates, it passes; otherwise it is dropped.
 
 **Expression-based filter:**
 
 ```json
 {
   "type": "filter",
-  "transform": { "type": "jsonata", "expression": "role = $input.requiredRole" }
+  "transform": "role = $input.requiredRole"
 }
 ```
 
-- `transform` (object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the event as `$` and the operation graph's original input as `$input`. If the expression evaluates to a truthy value, the event passes; otherwise it is dropped.
+- `transform` (string): a [Transform](#transforms) expression string as defined in this document. The expression is evaluated with the event as `$` and the operation graph's original input as `$input`. If the expression evaluates to a truthy value, the event passes; otherwise it is dropped.
 
 A filter MUST have exactly one of `schema` or `transform`.
 
@@ -215,32 +215,26 @@ A filter MUST have exactly one of `schema` or `transform`.
 ```json
 {
   "type": "transform",
-  "transform": {
-    "type": "jsonata",
-    "expression": "{ \"filter\": $input.filter, \"cursor\": nextCursor }"
-  }
+  "transform": "{ \"filter\": $input.filter, \"cursor\": nextCursor }"
 }
 ```
 
 Reshapes events using a transform expression.
 
-- `transform` (REQUIRED, object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The expression's result replaces the event and flows downstream.
+- `transform` (REQUIRED, string): a [Transform](#transforms) expression string as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The expression's result replaces the event and flows downstream.
 
 ### `map`
 
 ```json
 {
   "type": "map",
-  "transform": {
-    "type": "jsonata",
-    "expression": "items"
-  }
+  "transform": "items"
 }
 ```
 
 Unpacks an array into individual events. The transform expression is evaluated against the incoming event and MUST produce an array. Each element of the array is emitted as a separate event downstream.
 
-- `transform` (REQUIRED, object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The result MUST be an array; if it is not, the node fails with `map_not_array`.
+- `transform` (REQUIRED, string): a [Transform](#transforms) expression string as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The result MUST be an array; if it is not, the node fails with `map_not_array`.
 
 This enables patterns like "fetch a list of IDs, then process each one":
 
@@ -249,7 +243,7 @@ This enables patterns like "fetch a list of IDs, then process each one":
   "nodes": {
     "in": { "type": "input" },
     "listIds": { "type": "operation", "operation": "items.list" },
-    "unpack": { "type": "map", "transform": { "type": "jsonata", "expression": "ids" } },
+    "unpack": { "type": "map", "transform": "ids" },
     "fetchDetail": { "type": "operation", "operation": "items.get" },
     "collect": { "type": "buffer" },
     "out": { "type": "output" }
@@ -300,13 +294,13 @@ Use cases:
 
 ### Transforms
 
-Wherever a node embeds a dynamic expression, it uses a typed transform object: an object with `type` (the transform language identifier) and `expression` (the expression string). Tools claiming `openbindings.operation-graph@0.1.0` conformance MUST support transforms with `type` set to `"jsonata"`. Nodes that use transforms with an unsupported `type` are unresolvable; operation graphs containing unresolvable nodes are not actionable.
+Wherever a node embeds a dynamic expression, the value is a plain JSONata 2.0 expression string. Tools claiming `openbindings.operation-graph@0.2.0` conformance MUST support JSONata 2.0 transforms.
 
 ```json
-{ "type": "jsonata", "expression": "..." }
+"{ \"filter\": $input.filter, \"cursor\": nextCursor }"
 ```
 
-This typed-object shape follows the [core specification v0.1.0 Transform definition](../../versions/0.1.0/openbindings.md#transform-definition). Operation graph transforms embed the same shape directly on graph nodes.
+This follows the [core specification v0.2.0 Transforms section](../../openbindings.md#65-transforms), which defines transforms as plain expression strings.
 
 If a transform expression evaluates to `undefined` (no result), the node fails. If it evaluates to `null`, the event becomes `null` and flows downstream normally. This applies to all nodes that use transforms (`transform`, `map`, `filter`).
 
@@ -404,7 +398,7 @@ Implementations MUST enforce the following well-formedness rules on operation gr
 
 ## Extensions
 
-Operation graph source documents follow the same extension convention as the [core OpenBindings specification v0.1.0](../../versions/0.1.0/openbindings.md#extensions-x--fields):
+Operation graph source documents follow the same extension convention as the [core OpenBindings specification v0.2.0](../../openbindings.md#17-extensions):
 
 - Documents MAY include extension fields whose keys begin with `x-` at any object location (top-level, on graphs, on nodes, on edges).
 - Tools MUST ignore `x-` fields they do not understand.
@@ -420,7 +414,7 @@ This example fetches pages of results in a cycle until no more pages exist, coll
 
 ```json
 {
-  "openbindings": "0.1.0",
+  "openbindings": "0.2.0",
   "operations": {
     "items.listAll": {
       "description": "Fetch all items across all pages.",
@@ -451,7 +445,7 @@ This example fetches pages of results in a cycle until no more pages exist, coll
   },
   "sources": {
     "pagination": {
-      "format": "openbindings.operation-graph@0.1.0",
+      "format": "openbindings.operation-graph@0.2.0",
       "location": "./pagination.operation-graph.json",
       "description": "Operation graph source — full content shown in the next code block"
     }
@@ -470,7 +464,7 @@ This example fetches pages of results in a cycle until no more pages exist, coll
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "paginateAll": {
       "nodes": {
@@ -486,18 +480,12 @@ This example fetches pages of results in a cycle until no more pages exist, coll
         },
         "prepareCursor": {
           "type": "transform",
-          "transform": {
-            "type": "jsonata",
-            "expression": "{ \"filter\": $input.filter, \"cursor\": nextCursor }"
-          }
+          "transform": "{ \"filter\": $input.filter, \"cursor\": nextCursor }"
         },
         "collectPages": { "type": "buffer" },
         "aggregate": {
           "type": "transform",
-          "transform": {
-            "type": "jsonata",
-            "expression": "{ \"items\": $reduce($, function($a, $v){ $append($a, $v.items) }, []) }"
-          }
+          "transform": "{ \"items\": $reduce($, function($a, $v){ $append($a, $v.items) }, []) }"
         },
         "out": { "type": "output" }
       },
@@ -537,7 +525,7 @@ This example calls two operations concurrently and combines their results.
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "enrichOrder": {
       "nodes": {
@@ -567,7 +555,7 @@ This example routes events from a streaming operation to different handlers base
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "routeEvents": {
       "nodes": {
@@ -576,7 +564,7 @@ This example routes events from a streaming operation to different handlers base
         "isError": { "type": "filter", "schema": { "required": ["error"] } },
         "isSuccess": {
           "type": "filter",
-          "transform": { "type": "jsonata", "expression": "$not($exists(error))" }
+          "transform": "$not($exists(error))"
         },
         "handleError": { "type": "operation", "operation": "errors.log" },
         "handleSuccess": { "type": "operation", "operation": "results.store" },
@@ -604,7 +592,7 @@ This example processes events and also triggers a notification as a side effect.
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "processAndNotify": {
       "nodes": {
@@ -631,13 +619,13 @@ This example fetches a list of user IDs, then fetches details for each user, and
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "getAllUserDetails": {
       "nodes": {
         "in": { "type": "input" },
         "listUsers": { "type": "operation", "operation": "users.list" },
-        "unpack": { "type": "map", "transform": { "type": "jsonata", "expression": "ids" } },
+        "unpack": { "type": "map", "transform": "ids" },
         "getDetails": { "type": "operation", "operation": "users.get" },
         "collect": { "type": "buffer" },
         "out": { "type": "output" }
@@ -669,7 +657,7 @@ This example fetches details for each item, falling back to a default value if t
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "fetchWithFallback": {
       "nodes": {
@@ -682,10 +670,7 @@ This example fetches details for each item, falling back to a default value if t
         },
         "fallback": {
           "type": "transform",
-          "transform": {
-            "type": "jsonata",
-            "expression": "{ \"id\": input.id, \"name\": \"unknown\", \"error\": error }"
-          }
+          "transform": "{ \"id\": input.id, \"name\": \"unknown\", \"error\": error }"
         },
         "out": { "type": "output" }
       },
@@ -719,7 +704,7 @@ This example makes any operation failure terminate the operation graph.
 
 ```json
 {
-  "openbindings.operation-graph": "0.1.0",
+  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "strictFetch": {
       "nodes": {
@@ -748,7 +733,7 @@ This example makes any operation failure terminate the operation graph.
 
 ## Security considerations
 
-Operation graphs inherit the security considerations defined in the [core OpenBindings specification v0.1.0](../../versions/0.1.0/openbindings.md#security-considerations), including transform evaluation sandboxing, artifact fetching restrictions, and schema processing limits. Operation-graph-specific concerns:
+Operation graphs inherit the security considerations defined in the [core OpenBindings specification v0.2.0](../../openbindings.md#15-security-considerations), including transform evaluation sandboxing, artifact fetching restrictions, and schema processing limits. Operation-graph-specific concerns:
 
 - **Event amplification**: `map` nodes convert one event into many. Combined with cycles, a small input can produce a large number of operation invocations. A `map` inside a cycle is the primary amplification vector: if the map produces N events per iteration and `maxIterations` is M, the total can reach N^M events. Implementations SHOULD enforce a maximum total event count per operation graph execution and terminate with an error when the limit is exceeded.
 - **Cycle amplification**: fan-out within a cycle multiplies events per iteration. `maxIterations` bounds per-lineage traversals but does not bound total event count if fan-out occurs within the cycle.
@@ -756,7 +741,7 @@ Operation graphs inherit the security considerations defined in the [core OpenBi
 
 ## Deferred from v1
 
-The following features are out of scope for `openbindings.operation-graph@0.1.0`:
+The following features are out of scope for `openbindings.operation-graph@0.2.0`:
 
 - **Imported operation references**: operation nodes may only reference operations in the containing OBI's `operations` map, not operations from imported interfaces.
 - **Reusable sub-graphs**: `$ref` within operation graphs to reference other operation graphs or shared node subgraphs.

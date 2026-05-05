@@ -1,0 +1,77 @@
+{
+  "rule": "OBI-D-06",
+  "section": "16.2",
+  "description": "Has well-formed URI references (per RFC 3986 §4.1) in roles, sources[*].location, and schema $ref values.",
+  "tests": [
+    {
+      "description": "absolute https URI in roles",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "roles": { "taskmanager": "https://interfaces.example.com/task-manager/v1.json" }
+      },
+      "valid": true
+    },
+    {
+      "description": "relative URI reference in roles",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "roles": { "taskmanager": "./roles/task-manager.json" }
+      },
+      "valid": true
+    },
+    {
+      "description": "relative URI reference in source location",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "fragment-only $ref in inline schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": { "Task": { "type": "object" } },
+        "operations": {
+          "createTask": { "output": { "$ref": "#/schemas/Task" } }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "URI containing a literal whitespace character in roles",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "roles": { "taskmanager": "https://example.com/path with space" }
+      },
+      "valid": false,
+      "violates": ["OBI-D-06"]
+    },
+    {
+      "description": "URI containing disallowed angle-bracket characters in source location",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./<bad>/openapi.json" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-06"]
+    },
+    {
+      "description": "URI containing a backtick in schema $ref",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": { "Task": { "type": "object" } },
+        "operations": {
+          "createTask": { "output": { "$ref": "#/schemas/`Task`" } }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-06"]
+    }
+  ]
+}

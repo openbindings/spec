@@ -1,0 +1,47 @@
+{
+  "rule": "OBI-D-13",
+  "section": "16.2",
+  "description": "Has every satisfies[*].role value present as a key in the document's roles map.",
+  "tests": [
+    {
+      "description": "operation satisfies entry references existing role key",
+      "document": {
+        "openbindings": "0.2.0",
+        "roles": { "taskmanager": "https://interfaces.example.com/task-manager/v1.json" },
+        "operations": {
+          "createTask": {
+            "satisfies": [{ "role": "taskmanager", "operation": "tasks.create" }]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation satisfies entry references non-existent role key",
+      "document": {
+        "openbindings": "0.2.0",
+        "roles": { "taskmanager": "https://interfaces.example.com/task-manager/v1.json" },
+        "operations": {
+          "createTask": {
+            "satisfies": [{ "role": "missingRole", "operation": "tasks.create" }]
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-13"]
+    },
+    {
+      "description": "operation satisfies entry references a role key in a document with no roles map",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "satisfies": [{ "role": "taskmanager", "operation": "tasks.create" }]
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-13"]
+    }
+  ]
+}

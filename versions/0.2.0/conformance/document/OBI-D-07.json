@@ -1,0 +1,76 @@
+{
+  "rule": "OBI-D-07",
+  "section": "16.2",
+  "description": "Has every $schema value, where present, equal to https://json-schema.org/draft/2020-12/schema.",
+  "tests": [
+    {
+      "description": "schema with explicit 2020-12 $schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
+      },
+      "valid": true
+    },
+    {
+      "description": "schema without $schema (omission permitted)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": { "Task": { "type": "object" } },
+        "operations": { "createTask": {} }
+      },
+      "valid": true
+    },
+    {
+      "description": "schema with 2019-09 $schema value",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
+      },
+      "valid": false,
+      "violates": ["OBI-D-07"]
+    },
+    {
+      "description": "schema with draft-07 $schema value",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
+      },
+      "valid": false,
+      "violates": ["OBI-D-07"]
+    },
+    {
+      "description": "operation input schema with wrong $schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "$schema": "https://json-schema.org/draft/2019-09/schema",
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-07"]
+    }
+  ]
+}

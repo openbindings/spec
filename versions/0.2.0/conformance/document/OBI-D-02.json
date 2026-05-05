@@ -1,0 +1,78 @@
+{
+  "rule": "OBI-D-02",
+  "section": "16.2",
+  "description": "Validates against the JSON Schema at openbindings.schema.json.",
+  "notes": "OBI-D-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema catches but no more specific OBI-D rule names. Violations the schema catches that DO have a specific semantic rule (e.g., OBI-D-04 identifier pattern, OBI-D-16 SemVer) are listed under the semantic rule, not OBI-D-02.",
+  "tests": [
+    {
+      "description": "minimal valid document",
+      "document": { "openbindings": "0.2.0", "operations": {} },
+      "valid": true
+    },
+    {
+      "description": "missing required `operations` field",
+      "document": { "openbindings": "0.2.0" },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "missing required `openbindings` field",
+      "document": { "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "operation aliases is a string instead of array",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": "create" }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "binding missing required `operation` field",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "source": "httpApi" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "source missing required `format` field",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "location": "./openapi.json" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "source missing both `location` and `content`",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
+      "description": "operation deprecated flag is a string instead of boolean",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "deprecated": "yes" }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    }
+  ]
+}

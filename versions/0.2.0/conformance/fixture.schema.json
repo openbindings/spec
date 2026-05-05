@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/fixture.schema.json",
+  "title": "OpenBindings Conformance Fixture",
+  "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file).",
+  "type": "object",
+  "required": ["rule", "section", "description", "tests"],
+  "additionalProperties": false,
+  "properties": {
+    "rule": {
+      "type": "string",
+      "pattern": "^OBI-[DT]-[0-9]+$",
+      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §16 of the OpenBindings spec."
+    },
+    "section": {
+      "type": "string",
+      "description": "The spec section the rule is defined in (e.g., '16.2' for document rules, '16.3' for tool rules)."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable description of the rule, ideally byte-faithful to the spec text."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. why some test cases are intentionally out of format. Informational; not consumed by harnesses."
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Test cases for this rule. Each case bundles an OBI document with the expected validity verdict.",
+      "items": {
+        "type": "object",
+        "required": ["description", "document", "valid"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Description of what this specific case tests."
+          },
+          "document": {
+            "description": "An OBI document, embedded inline. Any JSON value (typically an object)."
+          },
+          "valid": {
+            "type": "boolean",
+            "description": "true if the document satisfies the rule (a conformant tool should accept it); false if the document violates the rule (a conformant tool should reject it)."
+          },
+          "violates": {
+            "type": "array",
+            "description": "When valid is false, the set of OBI-D-## or OBI-T-## rules the document is intended to test as violated. Lists semantic rules only; OBI-D-02 is omitted when a more specific rule names the violation. Minimum-set semantics: a conformant validator MUST report at least these rules.",
+            "items": {
+              "type": "string",
+              "pattern": "^OBI-[DT]-[0-9]+$"
+            }
+          },
+          "requiresMaxTested": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+            "description": "When set, the test only applies to SDKs whose MaxTestedVersion is at least this SemVer 2.0.0 version. Used for forward-compatible OBI-T-04 scenarios (e.g., a post-1.0 SDK MUST accept same-major-higher-minor documents) that cannot be evaluated against a pre-1.0 SDK without contradicting OBI-T-04. Runners SHOULD skip tests whose requiresMaxTested exceeds the SDK's MaxTestedVersion."
+          }
+        }
+      }
+    }
+  }
+}

@@ -57,6 +57,7 @@ The spec defines what an OBI document **is**: its shape, identity, discovery, re
 | ------------------------------------------------------ | ---------------------------------------- |
 | [`openbindings.md`](openbindings.md)                   | OBI spec (v0.2.0)                         |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for OBI document validation  |
+| [`versions/0.2.0/`](versions/0.2.0/)                   | v0.2.0 release snapshot                  |
 | [`versions/0.1.0/`](versions/0.1.0/)                   | v0.1.0 release snapshot                  |
 
 ## Ecosystem

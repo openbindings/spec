@@ -1,0 +1,64 @@
+{
+  "rule": "OBI-D-05",
+  "section": "16.2",
+  "description": "Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its aliases array.",
+  "tests": [
+    {
+      "description": "operations with distinct keys and distinct aliases",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": ["addTask", "newTask"] },
+          "listTasks": { "aliases": ["getTasks"] }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "two operations where one's alias matches another's key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": ["listTasks"] },
+          "listTasks": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-05"]
+    },
+    {
+      "description": "two operations sharing an alias",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": ["addItem"] },
+          "createPost": { "aliases": ["addItem"] }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-05"]
+    },
+    {
+      "description": "operation with duplicate aliases in its own array",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": ["addTask", "addTask"] }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-05"]
+    },
+    {
+      "description": "operation whose alias matches its own key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": { "aliases": ["createTask"] }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-05"]
+    }
+  ]
+}

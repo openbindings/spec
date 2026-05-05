@@ -1,0 +1,39 @@
+{
+  "rule": "OBI-D-09",
+  "section": "16.2",
+  "description": "Has every bindings[*].operation value present as a key in the document's operations map.",
+  "tests": [
+    {
+      "description": "binding references an existing operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding references a non-existent operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "nonexistentOp", "source": "httpApi" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-09"]
+    },
+    {
+      "description": "binding operation value matches an alias rather than a key in the operations map",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": { "aliases": ["addTask"] } },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "addTask.http": { "operation": "addTask", "source": "httpApi" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-09"]
+    }
+  ]
+}

@@ -13,3 +13,9 @@ To cut a release, see [`RELEASING.md`](../RELEASING.md) or run `scripts/release.
   - Schema: `0.1.0/openbindings.schema.json`
   - Editors: `0.1.0/editors.md`
   - Conformance: `0.1.0/conformance/`
+
+- `0.2.0/`
+  - Spec: `0.2.0/openbindings.md`
+  - Schema: `0.2.0/openbindings.schema.json`
+  - Editors: `0.2.0/editors.md`
+  - Conformance: `0.2.0/conformance/`

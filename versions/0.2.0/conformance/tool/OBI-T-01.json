@@ -1,0 +1,68 @@
+{
+  "rule": "OBI-T-01",
+  "section": "16.3",
+  "description": "Does not fail processing a document solely because the document contains an unsupported binding format or security method type. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.",
+  "notes": "All tests are positive (valid: true). The rule is anti-failure: it asserts the tool does NOT fail on these inputs. A tool that emits diagnostics while still processing the document is conformant (the rule says 'MAY surface diagnostics'). Tests only verify the SDK didn't refuse the document.",
+  "tests": [
+    {
+      "description": "document declares an unknown binding format",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "./somewhere" }
+        },
+        "bindings": {
+          "createTask.exotic": { "operation": "createTask", "source": "exotic" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "document declares an unknown security method type",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "security": {
+          "exoticAuth": [{ "type": "exotic-cryptographic-handshake-scheme" }]
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "document declares both unknown binding format and unknown security type",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "./somewhere" }
+        },
+        "security": {
+          "exoticAuth": [{ "type": "exotic-cryptographic-handshake-scheme" }]
+        },
+        "bindings": {
+          "createTask.exotic": {
+            "operation": "createTask",
+            "source": "exotic",
+            "security": "exoticAuth"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "ordered security array containing one known and one unknown type",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "security": {
+          "apiAuth": [
+            { "type": "exotic-cryptographic-handshake-scheme" },
+            { "type": "bearer" }
+          ]
+        }
+      },
+      "valid": true
+    }
+  ]
+}

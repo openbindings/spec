@@ -1,0 +1,70 @@
+{
+  "rule": "OBI-T-03",
+  "section": "16.3",
+  "description": "Treats x- prefixed fields as extensions. Unknown x- fields MUST NOT change the meaning of core fields for conformance purposes.",
+  "notes": "These fixtures test the acceptance side of OBI-T-03: that a tool processes documents containing x- extension fields without refusing them. The 'MUST NOT change the meaning of core fields' clause is not directly testable in this single-document format because verifying it would require comparing tool behavior with and without x- fields present (a comparative test out of scope for this fixture shape). Acceptance tests below establish the necessary baseline; the no-meaning-change clause is a per-tool behavioral guarantee best verified through the SDK's own implementation tests.",
+  "tests": [
+    {
+      "description": "document with x- extension at the root level",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-vendor-metadata": { "owner": "platform-team", "tags": ["internal"] },
+        "operations": { "createTask": {} }
+      },
+      "valid": true
+    },
+    {
+      "description": "document with x- extensions on operation, binding, and source",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "x-rate-limit-per-minute": 100
+          }
+        },
+        "sources": {
+          "httpApi": {
+            "format": "openapi@3.1",
+            "location": "./openapi.json",
+            "x-cache-ttl-seconds": 300
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "x-retry-policy": "exponential"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "document with x- field whose key resembles a core field name",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "x-operations": { "spurious": "should be ignored as extension, not interpreted as the operations map" }
+      },
+      "valid": true
+    },
+    {
+      "description": "x- extension nested deeply inside an operation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": { "type": "object" },
+            "examples": {
+              "happy": {
+                "x-source": "production-traffic-sample",
+                "input": {}
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

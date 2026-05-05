@@ -1,0 +1,59 @@
+{
+  "rule": "OBI-D-14",
+  "section": "16.2",
+  "description": "Has no duplicate entries (same role + operation pair) within any single operation's satisfies array.",
+  "tests": [
+    {
+      "description": "operation with multiple distinct satisfies entries",
+      "document": {
+        "openbindings": "0.2.0",
+        "roles": {
+          "taskmanager": "https://interfaces.example.com/task-manager/v1.json",
+          "auditable": "https://interfaces.example.com/auditable/v1.json"
+        },
+        "operations": {
+          "createTask": {
+            "satisfies": [
+              { "role": "taskmanager", "operation": "tasks.create" },
+              { "role": "auditable", "operation": "audit.record" }
+            ]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation with two satisfies entries having identical role and operation",
+      "document": {
+        "openbindings": "0.2.0",
+        "roles": { "taskmanager": "https://interfaces.example.com/task-manager/v1.json" },
+        "operations": {
+          "createTask": {
+            "satisfies": [
+              { "role": "taskmanager", "operation": "tasks.create" },
+              { "role": "taskmanager", "operation": "tasks.create" }
+            ]
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-14"]
+    },
+    {
+      "description": "operation with two satisfies entries sharing role but different operation (allowed)",
+      "document": {
+        "openbindings": "0.2.0",
+        "roles": { "taskmanager": "https://interfaces.example.com/task-manager/v1.json" },
+        "operations": {
+          "createTask": {
+            "satisfies": [
+              { "role": "taskmanager", "operation": "tasks.create" },
+              { "role": "taskmanager", "operation": "tasks.upsert" }
+            ]
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

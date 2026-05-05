@@ -1,0 +1,20 @@
+{
+  "rule": "OBI-D-03",
+  "section": "16.2",
+  "description": "Has unique operation keys within the document.",
+  "notes": "JSON object semantics (per RFC 8259 and OBI-D-01) already require unique keys within an object. Duplicate-key violations cannot be expressed as inline JSON fixtures because the test harness's JSON parser would normalize or reject them. This rule is testable only via raw-text fixtures, which are out of scope for this corpus's inline format. The positive case below confirms the rule's basic shape.",
+  "tests": [
+    {
+      "description": "multiple operations with distinct keys",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {},
+          "listTasks": {},
+          "deleteTask": {}
+        }
+      },
+      "valid": true
+    }
+  ]
+}
