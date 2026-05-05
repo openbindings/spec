@@ -6,7 +6,7 @@ This document describes the pattern for working with OpenBindings interfaces thr
 
 ## Overview
 
-The goal: a developer works with an interface client that knows what operations a service offers and how to reach them. The OBI tells the client how. Executors handle the transport. The developer never writes protocol-specific code.
+The goal: a developer works with an interface client that knows what operations a service offers and how to reach them. The OBI tells the client how. Binding invokers handle the transport. The developer never writes protocol-specific code.
 
 There are two levels of interface client:
 
@@ -15,13 +15,13 @@ There are two levels of interface client:
 
 ```typescript
 // Generic: works with any interface, untyped
-const client = new InterfaceClient(null, executor);
+const client = new InterfaceClient(null, dispatcher);
 await client.resolve("https://my-service.example.com");
-for await (const event of client.execute("listItems", { limit: 10 })) { ... }
+for await (const event of client.invoke("listItems", { limit: 10 })) { ... }
 
 // Typed: coupled to a specific interface
-const executor = new OperationExecutor([new OpenAPIExecutor()]);
-const client = new MyServiceClient(executor);
+const dispatcher = new OperationInvoker([new OpenAPIInvoker()]);
+const client = new MyServiceClient(dispatcher);
 await client.connect("https://my-service.example.com");
 const result = await client.listItems({ limit: 10 });
 // result is typed — the client knows the shape
@@ -29,7 +29,7 @@ const result = await client.listItems({ limit: 10 });
 
 `connect()` resolves the OBI — it does not require auth. If the service requires authentication for some or all operations, auth is a separate step (see [Auth Flow](#auth-flow)).
 
-The typed client wraps the generic one. Everything below (executors, context store, OBI resolution) is the same for both.
+The typed client wraps the generic one. Everything below (binding invokers, context store, OBI resolution) is the same for both.
 
 ## Pieces
 
@@ -38,42 +38,42 @@ The typed client wraps the generic one. Everything below (executors, context sto
 **Role**: Foundation types and runtime primitives.
 
 **Responsibilities**:
-- Core types: `OBInterface`, `Operation`, `StreamEvent`, `ExecuteOutput`, `ContextStore`, etc.
-- `InterfaceClient` (generic): resolves OBIs from URLs (fetches `/.well-known/openbindings`), manages connection state (idle → resolving → bound), executes operations via the executor.
-- `OperationExecutor`: routes operation execution to executors. Reads the OBI's bindings to find which executor handles each operation. Applies transforms if configured.
+- Core types: `OBInterface`, `Operation`, `StreamEvent`, `InvokeOutput`, `ContextStore`, etc.
+- `InterfaceClient` (generic): resolves OBIs from URLs (fetches `/.well-known/openbindings`), manages connection state (idle → resolving → bound), invokes operations via the dispatcher.
+- `OperationInvoker`: routes operation invocation to binding invokers. Reads the OBI's bindings to find which invoker handles each operation. Applies transforms if configured.
 - `ContextStore`: per-host credential storage. Keys are `host[:port]` (scheme-agnostic). Values are opaque credential maps (`{ bearerToken, apiKey, basic, ... }`).
-- Schema normalization and compatibility checking (profile v0.1).
+- Schema normalization and compatibility checking (see conventions `OB-2020-12` subsumption profile).
 - Validation (`validate()`).
 
 **Dependencies**: None. The SDK is the leaf dependency.
 
-**Does NOT contain**: Executor and creator implementations, codegen logic, CLI commands.
+**Does NOT contain**: Binding invoker and creator implementations, codegen logic, CLI commands.
 
-### 2. Binding Executors and Interface Creators
+### 2. Binding Invokers and Interface Creators
 
 **Role**: Binding format interpreters and transport handlers.
 
 **Responsibilities**:
-- Implement `BindingExecutor`: given a source (format + location), a ref, and input, make the protocol-specific call and return a stream of events. Unary calls produce one event; streaming calls produce many.
+- Implement `BindingInvoker`: given a source (format + location), a ref, and input, make the protocol-specific call and return a stream of events. Unary calls produce one event; streaming calls produce many.
 - Optionally implement `InterfaceCreator`: synthesize an OBI from a binding artifact (e.g., create an OBI from an OpenAPI spec).
 - Read the binding specification document (OpenAPI spec, AsyncAPI spec, etc.) to understand endpoints, methods, parameters, security schemes.
-- Apply credentials from the context according to the binding spec's security configuration. Each executor determines the protocol-appropriate mechanism for credential transmission.
+- Apply credentials from the context according to the binding spec's security configuration. Each invoker determines the protocol-appropriate mechanism for credential transmission.
 - Handle auth resolution: on auth failure, prompt for credentials via `PlatformCallbacks`, store them in `ContextStore` for reuse.
 
 **Dependencies**: SDK (for types, context helpers, normalization utilities).
 
-**Does NOT depend on**: Other executors, typed clients, or the CLI.
+**Does NOT depend on**: Other binding invokers, typed clients, or the CLI.
 
 **Examples**:
 - `@openbindings/openapi`: reads OpenAPI 3.x specs, makes HTTP requests, handles path/query/header/body parameter routing.
 - `@openbindings/asyncapi`: reads AsyncAPI 3.x specs, handles SSE streams and WebSocket connections.
-- `@openbindings/mcp`: connects to MCP servers via Streamable HTTP, executes tools/resources/prompts.
+- `@openbindings/mcp`: connects to MCP servers via Streamable HTTP, invokes tools/resources/prompts.
 - `grpc-go`: reads protobuf descriptors via server reflection, makes gRPC calls.
-- `connect-go`: executes Connect (Buf) RPCs over HTTP/1.1 with JSON payloads.
+- `connect-go`: invokes Connect (Buf) RPCs over HTTP/1.1 with JSON payloads.
 
-Each executor registers the format tokens it handles (e.g., `openapi@3.0`, `asyncapi@3.0`). The executor matches operation bindings to executors by format.
+Each binding invoker registers the format tokens it handles (e.g., `openapi@3.0`, `asyncapi@3.0`). The dispatcher matches operation bindings to invokers by format.
 
-Format tokens are community-driven — there is no central registry that gates them. Well-known formats use short names (`openapi`, `asyncapi`, `grpc`). Vendor- or project-specific formats use reverse-DNS naming to avoid collisions (e.g., `com.example.gateway-envelope@1.0`). Anyone can create a format token and an executor that handles it.
+Format tokens are community-driven — there is no central registry that gates them. Well-known formats use short names (`openapi`, `asyncapi`, `grpc`). Vendor- or project-specific formats use reverse-DNS naming to avoid collisions (e.g., `com.example.gateway-envelope@1.0`). Anyone can create a format token and a binding invoker that handles it.
 
 ### 3. Typed Interface Client
 
@@ -82,16 +82,16 @@ Format tokens are community-driven — there is no central registry that gates t
 A typed interface client wraps the SDK's generic `InterfaceClient` and adds compile-time type safety for a specific interface's operations.
 
 **Responsibilities**:
-- Constructor takes a pre-built `OperationExecutor`. The developer assembles the executor with their chosen binding executors, context store, and callbacks before passing it in.
-- `connect(url, opts?)`: stores bearer token in `ContextStore`, creates `InterfaceClient` with the executor, calls `resolve(url)` to fetch and bind the OBI. Throws on failure.
-- One typed method per operation: `getInfo()` returns `Promise<SoftwareInfo>`, `executeBinding(input)` returns `Promise<ExecuteBindingOutput>`, etc.
+- Constructor takes a pre-built `OperationInvoker`. The developer assembles the dispatcher with their chosen binding invokers, context store, and callbacks before passing it in.
+- `connect(url, opts?)`: stores bearer token in `ContextStore`, creates `InterfaceClient` with the dispatcher, calls `resolve(url)` to fetch and bind the OBI. Throws on failure.
+- One typed method per operation: `getInfo()` returns `Promise<SoftwareInfo>`, `invokeBinding(input)` returns `Promise<InvokeBindingOutput>`, etc.
 - One stream method per operation (suffixed `Stream`): `getInfoStream()` returns `AsyncGenerator<TypedStreamEvent<SoftwareInfo>>`.
 - Embeds the interface contract as a minified JSON constant. This is the "required interface" — the client knows what operations it expects.
 - Does NOT embed bindings, sources, or transforms. Those come from the live OBI at the target URL during `connect()`.
 
-**Dependencies**: SDK (for `InterfaceClient`, `OperationExecutor`, `MemoryStore`, `normalizeContextKey`).
+**Dependencies**: SDK (for `InterfaceClient`, `OperationInvoker`, `MemoryStore`, `normalizeContextKey`).
 
-**Does NOT depend on**: Any specific executor. The developer configures the `OperationExecutor` with their chosen binding executors before passing it to the client.
+**Does NOT depend on**: Any specific binding invoker. The developer configures the `OperationInvoker` with their chosen binding invokers before passing it to the client.
 
 **How it's produced**: However the developer wants:
 - `ob codegen <interface> --lang <language>` — the CLI reads the interface, builds an IR, and emits language-specific code. Most common path.
@@ -111,7 +111,7 @@ The mechanism is irrelevant. What matters is that the client is typed to a speci
 - Optionally declares roles (interfaces this service satisfies) and transforms (schema bridges between operation schemas and binding schemas).
 - Served at `/.well-known/openbindings` for discovery.
 
-**The OBI is the bridge between the interface client and the executors.** The client calls `execute("getInfo")`. The SDK looks up `getInfo` in the OBI's bindings, finds it's bound to a source at a specific ref. The `OperationExecutor` finds a binding executor that handles the source's format, hands it the source location and ref, and the binding executor handles the protocol-specific work.
+**The OBI is the bridge between the interface client and the binding invokers.** The client calls `invoke("getInfo")`. The SDK looks up `getInfo` in the OBI's bindings, finds it's bound to a source at a specific ref. The `OperationInvoker` finds a binding invoker that handles the source's format, hands it the source location and ref, and the binding invoker handles the protocol-specific work.
 
 ### 5. Context Store
 
@@ -120,10 +120,10 @@ The mechanism is irrelevant. What matters is that the client is typed to a speci
 **Responsibilities**:
 - Stores credentials keyed by `host[:port]` (no scheme — `http://`, `https://`, `ws://` all share the same key for the same host).
 - Values are opaque maps with well-known field names: `bearerToken`, `apiKey`, `basic` (`{ username, password }`).
-- Executors read from it before each request. The executor merges stored context with per-call context.
+- Binding invokers read from it before each request. The invoker merges stored context with per-call context.
 - Implementations: `MemoryStore` (in-memory, ephemeral), `LocalStorageContextStore` (browser persistence), custom implementations for server-side storage.
 
-**The developer stores a token once; every executor for that host uses it automatically.**
+**The developer stores a token once; every binding invoker for that host uses it automatically.**
 
 ### 6. Platform Callbacks
 
@@ -134,32 +134,32 @@ The mechanism is irrelevant. What matters is that the client is typed to a speci
 - `browserRedirect(url)`: open a URL for OAuth flows.
 - `confirmation(message)`: yes/no dialog.
 - `fileSelect(message, opts)`: let the user pick a file (client certificates, key files).
-- Used by executors when a request returns 401 and credentials need to be obtained interactively.
+- Used by binding invokers when a request returns 401 and credentials need to be obtained interactively.
 
 **The developer provides these at client construction or `connect()` time.** Browser apps implement them with modals/popups. CLI apps implement them with terminal prompts. Headless apps skip them (auth is pre-configured).
 
 ## Putting It Together
 
-The typed client and binding executors both depend on the SDK but do not depend on each other. The developer composes them at runtime:
+The typed client and the binding invokers both depend on the SDK but do not depend on each other. The developer composes them at runtime:
 
 ```typescript
-import { OperationExecutor, MemoryStore } from "@openbindings/sdk";
-import { OpenAPIExecutor } from "@openbindings/openapi";
+import { OperationInvoker, MemoryStore } from "@openbindings/sdk";
+import { OpenAPIInvoker } from "@openbindings/openapi";
 import { MyServiceClient } from "./client";
 
-const executor = new OperationExecutor([new OpenAPIExecutor()]);
-const client = new MyServiceClient(executor);
+const dispatcher = new OperationInvoker([new OpenAPIInvoker()]);
+const client = new MyServiceClient(dispatcher);
 await client.connect("https://api.example.com", { bearerToken: "..." });
 const menu = await client.getMenu();
 ```
 
-The client knows the interface. The executors know the protocols. Neither knows about the other. The SDK provides the primitives both build on.
+The client knows the interface. The binding invokers know the protocols. Neither knows about the other. The SDK provides the primitives both build on.
 
-## Unified Execution Model: Everything Is a Stream
+## Unified Invocation Model: Everything Is a Stream
 
 An OpenBindings interface defines operations — not request/response pairs, not subscriptions, not RPC calls. Just operations with input and output schemas. The interface doesn't say whether an operation yields one result or many. It can't, because that depends on the binding: the same operation might return a single JSON response over REST and a continuous event stream over AsyncAPI.
 
-This means the execution model must handle both cases uniformly. Every operation execution returns a **stream of events**. Each event carries either data or an error:
+This means the invocation model must handle both cases uniformly. Every operation invocation returns a **stream of events**. Each event carries either data or an error:
 
 ```typescript
 for await (const event of client.getMenuStream()) {
@@ -170,11 +170,11 @@ for await (const event of client.getMenuStream()) {
 
 For unary operations, the stream yields one event and closes. For subscriptions, it yields events until the connection closes or the consumer cancels. The consumer code is the same — iterate until done.
 
-This is not a design choice for convenience. It's a consequence of protocol agnosticism. If the execution model assumed request/response, it couldn't represent streaming. If it assumed streaming, unary would be a degenerate case (which it is — a stream of one). The stream model is the only one that works for all bindings without the interface having to declare which pattern applies.
+This is not a design choice for convenience. It's a consequence of protocol agnosticism. If the invocation model assumed request/response, it couldn't represent streaming. If it assumed streaming, unary would be a degenerate case (which it is — a stream of one). The stream model is the only one that works for all bindings without the interface having to declare which pattern applies.
 
 **Typed clients provide a unary convenience** — `await client.getMenu()` returns `Promise<MenuResponse>` by taking the first event from the stream. This is sugar for the common case where the developer knows the operation is unary. The stream variant (`client.getMenuStream()`) is always available for operations that may yield multiple events or when the developer wants event-level control.
 
-## Execution Flow
+## Invocation Flow
 
 When the developer calls `client.someOperation({ input })`:
 
@@ -183,18 +183,18 @@ Developer calls typed method
         │
         ▼
 Typed Interface Client
-        │  calls this.client.execute("someOperation", input)
+        │  calls this.client.invoke("someOperation", input)
         ▼
 Generic InterfaceClient
         │  looks up "someOperation" in the resolved OBI's bindings
         │  finds: source format + location, ref within source
         ▼
-OperationExecutor
-        │  matches source format to a registered executor
+OperationInvoker
+        │  matches source format to a registered binding invoker
         │  merges context from ContextStore for this host
         │  applies inputTransform if the binding has one
         ▼
-Executor
+Binding Invoker
         │  reads the binding spec to understand the protocol
         │  applies credentials from context per the spec's security config
         │  makes the protocol-specific call
@@ -202,10 +202,10 @@ Executor
 Response
         │
         ▼
-Executor
-        │  parses response, builds ExecuteOutput
+Binding Invoker
+        │  parses response, builds InvokeOutput
         ▼
-OperationExecutor
+OperationInvoker
         │  applies outputTransform if the binding has one
         │  wraps in StreamEvent
         ▼
@@ -218,7 +218,7 @@ Typed Interface Client
 Developer receives typed result
 ```
 
-For streaming operations, the flow is the same but the executor yields multiple events and the executor passes them through as a stream.
+For streaming operations, the flow is the same but the binding invoker yields multiple events and the dispatcher passes them through as a stream.
 
 ## Auth Flow
 
@@ -228,9 +228,9 @@ If the service requires auth for some or all operations, auth can be handled pro
 
 1. Developer calls `client.connect(url)` -- resolves the OBI, no token needed.
 2. If the OBI declares `security` entries on its bindings, the SDK knows what authentication methods are available.
-3. When an operation fails with `auth_required`, the binding executor walks the security methods in preference order and uses platform callbacks (`prompt`, `browserRedirect`) to acquire credentials interactively.
+3. When an operation fails with `auth_required`, the binding invoker walks the security methods in preference order and uses platform callbacks (`prompt`, `browserRedirect`) to acquire credentials interactively.
 4. Acquired credentials are stored in the `ContextStore` keyed by the source endpoint.
-5. The binding executor retries the operation once with the new credentials.
+5. The binding invoker retries the operation once with the new credentials.
 6. Subsequent operations automatically include the stored credentials.
 
 If the developer already has a token (e.g., from a previous session), they can pass it directly:
@@ -243,7 +243,7 @@ This stores the token and resolves the OBI in one step.
 
 **Auth is optional.** If the service doesn't require auth, skip steps 2–4. If the service allows unauthenticated access to some operations, those work immediately after `connect()`. Operations that require auth either fail with a clear error or trigger interactive resolution via `PlatformCallbacks`.
 
-The developer stores a token once. Every executor, every protocol, every request for that host uses it automatically.
+The developer stores a token once. Every binding invoker, every protocol, every request for that host uses it automatically.
 
 ## Roles and Conformance
 
@@ -269,9 +269,9 @@ Typed clients are per-interface. If you produce a client from the context-store 
 
 ## Key Principles
 
-1. **The developer never writes protocol-specific code.** Interface client + executors + OBI handle transport.
-2. **Executors are pluggable.** The developer chooses which formats to support. No unnecessary dependencies.
-3. **The OBI is the bridge.** It connects the client's operations to the executor's transport capabilities.
+1. **The developer never writes protocol-specific code.** Interface client + binding invokers + OBI handle transport.
+2. **Binding invokers are pluggable.** The developer chooses which formats to support. No unnecessary dependencies.
+3. **The OBI is the bridge.** It connects the client's operations to the binding invoker's transport capabilities.
 4. **Credentials are per-host, not per-request.** Store once, use everywhere.
 5. **Everything is a stream.** Unary operations are streams of one event. The pattern is the same for request/response and real-time subscriptions.
-6. **Composition at runtime.** Interface client + executors are composed when the client is constructed, not when the code is produced.
+6. **Composition at runtime.** Interface client + binding invokers are composed when the client is constructed, not when the code is produced.

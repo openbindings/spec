@@ -1,0 +1,254 @@
+{
+  "rule": "OBI-D-04",
+  "section": "16.2",
+  "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z_][A-Za-z0-9_.-]*$.",
+  "tests": [
+    {
+      "description": "operation key with simple alphanumeric identifier",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with underscore prefix",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "_internalOp": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with dot grouping",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "tasks.create": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with hyphen",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create-task": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding key with dotted suffix grouping",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" }
+        },
+        "bindings": {
+          "createTask.http": { "operation": "createTask", "source": "httpApi" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation alias matching identifier pattern",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": ["create_task", "make.task", "make-task"]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "1createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation key starting with hyphen",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "-createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation key containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create task": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation key containing slash",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create/task": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation key with non-ASCII Unicode",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "créerTâche": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation alias starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": ["1createTask"]
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "source key with whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "http api": { "format": "openapi@3.1", "location": "./openapi.json" }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "schema key starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "1Task": { "type": "object" }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "security entry key with hyphen-prefix",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "security": {
+          "-apiAuth": [{ "type": "bearer" }]
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "empty string operation key (regex requires at least one character)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "single underscore as operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "_": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "single ASCII letter as operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "a": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with trailing hyphen (allowed; only start-char is constrained)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask-": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with trailing dot (allowed; only start-char is constrained)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask.": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "multi-violation isolation: document violates both OBI-D-04 (bad identifier) and OBI-D-09 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "1badKey": {}
+        },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-04", "OBI-D-09"]
+    }
+  ]
+}

@@ -1,45 +1,83 @@
 # Changelog
 
-## 0.2.0 (working draft)
+## 0.2.0
 
-This describes the diff from 0.1.0 (last released) to the current working draft.
+This release narrows the spec to what an OBI document IS: shape, identity, discovery, references, versioning, and the conformance floor. Behavioral material from 0.1.0 (comparison rules, matching algorithms, transform execution, security method shapes) moves out of the spec; how tools handle these concerns is now tool-defined. Many breaking changes; per OBI-T-04, a 0.1.x tool MUST refuse a 0.2.0 document.
 
-### Changed
+### Breaking
 
-- **Scope of the spec dramatically narrowed.** 0.1.0 was a full-stack spec: it defined document shape AND normative schema-comparison rules AND operation-matching algorithms AND transform execution semantics AND security method semantics. The 0.2.0 draft defines only what an OBI document **is**: its shape, identity, discovery convention, reference-resolution rules, versioning, and document-level conformance. Everything behavioral has moved to the new `reference.md` companion doc (non-normative). Spec body is ~380 lines (down from ~1712).
-- **`version` field** simplified to an opaque author-declared label. 0.1.0 prescribed SemVer conventions and a "breaking changes MUST bump major" rule that was unenforceable from the spec's position; removed.
-- **Transform structure preserved** as `{type, expression}` but the 0.1.0 JSONata mandate and execution-flow prose moved to `reference.md`. Tools declare which transform types they support; unsupported types make bindings unactionable without failing the document.
-- **Security structure preserved** as a preference-ordered array of `{type, ...}` objects. The 0.1.0 well-known method definitions (`bearer`, `oauth2`, `basic`, `apiKey` with prescribed field shapes) moved to `reference.md`. The spec defers to upstream RFCs (RFC 6750 for bearer, OAuth 2.0 RFCs, etc.) for canonical semantics.
-- **Operation matching** retains the data-model fields (`aliases`, `satisfies`, `roles`) but drops the 0.1.0 matching algorithm (primary-key/alias/explicit-satisfies cascade). Matching procedure is tool-defined.
-- **Format tokens** reframed as community-owned strings. 0.1.0 asserted a matching rule (case-insensitive names, exact version match with trailing `.0` stripped); 0.2.0 recognizes that format tokens are strings whose equivalence and comparison semantics belong to each format's community. The spec recommends the `<name>@<version>` convention but no longer imposes normalization rules on community-chosen strings.
+- **Spec scope narrowed.** Spec body shrunk from ~1700 lines to ~830. Schema comparison rules, normalization, operation matching, transform execution flow, security method type definitions, interface conformance framing, and binding actionability are all removed. These are now tool-defined concerns.
+- **`executor` renamed to `invoker`** across the spec ecosystem. Role interface `openbindings.binding-executor` becomes `openbindings.binding-invoker`; `executeBinding` becomes `invokeBinding`; SDK types follow (`BindingExecutor` to `BindingInvoker`, `OperationExecutor` to `OperationInvoker`, etc.); CLI `ob op exec` / `ob binding exec` become `ob op invoke` / `ob binding invoke`. Hard rename, no aliases.
+- **Transform shape changed.** Named transforms changed from `{"type": "jsonata", "expression": "..."}` objects to plain JSONata 2.0 expression strings. Inline `inputTransform`/`outputTransform` accept a JSONata string or `{"$ref": "..."}` object. The `type` field on transforms is gone.
+- **Map key pattern enforced.** All map keys (operations, bindings, sources, transforms, roles, schemas, security, examples) and all aliases MUST match `^[A-Za-z_][A-Za-z0-9_.-]*$`. v0.1.0 allowed any JSON string.
+- **`$schema` pinned to 2020-12.** When `$schema` appears in any schema within the document, it MUST be exactly `https://json-schema.org/draft/2020-12/schema`.
+- **`$vocabulary` forbidden.** The `$vocabulary` keyword MUST NOT appear in schemas within the document.
+- **SemVer enforced on `openbindings` field.** The JSON Schema now enforces a full SemVer 2.0.0 pattern. v0.1.0 had no pattern constraint.
+- **Security method type definitions removed.** The per-scheme field shapes (`bearer`, `oauth2`, `basic`, `apiKey`) are gone from both the spec prose and the JSON Schema. `SecurityMethod` retains `type` (required) and `description` (optional) with `additionalProperties: true`. Scheme semantics defer to upstream RFCs.
+- **Format token normalization removed.** The 0.1.0 rules (case-insensitive matching, trailing `.0` stripping) are gone. Token equivalence is each format community's concern.
+- **Operation matching algorithm removed.** The 0.1.0 deterministic matching cascade (primary key, alias, explicit satisfies) is gone. Data-model fields (`aliases`, `satisfies`, `roles`) remain; matching procedure is tool-defined.
+- **`version` field is opaque.** The 0.1.0 SemVer requirement and "breaking changes bump major" rule are removed. Tools define no behavior in terms of `version`.
+- **YAML support dropped.** v0.1.0 had normative YAML support (YAML 1.2, no 1.1 coercion). v0.2.0 is JSON only.
+- **Example validation strengthened.** `examples[*].input` and `examples[*].output` MUST validate against their operation schemas (OBI-D-15). Was SHOULD in 0.1.0.
+- **Pre-1.0 minor version refusal.** Tools MUST refuse documents declaring a higher minor version while pre-1.0 (OBI-T-04). v0.1.0 only had major-version refusal.
+- **`$ref` cycle handling changed.** v0.1.0 required detection and fail-closed (treat as incompatible). v0.2.0 permits cycles in schemas and requires tools to handle them without infinite loops.
 
 ### Added
 
-- **`reference.md`** — new companion document (non-normative) capturing the openbindings project's reference-tool behaviors: comparison semantics (including a new fact vocabulary and canonical verdict derivation), transform execution (including JSONata support), operation matching, security method resolution, and related conventions. Versioned independently of the OBI spec. The core spec does not reference this document.
-- **`reference-tests/`** — directory containing test fixtures for the behaviors in `reference.md`. Renamed from `conformance/` to reflect that these tests exercise reference-tool behavior, not spec conformance.
-- **Scope section** at the top of the spec, explicitly distinguishing what the spec defines from what it intentionally doesn't.
-- **Location equality section** defining normative URI canonicalization for comparing role URIs and document locations. Uses RFC 3986 §6.2.2 + §6.2.3, RFC 3987/UTS #46 (IDN), and RFC 8089 (`file://`). Closes a gap in 0.1.0, which relied on prose about "URLs are the identity" without defining equality.
-- **Consolidated reference-resolution section** covering `roles`, `sources[*].location`, and schema `$ref` under one RFC 3986 §5 rule. 0.1.0 had three separate resolution clauses scattered across the document.
-- **Discovery response contract.** Explicit `GET` / `200 application/json` / `404` semantics at `/.well-known/openbindings`. 0.1.0 described the path as a convention but did not pin the HTTP contract.
+- **Positioning (section 1).** Distinguishing features, explicit out-of-scope list. Replaces the old Overview.
+- **Scope principle (section 2).** Normative statement that OBI is deliberately minimal. Authority over wire formats rests with binding format specs; authority over behavior rests with implementations.
+- **Discovery response contract (section 7.1).** Explicit `GET` / `200` / `404` semantics at `/.well-known/openbindings`, with `Content-Type` guidance and permissive CORS recommendation.
+- **Binding sufficiency (section 8).** Each binding's interaction target MUST be identifiable from the binding, its referenced source, and the document's discovery context. Replaces 0.1.0's "actionability" concept.
+- **Interface identity (section 9).** Document identity is the URI from which it was retrieved. No separate `id` field.
+- **Location equality (section 10).** Normative URI canonicalization for comparing role URIs and document locations, using RFC 3986 and UTS #46 (IDN).
+- **Canonical form (section 11, informative).** Names RFC 8785 (JCS) as the byte-stable serialization for content-addressing and signing.
+- **Reference resolution (section 12).** Single section covering `roles`, `sources[*].location`, and schema `$ref` under one RFC 3986 rule.
+- **Versioning (section 13).** Two-axis model: `openbindings` (spec version, SemVer 2.0.0) and `version` (opaque contract version).
+- **IANA considerations (section 14).** Provisional registrations for `/.well-known/openbindings` URI suffix and `application/vnd.openbindings+json` media type.
+- **Input/output contract direction (section 6.1).** `input` is a lower bound on service acceptance; `output` an upper bound on service emission. Three-way distinction between absent, `null`, and `{}`.
+- **Transform direction (section 6.5).** `inputTransform` reshapes caller input toward the source's expected input; `outputTransform` reshapes source output toward the operation's `output`.
+- **Conformance classes (section 16.1).** Three tiers: Inspection, Codegen, Invoking. Each tool rule annotates its minimum class. JSONata runtime only required at the Invoking tier.
+- **Stable rule identifiers (section 16).** Every conformance rule carries an `OBI-D-##` (document) or `OBI-T-##` (tool) identifier. Identifiers are stable within a major version.
+- **Document rules OBI-D-01 through OBI-D-17.** Covering UTF-8 JSON, schema validity, identifier patterns, cross-references (binding to operation/source/security/transform; satisfies to roles), `$schema` value, `$vocabulary` prohibition, example schema validation, SemVer for `openbindings`, and binding sufficiency.
+- **Tool rules OBI-T-01 through OBI-T-12.** Covering don't-fail-on-unknown postures, `x-` extension semantics, version refusal, schema-keyword diagnostics, `ref` resolution per format conventions, input/output validation, satisfies subsumption (SHOULD), deprecated-tier binding selection (MUST), JSONata 2.0 transform evaluation (MUST), and `$ref` cycle handling (MUST).
+- **Conformance corpus (`conformance/`).** Fixture-based test corpus keyed to rule IDs. 114 tests across 17 OBI-D rules and 3 OBI-T rules. Includes `manifest.json`, `fixture.schema.json`, a reference Go runner, plus verification and manifest generation scripts. Comparison fixtures live separately under `conformance/comparison/` (30 fixtures across 6 categories).
+- **Abstract, editors, license/IP, and notational conventions** as standalone front-matter sections.
+- **Normative and informative references (section 18).**
+- **`minLength: 1`** on `sources[*].location` and string `content` in the JSON Schema. Empty-string locations are now invalid.
+- **`propertyNames` constraints** in the JSON Schema enforcing the key pattern on every map.
+
+### Changed
+
+- **`idempotent` semantics tightened.** Now a contract-level claim ("every binding for this operation MUST preserve the guarantee"), not just metadata.
+- **`deprecated` on bindings.** New tier rule: non-deprecated bindings rank ahead of deprecated ones regardless of priority (OBI-T-10).
+- **`aliases` and `satisfies` reframed.** Now explicitly "author-attested claims" that tools MUST NOT reject as non-conformant based on semantic accuracy.
+- **Conformance corpus restructured.** v0.1.0 had 3 monolithic JSON files (schema-comparison, normalization, operation-matching). v0.2.0 uses individual fixture files keyed to rule IDs under `conformance/document/` and `conformance/tool/`, plus a separate `conformance/comparison/` tree.
 
 ### Removed
 
-- **Schema Comparison Rules section** (0.1.0 §456-635). Binary `compatible`/`incompatible`/`unspecified` verdicts, directional comparison rules, per-keyword comparison logic. Moved to `reference.md` (with substantial evolution: the reference tools now use a fact vocabulary rather than a binary verdict).
-- **JSON Schema profile subset** (0.1.0 §487-502). The enumeration of supported keywords and the fail-closed rule. Operation schemas in 0.2.0 are valid JSON Schema 2020-12; tools decide which keywords they can reason about.
-- **Normalization rules for comparison** (0.1.0 §504-527). RFC 8785 JCS, `allOf` flattening, `type`/`required` canonicalization, union sorting. Moved to `reference.md`.
-- **Operation matching algorithm** (0.1.0 §443-454). The explicit-preferred / fallback / uniqueness cascade.
-- **Transform execution flow** (0.1.0 §1173-1186). The numbered steps, error-propagation rules, JSONata mandate.
-- **Security method type definitions** (0.1.0 §969-1025). The bearer/oauth2/basic/apiKey field schemas.
-- **Binding coverage / actionability definition** (0.1.0 §912-936). The computation of whether an operation is actionable from its declared bindings.
-- **End-to-end example** (0.1.0 §1428-1712). Will be reworked and moved to `guides/` in a subsequent pass.
-- **Conformance test suite positioning as normative** (0.1.0 §1333-1341). Fixtures now live in `reference-tests/` and test reference-tool behavior, not spec conformance.
-- **Interface Conformance section** (0.1.0 §683-704) describing "declared vs implicit conformance." Now a tool concern.
+- Schema comparison rules section (v0.1.0 binary verdicts and per-keyword comparison logic)
+- JSON Schema profile subset (the constrained keyword set for deterministic comparison)
+- Normalization rules for comparison (JCS canonicalization, `$ref` inlining, `allOf` flattening)
+- Operation matching algorithm (three-strategy cascade)
+- Transform execution flow (numbered steps and error-propagation rules)
+- Security method type definitions (per-scheme field shapes for bearer/oauth2/basic/apiKey)
+- Binding actionability definition (replaced by binding sufficiency)
+- Interface conformance section (declared vs. implicit conformance)
+- End-to-end example (will be reworked as a guide)
+- "Core Ideas," "One interface shape; optional bindings," "Design principles," and other non-normative overview sections (replaced by sections 1-4)
+- Format registry guidance (well-known format token list)
+- Ref conventions section (JSON Pointer / XPath guidance)
+- Precedence and drift section
+- YAML support
 
-### Notes
+### Repository
 
-- Conformance fixtures previously at `conformance/` moved to `reference-tests/` and are labeled as reference-tool behavior tests rather than spec conformance tests. They describe what the reference tooling does, not what the spec requires of arbitrary conformant tools. See `reference-tests/README.md`.
-- `reference.md` is generous in what it preserves; it contains the full prior draft text with a reframing preamble and will be reorganized in subsequent passes. Readers evaluating the spec proper should read `openbindings.md` alone; `reference.md` is for readers building against or extending the reference tools. The core spec does not reference either `reference.md` or `reference-tests/`.
-- The README and FAQ still reference "deterministic compatibility checking" framing from 0.1.0. These will be reconciled with the new scope in a subsequent pass.
+- **New guides**: getting-started, FAQ, creators-and-invokers, binding-format-conventions, binding-invocation-context, interface-client
+- **New interfaces**: `openbindings.binding-invoker` (replaces `binding-executor`), `openbindings.source-inspector`
+- **New examples**: `minimal.obi.json`, `blend-coffee-shop.obi.json`, `multi-source.obi.json`
+- **New tooling**: CI workflow validating examples, interfaces, corpus consistency, canonical ordering, and local links
+- **Renamed interface**: `openbindings.binding-executor` to `openbindings.binding-invoker`
+- **Removed guides**: `cli.md`, `creators-and-executors.md`, `binding-execution-context.md` (replaced by renamed/rewritten guides)
 
 ## 0.1.0
 

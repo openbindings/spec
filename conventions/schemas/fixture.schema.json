@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conventions/v1/schemas/fixture.schema.json",
+  "title": "Comparison-fixture file (v1)",
+  "description": "Schema for a single comparison-fixture file under conformance/comparison/. A fixture pairs two pre-canonical OBI documents (left, right) with the expected report shape. See comparison.md §17.1 for the prose contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "left", "right", "mode", "expected"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "ob-comparison-fixture/v1"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable summary of what this fixture exercises."
+    },
+    "left": {"$ref": "#/$defs/obiDocument"},
+    "right": {"$ref": "#/$defs/obiDocument"},
+    "mode": {
+      "type": "string",
+      "enum": ["subsume", "equivalent", "identical"]
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {"type": "string"},
+        "profile": {"type": "string"},
+        "without_payloads": {"type": "boolean", "default": false},
+        "max_ref_depth": {"type": "integer", "minimum": 1, "maximum": 1024, "default": 32},
+        "strict_undecidable": {"type": "boolean", "default": false},
+        "assert_format": {"type": "boolean", "default": false}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "description": "Inline policy file shape, equivalent to a --policy=<file> argument.",
+      "additionalProperties": false,
+      "required": ["tags"],
+      "properties": {
+        "tags": {
+          "type": "object",
+          "patternProperties": {
+            "^/": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "suppressions": {
+      "type": "object",
+      "description": "Inline suppression ruleset, equivalent to a --ignore-file=<path> argument.",
+      "additionalProperties": false,
+      "required": ["version", "suppressions"],
+      "properties": {
+        "version": {"type": "string"},
+        "suppressions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/suppressionRule"}
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "description": "Full ComparisonReport shape with header placeholders. The runner substitutes <generated_at>, <tool.version>, <corpus-sha>, <input.left.uri>, <input.right.uri> before byte-comparison. Validated against report.schema.json separately."
+    }
+  },
+  "$defs": {
+    "obiDocument": {
+      "type": "object",
+      "description": "An OBI document inline; the runner does not require it to validate against the OBI schema before comparison runs.",
+      "additionalProperties": true
+    },
+    "suppressionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/kind"},
+        "kind_prefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": ["breaking", "non_breaking", "compliance", "structural"]
+        },
+        "operation": {"type": "string"},
+        "severity_below": {
+          "type": "string",
+          "enum": ["info", "warn", "error"]
+        },
+        "pointer": {"$ref": "#/$defs/jsonPointer"},
+        "side": {"$ref": "#/$defs/side"},
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["subsume", "equivalent", "identical"]
+          },
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "until": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+        }
+      },
+      "anyOf": [
+        {"required": ["kind"]},
+        {"required": ["kind_prefix"]},
+        {"required": ["category"]},
+        {"required": ["operation"]},
+        {"required": ["severity_below"]}
+      ],
+      "not": {
+        "required": ["kind", "kind_prefix"]
+      }
+    },
+    "kind": {
+      "type": "string",
+      "pattern": "^([a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*){0,5}|[a-z][a-z0-9_-]*/[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*)$"
+    },
+    "jsonPointer": {
+      "type": "string",
+      "pattern": "^(/([^/~]|~0|~1)*)*$"
+    },
+    "side": {
+      "type": "string",
+      "enum": ["left", "right"]
+    }
+  }
+}

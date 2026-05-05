@@ -1,0 +1,28 @@
+{
+  "rule": "OBI-D-01",
+  "section": "16.2",
+  "description": "Is valid UTF-8 encoded JSON per RFC 8259. Duplicate JSON object keys within any object make the document invalid.",
+  "notes": "Negative cases (malformed UTF-8, parser-rejected duplicate keys) cannot be expressed as inline JSON fixtures because the test harness's JSON parser would normalize or reject them before the fixture reaches a validator. Such cases require raw-text or raw-byte fixtures handled outside this corpus's inline format. The positive cases below confirm that well-formed JSON OBI documents pass.",
+  "tests": [
+    {
+      "description": "minimal valid OBI document",
+      "document": { "openbindings": "0.2.0", "operations": {} },
+      "valid": true
+    },
+    {
+      "description": "OBI document exercising several JSON value types",
+      "document": {
+        "openbindings": "0.2.0",
+        "name": "Mixed types",
+        "operations": {
+          "createTask": {
+            "deprecated": true,
+            "tags": ["a", "b", "c"],
+            "input": { "type": "object" }
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

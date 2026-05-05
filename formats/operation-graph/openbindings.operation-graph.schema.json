@@ -275,7 +275,7 @@
     },
     "Transform": {
       "type": "object",
-      "description": "A transform expression using the core OpenBindings Transform model.",
+      "description": "A typed transform expression as defined by this format (distinct from the core spec's bare JSONata strings).",
       "required": ["type", "expression"],
       "properties": {
         "type": {

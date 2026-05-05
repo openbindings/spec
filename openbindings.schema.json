@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/openbindings-0.2.0.json",
-  "title": "OpenBindings Interface Document (v0.2.0-draft)",
+  "title": "OpenBindings Interface Document (v0.2.0)",
   "description": "Canonical JSON Schema for the OpenBindings interface document.",
   "type": "object",
   "required": [
@@ -11,7 +11,8 @@
   "properties": {
     "openbindings": {
       "type": "string",
-      "description": "OpenBindings document format version (e.g., 0.1.0)."
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "OpenBindings document format version. Semantic Versioning 2.0.0 (e.g., 0.2.0)."
     },
     "name": {
       "type": "string",
@@ -28,6 +29,9 @@
     "schemas": {
       "type": "object",
       "description": "Named JSON Schemas referenced by operations.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/JSONSchema"
       }
@@ -35,6 +39,9 @@
     "operations": {
       "type": "object",
       "description": "Operation registry keyed by operation name.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/Operation"
       }
@@ -42,6 +49,9 @@
     "roles": {
       "type": "object",
       "description": "Interfaces this document intends to satisfy, mapping local aliases to URLs/paths of other OpenBindings interfaces.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "type": "string"
       }
@@ -49,6 +59,9 @@
     "sources": {
       "type": "object",
       "description": "Registry of binding artifacts (e.g., OpenAPI/AsyncAPI/proto).",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/Source"
       }
@@ -56,6 +69,9 @@
     "bindings": {
       "type": "object",
       "description": "Binding entries keyed by binding name, mapping operations to binding sources.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/BindingEntry"
       }
@@ -63,6 +79,9 @@
     "security": {
       "type": "object",
       "description": "Named security entries. Each entry is an array of security methods in preference order (first = preferred). Bindings reference these by key.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
         "type": "array",
         "items": {
@@ -72,9 +91,12 @@
     },
     "transforms": {
       "type": "object",
-      "description": "Named transforms that can be referenced by bindings.",
+      "description": "Named transforms. Each value is a JSONata expression string.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+      },
       "additionalProperties": {
-        "$ref": "#/$defs/Transform"
+        "type": "string"
       }
     }
   },
@@ -82,7 +104,13 @@
   "$defs": {
     "JSONSchema": {
       "type": "object",
-      "description": "JSON Schema object (dialect defined by the OpenBindings spec).",
+      "description": "JSON Schema 2020-12 object. Top-level constraints from §6.2 are enforced here (`$schema` value pinned, `$vocabulary` forbidden); recursive enforcement of nested subschemas is a tool concern.",
+      "properties": {
+        "$schema": {
+          "const": "https://json-schema.org/draft/2020-12/schema"
+        },
+        "$vocabulary": false
+      },
       "additionalProperties": true
     },
     "Operation": {
@@ -107,7 +135,8 @@
           "type": "array",
           "description": "Alternate names for matching compatibility.",
           "items": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
           }
         },
         "satisfies": {
@@ -138,6 +167,9 @@
         "examples": {
           "type": "object",
           "description": "Named examples for this operation.",
+          "propertyNames": {
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+          },
           "additionalProperties": {
             "$ref": "#/$defs/OperationExample"
           }
@@ -196,12 +228,13 @@
         },
         "location": {
           "type": "string",
+          "minLength": 1,
           "description": "URI or path to the binding specification."
         },
         "content": {
           "oneOf": [
             { "type": "object" },
-            { "type": "string" }
+            { "type": "string", "minLength": 1 }
           ],
           "description": "Binding specification content, embedded directly. Object for JSON-based formats, string for text formats (e.g. KDL, protobuf). If both location and content are present, implementations MUST prefer content."
         },
@@ -268,64 +301,21 @@
       "properties": {
         "type": {
           "type": "string",
-          "description": "Security method type identifier (e.g., 'bearer', 'oauth2', 'basic', 'apiKey'). Unknown types SHOULD be skipped by clients."
+          "description": "Security method type identifier."
         },
         "description": {
           "type": "string",
-          "description": "Human-readable description or hint for the client UI."
-        },
-        "authorizeUrl": {
-          "type": "string",
-          "description": "OAuth2 authorization endpoint URL. Required for type 'oauth2'."
-        },
-        "tokenUrl": {
-          "type": "string",
-          "description": "OAuth2 token endpoint URL. Required for type 'oauth2'."
-        },
-        "scopes": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Available OAuth2 scopes."
-        },
-        "clientId": {
-          "type": "string",
-          "description": "For type 'oauth2': optional client identifier. Servers MAY use a default."
-        },
-        "name": {
-          "type": "string",
-          "description": "For type 'apiKey': the name of the header, query parameter, or cookie."
-        },
-        "in": {
-          "type": "string",
-          "enum": ["header", "query", "cookie"],
-          "description": "For type 'apiKey': where the key is sent."
+          "description": "Human-readable description."
         }
       },
       "additionalProperties": true,
-      "description": "A security method declaration. Discriminated on the 'type' field. Well-known types: 'bearer', 'oauth2', 'basic', 'apiKey'. Clients that encounter an unknown type SHOULD skip it and try the next method in the array."
-    },
-    "Transform": {
-      "type": "object",
-      "required": [
-        "type",
-        "expression"
-      ],
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "Transform language identifier (e.g., 'jsonata')."
-        },
-        "expression": {
-          "type": "string",
-          "description": "Transform expression in the specified language."
-        }
-      },
-      "additionalProperties": true
+      "description": "A security method declaration. Discriminated on the `type` field; semantics of each type are defined by the relevant authentication-scheme specification."
     },
     "TransformOrRef": {
       "oneOf": [
         {
-          "$ref": "#/$defs/Transform"
+          "type": "string",
+          "description": "An inline JSONata expression."
         },
         {
           "type": "object",
@@ -339,7 +329,7 @@
           "additionalProperties": false
         }
       ],
-      "description": "Either an inline transform definition or a reference to a named transform."
+      "description": "Either an inline JSONata expression or a reference to a named transform."
     }
   }
 }

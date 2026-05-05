@@ -1,0 +1,174 @@
+{
+  "specVersion": "0.2.0",
+  "corpusVersion": "0.1.0",
+  "totals": {
+    "files": 20,
+    "tests": 114,
+    "positives": 56,
+    "negatives": 58,
+    "rulesCoveredDocument": 17,
+    "rulesCoveredTool": 3
+  },
+  "files": [
+    {
+      "path": "document/OBI-D-01.json",
+      "rule": "OBI-D-01",
+      "section": "16.2",
+      "tests": 2,
+      "positives": 2,
+      "negatives": 0
+    },
+    {
+      "path": "document/OBI-D-02.json",
+      "rule": "OBI-D-02",
+      "section": "16.2",
+      "tests": 8,
+      "positives": 1,
+      "negatives": 7
+    },
+    {
+      "path": "document/OBI-D-03.json",
+      "rule": "OBI-D-03",
+      "section": "16.2",
+      "tests": 1,
+      "positives": 1,
+      "negatives": 0
+    },
+    {
+      "path": "document/OBI-D-04.json",
+      "rule": "OBI-D-04",
+      "section": "16.2",
+      "tests": 21,
+      "positives": 10,
+      "negatives": 11
+    },
+    {
+      "path": "document/OBI-D-05.json",
+      "rule": "OBI-D-05",
+      "section": "16.2",
+      "tests": 5,
+      "positives": 1,
+      "negatives": 4
+    },
+    {
+      "path": "document/OBI-D-06.json",
+      "rule": "OBI-D-06",
+      "section": "16.2",
+      "tests": 7,
+      "positives": 4,
+      "negatives": 3
+    },
+    {
+      "path": "document/OBI-D-07.json",
+      "rule": "OBI-D-07",
+      "section": "16.2",
+      "tests": 5,
+      "positives": 2,
+      "negatives": 3
+    },
+    {
+      "path": "document/OBI-D-08.json",
+      "rule": "OBI-D-08",
+      "section": "16.2",
+      "tests": 5,
+      "positives": 1,
+      "negatives": 4
+    },
+    {
+      "path": "document/OBI-D-09.json",
+      "rule": "OBI-D-09",
+      "section": "16.2",
+      "tests": 3,
+      "positives": 1,
+      "negatives": 2
+    },
+    {
+      "path": "document/OBI-D-10.json",
+      "rule": "OBI-D-10",
+      "section": "16.2",
+      "tests": 2,
+      "positives": 1,
+      "negatives": 1
+    },
+    {
+      "path": "document/OBI-D-11.json",
+      "rule": "OBI-D-11",
+      "section": "16.2",
+      "tests": 3,
+      "positives": 2,
+      "negatives": 1
+    },
+    {
+      "path": "document/OBI-D-12.json",
+      "rule": "OBI-D-12",
+      "section": "16.2",
+      "tests": 5,
+      "positives": 3,
+      "negatives": 2
+    },
+    {
+      "path": "document/OBI-D-13.json",
+      "rule": "OBI-D-13",
+      "section": "16.2",
+      "tests": 3,
+      "positives": 1,
+      "negatives": 2
+    },
+    {
+      "path": "document/OBI-D-14.json",
+      "rule": "OBI-D-14",
+      "section": "16.2",
+      "tests": 3,
+      "positives": 2,
+      "negatives": 1
+    },
+    {
+      "path": "document/OBI-D-15.json",
+      "rule": "OBI-D-15",
+      "section": "16.2",
+      "tests": 11,
+      "positives": 6,
+      "negatives": 5
+    },
+    {
+      "path": "document/OBI-D-16.json",
+      "rule": "OBI-D-16",
+      "section": "16.2",
+      "tests": 13,
+      "positives": 5,
+      "negatives": 8
+    },
+    {
+      "path": "document/OBI-D-17.json",
+      "rule": "OBI-D-17",
+      "section": "16.2",
+      "tests": 3,
+      "positives": 3,
+      "negatives": 0
+    },
+    {
+      "path": "tool/OBI-T-01.json",
+      "rule": "OBI-T-01",
+      "section": "16.3",
+      "tests": 4,
+      "positives": 4,
+      "negatives": 0
+    },
+    {
+      "path": "tool/OBI-T-03.json",
+      "rule": "OBI-T-03",
+      "section": "16.3",
+      "tests": 4,
+      "positives": 4,
+      "negatives": 0
+    },
+    {
+      "path": "tool/OBI-T-04.json",
+      "rule": "OBI-T-04",
+      "section": "16.3",
+      "tests": 6,
+      "positives": 2,
+      "negatives": 4
+    }
+  ]
+}

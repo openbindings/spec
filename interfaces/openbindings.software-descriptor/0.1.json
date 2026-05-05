@@ -1,5 +1,5 @@
 {
-    "openbindings": "0.1.0",
+    "openbindings": "0.2.0",
     "name": "OpenBindings Software Descriptor",
     "version": "0.1.0",
     "description": "Base contract for software participating in the OpenBindings ecosystem. Defines the getInfo operation for self-identification. Implementations may return additional fields beyond the minimum.",

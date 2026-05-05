@@ -1,0 +1,40 @@
+{
+  "rule": "OBI-D-11",
+  "section": "16.2",
+  "description": "Has every bindings[*].security value (when present) present as a key in the document's security map.",
+  "tests": [
+    {
+      "description": "binding without security field",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding security references an existing security entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "security": { "apiAuth": [{ "type": "bearer" }] },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi", "security": "apiAuth" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding security references a non-existent security entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "security": { "apiAuth": [{ "type": "bearer" }] },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi", "security": "missingAuth" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-11"]
+    }
+  ]
+}

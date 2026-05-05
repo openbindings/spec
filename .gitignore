@@ -13,3 +13,12 @@
 
 # Tools
 .claude/
+
+# Local working notes (not part of the spec artifact)
+HANDOFF.md
+
+# Dependencies
+node_modules/
+
+# Go runner build artifacts
+conformance/runners/go/go

@@ -1,5 +1,5 @@
 {
-  "openbindings": "0.1.0",
+  "openbindings": "0.2.0",
   "name": "Echo Service",
   "version": "1.0.0",
   "description": "A minimal OpenBindings interface with a single operation and one binding.",

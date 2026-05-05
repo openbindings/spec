@@ -1,0 +1,70 @@
+{
+  "rule": "OBI-D-17",
+  "section": "16.2",
+  "description": "Has every binding identifiable from the binding, its referenced source, and the document's discovery context alone, with no dependency on external registries, vendor catalogs, or environment configuration.",
+  "notes": "Binding sufficiency is a semantic property of how a tool resolves a ref against its source artifact. Negative cases are difficult to express as inline JSON because 'requires external information to resolve' is a property of the ref's interpretation, not its surface form. The positive cases below show clearly self-sufficient bindings; structural negative cases (e.g., refs that conventionally require an environment-resolved registry lookup) require harness-level interpretation of ref schemes and are not represented in this corpus.",
+  "tests": [
+    {
+      "description": "binding with self-sufficient ref into embedded source content",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "httpApi": {
+            "format": "openapi@3.1",
+            "content": {
+              "openapi": "3.1.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "paths": {
+                "/tasks": { "post": { "summary": "create" } }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding with self-sufficient JSON Pointer ref into externally located source",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding with absent ref (targets the source as a whole per the format's convention)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "rawHandle": {} },
+        "sources": {
+          "mcpServer": { "format": "mcp@2025-11-25", "location": "https://example.com/mcp" }
+        },
+        "bindings": {
+          "rawHandle.mcp": {
+            "operation": "rawHandle",
+            "source": "mcpServer"
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

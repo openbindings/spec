@@ -1,0 +1,407 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conventions/v1/schemas/report.schema.json",
+  "title": "OpenBindings comparison report (v1)",
+  "description": "Schema for ComparisonReport values emitted by the official comparison tooling and embedded as fixture expected reports.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "format_version",
+    "profile",
+    "mode",
+    "tool",
+    "generated_at",
+    "inputs",
+    "summary",
+    "operations",
+    "schemas",
+    "metadata",
+    "sources",
+    "bindings",
+    "transforms",
+    "security",
+    "suppressed"
+  ],
+  "properties": {
+    "format_version": {
+      "const": "ob-comparison-report/v1"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^OB-[0-9]{4}-[0-9]{2}@(.+|<corpus-sha>)$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["subsume", "equivalent", "identical"]
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "version": {
+          "type": "string",
+          "anyOf": [
+            {"const": "<tool.version>"},
+            {"minLength": 1}
+          ]
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "anyOf": [
+        {"const": "<generated_at>"},
+        {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"}
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "right"],
+      "properties": {
+        "left": {"$ref": "#/$defs/inputDescriptor"},
+        "right": {"$ref": "#/$defs/inputDescriptor"}
+      }
+    },
+    "summary": {"$ref": "#/$defs/summary"},
+    "operations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/operationDelta"}
+    },
+    "schemas": {"$ref": "#/$defs/deltaArray"},
+    "metadata": {"$ref": "#/$defs/deltaArray"},
+    "sources": {"$ref": "#/$defs/deltaArray"},
+    "bindings": {"$ref": "#/$defs/deltaArray"},
+    "transforms": {"$ref": "#/$defs/deltaArray"},
+    "security": {"$ref": "#/$defs/deltaArray"},
+    "suppressed": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/suppressedFinding"}
+    }
+  },
+  "$defs": {
+    "inputDescriptor": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["source", "uri", "content_sha256", "label"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["file", "url", "stdin", "registry", "git-ref"]
+        },
+        "uri": {
+          "type": "string",
+          "anyOf": [
+            {"const": "<input.left.uri>"},
+            {"const": "<input.right.uri>"},
+            {"minLength": 1}
+          ]
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "coverage", "counts", "categories"],
+      "properties": {
+        "verdict": {
+          "$ref": "#/$defs/summaryVerdict"
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["total_operations", "paired", "only_left", "only_right", "paired_via"],
+          "properties": {
+            "total_operations": {"$ref": "#/$defs/nonNegativeInteger"},
+            "paired": {"$ref": "#/$defs/nonNegativeInteger"},
+            "only_left": {"$ref": "#/$defs/nonNegativeInteger"},
+            "only_right": {"$ref": "#/$defs/nonNegativeInteger"},
+            "paired_via": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["direct", "alias", "satisfies"],
+              "properties": {
+                "direct": {"$ref": "#/$defs/nonNegativeInteger"},
+                "alias": {"$ref": "#/$defs/nonNegativeInteger"},
+                "satisfies": {"$ref": "#/$defs/nonNegativeInteger"}
+              }
+            }
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/nonNegativeInteger"}
+        },
+        "categories": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["breaking", "non_breaking", "compliance", "structural"],
+          "properties": {
+            "breaking": {"$ref": "#/$defs/nonNegativeInteger"},
+            "non_breaking": {"$ref": "#/$defs/nonNegativeInteger"},
+            "compliance": {"$ref": "#/$defs/nonNegativeInteger"},
+            "structural": {"$ref": "#/$defs/nonNegativeInteger"}
+          }
+        }
+      }
+    },
+    "operationDelta": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["status", "findings"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["paired", "only_left", "only_right"]
+        },
+        "left": {"$ref": "#/$defs/operationRef"},
+        "right": {"$ref": "#/$defs/operationRef"},
+        "match": {"$ref": "#/$defs/matchRecord"},
+        "input": {"$ref": "#/$defs/schemaCompatibility"},
+        "output": {"$ref": "#/$defs/schemaCompatibility"},
+        "findings": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/finding"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "paired"}},
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["left", "right", "match"]
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"const": "only_left"}},
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["left"],
+            "not": {
+              "anyOf": [
+                {"required": ["right"]},
+                {"required": ["match"]},
+                {"required": ["input"]},
+                {"required": ["output"]}
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"const": "only_right"}},
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["right"],
+            "not": {
+              "anyOf": [
+                {"required": ["left"]},
+                {"required": ["match"]},
+                {"required": ["input"]},
+                {"required": ["output"]}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "operationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "pointer"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pointer": {"$ref": "#/$defs/jsonPointer"}
+      }
+    },
+    "matchRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "left", "right"],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["direct", "alias", "satisfies"]
+        },
+        "left": {"type": "string"},
+        "right": {"type": "string"}
+      }
+    },
+    "schemaCompatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "direction", "reasons"],
+      "properties": {
+        "verdict": {"$ref": "#/$defs/schemaVerdict"},
+        "direction": {
+          "type": "string",
+          "enum": ["input", "output"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/findingRef"}
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["kind", "category", "severity", "location"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/kind"},
+        "category": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["breaking", "non_breaking", "compliance", "structural"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "warn", "error"]
+        },
+        "location": {"$ref": "#/$defs/location"}
+      }
+    },
+    "findingRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "pointer", "side"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/kind"},
+        "pointer": {"$ref": "#/$defs/jsonPointer"},
+        "side": {"$ref": "#/$defs/side"}
+      }
+    },
+    "suppressedFinding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["finding", "suppressed_by", "actual_severity"],
+      "properties": {
+        "finding": {"$ref": "#/$defs/finding"},
+        "suppressed_by": {"$ref": "#/$defs/suppressionRule"},
+        "actual_severity": {
+          "type": "string",
+          "enum": ["info", "warn", "error"]
+        }
+      }
+    },
+    "suppressionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/kind"},
+        "kind_prefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": ["breaking", "non_breaking", "compliance", "structural"]
+        },
+        "operation": {"type": "string"},
+        "severity_below": {
+          "type": "string",
+          "enum": ["info", "warn", "error"]
+        },
+        "pointer": {"$ref": "#/$defs/jsonPointer"},
+        "side": {"$ref": "#/$defs/side"},
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["subsume", "equivalent", "identical"]
+          },
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "until": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+        }
+      },
+      "anyOf": [
+        {"required": ["kind"]},
+        {"required": ["kind_prefix"]},
+        {"required": ["category"]},
+        {"required": ["operation"]},
+        {"required": ["severity_below"]}
+      ],
+      "not": {
+        "required": ["kind", "kind_prefix"]
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["side", "pointer"],
+      "properties": {
+        "side": {"$ref": "#/$defs/side"},
+        "pointer": {"$ref": "#/$defs/jsonPointer"},
+        "counterpart": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["side", "pointer"],
+          "properties": {
+            "side": {"$ref": "#/$defs/side"},
+            "pointer": {"$ref": "#/$defs/jsonPointer"}
+          }
+        }
+      }
+    },
+    "deltaArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "kind": {
+      "type": "string",
+      "pattern": "^([a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*){0,5}|[a-z][a-z0-9_-]*/[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*)$"
+    },
+    "jsonPointer": {
+      "type": "string",
+      "pattern": "^(/([^/~]|~0|~1)*)*$"
+    },
+    "side": {
+      "type": "string",
+      "enum": ["left", "right"]
+    },
+    "summaryVerdict": {
+      "type": "string",
+      "enum": ["compatible", "incompatible", "unverified", "indeterminate"]
+    },
+    "schemaVerdict": {
+      "type": "string",
+      "enum": ["compatible", "incompatible", "unverified", "unspecified", "identical", "indeterminate"]
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

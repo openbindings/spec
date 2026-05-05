@@ -27,9 +27,4 @@ All changes land on `main` via squash-merged PRs. No direct commits to `main`.
 
 ## Releasing a spec version
 
-1. Ensure the working draft at `openbindings.md` is ready.
-2. Copy the working draft to `versions/X.Y.Z/` as an immutable snapshot.
-3. Tag: `git tag vX.Y.Z && git push origin vX.Y.Z`.
-
-Pre-1.0, minor versions may include breaking changes to the spec. Document
-them clearly in the release notes.
+See [RELEASING.md](RELEASING.md) for the full release workflow, including what gets snapshotted and why.

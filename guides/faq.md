@@ -15,9 +15,9 @@ OpenAPI describes **how** to access a service over HTTP. gRPC describes how to c
 If your service only speaks REST and always will, OpenAPI alone is probably sufficient. OpenBindings becomes valuable when:
 
 - Your service is accessible through **multiple protocols** and you want one contract that connects them
-- You want **transport-agnostic clients** that work with operations, not protocol details. Executors handle the transport at runtime
+- You want **transport-agnostic clients** that work with operations, not protocol details. Binding invokers handle the transport at runtime
 - You want to **delegate across boundaries**: declare that your service satisfies a shared interface (a role), and any client targeting that role works with your service. The delegate pattern, across networks, protocols, and organizations.
-- You want **deterministic compatibility checking** between interface versions or across implementations
+- You want **machine-checkable conformance** across implementations, with stable rule identifiers (`OBI-D-##` for documents, `OBI-T-##` for tools) you can cite in errors, errata, and conformance claims
 
 If none of these apply, use OpenAPI directly. You can always add an OBI later; it wraps your existing specs, it doesn't replace them.
 
@@ -27,7 +27,7 @@ MCP (Model Context Protocol) defines how AI models interact with tools. An OBI c
 
 ## What does "binding-specification-agnostic" mean?
 
-The OpenBindings spec doesn't know what OpenAPI, gRPC, or any other format is. It doesn't prescribe which protocols or formats you use. Binding formats are community-driven. Anyone can create a format token and a corresponding executor without modifying the spec or core tooling.
+The OpenBindings spec doesn't know what OpenAPI, gRPC, or any other format is. It doesn't prescribe which protocols or formats you use. Binding formats are community-driven. Anyone can create a format token and a corresponding binding invoker without modifying the spec or core tooling.
 
 ## What's the difference between an operation and a binding?
 
@@ -39,21 +39,23 @@ A role is a published interface that your service can declare it satisfies. For 
 
 Roles enable composable interfaces, like traits in Rust or protocols in Swift. Your service declares which roles it plays, individual operations use `satisfies` to map to the role's operations, and clients can check conformance at runtime or build time.
 
-## What does compatibility checking do?
+## How does conformance work?
 
-OpenBindings defines deterministic, tool-independent rules for comparing two interfaces. If interface A is compatible with interface B, a client built against B can trust A's schema shapes. This is evaluated by comparing operations and schemas, not bindings. It enables automated CI validation, safe interface evolution, and confidence when swapping implementations.
+OpenBindings defines two layers of conformance with stable rule identifiers (`OBI-D-##` for document validity, `OBI-T-##` for tool behavior). A document is conformant when it satisfies the OBI-D rules; a tool is conformant when it honors the OBI-T rules for its declared conformance class (Inspection, Codegen, or Invoking). Stable rule IDs mean SDK errors, errata, and conformance reports can cite specific rules unambiguously.
 
-Compatibility checking evaluates whether schema claims are compatible. It does not guarantee runtime interoperability. An OBI is a claim about what software does, and claims can be incorrect or incomplete.
+The spec ships a conformance corpus (`conformance/`) with fixtures keyed to each rule, so tool authors can measure their implementation's conformance and report it citably. SDK authors can run the corpus against their implementation to bootstrap and regression-test conformance.
 
-## What are binding executors?
+Comparison and matching semantics — whether two interfaces are "compatible," whether one operation "satisfies" another's contract — are tool-defined, not spec-defined. Tools choose their own conventions; the openbindings reference SDKs document their specific approach in their own READMEs.
 
-A binding executor knows how to execute bindings in a specific format. Given a source (format + location), a ref within that source, and operation input, it makes the protocol-specific call and returns a stream of events. The OpenAPI executor reads your OpenAPI spec to understand endpoints and security schemes. A gRPC executor reads your proto definitions. You can build your own for any format.
+## What are binding invokers?
 
-Executors are pluggable. The developer chooses which formats to support at construction time. No unnecessary dependencies.
+A binding invoker knows how to invoke bindings in a specific format. Given a source (format + location), a ref within that source, and operation input, it makes the protocol-specific call and returns a stream of events. The OpenAPI invoker reads your OpenAPI spec to understand endpoints and security schemes. A gRPC invoker reads your proto definitions. You can build your own for any format.
+
+Binding invokers are pluggable. The developer chooses which formats to support at construction time. No unnecessary dependencies.
 
 ## Is OpenBindings production-ready?
 
-The specification is at v0.1.0, the first public release. The core concepts are stable. We welcome feedback and contributions as the ecosystem matures.
+The specification is at v0.2.0, with v0.1.0 as the first published release. The core concepts are stable; substantial scope refinement happened between 0.1 and 0.2 (see `CHANGELOG.md`). We welcome feedback and contributions as the ecosystem matures.
 
 ## How can I contribute?
 

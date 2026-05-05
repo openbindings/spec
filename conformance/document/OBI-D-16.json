@@ -1,0 +1,83 @@
+{
+  "rule": "OBI-D-16",
+  "section": "16.2",
+  "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
+  "tests": [
+    {
+      "description": "current released spec version",
+      "document": { "openbindings": "0.2.0", "operations": {} },
+      "valid": true
+    },
+    {
+      "description": "1.0.0 release version",
+      "document": { "openbindings": "1.0.0", "operations": {} },
+      "valid": true,
+      "requiresMaxTested": "1.0.0"
+    },
+    {
+      "description": "pre-release version",
+      "document": { "openbindings": "0.2.0-rc.1", "operations": {} },
+      "valid": true
+    },
+    {
+      "description": "version with build metadata",
+      "document": { "openbindings": "1.0.0+build.123", "operations": {} },
+      "valid": true,
+      "requiresMaxTested": "1.0.0"
+    },
+    {
+      "description": "pre-release combined with build metadata",
+      "document": { "openbindings": "1.0.0-alpha+build.001", "operations": {} },
+      "valid": true,
+      "requiresMaxTested": "1.0.0"
+    },
+    {
+      "description": "two-component version is not SemVer 2.0.0",
+      "document": { "openbindings": "0.2", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "four-component version is not SemVer 2.0.0",
+      "document": { "openbindings": "0.2.0.0", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "non-numeric version label",
+      "document": { "openbindings": "latest", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "version with v prefix",
+      "document": { "openbindings": "v0.2.0", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "empty string",
+      "document": { "openbindings": "", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "openbindings value is a number, not a string",
+      "document": { "openbindings": 0.2, "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "openbindings value is null",
+      "document": { "openbindings": null, "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    },
+    {
+      "description": "leading-zero pre-release identifier (forbidden by SemVer 2.0.0 §9)",
+      "document": { "openbindings": "1.0.0-01", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-D-16"]
+    }
+  ]
+}

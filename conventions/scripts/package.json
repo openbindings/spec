@@ -1,0 +1,14 @@
+{
+  "name": "ob-conventions-scripts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CI scripts for the OpenBindings comparison convention. Run via `pnpm install && pnpm verify` from this directory.",
+  "scripts": {
+    "verify": "node verify-catalog.mjs && node verify-comparison-corpus.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.6.0"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "rule": "OBI-T-04",
+  "section": "16.3",
+  "description": "Refuses documents declaring a higher major openbindings version than the tool supports. While the spec is pre-1.0 (major version 0), this refusal extends to higher minor versions, per §13.1.",
+  "notes": "Tests assume the SDK under test supports a version range bounded below `999.x` for major-version refusal cases, and bounded below `0.999.x` for pre-1.0 minor-version refusal cases. SDK conformance to OBI-T-04 is independent of which specific version the SDK supports; the test asserts the refusal behavior on documents declaring versions higher than any plausible SDK release in this version family. Lower-version cases are not tested because OBI-T-04 does not mandate a specific behavior for documents declaring a lower minor than the SDK supports.",
+  "tests": [
+    {
+      "description": "document declares the current spec version (SDK should accept assuming it supports 0.2.x)",
+      "document": { "openbindings": "0.2.0", "operations": {} },
+      "valid": true
+    },
+    {
+      "description": "document declares a major version higher than any plausible SDK supports",
+      "document": { "openbindings": "999.0.0", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-T-04"]
+    },
+    {
+      "description": "document declares a far-future major version with non-zero minor",
+      "document": { "openbindings": "999.5.0", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-T-04"]
+    },
+    {
+      "description": "pre-1.0 document declares a higher minor than any plausible SDK supports (per §13.1 finer-granularity rule)",
+      "document": { "openbindings": "0.999.0", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-T-04"]
+    },
+    {
+      "description": "pre-1.0 document declares a higher minor with a patch component",
+      "document": { "openbindings": "0.999.5", "operations": {} },
+      "valid": false,
+      "violates": ["OBI-T-04"]
+    },
+    {
+      "description": "post-1.0 forward-compat: document declares a same-major-higher-minor version (SDK supporting major 1 should accept per §13.1)",
+      "document": { "openbindings": "1.5.0", "operations": {} },
+      "valid": true,
+      "requiresMaxTested": "1.5.0"
+    }
+  ]
+}

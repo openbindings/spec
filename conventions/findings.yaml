@@ -1,0 +1,259 @@
+# OpenBindings comparison finding catalog (v1)
+# Companion to findings.md; this file is the implementation source-of-truth.
+# Go SDK, TS SDK, and the conformance corpus runner consume this file directly.
+# CI verifies findings.md and this file stay in sync.
+#
+# Schema: see comparison.md §9 for field definitions.
+
+catalog_version: v1
+convention_version: v1
+profile: OB-2020-12
+
+categories: [breaking, non_breaking, compliance, structural]
+severities: [info, warn, error]
+modes: [subsume, equivalent, identical]
+
+kinds:
+
+  # ---- Pairing kinds (findings.md §5) ----
+
+  - kind: pair.unknown_role
+    description: A satisfies claim references a role not declared in the document's roles map.
+    categories: [structural]
+    severity: error
+    modes: [all]
+
+  - kind: pair.unknown_operation
+    description: A satisfies claim references an operation not present in the role document.
+    categories: [structural]
+    severity: error
+    modes: [all]
+
+  - kind: pair.ambiguous
+    description: Multiple matching strategies produced different pairings; the engine selected the highest-priority one but the ambiguity suggests a document defect.
+    categories: [structural]
+    severity: error
+    modes: [all]
+
+  - kind: operation.added
+    description: An operation present only in the right side; the right has surface area not in the contract.
+    categories: [non_breaking]
+    severity: info
+    modes: [all]
+
+  - kind: operation.removed
+    description: An operation present only in the left side (the contract); no counterpart in the right.
+    categories: [breaking]
+    severity: error
+    modes: [all]
+
+  # ---- Subsumption kinds (findings.md §6) ----
+
+  # 6.1 Type-set
+  - { kind: type.set.narrowed,            description: "The schema's type set is strictly smaller than the contract's; values valid for the contract may be rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: type.set.widened,             description: "The schema's type set is strictly larger than the contract's; values not promised by the contract may appear.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: required.added,               description: "A required property is required by the schema but not by the contract.",                                       categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: required.removed,             description: "A property required by the contract is not required by the schema.",                                            categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: required.optional_to_required, description: "An optional property in the contract became required in the schema.",                                          categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: required.required_to_optional, description: "A required property in the contract became optional in the schema.",                                           categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: type.integer_to_number,        description: "A type widened from `integer` to `number`; non-integers may appear.",                                          categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: type.number_to_integer,        description: "A type narrowed from `number` to `integer`; floats no longer accepted.",                                       categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+
+  # 6.2 Numeric bounds
+  - { kind: numeric.minimum.tightened,        description: "A numeric `minimum` increased; values previously accepted are now rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: numeric.minimum.loosened,         description: "A numeric `minimum` decreased; new lower values are now accepted.",           categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: numeric.maximum.tightened,        description: "A numeric `maximum` decreased; values previously accepted are now rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: numeric.maximum.loosened,         description: "A numeric `maximum` increased.",                                              categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: numeric.exclusive_bound.changed,  description: "A numeric bound's exclusivity flipped (inclusive vs exclusive).",             categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: numeric.multiple_of.changed,      description: "A `multipleOf` constraint changed in a way not strictly tighter or looser.",  categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+
+  # 6.3 String bounds
+  - { kind: string.min_length.tightened,  description: "`minLength` increased; shorter strings are now rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: string.min_length.loosened,   description: "`minLength` decreased.",                                   categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: string.max_length.tightened,  description: "`maxLength` decreased; longer strings are now rejected.",  categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: string.max_length.loosened,   description: "`maxLength` increased.",                                   categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: string.pattern.added,         description: "A `pattern` constraint was added; some previously valid strings may be rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: string.pattern.removed,       description: "A `pattern` constraint was removed.",                      categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: string.pattern.modified,      description: "A `pattern` was modified to a non-equal regex; subsumption is unverified (see `unverified.regex_containment`).", categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: string.format.added,          description: "A `format` constraint was added; under format-assertion mode this restricts the value space. (Requires `--assert-format`.)", categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: string.format.removed,        description: "A `format` constraint was removed. (Requires `--assert-format`.)",                                                          categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: string.format.incompatible,   description: "A `format` value changed to a disjoint or non-subsuming format per the format vocabulary (e.g., `ipv4` → `ipv6`, `email` → `uri`). (Requires `--assert-format`.)", categories: [breaking], severity: error, modes: [subsume, equivalent] }
+
+  # 6.4 Array
+  - { kind: array.items.narrowed,         description: "The `items` schema became more restrictive; previously valid arrays may be rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.items.widened,          description: "The `items` schema became less restrictive.",                                          categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: array.prefix_items.narrowed,  description: "A `prefixItems` entry became more restrictive at a given position.",                  categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.prefix_items.widened,   description: "A `prefixItems` entry became less restrictive.",                                      categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: array.min_items.tightened,    description: "`minItems` increased.",                                                               categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.min_items.loosened,     description: "`minItems` decreased.",                                                               categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: array.max_items.tightened,    description: "`maxItems` decreased.",                                                               categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.max_items.loosened,     description: "`maxItems` increased.",                                                               categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: array.unique_items.enabled,   description: "`uniqueItems` was set to true; arrays with duplicates are now rejected.",             categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.unique_items.disabled,  description: "`uniqueItems` was set to false.",                                                     categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: array.contains.added,         description: "A `contains` constraint was added.",                                                  categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: array.contains.removed,       description: "A `contains` constraint was removed.",                                                categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+
+  # 6.5 Object
+  - { kind: object.additional_properties.disabled, description: "`additionalProperties` became `false`; previously accepted extra properties are now rejected.", categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: object.additional_properties.enabled,  description: "`additionalProperties` became `true` (or absent).",                                              categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: object.property_names.added,           description: "A `propertyNames` constraint was added.",                                                        categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: object.property_names.removed,         description: "A `propertyNames` constraint was removed.",                                                      categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: object.dependent_required.added,       description: "A `dependentRequired` constraint was added.",                                                    categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: object.dependent_required.removed,     description: "A `dependentRequired` constraint was removed.",                                                  categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: object.min_properties.tightened,       description: "`minProperties` increased.",                                                                     categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: object.min_properties.loosened,        description: "`minProperties` decreased.",                                                                     categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: object.max_properties.tightened,       description: "`maxProperties` decreased.",                                                                     categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: object.max_properties.loosened,        description: "`maxProperties` increased.",                                                                     categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+
+  # 6.6 Mode-gated
+  - kind: identical.subsumption_only
+    description: The schema is `compatible` (subsumes correctly) but not `identical` (post-normalization equivalence). Fires under `--mode=identical` to flag the failure surface that subsumption-only modes pass silently.
+    categories: [breaking]
+    severity: error
+    modes: [identical]
+
+  # 6.7 Enum / const
+  - { kind: enum.value.removed,        description: "A value was removed from an `enum`.",                                          categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: enum.value.added,          description: "A value was added to an `enum`.",                                              categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: const.changed,             description: "A `const` value changed.",                                                     categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: enum.collapsed_to_const,   description: "An `enum` of multiple values was reduced to a single-value `const`.",          categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: const.expanded_to_enum,    description: "A `const` was replaced by an `enum` containing additional values.",            categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+
+  # 6.8 Combinators
+  - { kind: oneof.pairing.failed,      description: "`oneOf` branches could not be paired by subsumption (see `unverified.combinator_pairing`).",                   categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: anyof.pairing.failed,      description: "`anyOf` branches could not be paired by subsumption.",                                                          categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: allof.branch.added,        description: "An `allOf` branch was added; the schema is strictly more constrained.",                                         categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: allof.branch.removed,      description: "An `allOf` branch was removed; the schema is less constrained.",                                                categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: not.subsumption.flipped,   description: "A `not` schema's inner subsumption is undecidable in this position; see `unverified.combinator_pairing`.",      categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+
+  # 6.9 Conditionals
+  - { kind: conditional.if.differs,        description: "The `if` schemas of two conditionals are not byte-identical; subsumption is unverified (see `unverified.conditional_not_byte_equal`).",  categories: [non_breaking], severity: warn,  modes: [subsume, equivalent] }
+  - { kind: conditional.then.incompatible, description: "When the `if` schemas match, the `then` branches are incompatible.",                       categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+  - { kind: conditional.else.incompatible, description: "When the `if` schemas match, the `else` branches are incompatible.",                       categories: [breaking],     severity: error, modes: [subsume, equivalent] }
+
+  # 6.10 Unverified outcomes (severity escalates to error under --strict-undecidable)
+  - { kind: unverified.external_ref,                description: "Subsumption depends on a `$ref` the engine did not resolve (external document).",                                      categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.cycle_depth,                 description: "Subsumption traversal hit the cycle-depth bound without resolving.",                                                  categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.regex_containment,           description: "Pattern subsumption beyond byte-equality is not decided by the profile.",                                              categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.combinator_pairing,          description: "`oneOf` / `anyOf` branches could not be paired soundly.",                                                              categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.conditional_not_byte_equal,  description: "`if`/`then`/`else` schemas with non-byte-equal `if` schemas.",                                                         categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.dynamic_ref_external,        description: "A `$dynamicRef` resolves outside the current document.",                                                                categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+  - { kind: unverified.unsupported_keyword,         description: "The schema uses a keyword the profile does not recognize.",                                                            categories: [non_breaking], severity: warn, modes: [subsume, equivalent] }
+
+  # ---- Structural-change kinds (findings.md §7) ----
+
+  # 7.1 Field-level
+  - { kind: field.added,                      description: "A field was added to the schema.",                                                                                                              categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: field.removed,                    description: "A field was removed from the schema.",                                                                                                          categories: [breaking],     severity: error, modes: [all] }
+  - { kind: field.deprecated.changed,    description: "The `deprecated` flag changed on a field.",                                                                                                    categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: field.default.changed,            description: "A `default` value changed.",                                                                                                                   categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: metadata.changed,                 description: "A purely descriptive metadata value changed (description, title, examples, comment, tags, or other annotation-only keyword). The pointer identifies which field changed; `before`/`after` carry the values.", categories: [structural], severity: info,  modes: [all] }
+
+  # 7.2 Schema-map
+  - { kind: schema.added,                     description: "A top-level `schemas` entry was added.",                                                                                                        categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: schema.removed,                   description: "A top-level `schemas` entry was removed.",                                                                                                      categories: [breaking],     severity: error, modes: [all] }
+
+  # 7.3 Source
+  - { kind: source.added,                     description: "A `sources` entry was added.",                                                                                                                  categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: source.removed,                   description: "A `sources` entry was removed; bindings referencing it would break.",                                                                           categories: [breaking],     severity: error, modes: [all] }
+  - { kind: source.location.changed,          description: "A source's `location` URI changed.",                                                                                                            categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: source.format.changed,            description: "A source's `format` token changed.",                                                                                                            categories: [breaking],     severity: error, modes: [all] }
+  - { kind: source.content.changed,           description: "A source's inline `content` was modified.",                                                                                                     categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: source.priority.changed,          description: "A source's `priority` changed; binding selection ordering may shift.",                                                                          categories: [non_breaking], severity: warn,  modes: [all] }
+
+  # 7.4 Binding
+  - { kind: binding.added,                        description: "A `bindings` entry was added.",                                  categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: binding.removed,                      description: "A `bindings` entry was removed.",                                categories: [breaking],     severity: error, modes: [all] }
+  - { kind: binding.ref.changed,                  description: "A binding's `ref` was changed.",                                 categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.source.changed,               description: "A binding's `source` reference was changed.",                    categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.security.changed,             description: "A binding's `security` reference was changed.",                  categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.input_transform.changed,      description: "A binding's `inputTransform` was changed.",                      categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.output_transform.changed,     description: "A binding's `outputTransform` was changed.",                     categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.priority.changed,             description: "A binding's `priority` value changed; affects selection order when multiple bindings match.", categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: binding.deprecated.changed,           description: "A binding's `deprecated` flag changed.",                         categories: [non_breaking], severity: warn,  modes: [all] }
+
+  # 7.5 Transform
+  - { kind: transform.added,                  description: "A `transforms` entry was added.",                  categories: [non_breaking], severity: info, modes: [all] }
+  - { kind: transform.removed,                description: "A `transforms` entry was removed.",                categories: [non_breaking], severity: warn, modes: [all] }
+  - { kind: transform.expression.changed,     description: "A transform's JSONata expression was modified.",   categories: [non_breaking], severity: warn, modes: [all] }
+
+  # 7.6 Security (always-compliance)
+  - { kind: security.entry.added,                       description: "A `security` entry was added.",                                                  categories: [non_breaking, compliance], severity: info,  modes: [all] }
+  - { kind: security.entry.removed,                     description: "A `security` entry was removed.",                                                categories: [breaking, compliance],     severity: error, modes: [all] }
+  - { kind: security.method.type.changed,               description: "A security method's `type` changed (e.g., `bearer` to `oauth2`).",               categories: [breaking, compliance],     severity: error, modes: [all] }
+  - { kind: security.method.scopes.changed,             description: "A security method's OAuth2 scopes changed.",                                     categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+  - { kind: security.method.authorize_url.changed,      description: "A security method's `authorizeUrl` changed.",                                    categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+  - { kind: security.method.token_url.changed,          description: "A security method's `tokenUrl` changed.",                                        categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+  - { kind: security.method.client_id.changed,          description: "A security method's `clientId` changed.",                                        categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+  - { kind: security.method.api_key_name.changed,       description: "A `type: apiKey` method's `name` field changed.",                                categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+  - { kind: security.method.api_key_in.changed,         description: "A `type: apiKey` method's `in` field changed (header/query/cookie).",            categories: [breaking, compliance],     severity: error, modes: [all] }
+  - { kind: security.method.added,                      description: "A new security method was added to an existing security entry's preference array.", categories: [non_breaking, compliance], severity: info,  modes: [all] }
+  - { kind: security.method.removed,                    description: "A security method was removed from an existing security entry's preference array.", categories: [breaking, compliance],     severity: error, modes: [all] }
+  - { kind: security.method.reordered,                  description: "The preference order of methods within a security entry's array changed.",       categories: [non_breaking, compliance], severity: warn,  modes: [all] }
+
+  # 7.7 Operation-level
+  - { kind: operation.aliases.changed,        description: "An operation's `aliases` array changed.",      categories: [non_breaking], severity: warn, modes: [all] }
+  - { kind: operation.satisfies.changed,      description: "An operation's `satisfies` claims changed.",   categories: [non_breaking], severity: warn, modes: [all] }
+  - { kind: operation.idempotent.changed,     description: "An operation's `idempotent` flag changed.",    categories: [non_breaking], severity: warn, modes: [all] }
+
+  # 7.8 Operation declaration transitions
+  - { kind: operation.input.declared,         description: "The `input` field was added (absent → declared).",                                                                            categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: operation.input.undeclared,       description: "The `input` field was removed (declared → absent).",                                                                          categories: [breaking],     severity: error, modes: [all] }
+  - { kind: operation.input.null_to_schema,   description: "`input: null` (no inputs accepted) became a schema.",                                                                         categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: operation.input.schema_to_null,   description: "A schema became `input: null`.",                                                                                              categories: [breaking],     severity: error, modes: [all] }
+  - { kind: operation.output.declared,        description: "The `output` field was added.",                                                                                               categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: operation.output.undeclared,      description: "The `output` field was removed.",                                                                                             categories: [breaking],     severity: error, modes: [all] }
+  - { kind: operation.output.null_to_schema,  description: "`output: null` (no output emitted) became a schema; consumers may ignore the new data.",                                     categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: operation.output.schema_to_null,  description: "A schema became `output: null`.",                                                                                              categories: [breaking],     severity: error, modes: [all] }
+  - { kind: operation.deprecated.changed,     description: "An operation's `deprecated` flag changed.",                                                                                   categories: [non_breaking], severity: warn,  modes: [all] }
+
+  # 7.9 Top-level metadata
+  - { kind: metadata.name.changed,                    description: "The document's `name` changed.",                                       categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: metadata.openbindings_version.changed,    description: "The document's `openbindings` (spec version) field changed.",         categories: [non_breaking], severity: warn,  modes: [all] }
+  - { kind: roles.entry.added,                        description: "A `roles` entry was added.",                                           categories: [non_breaking], severity: info,  modes: [all] }
+  - { kind: roles.entry.removed,                      description: "A `roles` entry was removed.",                                         categories: [breaking],     severity: error, modes: [all] }
+  - { kind: roles.entry.changed,                      description: "A `roles` entry's URI changed.",                                       categories: [non_breaking], severity: warn,  modes: [all] }
+
+  # 7.10 Extensions
+  - { kind: extension.added,                  description: "An `x-*` extension field was added at this position.",                                       categories: [structural],               severity: info, modes: [all] }
+  - { kind: extension.removed,                description: "An `x-*` extension field was removed.",                                                       categories: [structural],               severity: info, modes: [all] }
+  - { kind: extension.changed,                description: "An `x-*` extension field's value changed.",                                                   categories: [structural],               severity: info, modes: [all] }
+  - { kind: extension.policy.added,           description: "A `x-policy-*` extension field was added; compliance review warranted.",                      categories: [non_breaking, compliance], severity: warn, modes: [all] }
+  - { kind: extension.policy.removed,         description: "A `x-policy-*` extension field was removed.",                                                 categories: [non_breaking, compliance], severity: warn, modes: [all] }
+  - { kind: extension.policy.changed,         description: "A `x-policy-*` extension field's value changed.",                                             categories: [non_breaking, compliance], severity: warn, modes: [all] }
+
+  # ---- Profile / engine kinds (findings.md §8) ----
+
+  - { kind: profile.schema.invalid_type_array,        description: "A schema declares `type` as an empty array or contains a non-2020-12 value.",                                                                                  categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.schema.not_2020_12,               description: "A schema does not conform to JSON Schema 2020-12 (e.g., uses draft-04 boolean exclusiveMinimum).",                                                              categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.schema.unsupported_keyword,       description: "A schema uses a keyword the profile does not understand; subsumption may be incomplete.",                                                                       categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.schema.profile_version_mismatch,  description: "One side declares a JSON Schema dialect not supported by the OB-2020-12 profile.",                                                                              categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.ref.resolution_failed,            description: "A `$ref` could not be resolved; subsumption was abandoned for that branch.",                                                                                    categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.ref.cycle_depth_exceeded,         description: "Reference traversal exceeded the cycle-depth bound.",                                                                                                            categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.schema.vocabulary_present,        description: "A schema declares `$vocabulary` (forbidden by OBI-D-08).",                                                                                                       categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.suppressions.rule_expired,        description: "A suppression rule's `until:` timestamp has passed; the rule is not applied.",                                                                                  categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.format_version_mismatch,          description: "A consumer is reading a report whose `format_version` differs from the consumer's expected version; best-effort interpretation may be lossy.",                  categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.policy.tag_unknown,               description: "A `--policy=<file>` declared a tag the catalog's activation map does not recognize; the tag is preserved but does not activate any compliance dimension.",      categories: [structural], severity: info,  modes: [all] }
+  - { kind: profile.kind_unknown,                     description: "A finding's `kind` slug is not in the catalog and does not carry a recognized vendor namespace; consumers see the kind verbatim and SHOULD treat severity as `info`.", categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.timeout_exceeded,                 description: "Comparison run hit the configured timeout; the report's verdict is `unverified` for any operation not yet fully evaluated.",                                       categories: [structural], severity: warn,  modes: [all] }
+  - { kind: profile.alias.cycle,                      description: "A graph cycle was detected during alias-based operation pairing or `satisfies` resolution; the affected branch is not paired.",                                     categories: [structural], severity: error, modes: [all] }
+  - { kind: profile.kind_translated,                  description: "A suppression rule referenced a kind that was translated via the catalog's top-level `aliases:` table; the new slug applies.",                                      categories: [structural], severity: info,  modes: [all] }
+
+# Compliance activation map (findings.md §9)
+# Tag-driven: kind activates `compliance` when the affected field has the tag.
+compliance_activation:
+  field.added:                        any_x_policy
+  field.removed:                      any_x_policy
+  required.added:                     x-policy-sensitive
+  required.required_to_optional:      x-policy-sensitive
+  string.pattern.added:                x-policy-sensitive
+  string.pattern.removed:              x-policy-sensitive
+  enum.value.removed:                  x-policy-sensitive
+  enum.value.added:                    x-policy-sensitive
+
+# Slug-rename aliases. Empty at v1; populated when a kind is renamed in a
+# minor catalog bump. Map old slug → current slug. Entries are preserved
+# indefinitely; consumers using a legacy slug receive a `profile.kind_translated`
+# info finding plus the translated behavior.
+aliases: {}
+

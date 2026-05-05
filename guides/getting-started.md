@@ -26,12 +26,12 @@ ob demo
 
 Leave that running and open a second terminal.
 
-## Execute an operation
+## Invoke an operation
 
 You can point `ob` directly at a running service. No need to download anything first:
 
 ```bash
-ob op exec http://localhost:8080 getMenu
+ob op invoke http://localhost:8080 getMenu
 ```
 
 That returned the menu. But how? The CLI fetched the OBI from `localhost:8080/.well-known/openbindings`, found the `getMenu` operation, selected the highest-priority binding (REST in this case), read the OpenAPI source to know the HTTP method and path, and made the call.
@@ -39,7 +39,7 @@ That returned the menu. But how? The CLI fetched the OBI from `localhost:8080/.w
 Now run the same operation over gRPC:
 
 ```bash
-ob op exec http://localhost:8080 --binding getMenu.grpc
+ob op invoke http://localhost:8080 --binding getMenu.grpc
 ```
 
 Same operation, same result, different protocol. This time the CLI selected the gRPC binding, read the proto definition from the gRPC source, and called the service using the gRPC protocol instead. The operation contract didn't change. Only the binding did.
@@ -47,23 +47,23 @@ Same operation, same result, different protocol. This time the CLI selected the 
 Try placing an order:
 
 ```bash
-ob op exec http://localhost:8080 placeOrder \
+ob op invoke http://localhost:8080 placeOrder \
   --input '{"drink": "Schema Latte", "size": "v2", "customer": "Alice"}'
 ```
 
 And stream live order updates over SSE:
 
 ```bash
-ob op exec http://localhost:8080 orderUpdates
+ob op invoke http://localhost:8080 orderUpdates
 ```
 
 You can also save the interface locally with `ob fetch localhost:8080` and work against the file instead of the URL. Either way works.
 
 ## How that worked
 
-The demo server publishes a single OBI that wires five operations to six protocol sources. Each binding maps an operation to a specific entry point in a source. The source declares its format (`openapi@3.1`, `grpc`, etc.) and location. When you run `ob op exec`, the CLI selects a binding, resolves its source, and hands off to a format-aware **binding executor** that knows how to speak that protocol.
+The demo server publishes a single OBI that wires five operations to six protocol sources. Each binding maps an operation to a specific entry point in a source. The source declares its format (`openapi@3.1`, `grpc`, etc.) and location. When you run `ob op invoke`, the CLI selects a binding, resolves its source, and hands off to a format-aware **binding invoker** that knows how to speak that protocol.
 
-The OBI doesn't implement protocol logic. It just tells binding executors where to look. See [Creators and Executors](creators-and-executors.md) and [Interface Client](interface-client.md) for more on how this works.
+The OBI doesn't implement protocol logic. It just tells binding invokers where to look. See [Creators and Invokers](creators-and-invokers.md) and [Interface Client](interface-client.md) for more on how this works.
 
 This is the core idea behind OpenBindings:
 
@@ -75,11 +75,11 @@ Operations define meaning. Bindings define access. Change one without touching t
 
 ## What an OBI looks like
 
-An OBI is just JSON (or YAML). You can write one by hand, generate one with `ob create`, or edit an existing one in any text editor. Here's a minimal interface for an echo service with one operation and one REST binding:
+An OBI is just JSON. You can write one by hand, generate one with `ob create`, or edit an existing one in any text editor. Here's a minimal interface for an echo service with one operation and one REST binding:
 
 ```json
 {
-  "openbindings": "0.1.0",
+  "openbindings": "0.2.0",
   "name": "Echo Service",
   "version": "1.0.0",
   "operations": {
@@ -136,14 +136,13 @@ This reads the spec, extracts operations, and produces a starting point. You can
 | **Source** | A reference to a binding artifact, identified by format and location. |
 | **Binding** | A mapping from an operation to a specific entry point in a source. |
 | **Interface** | The full OBI document: operations, schemas, sources, and bindings together. |
-| **Binding executor** | A format-aware component that knows how to execute bindings in a specific protocol (OpenAPI, gRPC, etc.). |
+| **Binding invoker** | A format-aware component that knows how to invoke bindings in a specific protocol (OpenAPI, gRPC, etc.). |
 | **Role** | A published interface that other services can declare they satisfy, like a trait or protocol. |
 | **Discovery** | Services publish their OBI at `/.well-known/openbindings` so tools can find them automatically. |
 
 ## Next steps
 
 - [Read the full specification](../openbindings.md) for normative details
-- [Explore the ob CLI](cli.md) for the complete command reference
 - [Browse examples](../examples/) to see real-world OBIs
 - [Download the JSON Schema](../openbindings.schema.json) for editor validation
 - [Join the community](https://github.com/openbindings/spec/discussions) to contribute and discuss

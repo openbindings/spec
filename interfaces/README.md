@@ -12,10 +12,11 @@ This directory contains **unbound OpenBindings interfaces** published by the Ope
 Each interface lives in its own directory with versioned files following the spec's guidance that published interfaces SHOULD use versioned URLs (major.minor as the version segment, since patch versions should not change the contract).
 
 - `openbindings.software-descriptor/0.1.json` — base software descriptor contract. Defines the canonical `getInfo` operation and `SoftwareInfo` schema for self-identifying software in the OpenBindings ecosystem.
-- `openbindings.binding-executor/0.1.json` — binding executor contract. Defines `listFormats` and `executeBinding` for components that execute bindings in specific formats (OpenAPI, AsyncAPI, gRPC, MCP, etc.).
+- `openbindings.binding-invoker/0.1.json` — binding invoker contract. Defines `listFormats` and `invokeBinding` for components that invoke bindings in specific formats (OpenAPI, AsyncAPI, gRPC, MCP, etc.).
 - `openbindings.interface-creator/0.1.json` — interface creator contract. Defines `listFormats` and `createInterface` for components that produce OBIs from existing binding artifacts.
+- `openbindings.source-inspector/0.1.json` — source inspector contract. Defines `listFormats` and `inspectSource` for components that inspect binding artifacts and return bindable targets before an OBI is created.
 - `openbindings.context-store/0.1.json` — context store contract. Defines CRUD operations for managing stored credentials and runtime context, keyed by normalized API origin.
-- `openbindings.host/0.1.json` — host contract. A composed interface that satisfies `software-descriptor`, `binding-executor`, `interface-creator`, and `context-store`, plus host-specific operations like `resolveInterface`.
+- `openbindings.host/0.1.json` — host contract. A composed interface that satisfies `software-descriptor`, `binding-invoker`, `interface-creator`, and `context-store`, plus host-specific operations like `resolveInterface`.
 - `openbindings.http-client/0.1.json` — HTTP client contract. Defines a `request` operation for making HTTP requests on behalf of callers that cannot make direct requests due to platform constraints (browser CSP/CORS, network restrictions, etc.).
 
 ## Authoring conventions
@@ -28,11 +29,11 @@ Schemas used as operation **outputs** (or nested inside output schemas) SHOULD N
 
 Schemas used as operation **inputs** MAY use `additionalProperties: false` when the role wants to forbid unknown caller arguments (the typical RPC-style case). Strict input validation catches typos in caller code without affecting evolution: adding a field to an input schema in a future version is symmetric to a CALLER change, which is acceptable.
 
-The OIDC provider role is a special case: it mirrors externally-defined OIDC schemas where strict field sets are part of the upstream contract.
+Some roles that mirror externally-defined schemas (e.g., OIDC) may use strict field sets where the upstream contract requires them.
 
 ### Schemas are intentionally self-contained per role
 
-Each role interface in this directory is a self-contained document. Schemas are defined locally in each file rather than referenced across files via `$ref`, even when sibling roles use the same shape (e.g., `FormatInfo` appears in `binding-executor.json`, `interface-creator.json`, and `host.json`).
+Each role interface in this directory is a self-contained document. Schemas are defined locally in each file rather than referenced across files via `$ref`, even when sibling roles use the same shape (e.g., `FormatInfo` appears in `openbindings.binding-invoker/0.1.json`, `openbindings.interface-creator/0.1.json`, and `openbindings.host/0.1.json`).
 
 The OpenBindings spec does not normatively define cross-document `$ref` resolution between role interface files. Self-containment means a tool can read and validate any one role file without resolving external references.
 

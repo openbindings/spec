@@ -2,7 +2,7 @@
 
 **Status**: Released as part of OpenBindings v0.1.0.
 
-This document defines the `openbindings.operation-graph` binding source format. It is a companion specification to the [OpenBindings Specification](../../openbindings.md) and depends on concepts defined there (operations, sources, bindings, transforms).
+This document defines the `openbindings.operation-graph` binding source format. It is a companion specification to the [OpenBindings Specification v0.1.0](../../versions/0.1.0/openbindings.md) and depends on concepts defined there (operations, sources, bindings, transforms).
 
 This format is versioned independently via its format token (`openbindings.operation-graph@<version>`).
 
@@ -195,7 +195,7 @@ Two mechanisms are available (mutually exclusive):
 }
 ```
 
-- `schema` (object): a JSON Schema. The event is validated against it. If the event validates, it passes; otherwise it is dropped. For interoperability, filter schemas SHOULD use the keyword subset defined in the [core specification's schema comparison profile](../../openbindings.md#supported-keyword-subset). Implementations MAY support additional JSON Schema keywords for filter validation.
+- `schema` (object): a [JSON Schema 2020-12](../../versions/0.1.0/openbindings.md#json-schema-dialect) object. The event is validated against it. If the event validates, it passes; otherwise it is dropped.
 
 **Expression-based filter:**
 
@@ -206,7 +206,7 @@ Two mechanisms are available (mutually exclusive):
 }
 ```
 
-- `transform` (object): a [Transform](#transforms) object as defined in the core OpenBindings specification. The expression is evaluated with the event as `$` and the operation graph's original input as `$input`. If the expression evaluates to a truthy value, the event passes; otherwise it is dropped.
+- `transform` (object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the event as `$` and the operation graph's original input as `$input`. If the expression evaluates to a truthy value, the event passes; otherwise it is dropped.
 
 A filter MUST have exactly one of `schema` or `transform`.
 
@@ -224,7 +224,7 @@ A filter MUST have exactly one of `schema` or `transform`.
 
 Reshapes events using a transform expression.
 
-- `transform` (REQUIRED, object): a [Transform](#transforms) object as defined in the core OpenBindings specification. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The expression's result replaces the event and flows downstream.
+- `transform` (REQUIRED, object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The expression's result replaces the event and flows downstream.
 
 ### `map`
 
@@ -240,7 +240,7 @@ Reshapes events using a transform expression.
 
 Unpacks an array into individual events. The transform expression is evaluated against the incoming event and MUST produce an array. Each element of the array is emitted as a separate event downstream.
 
-- `transform` (REQUIRED, object): a [Transform](#transforms) object. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The result MUST be an array; if it is not, the node fails with `map_not_array`.
+- `transform` (REQUIRED, object): a typed [Transform](#transforms) object as defined in this document. The expression is evaluated with the incoming event as `$` and the operation graph's original input as `$input`. The result MUST be an array; if it is not, the node fails with `map_not_array`.
 
 This enables patterns like "fetch a list of IDs, then process each one":
 
@@ -300,13 +300,13 @@ Use cases:
 
 ### Transforms
 
-Wherever a node embeds a dynamic expression, it uses the core OpenBindings specification's Transform model: an object with `type` (the transform language identifier) and `expression` (the expression string). Tools claiming `openbindings.operation-graph@0.1` conformance MUST support transforms with `type` set to `"jsonata"`. Nodes that use transforms with an unsupported `type` are unresolvable; operation graphs containing unresolvable nodes are not actionable.
+Wherever a node embeds a dynamic expression, it uses a typed transform object: an object with `type` (the transform language identifier) and `expression` (the expression string). Tools claiming `openbindings.operation-graph@0.1.0` conformance MUST support transforms with `type` set to `"jsonata"`. Nodes that use transforms with an unsupported `type` are unresolvable; operation graphs containing unresolvable nodes are not actionable.
 
 ```json
 { "type": "jsonata", "expression": "..." }
 ```
 
-This object is embedded on nodes via a field named `transform`. See the [core specification](../../openbindings.md#transform-definition) for the full Transform definition.
+This typed-object shape follows the [core specification v0.1.0 Transform definition](../../versions/0.1.0/openbindings.md#transform-definition). Operation graph transforms embed the same shape directly on graph nodes.
 
 If a transform expression evaluates to `undefined` (no result), the node fails. If it evaluates to `null`, the event becomes `null` and flows downstream normally. This applies to all nodes that use transforms (`transform`, `map`, `filter`).
 
@@ -404,7 +404,7 @@ Implementations MUST enforce the following well-formedness rules on operation gr
 
 ## Extensions
 
-Operation graph source documents follow the same extension convention as the [core OpenBindings specification](../../openbindings.md#extensions-x--fields):
+Operation graph source documents follow the same extension convention as the [core OpenBindings specification v0.1.0](../../versions/0.1.0/openbindings.md#extensions-x--fields):
 
 - Documents MAY include extension fields whose keys begin with `x-` at any object location (top-level, on graphs, on nodes, on edges).
 - Tools MUST ignore `x-` fields they do not understand.
@@ -748,7 +748,7 @@ This example makes any operation failure terminate the operation graph.
 
 ## Security considerations
 
-Operation graphs inherit the security considerations defined in the [core OpenBindings specification](../../openbindings.md#security-considerations), including transform evaluation sandboxing, artifact fetching restrictions, and schema processing limits. Operation-graph-specific concerns:
+Operation graphs inherit the security considerations defined in the [core OpenBindings specification v0.1.0](../../versions/0.1.0/openbindings.md#security-considerations), including transform evaluation sandboxing, artifact fetching restrictions, and schema processing limits. Operation-graph-specific concerns:
 
 - **Event amplification**: `map` nodes convert one event into many. Combined with cycles, a small input can produce a large number of operation invocations. A `map` inside a cycle is the primary amplification vector: if the map produces N events per iteration and `maxIterations` is M, the total can reach N^M events. Implementations SHOULD enforce a maximum total event count per operation graph execution and terminate with an error when the limit is exceeded.
 - **Cycle amplification**: fan-out within a cycle multiplies events per iteration. `maxIterations` bounds per-lineage traversals but does not bound total event count if fan-out occurs within the cycle.

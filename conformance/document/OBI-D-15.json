@@ -1,0 +1,224 @@
+{
+  "rule": "OBI-D-15",
+  "section": "16.2",
+  "description": "Has every example's provided input validating against its operation's input schema, and every example's provided output validating against its operation's output schema, when the respective schema is specified.",
+  "tests": [
+    {
+      "description": "example input validates against specified input schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": { "title": { "type": "string" } },
+              "required": ["title"]
+            },
+            "examples": {
+              "happy": { "input": { "title": "Buy milk" } }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example output validates against specified output schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "output": {
+              "type": "object",
+              "properties": { "id": { "type": "string" } },
+              "required": ["id"]
+            },
+            "examples": {
+              "happy": { "output": { "id": "abc123" } }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example with neither input nor output present (no validation required)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": { "type": "object" },
+            "output": { "type": "object" },
+            "examples": {
+              "minimal": { "description": "purely descriptive example" }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example input present but operation input schema unspecified (no validation required)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "examples": {
+              "raw": { "input": { "anything": "goes" } }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example input violates required field of operation input schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": { "title": { "type": "string" } },
+              "required": ["title"]
+            },
+            "examples": {
+              "broken": { "input": {} }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-15"]
+    },
+    {
+      "description": "example output type does not match operation output schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "output": {
+              "type": "object",
+              "properties": { "id": { "type": "string" } },
+              "required": ["id"]
+            },
+            "examples": {
+              "broken": { "output": { "id": 123 } }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-15"]
+    },
+    {
+      "description": "example input wrong type for operation input schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": { "title": { "type": "string" } }
+            },
+            "examples": {
+              "broken": { "input": { "title": 42 } }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-15"]
+    },
+    {
+      "description": "example input matches operation input schema reached via $ref into the schemas map",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "TaskInput": {
+            "type": "object",
+            "properties": { "title": { "type": "string" } },
+            "required": ["title"]
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/schemas/TaskInput" },
+            "examples": {
+              "happy": { "input": { "title": "Buy milk" } }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example output matches operation output schema reached via $ref into the schemas map",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": { "id": { "type": "string" } },
+            "required": ["id"]
+          }
+        },
+        "operations": {
+          "createTask": {
+            "output": { "$ref": "#/schemas/Task" },
+            "examples": {
+              "happy": { "output": { "id": "abc123" } }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "example input violates required field of operation input schema reached via $ref",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "TaskInput": {
+            "type": "object",
+            "properties": { "title": { "type": "string" } },
+            "required": ["title"]
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/schemas/TaskInput" },
+            "examples": {
+              "broken": { "input": {} }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-15"]
+    },
+    {
+      "description": "example output type does not match operation output schema reached via $ref",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": { "id": { "type": "string" } },
+            "required": ["id"]
+          }
+        },
+        "operations": {
+          "createTask": {
+            "output": { "$ref": "#/schemas/Task" },
+            "examples": {
+              "broken": { "output": { "id": 123 } }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-15"]
+    }
+  ]
+}

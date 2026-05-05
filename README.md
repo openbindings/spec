@@ -21,7 +21,7 @@
 
 ## What is OpenBindings?
 
-OpenBindings defines a standard way to describe **what a service does** — its operations, schemas, and compatibility guarantees — separately from **how you access it**.
+OpenBindings defines a standard way to describe **what a service does** — its operations, schemas, and bindings — separately from **how you access it**.
 
 A single OpenBindings Interface (OBI) can reference bindings in OpenAPI, AsyncAPI, MCP, gRPC, or any other binding specification, without redefining the contract for each one.
 
@@ -49,22 +49,15 @@ A single OpenBindings Interface (OBI) can reference bindings in OpenAPI, AsyncAP
 
 ## Read the spec
 
-The spec defines what an OBI document **is**: its shape, identity, discovery, reference resolution, and versioning. It deliberately does not define how tools should compare OBIs, derive verdicts, execute transforms, or resolve security methods. Those are tool concerns.
+The spec defines what an OBI document **is**: its shape, identity, discovery, reference resolution, and versioning. It defines the transform language (JSONata 2.0) for tools that evaluate transforms, but deliberately does not define comparison semantics, matching strategies, security method resolution, or the surrounding transform runtime (sandboxing, error handling, resource limits). Those are tool concerns; the official tooling's answers live under `conventions/`.
 
 **Core specification.** The documents below define what an OBI document is. The spec is self-contained and does not reference the reference-tooling material below.
 
 | Document                                               | Description                              |
 | ------------------------------------------------------ | ---------------------------------------- |
-| [`openbindings.md`](openbindings.md)                   | OBI spec (working draft toward 0.2.0)    |
+| [`openbindings.md`](openbindings.md)                   | OBI spec (v0.2.0)                         |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for OBI document validation  |
 | [`versions/0.1.0/`](versions/0.1.0/)                   | v0.1.0 release snapshot                  |
-
-**Reference tooling (non-normative).** The documents below describe the openbindings project's reference-tool behavior — what the `ob` CLI, `openbindings-go`, `openbindings-ts`, and future official tools do with OBI documents. They are NOT part of the OBI spec; a tool is spec-conformant regardless of whether it follows these conventions. They exist as an alignment target for third-party tools that want to interoperate with the project's reference tooling.
-
-| Document                                   | Description                                                                |
-| ------------------------------------------ | -------------------------------------------------------------------------- |
-| [`reference.md`](reference.md)             | Reference-tool behaviors (comparison, transforms, auth, matching, etc.)    |
-| [`reference-tests/`](reference-tests/)     | Test fixtures exercising the behaviors in `reference.md`                   |
 
 ## Ecosystem
 
@@ -72,18 +65,18 @@ The spec defines what an OBI document **is**: its shape, identity, discovery, re
 
 | Repository                                                                      | Description                                              |
 | ------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading, writing, and executing OBI documents |
+| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading, writing, and invoking OBI documents |
 | [openbindings/openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo (core SDK + format packages)     |
 
 **CLI**
 
 | Repository                                            | Description                                                                |
 | ----------------------------------------------------- | -------------------------------------------------------------------------- |
-| [openbindings/ob](https://github.com/openbindings/ob) | `ob` -- the OpenBindings CLI for creating, executing, and serving OBIs. Ships with a built-in multi-protocol demo (`ob demo`). |
+| [openbindings/ob](https://github.com/openbindings/ob) | `ob` -- the OpenBindings CLI for creating, invoking, and serving OBIs. Ships with a built-in multi-protocol demo (`ob demo`). |
 
 **Binding format libraries**
 
-Format libraries implement binding execution and interface creation for specific binding specifications. They live inside the SDK repos as subpackages.
+Format libraries implement binding invocation and interface creation for specific binding specifications. They live inside the SDK repos as subpackages.
 
 | Package (Go)                          | Package (TypeScript)         | Format token                         |
 | ------------------------------------- | ---------------------------- | ------------------------------------ |
@@ -102,9 +95,9 @@ Format libraries implement binding execution and interface creation for specific
 ```
 openbindings.md              OBI specification
 openbindings.schema.json     JSON Schema for OBI documents
+conformance/                 Conformance test corpus + reference Go runner
+conventions/                 Official tooling conventions (comparison, findings catalog)
 versions/                    Immutable released snapshots of the spec
-reference.md                 Reference-tool behaviors (non-normative)
-reference-tests/             Test fixtures for reference-tool behaviors (non-normative)
 interfaces/                  Standard OBI interfaces published by the project
 examples/                    Spec examples
 formats/                     Binding format specifications (e.g., operation-graph)

@@ -1,14 +1,8 @@
 {
-    "openbindings": "0.1.0",
+    "openbindings": "0.2.0",
     "name": "OpenBindings Host",
     "version": "0.1.0",
-    "description": "Interface for an OpenBindings host — a remote service that provides binding execution, interface resolution, context management, and format discovery. Clients connect to a host for infrastructure capabilities that complement browser-side or local execution. A host composes the binding-executor, interface-creator, context-store, and software-descriptor roles, and adds host-specific operations like interface resolution.",
-    "roles": {
-        "openbindings.software-descriptor": "../openbindings.software-descriptor/0.1.json",
-        "openbindings.context-store": "../openbindings.context-store/0.1.json",
-        "openbindings.binding-executor": "../openbindings.binding-executor/0.1.json",
-        "openbindings.interface-creator": "../openbindings.interface-creator/0.1.json"
-    },
+    "description": "Interface for an OpenBindings host — a remote service that provides binding invocation, interface resolution, context management, and format discovery. Clients connect to a host for infrastructure capabilities that complement browser-side or local execution. A host composes the binding-invoker, interface-creator, context-store, and software-descriptor roles, and adds host-specific operations like interface resolution.",
     "schemas": {
         "SoftwareInfo": {
             "type": "object",
@@ -143,7 +137,7 @@
             "description": "A valid OpenBindings interface document.",
             "additionalProperties": true
         },
-        "ExecuteSource": {
+        "InvokeSource": {
             "type": "object",
             "description": "Binding source for execution.",
             "properties": {
@@ -178,10 +172,10 @@
         },
         "BindingContext": {
             "type": "object",
-            "description": "Opaque runtime context for binding execution. Well-known fields include 'bearerToken', 'apiKey', 'basic'.",
+            "description": "Opaque runtime context for binding invocation. Well-known fields include 'bearerToken', 'apiKey', 'basic'.",
             "additionalProperties": true
         },
-        "ExecutionOptions": {
+        "InvocationOptions": {
             "type": "object",
             "description": "Developer-supplied per-request execution options.",
             "properties": {
@@ -210,12 +204,12 @@
             },
             "additionalProperties": false
         },
-        "ExecuteBindingInput": {
+        "InvokeBindingInput": {
             "type": "object",
             "description": "Input for executing a resolved binding.",
             "properties": {
                 "source": {
-                    "$ref": "#/schemas/ExecuteSource"
+                    "$ref": "#/schemas/InvokeSource"
                 },
                 "ref": {
                     "type": "string",
@@ -228,7 +222,7 @@
                     "$ref": "#/schemas/BindingContext"
                 },
                 "options": {
-                    "$ref": "#/schemas/ExecutionOptions"
+                    "$ref": "#/schemas/InvocationOptions"
                 }
             },
             "required": [
@@ -253,7 +247,7 @@
                 "message"
             ]
         },
-        "ExecuteBindingOutput": {
+        "InvokeBindingOutput": {
             "type": "object",
             "description": "Output from executing a resolved binding.",
             "properties": {
@@ -280,7 +274,7 @@
                 },
                 "context": {
                     "type": "object",
-                    "description": "Opaque credential map. Structure is executor-managed; well-known fields include 'bearerToken', 'apiKey', 'basic'.",
+                    "description": "Opaque credential map. Structure is invoker-managed; well-known fields include 'bearerToken', 'apiKey', 'basic'.",
                     "additionalProperties": true
                 }
             },
@@ -324,85 +318,91 @@
     "operations": {
         "getInfo": {
             "description": "Return identity and metadata about this host.",
-            "idempotent": true,
-            "output": {
-                "$ref": "#/schemas/SoftwareInfo"
-            },
             "satisfies": [
                 {
                     "role": "openbindings.software-descriptor",
                     "operation": "getInfo"
                 }
-            ]
+            ],
+            "idempotent": true,
+            "output": {
+                "$ref": "#/schemas/SoftwareInfo"
+            }
         },
         "listFormats": {
             "description": "List binding formats supported by this host.",
-            "idempotent": true,
-            "output": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/schemas/FormatInfo"
-                }
-            },
             "satisfies": [
                 {
-                    "role": "openbindings.binding-executor",
+                    "role": "openbindings.binding-invoker",
                     "operation": "listFormats"
                 },
                 {
                     "role": "openbindings.interface-creator",
                     "operation": "listFormats"
                 }
-            ]
+            ],
+            "idempotent": true,
+            "output": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/schemas/FormatInfo"
+                }
+            }
         },
         "createInterface": {
             "description": "Create an OpenBindings interface from binding source artifacts.",
-            "input": {
-                "$ref": "#/schemas/CreateInterfaceInput"
-            },
-            "output": {
-                "$ref": "#/schemas/OpenBindingsInterface"
-            },
             "satisfies": [
                 {
                     "role": "openbindings.interface-creator",
                     "operation": "createInterface"
                 }
-            ]
-        },
-        "executeBinding": {
-            "description": "Execute a resolved binding.",
+            ],
             "input": {
-                "$ref": "#/schemas/ExecuteBindingInput"
+                "$ref": "#/schemas/CreateInterfaceInput"
             },
             "output": {
-                "$ref": "#/schemas/ExecuteBindingOutput"
-            },
+                "$ref": "#/schemas/OpenBindingsInterface"
+            }
+        },
+        "invokeBinding": {
+            "description": "Invoke a resolved binding.",
             "satisfies": [
                 {
-                    "role": "openbindings.binding-executor",
-                    "operation": "executeBinding"
+                    "role": "openbindings.binding-invoker",
+                    "operation": "invokeBinding"
                 }
-            ]
+            ],
+            "input": {
+                "$ref": "#/schemas/InvokeBindingInput"
+            },
+            "output": {
+                "$ref": "#/schemas/InvokeBindingOutput"
+            }
         },
         "listContexts": {
             "description": "List all stored context entries.",
+            "satisfies": [
+                {
+                    "role": "openbindings.context-store",
+                    "operation": "listContexts"
+                }
+            ],
             "idempotent": true,
             "output": {
                 "type": "array",
                 "items": {
                     "$ref": "#/schemas/ContextEntry"
                 }
-            },
-            "satisfies": [
-                {
-                    "role": "openbindings.context-store",
-                    "operation": "listContexts"
-                }
-            ]
+            }
         },
         "getContext": {
             "description": "Get a stored context entry by key.",
+            "satisfies": [
+                {
+                    "role": "openbindings.context-store",
+                    "operation": "getContext"
+                }
+            ],
             "idempotent": true,
             "input": {
                 "type": "object",
@@ -419,16 +419,16 @@
             },
             "output": {
                 "$ref": "#/schemas/ContextEntry"
-            },
-            "satisfies": [
-                {
-                    "role": "openbindings.context-store",
-                    "operation": "getContext"
-                }
-            ]
+            }
         },
         "setContext": {
             "description": "Set or update a context entry.",
+            "satisfies": [
+                {
+                    "role": "openbindings.context-store",
+                    "operation": "setContext"
+                }
+            ],
             "input": {
                 "type": "object",
                 "properties": {
@@ -447,16 +447,16 @@
                     "context"
                 ],
                 "additionalProperties": false
-            },
-            "satisfies": [
-                {
-                    "role": "openbindings.context-store",
-                    "operation": "setContext"
-                }
-            ]
+            }
         },
         "deleteContext": {
             "description": "Delete a stored context entry.",
+            "satisfies": [
+                {
+                    "role": "openbindings.context-store",
+                    "operation": "deleteContext"
+                }
+            ],
             "input": {
                 "type": "object",
                 "properties": {
@@ -469,13 +469,7 @@
                     "key"
                 ],
                 "additionalProperties": false
-            },
-            "satisfies": [
-                {
-                    "role": "openbindings.context-store",
-                    "operation": "deleteContext"
-                }
-            ]
+            }
         },
         "resolveInterface": {
             "description": "Resolve an OpenBindings interface from a URL. The host fetches the URL (avoiding client-side CORS issues) and returns the interface, optionally synthesizing from supported formats.",
@@ -486,5 +480,11 @@
                 "$ref": "#/schemas/ResolveInterfaceOutput"
             }
         }
+    },
+    "roles": {
+        "openbindings.software-descriptor": "../openbindings.software-descriptor/0.1.json",
+        "openbindings.context-store": "../openbindings.context-store/0.1.json",
+        "openbindings.binding-invoker": "../openbindings.binding-invoker/0.1.json",
+        "openbindings.interface-creator": "../openbindings.interface-creator/0.1.json"
     }
 }

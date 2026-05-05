@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conventions/v1/schemas/findings.schema.json",
+  "title": "OpenBindings finding catalog (v1)",
+  "description": "Schema for findings.yaml. The Go and TS SDKs and the conformance runner consume findings.yaml; this schema is the contract between the catalog file and its consumers. CI verifies that findings.yaml validates against this schema and that the catalog matches findings.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["catalog_version", "convention_version", "profile", "categories", "severities", "modes", "kinds"],
+  "properties": {
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "convention_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9-]+$"
+    },
+    "categories": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["breaking", "non_breaking", "compliance", "structural"]},
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true
+    },
+    "severities": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["info", "warn", "error"]},
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "modes": {
+      "type": "array",
+      "items": {"type": "string", "enum": ["subsume", "equivalent", "identical"]},
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "kinds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/kindEntry"}
+    },
+    "compliance_activation": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$": {
+          "type": "string",
+          "description": "A tag selector: 'any_x_policy' matches any x-policy-* tag; bare tag names match exactly."
+        }
+      },
+      "additionalProperties": false
+    },
+    "aliases": {
+      "type": "object",
+      "description": "Slug-rename map. Keys are old slugs, values are current slugs. Empty at v1; grows on slug-rename events.",
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "kindEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description", "categories", "severity", "modes"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*){0,5}$",
+          "maxLength": 128,
+          "description": "Un-namespaced slug; vendor namespacing is consumer-side."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "MUST match the description column in findings.md verbatim. CI gates on this."
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["breaking", "non_breaking", "compliance", "structural"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "warn", "error"]
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["all", "subsume", "equivalent", "identical"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "hint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional advisory hint rendered below the finding. See findings.md Annex B."
+        }
+      }
+    }
+  }
+}

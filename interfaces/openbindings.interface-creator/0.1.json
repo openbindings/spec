@@ -1,5 +1,5 @@
 {
-    "openbindings": "0.1.0",
+    "openbindings": "0.2.0",
     "name": "OpenBindings Interface Creator",
     "version": "0.1.0",
     "description": "Interface for creating OpenBindings interfaces from binding artifacts. Given a binding specification (e.g., an OpenAPI spec), an interface creator extracts operations, schemas, sources, and bindings into an OBI document.",

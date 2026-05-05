@@ -1,5 +1,5 @@
 {
-    "openbindings": "0.1.0",
+    "openbindings": "0.2.0",
     "name": "HTTP Client",
     "version": "0.1.0",
     "description": "An HTTP client that makes requests on behalf of callers. Useful for clients that cannot make direct HTTP requests due to platform constraints (browser CSP/CORS, network restrictions, firewalls, etc.). Implementations SHOULD validate URLs and MAY restrict access to private networks.",
@@ -72,8 +72,7 @@
                 "required": [
                     "status",
                     "body"
-                ],
-                "additionalProperties": false
+                ]
             }
         }
     }

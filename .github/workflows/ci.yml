@@ -25,17 +25,51 @@ jobs:
 
       - name: Validate interface files against schema
         run: |
-          for f in interfaces/*.json; do
+          for f in interfaces/*/*.json; do
             echo "Validating $f..."
             ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
           done
 
-      - name: Validate reference-test fixtures are valid JSON
+      - name: Check canonical field ordering
         run: |
-          for f in reference-tests/*.json; do
-            echo "Checking $f..."
-            python3 -m json.tool "$f" > /dev/null
-          done
+          node scripts/check-canonical-order.mjs examples/*.obi.json interfaces/*/*.json
 
       - name: Validate operation-graph schema is valid JSON
         run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null
+
+      - name: Verify conformance corpus consistency
+        run: node scripts/verify-corpus.mjs
+
+      - name: Check conformance manifest is up-to-date
+        run: |
+          node scripts/generate-conformance-manifest.mjs
+          git diff --exit-code conformance/manifest.json
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install conventions script dependencies
+        run: cd conventions/scripts && pnpm install --ignore-scripts
+
+      - name: Verify conventions consistency
+        run: |
+          node conventions/scripts/verify-catalog.mjs
+          node conventions/scripts/verify-comparison-corpus.mjs
+
+      - name: Check local markdown links
+        run: |
+          rc=0
+          while IFS= read -r file; do
+            dir=$(dirname "$file")
+            grep -oP '\[(?:[^\]]*)\]\(\K[^)#][^)]*?\.(?:md|json|yaml|yml)' "$file" 2>/dev/null | while IFS= read -r target; do
+              case "$target" in http://*|https://*) continue;; esac
+              target_file="${target%%#*}"
+              resolved="$dir/$target_file"
+              if [ ! -f "$resolved" ]; then
+                echo "BROKEN LINK: $file -> $target (resolved: $resolved)"
+                exit 1
+              fi
+            done || rc=1
+          done < <(find . -name '*.md' -not -path './node_modules/*' -not -path './conventions/scripts/node_modules/*' -not -path './versions/*')
+          exit $rc
