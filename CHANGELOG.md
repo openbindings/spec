@@ -77,7 +77,9 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 - **New examples**: `minimal.obi.json`, `blend-coffee-shop.obi.json`, `multi-source.obi.json`
 - **New tooling**: CI workflow validating examples, interfaces, corpus consistency, canonical ordering, and local links
 - **Renamed interface**: `openbindings.binding-executor` to `openbindings.binding-invoker`
+- **Retired interface**: `openbindings.host` (composed meta-role; no implementation ever claimed it; consumers can match its constituent roles directly)
 - **Removed guides**: `cli.md`, `creators-and-executors.md`, `binding-execution-context.md` (replaced by renamed/rewritten guides)
+- **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0` (transforms aligned with core spec to plain JSONata strings; SemVer pattern enforcement and `propertyNames` constraints added to its schema; format spec now snapshotted under `formats/operation-graph/versions/`)
 
 ## 0.1.0
 
