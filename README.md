@@ -89,7 +89,7 @@ Format libraries implement binding invocation and interface creation for specifi
 | `openbindings-go/formats/graphql`     | `@openbindings/graphql`      | `graphql`                            |
 | `openbindings-go/formats/usage`       |                              | `usage@^2.0.0`                       |
 | `openbindings-go/formats/workersrpc`  | `@openbindings/workers-rpc`  | `workers-rpc`                        |
-| `openbindings-go/formats/operationgraph` |                           | `openbindings.operation-graph@0.1.0` |
+| `openbindings-go/formats/operationgraph` |                           | `openbindings.operation-graph@0.2.0` |
 
 ## Repository structure
 
