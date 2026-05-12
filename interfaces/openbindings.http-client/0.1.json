@@ -1,6 +1,6 @@
 {
     "openbindings": "0.2.0",
-    "name": "HTTP Client",
+    "name": "OpenBindings HTTP Client",
     "version": "0.1.0",
     "description": "An HTTP client that makes requests on behalf of callers. Useful for clients that cannot make direct HTTP requests due to platform constraints (browser CSP/CORS, network restrictions, firewalls, etc.). Implementations SHOULD validate URLs and MAY restrict access to private networks.",
     "operations": {
@@ -15,7 +15,8 @@
                     },
                     "method": {
                         "type": "string",
-                        "description": "HTTP method. Defaults to GET."
+                        "description": "HTTP method.",
+                        "default": "GET"
                     },
                     "headers": {
                         "type": "object",
@@ -38,7 +39,8 @@
                     },
                     "followRedirects": {
                         "type": "boolean",
-                        "description": "Whether to follow HTTP redirects. Defaults to true."
+                        "description": "Whether to follow HTTP redirects.",
+                        "default": true
                     }
                 },
                 "required": [
