@@ -44,7 +44,7 @@
         },
         "BindingContext": {
             "type": "object",
-            "description": "Opaque runtime context for binding invocation. Well-known fields include 'bearerToken', 'apiKey', 'basic'.",
+            "description": "Opaque runtime context for binding invocation, typically sourced from a context store. Well-known credential fields: 'bearerToken' (string), 'apiKey' (string), 'basic' (object with 'username' and 'password'), 'accessToken' / 'refreshToken' / 'expiresAt' for OAuth. Well-known transport fields: 'headers' / 'cookies' / 'environment' (objects with string values) and 'metadata' (object with arbitrary values). Implementations and callers MAY add additional fields for session state, consent flags, or any other invoker-managed runtime data; drivers SHOULD ignore fields they don't recognize.",
             "additionalProperties": true
         },
         "InvocationOptions": {
