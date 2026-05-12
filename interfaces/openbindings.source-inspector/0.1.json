@@ -120,6 +120,7 @@
         },
         "inspectSource": {
             "description": "Inspect a binding source artifact and return bindable targets that can be framed as operations.",
+            "idempotent": true,
             "input": { "$ref": "#/schemas/InspectSourceInput" },
             "output": { "$ref": "#/schemas/SourceInspection" }
         }

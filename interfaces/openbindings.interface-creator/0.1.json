@@ -102,6 +102,7 @@
         },
         "createInterface": {
             "description": "Create an OpenBindings interface, optionally from binding source artifacts.",
+            "idempotent": true,
             "input": { "$ref": "#/schemas/CreateInterfaceInput" },
             "output": { "$ref": "#/schemas/OpenBindingsInterface" }
         }

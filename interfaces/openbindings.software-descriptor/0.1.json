@@ -2,7 +2,7 @@
     "openbindings": "0.2.0",
     "name": "OpenBindings Software Descriptor",
     "version": "0.1.0",
-    "description": "Base contract for software participating in the OpenBindings ecosystem. Defines the getInfo operation for self-identification. Implementations may return additional fields beyond the minimum.",
+    "description": "Generic identity contract any software MAY implement. Defines the getInfo operation for self-identification — name, version, description, homepage, repository, maintainer. Implementations MAY return additional fields beyond the minimum.",
     "schemas": {
         "SoftwareInfo": {
             "type": "object",
