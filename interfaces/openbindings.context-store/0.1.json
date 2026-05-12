@@ -2,47 +2,24 @@
     "openbindings": "0.2.0",
     "name": "OpenBindings Context Store",
     "version": "0.1.0",
-    "description": "Interface for managing stored credentials and context. Implementations provide CRUD operations over an opaque key-value store where keys are normalized API origins and values are credential maps using well-known field names.",
+    "description": "Interface for storing and retrieving context keyed by stable identifiers (typically a normalized API origin). Context is opaque per-target runtime data — credentials, session state, consent flags, custom headers, environment variables, metadata, or any other invoker-managed state. This role models the minimum surface a runtime needs: fetch the context for an invocation, persist newly-resolved context, and remove it on logout. Implementations MAY expose richer management capabilities (listing, inspection, rotation, audit) outside this role contract; that surface is implementation-defined and not part of the role.",
     "schemas": {
-        "ContextEntry": {
+        "Context": {
             "type": "object",
-            "description": "A stored context entry.",
-            "properties": {
-                "key": {
-                    "type": "string",
-                    "description": "Context store key (typically a normalized API host, e.g., 'api.example.com')."
-                },
-                "context": {
-                    "type": "object",
-                    "description": "Opaque credential map. Structure is invoker-managed; well-known fields include 'bearerToken', 'apiKey', 'basic'.",
-                    "additionalProperties": true
-                }
-            },
-            "required": [
-                "key"
-            ]
+            "description": "Opaque per-target context payload. Well-known field conventions used across OpenBindings drivers — credential fields: 'bearerToken' (string) for bearer auth, 'apiKey' (string) for API-key auth, 'basic' (object with 'username' and 'password') for HTTP basic auth, 'accessToken' / 'refreshToken' / 'expiresAt' for OAuth; transport fields: 'headers' / 'cookies' / 'environment' (objects with string values) and 'metadata' (object with arbitrary values) for per-target HTTP headers, cookies, environment variables, and invoker-specific metadata. Credentials are one kind of context, not the whole concept — implementations and callers MAY add additional fields for session state, consent flags, custom configuration, or any invoker-managed runtime data. The store SHOULD treat the payload as opaque.",
+            "additionalProperties": true
         }
     },
     "operations": {
-        "listContexts": {
-            "description": "List all stored context entries.",
-            "idempotent": true,
-            "output": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/schemas/ContextEntry"
-                }
-            }
-        },
         "getContext": {
-            "description": "Get a stored context entry by key.",
+            "description": "Retrieve the context stored for the given key. Returns null when no context exists for the key.",
             "idempotent": true,
             "input": {
                 "type": "object",
                 "properties": {
                     "key": {
                         "type": "string",
-                        "description": "Context store key."
+                        "description": "Context store key (typically a normalized API origin)."
                     }
                 },
                 "required": [
@@ -51,11 +28,15 @@
                 "additionalProperties": false
             },
             "output": {
-                "$ref": "#/schemas/ContextEntry"
+                "oneOf": [
+                    { "$ref": "#/schemas/Context" },
+                    { "type": "null" }
+                ]
             }
         },
         "setContext": {
-            "description": "Set or update a context entry.",
+            "description": "Create or replace the context for the given key. The supplied context fully replaces any existing context.",
+            "idempotent": true,
             "input": {
                 "type": "object",
                 "properties": {
@@ -64,9 +45,7 @@
                         "description": "Context store key."
                     },
                     "context": {
-                        "type": "object",
-                        "description": "Credential map to store.",
-                        "additionalProperties": true
+                        "$ref": "#/schemas/Context"
                     }
                 },
                 "required": [
@@ -77,7 +56,8 @@
             }
         },
         "deleteContext": {
-            "description": "Delete a stored context entry.",
+            "description": "Remove the context for the given key. Deleting a key that does not exist MUST succeed without error.",
+            "idempotent": true,
             "input": {
                 "type": "object",
                 "properties": {

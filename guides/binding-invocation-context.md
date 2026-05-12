@@ -18,7 +18,8 @@ here for consistency across the ecosystem.
 
 When an invoker invokes a binding, it often needs more than just the
 operation input. It may need credentials, session state, consent flags,
-or other runtime data specific to the service it's talking to. This
+custom headers, cookies, environment variables, metadata, or other
+runtime data specific to the service it's talking to. All of this
 runtime data is **binding invocation context**.
 
 Context is **invoker-managed**. The invoker decides what context it
@@ -27,38 +28,53 @@ SDK provides storage infrastructure and platform callbacks, but never
 inspects or interprets context. To the SDK, context is an opaque object
 keyed by an invoker-determined identifier.
 
-### Context vs invocation options
+Credentials are one kind of context — the kind most invokers need first
+— but context is the umbrella. Headers, cookies, environment variables,
+session state, consent flags, custom invoker fields: all context.
+Implementations MAY store any of these alongside credentials in the same
+opaque payload.
 
-Context is distinct from **invocation options** like HTTP headers, cookies,
-or environment variables. The difference:
+### Stored vs per-call context
 
-| | Context | Invocation options |
+Context divides along **lifecycle**, not along type:
+
+| | Stored context | Per-call context |
 |---|---|---|
-| **Who produces it** | Invoker (via resolution) | Developer |
-| **Lifecycle** | Persistent across calls | Per-request or client-level |
-| **Who understands it** | Invoker | Transport layer |
-| **Stored by SDK** | Yes | No |
-| **Example** | Bearer token, API key | Correlation ID header, trace context |
+| **Lifecycle** | Persistent across calls | Single invocation |
+| **Origin** | Resolved by the invoker (auth flows, manual configuration) | Supplied by the caller at invocation time |
+| **Held by** | The context store | The caller's `invokeBinding` arguments |
 
-Invocation options are developer-supplied pass-through details. They're
-a separate concept — not stored, not resolved, not managed by the
-context system.
+Both have the same opaque shape — a context object with well-known
+fields (`bearerToken`, `apiKey`, `basic`, plus headers/cookies/etc.).
+At invocation time the binding invoker merges them: stored context for
+the target is loaded, then per-call context is layered on top with
+caller-supplied values taking precedence.
+
+There is no separate "invocation options" concept. Headers and cookies
+that need to persist across calls live in the stored context; headers
+and cookies that apply to a single call are supplied per-call. The
+shape is the same in both cases.
 
 ### The context store
 
 The SDK maintains a **context store** — a key-value map where keys are
-invoker-determined strings and values are opaque objects.
+invoker-determined strings and values are opaque context payloads
+(satisfying the `openbindings.context-store` role, with operations
+`getContext`/`setContext`/`deleteContext`).
 
 The invoker controls the key. Typically, an invoker normalizes to the
 API's domain (e.g., both `https://api.example.com` and
 `wss://api.example.com` resolve to `api.example.com`). This enables
 **cross-invoker context sharing**: an OpenAPI invoker and an AsyncAPI
 invoker hitting the same API independently derive the same key, so
-credentials obtained through one invoker's auth flow are available to
-the other without duplicate prompts.
+credentials and other context obtained through one invoker's flow are
+available to the other without duplicate prompts.
 
 Storage backend is SDK-configurable: in-memory (session-scoped) or
-persistent (on-disk). The developer chooses based on their environment.
+persistent (on-disk, OS keychain, hosted vault). An implementation MAY
+expose richer management capabilities (listing, inspection, rotation,
+audit) outside the role contract — those are implementation-defined
+surfaces. The role contract itself is just `get` / `set` / `delete`.
 
 ---
 
@@ -66,13 +82,18 @@ persistent (on-disk). The developer chooses based on their environment.
 
 Context is an opaque object — invokers can store whatever structure
 they need. But for cross-invoker interoperability, invokers SHOULD use
-well-known field names for common credential types:
+well-known field names:
 
 | Field | Type | Purpose |
 |---|---|---|
 | `bearerToken` | `string` | Bearer token (OAuth2, JWT, etc.) |
 | `apiKey` | `string` | API key |
 | `basic` | `{ username, password }` | HTTP Basic credentials |
+| `accessToken` / `refreshToken` / `expiresAt` | `string` | OAuth lifecycle |
+| `headers` | `{ [k]: string }` | HTTP headers (request-level) |
+| `cookies` | `{ [k]: string }` | HTTP cookies (request-level) |
+| `environment` | `{ [k]: string }` | Environment variables (for exec-style invokers) |
+| `metadata` | `{ [k]: any }` | Invoker-specific metadata (e.g., gRPC metadata) |
 
 These are top-level fields in the context object. An invoker can store
 anything else alongside them — CSRF tokens, session IDs, consent flags,
@@ -80,9 +101,9 @@ invoker-specific state. The well-known fields are a convention, not a
 schema. No validation, no enforcement.
 
 This convention is extensible. If a new protocol or auth mechanism
-emerges that requires a new credential type, invokers adopt a new
-well-known field name. No spec change needed. The convention grows
-through ecosystem usage, the same way HTTP headers do.
+emerges that requires a new field, invokers adopt a new well-known
+field name. No spec change needed. The convention grows through
+ecosystem usage, the same way HTTP headers do.
 
 An invoker that doesn't need cross-invoker sharing can ignore the
 convention entirely and use whatever internal structure it wants.
@@ -96,14 +117,15 @@ The SDK orchestrates context around binding invocation:
 ```
 1. SDK resolves which binding to invoke for the operation.
 
-2. SDK calls invokeBinding with the operation input, any developer-supplied
-   context, invocation options, and the context store reference.
+2. SDK calls invokeBinding with the operation input, any per-call context
+   supplied by the caller, and the context store reference.
 
 3. Binding invoker derives the context key using normalizeContextKey(source.location)
    and looks up stored context from the store. If found, it merges stored
-   context with developer-supplied context (developer context takes precedence).
+   context with per-call context (per-call values take precedence).
 
-4. Binding invoker applies merged context and options where the protocol expects them.
+4. Binding invoker applies merged context where the protocol expects each
+   field (auth fields → auth headers; the headers field → HTTP headers; etc.).
 
 5. Binding invoker returns the result.
    If the invoker resolved or refreshed context during invocation,
@@ -343,10 +365,14 @@ invoker stores the result via the SDK.
 
 ### For SDK implementers
 
-1. **Implement the context store.** A key-value map. Keys are strings
-   (invoker-determined). Values are opaque objects. Support in-memory
-   (session-scoped) and optionally persistent (on-disk) storage. Let the
-   developer configure which.
+1. **Implement the context store.** A key-value map honoring the
+   `openbindings.context-store` role (`getContext` / `setContext` /
+   `deleteContext`). Keys are strings (invoker-determined). Values are
+   opaque context payloads. Support in-memory (session-scoped) and
+   optionally persistent (on-disk, OS keychain) storage. Let the
+   developer configure which. Management surfaces (listing, inspection,
+   rotation) are implementation-specific affordances outside the role
+   contract.
 2. **Define platform callbacks** in your language. This is the contract
    between the SDK and binding invokers. Keep it small — the callback kinds
    above, plus a store callback for persisting context.

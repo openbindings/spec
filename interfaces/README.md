@@ -15,7 +15,7 @@ Each interface lives in its own directory with versioned files following the spe
 - `openbindings.binding-invoker/0.1.json` — binding invoker contract. Defines `listFormats` and `invokeBinding` for components that invoke bindings in specific formats (OpenAPI, AsyncAPI, gRPC, MCP, etc.).
 - `openbindings.interface-creator/0.1.json` — interface creator contract. Defines `listFormats` and `createInterface` for components that produce OBIs from existing binding artifacts.
 - `openbindings.source-inspector/0.1.json` — source inspector contract. Defines `listFormats` and `inspectSource` for components that inspect binding artifacts and return bindable targets before an OBI is created.
-- `openbindings.context-store/0.1.json` — context store contract. Defines CRUD operations for managing stored credentials and runtime context, keyed by normalized API origin.
+- `openbindings.context-store/0.1.json` — context store contract. Defines `getContext`, `setContext`, and `deleteContext` for storing and retrieving opaque per-target context (credentials, session state, custom headers, configuration, etc.) keyed by stable identifier (typically a normalized API origin). Implementations MAY expose richer management capabilities (listing, inspection, rotation) outside the role contract.
 - `openbindings.http-client/0.1.json` — HTTP client contract. Defines a `request` operation for making HTTP requests on behalf of callers that cannot make direct requests due to platform constraints (browser CSP/CORS, network restrictions, etc.).
 
 ## Authoring conventions

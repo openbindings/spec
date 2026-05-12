@@ -115,13 +115,13 @@ The mechanism is irrelevant. What matters is that the client is typed to a speci
 
 ### 5. Context Store
 
-**Role**: Per-host credential persistence.
+**Role**: Per-host context persistence. The SDK-side surface of the `openbindings.context-store` role (`getContext` / `setContext` / `deleteContext`).
 
 **Responsibilities**:
-- Stores credentials keyed by `host[:port]` (no scheme — `http://`, `https://`, `ws://` all share the same key for the same host).
-- Values are opaque maps with well-known field names: `bearerToken`, `apiKey`, `basic` (`{ username, password }`).
-- Binding invokers read from it before each request. The invoker merges stored context with per-call context.
-- Implementations: `MemoryStore` (in-memory, ephemeral), `LocalStorageContextStore` (browser persistence), custom implementations for server-side storage.
+- Stores context keyed by `host[:port]` (no scheme — `http://`, `https://`, `ws://` all share the same key for the same host).
+- Values are opaque maps with well-known field conventions: credential fields (`bearerToken`, `apiKey`, `basic` with `{username, password}`, `accessToken`/`refreshToken`/`expiresAt`) and transport fields (`headers`, `cookies`, `environment`, `metadata`). Credentials are one kind of context; the store carries everything per-target an invoker needs.
+- Binding invokers read from it before each request. The invoker merges stored context with per-call context; per-call values take precedence.
+- Implementations: `MemoryStore` (in-memory, ephemeral), browser-persistence stores (LocalStorage / IndexedDB), OS-keychain-backed stores, hosted credential-vault clients.
 
 **The developer stores a token once; every binding invoker for that host uses it automatically.**
 

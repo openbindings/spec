@@ -35,7 +35,7 @@ An **operation** is a named unit of capability: something a service can do, with
 
 ## What are roles?
 
-A role is a published interface that your service can declare it satisfies. For example, if your service plays the `openbindings.context-store` role, clients know it supports `getContext`, `setContext`, `listContexts`, and `deleteContext` with specific schemas. Tooling can verify conformance automatically.
+A role is a published interface that your service can declare it satisfies. For example, if your service plays the `openbindings.context-store` role, clients know it supports `getContext`, `setContext`, and `deleteContext` with specific schemas. Tooling can verify conformance automatically.
 
 Roles enable composable interfaces, like traits in Rust or protocols in Swift. Your service declares which roles it plays, individual operations use `satisfies` to map to the role's operations, and clients can check conformance at runtime or build time.
 
