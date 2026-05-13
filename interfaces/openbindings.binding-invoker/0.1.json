@@ -93,26 +93,6 @@
             },
             "required": ["source", "ref"],
             "additionalProperties": false
-        },
-        "Error": {
-            "type": "object",
-            "properties": {
-                "code": { "type": "string" },
-                "message": { "type": "string" },
-                "details": {}
-            },
-            "required": ["code", "message"]
-        },
-        "InvokeBindingOutput": {
-            "type": "object",
-            "description": "Output from invoking a resolved binding.",
-            "properties": {
-                "output": {},
-                "status": { "type": "integer" },
-                "durationMs": { "type": "number" },
-                "error": { "$ref": "#/schemas/Error" }
-            },
-            "additionalProperties": true
         }
     },
     "operations": {
@@ -125,9 +105,9 @@
             }
         },
         "invokeBinding": {
-            "description": "Invoke a resolved binding. Returns a stream of events — unary calls produce one event, streaming calls produce many until the connection closes.",
+            "description": "Invoke a resolved binding. Produces the bound operation's output; how that output is delivered (unary, streaming, batched) is an implementation/binding concern outside the role contract.",
             "input": { "$ref": "#/schemas/InvokeBindingInput" },
-            "output": { "$ref": "#/schemas/InvokeBindingOutput" }
+            "output": {}
         }
     }
 }
