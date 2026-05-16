@@ -22,7 +22,8 @@ Do not use guides as:
 
 - `getting-started.md` — first walkthrough for the `ob` CLI and a minimal OBI document.
 - `faq.md` — short conceptual answers for new readers.
-- `creators-and-invokers.md` — implementation guidance for binding invokers and interface creators.
+- `creators-and-invokers.md` — concepts behind binding invokers, interface creators, and source inspectors.
+- `implementing-a-binding-format.md` — step-by-step walkthrough for implementing a new binding format, with Go and TypeScript examples.
 - `binding-format-conventions.md` — advisory catalog of known binding-format conventions used by current implementations.
 - `binding-invocation-context.md` — SDK guidance for runtime context, credentials, and platform callbacks.
-- `interface-client.md` — SDK client architecture pattern for generic and typed interface clients.
+- `interface-client.md` — pattern for consuming an OpenBindings interface from a target service.
