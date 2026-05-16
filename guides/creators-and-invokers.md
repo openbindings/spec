@@ -25,7 +25,7 @@ This is the core capability that makes OpenBindings protocol-agnostic. The devel
 
 An interface creator knows how to produce an OBI from a binding artifact. Given an OpenAPI spec, it extracts operations, schemas, sources, bindings, and security into an OpenBindings interface document.
 
-This is what powers `ob create`, `InterfaceClient.resolve()` synthesis, and any tool that needs to bootstrap OBI adoption from existing specs.
+This is what powers `ob create`, on-the-fly OBI synthesis when a consumer is handed a raw binding artifact, and any tool that needs to bootstrap OBI adoption from existing specs.
 
 **Role interface:** `openbindings.interface-creator`
 

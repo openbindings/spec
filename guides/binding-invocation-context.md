@@ -182,15 +182,21 @@ most, but the pattern is context-general.
 A developer writes this:
 
 ```typescript
-const dispatcher = new OperationInvoker([new OpenAPIInvoker()]);
-const client = new InterfaceClient(null, dispatcher, {
-  contextStore: new MemoryStore(),
-  platformCallbacks: browserCallbacks(),
-});
+const operationInvoker = new OperationInvoker(
+  [new OpenAPIInvoker()],
+  {
+    contextStore: new MemoryStore(),
+    platformCallbacks: browserCallbacks(),
+  },
+);
 
-await client.resolve("https://api.example.com");
-for await (const event of client.invoke("listUsers", { page: 1 })) {
-  // handle event.data
+const iface = await fetchInterface("https://api.example.com");
+for await (const event of operationInvoker.invoke({
+  interface: iface,
+  operation: "listUsers",
+  input: { page: 1 },
+})) {
+  // handle event.output
 }
 ```
 

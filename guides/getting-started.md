@@ -63,7 +63,7 @@ You can also save the interface locally with `ob fetch localhost:8080` and work 
 
 The demo server publishes a single OBI that wires five operations to six protocol sources. Each binding maps an operation to a specific entry point in a source. The source declares its format (`openapi@3.1`, `grpc`, etc.) and location. When you run `ob op invoke`, the CLI selects a binding, resolves its source, and hands off to a format-aware **binding invoker** that knows how to speak that protocol.
 
-The OBI doesn't implement protocol logic. It just tells binding invokers where to look. See [Creators and Invokers](creators-and-invokers.md) and [Interface Client](interface-client.md) for more on how this works.
+The OBI doesn't implement protocol logic. It just tells binding invokers where to look. See [Creators and Invokers](creators-and-invokers.md) and [Consuming an OpenBindings Interface](interface-client.md) for more on how this works.
 
 This is the core idea behind OpenBindings:
 
