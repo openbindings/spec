@@ -259,14 +259,12 @@ func (e *Invoker) InvokeBinding(
     defer resp.Body.Close()
 
     raw, _ := io.ReadAll(resp.Body)
-    if resp.StatusCode == 401 {
-        return openbindings.SingleEventChannel(
-            openbindings.HTTPErrorOutput(start, openbindings.ErrCodeAuthRequired, resp.StatusCode, string(raw)),
-        ), nil
-    }
     if resp.StatusCode >= 400 {
+        // HTTPErrorOutput maps the status code to the right ErrCode_*
+        // automatically (401 -> auth_required, 403 -> permission_denied,
+        // 5xx -> invocation_failed, etc.).
         return openbindings.SingleEventChannel(
-            openbindings.HTTPErrorOutput(start, openbindings.ErrCodeInvocationFailed, resp.StatusCode, string(raw)),
+            openbindings.HTTPErrorOutput(start, resp.StatusCode, resp.Status),
         ), nil
     }
 
@@ -617,8 +615,8 @@ The helpers below ship with `openbindings-go` and `@openbindings/sdk`. Reach for
 | What | Go | TS |
 |---|---|---|
 | Wrap one event as a closed channel/iterable | `SingleEventChannel(out)` | (just `yield` once) |
-| Build a failure event | `FailedOutput(start, code, msg)` | (literal `{ error: { code, message }, durationMs }`) |
-| Build an HTTP-error event with status | `HTTPErrorOutput(start, code, status, body)` | (literal `{ error, status, durationMs }`) |
+| Build a pre-request failure event | `FailedOutput(start, code, msg)` | (literal `{ error: { code, message }, durationMs }`) |
+| Build an HTTP-error event (status code → standard ErrCode mapping) | `HTTPErrorOutput(start, statusCode, statusText)` | (literal `{ error, status, durationMs }`) |
 
 The TS side relies on plain object literals because async generators make ad-hoc shapes cheap; the Go side ships builders because returning a closed channel from one line is otherwise verbose.
 
