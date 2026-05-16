@@ -26,4 +26,4 @@ Do not use guides as:
 - `implementing-a-binding-format.md` — step-by-step walkthrough for implementing a new binding format, with Go and TypeScript examples.
 - `binding-format-conventions.md` — advisory catalog of known binding-format conventions used by current implementations.
 - `binding-invocation-context.md` — SDK guidance for runtime context, credentials, and platform callbacks.
-- `interface-client.md` — pattern for consuming an OpenBindings interface from a target service.
+- `consuming-an-interface.md` — pattern for consuming an OpenBindings interface from a target service.

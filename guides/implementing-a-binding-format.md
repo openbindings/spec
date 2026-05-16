@@ -4,7 +4,7 @@
 
 This document is a practical walkthrough for implementing a new binding format — i.e., publishing a package like `@my-org/openbindings-acme` or `github.com/my-org/openbindings-acme-go` that lets OpenBindings consumers invoke against your wire protocol.
 
-For the conceptual layer (what these roles are, why they're separate, the deployment models), see [Creators and Invokers](./creators-and-invokers.md). For the consumer side (how application code uses your format), see [Consuming an OpenBindings Interface](./interface-client.md).
+For the conceptual layer (what these roles are, why they're separate, the deployment models), see [Creators and Invokers](./creators-and-invokers.md). For the consumer side (how application code uses your format), see [Consuming an OpenBindings Interface](./consuming-an-interface.md).
 
 The Go and TypeScript SDKs follow the same shape; this guide shows both side-by-side. Examples assume the running example of a fictional `acme-gateway@1.0` format whose protocol is "HTTP POST to `<location>/<ref>` with the input as a JSON body and an optional bearer token."
 
