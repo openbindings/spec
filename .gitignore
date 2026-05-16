@@ -16,6 +16,7 @@
 
 # Local working notes (not part of the spec artifact)
 HANDOFF.md
+ERGONOMICS.md
 
 # Dependencies
 node_modules/
