@@ -34,7 +34,7 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 - **Canonical form (section 11, informative).** Names RFC 8785 (JCS) as the byte-stable serialization for content-addressing and signing.
 - **Reference resolution (section 12).** Single section covering `roles`, `sources[*].location`, and schema `$ref` under one RFC 3986 rule.
 - **Versioning (section 13).** Two-axis model: `openbindings` (spec version, SemVer 2.0.0) and `version` (opaque contract version).
-- **IANA considerations (section 14).** Provisional registrations for `/.well-known/openbindings` URI suffix and `application/vnd.openbindings+json` media type.
+- **IANA considerations (section 14).** Defines registration details for the OpenBindings well-known URI suffix and JSON media type; IANA registries are authoritative for current status.
 - **Input/output contract direction (section 6.1).** `input` is a lower bound on service acceptance; `output` an upper bound on service emission. Three-way distinction between absent, `null`, and `{}`.
 - **Transform direction (section 6.5).** `inputTransform` reshapes caller input toward the source's expected input; `outputTransform` reshapes source output toward the operation's `output`.
 - **Conformance classes (section 16.1).** Three tiers: Inspection, Codegen, Invoking. Each tool rule annotates its minimum class. JSONata runtime only required at the Invoking tier.
@@ -46,6 +46,7 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 - **Normative and informative references (section 18).**
 - **`minLength: 1`** on `sources[*].location` and string `content` in the JSON Schema. Empty-string locations are now invalid.
 - **`propertyNames` constraints** in the JSON Schema enforcing the key pattern on every map.
+- **Schema-level enforcement of cross-reference patterns and uniqueness.** Cross-reference values (`bindings[*].operation`, `bindings[*].source`, `bindings[*].security`, `satisfies[*].role`) and `TransformOrRef.$ref` are now pattern-constrained in the JSON Schema. `aliases` and `satisfies` arrays carry `uniqueItems: true`. `satisfies[*].operation` carries `minLength: 1`. These backstop existing prose rules (OBI-D-05, OBI-D-09 through OBI-D-14) with structural validation that catches typos before cross-reference resolution.
 
 ### Changed
 
@@ -73,14 +74,15 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 
 ### Repository
 
-- **New guides**: getting-started, FAQ, creators-and-invokers, binding-format-conventions, binding-invocation-context, interface-client
+- **New guides**: getting-started, FAQ, creators-and-invokers, binding-format-conventions, binding-invocation-context, consuming-an-interface, implementing-a-binding-format
 - **New interfaces**: `openbindings.binding-invoker` (replaces `binding-executor`), `openbindings.source-inspector`
 - **New examples**: `minimal.obi.json`, `blend-coffee-shop.obi.json`, `multi-source.obi.json`
 - **New tooling**: CI workflow validating examples, interfaces, corpus consistency, canonical ordering, and local links
 - **Renamed interface**: `openbindings.binding-executor` to `openbindings.binding-invoker`
 - **Retired interface**: `openbindings.host` (composed meta-role; no implementation ever claimed it; consumers can match its constituent roles directly)
-- **Removed guides**: `cli.md`, `creators-and-executors.md`, `binding-execution-context.md` (replaced by renamed/rewritten guides)
-- **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0` (transforms aligned with core spec to plain JSONata strings; SemVer pattern enforcement and `propertyNames` constraints added to its schema; format spec now snapshotted under `formats/operation-graph/versions/`)
+- **Renamed guides** (executor→invoker terminology): `creators-and-executors.md` to `creators-and-invokers.md`; `binding-execution-context.md` to `binding-invocation-context.md`.
+- **Removed guide**: `cli.md`.
+- **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0` (transforms aligned with core spec to plain JSONata strings; SemVer pattern enforcement and `propertyNames` constraints added to its schema)
 
 ## 0.1.0
 

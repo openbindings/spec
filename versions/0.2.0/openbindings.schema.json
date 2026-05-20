@@ -134,6 +134,7 @@
         "aliases": {
           "type": "array",
           "description": "Alternate names for matching compatibility.",
+          "uniqueItems": true,
           "items": {
             "type": "string",
             "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
@@ -142,6 +143,7 @@
         "satisfies": {
           "type": "array",
           "description": "Explicit mappings to operations in other interfaces.",
+          "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/Satisfies"
           }
@@ -203,10 +205,12 @@
       "properties": {
         "role": {
           "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$",
           "description": "Role key referencing an entry in the document's roles map."
         },
         "operation": {
           "type": "string",
+          "minLength": 1,
           "description": "Operation key or alias within the role's interface."
         }
       },
@@ -258,10 +262,12 @@
       "properties": {
         "operation": {
           "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$",
           "description": "Operation key referenced by this binding."
         },
         "source": {
           "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$",
           "description": "Binding source key from sources."
         },
         "ref": {
@@ -282,6 +288,7 @@
         },
         "security": {
           "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$",
           "description": "Key referencing an entry in the document's security map. Indicates the security requirements for this binding."
         },
         "inputTransform": {
@@ -323,6 +330,7 @@
           "properties": {
             "$ref": {
               "type": "string",
+              "pattern": "^#/transforms/[A-Za-z_][A-Za-z0-9_.-]*$",
               "description": "JSON Pointer reference to a named transform (e.g., '#/transforms/myTransform')."
             }
           },

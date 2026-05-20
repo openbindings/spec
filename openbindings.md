@@ -645,11 +645,11 @@ The optional `version` field describes the author's own notion of the interface'
 
 ## 14. IANA considerations
 
-This specification defines two registrations for IANA. Both are provisional while the spec is pre-1.0 and become permanent upon 1.0 release.
+This specification defines IANA registration details for the OpenBindings well-known URI suffix and JSON media type. The IANA registries are authoritative for current registration status.
 
 ### 14.1. Well-known URI suffix
 
-Per [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615):
+Registration details per [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615), in the [IANA Well-Known URIs registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml):
 
 - **URI suffix:** `openbindings`
 - **Change controller:** openbindings project
