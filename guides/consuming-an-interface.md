@@ -254,7 +254,7 @@ An interface can declare that it satisfies roles (published shared interfaces):
 ```json
 {
   "roles": {
-    "openbindings.context-store": "https://openbindings.com/interfaces/context-store.json"
+    "openbindings.context-store": "https://openbindings.com/interfaces/openbindings.context-store/0.1.json"
   },
   "operations": {
     "getContext": {

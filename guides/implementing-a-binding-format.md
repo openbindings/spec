@@ -262,7 +262,7 @@ func (e *Invoker) InvokeBinding(
     if resp.StatusCode >= 400 {
         // HTTPErrorOutput maps the status code to the right ErrCode_*
         // automatically (401 -> auth_required, 403 -> permission_denied,
-        // 5xx -> invocation_failed, etc.).
+        // 5xx -> execution_failed, etc.).
         return openbindings.SingleEventChannel(
             openbindings.HTTPErrorOutput(start, resp.StatusCode, resp.Status),
         ), nil
@@ -288,7 +288,7 @@ import {
   ERR_INVALID_INPUT,
   ERR_CONNECT_FAILED,
   ERR_AUTH_REQUIRED,
-  ERR_INVOCATION_FAILED,
+  ERR_EXECUTION_FAILED,
   buildAuthHeaders,
   contextHeaders,
   maybeJSON,
@@ -335,7 +335,7 @@ async *invokeBinding(
     return;
   }
   if (resp.status >= 400) {
-    yield { error: { code: ERR_INVOCATION_FAILED, message: raw }, status: resp.status, durationMs: Date.now() - start };
+    yield { error: { code: ERR_EXECUTION_FAILED, message: raw }, status: resp.status, durationMs: Date.now() - start };
     return;
   }
 
@@ -651,7 +651,7 @@ The SDKs export string constants for the canonical error codes. Using them lets 
 | `ErrCodeSourceLoadFailed` / `ERR_SOURCE_LOAD_FAILED` | Couldn't fetch or parse the source artifact |
 | `ErrCodeSourceConfigError` / `ERR_SOURCE_CONFIG_ERROR` | Source loaded but missing required config |
 | `ErrCodeConnectFailed` / `ERR_CONNECT_FAILED` | Couldn't reach the target |
-| `ErrCodeInvocationFailed` / `ERR_INVOCATION_FAILED` | Target returned an error |
+| `ErrCodeExecutionFailed` / `ERR_EXECUTION_FAILED` | Target returned an error |
 | `ErrCodeResponseError` / `ERR_RESPONSE_ERROR` | Got a response but couldn't process it |
 | `ErrCodeStreamError` / `ERR_STREAM_ERROR` | Error mid-stream |
 | `ErrCodeTimeout` / `ERR_TIMEOUT` | Call timed out |

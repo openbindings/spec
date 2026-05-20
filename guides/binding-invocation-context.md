@@ -214,9 +214,11 @@ binding spec (e.g., OpenAPI security schemes) or from runtime signals
 (e.g., a 401 response). Either way, the invoker knows what's needed and
 how to obtain it.
 
-The core spec explicitly scopes this out: "Pagination patterns, error
-handling conventions, and authentication mechanisms are application-level
-concerns outside the scope of this specification."
+The core spec explicitly scopes this out. Its §1.2 lists "runtime or
+protocol semantics. Invocation, retries, credential flow, sandboxing,
+and rate limiting" as out of scope, and §2 (Scope principle) places
+authority over invocation-time behavior — including security posture
+and credential handling — with implementations rather than the spec.
 
 Context resolution lives entirely below the OBI layer. The OBI document
 shape, binding resolution, and compatibility rules are not involved.

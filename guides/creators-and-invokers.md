@@ -17,7 +17,7 @@ This is the core capability that makes OpenBindings protocol-agnostic. The devel
 | Operation | Input | Output |
 |-----------|-------|--------|
 | `listFormats` | -- | `FormatInfo[]` |
-| `invokeBinding` | `BindingInvocationInput` | stream of `StreamEvent` |
+| `invokeBinding` | `BindingInvocationInput` | stream of `InvocationOutput` |
 
 `invokeBinding` always returns a stream of events. Unary calls produce a stream of one event. Streaming calls (WebSocket subscriptions, SSE, gRPC streams) produce many events until the connection closes. There is no separate "subscribe" operation -- invocation IS streaming.
 
@@ -99,7 +99,7 @@ A library is a code module that implements `BindingInvoker` and/or `InterfaceCre
 // Go
 type BindingInvoker interface {
     Formats() []FormatInfo
-    InvokeBinding(ctx context.Context, input *BindingInvocationInput) (<-chan StreamEvent, error)
+    InvokeBinding(ctx context.Context, input *BindingInvocationInput) (<-chan InvocationOutput, error)
 }
 
 type InterfaceCreator interface {
@@ -112,7 +112,7 @@ type InterfaceCreator interface {
 // TypeScript
 interface BindingInvoker {
     formats(): FormatInfo[];
-    invokeBinding(input: BindingInvocationInput, options?: { signal?: AbortSignal }): AsyncIterable<StreamEvent>;
+    invokeBinding(input: BindingInvocationInput, options?: { signal?: AbortSignal }): AsyncIterable<InvocationOutput>;
 }
 
 interface InterfaceCreator {
@@ -179,7 +179,7 @@ ob conform interface-creator.json my-service.obi.json --yes  # optional
 | Concern | Library | Service |
 |---------|---------|---------|
 | `listFormats` | `Formats() -> []FormatInfo` | `listFormats` operation -> `FormatInfo[]` |
-| `invokeBinding` | `InvokeBinding(ctx, input) -> <-chan StreamEvent` | `invokeBinding` operation -> stream of events |
+| `invokeBinding` | `InvokeBinding(ctx, input) -> <-chan InvocationOutput` | `invokeBinding` operation -> stream of events |
 | `createInterface` | `CreateInterface(ctx, input) -> *Interface` | `createInterface` operation -> `OpenBindingsInterface` |
 | Identity | Not applicable -- code dependency | Optional via `software-descriptor` role |
 | Transport | In-process function calls | Network via OBI bindings |
@@ -213,7 +213,7 @@ OpenAPI Binding Invoker
         |  on auth error: resolves security via callbacks, retries once
         |  returns stream of events
         v
-Stream of StreamEvent
+Stream of InvocationOutput
 ```
 
 For service implementations, the operation invoker delegates via a proxy that implements `BindingInvoker` locally and calls the service's `invokeBinding` operation over the network.
@@ -244,7 +244,7 @@ Binding invokers SHOULD use standard error codes to enable protocol-agnostic err
 | `source_load_failed` | Couldn't load or parse the binding source | No |
 | `source_config_error` | Source loaded but missing required config (no server URL, etc.) | No |
 | `connect_failed` | Couldn't establish connection to the service | Maybe (transient) |
-| `invocation_failed` | Call was made but the service returned an error | Depends |
+| `execution_failed` | Call was made but the service returned an error | Depends |
 | `response_error` | Got a response but couldn't process it | No |
 | `stream_error` | Error during streaming after initial connection | Depends |
 | `timeout` | Operation timed out | Maybe (transient) |
@@ -343,7 +343,7 @@ Interface creators SHOULD produce per-binding security references when the forma
 
 ## Why `InvokeBinding` returns a stream, not a value
 
-The binding invoker interface returns a stream (`<-chan StreamEvent` in Go, `AsyncIterable<StreamEvent>` in TypeScript) rather than a single value. This was a deliberate design choice that was stress-tested extensively.
+The binding invoker interface returns a stream (`<-chan InvocationOutput` in Go, `AsyncIterable<InvocationOutput>` in TypeScript) rather than a single value. This was a deliberate design choice that was stress-tested extensively.
 
 ### The question
 
@@ -386,7 +386,7 @@ This means the SDK doesn't need a bidirectional stream primitive. Bidirectional 
 
 ### Known limitations
 
-**gRPC client-streaming and bidirectional streaming RPCs** cannot be represented in the current model. The `InvokeBinding` interface accepts a single input, which maps to gRPC unary and server-streaming RPCs but not to methods where the client sends a stream of inputs. Interface creators skip these method types during OBI creation. If a future binding format requires streaming input, the interface may need to accept a channel or iterator as input. This is a known gap, not a design flaw -- the current model covers the vast majority of real-world API patterns.
+**gRPC client-streaming and bidirectional streaming RPCs** cannot be represented in the current SDK invocation model. The `InvokeBinding` interface (as shipped by the openbindings SDKs) accepts a single input, which maps to gRPC unary and server-streaming RPCs but not to methods where the client sends a stream of inputs. Interface creators skip these method types during OBI creation. If a future binding format requires streaming input, the SDK interface may need to accept a channel or iterator as input. This is a known SDK-shape gap, not a constraint of the OBI model itself (the core spec at §6.1 explicitly permits bidirectional patterns) -- and the current SDK shape covers the vast majority of real-world API patterns.
 
 ### Connection pooling is a format library concern
 

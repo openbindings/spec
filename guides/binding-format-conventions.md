@@ -189,11 +189,11 @@ Mirrors the command-line invocation (without the binary name).
 
 ---
 
-## Streaming patterns and the OBI invocation model (non-normative)
+## Streaming patterns and the SDK invocation model (non-normative)
 
-The current OBI invocation model is "one input value, one stream of output events." This shape is a natural fit for unary RPCs (a stream of one event), server-streaming RPCs (a stream of many events), server-sent events, and subscription patterns where the client provides parameters once and then receives many results.
+The core spec is permissive about invocation patterns: §6.1 says operations may be request/response, streaming, bidirectional, or pub/sub, with the binding (and the tool that invokes it) determining which. The current openbindings SDKs, however, expose binding invocation as "one input value, one stream of output events" — a shape that fits unary RPCs (a stream of one event), server-streaming RPCs (a stream of many events), server-sent events, and subscription patterns where the client provides parameters once and then receives many results.
 
-It is **not** a natural fit for protocol patterns where the caller needs to send multiple inputs over the lifetime of a single operation invocation. The following patterns are therefore out of scope as of v0.2, and binding format libraries SHOULD skip them at interface creation time:
+That SDK shape is **not** a natural fit for protocol patterns where the caller needs to send multiple inputs over the lifetime of a single operation invocation. The following patterns are therefore out of scope for the current SDKs, and binding format libraries SHOULD skip them at interface creation time:
 
 - **Client-streaming RPCs** (e.g., gRPC and Connect: client sends a stream of messages, server sends one response)
 - **Bidirectional streaming RPCs** (both sides send streams of messages)
@@ -201,7 +201,7 @@ It is **not** a natural fit for protocol patterns where the caller needs to send
 
 `grpc-go` and `connect-go` skip client-streaming and bidirectional methods during interface creation. `asyncapi-go` handles WebSocket subscriptions as "send one input message, receive a stream of events" and does not currently support post-init client sends.
 
-These limits are **structural** to the current OBI model, not bugs in any individual library. A future version of the spec may extend the invocation model to accept a stream of inputs as well as produce a stream of outputs; until then, services that rely on these patterns should expose alternative bindings (e.g., a server-streaming or unary equivalent) for OBI consumers.
+These limits sit in the SDKs' `BindingInvoker` interface shape, not in the OBI model itself. A future SDK iteration may extend the invocation interface to accept a stream of inputs as well as produce a stream of outputs; until then, services that rely on these patterns should expose alternative bindings (e.g., a server-streaming or unary equivalent) for OBI consumers built on the current SDKs.
 
 ### Streaming patterns that ARE supported
 
