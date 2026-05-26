@@ -234,3 +234,16 @@ If you're building an invoker for a new binding format, you should define and do
 7. **Streaming behavior**: Which operations produce multiple stream events vs. a single event.
 
 Document these in your library's README and consider submitting a PR to add them to this catalog.
+
+### Designing a JSON-based binding format
+
+When a format's artifact is itself a JSON document (as opposed to a wire-protocol identifier like a gRPC method name or an MCP tool name), the format author has a choice about what to make normative: the document shape, or just the binding unit inside it.
+
+Prefer the latter. Specifically:
+
+- **The format spec defines the addressable binding unit** (the value at which a `ref` resolves), not the enclosing document.
+- **The binding unit declares its own format version.** Embed the version field on the unit itself so that a single host document can carry units at different versions side by side, and so that the version travels with the unit if it is moved or copied.
+- **`ref` is a JSON Pointer (RFC 6901).** Concretely, that means `ref` values look like `"#/graphs/foo"` rather than `"foo"`. The empty Pointer `""` resolves to the document root, which lets a host document whose root IS a binding unit be addressed without naming.
+- **The enclosing document's shape is the author's concern.** Authors are free to embed binding units anywhere they're useful: in a file dedicated to that format, alongside units of other formats, or inside an unrelated host document at an `x-`-prefixed location.
+
+`openbindings.operation-graph` follows this pattern. The format spec defines an operation graph definition (its `nodes`, `edges`, validation rules, and required `openbindings.operation-graph` version field); the JSON document containing one or more graph definitions has no spec-prescribed shape. A conventional shape (a `graphs` map at the document root) is documented for ergonomics but is non-normative.

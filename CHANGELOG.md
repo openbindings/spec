@@ -82,7 +82,13 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 - **Retired interface**: `openbindings.host` (composed meta-role; no implementation ever claimed it; consumers can match its constituent roles directly)
 - **Renamed guides** (executor→invoker terminology): `creators-and-executors.md` to `creators-and-invokers.md`; `binding-execution-context.md` to `binding-invocation-context.md`.
 - **Removed guide**: `cli.md`.
-- **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0` (transforms aligned with core spec to plain JSONata strings; SemVer pattern enforcement and `propertyNames` constraints added to its schema)
+- **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0`. Changes:
+  - Transforms aligned with core spec to plain JSONata strings.
+  - SemVer pattern enforcement and `propertyNames` constraints added to its schema.
+  - **Addressable unit is the operation graph definition, not the JSON document around it.** The format spec no longer prescribes a document shape; an operation graph source document is any JSON document containing at least one graph definition.
+  - **Binding `ref` is a REQUIRED JSON Pointer.** Bare graph keys (e.g., `"paginateAll"`) are no longer accepted; a binding writes `"#/graphs/paginateAll"`, or `""` to target a graph at the document root. A graph embedded anywhere in a host document is addressable via its Pointer.
+  - **Each graph declares its own version.** The top-level `openbindings.operation-graph` field moves from the document onto the graph itself, allowing a single file to hold graphs at different format versions. The format token on the OBI source declaration continues to version the addressing convention.
+  - **Conventional document shape** (a top-level `graphs` map) is documented as non-normative for files whose primary purpose is to hold operation graphs.
 
 ## 0.1.0
 

@@ -13,7 +13,8 @@ This format is versioned independently via its format token (`openbindings.opera
 
 - [Overview](#overview)
 - [Format identifier](#format-identifier)
-- [Source document shape](#source-document-shape)
+- [Source documents](#source-documents)
+- [Binding `ref` syntax](#binding-ref-syntax)
 - [Operation graph definition](#operation-graph-definition)
 - [Node definitions](#node-definitions) (`input`, `output`, `operation`, `buffer`, `filter`, `transform`, `map`, `combine`, `exit`)
 - [Edge definition](#edge-definition)
@@ -62,30 +63,63 @@ This token is used in the `format` field of an OpenBindings `sources` entry:
 
 The `openbindings.` prefix indicates formats governed by the OpenBindings project. Third-party formats SHOULD use their own prefix to avoid misrepresenting governance.
 
-## Source document shape
+## Source documents
 
-An operation graph source document is a JSON object with the following top-level structure:
+The addressable unit of this binding format is the [Operation graph definition](#operation-graph-definition), not the JSON document that contains it. An operation graph source document is therefore any JSON document containing at least one operation graph definition addressable by JSON Pointer. The shape of the surrounding document is unconstrained.
+
+A single document MAY contain multiple operation graphs, including graphs declaring different versions of this format. Each graph carries its own version field (see [Operation graph definition](#operation-graph-definition)); the document itself has no version field.
+
+### Conventional shape (non-normative)
+
+For files whose primary purpose is to hold operation graphs, the RECOMMENDED top-level shape is a `graphs` map keyed by graph name:
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
-    "<graphKey>": { ... }
+    "paginateAll": {
+      "openbindings.operation-graph": "0.2.0",
+      "nodes": { ... },
+      "edges": [ ... ]
+    }
   }
 }
 ```
 
-- `openbindings.operation-graph` (REQUIRED): format version string.
-- `graphs` (REQUIRED): a map of named operation graphs. Each key is an operation graph identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is an [Operation graph definition](#operation-graph-definition).
+This is a convention, not a requirement. Tools MUST NOT reject documents that do not match it. A document whose root is itself a graph definition is also valid; so is a graph embedded at any other JSON Pointer location within an arbitrary host document.
 
-A single source document MAY contain multiple operation graphs. Each operation graph is referenced via the binding's `ref` field (e.g., `"ref": "paginateAll"`).
+## Binding `ref` syntax
 
-## Operation graph definition
+A binding whose `source` references an `openbindings.operation-graph` document MUST address its target operation graph using a [JSON Pointer (RFC 6901)](https://www.rfc-editor.org/rfc/rfc6901) fragment.
 
-An operation graph defines a directed graph of typed nodes connected by edges:
+The Pointer is evaluated against the operation graph source document. The resolved value MUST be a valid [Operation graph definition](#operation-graph-definition). The empty Pointer (`""`) is permitted and resolves to the whole document, so a document whose root is a graph definition is addressable without naming.
+
+Example:
 
 ```json
 {
+  "bindings": {
+    "items.listAll.pagination": {
+      "operation": "items.listAll",
+      "source": "pagination",
+      "ref": "#/graphs/paginateAll"
+    }
+  }
+}
+```
+
+The leading `#` is part of the syntax; it denotes a fragment identifier per RFC 3986. Tools that resolve `ref` MUST treat the value as a JSON Pointer and MUST NOT accept bare graph keys (e.g., `"paginateAll"`) as shorthand.
+
+A `ref` that does not resolve, or whose resolved value is not a valid operation graph definition, is a binding error; tools acting on the binding (Codegen, Invoking) MUST surface it.
+
+`ref` is REQUIRED on bindings using this format. To target a graph at the document root, use the empty Pointer `""`. This format does not define a "whole document" interpretation for an absent `ref`.
+
+## Operation graph definition
+
+An operation graph is the addressable unit of this binding format. It is a JSON object with the following shape:
+
+```json
+{
+  "openbindings.operation-graph": "0.2.0",
   "description": "Processes items and returns the result.",
   "nodes": {
     "in": { "type": "input" },
@@ -99,6 +133,7 @@ An operation graph defines a directed graph of typed nodes connected by edges:
 }
 ```
 
+- `openbindings.operation-graph` (REQUIRED, string): the version of this format the graph was authored against. MUST match the SemVer 2.0.0 pattern. Tools MUST refuse graphs declaring a higher minor version while pre-1.0, per the core spec's OBI-T-04. Each graph in a document declares its own version independently.
 - `description` (OPTIONAL, string): a human-readable description of what the operation graph does.
 - `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is a [Node](#node-definitions). Node keys MUST be unique within the operation graph (enforced by JSON object semantics).
 - `edges` (REQUIRED): an array of [Edge](#edge-definition) objects defining the connections between nodes.
@@ -379,30 +414,35 @@ There is no accumulated state (`$steps` or similar). Events carry their own data
 
 ## Validation rules
 
-Implementations MUST enforce the following well-formedness rules on operation graph source documents:
+Implementations MUST enforce the following well-formedness rules on each operation graph definition (the value at which a binding's `ref` resolves):
 
-1. The operation graph MUST contain exactly one node with `"type": "input"`.
-2. The operation graph MUST contain exactly one node with `"type": "output"`.
-3. The `input` node MUST NOT be the target of any edge (no incoming edges).
-4. The `output` node MUST NOT be the source of any edge (no outgoing edges).
-5. Every node MUST be reachable from the `input` node by transitively following edges and `onError` references (no orphan nodes).
-6. Every edge MUST reference valid node keys in both `from` and `to`.
-7. There MUST NOT be duplicate edges (same `from` and `to` pair).
-8. Every cycle in the graph MUST contain at least one `operation` node with `maxIterations` declared.
-9. `operation` nodes MUST reference operations that exist in the containing OBI's `operations` map.
-10. `filter` nodes MUST have exactly one of `schema` or `transform` (mutual exclusivity).
-11. `buffer` nodes MUST NOT have both `until` and `through` (mutual exclusivity).
-12. Every node MUST have a `type` field. Tools MUST support the node types defined in this specification (`input`, `output`, `operation`, `buffer`, `filter`, `transform`, `map`, `combine`, `exit`). Documents MAY use other `type` values; tools that encounter an unsupported node type SHOULD report an error.
-13. If a node declares `onError`, the referenced node key MUST exist in the operation graph.
-14. `exit` nodes MUST NOT have any outgoing edges.
+1. The operation graph MUST declare an `openbindings.operation-graph` field whose value matches the SemVer 2.0.0 pattern.
+2. The operation graph MUST contain exactly one node with `"type": "input"`.
+3. The operation graph MUST contain exactly one node with `"type": "output"`.
+4. The `input` node MUST NOT be the target of any edge (no incoming edges).
+5. The `output` node MUST NOT be the source of any edge (no outgoing edges).
+6. Every node MUST be reachable from the `input` node by transitively following edges and `onError` references (no orphan nodes).
+7. Every edge MUST reference valid node keys in both `from` and `to`.
+8. There MUST NOT be duplicate edges (same `from` and `to` pair).
+9. Every cycle in the graph MUST contain at least one `operation` node with `maxIterations` declared.
+10. `operation` nodes MUST reference operations that exist in the containing OBI's `operations` map.
+11. `filter` nodes MUST have exactly one of `schema` or `transform` (mutual exclusivity).
+12. `buffer` nodes MUST NOT have both `until` and `through` (mutual exclusivity).
+13. Every node MUST have a `type` field. Tools MUST support the node types defined in this specification (`input`, `output`, `operation`, `buffer`, `filter`, `transform`, `map`, `combine`, `exit`). Documents MAY use other `type` values; tools that encounter an unsupported node type SHOULD report an error.
+14. If a node declares `onError`, the referenced node key MUST exist in the operation graph.
+15. `exit` nodes MUST NOT have any outgoing edges.
+
+These rules apply to the operation graph definition itself. The enclosing JSON document has no specified shape and is not subject to validation by this specification.
 
 ## Extensions
 
-Operation graph source documents follow the same extension convention as the [core OpenBindings specification v0.2.0](../../openbindings.md#17-extensions):
+Operation graph definitions follow the same extension convention as the [core OpenBindings specification v0.2.0](../../openbindings.md#17-extensions):
 
-- Documents MAY include extension fields whose keys begin with `x-` at any object location (top-level, on graphs, on nodes, on edges).
+- Operation graph definitions MAY include extension fields whose keys begin with `x-` at any object location within the graph (on the graph itself, on nodes, on edges).
 - Tools MUST ignore `x-` fields they do not understand.
 - `x-` fields MUST NOT change the meaning of any defined operation graph field for purposes of validation, execution, or compatibility.
+
+The shape of the enclosing JSON document is unconstrained by this specification, so any extension scheme applied outside the graph definition is the host document's concern, not this format's.
 
 ## Normative examples
 
@@ -454,7 +494,7 @@ This example fetches pages of results in a cycle until no more pages exist, coll
     "items.listAll.pagination": {
       "operation": "items.listAll",
       "source": "pagination",
-      "ref": "paginateAll"
+      "ref": "#/graphs/paginateAll"
     }
   }
 }
@@ -464,9 +504,9 @@ This example fetches pages of results in a cycle until no more pages exist, coll
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "paginateAll": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "fetchPage": {
@@ -525,9 +565,9 @@ This example calls two operations concurrently and combines their results.
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "enrichOrder": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "customer": { "type": "operation", "operation": "customers.get" },
@@ -555,9 +595,9 @@ This example routes events from a streaming operation to different handlers base
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "routeEvents": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "stream": { "type": "operation", "operation": "events.subscribe" },
@@ -592,9 +632,9 @@ This example processes events and also triggers a notification as a side effect.
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "processAndNotify": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "process": { "type": "operation", "operation": "items.process" },
@@ -619,9 +659,9 @@ This example fetches a list of user IDs, then fetches details for each user, and
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "getAllUserDetails": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "listUsers": { "type": "operation", "operation": "users.list" },
@@ -657,9 +697,9 @@ This example fetches details for each item, falling back to a default value if t
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "fetchWithFallback": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "fetchDetail": {
@@ -704,9 +744,9 @@ This example makes any operation failure terminate the operation graph.
 
 ```json
 {
-  "openbindings.operation-graph": "0.2.0",
   "graphs": {
     "strictFetch": {
+      "openbindings.operation-graph": "0.2.0",
       "nodes": {
         "in": { "type": "input" },
         "fetch": {

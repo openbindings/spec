@@ -1,41 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/openbindings.operation-graph-0.2.0.json",
-  "title": "OpenBindings OperationGraph Source Document (v0.2.0)",
-  "description": "JSON Schema for openbindings.operation-graph binding source documents. Companion to the OpenBindings Specification.",
-  "type": "object",
-  "required": [
-    "openbindings.operation-graph",
-    "graphs"
-  ],
-  "properties": {
-    "openbindings.operation-graph": {
-      "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-      "description": "Format version for this openbindings.operation-graph source document (SemVer 2.0.0, e.g., 0.2.0)."
-    },
-    "graphs": {
-      "type": "object",
-      "description": "Named operation graphs, each defining a node graph.",
-      "propertyNames": {
-        "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/OperationGraph"
-      }
-    }
-  },
-  "patternProperties": { "^x-": {} },
-  "additionalProperties": false,
+  "title": "OpenBindings Operation Graph Definition (v0.2.0)",
+  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's ref resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification.",
+  "$ref": "#/$defs/OperationGraph",
   "$defs": {
     "OperationGraph": {
       "type": "object",
-      "description": "A named operation graph defining a directed graph of typed nodes connected by edges.",
+      "description": "An operation graph defining a directed graph of typed nodes connected by edges.",
       "required": [
+        "openbindings.operation-graph",
         "nodes",
         "edges"
       ],
       "properties": {
+        "openbindings.operation-graph": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Format version this graph was authored against (SemVer 2.0.0, e.g., 0.2.0). Each graph declares its own version independently."
+        },
         "description": {
           "type": "string",
           "description": "A human-readable description of what the operation graph does."
