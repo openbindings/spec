@@ -98,6 +98,11 @@ async function runGraph(graph, mockOps, input) {
 
   const buffers = {}; // key -> { acc:[values], counts:{} }
   const combines = {}; // key -> { latest:{}, counts:{}, produced:Set, ready:bool }
+  for (const [key, node] of Object.entries(nodes)) {
+    if (node.type === "combine" && inSources[key].length > 0) {
+      combines[key] = { latest: {}, counts: {}, produced: new Set(), ready: false };
+    }
+  }
 
   const queue = [];
   const enqueueFrom = (fromKey, events) => {

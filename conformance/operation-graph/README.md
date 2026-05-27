@@ -19,7 +19,7 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions; one file per spec example)
-    OG-EX-01.json ... OG-EX-08.json
+    OG-EX-01.json ... OG-EX-09.json
   validation/           (well-formedness rules; OG-VR.json)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
@@ -49,7 +49,7 @@ CI also runs.
 
 ## Execution fixtures
 
-Most execution fixtures correspond to one normative example in the format spec; OG-EX-08 instead exercises the maxIterations event-lineage rule (a merge node on a cycle).
+Most execution fixtures correspond to one normative example in the format spec; OG-EX-08 exercises the maxIterations event-lineage rule (a merge node on a cycle), and OG-EX-09/10 exercise `combine` readiness caused by source completion.
 A fixture supplies:
 
 - `graph` — the operation graph definition under test.
@@ -75,11 +75,17 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-06 | Error handling with `onError` | operation failure routed to a fallback `transform` |
 | OG-EX-07 | Fatal error with `exit` | `onError` to `exit` with `error: true`, fatal termination |
 | OG-EX-08 | Bounded cycle through a buffer | (not a spec example) merge node on a cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
+| OG-EX-09 | Combine with one empty source | (not a spec example) source completion makes `combine` ready; one key is `null` |
+| OG-EX-10 | Combine with all sources empty | (not a spec example) completion-only readiness emits one all-`null` combined object |
 
 OG-EX-02 is the fixture that pins the corrected `combine` semantics: because
 `customer` and `orders` each emit exactly once, `combine` waits until both are
 ready and emits a single joined object, with no intermediate `null`-bearing
 partial.
+
+OG-EX-09 and OG-EX-10 pin the completion side of the same readiness rule:
+sources that complete without producing an event contribute `null`, and
+completion can itself be the event that makes the `combine` node ready to emit.
 
 ## Validation fixtures
 

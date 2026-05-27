@@ -92,7 +92,7 @@ This is a convention, not a requirement. Tools MUST NOT reject documents that do
 
 A binding whose `source` references an `openbindings.operation-graph` document MUST address its target operation graph using a [JSON Pointer (RFC 6901)](https://www.rfc-editor.org/rfc/rfc6901) fragment.
 
-The Pointer is evaluated against the operation graph source document. The resolved value MUST be a valid [Operation graph definition](#operation-graph-definition). The empty Pointer (`""`) is permitted and resolves to the whole document, so a document whose root is a graph definition is addressable without naming.
+The Pointer carried by the fragment is evaluated against the operation graph source document. The resolved value MUST be a valid [Operation graph definition](#operation-graph-definition). The empty JSON Pointer is represented as the fragment `"#"` and resolves to the whole document, so a document whose root is a graph definition is addressable without naming.
 
 Example:
 
@@ -112,7 +112,7 @@ The leading `#` is part of the syntax; it denotes a fragment identifier per RFC 
 
 A `ref` that does not resolve, or whose resolved value is not a valid operation graph definition, is a binding error; tools acting on the binding (Codegen, Invoking) MUST surface it.
 
-`ref` is REQUIRED on bindings using this format. To target a graph at the document root, use the empty Pointer `""`. This format does not define a "whole document" interpretation for an absent `ref`.
+`ref` is REQUIRED on bindings using this format. To target a graph at the document root, use the JSON Pointer fragment `"#"`. This format does not define a "whole document" interpretation for an absent `ref`.
 
 ## Operation graph definition
 
@@ -197,6 +197,12 @@ Invokes an operation defined in the containing OBI's `operations` map.
 - `timeout` (OPTIONAL, integer >= 1): maximum time in milliseconds to wait for the operation to complete. If the operation does not complete within this time, the invocation fails with `timeout_exceeded`.
 
 When an event arrives at an operation node, the event becomes the operation's input. The operation is invoked, and its output events flow downstream independently. If the operation produces multiple output events (streaming), each event flows through the graph on its own.
+
+An operation node invokes the named operation through the containing OBI processor's ordinary operation-invocation path. The operation graph format does not inspect or interpret the referenced operation's bindings directly. Binding selection, security resolution, input/output transforms, source loading, and format-specific `ref` handling are performed by the processor the same way they are for a top-level invocation of that operation.
+
+The selected binding can use any source format supported by that processor, including OpenAPI, AsyncAPI, gRPC, MCP, GraphQL, or another operation graph. This format neither requires nor forbids any particular binding-selection algorithm beyond obligations inherited from the core OpenBindings specification for tools that select among bindings. If no supported binding can be selected, or if the selected binding fails, the operation node fails and error handling follows this format's `onError` rules.
+
+Because binding selection is a processor concern, a graph whose behavior depends on which of several non-equivalent bindings is selected is not fully portable. Authors who need portable behavior should ensure referenced operations have behaviorally equivalent bindings, or only one actionable binding in the relevant processing environment.
 
 ### `buffer`
 
@@ -302,7 +308,7 @@ This enables patterns like "fetch a list of IDs, then process each one":
 
 Joins multiple incoming sources by pairing the latest event from each into a keyed object. The keys are the names of the source nodes (determined from incoming edges); the values are the most recent event received from each source.
 
-A combine node is **ready** once every incoming source has either produced at least one event or completed. It emits nothing before it is ready. Once ready, it emits a combined object, and after that it emits again every time any still-active source produces a new event (carrying that source's new value alongside the latest value held for every other source).
+A combine node is **ready** once every incoming source has either produced at least one event or completed. It emits nothing before it is ready. Once ready, it emits a combined object, and after that it emits again every time any still-active source produces a new event (carrying that source's new value alongside the latest value held for every other source). If source completion makes the node ready, it emits one combined object immediately, using `null` for each source that completed without producing an event.
 
 - While not ready, the node accumulates the latest event from each source silently, emitting nothing.
 - A source that completes without ever producing an event contributes `null` for its key. A source that has produced at least one event always contributes its latest event, so before readiness a key is `null` only for a source that has completed empty.
@@ -395,7 +401,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 4. **Stream completion propagation**: when a node has processed all incoming events and will produce no more output, its output stream is complete. Completion propagates along edges:
    - A `buffer` with no conditions flushes its contents when all incoming edges are complete.
    - A `buffer` with `limit` flushes any remaining partial batch when all incoming edges are complete.
-   - A `combine` node becomes ready once every incoming source has produced at least one event or completed; it completes once all incoming sources have completed. A source that completed without ever producing an event contributes `null` for its key in every emission.
+   - A `combine` node becomes ready once every incoming source has produced at least one event or completed. If source completion makes the node ready, it emits one combined object immediately, using each source's latest event or `null` for each source that completed without producing an event. After readiness, each subsequent event from an active source emits another combined object. The node completes once all incoming sources have completed and any readiness-triggered emission has been delivered.
    - A node's output is complete when the node itself is complete and all its output events have been delivered.
 
 5. **Operation graph completion**: the operation graph is complete when either (a) an `exit` node is reached, which terminates the operation graph immediately, or (b) all events have finished flowing through the graph — they have reached the output node, reached a dead end, or been dropped by filters — and no events are in-flight. *Note (non-normative): in cyclic graphs, a cycle completes when all events within it have been dropped by filters or reached nodes outside the cycle, and no new events are entering the cycle. The mechanism for detecting this (reference counting, liveness tracking, drain detection, etc.) is implementation-defined.*
@@ -416,7 +422,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 - `map` gives every element event it emits the counts of the single input event it unpacked. A `map` inside a cycle therefore copies the input's counts onto each element, which is the amplification described under [Security considerations](#security-considerations).
 - A node that merges several events into one output (`buffer` on flush, `combine` on emit) gives the merged output event, for each node, the maximum of that node's count among all events combined into it. Taking the maximum guarantees that a merge never lowers a count, so a merge cannot be used to escape a `maxIterations` bound on a cycle that passes through it.
 
-Because counts only increase along a path and merges take the maximum, every cycle that contains an `operation` node with `maxIterations` (required by validation rule 9) is bounded no matter which buffer, combine, or map nodes also lie on the cycle.
+Because counts only increase along a lineage and merges take the maximum, a cycle that contains an `operation` node with `maxIterations` cannot traverse that operation indefinitely within any single event lineage. This is a per-lineage bound; it does not bound total event count or total operation invocations when `map` or fan-out creates additional lineages.
 
 ## Determinism and portability
 
