@@ -39,7 +39,8 @@ uses for the core schema.
 3. **Validation fixtures.** Each file matches `validation.schema.json`. Every
    `valid: true` graph validates against the op-graph schema. For rule blocks
    marked `schemaEnforced: true`, every `valid: false` graph is rejected by the
-   schema.
+   schema. Rule-10 tests additionally carry an `operations` set, and the verifier
+   resolves each operation node's `operation` field against it.
 
 `scripts/verify-operation-graph.mjs` does not execute graphs; it pins their
 shape. Executing them and diffing the output stream is the job of the reference
@@ -89,15 +90,16 @@ format spec's Validation rules section. Each rule block declares
 - **Schema-enforced** (rules 1, 8, 11, 12, 13): the op-graph JSON Schema alone
   rejects violations. The verifier asserts schema rejection on the negative
   cases.
-- **Beyond schema** (rules 2-7, 9, 14, 15): catching violations needs a
-  structural validator (node-cardinality, reachability, cycle analysis,
-  edge and `onError` cross-references). The negative graphs here are otherwise
-  schema-valid; only the named rule is violated.
+- **Beyond schema** (rules 2-7, 9, 10, 14, 15): catching violations needs a
+  structural validator (node-cardinality, reachability, cycle analysis, and
+  edge, `onError`, and operation-key cross-references). The negative graphs here
+  are otherwise schema-valid; only the named rule is violated.
 
 Rule 10 (operation nodes reference operations that exist in the containing OBI's
-`operations` map) is intentionally not covered here: it can only be evaluated
-against a containing OBI document, not against a graph in isolation, so it
-belongs to OBI-level validation rather than this graph-shape corpus.
+`operations` map) cannot be judged from a graph in isolation, so its tests
+additionally carry an `operations` array listing the operation keys the
+containing OBI declares; the verifier resolves each operation node's `operation`
+field against that set.
 
 Rule 13's unsupported-node-type clause is SHOULD-level ("tools SHOULD report an
 error" for an unknown `type`), not a validity failure, so an unknown node type

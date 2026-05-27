@@ -168,6 +168,31 @@
       ]
     },
     {
+      "rule": 10,
+      "title": "operation nodes MUST reference operations that exist in the containing OBI's operations map.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "all operation nodes resolve against the containing OBI's operations",
+          "operations": ["items.fetch", "items.process"],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "fetch": { "type": "operation", "operation": "items.fetch" }, "process": { "type": "operation", "operation": "items.process" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "fetch" }, { "from": "fetch", "to": "process" }, { "from": "process", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "an operation node references a key absent from the OBI's operations",
+          "operations": ["items.fetch", "items.process"],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "fetch": { "type": "operation", "operation": "items.fetch" }, "process": { "type": "operation", "operation": "items.missing" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "fetch" }, { "from": "fetch", "to": "process" }, { "from": "process", "to": "out" } ] },
+          "valid": false
+        },
+        {
+          "description": "a graph with no operation nodes resolves vacuously",
+          "operations": [],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        }
+      ]
+    },
+    {
       "rule": 11,
       "title": "filter nodes MUST have exactly one of schema or transform.",
       "schemaEnforced": true,

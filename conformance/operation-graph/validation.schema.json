@@ -43,6 +43,11 @@
                 "valid": {
                   "type": "boolean",
                   "description": "Whether the graph satisfies the named validation rule."
+                },
+                "operations": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "For rule-10 tests only: the operation keys the containing OBI declares. The runner resolves each operation node's `operation` field against this set."
                 }
               },
               "additionalProperties": false

@@ -178,6 +178,19 @@ for (const file of listJson(join(CORPUS, "validation"))) {
         errors.push(
           `${tlabel}: rule is schemaEnforced and the graph is invalid, but the op-graph schema accepted it`
         );
+      // Rule 10 cannot be judged from the graph alone; resolve operation node
+      // references against the containing OBI's operations supplied by the test.
+      if (block.rule === 10) {
+        const ops = t.operations ?? [];
+        const refs = Object.values(t.graph.nodes ?? {})
+          .filter((n) => n && n.type === "operation")
+          .map((n) => n.operation);
+        const allResolve = refs.every((ref) => ops.includes(ref));
+        if (allResolve !== t.valid)
+          errors.push(
+            `${tlabel}: operation refs resolve=${allResolve} against [${ops.join(", ")}], but fixture says valid=${t.valid}`
+          );
+      }
     }
   }
 }
