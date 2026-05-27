@@ -152,12 +152,12 @@ All nodes support the following optional field:
 ```json
 {
   "error": "timeout_exceeded",
-  "input": { "filter": "active", "cursor": "pg2" }
+  "event": { "filter": "active", "cursor": "pg2" }
 }
 ```
 
 - `error` (string): the error message or error type.
-- `input` (any): the event that was being processed when the failure occurred.
+- `event` (any): the event that was being processed when the failure occurred.
 
 Errors are silent by default. Operation graphs often process many events (e.g., fetching details for 100 items), and one transient failure should not kill the entire stream. Authors who want errors handled wire `onError` to a transform for fallback values, to an operation for logging, or to an `exit` node with `error: true` to make failures fatal. The graph author is always in control of error policy.
 
@@ -402,7 +402,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 
 6. **Cancellation**: if the caller cancels the operation graph (e.g., via an abort signal) or an `exit` node is reached, cancellation propagates to all active operation invocations. Buffer nodes discard accumulated contents without flushing. Combine nodes discard latest values without emitting. All pending operations are cancelled.
 
-7. **Errors**: when a node fails (operation failure, `timeout_exceeded`, `map_not_array`, or any other node-level error), the failing event does not propagate along the node's normal outgoing edges. If the node has `onError` set, an error event (`{ "error": "<message>", "input": <eventBeingProcessed> }`) is routed to the named node. If `onError` is not set, the error event is dropped. In both cases, other in-flight events in the graph continue processing normally. To make errors fatal, wire `onError` to an `exit` node with `error: true`.
+7. **Errors**: when a node fails (operation failure, `timeout_exceeded`, `map_not_array`, or any other node-level error), the failing event does not propagate along the node's normal outgoing edges. If the node has `onError` set, an error event (`{ "error": "<message>", "event": <eventBeingProcessed> }`) is routed to the named node. If `onError` is not set, the error event is dropped. In both cases, other in-flight events in the graph continue processing normally. To make errors fatal, wire `onError` to an `exit` node with `error: true`.
 
 ### `maxIterations` and event lineage
 
@@ -749,7 +749,7 @@ This example fetches details for each item, falling back to a default value if t
         },
         "fallback": {
           "type": "transform",
-          "transform": "{ \"id\": input.id, \"name\": \"unknown\", \"error\": error }"
+          "transform": "{ \"id\": event.id, \"name\": \"unknown\", \"error\": error }"
         },
         "out": { "type": "output" }
       },
@@ -773,8 +773,8 @@ This example fetches details for each item, falling back to a default value if t
 
 1. **`in`** receives `{ "id": "item-1" }`, flows to `fetchDetail`.
 2. **`fetchDetail`** invokes `items.get`. The operation times out after 5000ms.
-3. Because `onError` is set, an error event `{ "error": "timeout_exceeded", "input": { "id": "item-1" } }` is routed to `fallback`. (Without `onError`, the error would be silently dropped.)
-4. **`fallback`** receives the error event as `$`. The expression accesses `input.id` and `error` as fields of the error event (not `$input`, which is the operation graph's original input). Result: `{ "id": "item-1", "name": "unknown", "error": "timeout_exceeded" }`.
+3. Because `onError` is set, an error event `{ "error": "timeout_exceeded", "event": { "id": "item-1" } }` is routed to `fallback`. (Without `onError`, the error would be silently dropped.)
+4. **`fallback`** receives the error event as `$`. The expression accesses `event.id` and `error` as fields of the error event (`event` is the value the node was processing when it failed, distinct from `$input`, the operation graph's original input). Result: `{ "id": "item-1", "name": "unknown", "error": "timeout_exceeded" }`.
 5. Event flows to `out`. Output: `{ "id": "item-1", "name": "unknown", "error": "timeout_exceeded" }`.
 
 ### Example 7: Fatal error with `exit`
@@ -808,7 +808,7 @@ This example makes any operation failure terminate the operation graph.
 
 **Execution (success)**: `in` -> `fetch` succeeds -> `out` emits the result.
 
-**Execution (error)**: `fetch` times out. The error event `{ "error": "timeout_exceeded", "input": { ... } }` is routed to `die`. The `exit` node terminates the operation graph with an error. Any previously emitted output events are not retracted, but the stream is closed as failed.
+**Execution (error)**: `fetch` times out. The error event `{ "error": "timeout_exceeded", "event": { ... } }` is routed to `die`. The `exit` node terminates the operation graph with an error. Any previously emitted output events are not retracted, but the stream is closed as failed.
 
 ## Security considerations
 

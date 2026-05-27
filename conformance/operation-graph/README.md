@@ -19,8 +19,9 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions; one file per spec example)
-    OG-EX-01.json ... OG-EX-07.json
+    OG-EX-01.json ... OG-EX-08.json
   validation/           (well-formedness rules; OG-VR.json)
+  runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
 
 ## What the verifier checks
@@ -40,14 +41,14 @@ uses for the core schema.
    marked `schemaEnforced: true`, every `valid: false` graph is rejected by the
    schema.
 
-The verifier does not execute graphs; it pins their shape and their declared
-expected outputs. A reference execution runner that replays the execution
-fixtures and diffs the output stream is a follow-up (see "Runner contract"
-below); the fixtures are designed so one can consume them without modification.
+`scripts/verify-operation-graph.mjs` does not execute graphs; it pins their
+shape. Executing them and diffing the output stream is the job of the reference
+runner under `runners/js/` (see [Reference runner](#reference-runner)), which the
+CI also runs.
 
 ## Execution fixtures
 
-Each execution fixture corresponds to one normative example in the format spec.
+Most execution fixtures correspond to one normative example in the format spec; OG-EX-08 instead exercises the maxIterations event-lineage rule (a merge node on a cycle).
 A fixture supplies:
 
 - `graph` — the operation graph definition under test.
@@ -72,6 +73,7 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-05 | Map and collect | `map` unpack, per-element invocation, `buffer` collect |
 | OG-EX-06 | Error handling with `onError` | operation failure routed to a fallback `transform` |
 | OG-EX-07 | Fatal error with `exit` | `onError` to `exit` with `error: true`, fatal termination |
+| OG-EX-08 | Bounded cycle through a buffer | (not a spec example) merge node on a cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
 
 OG-EX-02 is the fixture that pins the corrected `combine` semantics: because
 `customer` and `orders` each emit exactly once, `combine` waits until both are
@@ -102,17 +104,32 @@ error" for an unknown `type`), not a validity failure, so an unknown node type
 is schema-valid and is not represented as a negative case. Only the MUST part
 (every node has a `type`) is fixtured.
 
-## Runner contract (for a future reference runner)
+## Reference runner
 
-A runner that executes these fixtures should, for each execution fixture:
+`runners/js/run.mjs` executes every execution fixture and diffs the produced
+output stream against `expected`. Because operations are mocked, it needs only a
+graph engine, a JSONata evaluator (`jsonata`), and a JSON Schema validator
+(`ajv`); it does not depend on any binding-invocation stack.
 
-1. Load `graph`, validate it against the op-graph schema, and bind its
-   `operation` nodes to the mocked `operations` (matching `whenInput`, emitting
-   `emit`, or failing with `fail`).
-2. Run the graph with `input`.
-3. Compare the produced output stream to `expected.output` using
-   `expected.ordering`, and, when `expected.error` is true, assert fatal
-   termination with `expected.errorDetail`.
+```
+cd runners/js
+npm install
+node run.mjs
+```
 
-Because operation responses are mocked, a runner needs only the graph engine
-under test, not live services.
+The engine is a deterministic, single-threaded drain-to-fixpoint interpreter: it
+processes the FIFO event queue to quiescence, then performs an end-of-stream pass
+(flush no-condition buffers, complete combines) and repeats until nothing new is
+produced. `ordering: exact` fixtures are compared in order; `ordering: set`
+fixtures are compared as a multiset, matching the spec's determinism contract.
+For each fixture the runner binds the `operation` nodes to the mocked
+`operations` (matching `whenInput`, emitting `emit`, or failing with `fail`),
+runs the graph with `input`, and asserts fatal termination with
+`expected.errorDetail` when `expected.error` is true. The CI runs it on every
+push.
+
+This is a *reference* oracle: it and the fixtures are maintained together, so it
+confirms the fixtures are self-consistent and reproduce the spec's stated
+execution traces. Running an independent implementation (an SDK's operation-graph
+engine) against the same corpus is the stronger cross-implementation check and is
+the natural next step; the corpus is designed to be consumed unmodified.

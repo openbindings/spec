@@ -37,7 +37,7 @@
       "expected": {
         "output": [],
         "error": true,
-        "errorDetail": { "error": "timeout_exceeded", "input": { "id": "item-1" } },
+        "errorDetail": { "error": "timeout_exceeded", "event": { "id": "item-1" } },
         "ordering": "exact"
       }
     }
