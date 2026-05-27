@@ -1,0 +1,45 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Fatal error with exit: make any operation failure terminate the operation graph. Mirrors the format spec's Example 7 (error path).",
+  "fixtures": [
+    {
+      "id": "OG-EX-07",
+      "name": "Fatal error with exit",
+      "section": "Normative examples / Example 7",
+      "description": "items.get fails with timeout_exceeded. onError routes the error event to die, an exit node with error:true, which terminates the graph with an error. The error event is the error detail and is not emitted to the output stream, so output is empty and error is true.",
+      "operations": {
+        "items.get": {
+          "responses": [
+            { "whenInput": { "id": "item-1" }, "fail": "timeout_exceeded" }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "fetch": {
+            "type": "operation",
+            "operation": "items.get",
+            "timeout": 5000,
+            "onError": "die"
+          },
+          "die": { "type": "exit", "error": true },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "fetch" },
+          { "from": "fetch", "to": "out" }
+        ]
+      },
+      "input": { "id": "item-1" },
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": { "error": "timeout_exceeded", "input": { "id": "item-1" } },
+        "ordering": "exact"
+      }
+    }
+  ]
+}

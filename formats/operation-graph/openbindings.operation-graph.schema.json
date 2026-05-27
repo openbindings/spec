@@ -35,8 +35,9 @@
         },
         "edges": {
           "type": "array",
-          "description": "Array of edges connecting nodes.",
+          "description": "Array of edges connecting nodes. Duplicate edges (same from/to pair) are forbidden by validation rule 8; uniqueItems backstops that rule structurally.",
           "minItems": 1,
+          "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/Edge"
           }

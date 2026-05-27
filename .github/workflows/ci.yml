@@ -37,6 +37,9 @@ jobs:
       - name: Validate operation-graph schema is valid JSON
         run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null
 
+      - name: Verify operation-graph examples and conformance subcorpus
+        run: node scripts/verify-operation-graph.mjs
+
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 

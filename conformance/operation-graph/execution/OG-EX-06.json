@@ -1,0 +1,49 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Error handling with onError: fetch an item's detail, falling back to a default value when the fetch fails. Mirrors the format spec's Example 6 (error path).",
+  "fixtures": [
+    {
+      "id": "OG-EX-06",
+      "name": "Error handling with onError (error path)",
+      "section": "Normative examples / Example 6",
+      "description": "items.get fails with timeout_exceeded. Because onError is set, the error event { error, input } is routed to the fallback transform, which reads input.id and error off the error event (not $input) and produces a default record. That record reaches output.",
+      "operations": {
+        "items.get": {
+          "responses": [
+            { "whenInput": { "id": "item-1" }, "fail": "timeout_exceeded" }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "fetchDetail": {
+            "type": "operation",
+            "operation": "items.get",
+            "timeout": 5000,
+            "onError": "fallback"
+          },
+          "fallback": {
+            "type": "transform",
+            "transform": "{ \"id\": input.id, \"name\": \"unknown\", \"error\": error }"
+          },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "fetchDetail" },
+          { "from": "fetchDetail", "to": "out" },
+          { "from": "fallback", "to": "out" }
+        ]
+      },
+      "input": { "id": "item-1" },
+      "expected": {
+        "output": [
+          { "id": "item-1", "name": "unknown", "error": "timeout_exceeded" }
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}
