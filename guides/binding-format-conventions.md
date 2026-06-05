@@ -179,7 +179,7 @@ Mirrors the command-line invocation (without the binary name).
 
 **Source**: `location` is the path to the usage-spec KDL file. Also supports `exec:<binary>` to extract the spec from the binary at runtime. `content` is inline KDL content.
 
-**Credentials**: Local CLI invocation, not network services. Configuration is supplied through the `environment` key in the [binding context](./binding-invocation-context.md) and surfaced to the child process as environment variables.
+**Credentials**: Local CLI invocation, not network services. Configuration is supplied through the `environment` key in the [binding context](/interfaces/binding-invoker#context) and surfaced to the child process as environment variables.
 
 **Invocation**: The invoker builds CLI arguments from the input (flags by name, positional args by order), runs the binary via `os/exec`, and returns stdout as a single stream event with exit code as status.
 

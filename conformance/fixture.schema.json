@@ -25,6 +25,11 @@
       "type": "string",
       "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. why some test cases are intentionally out of format. Informational; not consumed by harnesses."
     },
+    "coverage": {
+      "type": "string",
+      "enum": ["positive-only"],
+      "description": "If present, marks this fixture as providing partial coverage of its rule. 'positive-only' means the fixture has no discriminating negative cases (typically because negative cases cannot be expressed in the document-level fixture format without per-format harness logic, cf. OBI-T-06). A fixture marked this way is counted separately in the manifest and does not contribute to a 'complete coverage' claim. Absence means complete coverage."
+    },
     "tests": {
       "type": "array",
       "minItems": 1,

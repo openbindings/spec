@@ -4,11 +4,12 @@ Test fixtures for OpenBindings document and tool conformance, keyed to the rule 
 
 ## Status
 
-**Inspection-class document validity coverage complete; OBI-T (tool behavior) coverage in progress for the rules whose observable conformance fits the document-level fixture format.**
+**Document validity coverage complete for OBI-D-01 through OBI-D-16; OBI-D-17 is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage in progress for the rules whose observable conformance fits the document-level fixture format.**
 
 | Rule range | Coverage |
 |---|---|
-| OBI-D-01 to OBI-D-17 | Complete (100 tests) |
+| OBI-D-01 to OBI-D-16 | Complete (97 tests) |
+| OBI-D-17 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
 | OBI-T-01, OBI-T-03, OBI-T-04 | Complete (14 tests; parse/load-shaped rules, same fixture format as OBI-D) |
 | OBI-T-02, OBI-T-05 | **Deferred.** Rules SHOULD-warn on diagnostics. The spec deliberately leaves diagnostic emission shape tool-defined; pinning a diagnostic shape via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
 | OBI-T-06 | **Deferred.** Applies to tools that resolve `ref` values per binding-format conventions. Conformance is per-format and depends on each format community's `ref` syntax; a portable corpus would need a per-format fixture set. |

@@ -4,7 +4,7 @@
 
 This document is a practical walkthrough for implementing a new binding format — i.e., publishing a package like `@my-org/openbindings-acme` or `github.com/my-org/openbindings-acme-go` that lets OpenBindings consumers invoke against your wire protocol.
 
-For the conceptual layer (what these roles are, why they're separate, the deployment models), see [Creators and Invokers](./creators-and-invokers.md). For the consumer side (how application code uses your format), see [Consuming an OpenBindings Interface](./consuming-an-interface.md).
+For the conceptual layer (what roles are, why they're separate, and how implementations carry them), see the [role pages](../interfaces/). For the consumer side (how application code uses your format), see [Consuming an OpenBindings Interface](./consuming-an-interface.md).
 
 The Go and TypeScript SDKs follow the same shape; this guide shows both side-by-side. Examples assume the running example of a fictional `acme-gateway@1.0` format whose protocol is "HTTP POST to `<location>/<ref>` with the input as a JSON body and an optional bearer token."
 
@@ -386,7 +386,7 @@ if (event.error?.code === ERR_AUTH_REQUIRED &&
 }
 ```
 
-See [Creators and Invokers § Security resolution](./creators-and-invokers.md#security-resolution) for the resolution algorithm.
+See [Binding Invoker § Security resolution](/interfaces/binding-invoker#security-resolution) for the resolution algorithm.
 
 ---
 
@@ -509,7 +509,7 @@ export class AcmeGatewayCreator implements InterfaceCreator {
 
 ### Populating `security`
 
-If your format has security metadata (OpenAPI's `securitySchemes`, GraphQL directives, etc.), interface creators SHOULD extract it and populate the OBI's `security` section. Bindings that require auth reference the security entry by name; bindings for public endpoints SHOULD NOT have a `security` reference. See [Creators and Invokers § Security population](./creators-and-invokers.md#security-population) for the format-to-method mapping table.
+If your format has security metadata (OpenAPI's `securitySchemes`, GraphQL directives, etc.), interface creators SHOULD extract it and populate the OBI's `security` section. Bindings that require auth reference the security entry by name; bindings for public endpoints SHOULD NOT have a `security` reference. See [Interface Creator § Security population](/interfaces/interface-creator#security-population) for the format-to-method mapping table.
 
 ---
 
@@ -701,7 +701,7 @@ The Go SDK ships an integration test scaffold in `openbindings-go/formats/openap
 
 ## Step 7 (optional): Publish a service
 
-The same contract works as a service. You can wrap your library implementation in an `ob serve` instance to expose `binding-invoker`, `interface-creator`, and `source-inspector` operations over HTTP and MCP. Consumers then talk to your service instead of importing the library — useful when the format requires heavyweight dependencies you don't want to bundle into every consumer. See [Creators and Invokers § Two deployment models](./creators-and-invokers.md#two-deployment-models) for the trade-off.
+The same contract works as a service. You can wrap your library implementation in an `ob serve` instance to expose `binding-invoker`, `interface-creator`, and `source-inspector` operations over HTTP and MCP. Consumers then talk to your service instead of importing the library, which is useful when the format requires heavyweight dependencies you don't want to bundle into every consumer. See the [/interfaces overview](../interfaces/) for the library-vs-service trade-off.
 
 ---
 

@@ -1,0 +1,291 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "validation",
+  "description": "Well-formedness fixtures keyed to the numbered validation rules in the operation-graph format spec. valid:true graphs must validate against the op-graph JSON Schema; for schemaEnforced rules, valid:false graphs must be rejected by it. Negative graphs for non-schemaEnforced rules are otherwise schema-valid so that only the named rule is violated.",
+  "notes": "Rule 10 (operation nodes reference operations in the containing OBI) is covered at the OBI level, not here, since it cannot be decided from a graph in isolation. Rule 13's unsupported-type clause is SHOULD-level and is not a validity failure, so only the MUST part (every node has a type) is fixtured.",
+  "rules": [
+    {
+      "rule": 1,
+      "title": "The graph MUST declare an openbindings.operation-graph SemVer field.",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "version present and valid",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "version field missing",
+          "graph": { "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": false
+        },
+        {
+          "description": "version is not a SemVer string",
+          "graph": { "openbindings.operation-graph": "1", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 2,
+      "title": "The graph MUST contain exactly one input node.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "exactly one input node",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "two input nodes",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "in2": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" }, { "from": "in2", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 3,
+      "title": "The graph MUST contain exactly one output node.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "exactly one output node",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "two output nodes",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" }, "out2": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" }, { "from": "in", "to": "out2" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 4,
+      "title": "The input node MUST NOT have incoming edges.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "input has no incoming edge",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "input is the target of an edge (the cycle carries an operation with maxIterations so only rule 4 is violated)",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "op": { "type": "operation", "operation": "x", "maxIterations": 3 }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "op" }, { "from": "op", "to": "in" }, { "from": "in", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 5,
+      "title": "The output node MUST NOT have outgoing edges.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "output has no outgoing edge",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "output is the source of an edge",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" }, "sink": { "type": "transform", "transform": "$" } }, "edges": [ { "from": "in", "to": "out" }, { "from": "out", "to": "sink" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 6,
+      "title": "Every node MUST be reachable from the input node (via edges and onError references).",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "all nodes reachable",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "an onError target counts toward reachability",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "op": { "type": "operation", "operation": "x", "onError": "fb" }, "fb": { "type": "transform", "transform": "$" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "op" }, { "from": "op", "to": "out" }, { "from": "fb", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "orphan node unreachable from input",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" }, "orphan": { "type": "transform", "transform": "$" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 7,
+      "title": "Every edge MUST reference valid node keys in both from and to.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "all edge endpoints are real nodes",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "edge targets a nonexistent node key",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" }, { "from": "in", "to": "ghost" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 8,
+      "title": "There MUST NOT be duplicate edges (same from and to pair).",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "distinct edges",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "t": { "type": "transform", "transform": "$" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "t" }, { "from": "t", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "an edge appears twice",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" }, { "from": "in", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 9,
+      "title": "Every cycle MUST contain at least one operation node with maxIterations declared.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "cycle contains an operation node with maxIterations",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "op": { "type": "operation", "operation": "x", "maxIterations": 5 }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "op" }, { "from": "op", "to": "op" }, { "from": "op", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "cycle of transforms with no bounded operation node",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "a": { "type": "transform", "transform": "$" }, "b": { "type": "transform", "transform": "$" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "a" }, { "from": "a", "to": "b" }, { "from": "b", "to": "a" }, { "from": "a", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 10,
+      "title": "operation nodes MUST reference operations that exist in the containing OBI's operations map.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "all operation nodes resolve against the containing OBI's operations",
+          "operations": ["items.fetch", "items.process"],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "fetch": { "type": "operation", "operation": "items.fetch" }, "process": { "type": "operation", "operation": "items.process" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "fetch" }, { "from": "fetch", "to": "process" }, { "from": "process", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "an operation node references a key absent from the OBI's operations",
+          "operations": ["items.fetch", "items.process"],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "fetch": { "type": "operation", "operation": "items.fetch" }, "process": { "type": "operation", "operation": "items.missing" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "fetch" }, { "from": "fetch", "to": "process" }, { "from": "process", "to": "out" } ] },
+          "valid": false
+        },
+        {
+          "description": "a graph with no operation nodes resolves vacuously",
+          "operations": [],
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        }
+      ]
+    },
+    {
+      "rule": 11,
+      "title": "filter nodes MUST have exactly one of schema or transform.",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "filter with schema only",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "f": { "type": "filter", "schema": { "required": ["x"] } }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "f" }, { "from": "f", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "filter with transform only",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "f": { "type": "filter", "transform": "true" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "f" }, { "from": "f", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "filter with both schema and transform",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "f": { "type": "filter", "schema": { "required": ["x"] }, "transform": "true" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "f" }, { "from": "f", "to": "out" } ] },
+          "valid": false
+        },
+        {
+          "description": "filter with neither schema nor transform",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "f": { "type": "filter" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "f" }, { "from": "f", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 12,
+      "title": "buffer nodes MUST NOT have both until and through.",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "buffer with until only",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "b": { "type": "buffer", "until": { "type": "object" } }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "b" }, { "from": "b", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "buffer with both until and through",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "b": { "type": "buffer", "until": { "type": "object" }, "through": { "type": "object" } }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "b" }, { "from": "b", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 13,
+      "title": "Every node MUST have a type field.",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "every node has a type",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "a node is missing its type field",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "bad": {}, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "bad" }, { "from": "bad", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 14,
+      "title": "If a node declares onError, the referenced node key MUST exist.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "onError references an existing node",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "op": { "type": "operation", "operation": "x", "onError": "fb" }, "fb": { "type": "transform", "transform": "$" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "op" }, { "from": "op", "to": "out" }, { "from": "fb", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "onError references a nonexistent node",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "op": { "type": "operation", "operation": "x", "onError": "ghost" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "op" }, { "from": "op", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": 15,
+      "title": "exit nodes MUST NOT have outgoing edges.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "exit node with no outgoing edge",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "x": { "type": "exit" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "x" }, { "from": "in", "to": "out" } ] },
+          "valid": true
+        },
+        {
+          "description": "exit node with an outgoing edge",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "x": { "type": "exit" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "x" }, { "from": "x", "to": "out" } ] },
+          "valid": false
+        }
+      ]
+    }
+  ]
+}

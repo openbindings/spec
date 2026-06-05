@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/operation-graph-validation-fixture-0.2.0.json",
+  "title": "openbindings.operation-graph validation fixture file",
+  "description": "Well-formedness fixtures keyed to the numbered validation rules in the openbindings.operation-graph spec. Each rule block carries `schemaEnforced`, declaring whether the op-graph JSON Schema alone is sufficient to catch violations of that rule; a runner uses it to decide whether to assert schema rejection on the negative cases.",
+  "type": "object",
+  "required": ["format", "kind", "rules"],
+  "properties": {
+    "format": { "const": "openbindings.operation-graph@0.2.0" },
+    "kind": { "const": "validation" },
+    "description": { "type": "string" },
+    "notes": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["rule", "title", "schemaEnforced", "tests"],
+        "properties": {
+          "rule": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 15,
+            "description": "The validation-rule number from the format spec's Validation rules section."
+          },
+          "title": { "type": "string" },
+          "schemaEnforced": {
+            "type": "boolean",
+            "description": "True if the op-graph JSON Schema alone rejects every violation of this rule; false if catching it requires a structural validator beyond JSON Schema (reachability, cycle analysis, cross-references)."
+          },
+          "tests": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["description", "graph", "valid"],
+              "properties": {
+                "description": { "type": "string" },
+                "graph": {
+                  "type": "object",
+                  "description": "An operation graph definition. valid:true graphs MUST validate against the op-graph JSON Schema; valid:false graphs for schemaEnforced rules MUST be rejected by it."
+                },
+                "valid": {
+                  "type": "boolean",
+                  "description": "Whether the graph satisfies the named validation rule."
+                },
+                "operations": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "For rule-10 tests only: the operation keys the containing OBI declares. The runner resolves each operation node's `operation` field against this set."
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

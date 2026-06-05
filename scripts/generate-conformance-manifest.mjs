@@ -62,6 +62,7 @@ const files = fixtures.map(({ relPath, absPath }) => {
     tests,
     positives,
     negatives,
+    ...(fixture.coverage ? { coverage: fixture.coverage } : {}),
   };
 });
 
@@ -75,8 +76,15 @@ const totals = files.reduce(
   { tests: 0, positives: 0, negatives: 0 }
 );
 
-const documentRules = files.filter((f) => f.rule.startsWith("OBI-D-")).length;
-const toolRules = files.filter((f) => f.rule.startsWith("OBI-T-")).length;
+// Coverage accounting: a fixture marked `coverage: "positive-only"` (or any
+// non-absent coverage value) provides partial, non-discriminating coverage.
+// It does not contribute to the "complete" rule counts; it is reported
+// separately as `rulesPartial...`.
+const isComplete = (f) => !f.coverage;
+const documentRules = files.filter((f) => f.rule.startsWith("OBI-D-") && isComplete(f)).length;
+const toolRules = files.filter((f) => f.rule.startsWith("OBI-T-") && isComplete(f)).length;
+const documentRulesPartial = files.filter((f) => f.rule.startsWith("OBI-D-") && !isComplete(f)).length;
+const toolRulesPartial = files.filter((f) => f.rule.startsWith("OBI-T-") && !isComplete(f)).length;
 
 const manifest = {
   specVersion: readSpecVersion(),
@@ -88,6 +96,8 @@ const manifest = {
     negatives: totals.negatives,
     rulesCoveredDocument: documentRules,
     rulesCoveredTool: toolRules,
+    rulesPartialDocument: documentRulesPartial,
+    rulesPartialTool: toolRulesPartial,
   },
   files,
 };

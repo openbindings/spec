@@ -41,7 +41,7 @@ Roles enable composable interfaces, like traits in Rust or protocols in Swift. Y
 
 ## How does conformance work?
 
-OpenBindings defines two layers of conformance with stable rule identifiers (`OBI-D-##` for document validity, `OBI-T-##` for tool behavior). A document is conformant when it satisfies the OBI-D rules; a tool is conformant when it honors the OBI-T rules for its declared conformance class (Inspection, Codegen, or Invoking). Stable rule IDs mean SDK errors, errata, and conformance reports can cite specific rules unambiguously.
+OpenBindings defines two layers of conformance with stable rule identifiers (`OBI-D-##` for document validity, `OBI-T-##` for tool behavior). A document is conformant when it satisfies the OBI-D rules; a tool is conformant when it honors the OBI-T rules that apply to the capabilities it exercises (parsing, reference resolution, binding selection, operation-name resolution, invocation, and transform evaluation). Stable rule IDs mean SDK errors, errata, and conformance reports can cite specific rules unambiguously.
 
 The spec ships a conformance corpus (`conformance/`) with fixtures keyed to each rule, so tool authors can measure their implementation's conformance and report it citably. SDK authors can run the corpus against their implementation to bootstrap and regression-test conformance.
 

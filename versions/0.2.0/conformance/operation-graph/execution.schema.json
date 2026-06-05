@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/operation-graph-execution-fixture-0.2.0.json",
+  "title": "openbindings.operation-graph execution fixture file",
+  "description": "Describes one or more execution fixtures for the openbindings.operation-graph format. Each fixture pairs a graph, a set of mocked operation responses, and a graph input with the expected output stream, so a runner can replay the graph deterministically and compare. This schema constrains fixture shape only; a runner validates each `graph` against the op-graph schema separately.",
+  "type": "object",
+  "required": ["format", "kind", "fixtures"],
+  "properties": {
+    "format": { "const": "openbindings.operation-graph@0.2.0" },
+    "kind": { "const": "execution" },
+    "description": { "type": "string" },
+    "notes": { "type": "string" },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "section", "graph", "input", "expected"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^OG-EX-[0-9]{2}$",
+            "description": "Stable fixture identifier, e.g. OG-EX-01."
+          },
+          "name": { "type": "string" },
+          "section": {
+            "type": "string",
+            "description": "The spec section or example this fixture is drawn from."
+          },
+          "description": { "type": "string" },
+          "operations": {
+            "type": "object",
+            "description": "Mocked behavior for each operation an `operation` node may invoke, keyed by operation key.",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["responses"],
+              "properties": {
+                "responses": {
+                  "type": "array",
+                  "description": "Response rules, matched in order. The first rule whose `whenInput` deep-equals the node's input event (or whose `whenInput` is absent, a wildcard) applies.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "whenInput": {
+                        "description": "Input event this rule matches. Absent means it matches any input."
+                      },
+                      "emit": {
+                        "type": "array",
+                        "description": "Events the operation emits for a matched input. More than one element models a streaming operation."
+                      },
+                      "fail": {
+                        "type": "string",
+                        "description": "If present, the operation fails with this error code instead of emitting."
+                      }
+                    },
+                    "oneOf": [
+                      { "required": ["emit"] },
+                      { "required": ["fail"] }
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "graph": {
+            "type": "object",
+            "description": "An operation graph definition. A runner validates this against the op-graph JSON Schema."
+          },
+          "input": {
+            "description": "The event provided to the graph's input node."
+          },
+          "expected": {
+            "type": "object",
+            "required": ["output"],
+            "properties": {
+              "output": {
+                "type": "array",
+                "description": "Expected operation-graph output events (events reaching the output node, plus any error:false exit event)."
+              },
+              "ordering": {
+                "enum": ["exact", "set"],
+                "default": "exact",
+                "description": "`exact` requires the output array to match in order; `set` requires the same multiset of events, since concurrency makes the order implementation-defined."
+              },
+              "error": {
+                "type": "boolean",
+                "default": false,
+                "description": "True when the graph is expected to terminate with an error (an exit node with error:true)."
+              },
+              "errorDetail": {
+                "description": "When error is true, the expected error-detail event."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -2,12 +2,14 @@
   "specVersion": "0.2.0",
   "corpusVersion": "0.1.0",
   "totals": {
-    "files": 20,
-    "tests": 114,
-    "positives": 56,
-    "negatives": 58,
-    "rulesCoveredDocument": 17,
-    "rulesCoveredTool": 3
+    "files": 17,
+    "tests": 102,
+    "positives": 49,
+    "negatives": 53,
+    "rulesCoveredDocument": 13,
+    "rulesCoveredTool": 3,
+    "rulesPartialDocument": 1,
+    "rulesPartialTool": 0
   },
   "files": [
     {
@@ -54,9 +56,9 @@
       "path": "document/OBI-D-06.json",
       "rule": "OBI-D-06",
       "section": "16.2",
-      "tests": 7,
-      "positives": 4,
-      "negatives": 3
+      "tests": 4,
+      "positives": 2,
+      "negatives": 2
     },
     {
       "path": "document/OBI-D-07.json",
@@ -94,57 +96,34 @@
       "path": "document/OBI-D-11.json",
       "rule": "OBI-D-11",
       "section": "16.2",
-      "tests": 3,
-      "positives": 2,
-      "negatives": 1
-    },
-    {
-      "path": "document/OBI-D-12.json",
-      "rule": "OBI-D-12",
-      "section": "16.2",
       "tests": 5,
       "positives": 3,
       "negatives": 2
     },
     {
-      "path": "document/OBI-D-13.json",
-      "rule": "OBI-D-13",
-      "section": "16.2",
-      "tests": 3,
-      "positives": 1,
-      "negatives": 2
-    },
-    {
-      "path": "document/OBI-D-14.json",
-      "rule": "OBI-D-14",
-      "section": "16.2",
-      "tests": 3,
-      "positives": 2,
-      "negatives": 1
-    },
-    {
-      "path": "document/OBI-D-15.json",
-      "rule": "OBI-D-15",
+      "path": "document/OBI-D-12.json",
+      "rule": "OBI-D-12",
       "section": "16.2",
       "tests": 11,
       "positives": 6,
       "negatives": 5
     },
     {
-      "path": "document/OBI-D-16.json",
-      "rule": "OBI-D-16",
+      "path": "document/OBI-D-13.json",
+      "rule": "OBI-D-13",
       "section": "16.2",
       "tests": 13,
       "positives": 5,
       "negatives": 8
     },
     {
-      "path": "document/OBI-D-17.json",
-      "rule": "OBI-D-17",
+      "path": "document/OBI-D-14.json",
+      "rule": "OBI-D-14",
       "section": "16.2",
       "tests": 3,
       "positives": 3,
-      "negatives": 0
+      "negatives": 0,
+      "coverage": "positive-only"
     },
     {
       "path": "tool/OBI-T-01.json",

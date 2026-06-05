@@ -16,7 +16,10 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 - **SemVer enforced on `openbindings` field.** The JSON Schema now enforces a full SemVer 2.0.0 pattern. v0.1.0 had no pattern constraint.
 - **Security method type definitions removed.** The per-scheme field shapes (`bearer`, `oauth2`, `basic`, `apiKey`) are gone from both the spec prose and the JSON Schema. `SecurityMethod` retains `type` (required) and `description` (optional) with `additionalProperties: true`. Scheme semantics defer to upstream RFCs.
 - **Format token normalization removed.** The 0.1.0 rules (case-insensitive matching, trailing `.0` stripping) are gone. Token equivalence is each format community's concern.
-- **Operation matching algorithm removed.** The 0.1.0 deterministic matching cascade (primary key, alias, explicit satisfies) is gone. Data-model fields (`aliases`, `satisfies`, `roles`) remain; matching procedure is tool-defined.
+- **Operation matching algorithm removed.** The 0.1.0 deterministic matching cascade (primary key, alias, explicit satisfies) is gone; matching procedure beyond name resolution is tool-defined.
+- **`roles` map and operation `satisfies` array removed.** Cross-document correspondence collapses into one mechanism: an operation claims to fulfill a shared contract by carrying that contract's operation name as an `aliases` entry. There is no separate role table and no structured satisfies claim. Correspondence no longer carries a URL anchor or any spec-level verification or trust semantics; those are registry and tooling concerns. Removes §6.7, the top-level `roles` field, the operation `satisfies` field, and `roles` from OBI-D-06.
+- **Aliases are alternate keys.** An operation's key and its `aliases` form one flat, document-unique namespace (OBI-D-05); both resolve to the operation with equal standing. The key remains the operation's singular primary name for display, logging, identity, and the value bindings reference in `bindings[*].operation`.
+- **`security` field removed.** The top-level `security` map and the `bindings[*].security` reference are removed from the document. Authentication is not interface metadata: it is a runtime prerequisite negotiated by the binding invoker, not declared statically in the OBI. The `openbindings.binding-invoker` role gains a `CONTEXT_REQUIRED` challenge (a binding may fail asking for context, the runtime resolves it into a context store and retries), with `auth.*` as the first family of requirement types. Removes §6.6, the top-level `security` field, `bindings[*].security`, and retires OBI-D-11.
 - **`version` field is opaque.** The 0.1.0 SemVer requirement and "breaking changes bump major" rule are removed. Tools define no behavior in terms of `version`.
 - **YAML support dropped.** v0.1.0 had normative YAML support (YAML 1.2, no 1.1 coercion). v0.2.0 is JSON only.
 - **Example validation strengthened.** `examples[*].input` and `examples[*].output` MUST validate against their operation schemas (OBI-D-15). Was SHOULD in 0.1.0.
@@ -25,6 +28,7 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 
 ### Added
 
+- **OBI-T-13 (operation-name resolution).** MUST-level rule: a tool resolving an operation by name matches against the flat key+aliases namespace, treats key and alias matches as equally authoritative, never privileges the key, never resolves a non-matching name, and selects bindings by the resolved operation's key. Closes the prior gap where name resolution was unspecified and two conforming tools could disagree.
 - **Positioning (section 1).** Distinguishing features, explicit out-of-scope list. Replaces the old Overview.
 - **Scope principle (section 2).** Normative statement that OBI is deliberately minimal. Authority over wire formats rests with binding format specs; authority over behavior rests with implementations.
 - **Discovery response contract (section 7.1).** Explicit `GET` / `200` / `404` semantics at `/.well-known/openbindings`, with `Content-Type` guidance and permissive CORS recommendation.
@@ -74,13 +78,13 @@ This release narrows the spec to what an OBI document IS: shape, identity, disco
 
 ### Repository
 
-- **New guides**: getting-started, FAQ, creators-and-invokers, binding-format-conventions, binding-invocation-context, consuming-an-interface, implementing-a-binding-format
+- **New guides**: getting-started, FAQ, binding-format-roles, binding-format-conventions, binding-invocation-context, consuming-an-interface, implementing-a-binding-format
 - **New interfaces**: `openbindings.binding-invoker` (replaces `binding-executor`), `openbindings.source-inspector`
 - **New examples**: `minimal.obi.json`, `blend-coffee-shop.obi.json`, `multi-source.obi.json`
 - **New tooling**: CI workflow validating examples, interfaces, corpus consistency, canonical ordering, and local links
 - **Renamed interface**: `openbindings.binding-executor` to `openbindings.binding-invoker`
 - **Retired interface**: `openbindings.host` (composed meta-role; no implementation ever claimed it; consumers can match its constituent roles directly)
-- **Renamed guides** (executor→invoker terminology): `creators-and-executors.md` to `creators-and-invokers.md`; `binding-execution-context.md` to `binding-invocation-context.md`.
+- **Renamed guides** (executor→invoker terminology, then broader naming): `creators-and-executors.md` to `binding-format-roles.md` (covers binding invoker, interface creator, and source inspector roles); `binding-execution-context.md` to `binding-invocation-context.md`.
 - **Removed guide**: `cli.md`.
 - **Companion format spec bumped**: `openbindings.operation-graph@0.1.0` to `@0.2.0`. Changes:
   - Transforms aligned with core spec to plain JSONata strings.

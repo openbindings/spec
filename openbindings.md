@@ -2,7 +2,7 @@
 
 ## Abstract
 
-OpenBindings (OBI) is a portable interface description format. A service describes its operations (input/output contracts, role claims, examples) once, and exposes them over OpenAPI, AsyncAPI, gRPC, MCP, or any other binding format. The contract lives at the operation layer; the protocols live at the binding layer.
+OpenBindings (OBI) is a portable interface description format. A service describes its operations (input/output contracts, examples) once, and exposes them over OpenAPI, AsyncAPI, gRPC, MCP, or any other binding format. The contract lives at the operation layer; the protocols live at the binding layer.
 
 ```json
 {
@@ -22,7 +22,7 @@ OpenBindings (OBI) is a portable interface description format. A service describ
 }
 ```
 
-The body of this document defines the OBI shape, identity, discovery convention, reference-resolution rules, and conformance floor. New readers may prefer the [§4. Overview](#4-overview) walkthrough; the normative material starts at [§5. Terminology](#5-terminology).
+The body of this document defines the OBI shape, discovery convention, reference-resolution rules, and conformance floor. New readers may prefer the [§4. Overview](#4-overview) walkthrough; the normative material starts at [§5. Terminology](#5-terminology).
 
 ## Editors
 
@@ -32,7 +32,7 @@ See `EDITORS.md` for the current editor roster.
 
 ## Status of this document
 
-This is **version 0.2.0** of the OpenBindings specification. It is pre-1.0, and minor-version revisions MAY include breaking changes per [§13.1. `openbindings` field (spec version)](#131-openbindings-field-spec-version). Substantive changes are recorded in `CHANGELOG.md` and cite stable rule identifiers (`OBI-D-##`/`OBI-T-##`) where applicable.
+This is **version 0.2.0** of the OpenBindings specification. It is pre-1.0, and minor-version revisions MAY include breaking changes per [§11.1. `openbindings` field (spec version)](#111-openbindings-field-spec-version). Substantive changes are recorded in `CHANGELOG.md` and cite stable rule identifiers (`OBI-D-##`/`OBI-T-##`) where applicable.
 
 ## License and intellectual property
 
@@ -57,47 +57,43 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
   - [6.3. Bindings](#63-bindings)
   - [6.4. Sources](#64-sources)
   - [6.5. Transforms](#65-transforms)
-  - [6.6. Security](#66-security)
-  - [6.7. Roles](#67-roles)
 - [7. Discovery](#7-discovery)
   - [7.1. Response contract](#71-response-contract)
 - [8. Binding sufficiency](#8-binding-sufficiency)
-- [9. Interface identity](#9-interface-identity)
-- [10. Location equality](#10-location-equality)
-- [11. Canonical form (informative)](#11-canonical-form-informative)
-- [12. Reference resolution](#12-reference-resolution)
-- [13. Versioning](#13-versioning)
-  - [13.1. `openbindings` field (spec version)](#131-openbindings-field-spec-version)
-  - [13.2. `version` field (contract version)](#132-version-field-contract-version)
-- [14. IANA considerations](#14-iana-considerations)
-  - [14.1. Well-known URI suffix](#141-well-known-uri-suffix)
-  - [14.2. Media type](#142-media-type)
-- [15. Security considerations](#15-security-considerations)
-  - [15.1. Recommended mitigations (informative)](#151-recommended-mitigations-informative)
-- [16. Conformance](#16-conformance)
-  - [16.1. Conformance classes](#161-conformance-classes)
-  - [16.2. Document rules](#162-document-rules)
-  - [16.3. Tool rules](#163-tool-rules)
-- [17. Extensions](#17-extensions)
-- [18. References](#18-references)
-  - [18.1. Normative references](#181-normative-references)
-  - [18.2. Informative references](#182-informative-references)
-- [19. See also](#19-see-also)
+- [9. Canonical form (informative)](#9-canonical-form-informative)
+- [10. Reference resolution](#10-reference-resolution)
+- [11. Versioning](#11-versioning)
+  - [11.1. `openbindings` field (spec version)](#111-openbindings-field-spec-version)
+  - [11.2. `version` field (contract version)](#112-version-field-contract-version)
+- [12. IANA considerations](#12-iana-considerations)
+  - [12.1. Well-known URI suffix](#121-well-known-uri-suffix)
+  - [12.2. Media type](#122-media-type)
+- [13. Security considerations](#13-security-considerations)
+  - [13.1. Recommended mitigations (informative)](#131-recommended-mitigations-informative)
+- [14. Conformance](#14-conformance)
+  - [14.1. Tool obligations](#141-tool-obligations)
+  - [14.2. Document rules](#142-document-rules)
+  - [14.3. Tool rules](#143-tool-rules)
+- [15. Extensions](#15-extensions)
+- [16. References](#16-references)
+  - [16.1. Normative references](#161-normative-references)
+  - [16.2. Informative references](#162-informative-references)
+- [17. See also](#17-see-also)
 
 ---
 
 ## 1. Positioning
 
-OpenBindings operates one layer above protocol-specific interface specifications like OpenAPI, AsyncAPI, gRPC, and MCP. Those specs describe how to invoke endpoints over a particular wire format. OBI describes, at the layer above: what operations a service offers, what their input and output contracts are, and which of those operations correspond to shared interface contracts, independent of protocol.
+OpenBindings operates one layer above protocol-specific interface specifications like OpenAPI, AsyncAPI, gRPC, and MCP. Those specs describe how to invoke endpoints over a particular wire format. OBI describes, at the layer above: what operations a service offers, what their input and output contracts are, and the shared-contract names by which those operations can be recognized, independent of protocol.
 
 An OBI does not replace the binding formats it points at. Each format remains authoritative over its own wire shape. An OBI adds the operation-level overlay that no single binding format alone carries, and does so in a way that survives across multiple protocols.
 
 ### 1.1. Distinguishing features
 
 - **One operation, many bindings.** A single operation contract can be exposed over multiple protocols simultaneously without duplicating the contract.
-- **Vendor-independent matching.** A service can declare, machine-readably, that it implements the same contract as other services — without a registry mediating the lookup. Consumers match by what a service does, not by who runs it.
+- **Vendor-independent correspondence.** An operation can carry the same name a shared contract uses, so consumers can recognize it by that shared name rather than by who runs the service. The name is author-asserted, and the spec attaches no verification or trust semantics to it (see [§6.1. Operations](#61-operations)).
 - **Convention-driven discovery.** A service publishes its interface at `/.well-known/openbindings`, so tools can find it without configuration.
-- **URI-based identity.** Any reference resolves in a single fetch, with no separate name-to-location step.
+- **Resolvable references.** Relative references resolve from the document's base URI, with no separate name-to-location registry step.
 
 ### 1.2. Out of scope
 
@@ -106,7 +102,7 @@ OpenBindings does not:
 - **Replace underlying binding formats.** OpenAPI, AsyncAPI, gRPC, MCP, and others remain authoritative for their wire formats. OBI points at them.
 - **Serve as an authoring language.** OBI is the target artifact, not a source format that compiles to multiple targets. Tools like TypeSpec and Smithy occupy that adjacent role.
 - **Define runtime or protocol semantics.** Invocation, retries, credential flow, sandboxing, and rate limiting are processor concerns.
-- **Maintain registries of formats, role URIs, or security-method types.** Identity is URI-based; format-token authority rests with each format's community.
+- **Maintain registries of formats.** Identity is URI-based; format-token authority rests with each format's community.
 - **Specify integrity, signing, or attestation.** Supply-chain verification composes externally over URI fetches.
 
 ## 2. Scope principle
@@ -126,11 +122,11 @@ Readers evaluating conformance should read the rest of this document in light of
 
 OpenBindings (OBI) is a **portable interface description format**. Services publish an OBI document describing their operations and how to reach them; tools consume OBIs to drive protocol-specific clients, power registries, feed agents, and so on.
 
-This spec defines **what an OBI document is**: its shape, identity, discovery convention, reference-resolution rules, and forward-compatibility rules. It also defines **a minimum conformance floor for tools** that preserves document portability across implementations.
+This spec defines **what an OBI document is**: its shape, discovery convention, reference-resolution rules, and forward-compatibility rules. It also defines **a minimum conformance floor for tools** that preserves document portability across implementations.
 
-It does not define **higher-level tool behavior** (comparison, matching, security method resolution, binding invocation, registry semantics) or **binding format conventions** (`ref` syntax, format-token governance, binding-artifact addressing). Tool behavior is each tool's concern; binding format conventions are governed by each format's own authoritative specification. The openbindings project does not maintain a registry of formats. (This spec does define the transform evaluation language -- JSONata 2.0 -- for Invoking-class tools; see [Transforms]. What remains tool-defined is the surrounding runtime: sandboxing, error handling, resource limits, and invocation lifecycle.)
+It does not define **higher-level tool behavior** (comparison, matching, credential and context resolution, binding invocation, registry semantics) or **binding format conventions** (`ref` syntax, format-token governance, binding-artifact addressing). Tool behavior is each tool's concern; binding format conventions are governed by each format's own authoritative specification. The openbindings project does not maintain a registry of formats. (This spec does define the transform evaluation language -- JSONata 2.0 -- for tools that evaluate transforms; see [Transforms]. What remains tool-defined is the surrounding runtime: sandboxing, error handling, resource limits, and invocation lifecycle.)
 
-The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`, `openbindings-ts`) as one implementation of this spec. Third-party tools are free to adopt their conventions or publish their own.
+The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`, `openbindings-ts`) as implementations of this spec. Third-party tools are free to adopt their conventions or publish their own.
 
 ---
 
@@ -138,7 +134,7 @@ The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`,
 
 OpenBindings separates what a service does (operations with input/output schemas) from how you access it (bindings to OpenAPI, AsyncAPI, gRPC, MCP, or any other binding specification). A single OBI document can reference bindings in multiple protocols without redefining the operation contract. Services can publish their OBI at a well-known location so tools can discover and act on it.
 
-Terms used informally below (operation, binding, source, transform, role, `satisfies`) are defined precisely in [Terminology]. Readers unfamiliar with the vocabulary may prefer to skim that section first.
+Terms used informally below (operation, binding, source, transform, alias) are defined precisely in [Terminology]. Readers unfamiliar with the vocabulary may prefer to skim that section first.
 
 OBI documents are JSON. JSON is chosen for properties that hold independent of any other OpenBindings decision: parser availability across every language and runtime including browsers, a frozen and unambiguous parse defined by RFC 8259, a low security surface compared to formats whose parsers evaluate tags or expressions on load, and a mature surrounding tool culture. OpenBindings also requires a transform language (see [Transforms]), so the host format had to be one with a mature cross-language expression language over its data model.
 
@@ -193,7 +189,7 @@ The same operation can be exposed over a second protocol by adding another bindi
 }
 ```
 
-A realistic OBI layers in shared schemas reused across operations, a named transform bridging a source's wire shape with the operation contract, a role claim asserting this service fulfills a published interface, and a security reference describing how callers authenticate:
+A realistic OBI layers in shared schemas reused across operations, a named transform bridging a source's wire shape with the operation contract, and an alias making an operation addressable by a shared contract name:
 
 ```json
 {
@@ -213,9 +209,7 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
   "operations": {
     "createTask": {
       "description": "Create a new task.",
-      "satisfies": [
-        { "role": "taskmanager", "operation": "tasks.create" }
-      ],
+      "aliases": ["tasks.create"],
       "input": {
         "type": "object",
         "properties": { "title": { "type": "string" } },
@@ -231,9 +225,6 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
       }
     }
   },
-  "roles": {
-    "taskmanager": "https://interfaces.example.com/task-manager/v1.json"
-  },
   "sources": {
     "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" },
     "mcpServer": { "format": "mcp@2025-11-25", "location": "https://example.com/mcp" }
@@ -243,7 +234,6 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
       "operation": "createTask",
       "source": "httpApi",
       "ref": "#/paths/~1tasks/post",
-      "security": "apiAuth",
       "outputTransform": { "$ref": "#/transforms/apiToTask" }
     },
     "createTask.mcp": {
@@ -256,9 +246,6 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
       "source": "httpApi",
       "ref": "#/paths/~1tasks/get"
     }
-  },
-  "security": {
-    "apiAuth": [ { "type": "bearer" } ]
   },
   "transforms": {
     "apiToTask": "{ \"id\": task_id, \"title\": task_title, \"done\": is_done }"
@@ -274,12 +261,12 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
 - **Binding artifact**: the protocol-specific specification document or endpoint referenced by a source (e.g., an OpenAPI document, a `.proto` file, an MCP endpoint).
 - **Source**: a reference to a binding artifact, identified by a format token and either a location or embedded content.
 - **Transform**: a shape mapping between an operation's `input`/`output` schemas and a source's expected wire shape. Stored under a key in the document's `transforms` map, or inline on a binding.
-- **Role**: another OBI document referenced as a shared interface contract (its operations and schemas define the contract; any bindings it carries are ignored in the role context).
-- **Location**: the URI from which a document was retrieved, or a caller-supplied base URI for documents loaded without a canonical retrieval URI.
+- **Alias**: an additional name under which an operation is recognized, beyond its key. An operation's key plus its aliases form one flat, document-unique namespace of names that all resolve to that operation.
+- **Base URI**: the URI a document's relative references resolve against: the URI it was retrieved from, or a caller-supplied base when the document was loaded without one.
 
-How these relate: an **operation** is the portable contract, independent of any protocol. A **source** points at a binding artifact. A **binding** links one operation to one source and optionally attaches a **transform** that bridges shape differences. A **role** is another OBI referenced as a shared contract; operations declare which role operations they `satisfy`.
+How these relate: an **operation** is the portable contract, independent of any protocol. A **source** points at a binding artifact. A **binding** links one operation to one source and optionally attaches a **transform** that bridges shape differences. An operation is addressable by its key or any of its **aliases**; both are equally valid for resolution.
 
-Whether an OBI is "compatible with" another OBI, "satisfies" a role, or is "aligned with" a target interface depends on tool-defined comparison and matching semantics. This spec does not define those.
+Whether an OBI is "compatible with" another OBI or "aligned with" a target interface depends on tool-defined comparison and matching semantics. This spec does not define those. Cross-document correspondence (claiming an operation fulfills a shared contract) is expressed by giving the operation the contract's name as an alias; the spec attaches no verification or trust semantics to that name, which is an ordinary identifier with no anchoring authority.
 
 ---
 
@@ -295,13 +282,11 @@ An OBI document is a JSON object. Top-level fields:
 | `description` | string | no | Human-friendly description. |
 | `schemas` | object | no | Map of schema names to JSON Schema objects. |
 | `operations` | object | yes | Map of operation keys to operation objects. |
-| `roles` | object | no | Map of role keys to URIs of other OBI documents referenced as shared contracts. |
 | `sources` | object | no | Map of source keys to source objects. |
 | `bindings` | object | no | Map of binding keys to binding objects. |
-| `security` | object | no | Map of security-entry keys to arrays of security method objects. |
 | `transforms` | object | no | Map of transform names to JSONata expression strings. |
 
-Operation keys MUST be unique within a document. Binding, source, transform, role, schema, and security-entry keys MUST be unique within their respective maps. All map keys (operation, binding, source, transform, role, schema, security-entry, and example keys) and all operation aliases MUST match the pattern `^[A-Za-z_][A-Za-z0-9_.-]*$`. This constrains identifiers to a codegen-friendly ASCII subset while permitting common conventions like dotted grouping (`createTask.http`) or hyphenated names (`my-operation`).
+Operation keys MUST be unique within a document. Binding, source, transform, and schema keys MUST be unique within their respective maps. All map keys (operation, binding, source, transform, schema, and example keys) and all operation aliases MUST match the pattern `^[A-Za-z_][A-Za-z0-9_.-]*$`. This constrains identifiers to a codegen-friendly ASCII subset while permitting common conventions like dotted grouping (`createTask.http`) or hyphenated names (`my-operation`).
 
 ### 6.1. Operations
 
@@ -318,8 +303,7 @@ An operation object MAY contain:
 | `description` | string | Human-readable description. |
 | `deprecated` | boolean | Hint that consumers should migrate. |
 | `tags` | array of strings | Documentation labels for grouping/filtering. |
-| `aliases` | array of strings | Alternate names by which this operation MAY be recognized. |
-| `satisfies` | array of objects | Each object has shape `{"role": string, "operation": string}`, declaring that this operation is intended to fulfill a named operation within a role interface. |
+| `aliases` | array of strings | Additional names, equal in standing to the operation's key, by which this operation is recognized. |
 | `idempotent` | boolean | Hint that multiple invocations with the same input produce the same observable state. |
 | `input` | JSON Schema, `null`, or absent | Shape of input to this operation. |
 | `output` | JSON Schema, `null`, or absent | Shape of output from this operation. |
@@ -329,20 +313,15 @@ An operation object MAY contain:
 
 The `input` and `output` schemas are caller-facing contracts that run in opposite directions. A service implementing the operation accepts at minimum every value validating against `input` and may accept more; a caller sending any value validating against `input` is honoring the input contract. A service implementing the operation produces only values validating against `output` and may produce a narrower set; a caller receiving a successful result can rely on it validating against `output`.
 
-`aliases` declares alternate names the author considers equivalent to the operation's key. Common cases include a prior name kept for continuity after a rename, or a vendor-specific name that some consumers look up by. Tools comparing or matching operations across documents MAY treat an operation's key and its aliases interchangeably. The spec defines only the declaration; matching semantics are a tool concern. An alias MUST NOT duplicate any operation's key or alias in the document; a name that resolves to multiple operations doesn't identify any of them.
+`aliases` declares additional names for the operation. An operation's **identifiers** are its key plus its aliases, and they share one flat namespace: every identifier is equally valid for resolving the operation, and the choice of which name to place in the key versus in `aliases` carries no semantic weight beyond the key being the operation's primary, singular name for display, logging, and binding references (the value bindings carry in `bindings[*].operation`). The namespace is document-unique (an identifier MUST NOT collide with any other operation's key or alias, per [OBI-D-05](#142-document-rules)), so any identifier resolves to at most one operation. A consumer holding an alias and a consumer holding the key refer to the same operation.
 
-`aliases` and `satisfies` both inform cross-contract recognition, but they declare different things:
+Common uses of `aliases`: a prior name kept for continuity after a rename, a vendor-specific name some consumers look up by, or a shared-contract name that makes this operation addressable as the implementation of a published interface (e.g., `tasks.create` on a `createTask` operation). The last is how an OBI claims cross-document correspondence: it adopts the contract's operation name as an alias. The name is an ordinary identifier. The spec attaches no verification, ownership, or trust semantics to it; whether an alias legitimately names a published contract is a registry and tooling concern, not a property the document can assert or a tool can confirm from the document alone.
 
-| Field | What it declares | Who refers to it |
-|---|---|---|
-| `aliases` | Additional names by which **this** operation is known within its own document | Consumers looking up this operation by an alternate key |
-| `satisfies` | A claim that this operation fulfills a **different** operation defined in another (role) document | Registries, matchers, and agent routers matching services to role contracts |
-
-A consumer holding an alias and a consumer holding the key refer to the same operation. A consumer cannot refer to this operation by the name of what it `satisfies`; the `satisfies` field is a correspondence claim, not an additional name. An operation MAY use both independently.
+How tools must resolve an operation by name is fixed by [OBI-T-12](#143-tool-rules) so that two conforming tools never disagree on which operation a name selects.
 
 `idempotent` is a contract-level claim that consumers (retry logic, caching layers, client-side dedup, agent planners) can rely on: every binding for this operation MUST preserve the guarantee. An operation whose bindings cannot uniformly honor the guarantee (for example, a non-idempotent HTTP verb wrapping a handler that creates a new resource each call) MUST NOT declare `idempotent: true`.
 
-`aliases`, `satisfies`, and `idempotent` are author-attested claims. They assert something the spec cannot mechanically verify from the document alone: that two names refer to the same operation, that an operation corresponds to a named operation in a different contract, or that invocations are idempotent. The spec enforces structural constraints on these fields (alias format, `satisfies.role` resolving to a `roles` key, no duplicate `satisfies` entries) under [Conformance], and those structural constraints determine document validity. The attested content itself is not a conformance test: tools MUST NOT reject a document as non-conformant on the basis that an author-attested claim appears semantically inaccurate. Tools MAY surface diagnostics and MAY use author-attested claims as input to their own higher-level decisions (matching, selection, retry strategy).
+`aliases` and `idempotent` carry author-attested meaning the spec cannot mechanically verify from the document alone: that an alias legitimately names what the author intends (a prior name, a vendor name, a shared-contract name) and that invocations are idempotent. The spec enforces structural constraints on these fields (alias format and the document-unique identifier namespace) under [Conformance], and those structural constraints determine document validity. The attested content itself is not a conformance test: tools MUST NOT reject a document as non-conformant on the basis that an author-attested claim appears semantically inaccurate. Tools MAY surface diagnostics and MAY use author-attested claims as input to their own higher-level decisions (matching, selection, retry strategy).
 
 `examples` holds author-supplied sample input/output pairs for an operation. The spec defines only the structural shape; consumers such as generated docs, SDK codegen, test harnesses, and agent few-shot material apply them as they see fit. Within any example, a provided `input` MUST validate against the operation's `input` schema when that schema is specified, and a provided `output` MUST validate against the operation's `output` schema when that schema is specified.
 
@@ -351,6 +330,8 @@ An operation's `input` and `output` schemas may be inlined or referenced via `$r
 ### 6.2. Schemas
 
 The top-level `schemas` map holds named JSON Schema objects. Operations reference them via `$ref` (e.g., `{"$ref": "#/schemas/Task"}`).
+
+Schemas at OBI document positions (the value of `input`, `output`, and entries in `schemas`) are in JSON Schema 2020-12's object form; the boolean schemas `true` and `false` are not used at those positions. The empty schema `{}` expresses "accepts any value" per [§6.1. Operations](#61-operations). Boolean values inside a schema's own keyword definitions (such as `additionalProperties: false`) are JSON Schema 2020-12 keyword arguments and are unaffected.
 
 Every schema object in an OBI document is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) document. A `$schema` keyword MAY be omitted; absence means 2020-12. When `$schema` is present, its value MUST be `https://json-schema.org/draft/2020-12/schema`. The `$vocabulary` keyword MUST NOT appear in schemas within the document. Permitting vocabularies would require every OBI consumer to resolve meta-schemas to determine which keywords apply, and could fragment schema semantics across tools that disagree about unknown vocabularies. This constraint applies wherever a schema appears within the document: in the top-level `schemas` map, inlined on an operation's `input`/`output`, or nested as a subschema within another schema.
 
@@ -373,7 +354,6 @@ And MAY contain:
 |---|---|---|
 | `ref` | string | Pointer into the binding artifact identifying the specific operation. Format-specific. |
 | `priority` | number | Preference hint for binding selection. Lower is more preferred. |
-| `security` | string | Key into the document's `security` map. |
 | `description` | string | Human-readable description. |
 | `deprecated` | boolean | Hint that this binding is being phased out. |
 | `inputTransform` | JSONata string or `$ref` | See [Transforms]. |
@@ -445,9 +425,9 @@ The binding's `outputTransform` bridges the two:
 
 An `inputTransform` does the same in the opposite direction, reshaping caller input to the source's expected shape.
 
-A transform is a [JSONata](https://jsonata.org/) expression string. Tools claiming Invoking-class conformance (see [§16.1. Conformance classes](#161-conformance-classes)) MUST evaluate transforms according to [JSONata 2.0](https://docs.jsonata.org/); any implementation may provide its own JSONata 2.0 evaluator.
+A transform is a [JSONata](https://jsonata.org/) expression string. A tool that evaluates transforms (see [§14.1. Tool obligations](#141-tool-obligations)) MUST do so according to [JSONata 2.0](https://docs.jsonata.org/); any implementation may provide its own JSONata 2.0 evaluator.
 
-"JSONata 2.0" here denotes the language at its 2.x major version as defined by its published documentation and reference implementation, not a separate formal standard maintained by this project. Where that documentation leaves behavior unspecified or ambiguous, tools SHOULD follow the behavior of the JSONata reference implementation (see [§18.2. Informative references](#182-informative-references)). Non-determinism inherent to JSONata's standard library (e.g., `$now()`, `$random()`, `$millis()`) is not a conformance defect: outputs MAY differ across calls and across tools whenever the transform expression itself is non-deterministic. The portability guarantee is correctness of evaluation, not byte-equivalence of outputs.
+"JSONata 2.0" here denotes the language at its 2.x major version as defined by its published documentation and reference implementation, not a separate formal standard maintained by this project. Where that documentation leaves behavior unspecified or ambiguous, tools SHOULD follow the behavior of the JSONata reference implementation (see [§16.2. Informative references](#162-informative-references)). Non-determinism inherent to JSONata's standard library (e.g., `$now()`, `$random()`, `$millis()`) is not a conformance defect: outputs MAY differ across calls and across tools whenever the transform expression itself is non-deterministic. The portability guarantee is correctness of evaluation, not byte-equivalence of outputs.
 
 Invocation semantics, including how errors propagate, resource limits, and sandboxing, are tool concerns; see [Security considerations].
 
@@ -455,62 +435,7 @@ Mandating one expression language is what makes transforms portable: a pluggable
 
 Named transforms MAY be defined in the top-level `transforms` map (keys are names, values are JSONata expression strings) and referenced by binding entries via `$ref` (e.g., `{"$ref": "#/transforms/fromApiOutput"}`). Bindings MAY also inline a transform directly as the string value of `inputTransform`/`outputTransform`.
 
-**Request lifecycle (informative).** An Invoking-class tool at call time typically: (1) resolves a binding for the operation, taking `priority` and tool-specific preferences into account; (2) validates caller-provided input against the operation's `input` schema when specified; (3) evaluates the binding's `inputTransform` on the caller's input, if declared; (4) invokes the binding's source with the result, honoring the format's addressing conventions and any referenced `security` entry; (5) evaluates the binding's `outputTransform` on the source's output, if declared, then validates the resulting value against the operation's `output` schema when that schema is specified; (6) returns the result to the caller. This spec does not prescribe the steps; it describes where each field fits so tool authors share a common picture.
-
-### 6.6. Security
-
-An OBI document MAY declare named security entries that bindings reference. Each entry is an array of security method objects in preference order:
-
-```json
-{
-  "security": {
-    "api-auth": [
-      {"type": "oauth2", "authorizeUrl": "https://...", "tokenUrl": "https://..."},
-      {"type": "bearer"}
-    ]
-  }
-}
-```
-
-Each security method MUST contain:
-
-| Field | Type | Required | Purpose |
-|---|---|---|---|
-| `type` | string | yes | Security method identifier. Community-extensible. |
-
-And MAY contain a `description` string plus any additional fields the method's `type` requires.
-
-This spec does not define what any particular `type` means. Security method semantics (what `bearer` requires from a client, how `oauth2` flows are driven, etc.) are tool concerns. The openbindings project aligns with well-known authentication schemes defined in external specifications (RFC 6750 for bearer, OAuth 2.0 RFCs for `oauth2`, etc.).
-
-### 6.7. Roles
-
-Roles let a service declare that it satisfies a published interface contract, a shared definition of operations that independent services can claim to implement. This lets consumers match services by the role they play rather than by vendor-specific URLs or names.
-
-A role is just another OBI document, referenced by URI. A role document MAY consist of only operations and schemas (a pure contract that describes what a service does without describing how to reach any particular implementation), or MAY include bindings. Role-ness is a consumption perspective, not a document type: any OBI can be used as a role, regardless of what the publishing author anticipated. This lets an author publish a single OBI that doubles as their own implementation doc and a contract others claim to satisfy, and it lets a consumer treat someone else's implementation-focused OBI as a role without coordination. When any OBI is referenced as a role, only its operations and schemas contribute to the contract; any bindings it carries describe its own implementation and are ignored by consumers of the role.
-
-Several task-tracking services might each declare they satisfy a shared `taskmanager` role; a client written against the role can work with any of them without per-vendor code.
-
-The top-level `roles` map declares the roles this document claims to satisfy. Each entry maps a local role key to a URI reference:
-
-```json
-{
-  "roles": {
-    "taskmanager": "https://interfaces.example.com/task-manager/v1.json",
-    "oauth2": "./oauth2-interface.json"
-  }
-}
-```
-
-- Each `roles` value MUST be a valid URI or relative URI reference. Relative references are resolved per [Reference resolution].
-- Role keys are local to the declaring document. The same role key in two different documents does not imply the same role; identity between two role references is determined by the resolved URIs under [Location equality].
-
-The `satisfies` fields on operations (see [Operations]) reference `role` keys in this map plus a target operation name. For each `satisfies` entry:
-
-- The `role` field MUST reference a key that exists in the document's top-level `roles` map. An operation that declares `satisfies` with a `role` value not present in `roles` is an invalid document.
-- The `operation` field MUST be a non-empty string. The author claims it names an operation in the role interface by its key or by any of its declared aliases; the spec does not require the named operation to exist at the role URI (verification is a tool concern). It requires only that the claim be structurally well-formed.
-- An operation's `satisfies` array MAY contain multiple entries, each declaring satisfaction of a different role's operation. An operation's `satisfies` array MUST NOT contain duplicate entries (same `role` + `operation` pair appearing twice).
-
-A `satisfies` declaration is a *claim* by the document author that the declaring operation is intended to fulfill the named role's operation. It is an affirmative assertion of semantic correspondence, not a mere documentation hint: the author is stating that this operation does the job the role's operation describes. Codifying the claim as a structured field (rather than leaving it to free-form prose) makes it machine-readable, so registries, matchers, and agent routing layers can treat role correspondence as first-class metadata. The spec makes no assertion about whether the claim is accurate. Verification of satisfaction (structural, semantic, or otherwise) is a tool concern; a minimum SHOULD-level structural check appears at [OBI-T-09](#163-tool-rules).
+**Request lifecycle (informative).** A tool invoking a binding at call time typically: (1) resolves a binding for the operation, taking into account `priority`, which bindings the tool can actually act on (e.g., choosing a lower-priority binding whose format it supports over a higher-priority one whose format it cannot parse, per [OBI-T-01](#143-tool-rules)), and tool-specific preferences such as latency, cost, or protocol; (2) validates caller-provided input against the operation's `input` schema when specified; (3) evaluates the binding's `inputTransform` on the caller's input, if declared; (4) invokes the binding's source with the result, honoring the format's addressing conventions, and supplying any runtime context the binding requires (credentials and the like are resolved by the invoker, not declared in the OBI document); (5) evaluates the binding's `outputTransform` on the source's output, if declared, then validates the resulting value against the operation's `output` schema when that schema is specified; (6) returns the result to the caller. This spec does not prescribe the steps; it describes where each field fits so tool authors share a common picture.
 
 ---
 
@@ -539,52 +464,13 @@ Each binding in an OBI document identifies a concrete interaction target. The in
 
 Sufficiency does not extend to reachability. Whether the identified target is currently reachable, accepts a caller's credentials, or succeeds at call time are properties of the running service and its deployment, not of the document. An OBI is conformant whether or not the target it identifies is callable at any given moment.
 
-Format communities define the syntax and addressing semantics of `ref` values for their format, including conventions for the absent-`ref` case. If resolving a `ref` requires information beyond the OBI document and its discovery context (for example, external registries, vendor catalogs, or environment configuration), a binding using that source does not satisfy the sufficiency rule above and is non-conformant.
+Format communities define the syntax and addressing semantics of `ref` values for their format, including conventions for the absent-`ref` case. If resolving a `ref` requires information beyond the OBI document and its discovery context (for example, external registries, vendor catalogs, or environment configuration), a binding using that source does not satisfy the sufficiency rule above and is non-conformant. Verifying [OBI-D-14](#142-document-rules) for a specific `ref` therefore requires the same per-format knowledge as [OBI-T-06](#143-tool-rules); a format-agnostic document validator can confirm positive cases but cannot exhaustively rule on negatives.
 
 OBI's interop guarantee for a given binding is no stronger than the format's own. Where a binding format is ambiguous, that ambiguity is inherited by bindings targeting it; resolving it is the format community's work, not OBI's.
 
 ---
 
-## 9. Interface identity
-
-An OBI document is identified by its **location**: the URI from which the document was retrieved. There is no separate `id` field. The document's location is its canonical identity for references, deduplication, and comparison with other documents.
-
-Location-based identity keeps identity resolvable: any tool receiving a reference to an OBI can fetch and verify it in one step, without a separate name-to-location lookup. An author-declared `id` field would be authoritative only to the author and could silently drift from the URL at which the document actually lives.
-
-The optional `name` field is a human-friendly label, not an identifier.
-
-Interface URIs are not snapshots; if the document at a URI changes, references to it see the change. Authors who want version-stable references can use versioned path segments (e.g., `https://interfaces.example.com/task-manager/v1.json`) or other URL schemes that do not change out from under existing consumers.
-
-This model works without a central registry or content-addressed store to mediate lookups. Integrity checks, version pinning, and supply-chain verification are consumer concerns that compose on top of URL fetches; none need identity-layer support.
-
-Trust in an interface depends on the authenticated discovery context or the trust placed in the hosting location, not on the document's contents.
-
----
-
-## 10. Location equality
-
-Location equality answers whether two URIs refer to the same OBI. It matters wherever the spec uses URIs to establish identity: comparing role values across documents, deduplicating references during processing, and recognizing the same interface seen from multiple entry points.
-
-Two locations are equal iff they produce the same canonical form, compared byte-for-byte. Before comparison, bare filesystem paths are lifted to `file://` URIs per RFC 8089, since equality operates on URIs rather than on paths that could belong to either side of a network boundary. The canonical form is then produced by applying, in order:
-
-1. Host labels converted to A-label form per UTS #46.
-2. Syntax-based normalization per RFC 3986 §6.2.2: lowercase scheme and host, percent-encoding normalization of unreserved characters, dot-segment removal.
-3. Scheme-based normalization per RFC 3986 §6.2.3: remove the default port for the scheme, and replace an empty path with `/` when the URI has an authority.
-4. Fragment component stripped: fragments address *within* a document, not the document itself, so they do not change which document is identified.
-
-The following remain significant after normalization:
-
-- **Scheme**: `http` and `https` are distinct. The difference is a transport-level change in origin, even when the host and path match.
-- **Trailing slash on non-empty paths**: `/x` and `/x/` are distinct. HTTP convention treats these as different resources, and the spec defers to that convention rather than second-guessing server routing.
-- **Query component**: different query strings yield distinct locations, since queries select different resources or views.
-- **Userinfo** (`user:pass@`): distinct userinfo yields distinct URIs. Authors SHOULD NOT include userinfo in role values; credentials embedded in URIs leak through logs, telemetry, and error paths.
-- **Path and query case**: RFC 3986 treats these as case-sensitive; normalization does not lowercase them. Servers commonly treat case as meaningful.
-
-The URI used for equality is the declared URI (or caller-supplied base), regardless of any HTTP redirects encountered during fetching.
-
----
-
-## 11. Canonical form (informative)
+## 9. Canonical form (informative)
 
 Some applications need a stable byte representation of an OBI document for content addressing, integrity attestation, signature verification, or prompt-cache stability when feeding OBIs to language models. This section names such a form so tools and downstream specifications can refer to it consistently. It is informative; conformance to this specification does not require producing or consuming canonical-form documents.
 
@@ -596,15 +482,16 @@ Canonical form is distinct from any human-readable ordering a tool may emit when
 
 ---
 
-## 12. Reference resolution
+## 10. Reference resolution
 
-Relative URI references appear in three places in an OBI document:
+OBI documents define no `id` field; OBI assigns no identity of its own. A tool uses the URI it retrieved a document from, or a caller-supplied base URI when the document was loaded without one (for example, from stdin or an in-memory object), as the document's **base URI**: the URI that relative references resolve against, and a starting point for any caching, deduplication, or comparison the tool performs. A redirect encountered while fetching does not change the base URI unless the loader explicitly adopts the redirected URI. The `name` and `version` fields are labels, not identifiers.
 
-1. `roles[*]` values (role URIs).
-2. `sources[*].location` values (binding artifact URIs).
-3. Schema `$ref` values within inline or external schemas.
+Relative URI references appear in two places in an OBI document:
 
-All are resolved per RFC 3986 §5 Reference Resolution, using the declaring document's canonical URI as the base URI. Resolution is directory-relative: RFC 3986's merge step strips everything after the last `/` in the base URI's path before appending the reference.
+1. `sources[*].location` values (binding artifact URIs).
+2. Schema `$ref` values within inline or external schemas.
+
+Both are resolved per RFC 3986 §5 Reference Resolution against that base URI. Resolution is directory-relative: RFC 3986's merge step strips everything after the last `/` in the base URI's path before appending the reference. If no base URI is available, relative references in the document are unresolvable.
 
 Example. Document at `https://example.com/interfaces/host.json`:
 
@@ -613,19 +500,19 @@ Example. Document at `https://example.com/interfaces/host.json`:
 - `/foo.json` → `https://example.com/foo.json`
 - `https://other.example.com/foo.json` → unchanged (absolute URI; base not consulted)
 
-Documents loaded without a canonical retrieval URI (e.g., from stdin, from an in-memory object) MAY accept a caller-supplied base URI. If none is available, relative references in that document are unresolvable.
-
-Schema `$ref` values additionally follow JSON Schema 2020-12 semantics: a schema's `$id`, when present, establishes the base URI for `$ref` values within that schema, overriding the enclosing OBI's location as the base. When a `$ref` fragment is a JSON Pointer, [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) escape rules apply (`~0` for `~`, `~1` for `/`).
+Schema `$ref` values additionally follow JSON Schema 2020-12 semantics: a schema's `$id`, when present, establishes the base URI for `$ref` values within that schema, overriding the document's base URI. When a `$ref` fragment is a JSON Pointer, [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) escape rules apply (`~0` for `~`, `~1` for `/`).
 
 Schema `$ref` cycles (where resolving a chain of `$ref`s returns to an already-visited schema) are common in recursive types (trees, linked lists, comment threads, ASTs). Cycles are permitted rather than forbidden because recursive types are legitimate and widespread; excluding them would cut off a large class of real-world schemas. Tools that resolve `$ref` MUST handle cycles without infinite loops (via memoization, bisimulation, or similar techniques). The exact handling is tool-defined.
 
+Comparing two URIs for identity (for example, to cache or deduplicate fetched documents) is a tool concern; this spec defines no canonical equality. Tools that normalize for this purpose should keep two questions distinct: which *document* was fetched, where the fragment is irrelevant, versus which *schema* a `$ref` targets, where `…#/$defs/A` and `…#/$defs/B` address different schemas and must stay distinct (including for the cycle handling above).
+
 ---
 
-## 13. Versioning
+## 11. Versioning
 
 OBI documents carry two independent version concepts.
 
-### 13.1. `openbindings` field (spec version)
+### 11.1. `openbindings` field (spec version)
 
 The `openbindings` field identifies which version of this specification the document is declared against. The value MUST be a [Semantic Versioning 2.0.0](https://semver.org/) string (e.g., `0.2.0`, `1.0.0`).
 
@@ -639,17 +526,17 @@ Major-version refusal is mandatory because a major bump may change the meaning o
 
 Pre-1.0 (major version 0): minor versions MAY include breaking changes, per pre-1.0 SemVer convention. The same refusal principle applies at finer granularity: tools MUST refuse to parse pre-1.0 documents that declare a higher minor version than the tool supports.
 
-### 13.2. `version` field (contract version)
+### 11.2. `version` field (contract version)
 
 The optional `version` field describes the author's own notion of the interface's contract version. It is opaque to this spec; no tool behavior is defined in terms of it. Authors MAY use SemVer, dates, or any other convention.
 
 ---
 
-## 14. IANA considerations
+## 12. IANA considerations
 
 This specification defines IANA registration details for the OpenBindings well-known URI suffix and JSON media type. The IANA registries are authoritative for current registration status.
 
-### 14.1. Well-known URI suffix
+### 12.1. Well-known URI suffix
 
 Registration details per [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615), in the [IANA Well-Known URIs registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml):
 
@@ -658,7 +545,7 @@ Registration details per [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615), in 
 - **Reference:** this specification
 - **Related information:** see [§7. Discovery](#7-discovery)
 
-### 14.2. Media type
+### 12.2. Media type
 
 Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
@@ -666,30 +553,30 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - **Required parameters:** none
 - **Encoding considerations:** 8-bit UTF-8 per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)
 - **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)
-- **Security considerations:** see [§15. Security considerations](#15-security-considerations)
-- **Interoperability considerations:** see [§16. Conformance](#16-conformance)
+- **Security considerations:** see [§13. Security considerations](#13-security-considerations)
+- **Interoperability considerations:** see [§14. Conformance](#14-conformance)
 - **Applications that use this media type:** tools that produce or consume OpenBindings documents
 - **Change controller:** openbindings project
 - **Published specification:** this specification
 
 ---
 
-## 15. Security considerations
+## 13. Security considerations
 
 Processing OBI documents involves fetching external artifacts, resolving references, and handling arbitrary author-supplied input. The threat surface is comparable to JSON Schema processors and artifact-fetching tools generally: SSRF, resource exhaustion, untrusted code evaluation, and content-type confusion.
 
 The document format creates the following exposure:
 
-- **URIs as attack vectors.** `roles` values, `sources[*].location` values, and schema `$ref` values may resolve to arbitrary network endpoints, including internal or link-local addresses such as `http://169.254.169.254/...` or `file:///etc/passwd`. Unrestricted fetching inherits SSRF and exfiltration exposure.
+- **URIs as attack vectors.** `sources[*].location` values and schema `$ref` values may resolve to arbitrary network endpoints, including internal or link-local addresses such as `http://169.254.169.254/...` or `file:///etc/passwd`. Unrestricted fetching inherits SSRF and exfiltration exposure.
 - **Unbounded size.** The spec imposes no size cap on OBI documents or on the artifacts and schemas they reference. Untrusted input creates memory and processing-time exhaustion exposure.
 - **Schema `$ref` cycles.** Permitted by the spec (see [Reference resolution]); naive resolvers can exhaust the stack or loop indefinitely.
 - **Transforms as executable code.** Transforms are JSONata source code. Untrusted documents can embed expressions designed to run without bound or access process state when evaluated.
 - **Plaintext discovery.** Discovery over HTTP is subject to tampering by network intermediaries; fetched content cannot be distinguished from content planted by an on-path attacker.
 - **Integrity is out of scope.** The spec does not define document signing, attestation, or integrity verification. Authenticity and integrity are established by external means (TLS, content signing, out-of-band attestation) or not at all.
 
-Mitigation strategies, such as scheme allow-lists, size caps, cycle detection, transform sandboxing, and HTTPS enforcement, are processor concerns. The spec does not mandate any particular policy; [§15.1. Recommended mitigations (informative)](#151-recommended-mitigations-informative) lists categories tools typically consider.
+Mitigation strategies, such as scheme allow-lists, size caps, cycle detection, transform sandboxing, and HTTPS enforcement, are processor concerns. The spec does not mandate any particular policy; [§13.1. Recommended mitigations (informative)](#131-recommended-mitigations-informative) lists categories tools typically consider.
 
-### 15.1. Recommended mitigations (informative)
+### 13.1. Recommended mitigations (informative)
 
 The following are non-normative. They name categories of mitigation that tools processing OBI documents from untrusted origins typically consider. Specific limits, policies, and defaults depend on deployment; the spec does not prescribe numbers.
 
@@ -698,32 +585,28 @@ The following are non-normative. They name categories of mitigation that tools p
 - **Size caps** on fetched documents, schemas, and binding artifacts.
 - **Timeouts** on fetches and on transform evaluation.
 - **JSONata sandboxing**. Evaluating transforms without filesystem, network, or host-process access; disabling expression primitives that touch the host environment.
-- **Transport security**. Enforcing TLS for non-loopback origins, and distinguishing declared from redirected URIs for identity purposes (see [§10. Location equality](#10-location-equality)).
-- **Reference-cycle detection**. Required by [§12. Reference resolution](#12-reference-resolution) for `$ref` cycles; the same posture applies to transitive `roles` and `sources[*].location` traversal.
+- **Transport security**. Enforcing TLS for non-loopback origins, and distinguishing declared from redirected URIs for identity purposes (by default a document's base URI is the URI it was requested at, not the URI a redirect resolves to, unless the loader explicitly adopts the redirected URI per [§10. Reference resolution](#10-reference-resolution)).
+- **Reference-cycle detection**. Required by [§10. Reference resolution](#10-reference-resolution) for `$ref` cycles; the same posture applies to transitive `sources[*].location` traversal.
 
-Whether and how to apply these is a processor concern. This subsection is informative; no rule in [§16. Conformance](#16-conformance) mandates specific mitigation policy.
+Whether and how to apply these is a processor concern. This subsection is informative; no rule in [§14. Conformance](#14-conformance) mandates specific mitigation policy.
 
 ---
 
-## 16. Conformance
+## 14. Conformance
 
-The normative shape of an OBI document is defined by this specification's prose. The accompanying `openbindings.schema.json` expresses the structural portion of that definition in JSON Schema form for validator tooling; it is a derived artifact, not a second source of truth. **Where prose and schema conflict, the prose governs.** Schema validation (OBI-D-02) is necessary but not sufficient for document conformance: some rules (such as the cross-references from `satisfies` into `roles`, or the recursive prohibition on `$vocabulary` per OBI-D-08) require walking the document beyond what JSON Schema validation expresses, and exist only in prose.
+The normative shape of an OBI document is defined by this specification's prose. The accompanying `openbindings.schema.json` expresses the structural portion of that definition in JSON Schema form for validator tooling; it is a derived artifact, not a second source of truth. **Where prose and schema conflict, the prose governs.** Schema validation (OBI-D-02) is necessary but not sufficient for document conformance: some rules (such as the document-unique operation-identifier namespace per OBI-D-05, or the recursive prohibition on `$vocabulary` per OBI-D-08) require walking the document beyond what JSON Schema validation expresses, and exist only in prose.
 
 Each rule below carries a stable identifier (`OBI-D-##` for document rules, `OBI-T-##` for tool rules) so validators, test suites, and errata can cite it unambiguously. Identifiers are stable within a major version: they MUST NOT be reused or renumbered. Rules removed in a future major version retain their identifiers as historical references.
 
-### 16.1. Conformance classes
+### 14.1. Tool obligations
 
-Tools interacting with OBI documents fall into three conformance classes, distinguished by their relationship to transforms:
+A tool's obligations follow the capabilities it exercises, not a fixed class. A tool that only parses, validates against the document rules, indexes, or renders OBI documents owes the rules marked *all processors*. A tool that also resolves references, reasons about schemas, selects among bindings, resolves operation names, or invokes bindings additionally owes the rules scoped to those activities. Each tool rule in [§14.3. Tool rules](#143-tool-rules) names the capability it applies to.
 
-- **Inspection** — parses and validates OBI documents without evaluating transforms. Includes validators, indexers, discovery aggregators, and browser clients that surface operations for display or delegate invocation. No JSONata runtime required.
-- **Codegen** — produces static artifacts (SDK types, documentation, client skeletons) from OBI documents. Transform strings pass through as opaque data. No JSONata runtime required at generation time. Codegen includes all Inspection obligations.
-- **Invoking** — invokes bindings and evaluates declared transforms as part of invocation. Requires a JSONata 2.0 runtime. Invoking includes all Codegen obligations.
+Two capabilities carry a notable runtime dependency: a tool needs **runtime** JSON Schema validation when it **invokes** bindings (to check input and output against the operation's schemas), and a JSONata 2.0 runtime when it **evaluates transforms** (a document with no transforms needs no JSONata runtime from any tool). Non-invoking tools may still process schemas, for example to validate examples, inspect or compare schemas, or generate types, but they need no invocation machinery.
 
-A tool claims the highest class it implements; lower-class obligations are implicit. Each tool rule in [§16.3. Tool rules](#163-tool-rules) is annotated with the minimum class to which it applies.
+A tool self-declares the capabilities it implements in its documentation or metadata. The openbindings project does not maintain a registry of conformant tools; conformance is verified empirically by running the conformance test corpus, not by central registration.
 
-Claiming is informal: a tool self-declares its class in its documentation or metadata. The openbindings project does not maintain a registry of conformant tools; conformance is verified empirically by running the conformance test corpus, not by central registration.
-
-### 16.2. Document rules
+### 14.2. Document rules
 
 A conformant **OBI document**:
 
@@ -732,45 +615,42 @@ A conformant **OBI document**:
 - **OBI-D-03**: Has unique operation keys within the document.
 - **OBI-D-04**: Has every map key and every operation alias matching the pattern `^[A-Za-z_][A-Za-z0-9_.-]*$`.
 - **OBI-D-05**: Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its `aliases` array.
-- **OBI-D-06**: Has well-formed URI references (per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1) in `roles`, `sources[*].location`, and schema `$ref` values.
+- **OBI-D-06**: Has well-formed URI references (per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1) in `sources[*].location` and schema `$ref` values.
 - **OBI-D-07**: Has every `$schema` value, where present, equal to `https://json-schema.org/draft/2020-12/schema`.
 - **OBI-D-08**: Has no `$vocabulary` keyword in any schema within the document.
 - **OBI-D-09**: Has every `bindings[*].operation` value present as a key in the document's `operations` map.
 - **OBI-D-10**: Has every `bindings[*].source` value present as a key in the document's `sources` map.
-- **OBI-D-11**: Has every `bindings[*].security` value (when present) present as a key in the document's `security` map.
-- **OBI-D-12**: Has every named-transform `$ref` in `bindings[*].inputTransform` and `bindings[*].outputTransform` resolving to a key in the document's `transforms` map.
-- **OBI-D-13**: Has every `satisfies[*].role` value present as a key in the document's `roles` map.
-- **OBI-D-14**: Has no duplicate entries (same `role` + `operation` pair) within any single operation's `satisfies` array.
-- **OBI-D-15**: Has every example's provided `input` validating against its operation's `input` schema, and every example's provided `output` validating against its operation's `output` schema, when the respective schema is specified.
-- **OBI-D-16**: Has an `openbindings` field whose value is a valid [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string.
-- **OBI-D-17**: Has every binding identifiable from the binding, its referenced source, and the document's discovery context alone, with no dependency on external registries, vendor catalogs, or environment configuration. (See [§8. Binding sufficiency](#8-binding-sufficiency).)
+- **OBI-D-11**: Has every named-transform `$ref` in `bindings[*].inputTransform` and `bindings[*].outputTransform` resolving to a key in the document's `transforms` map.
+- **OBI-D-12**: Has every example's provided `input` validating against its operation's `input` schema, and every example's provided `output` validating against its operation's `output` schema, when the respective schema is specified.
+- **OBI-D-13**: Has an `openbindings` field whose value is a valid [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string.
+- **OBI-D-14**: Has every binding identifiable from the binding, its referenced source, and the document's discovery context alone, with no dependency on external registries, vendor catalogs, or environment configuration. (See [§8. Binding sufficiency](#8-binding-sufficiency).)
 
-### 16.3. Tool rules
+### 14.3. Tool rules
 
 A conformant **tool**:
 
-- **OBI-T-01** (Inspection): Does not fail processing a document solely because the document contains an unsupported binding format or security method type. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.
-- **OBI-T-02** (Inspection): Ignores unknown fields that are not defined by this specification. Tools SHOULD surface diagnostics (warnings) for unknown non-`x-` fields to help catch typos.
-- **OBI-T-03** (Inspection): Treats `x-` prefixed fields as extensions. Unknown `x-` fields MUST NOT change the meaning of core fields for conformance purposes.
-- **OBI-T-04** (Inspection): Refuses documents declaring a higher major `openbindings` version than the tool supports. While the spec is pre-1.0 (major version 0), this refusal extends to higher minor versions, per [§13.1. `openbindings` field (spec version)](#131-openbindings-field-spec-version).
-- **OBI-T-05** (Inspection; applies to tools that reason about schemas, e.g., for comparison, validation, or code generation): SHOULD surface diagnostics for semantically significant keywords the tool does not interpret.
-- **OBI-T-06** (Codegen; applies to tools that resolve or act on `ref` values): Honors the addressing conventions of each binding format it claims to support.
-- **OBI-T-07** (Invoking): A tool MUST validate caller-provided input against the operation's `input` schema when that schema is specified. If the binding declares an `inputTransform`, validation MUST occur before transform application. A validation failure is an invocation error for that operation; it does not render the document non-conformant.
-- **OBI-T-08** (Invoking): When the operation's `output` schema is specified, a tool MUST validate the operation's result against the `output` schema. If the binding declares an `outputTransform`, the result to validate is the value produced by evaluating the transform; otherwise it is the source's output as received. A validation failure is an invocation error for that operation; it does not render the document non-conformant.
-- **OBI-T-09** (Inspection; applies to tools that verify `satisfies` claims): SHOULD treat a `satisfies` claim as structurally supported only when every value satisfying the referenced role operation's `input` schema also satisfies the declaring operation's `input` schema (contravariant input), and every value satisfying the declaring operation's `output` schema also satisfies the role operation's `output` schema (covariant output). JSON Schema subsumption is undecidable in general; tools that cannot decide for a given pair MAY surface the claim as unverified rather than as a violation. A claim failing this check does not render the document non-conformant under [§6.1. Operations](#61-operations); the diagnostic surface is the intended outcome.
-- **OBI-T-10** (Inspection; applies to tools that select among multiple bindings for the same operation): MUST prefer non-deprecated bindings over deprecated ones. A deprecated binding with any `priority` value is ranked after every non-deprecated binding. Within each tier, tools SHOULD prefer lower `priority` values. Tools MAY apply additional selection tactics (latency, cost, protocol preference) after the tier rule has been applied.
-- **OBI-T-11** (Invoking): Evaluates declared transforms according to [JSONata 2.0](https://docs.jsonata.org/). Any implementation may provide its own JSONata 2.0 evaluator.
-- **OBI-T-12** (Inspection; applies to tools that resolve `$ref` values): MUST handle cycles without infinite loops (via memoization, bisimulation, or similar techniques). The exact handling is tool-defined.
+- **OBI-T-01** (all processors): Does not fail processing a document solely because the document contains an unsupported binding format. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.
+- **OBI-T-02** (all processors): Ignores unknown fields that are not defined by this specification. Tools SHOULD surface diagnostics (warnings) for unknown non-`x-` fields to help catch typos.
+- **OBI-T-03** (all processors): Treats `x-` prefixed fields as extensions. Unknown `x-` fields MUST NOT change the meaning of core fields for conformance purposes.
+- **OBI-T-04** (all processors): Refuses documents declaring a higher major `openbindings` version than the tool supports. While the spec is pre-1.0 (major version 0), this refusal extends to higher minor versions, per [§11.1. `openbindings` field (spec version)](#111-openbindings-field-spec-version).
+- **OBI-T-05** (applies when reasoning about schemas, e.g., for comparison, validation, or code generation): SHOULD surface diagnostics for semantically significant keywords the tool does not interpret.
+- **OBI-T-06** (applies when resolving or acting on `ref` values): Honors the addressing conventions of each binding format it claims to support.
+- **OBI-T-07** (applies when invoking): A tool MUST validate caller-provided input against the operation's `input` schema when that schema is specified. If the binding declares an `inputTransform`, validation MUST occur before transform application. A validation failure is an invocation error for that operation; it does not render the document non-conformant.
+- **OBI-T-08** (applies when invoking): When the operation's `output` schema is specified, a tool MUST validate the operation's result against the `output` schema. If the binding declares an `outputTransform`, the result to validate is the value produced by evaluating the transform; otherwise it is the source's output as received. A validation failure is an invocation error for that operation; it does not render the document non-conformant. For a streaming binding that carries more than one value, OBI-T-07 and OBI-T-08 apply to each value individually as it crosses the operation boundary (per input item before send, per output item as received or transformed), not to a collected aggregate of the stream; the `input`/`output` schema describes one such value, and heterogeneous streams express their variants with JSON Schema alternation (`oneOf`/`anyOf`).
+- **OBI-T-09** (applies when selecting among multiple bindings for the same operation): MUST prefer non-deprecated bindings over deprecated ones. A deprecated binding with any `priority` value is ranked after every non-deprecated binding. Within each tier, tools SHOULD prefer lower `priority` values. Tools MAY apply additional selection tactics (latency, cost, protocol preference) after the tier rule has been applied.
+- **OBI-T-10** (applies when evaluating transforms): Evaluates declared transforms according to [JSONata 2.0](https://docs.jsonata.org/). Any implementation may provide its own JSONata 2.0 evaluator.
+- **OBI-T-11** (applies when resolving `$ref` values): MUST handle cycles without infinite loops (via memoization, bisimulation, or similar techniques). The exact handling is tool-defined.
+- **OBI-T-12** (applies when resolving operation names): MUST resolve a name against the flat namespace of operation identifiers (each operation's key together with its `aliases`), treating key and alias matches as equally authoritative. Because OBI-D-05 makes that namespace document-unique, a name resolves to at most one operation; a tool MUST NOT privilege key matches over alias matches, and MUST NOT resolve a name that matches no identifier. When resolution fails, a tool SHOULD surface a diagnostic naming the unresolved name so the indirection is debuggable. A binding referenced for a resolved operation is selected by the operation's key (the value bindings carry in `bindings[*].operation`), not by the alias used to reach it.
 
-The consistent "don't fail the document on unknown X" posture across OBI-T-01 through OBI-T-04 is deliberate. Partial tool support is the common case: a tool may understand `openapi` bindings but not `grpc`, or some security method types but not others. Failing the whole document on any unsupported element would force every tool to support every element, fracturing the ecosystem. The diagnostic allowance preserves visibility: authors still learn when their document contains elements a specific tool can't act on. The distinction between warning on non-`x-` unknowns and silently accepting `x-` unknowns reflects that non-`x-` typos are usually misspelled core fields, while `x-` names are explicitly reserved for extensions whose names the spec cannot know.
+The consistent "don't fail the document on unknown X" posture across OBI-T-01 through OBI-T-04 is deliberate. Partial tool support is the common case: a tool may understand `openapi` bindings but not `grpc`. Failing the whole document on any unsupported element would force every tool to support every element, fracturing the ecosystem. The diagnostic allowance preserves visibility: authors still learn when their document contains elements a specific tool can't act on. The distinction between warning on non-`x-` unknowns and silently accepting `x-` unknowns reflects that non-`x-` typos are usually misspelled core fields, while `x-` names are explicitly reserved for extensions whose names the spec cannot know.
 
-OBI-T-07 through OBI-T-12 move the conformance floor past structural validity: they give tools that evaluate transforms, verify role claims, select among bindings, or resolve references something concrete to check beyond "the document parses." Each is spec-level under the [§2. Scope principle](#2-scope-principle) only where portability depends on it, and no further. OBI-T-07 and OBI-T-08 are MUSTs for Invoking-class tools because they apply at the operation-contract boundary, where values cross into and out of the portable contract; leaving these checks to tool discretion would let two conforming tools disagree on whether a given input or output honors the contract, which is the one disagreement the contract cannot survive. OBI-T-09 is a SHOULD because JSON Schema subsumption is not generally decidable, and a tool that cannot decide is permitted to surface the claim as unverified rather than pretending it has ruled on it. OBI-T-10's tier rule is a MUST because `deprecated: true` requires a portable selection-ordering meaning to be useful: without it, two conforming tools could disagree on whether a non-deprecated binding ranks ahead of a deprecated one, which the §6.3 spec-level tier prose rules out. Selection tactics beyond the tier (priority within tier, latency, cost, protocol preference, tool-specific signals) remain SHOULD- or MAY-level because they encode preferences whose meaning the spec deliberately leaves to authors and tools. OBI-T-11 is a MUST because JSONata 2.0 is the spec's mandated transform interchange language; an Invoking tool that evaluated transforms in any other language would silently produce different results from a conforming one, breaking the portability §6.5 commits to. OBI-T-12 is a MUST because §12 explicitly permits `$ref` cycles in recursive schemas; a tool that loops indefinitely on a conformant document would render the spec's permissive cycle rule unusable in practice.
+OBI-T-05 through OBI-T-12 scope the conformance floor to specific capabilities, giving tools that reason about schemas, resolve references, select among bindings, resolve operation names, or invoke and evaluate transforms something concrete to check beyond "the document parses." Each is spec-level under the [§2. Scope principle](#2-scope-principle) only where portability depends on it, and no further. Two differ from the rest: OBI-T-05 is a SHOULD (a diagnostic aid, not a portability requirement), and OBI-T-06, though a MUST, defers the actual `ref` syntax to each binding format rather than defining an OBI-native one. OBI-T-07 and OBI-T-08 are MUSTs for tools that invoke because they apply at the operation-contract boundary, where values cross into and out of the portable contract; leaving these checks to tool discretion would let two conforming tools disagree on whether a given input or output honors the contract, which is the one disagreement the contract cannot survive. OBI-T-09's tier rule is a MUST because `deprecated: true` requires a portable selection-ordering meaning to be useful: without it, two conforming tools could disagree on whether a non-deprecated binding ranks ahead of a deprecated one, which the §6.3 spec-level tier prose rules out. Selection tactics beyond the tier (priority within tier, latency, cost, protocol preference, tool-specific signals) remain SHOULD- or MAY-level because they encode preferences whose meaning the spec deliberately leaves to authors and tools. OBI-T-10 is a MUST because JSONata 2.0 is the spec's mandated transform interchange language; a tool that evaluated transforms in any other language would silently produce different results from a conforming one, breaking the portability §6.5 commits to. OBI-T-11 is a MUST because §10 explicitly permits `$ref` cycles in recursive schemas; a tool that loops indefinitely on a conformant document would render the spec's permissive cycle rule unusable in practice. OBI-T-12 is a MUST because operation-name resolution is the same kind of portability boundary as OBI-T-07/T-08: if two conforming tools resolved the same name against the same document to different operations (or one consulted aliases and the other did not), every downstream guarantee built on operation-name resolution would silently diverge. The identifier namespace is unambiguous by OBI-D-05, so the only thing left to pin is that all tools read it the same way.
 
-This spec does not define tool behavior beyond these minimum conformance rules. Behavioral conventions (comparison, transform evaluation, security method resolution, etc.) are documented per-tool.
+This spec does not define tool behavior beyond these minimum conformance rules. Behavioral conventions (comparison, transform runtime policy such as error handling, resource limits, and sandboxing, credential resolution, and the like) are documented per-tool. The transform *language* itself is specified (JSONata 2.0, OBI-T-10); what stays per-tool is the runtime around it.
 
 ---
 
-## 17. Extensions
+## 15. Extensions
 
 - OBI documents MAY include extension fields whose keys begin with `x-` at any object location.
 - Tools MUST ignore `x-` fields they do not understand.
@@ -778,9 +658,9 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 
 ---
 
-## 18. References
+## 16. References
 
-### 18.1. Normative references
+### 16.1. Normative references
 
 - **[BCP 14]** S. Bradner, "Key words for use in RFCs to Indicate Requirement Levels," RFC 2119 / BCP 14, March 1997. <https://www.rfc-editor.org/rfc/rfc2119>
 - **[RFC 8174]** B. Leiba, "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words," RFC 8174, May 2017. <https://www.rfc-editor.org/rfc/rfc8174>
@@ -788,28 +668,26 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 - **[RFC 3986]** T. Berners-Lee, R. Fielding, L. Masinter, "Uniform Resource Identifier (URI): Generic Syntax," RFC 3986, January 2005. <https://www.rfc-editor.org/rfc/rfc3986>
 - **[RFC 6838]** N. Freed, J. Klensin, T. Hansen, "Media Type Specifications and Registration Procedures," RFC 6838, January 2013. <https://www.rfc-editor.org/rfc/rfc6838>
 - **[RFC 6901]** P. Bryan, Ed., K. Zyp, M. Nottingham, Ed., "JavaScript Object Notation (JSON) Pointer," RFC 6901, April 2013. <https://www.rfc-editor.org/rfc/rfc6901>
-- **[RFC 8089]** M. Kerwin, "The 'file' URI Scheme," RFC 8089, February 2017. <https://www.rfc-editor.org/rfc/rfc8089>
 - **[RFC 8615]** M. Nottingham, "Well-Known Uniform Resource Identifiers (URIs)," RFC 8615, May 2019. <https://www.rfc-editor.org/rfc/rfc8615>
-- **[UTS #46]** Unicode Consortium, "Unicode IDNA Compatibility Processing," Unicode Technical Standard #46. <https://www.unicode.org/reports/tr46/>
 - **[SemVer 2.0.0]** Tom Preston-Werner, "Semantic Versioning 2.0.0." <https://semver.org/spec/v2.0.0.html>
 - **[JSON Schema 2020-12]** JSON Schema Specification, Draft 2020-12. <https://json-schema.org/draft/2020-12>
 - **[JSONata 2.0]** JSONata Project, "JSONata Documentation," version 2. <https://docs.jsonata.org/>
 
-### 18.2. Informative references
+### 16.2. Informative references
 
 - **[RFC 6750]** M. Jones, D. Hardt, "The OAuth 2.0 Authorization Framework: Bearer Token Usage," RFC 6750, October 2012. <https://www.rfc-editor.org/rfc/rfc6750>
-- **[RFC 8785]** A. Rundgren, B. Jordan, S. Erdtman, "JSON Canonicalization Scheme (JCS)," RFC 8785, June 2020. <https://www.rfc-editor.org/rfc/rfc8785>. Cited by [§11. Canonical form (informative)](#11-canonical-form-informative).
+- **[RFC 8785]** A. Rundgren, B. Jordan, S. Erdtman, "JSON Canonicalization Scheme (JCS)," RFC 8785, June 2020. <https://www.rfc-editor.org/rfc/rfc8785>. Cited by [§9. Canonical form (informative)](#9-canonical-form-informative).
 - **JSONata reference implementation**: JSONata Project, `jsonata` (npm). <https://github.com/jsonata-js/jsonata>. The JavaScript reference implementation for [JSONata 2.0](https://docs.jsonata.org/); cited by [§6.5. Transforms](#65-transforms) as the SHOULD-level tie-breaker where JSONata 2.0's documentation does not unambiguously define behavior.
 - **openbindings reference tools**: `ob` CLI, `openbindings-go`, `openbindings-ts` (see project README). One implementation of this spec among potentially many.
 - **Companion guides**: `guides/` in the specification repository (tutorials, format convention summaries, author guidance; informational, not normative).
 
 ---
 
-## 19. See also
+## 17. See also
 
 - `openbindings.schema.json` — JSON Schema for document validity.
 - `guides/` — tutorials, format convention summaries, author guidance (informational, not normative).
-- `interfaces/` — role interfaces published by the openbindings project (informational).
+- `interfaces/` — shared-contract interfaces published by the openbindings project (informational).
 - `formats/` — companion format specifications (authority level varies per format).
 - `conformance/` — conformance test corpus keyed to OBI-D-##/OBI-T-## rule identifiers (fixtures, manifest, fixture meta-schema, reference Go runner).
 - `CHANGELOG.md` — version history and diffs between spec versions.
@@ -823,13 +701,9 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 [Bindings]: #63-bindings
 [Sources]: #64-sources
 [Transforms]: #65-transforms
-[Security]: #66-security
-[Roles]: #67-roles
 [Discovery]: #7-discovery
 [Binding sufficiency]: #8-binding-sufficiency
-[Interface identity]: #9-interface-identity
-[Location equality]: #10-location-equality
-[Reference resolution]: #12-reference-resolution
-[Versioning]: #13-versioning
-[Security considerations]: #15-security-considerations
-[Conformance]: #16-conformance
+[Reference resolution]: #10-reference-resolution
+[Versioning]: #11-versioning
+[Security considerations]: #13-security-considerations
+[Conformance]: #14-conformance

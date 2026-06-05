@@ -22,8 +22,8 @@ Do not use guides as:
 
 - `getting-started.md` — first walkthrough for the `ob` CLI and a minimal OBI document.
 - `faq.md` — short conceptual answers for new readers.
-- `creators-and-invokers.md` — concepts behind binding invokers, interface creators, and source inspectors.
+- `consuming-an-interface.md` — pattern for consuming an OpenBindings interface from a target service.
 - `implementing-a-binding-format.md` — step-by-step walkthrough for implementing a new binding format, with Go and TypeScript examples.
 - `binding-format-conventions.md` — advisory catalog of known binding-format conventions used by current implementations.
-- `binding-invocation-context.md` — SDK guidance for runtime context, credentials, and platform callbacks.
-- `consuming-an-interface.md` — pattern for consuming an OpenBindings interface from a target service.
+
+Per-role guidance (roles are abstract contracts that implementations can satisfy) lives alongside each role contract in `../interfaces/openbindings.<role>/README.md`.
