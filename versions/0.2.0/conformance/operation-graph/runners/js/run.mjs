@@ -205,20 +205,27 @@ async function runGraph(graph, mockOps, input) {
       case "buffer": {
         const b = (buffers[nodeKey] ||= { acc: [], counts: {} });
         const val = event.value;
-        if (node.until && schemaPass(node.until, val)) {
-          flushBuffer(nodeKey); // exclude triggering event, drop it
-          return;
-        }
-        if (node.through && schemaPass(node.through, val)) {
-          b.acc.push(val);
-          b.counts = mergeMax(b.counts, event.counts);
+        // Spec order (execution algorithm): add the event, then evaluate
+        // limit, then until, then through. limit takes precedence, so an event
+        // that both reaches the limit and matches until/through is flushed as
+        // part of the batch rather than treated as a delimiter.
+        b.acc.push(val);
+        if (node.limit && b.acc.length >= node.limit) {
+          b.counts = mergeMax(b.counts, event.counts); // triggering event is in the batch
           flushBuffer(nodeKey);
           return;
         }
-        b.acc.push(val);
-        b.counts = mergeMax(b.counts, event.counts);
-        if (node.limit && b.acc.length >= node.limit) flushBuffer(nodeKey);
-        return; // no-condition buffers flush at end of stream
+        if (node.until && schemaPass(node.until, val)) {
+          b.acc.pop(); // exclude and drop the triggering event; counts not merged
+          flushBuffer(nodeKey);
+          return;
+        }
+        b.counts = mergeMax(b.counts, event.counts); // event stays in the batch
+        if (node.through && schemaPass(node.through, val)) {
+          flushBuffer(nodeKey);
+          return;
+        }
+        return; // continue accumulating; no-condition buffers flush at end of stream
       }
       case "combine": {
         const c = (combines[nodeKey] ||= {

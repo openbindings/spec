@@ -218,7 +218,7 @@ Accumulates incoming events into a batch. When the buffer's condition is met (or
 - `until` (OPTIONAL, JSON Schema): flush when an event matches this schema. The matching event is **not** included in the batch and is dropped (it does not flow downstream or remain in the buffer). The buffer resets and continues accumulating. Mutually exclusive with `through`.
 - `through` (OPTIONAL, JSON Schema): flush when an event matches this schema. The matching event **is** included in the batch (inclusive). The buffer resets and continues accumulating. Mutually exclusive with `until`.
 
-If no conditions are specified (`{ "type": "buffer" }`), the buffer drains all upstream events and flushes once when all incoming edges complete.
+If no conditions are specified (`{ "type": "buffer" }`), the buffer drains all upstream events and flushes them as a single array when all incoming edges complete. If it received no events, it emits nothing (not an empty array), consistent with the conditional variants.
 
 When `limit` is specified, the buffer operates as a tumbling window: it flushes every N events, resets, and continues accumulating non-overlapping batches. When all upstream edges complete, any remaining partial batch is flushed regardless of whether the limit was reached.
 
@@ -405,7 +405,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 3. **Fan-out**: after a node produces output event(s), each event is sent along every outgoing edge to the connected target nodes.
 
 4. **Stream completion propagation**: when a node has processed all incoming events and will produce no more output, its output stream is complete. Completion propagates along edges:
-   - A `buffer` with no conditions flushes its contents when all incoming edges are complete.
+   - A `buffer` with no conditions flushes its accumulated events as a single array when all incoming edges are complete; if it received no events, it emits nothing.
    - A `buffer` with `limit`, `until`, or `through` flushes any remaining partial batch (the events accumulated since its last flush) when all incoming edges are complete; if nothing is accumulated at that point, it emits no final batch. No buffer variant silently discards a trailing partial batch on completion.
    - A `combine` node becomes ready once every incoming source has produced at least one event or completed. If source completion makes the node ready, it emits one combined object immediately, using each source's latest event or `null` for each source that completed without producing an event. After readiness, each subsequent event from an active source emits another combined object. The node completes once all incoming sources have completed and any readiness-triggered emission has been delivered.
    - A node's output is complete when the node itself is complete and all its output events have been delivered.

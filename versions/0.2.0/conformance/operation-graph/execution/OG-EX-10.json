@@ -1,0 +1,43 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Buffer flush precedence: when an event both reaches `limit` and matches `until`, `limit` takes precedence (it is evaluated first), so the event is flushed as part of the batch rather than treated as an excluded delimiter.",
+  "fixtures": [
+    {
+      "id": "OG-EX-10",
+      "name": "Buffer limit precedence over until",
+      "section": "Node definitions / buffer; Execution algorithm",
+      "description": "src.emit produces two events from one input; the second matches the buffer's `until` schema AND reaches `limit: 2`. Because limit is evaluated first, the batch flushes including the second event ([{n:1},{n:2,end:true}]) rather than excluding it ([{n:1}]).",
+      "operations": {
+        "src.emit": {
+          "responses": [
+            {
+              "whenInput": { "go": true },
+              "emit": [ { "n": 1 }, { "n": 2, "end": true } ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "description": "Buffer with both limit and until; the limit-reaching event also matches until.",
+        "nodes": {
+          "in": { "type": "input" },
+          "src": { "type": "operation", "operation": "src.emit" },
+          "buf": { "type": "buffer", "limit": 2, "until": { "required": ["end"] } },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "src" },
+          { "from": "src", "to": "buf" },
+          { "from": "buf", "to": "out" }
+        ]
+      },
+      "input": { "go": true },
+      "expected": {
+        "output": [ [ { "n": 1 }, { "n": 2, "end": true } ] ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}
