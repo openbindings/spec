@@ -406,7 +406,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 
 4. **Stream completion propagation**: when a node has processed all incoming events and will produce no more output, its output stream is complete. Completion propagates along edges:
    - A `buffer` with no conditions flushes its contents when all incoming edges are complete.
-   - A `buffer` with `limit` flushes any remaining partial batch when all incoming edges are complete.
+   - A `buffer` with `limit`, `until`, or `through` flushes any remaining partial batch (the events accumulated since its last flush) when all incoming edges are complete; if nothing is accumulated at that point, it emits no final batch. No buffer variant silently discards a trailing partial batch on completion.
    - A `combine` node becomes ready once every incoming source has produced at least one event or completed. If source completion makes the node ready, it emits one combined object immediately, using each source's latest event or `null` for each source that completed without producing an event. After readiness, each subsequent event from an active source emits another combined object. The node completes once all incoming sources have completed and any readiness-triggered emission has been delivered.
    - A node's output is complete when the node itself is complete and all its output events have been delivered.
 

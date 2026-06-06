@@ -2,7 +2,7 @@
   "format": "openbindings.operation-graph@0.2.0",
   "kind": "validation",
   "description": "Well-formedness fixtures keyed to the numbered validation rules in the operation-graph format spec. valid:true graphs must validate against the op-graph JSON Schema; for schemaEnforced rules, valid:false graphs must be rejected by it. Negative graphs for non-schemaEnforced rules are otherwise schema-valid so that only the named rule is violated.",
-  "notes": "Rule 10 (operation nodes reference operations in the containing OBI) is covered at the OBI level, not here, since it cannot be decided from a graph in isolation. Rule 13's unsupported-type clause is SHOULD-level and is not a validity failure, so only the MUST part (every node has a type) is fixtured.",
+  "notes": "Rule 10 (operation nodes reference operations in the containing OBI) is covered at the OBI level, not here, since it cannot be decided from a graph in isolation. Rule 13 requires every node's type to be one of the defined node types; unknown types are non-conformant and schema-enforced, so both the missing-type and unknown-type cases are fixtured as negatives.",
   "rules": [
     {
       "rule": 1,
@@ -238,7 +238,7 @@
     },
     {
       "rule": 13,
-      "title": "Every node MUST have a type field.",
+      "title": "Every node MUST have a type field whose value is one of the defined node types.",
       "schemaEnforced": true,
       "tests": [
         {
@@ -249,6 +249,11 @@
         {
           "description": "a node is missing its type field",
           "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "bad": {}, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "bad" }, { "from": "bad", "to": "out" } ] },
+          "valid": false
+        },
+        {
+          "description": "a node uses an unknown (custom) type",
+          "graph": { "openbindings.operation-graph": "0.2.0", "nodes": { "in": { "type": "input" }, "bad": { "type": "custom" }, "out": { "type": "output" } }, "edges": [ { "from": "in", "to": "bad" }, { "from": "bad", "to": "out" } ] },
           "valid": false
         }
       ]

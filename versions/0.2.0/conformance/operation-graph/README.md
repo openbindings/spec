@@ -107,10 +107,11 @@ additionally carry an `operations` array listing the operation keys the
 containing OBI declares; the verifier resolves each operation node's `operation`
 field against that set.
 
-Rule 13's unsupported-node-type clause is SHOULD-level ("tools SHOULD report an
-error" for an unknown `type`), not a validity failure, so an unknown node type
-is schema-valid and is not represented as a negative case. Only the MUST part
-(every node has a `type`) is fixtured.
+Rule 13 requires every node's `type` to be one of the defined node types. An
+unknown `type` is non-conformant (schema-enforced via the node-type enum), so a
+graph containing one is a validity failure that a tool MUST reject rather than
+execute partially. Both the missing-`type` and unknown-`type` (`type: "custom"`)
+cases are fixtured as negatives.
 
 ## Reference runner
 

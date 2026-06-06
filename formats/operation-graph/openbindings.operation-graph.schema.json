@@ -111,7 +111,7 @@
               "timeout": {
                 "type": "integer",
                 "minimum": 1,
-                "description": "Maximum time in milliseconds to wait for the operation to complete."
+                "description": "Total budget in milliseconds for the operation invocation, until its output stream completes; not an idle or per-event timeout. On expiry the node fails with timeout_exceeded."
               }
             },
             "patternProperties": { "^x-": {} },
@@ -129,7 +129,7 @@
               "limit": {
                 "type": "integer",
                 "minimum": 1,
-                "description": "Flush after accumulating this many events. Resets and continues (windowing)."
+                "description": "Flush after accumulating this many events, then reset and continue (a tumbling window of disjoint batches). Takes precedence over until/through when both would fire on the same event."
               },
               "until": {
                 "type": "object",
