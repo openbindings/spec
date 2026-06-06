@@ -139,6 +139,8 @@ An operation graph is the addressable unit of this binding format. It is a JSON 
 - `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is a [Node](#node-definitions). Node keys MUST be unique within the operation graph (enforced by JSON object semantics).
 - `edges` (REQUIRED): an array of [Edge](#edge-definition) objects defining the connections between nodes.
 
+**Version precedence.** Two version signals may be present: the source `format` token (`openbindings.operation-graph@X.Y.Z`) and each graph's own `openbindings.operation-graph` field. The graph's field governs how that graph is interpreted and executed, and is the value the core spec's OBI-T-04 version refusal is applied against; the source token identifies the format family and its version is advisory for binding selection. Because one document may hold graphs at differing versions (see [Source documents](#source-documents)), the token cannot govern per-graph execution. A tool MAY surface a diagnostic when the token version and a graph's field disagree, but MUST NOT let the token override the graph's field.
+
 There is no explicit `entry` field. The entry point is the `input` node (identified by `"type": "input"`), and the exit point is the `output` node (identified by `"type": "output"`). See [Validation rules](#validation-rules) for structural constraints.
 
 ## Node definitions
@@ -161,7 +163,7 @@ All nodes support the following optional field:
 
 Errors are silent by default. Operation graphs often process many events (e.g., fetching details for 100 items), and one transient failure should not kill the entire stream. Authors who want errors handled wire `onError` to a transform for fallback values, to an operation for logging, or to an `exit` node with `error: true` to make failures fatal. The graph author is always in control of error policy.
 
-This specification defines the node types below. Documents MAY use other `type` values for custom node types, but tooling is only required to support the types defined here. Custom node types are not portable across implementations.
+This specification defines the node types below. A conformant `openbindings.operation-graph@0.2.0` graph uses only these types. Unlike an unknown metadata field, an unknown node `type` is an executable step a tool cannot safely skip or ignore: a graph containing a node whose `type` is not defined here is non-invocable under this format version (see [Validation rules](#validation-rules)). Extended or custom execution nodes belong behind a distinct format token or profile, not inside this format version.
 
 ### `input`
 
@@ -194,7 +196,7 @@ Invokes an operation defined in the containing OBI's `operations` map.
 
 - `operation` (REQUIRED, string): the operation key to invoke.
 - `maxIterations` (OPTIONAL, integer >= 1): the maximum number of times this node may be invoked per event lineage. REQUIRED if the node is reachable from itself (part of a cycle). See [Execution algorithm](#execution-algorithm).
-- `timeout` (OPTIONAL, integer >= 1): maximum time in milliseconds to wait for the operation to complete. If the operation does not complete within this time, the invocation fails with `timeout_exceeded`.
+- `timeout` (OPTIONAL, integer >= 1): a total budget, in milliseconds, for the operation invocation — from invocation until the operation's output stream completes — not an idle or per-event timeout. For a unary operation this is simply the time to its single result. For a streaming operation, events emitted before the budget elapses have already flowed downstream; if the operation has not completed when the budget elapses, the node fails with `timeout_exceeded` (routed per `onError`). Authors who need an idle, first-event, or other partial timeout should express it in the operation's own binding, not here.
 
 When an event arrives at an operation node, the event becomes the operation's input. The operation is invoked, and its output events flow downstream independently. If the operation produces multiple output events (streaming), each event flows through the graph on its own.
 
@@ -212,13 +214,15 @@ Because binding selection is a processor concern, a graph whose behavior depends
 
 Accumulates incoming events into a batch. When the buffer's condition is met (or all upstream edges complete), it emits the accumulated events as an array downstream.
 
-- `limit` (OPTIONAL, integer >= 1): flush after accumulating this many events. The buffer resets and begins accumulating again (windowing). "No more than N" — if upstream completes before the limit is reached, the partial batch is flushed.
+- `limit` (OPTIONAL, integer >= 1): flush after accumulating this many events. The buffer resets and begins accumulating again (a tumbling window: successive batches are disjoint). "No more than N" — if upstream completes before the limit is reached, the partial batch is flushed.
 - `until` (OPTIONAL, JSON Schema): flush when an event matches this schema. The matching event is **not** included in the batch and is dropped (it does not flow downstream or remain in the buffer). The buffer resets and continues accumulating. Mutually exclusive with `through`.
 - `through` (OPTIONAL, JSON Schema): flush when an event matches this schema. The matching event **is** included in the batch (inclusive). The buffer resets and continues accumulating. Mutually exclusive with `until`.
 
 If no conditions are specified (`{ "type": "buffer" }`), the buffer drains all upstream events and flushes once when all incoming edges complete.
 
-When `limit` is specified, the buffer operates as a sliding window: it flushes every N events, resets, and continues accumulating. When all upstream edges complete, any remaining partial batch is flushed regardless of whether the limit was reached.
+When `limit` is specified, the buffer operates as a tumbling window: it flushes every N events, resets, and continues accumulating non-overlapping batches. When all upstream edges complete, any remaining partial batch is flushed regardless of whether the limit was reached.
+
+A buffer MAY combine `limit` with `until` or `through` (validation rule 12 makes only `until` and `through` mutually exclusive). When more than one flush condition would fire on the same event, `limit` takes precedence: it is evaluated first (see [Execution algorithm](#execution-algorithm)), so the event that reaches the limit is flushed as part of the batch and the `until`/`through` rule does not additionally apply to it.
 
 The buffer's output is always an array of the accumulated events.
 
@@ -316,6 +320,8 @@ A combine node is **ready** once every incoming source has either produced at le
 - The combine node completes when all incoming sources have completed.
 
 Waiting for readiness is what makes `combine` a parallel join: two sources that each emit once produce exactly one combined emission rather than a sequence of partial objects. Emitting a partial object early, before every source is ready, is out of scope for this version (see [Deferred from v1](#deferred-from-v1)).
+
+**Portability.** A `combine` driven by sources that each emit exactly once produces exactly one combined emission and is fully portable. When a source emits more than once, the number and contents of the combined emissions depend on cross-path interleaving and are implementation-defined (see [Determinism and portability](#determinism-and-portability)). Authors who require portable output SHOULD drive `combine` only with single-emission sources; a multi-emission `combine` is permitted but its emission count and contents are not portable across conforming engines.
 
 ### `exit`
 
@@ -421,6 +427,7 @@ Given an operation graph with input node `IN`, output node `OUT`, and composite 
 - `filter` and `transform` pass the counts of their input event through to their single output event unchanged. A filtered-out event propagates nothing.
 - `map` gives every element event it emits the counts of the single input event it unpacked. A `map` inside a cycle therefore copies the input's counts onto each element, which is the amplification described under [Security considerations](#security-considerations).
 - A node that merges several events into one output (`buffer` on flush, `combine` on emit) gives the merged output event, for each node, the maximum of that node's count among all events combined into it. Taking the maximum guarantees that a merge never lowers a count, so a merge cannot be used to escape a `maxIterations` bound on a cycle that passes through it.
+- An `onError` route carries the lineage of the failing event: the error event inherits, for every node, the counts of the event that was being processed when the failure occurred. An error path that re-enters a cycle is therefore bounded by the same `maxIterations` as the data path, and `onError` references count as edges for the cycle check in [rule 9](#validation-rules). This gives error routing a portable bound rather than relying on per-implementation policy.
 
 Because counts only increase along a lineage and merges take the maximum, a cycle that contains an `operation` node with `maxIterations` cannot traverse that operation indefinitely within any single event lineage. This is a per-lineage bound; it does not bound total event count or total operation invocations when `map` or fan-out creates additional lineages.
 
@@ -469,11 +476,11 @@ Implementations MUST enforce the following well-formedness rules on each operati
 6. Every node MUST be reachable from the `input` node by transitively following edges and `onError` references (no orphan nodes).
 7. Every edge MUST reference valid node keys in both `from` and `to`.
 8. There MUST NOT be duplicate edges (same `from` and `to` pair).
-9. Every cycle in the graph MUST contain at least one `operation` node with `maxIterations` declared.
+9. Every cycle in the graph MUST contain at least one `operation` node with `maxIterations` declared. Cycle detection follows both data edges and `onError` references: an `onError` route is a control edge for this purpose, so an error route that loops back into a path (including a node routing `onError` to itself) is bounded by the same rule as a data cycle.
 10. `operation` nodes MUST reference operations that exist in the containing OBI's `operations` map.
 11. `filter` nodes MUST have exactly one of `schema` or `transform` (mutual exclusivity).
 12. `buffer` nodes MUST NOT have both `until` and `through` (mutual exclusivity).
-13. Every node MUST have a `type` field. Tools MUST support the node types defined in this specification (`input`, `output`, `operation`, `buffer`, `filter`, `transform`, `map`, `combine`, `exit`). Documents MAY use other `type` values; tools that encounter an unsupported node type SHOULD report an error.
+13. Every node MUST have a `type` field whose value is one of the node types defined in this specification (`input`, `output`, `operation`, `buffer`, `filter`, `transform`, `map`, `combine`, `exit`). A graph containing a node with any other `type` is not a conformant `openbindings.operation-graph@0.2.0` graph; a tool acting on such a binding (Codegen, Invoking) MUST fail it rather than execute partially, because a node is an executable step whose unknown semantics cannot be safely skipped. (Every node is reachable by rule 6, so there is no harmless "unreachable custom node" case.) Custom execution nodes require a distinct format token or profile.
 14. If a node declares `onError`, the referenced node key MUST exist in the operation graph.
 15. `exit` nodes MUST NOT have any outgoing edges.
 
@@ -822,7 +829,7 @@ Operation graphs inherit the security considerations defined in the [core OpenBi
 
 - **Event amplification**: `map` nodes convert one event into many. Combined with cycles, a small input can produce a large number of operation invocations. A `map` inside a cycle is the primary amplification vector: if the map produces N events per iteration and `maxIterations` is M, the total can reach N^M events. Implementations SHOULD enforce a maximum total event count per operation graph execution and terminate with an error when the limit is exceeded.
 - **Cycle amplification**: fan-out within a cycle multiplies events per iteration. `maxIterations` bounds per-lineage traversals but does not bound total event count if fan-out occurs within the cycle.
-- **Error chains**: `onError` routing can create chains of operation invocations in response to failures. Implementations SHOULD enforce a maximum error chain depth to prevent unbounded error processing.
+- **Error chains**: `onError` routing can create chains of operation invocations in response to failures. The primary bound is normative: error events inherit the failing event's lineage and `onError` routes count as cycle edges, so any error loop must pass through an `operation` node with `maxIterations` (see [`maxIterations` and event lineage](#maxiterations-and-event-lineage) and validation rule 9). As defense in depth, implementations MAY additionally cap total error-chain depth.
 
 ## Deferred from v1
 

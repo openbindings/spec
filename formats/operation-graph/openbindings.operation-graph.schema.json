@@ -53,7 +53,8 @@
       "properties": {
         "type": {
           "type": "string",
-          "description": "The node type. Determines behavior and which other fields are valid."
+          "enum": ["input", "output", "operation", "buffer", "filter", "transform", "map", "combine", "exit"],
+          "description": "The node type. Determines behavior and which other fields are valid. Must be one of the types defined by this format version (validation rule 13); custom node types require a distinct format token or profile."
         },
         "onError": {
           "type": "string",
