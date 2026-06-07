@@ -18,8 +18,8 @@ operation-graph/
   README.md             (this file)
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
-  execution/            (replayable graph executions; one file per spec example)
-    OG-EX-01.json ... OG-EX-09.json
+  execution/            (replayable graph executions)
+    OG-EX-01.json ... OG-EX-12.json
   validation/           (well-formedness rules; OG-VR.json)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
@@ -77,6 +77,8 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-08 | Bounded cycle through a buffer | (not a spec example) merge node on a cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
 | OG-EX-09 | Combine with one empty source | (not a spec example) source completion makes `combine` ready; one key is `null` |
 | OG-EX-10 | Combine with all sources empty | (not a spec example) completion-only readiness emits one all-`null` combined object |
+| OG-EX-11 | Buffer limit precedence over until | (not a spec example) `limit` is evaluated before `until`/`through`; the limit-reaching event is flushed as part of the batch, not excluded as a delimiter |
+| OG-EX-12 | Empty no-condition buffer | (not a spec example) a buffer that accumulates zero events emits nothing (not `[]`) on completion |
 
 OG-EX-02 is the fixture that pins the corrected `combine` semantics: because
 `customer` and `orders` each emit exactly once, `combine` waits until both are
