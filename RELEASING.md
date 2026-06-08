@@ -14,11 +14,11 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
-- `conformance/` — the core conformance test corpus: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Excludes `conformance/comparison/` (see below). Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise (§16) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version.
+- `conformance/` — the core conformance test corpus: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Excludes `conformance/comparison/` (see below). Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise (§14) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version.
 
 **Not snapshotted:**
 
-- `interfaces/` — role interfaces are independently versioned and use location-based identity. Each interface lives at a stable, versioned path (e.g., `interfaces/openbindings.binding-invoker/0.1.json`) that IS its identity. Copying interfaces into a version snapshot would create a second URL for the same contract, fragmenting identity. See the spec's [Interface identity](openbindings.md#9-interface-identity) section.
+- `interfaces/` — role interfaces are independently versioned and use location-based identity. Each interface lives at a stable, versioned path (e.g., `interfaces/openbindings.binding-invoker/0.1.json`) that IS its identity. Copying interfaces into a version snapshot would create a second URL for the same contract, fragmenting identity. See the spec's [Reference resolution](openbindings.md#10-reference-resolution) section.
 - `formats/` — companion format specs carry their own version in their format token (e.g., `openbindings.operation-graph@0.1.0`) and are independently versioned. They live at their canonical path and are referenced by format token, not by release version.
 - `conventions/` — official tooling conventions (comparison analysis, subsumption profile, findings catalog) are non-normative and independently versioned. They are not part of the core spec release.
 - `conformance/comparison/` — comparison conformance fixtures are governed by `conventions/` (schemas, prose), not by the core spec's OBI-D/OBI-T rule identifiers. They are excluded from core snapshots; their lifecycle follows the conventions they test.

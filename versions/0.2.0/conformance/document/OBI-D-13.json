@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-13",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
   "tests": [
     {

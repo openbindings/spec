@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-08",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has no $vocabulary keyword in any schema within the document.",
-  "notes": "Recursive enforcement: $vocabulary is forbidden at any nesting depth, not only at the top level of a schema. Per §16, the spec's JSON Schema artifact only enforces this at top level; recursive enforcement is an implementer obligation under OBI-D-08 prose.",
+  "notes": "Recursive enforcement: $vocabulary is forbidden at any nesting depth, not only at the top level of a schema. Per §14.2, the spec's JSON Schema artifact only enforces this at top level; recursive enforcement is an implementer obligation under OBI-D-08 prose.",
   "tests": [
     {
       "description": "schemas with no $vocabulary anywhere",

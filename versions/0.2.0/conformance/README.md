@@ -1,23 +1,23 @@
 # OpenBindings Conformance Corpus
 
-Test fixtures for OpenBindings document and tool conformance, keyed to the rule identifiers defined in `openbindings.md` §16. The root document/tool corpus tests only the spec's normative rules. Tool-defined behavior fixtures live in explicitly named subcorpora such as `comparison/` and are governed by their companion conventions, not by core spec conformance.
+Test fixtures for OpenBindings document and tool conformance, keyed to the rule identifiers defined in `openbindings.md` §14. The root document/tool corpus tests only the spec's normative rules. Tool-defined behavior fixtures live in explicitly named subcorpora such as `comparison/` and are governed by their companion conventions, not by core spec conformance.
 
 ## Status
 
-**Document validity coverage complete for OBI-D-01 through OBI-D-16; OBI-D-17 is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage in progress for the rules whose observable conformance fits the document-level fixture format.**
+**Document validity coverage is complete for OBI-D-01 through OBI-D-13; OBI-D-14 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (100 tests at this version).**
 
 | Rule range | Coverage |
 |---|---|
-| OBI-D-01 to OBI-D-16 | Complete (97 tests) |
-| OBI-D-17 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
-| OBI-T-01, OBI-T-03, OBI-T-04 | Complete (14 tests; parse/load-shaped rules, same fixture format as OBI-D) |
-| OBI-T-02, OBI-T-05 | **Deferred.** Rules SHOULD-warn on diagnostics. The spec deliberately leaves diagnostic emission shape tool-defined; pinning a diagnostic shape via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
+| OBI-D-01 to OBI-D-13 | Complete |
+| OBI-D-14 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
+| OBI-T-01, OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D) |
+| OBI-T-02, OBI-T-05 | **Deferred.** Diagnostic-emission rules (ignore unknown fields; surface diagnostics for uninterpreted schema keywords) that SHOULD warn. The spec deliberately leaves diagnostic shape tool-defined; pinning it via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
 | OBI-T-06 | **Deferred.** Applies to tools that resolve `ref` values per binding-format conventions. Conformance is per-format and depends on each format community's `ref` syntax; a portable corpus would need a per-format fixture set. |
 | OBI-T-07, OBI-T-08 | **Deferred.** Invocation-time validation of caller-provided input and source-produced output. Fixtures need richer shape: caller input + expected validation outcome separate from the OBI document. Pending fixture format design. |
-| OBI-T-09 | **Deferred.** SHOULD-level subsumption check on `satisfies` claims; the rule is undecidable in general and explicitly permits "unverified" as a non-violation outcome. A meaningful fixture would need a small witness set the spec promotes from SHOULD to MUST-decide for those specific cases. Out of scope absent that. |
-| OBI-T-10 | **Deferred.** Selection ordering across multiple bindings. Fixtures need richer shape: multi-binding scenario + expected selection. Pending fixture format design. |
-| OBI-T-11 | **Deferred.** Transform evaluation per JSONata 2.0. Fixtures need richer shape: transform input + expected transform output. Pending fixture format design. |
-| OBI-T-12 | **Deferred.** MUST handle `$ref` cycles without infinite loops; the spec explicitly allows either successful resolution or terminating-with-error as conformant. The current `valid: true|false` shape can't express "either accept or reject is fine, but the tool must terminate." Pending either a format extension (`expected_termination: true`) or a harness convention separate from the fixture. |
+| OBI-T-09 | **Deferred.** Selection among multiple candidate bindings for one operation (non-deprecated ranked ahead of deprecated, then by `priority`), applied only over the candidates a tool can act on. Fixtures need a multi-binding scenario + expected selection, including candidate-set filtering by tool capability. Pending fixture format design. |
+| OBI-T-10 | **Deferred.** Transform evaluation per JSONata 2.0. Fixtures need richer shape: transform input + expected transform output. Pending fixture format design. |
+| OBI-T-11 | **Deferred.** MUST handle `$ref` cycles without infinite loops; the spec explicitly allows either successful resolution or terminating-with-error as conformant. The current `valid: true|false` shape can't express "either accept or reject is fine, but the tool must terminate." Pending either a format extension (`expected_termination: true`) or a harness convention separate from the fixture. |
+| OBI-T-12 | **Deferred.** Operation-name resolution against the flat key+aliases namespace. Fixtures need a resolve-by-name scenario + the expected resolved operation (or a no-match outcome). Pending fixture format design. |
 
 ## Layout
 
@@ -50,7 +50,7 @@ Each rule has one JSON file. The file declares the rule identifier, section refe
 ```json
 {
   "rule": "OBI-D-XX",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Brief rule description quoted or paraphrased from the spec.",
   "tests": [
     {
@@ -70,7 +70,7 @@ Each rule has one JSON file. The file declares the rule identifier, section refe
 
 Field semantics:
 - `rule`: the OBI-D-## or OBI-T-## identifier this fixture covers.
-- `section`: the spec section the rule is defined in (`16.2` for document rules; `16.3` for tool rules).
+- `section`: the spec section the rule is defined in (`14.2` for document rules; `14.3` for tool rules).
 - `description`: human-readable description of what the rule says.
 - `tests[*].description`: human-readable description of what this specific case tests.
 - `tests[*].document`: an OBI document, embedded inline.
@@ -89,9 +89,9 @@ The corpus tracks the spec version it was authored against. Spec changes that af
 
 ## Coverage limits
 
-This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits (notably OBI-T-09's undecidability and OBI-T-02's diagnostic surface) and will be partially tested or documented as un-testable when those rules are added; gaps are noted per-rule.
+This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits (notably the diagnostic-shape rules OBI-T-02/OBI-T-05, the per-format `ref` rule OBI-T-06, and the invocation-time behavioral rules OBI-T-07 through OBI-T-12) and are documented as deferred until a richer fixture format exists; gaps are noted per-rule above.
 
-OBI-D-15 fixtures depend on the SDK under test having a JSON Schema 2020-12 validator wired into validation; SDKs without that capability will report mismatches on the negative cases. This is a per-SDK conformance gap, not a corpus defect.
+OBI-D-12 (example validation) fixtures depend on the SDK under test having a JSON Schema 2020-12 validator wired into validation; SDKs without that capability will report mismatches on the negative cases. This is a per-SDK conformance gap, not a corpus defect.
 
 ## Forward-compatibility annotation: `requiresMaxTested`
 
@@ -101,4 +101,4 @@ Such test cases set `requiresMaxTested: "X.Y.Z"` on the test entry. A runner SHO
 
 ## Adding fixtures
 
-To add a test case for a covered rule, edit the rule's JSON file and append a test entry to `tests`. To add coverage for a new rule, create `document/OBI-D-XX.json` (or future `tool/OBI-T-XX.json`) following the format above. After any addition or edit, regenerate `manifest.json` (`node ../scripts/generate-conformance-manifest.mjs`) and run `node ../scripts/verify-corpus.mjs` to confirm the corpus stays in sync with the spec.
+To add a test case for a covered rule, edit the rule's JSON file and append a test entry to `tests`. To add coverage for a new rule, create `document/OBI-D-XX.json` (or `tool/OBI-T-XX.json`) following the format above. After any addition or edit, regenerate `manifest.json` (`node ../scripts/generate-conformance-manifest.mjs`) and run `node ../scripts/verify-corpus.mjs` to confirm the corpus stays in sync with the spec.

@@ -2,7 +2,7 @@
   "openbindings": "0.2.0",
   "name": "OpenBlendings",
   "version": "1.0.0",
-  "description": "A coffee shop with six bindings: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six binding specifications.",
+  "description": "A coffee shop with bindings in six formats: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six binding formats.",
   "schemas": {
     "MenuItem": {
       "type": "object",

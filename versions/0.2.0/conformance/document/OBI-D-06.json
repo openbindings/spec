@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-06",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has well-formed URI references (per RFC 3986 §4.1) in sources[*].location and schema $ref values.",
   "tests": [
     {

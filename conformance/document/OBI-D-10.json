@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-10",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has every bindings[*].source value present as a key in the document's sources map.",
   "tests": [
     {

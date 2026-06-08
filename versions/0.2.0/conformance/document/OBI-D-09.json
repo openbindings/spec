@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-09",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has every bindings[*].operation value present as a key in the document's operations map.",
   "tests": [
     {

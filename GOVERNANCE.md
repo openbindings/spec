@@ -15,7 +15,7 @@ The goal is to keep the OpenBindings specification vendor-neutral, implementable
 - Editors seek rough consensus on meaningful changes.
 - If consensus cannot be reached, editors make a decision with a bias toward:
   - interoperability and determinism
-  - backward compatibility (within a major spec version)
+  - backward compatibility where practical (the spec is pre-1.0; minor versions may include breaking changes)
   - clarity and minimalism
 
 ## Releases

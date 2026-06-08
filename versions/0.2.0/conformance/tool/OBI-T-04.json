@@ -1,6 +1,6 @@
 {
   "rule": "OBI-T-04",
-  "section": "16.3",
+  "section": "14.3",
   "description": "Refuses documents declaring a higher major openbindings version than the tool supports. While the spec is pre-1.0 (major version 0), this refusal extends to higher minor versions, per §13.1.",
   "notes": "Tests assume the SDK under test supports a version range bounded below `999.x` for major-version refusal cases, and bounded below `0.999.x` for pre-1.0 minor-version refusal cases. SDK conformance to OBI-T-04 is independent of which specific version the SDK supports; the test asserts the refusal behavior on documents declaring versions higher than any plausible SDK release in this version family. Lower-version cases are not tested because OBI-T-04 does not mandate a specific behavior for documents declaring a lower minor than the SDK supports.",
   "tests": [

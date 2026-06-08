@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-04",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z_][A-Za-z0-9_.-]*$.",
   "tests": [
     {
@@ -168,14 +168,14 @@
       "violates": ["OBI-D-04"]
     },
     {
-      "description": "security entry key with hyphen-prefix",
+      "description": "transforms map key with hyphen-prefix",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "createTask": {}
         },
-        "security": {
-          "-apiAuth": [{ "type": "bearer" }]
+        "transforms": {
+          "-normalize": "payload"
         }
       },
       "valid": false,

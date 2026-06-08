@@ -2,10 +2,10 @@
 // Verifies the conformance corpus against the spec.
 //
 // Checks performed:
-//   1. Every OBI-D-## and OBI-T-## rule defined in openbindings.md §16 has
+//   1. Every OBI-D-## and OBI-T-## rule defined in openbindings.md §14 has
 //      either a fixture file OR an entry in conformance/README.md's deferred
 //      rules table.
-//   2. Every fixture file's `rule` field references a real rule defined in §16.
+//   2. Every fixture file's `rule` field references a real rule defined in §14.
 //   3. Every fixture file's `section` field matches the rule's actual section.
 //   4. Every `violates` entry in any test case references a real rule.
 //   5. Every fixture file conforms structurally to the shape declared in
@@ -53,7 +53,7 @@ function extractSpecRules(md) {
 }
 
 function inferSectionForRule(ruleId) {
-  return ruleId.startsWith("OBI-D-") ? "16.2" : "16.3";
+  return ruleId.startsWith("OBI-D-") ? "14.2" : "14.3";
 }
 
 function listFixtures() {
@@ -155,7 +155,7 @@ for (const { relPath, absPath } of fixtures) {
       fixtureRules.set(fixture.rule, relPath);
     }
     if (!specRules.has(fixture.rule)) {
-      err(`${relPath}: rule '${fixture.rule}' is not defined in openbindings.md §16`);
+      err(`${relPath}: rule '${fixture.rule}' is not defined in openbindings.md §14`);
     }
     const expectedSection = inferSectionForRule(fixture.rule);
     if (fixture.section !== expectedSection) {
@@ -167,7 +167,7 @@ for (const { relPath, absPath } of fixtures) {
       if (Array.isArray(t.violates)) {
         for (const v of t.violates) {
           if (!specRules.has(v)) {
-            err(`${relPath}.tests[${i}].violates: rule '${v}' is not defined in openbindings.md §16`);
+            err(`${relPath}.tests[${i}].violates: rule '${v}' is not defined in openbindings.md §14`);
           }
         }
       }
@@ -190,7 +190,7 @@ for (const ruleId of deferredRules) {
 }
 
 // Report
-console.log(`Spec rules found in §16: ${specRules.size}`);
+console.log(`Spec rules found in §14: ${specRules.size}`);
 console.log(`Fixture files: ${fixtures.length}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferredRules.size}`);

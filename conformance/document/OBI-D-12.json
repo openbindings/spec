@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-12",
-  "section": "16.2",
+  "section": "14.2",
   "description": "Has every example's provided input validating against its operation's input schema, and every example's provided output validating against its operation's output schema, when the respective schema is specified.",
   "tests": [
     {
