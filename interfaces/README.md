@@ -18,6 +18,17 @@ Each interface lives in its own directory with versioned files following the spe
 - `openbindings.context-store/0.1.json` — context store contract. Defines `getContext`, `setContext`, and `deleteContext` for storing and retrieving opaque per-target context (credentials, session state, custom headers, configuration, etc.) keyed by stable identifier (typically a normalized API origin). Implementations MAY expose richer management capabilities (listing, inspection, rotation) outside the role contract.
 - `openbindings.http-client/0.1.json` — HTTP client contract. Defines a `request` operation for making HTTP requests on behalf of callers that cannot make direct requests due to platform constraints (browser CSP/CORS, network restrictions, etc.).
 
+## How these roles relate
+
+The roles compose rather than overlap:
+
+- **source-inspector** and **interface-creator** sit at authoring time: an inspector reports the bindable targets in a raw artifact, and a creator turns an artifact into an OBI.
+- **binding-invoker** is the runtime workhorse that invokes an operation's binding. When a binding needs something the caller has not supplied (credentials, a session, configuration), the invoker raises a `CONTEXT_REQUIRED` challenge, which the runtime resolves into the **context-store** and then retries. Authentication lives entirely in this loop, never in the OBI document.
+- **http-client** is an escape hatch for callers that cannot make direct requests (browser CSP/CORS, sandboxed environments).
+- **software-descriptor** is a universal add-on any of the above MAY also implement, so tooling can ask "what is this?" uniformly.
+
+A service signals that it implements one of these contracts by giving the corresponding operation the contract's operation name as an `alias` (see the spec's Operations section). The alias is author-asserted; the spec attaches no verification or trust semantics to it.
+
 ## Authoring conventions
 
 These conventions apply to the role interfaces published in this directory and are recommended (but not required) for any third party authoring role interfaces.

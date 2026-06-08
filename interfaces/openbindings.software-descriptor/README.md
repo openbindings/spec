@@ -2,7 +2,7 @@
 
 A generic identity contract any piece of software MAY implement. Defines `getInfo` for self-identification: name, version, description, homepage, repository, maintainer.
 
-This role exists so that tooling, registries, and clients have a uniform way to ask "what is this thing?" regardless of what else the software does. Any implementation that satisfies a domain role (binding invoker, interface creator, source inspector, anything else) can also satisfy this role to advertise its identity.
+This role exists so that tooling, registries, and clients have a uniform way to ask "what is this thing?" regardless of what else the software does. Any implementation that fills a domain role (binding invoker, interface creator, source inspector, anything else) can also implement this role to advertise its identity.
 
 ## When to add it
 
