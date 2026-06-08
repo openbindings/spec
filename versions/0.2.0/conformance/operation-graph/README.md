@@ -6,7 +6,7 @@ companion specification at
 
 This is a per-format subcorpus, governed by the operation-graph format spec, not
 by the core OBI-D / OBI-T conformance rules. It lives alongside the core corpus
-the same way `comparison/` does: the core verifiers (`verify-corpus.mjs`,
+but is governed separately: the core verifiers (`verify-corpus.mjs`,
 `generate-conformance-manifest.mjs`) only scan `document/` and `tool/`, so they
 neither pick up nor are broken by this directory. The dedicated verifier is
 `scripts/verify-operation-graph.mjs`.

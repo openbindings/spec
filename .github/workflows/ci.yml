@@ -54,18 +54,6 @@ jobs:
           node scripts/generate-conformance-manifest.mjs
           git diff --exit-code conformance/manifest.json
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install conventions script dependencies
-        run: cd conventions/scripts && pnpm install --ignore-scripts
-
-      - name: Verify conventions consistency
-        run: |
-          node conventions/scripts/verify-catalog.mjs
-          node conventions/scripts/verify-comparison-corpus.mjs
-
       - name: Check local markdown links
         run: |
           rc=0
@@ -80,5 +68,5 @@ jobs:
                 exit 1
               fi
             done || rc=1
-          done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*')
+          done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './temp_ref/*')
           exit $rc

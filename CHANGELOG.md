@@ -42,7 +42,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
 - **Stable rule identifiers (section 14).** Every conformance rule carries an `OBI-D-##` (document) or `OBI-T-##` (tool) identifier. Identifiers are stable within a major version.
 - **Document rules OBI-D-01 through OBI-D-14.** Covering UTF-8 JSON, schema validity, unique operation keys, identifier patterns (keys and aliases), identifier-namespace collisions, URI references, `$schema` value, `$vocabulary` prohibition, binding cross-references (to operations and sources), named-transform `$ref` resolution, example schema validation, SemVer for `openbindings`, and binding sufficiency.
 - **Tool rules OBI-T-01 through OBI-T-12.** Covering don't-fail-on-unknown postures, ignoring unknown fields, `x-` extension semantics, version refusal, schema-keyword diagnostics, `ref` resolution per format conventions, input/output validation, deprecated-tier binding selection (MUST), JSONata 2.0 transform evaluation (MUST), `$ref` cycle handling (MUST), and operation-name resolution (MUST).
-- **Conformance corpus (`conformance/`).** Fixture-based test corpus keyed to rule IDs. 100 tests across 14 document rules and 3 tool rules. Includes `manifest.json`, `fixture.schema.json`, a reference Go runner, plus verification and manifest generation scripts. Comparison fixtures live separately under `conformance/comparison/` (30 fixtures across 6 categories).
+- **Conformance corpus (`conformance/`).** Fixture-based test corpus keyed to rule IDs. 100 tests across 14 document rules and 3 tool rules. Includes `manifest.json`, `fixture.schema.json`, a reference Go runner, plus verification and manifest generation scripts.
 - **Abstract, editors, license/IP, and notational conventions** as standalone front-matter sections.
 - **Normative and informative references (section 16).**
 - **`minLength: 1`** on `sources[*].location` and string `content` in the JSON Schema. Empty-string locations are now invalid.
@@ -54,7 +54,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
 - **`idempotent` semantics tightened.** Now a contract-level claim ("every binding for this operation MUST preserve the guarantee"), not just metadata.
 - **`deprecated` on bindings.** New tier rule: non-deprecated bindings rank ahead of deprecated ones regardless of priority (OBI-T-09).
 - **`aliases` reframed.** Now explicitly "author-attested claims" that tools MUST NOT reject as non-conformant based on semantic accuracy.
-- **Conformance corpus restructured.** v0.1.0 had 3 monolithic JSON files (schema-comparison, normalization, operation-matching). v0.2.0 uses individual fixture files keyed to rule IDs under `conformance/document/` and `conformance/tool/`, plus a separate `conformance/comparison/` tree.
+- **Conformance corpus restructured.** v0.1.0 had 3 monolithic JSON files (schema-comparison, normalization, operation-matching). v0.2.0 uses individual fixture files keyed to rule IDs under `conformance/document/` and `conformance/tool/`.
 
 ### Removed
 

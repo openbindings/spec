@@ -10,6 +10,7 @@ Harvested here (originals removed from their live locations in a later step):
 - `README.md` — the old repo front door (to be rewritten).
 - `guides/` — the old guide set (to be rewritten / re-scoped).
 - `ROLE-REVIEW.md` — a dated internal role-review artifact (cut outright).
+- `conventions/` + `conformance-comparison/` — the comparison / subsumption / findings convention body and its fixture corpus. To be **republished as a neutral community convention** (compatibility semantics + finding vocabulary + report schema) on the site, with the `ob`-specific CLI surface (flags, exit codes, SARIF rendering) moving to the `ob` repo. Removed from the spec repo because the core spec defers comparison to tools; preserved here until republished, then delete.
 
 Nothing in here is authoritative. The authoritative sources are
 `openbindings.md`, the JSON Schemas, `formats/`, `conformance/`, and the role

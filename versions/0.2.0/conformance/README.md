@@ -1,6 +1,6 @@
 # OpenBindings Conformance Corpus
 
-Test fixtures for OpenBindings document and tool conformance, keyed to the rule identifiers defined in `openbindings.md` §14. The root document/tool corpus tests only the spec's normative rules. Tool-defined behavior fixtures live in explicitly named subcorpora such as `comparison/` and are governed by their companion conventions, not by core spec conformance.
+Test fixtures for OpenBindings document and tool conformance, keyed to the rule identifiers defined in `openbindings.md` §14. The root document/tool corpus tests only the spec's normative rules.
 
 ## Status
 
@@ -34,9 +34,6 @@ conformance/
     OBI-T-01.json
     OBI-T-03.json
     OBI-T-04.json
-  comparison/          (tooling-convention fixtures; not core spec conformance)
-    manifest.json
-    subsumption/
   runners/
     go/                (reference Go harness; exemplar for SDK authors)
 ```
