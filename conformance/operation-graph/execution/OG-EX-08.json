@@ -1,43 +1,113 @@
 {
   "format": "openbindings.operation-graph@0.2.0",
   "kind": "execution",
-  "description": "Bounded cycle through a buffer. This fixture is not drawn from a spec example; it exercises the maxIterations event-lineage rule (finding that a merge node on a cycle must not reset an iteration count). The cycle passes through a buffer (a merge node): step -> gate(buffer) -> unwrap -> step. Because the buffer preserves the operation's per-lineage count across the flush (element-wise max, here over a single-element batch), maxIterations bounds step to exactly 3 invocations, so the counter stops at n=3. If a merge reset the count instead, the cycle would never reach the bound and would not terminate, so this fixture pins the lineage safety rule.",
+  "description": "Bounded cycle through a buffer. This fixture is not drawn from a spec example; it exercises the maxIterations event-lineage rule on an each node (a merge node on a cycle must not reset an iteration count). The cycle passes through a buffer (a merge node): step -> gate(buffer) -> unwrap -> step. Because the buffer preserves the operation's per-lineage count across the flush (element-wise max, here over a single-element batch), maxIterations bounds step to exactly 3 invocations, so the counter stops at n=3. If a merge reset the count instead, the cycle would never reach the bound and would not terminate, so this fixture pins the lineage safety rule.",
   "fixtures": [
     {
       "id": "OG-EX-08",
       "name": "Bounded cycle through a buffer",
       "section": "maxIterations and event lineage",
-      "description": "items.next increments n. step (maxIterations 3) feeds its output through a buffer with limit 1 (a merge node that flushes each event as a one-element array) and an unwrap transform back into itself, and also to output. step is invoked for n=0,1,2 (counts 1,2,3); the fourth arrival (n=3) exceeds maxIterations and is dropped, so the output is exactly [{n:1},{n:2},{n:3}]. The buffer carries step's count across the flush rather than resetting it, which is what keeps the cycle bounded.",
+      "description": "items.next increments n. step (an each node, maxIterations 3) feeds its output through a buffer with limit 1 (a merge node that flushes each event as a one-element array) and an unwrap transform back into itself, and also to output. step opens one invocation for n=0,1,2 (counts 1,2,3); the fourth arrival (n=3) exceeds maxIterations and is dropped, so the output is exactly [{n:1},{n:2},{n:3}]. The buffer carries step's count across the flush rather than resetting it, which is what keeps the cycle bounded.",
       "operations": {
         "items.next": {
           "responses": [
-            { "whenInput": { "n": 0 }, "emit": [ { "n": 1 } ] },
-            { "whenInput": { "n": 1 }, "emit": [ { "n": 2 } ] },
-            { "whenInput": { "n": 2 }, "emit": [ { "n": 3 } ] }
+            {
+              "whenInput": {
+                "n": 0
+              },
+              "emit": [
+                {
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "whenInput": {
+                "n": 1
+              },
+              "emit": [
+                {
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "whenInput": {
+                "n": 2
+              },
+              "emit": [
+                {
+                  "n": 3
+                }
+              ]
+            }
           ]
         }
       },
       "graph": {
         "openbindings.operation-graph": "0.2.0",
-        "description": "A cycle that routes an operation's output through a buffer and back into the operation, bounded by maxIterations.",
+        "description": "A cycle that routes an each node's output through a buffer and back into it, bounded by maxIterations (operation conduits cannot sit on cycles).",
         "nodes": {
-          "in": { "type": "input" },
-          "step": { "type": "operation", "operation": "items.next", "maxIterations": 3 },
-          "gate": { "type": "buffer", "limit": 1 },
-          "unwrap": { "type": "transform", "transform": "$[0]" },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "step": {
+            "type": "each",
+            "operation": "items.next",
+            "maxIterations": 3
+          },
+          "gate": {
+            "type": "buffer",
+            "limit": 1
+          },
+          "unwrap": {
+            "type": "transform",
+            "transform": "$[0]"
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "step" },
-          { "from": "step", "to": "out" },
-          { "from": "step", "to": "gate" },
-          { "from": "gate", "to": "unwrap" },
-          { "from": "unwrap", "to": "step" }
+          {
+            "from": "in",
+            "to": "step"
+          },
+          {
+            "from": "step",
+            "to": "out"
+          },
+          {
+            "from": "step",
+            "to": "gate"
+          },
+          {
+            "from": "gate",
+            "to": "unwrap"
+          },
+          {
+            "from": "unwrap",
+            "to": "step"
+          }
         ]
       },
-      "input": { "n": 0 },
+      "writes": [
+        {
+          "n": 0
+        }
+      ],
       "expected": {
-        "output": [ { "n": 1 }, { "n": 2 }, { "n": 3 } ],
+        "output": [
+          {
+            "n": 1
+          },
+          {
+            "n": 2
+          },
+          {
+            "n": 3
+          }
+        ],
         "ordering": "exact"
       }
     }

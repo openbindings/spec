@@ -1,42 +1,83 @@
 {
   "format": "openbindings.operation-graph@0.2.0",
   "kind": "execution",
-  "description": "Fire-and-forget side effect: process an event and also trigger a notification, but only the process result is operation-graph output. Mirrors the format spec's Example 4.",
+  "description": "Fire-and-forget side effect: process an event and also trigger a notification, but only the process result is operation-graph output. Mirrors the format spec's Dead ends pattern (Edge definition); fire-and-forget is no longer a numbered example.",
   "fixtures": [
     {
       "id": "OG-EX-04",
       "name": "Fire-and-forget side effect",
-      "section": "Normative examples / Example 4",
+      "section": "Edge definition / Dead ends",
       "description": "in fans out to items.process and notifications.send. Only process has a path to out, so only its result is output. notify is a dead end: it still executes (the runner should observe notifications.send was invoked), but its result is discarded and is not in the expected output.",
       "operations": {
         "items.process": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [ { "processed": true } ] }
+            {
+              "emit": [
+                {
+                  "processed": true
+                }
+              ]
+            }
           ]
         },
         "notifications.send": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [ { "sent": true } ] }
+            {
+              "emit": [
+                {
+                  "sent": true
+                }
+              ]
+            }
           ]
         }
       },
       "graph": {
         "openbindings.operation-graph": "0.2.0",
         "nodes": {
-          "in": { "type": "input" },
-          "process": { "type": "operation", "operation": "items.process" },
-          "notify": { "type": "operation", "operation": "notifications.send" },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "process": {
+            "type": "operation",
+            "operation": "items.process"
+          },
+          "notify": {
+            "type": "operation",
+            "operation": "notifications.send"
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "process" },
-          { "from": "in", "to": "notify" },
-          { "from": "process", "to": "out" }
+          {
+            "from": "in",
+            "to": "process"
+          },
+          {
+            "from": "in",
+            "to": "notify"
+          },
+          {
+            "from": "process",
+            "to": "out"
+          }
         ]
       },
-      "input": { "id": "x" },
+      "writes": [
+        {
+          "id": "x"
+        }
+      ],
       "expected": {
-        "output": [ { "processed": true } ],
+        "output": [
+          {
+            "processed": true
+          }
+        ],
         "ordering": "exact"
       }
     }

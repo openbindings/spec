@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/openbindings.operation-graph-0.2.0.json",
   "title": "OpenBindings Operation Graph Definition (v0.2.0)",
-  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's ref resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification.",
+  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's ref resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification. Structural validation only; behavioral rules (identity law, back-closure, cycle rules) are defined by the specification prose, which governs. Working draft accompanying the v0.2.0 specification working draft; not yet tagged.",
   "$ref": "#/$defs/OperationGraph",
   "$defs": {
     "OperationGraph": {
       "type": "object",
-      "description": "An operation graph defining a directed graph of typed nodes connected by edges.",
+      "description": "An operation graph: a directed graph of typed nodes connected by edges, in which every processing node is an operation invocation — bound at runtime (operation) or bound by the specification (built-ins).",
       "required": [
         "openbindings.operation-graph",
         "nodes",
@@ -35,7 +35,7 @@
         },
         "edges": {
           "type": "array",
-          "description": "Array of edges connecting nodes. Duplicate edges (same from/to pair) are forbidden by validation rule 8; uniqueItems backstops that rule structurally.",
+          "description": "Array of edges connecting nodes. Edges carry event streams. Duplicate edges (same from/to pair) are forbidden by OG-V-08; uniqueItems backstops that rule structurally.",
           "minItems": 1,
           "uniqueItems": true,
           "items": {
@@ -48,18 +48,18 @@
     },
     "Node": {
       "type": "object",
-      "description": "A typed node in an operation graph. The 'type' field determines the node's behavior and valid fields.",
+      "description": "A typed node. Every node receives the merged streams of its incoming edges and emits a stream along its outgoing edges. The 'type' field is the discriminator: it determines the node's behavior and which other fields are valid.",
       "required": ["type"],
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["input", "output", "operation", "buffer", "filter", "transform", "map", "combine", "exit"],
-          "description": "The node type. Determines behavior and which other fields are valid. Must be one of the types defined by this format version (validation rule 13); custom node types require a distinct format token or profile."
+          "enum": ["input", "output", "operation", "each", "transform", "filter", "map", "buffer", "combine", "exit"],
+          "description": "The node type. 'operation' is the cardinality-agnostic conduit (one invocation per graph invocation); the remaining processing types are built-ins — operations whose binding is the specification. Must be one of the types defined by this format version (OG-V-14); custom node types require a distinct format token or profile."
         },
         "onError": {
           "type": "string",
           "minLength": 1,
-          "description": "Node key to route error events to if this node fails. If not set, errors are dropped."
+          "description": "Node key to route error events to if this node fails. Processing nodes only; not permitted on the boundary nodes (input, output), which are not invocations of their own. If not set, per-event failures are dropped and an operation conduit's terminal error terminates the graph invocation."
         }
       },
       "allOf": [
@@ -69,8 +69,7 @@
           },
           "then": {
             "properties": {
-              "type": true,
-              "onError": true
+              "type": true
             },
             "patternProperties": { "^x-": {} },
             "additionalProperties": false
@@ -82,8 +81,7 @@
           },
           "then": {
             "properties": {
-              "type": true,
-              "onError": true
+              "type": true
             },
             "patternProperties": { "^x-": {} },
             "additionalProperties": false
@@ -101,17 +99,41 @@
               "operation": {
                 "type": "string",
                 "minLength": 1,
-                "description": "Operation key in the containing OBI to invoke."
-              },
-              "maxIterations": {
-                "type": "integer",
-                "minimum": 1,
-                "description": "Maximum times this node may be invoked per event lineage. Required if the node is part of a cycle."
+                "description": "Operation key in the containing OBI to invoke. The node holds one invocation per graph invocation and pipes its incoming stream into it: each arriving event is written as one input, incoming completion closes the invocation's input side, and outputs flow downstream in emission order. Cardinality-agnostic; MUST NOT participate in a cycle (OG-V-10). An unhandled terminal error on the held invocation terminates the graph invocation with that error; onError opts it into in-graph handling instead."
               },
               "timeout": {
                 "type": "integer",
                 "minimum": 1,
-                "description": "Total budget in milliseconds for the operation invocation, until its output stream completes; not an idle or per-event timeout. On expiry the node fails with timeout_exceeded."
+                "description": "Total budget in milliseconds for the held invocation, from the node's first drive until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with TIMEOUT_EXCEEDED, handled as a conduit terminal error."
+              }
+            },
+            "patternProperties": { "^x-": {} },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "each" } }
+          },
+          "then": {
+            "required": ["operation"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "operation": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Operation key in the containing OBI to invoke once per arriving event: one invocation per event, the event written as its only input, outputs merged downstream."
+              },
+              "maxIterations": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Maximum invocations this node may open per event lineage. Required if the node is part of a cycle (OG-V-09). Events whose lineage count has reached the limit are dropped, not errored."
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Per-invocation budget in milliseconds, from drive until that invocation's output stream completes. On expiry, that invocation fails as a node failure for the triggering event."
               }
             },
             "patternProperties": { "^x-": {} },
@@ -253,7 +275,7 @@
     },
     "Edge": {
       "type": "object",
-      "description": "A connection between two nodes. Edges carry no logic.",
+      "description": "A connection between two nodes, carrying an event stream. Edges carry no logic.",
       "required": ["from", "to"],
       "properties": {
         "from": {

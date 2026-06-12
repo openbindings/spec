@@ -4,6 +4,13 @@ Fixtures for the `openbindings.operation-graph` binding format, keyed to its
 companion specification at
 [`formats/operation-graph/openbindings.operation-graph.md`](../../formats/operation-graph/openbindings.operation-graph.md).
 
+The corpus tracks the **transparency rewrite** of the format: `operation` is
+the cardinality-agnostic conduit (one held invocation per graph invocation),
+`each` is the per-event invocation built-in, caller input is a stream of
+writes, and the identity law (`input → operation(y) → output` is
+observationally indistinguishable from direct invocation of `y`) is pinned by
+its own fixture suite.
+
 This is a per-format subcorpus, governed by the operation-graph format spec, not
 by the core OBI-D / OBI-T conformance rules. It lives alongside the core corpus
 but is governed separately: the core verifiers (`verify-corpus.mjs`,
@@ -19,7 +26,7 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions)
-    OG-EX-01.json ... OG-EX-12.json
+    OG-EX-01.json ... OG-EX-17.json   (files; ids run OG-EX-01 ... OG-EX-19)
   validation/           (well-formedness rules; OG-VR.json)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
@@ -39,8 +46,9 @@ uses for the core schema.
 3. **Validation fixtures.** Each file matches `validation.schema.json`. Every
    `valid: true` graph validates against the op-graph schema. For rule blocks
    marked `schemaEnforced: true`, every `valid: false` graph is rejected by the
-   schema. Rule-10 tests additionally carry an `operations` set, and the verifier
-   resolves each operation node's `operation` field against it.
+   schema. OG-V-11 tests additionally carry an `operations` set, and the
+   verifier resolves the `operation` field of every `operation` and `each` node
+   against it.
 
 `scripts/verify-operation-graph.mjs` does not execute graphs; it pins their
 shape. Executing them and diffing the output stream is the job of the reference
@@ -49,71 +57,90 @@ CI also runs.
 
 ## Execution fixtures
 
-Most execution fixtures correspond to one normative example in the format spec; OG-EX-08 exercises the maxIterations event-lineage rule (a merge node on a cycle), and OG-EX-09/10 exercise `combine` readiness caused by source completion.
 A fixture supplies:
 
 - `graph` — the operation graph definition under test.
-- `operations` — mocked behavior for each operation an `operation` node invokes.
-  Each operation has an ordered list of `responses`; the first whose `whenInput`
-  deep-equals the node's input event (or whose `whenInput` is absent, a
-  wildcard) applies, emitting `emit` events or failing with `fail`.
-- `input` — the event handed to the `input` node.
+- `operations` — mocked behavior for each operation an `operation` or `each`
+  node invokes. Mocks are matched **per invocation**: a conduit's one held
+  invocation collects every arriving event as a write; an `each` node opens a
+  single-write invocation per event. Each operation has an ordered list of
+  `responses`; the first whose `whenInputs` deep-equals the invocation's write
+  list (or whose `whenInput` deep-equals the sole write of a single-write
+  invocation, or which carries neither, a wildcard) applies, emitting `emit`
+  events or terminating with `fail`. `closesAfter: N` models a selected binding
+  that closes its input side after reading N writes (1 = unary or
+  server-streaming); absent models a stream-consuming binding that responds at
+  input completion.
+- `writes` — the values the caller writes to the graph invocation, in order.
+  Each roots an event lineage; `[]` is a no-input invocation. The caller closes
+  the input side after the last write (unless back-closure closes it first).
 - `expected` — the expected `output` events, an `ordering` of `exact` or `set`,
-  and for fatal-exit cases `error: true` with the `errorDetail` event.
+  and for fatal cases `error: true` with the `errorDetail`: the event that
+  reached an `exit` node with `error: true`, or for an unhandled conduit
+  terminal error, the unwrapped inner terminal error value itself (the value
+  direct invocation would surface, not wrapped in the error-event shape).
 
 `ordering: set` is used where the graph has concurrent paths whose interleaving
 is implementation-defined (see the spec's "Determinism and portability"
 section); the runner compares the output as a multiset in that case.
 
-| Fixture | Example | Exercises |
+| Fixture | Keyed to | Exercises |
 |---|---|---|
-| OG-EX-01 | Pagination aggregation | cycle with `maxIterations`, `buffer` drain, `transform` reduce |
-| OG-EX-02 | Parallel combine | `combine` readiness: single-emission sources yield exactly one combined event, no partial |
-| OG-EX-03 | Streaming fan-out with filters | streaming op, schema and expression `filter`, fan-out to two handlers (`set`) |
-| OG-EX-04 | Fire-and-forget side effect | dead-end branch excluded from output |
-| OG-EX-05 | Map and collect | `map` unpack, per-element invocation, `buffer` collect |
-| OG-EX-06 | Error handling with `onError` | operation failure routed to a fallback `transform` |
-| OG-EX-07 | Fatal error with `exit` | `onError` to `exit` with `error: true`, fatal termination |
-| OG-EX-08 | Bounded cycle through a buffer | (not a spec example) merge node on a cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
-| OG-EX-09 | Combine with one empty source | (not a spec example) source completion makes `combine` ready; one key is `null` |
-| OG-EX-10 | Combine with all sources empty | (not a spec example) completion-only readiness emits one all-`null` combined object |
-| OG-EX-11 | Buffer limit precedence over until | (not a spec example) `limit` is evaluated before `until`/`through`; the limit-reaching event is flushed as part of the batch, not excluded as a delimiter |
-| OG-EX-12 | Empty no-condition buffer | (not a spec example) a buffer that accumulates zero events emits nothing (not `[]`) on completion |
+| OG-EX-01 | Example 2 (pagination) | cycle bounded by `each` + `maxIterations`, `buffer` drain, `transform` reduce |
+| OG-EX-02 | Example 3 (parallel combine) | `combine` readiness: single-emission conduit sources yield exactly one combined event, no partial |
+| OG-EX-03 | Example 6 (fan-out filters) | server-streaming conduit, schema and expression `filter`, per-event `each` handlers (`set`) |
+| OG-EX-04 | Edge definition / Dead ends | fire-and-forget: dead-end branch executes but is excluded from output |
+| OG-EX-05 | Example 4 (map and collect) | the canonical `map → each` pairing, `buffer` collect |
+| OG-EX-06 | Example 7 (onError fallback) | per-event `each` failure routed to a fallback `transform` (error event carries `event`) |
+| OG-EX-07 | Example 8 (fatal per-event error) | `each` failure made fatal: `onError` to `exit` with `error: true` |
+| OG-EX-08 | maxIterations and event lineage | merge node (buffer) on an `each` cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
+| OG-EX-09 | combine | source completion makes `combine` ready; an empty source contributes `null` |
+| OG-EX-10 | combine | completion-only readiness emits one all-`null` combined object |
+| OG-EX-11 | buffer | `limit` precedence over `until`/`through`; the limit-reaching event is flushed as part of the batch |
+| OG-EX-12 | buffer | a no-condition buffer that accumulates zero events emits nothing (not `[]`) on completion |
+| OG-EX-13 | Identity law / Example 1 | the trivial wrapper, unary selected binding: one write in, one event out |
+| OG-EX-14 | Identity law / consequence 2 | zero writes pipe as a no-input invocation (`whenInputs: []`); nothing is synthesized |
+| OG-EX-15 | Identity law / other cardinalities | client-streaming: three writes into one held session, one aggregate out |
+| OG-EX-16 | Identity law / consequence 4 | unhandled conduit terminal error terminates the graph with that error (terminal-status parity) |
+| OG-EX-17 | operation / Failure | conduit terminal error opted into handling via `onError`; error event has no `event` member |
+| OG-EX-18 | operation / Acceptance; back-closure | write rejection at a non-accepting conduit reached through a `transform` (back-closure is non-transitive) |
+| OG-EX-19 | back-closure | input's direct consumer goes non-accepting → the boundary refuses the caller's later writes entirely |
 
-OG-EX-02 is the fixture that pins the corrected `combine` semantics: because
-`customer` and `orders` each emit exactly once, `combine` waits until both are
-ready and emits a single joined object, with no intermediate `null`-bearing
-partial.
+File-to-id mapping: OG-EX-09.json holds OG-EX-09/10, OG-EX-13.json holds
+OG-EX-13–16 (the identity-law suite), and OG-EX-17.json holds OG-EX-17–19 (the
+conduit acceptance/error suite); every other file holds the single fixture of
+its own id.
 
-OG-EX-09 and OG-EX-10 pin the completion side of the same readiness rule:
-sources that complete without producing an event contribute `null`, and
-completion can itself be the event that makes the `combine` node ready to emit.
+OG-EX-13 through OG-EX-16 are the corpus's encoding of the spec's conformance
+anchor: the same trivial wrapper graph, exercised across unary, no-input,
+client-streaming, and terminal-error scenarios. OG-EX-18 and OG-EX-19 pin the
+two sides of the input-side closure rule: a built-in between `input` and the
+conduit keeps closure caller-owned (so a late write is rejected *inside* the
+graph), while a direct conduit consumer back-closes the boundary (so a late
+write never enters the graph at all).
 
 ## Validation fixtures
 
-`validation/OG-VR.json` covers the numbered well-formedness rules from the
-format spec's Validation rules section. Each rule block declares
-`schemaEnforced`:
+`validation/OG-VR.json` covers the well-formedness rules from the format
+spec's Validation rules section, keyed by their stable `OG-V-##` identifiers.
+Each rule block declares `schemaEnforced`:
 
-- **Schema-enforced** (rules 1, 8, 11, 12, 13): the op-graph JSON Schema alone
-  rejects violations. The verifier asserts schema rejection on the negative
-  cases.
-- **Beyond schema** (rules 2-7, 9, 10, 14, 15): catching violations needs a
-  structural validator (node-cardinality, reachability, cycle analysis, and
-  edge, `onError`, and operation-key cross-references). The negative graphs here
-  are otherwise schema-valid; only the named rule is violated.
+- **Schema-enforced** (OG-V-01, -08, -12, -13, -14, -17): the op-graph JSON
+  Schema alone rejects violations. The verifier asserts schema rejection on the
+  negative cases.
+- **Beyond schema** (OG-V-02 through -07, -09, -10, -11, -15, -16): catching
+  violations needs a structural validator (node-cardinality, reachability,
+  cycle analysis, and edge, `onError`, and operation-key cross-references). The
+  negative graphs here are otherwise schema-valid; only the named rule is
+  violated.
 
-Rule 10 (operation nodes reference operations that exist in the containing OBI's
-`operations` map) cannot be judged from a graph in isolation, so its tests
-additionally carry an `operations` array listing the operation keys the
-containing OBI declares; the verifier resolves each operation node's `operation`
-field against that set.
-
-Rule 13 requires every node's `type` to be one of the defined node types. An
-unknown `type` is non-conformant (schema-enforced via the node-type enum), so a
-graph containing one is a validity failure that a tool MUST reject rather than
-execute partially. Both the missing-`type` and unknown-`type` (`type: "custom"`)
-cases are fixtured as negatives.
+OG-V-09 (every cycle carries an `each` with `maxIterations`) and OG-V-10
+(`operation` conduits must not sit on cycles) both follow data edges *and*
+`onError` references; the fixtures include onError-closed cycles for each.
+OG-V-11 (operation references resolve in the containing OBI) cannot be judged
+from a graph in isolation, so its tests carry an `operations` array listing the
+keys the containing OBI declares. OG-V-17 (no `onError` on the boundary nodes)
+is schema-enforced via the per-type field whitelists.
 
 ## Reference runner
 
@@ -128,16 +155,28 @@ npm install
 node run.mjs
 ```
 
-The engine is a deterministic, single-threaded drain-to-fixpoint interpreter: it
-processes the FIFO event queue to quiescence, then performs an end-of-stream pass
-(flush no-condition buffers, complete combines) and repeats until nothing new is
-produced. `ordering: exact` fixtures are compared in order; `ordering: set`
-fixtures are compared as a multiset, matching the spec's determinism contract.
-For each fixture the runner binds the `operation` nodes to the mocked
-`operations` (matching `whenInput`, emitting `emit`, or failing with `fail`),
-runs the graph with `input`, and asserts fatal termination with
-`expected.errorDetail` when `expected.error` is true. The CI runs it on every
-push.
+The engine is a deterministic, single-threaded drain-to-fixpoint interpreter
+implementing the transparency-rewrite semantics:
+
+- Caller `writes` are admitted sequentially, each draining the FIFO event queue
+  to quiescence before the next; back-closure refuses remaining writes once
+  every direct consumer of the `input` node is non-accepting.
+- An `operation` node holds one invocation: arriving events are written in
+  order; `closesAfter` completes it mid-stream (later events become
+  write-rejection error events); otherwise it completes at input completion.
+  An unhandled `fail` terminates the run with `{ error }` as the error detail.
+- An `each` node opens a single-write invocation per event, bounded per lineage
+  by `maxIterations`.
+- `$input` is the lineage root: merged events (buffer flush, combine emission,
+  multi-write conduit responses) keep `$input` only when all contributors share
+  one root.
+- At end of stream, stateful nodes (conduits, buffers, combines) complete in
+  dependency order: a node completes only once no other live stateful node can
+  still reach it, so upstream responses land before downstream flushes.
+
+`ordering: exact` fixtures are compared in order; `ordering: set` fixtures are
+compared as a multiset, matching the spec's determinism contract. The CI runs
+the runner on every push.
 
 This is a *reference* oracle: it and the fixtures are maintained together, so it
 confirms the fixtures are self-consistent and reproduce the spec's stated

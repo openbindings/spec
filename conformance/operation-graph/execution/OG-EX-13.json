@@ -1,0 +1,253 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "The identity law: input -> operation(y) -> output is observationally indistinguishable from a direct invocation of y. These fixtures exercise the conformance anchor (the trivial wrapper, spec Example 1) across the invocation-conformance scenarios: unary, no-input (zero writes), client-streaming (multiple writes), and terminal error. Together they pin consequences 1, 2, and 4 of the law.",
+  "fixtures": [
+    {
+      "id": "OG-EX-13",
+      "name": "Identity wrapper, unary",
+      "section": "Transparency (the identity law) / Example 1",
+      "description": "The caller writes one value. The conduit pipes it into the held users.get invocation; the unary mock reads it, closes its input (closesAfter 1), and emits one result, which flows to output. One write in, one event out, exactly as direct invocation.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "id": "u1"
+              },
+              "emit": [
+                {
+                  "id": "u1",
+                  "name": "Alice"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "get": {
+            "type": "operation",
+            "operation": "users.get"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "get"
+          },
+          {
+            "from": "get",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "id": "u1"
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "id": "u1",
+            "name": "Alice"
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-14",
+      "name": "Identity wrapper, no-input invocation",
+      "section": "Transparency (the identity law) / consequence 2",
+      "description": "The caller writes nothing and closes. An empty input stream is piped as an empty input stream: the conduit performs one no-input invocation of time.now (driven by incoming completion, matched by whenInputs []), and its single output flows to output. No value is synthesized.",
+      "operations": {
+        "time.now": {
+          "responses": [
+            {
+              "whenInputs": [],
+              "emit": [
+                {
+                  "now": "2026-06-11T00:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "now": {
+            "type": "operation",
+            "operation": "time.now"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "now"
+          },
+          {
+            "from": "now",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [],
+      "expected": {
+        "output": [
+          {
+            "now": "2026-06-11T00:00:00Z"
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-15",
+      "name": "Identity wrapper, client-streaming",
+      "section": "Transparency (the identity law) / Example 1 (other cardinalities)",
+      "description": "The caller writes three values and closes. The conduit pipes all three, in order, into the one held stats.sum invocation (stream-consuming mock: no closesAfter, input stays open until the caller's close propagates); the invocation then emits its single aggregate result. Three writes, one session \u2014 the case the old per-event operation node could not express.",
+      "operations": {
+        "stats.sum": {
+          "responses": [
+            {
+              "whenInputs": [
+                {
+                  "n": 1
+                },
+                {
+                  "n": 2
+                },
+                {
+                  "n": 3
+                }
+              ],
+              "emit": [
+                {
+                  "total": 6
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "sum": {
+            "type": "operation",
+            "operation": "stats.sum"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "sum"
+          },
+          {
+            "from": "sum",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "n": 1
+        },
+        {
+          "n": 2
+        },
+        {
+          "n": 3
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "total": 6
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-16",
+      "name": "Identity wrapper, terminal error",
+      "section": "Transparency (the identity law) / consequence 4",
+      "description": "The inner invocation terminates with an error and the conduit has no onError, so the graph invocation terminates with that error: terminal status is preserved, not converted into a successful empty stream. The error detail is the inner terminal error value itself (the value direct invocation would surface), not an error-event wrapper around it.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "id": "u1"
+              },
+              "fail": "backend_unavailable"
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "get": {
+            "type": "operation",
+            "operation": "users.get"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "get"
+          },
+          {
+            "from": "get",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "id": "u1"
+        }
+      ],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": "backend_unavailable",
+        "ordering": "exact"
+      }
+    }
+  ]
+}

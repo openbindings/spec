@@ -178,12 +178,13 @@ for (const file of listJson(join(CORPUS, "validation"))) {
         errors.push(
           `${tlabel}: rule is schemaEnforced and the graph is invalid, but the op-graph schema accepted it`
         );
-      // Rule 10 cannot be judged from the graph alone; resolve operation node
-      // references against the containing OBI's operations supplied by the test.
-      if (block.rule === 10) {
+      // OG-V-11 cannot be judged from the graph alone; resolve operation and
+      // each node references against the containing OBI's operations supplied
+      // by the test.
+      if (block.rule === "OG-V-11") {
         const ops = t.operations ?? [];
         const refs = Object.values(t.graph.nodes ?? {})
-          .filter((n) => n && n.type === "operation")
+          .filter((n) => n && (n.type === "operation" || n.type === "each"))
           .map((n) => n.operation);
         const allResolve = refs.every((ref) => ops.includes(ref));
         if (allResolve !== t.valid)

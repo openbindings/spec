@@ -10,10 +10,21 @@
       "description": "src.emit produces two events from one input; the second matches the buffer's `until` schema AND reaches `limit: 2`. Because limit is evaluated first, the batch flushes including the second event ([{n:1},{n:2,end:true}]) rather than excluding it ([{n:1}]).",
       "operations": {
         "src.emit": {
+          "closesAfter": 1,
           "responses": [
             {
-              "whenInput": { "go": true },
-              "emit": [ { "n": 1 }, { "n": 2, "end": true } ]
+              "whenInput": {
+                "go": true
+              },
+              "emit": [
+                {
+                  "n": 1
+                },
+                {
+                  "n": 2,
+                  "end": true
+                }
+              ]
             }
           ]
         }
@@ -22,20 +33,58 @@
         "openbindings.operation-graph": "0.2.0",
         "description": "Buffer with both limit and until; the limit-reaching event also matches until.",
         "nodes": {
-          "in": { "type": "input" },
-          "src": { "type": "operation", "operation": "src.emit" },
-          "buf": { "type": "buffer", "limit": 2, "until": { "required": ["end"] } },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "src": {
+            "type": "operation",
+            "operation": "src.emit"
+          },
+          "buf": {
+            "type": "buffer",
+            "limit": 2,
+            "until": {
+              "required": [
+                "end"
+              ]
+            }
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "src" },
-          { "from": "src", "to": "buf" },
-          { "from": "buf", "to": "out" }
+          {
+            "from": "in",
+            "to": "src"
+          },
+          {
+            "from": "src",
+            "to": "buf"
+          },
+          {
+            "from": "buf",
+            "to": "out"
+          }
         ]
       },
-      "input": { "go": true },
+      "writes": [
+        {
+          "go": true
+        }
+      ],
       "expected": {
-        "output": [ [ { "n": 1 }, { "n": 2, "end": true } ] ],
+        "output": [
+          [
+            {
+              "n": 1
+            },
+            {
+              "n": 2,
+              "end": true
+            }
+          ]
+        ],
         "ordering": "exact"
       }
     }

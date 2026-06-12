@@ -12,18 +12,44 @@
         "openbindings.operation-graph": "0.2.0",
         "description": "filter drops all events; downstream no-condition buffer receives nothing.",
         "nodes": {
-          "in": { "type": "input" },
-          "drop": { "type": "filter", "schema": { "required": ["zzz"] } },
-          "buf": { "type": "buffer" },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "drop": {
+            "type": "filter",
+            "schema": {
+              "required": [
+                "zzz"
+              ]
+            }
+          },
+          "buf": {
+            "type": "buffer"
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "drop" },
-          { "from": "drop", "to": "buf" },
-          { "from": "buf", "to": "out" }
+          {
+            "from": "in",
+            "to": "drop"
+          },
+          {
+            "from": "drop",
+            "to": "buf"
+          },
+          {
+            "from": "buf",
+            "to": "out"
+          }
         ]
       },
-      "input": { "x": 1 },
+      "writes": [
+        {
+          "x": 1
+        }
+      ],
       "expected": {
         "output": [],
         "ordering": "exact"

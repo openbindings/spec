@@ -1,0 +1,132 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Conduit error handling and input-side acceptance. OG-EX-17 pins the onError opt-in for conduit terminal errors (the error event has no event member). OG-EX-18 pins write rejection at a non-accepting conduit reached through a built-in, which also pins that back-closure is non-transitive (the transform between input and the conduit keeps closure caller-owned, so the second write enters the graph and is rejected at the node). OG-EX-19 pins back-closure proper: when the input node's direct consumer is a non-accepting conduit, the caller-facing input side closes and later writes never enter the graph at all.",
+  "fixtures": [
+    {
+      "id": "OG-EX-17",
+      "name": "Conduit terminal error handled via onError",
+      "section": "operation / Failure",
+      "description": "The held items.list invocation terminates with backend_unavailable. The conduit sets onError, opting the terminal error into in-graph handling: the error event { error } — no event member, the failure belongs to the invocation as a whole — routes to the fallback transform, which emits a default. The graph completes normally.",
+      "operations": {
+        "items.list": {
+          "closesAfter": 1,
+          "responses": [
+            { "fail": "backend_unavailable" }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "list": {
+            "type": "operation",
+            "operation": "items.list",
+            "onError": "fallback"
+          },
+          "fallback": {
+            "type": "transform",
+            "transform": "{ \"items\": [], \"degraded\": error }"
+          },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "list" },
+          { "from": "list", "to": "out" },
+          { "from": "fallback", "to": "out" }
+        ]
+      },
+      "writes": [ { "filter": "active" } ],
+      "expected": {
+        "output": [ { "items": [], "degraded": "backend_unavailable" } ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-18",
+      "name": "Write rejection at a non-accepting conduit (non-transitive back-closure)",
+      "section": "operation / Acceptance; Execution semantics / Input-side closure (back-closure)",
+      "description": "input feeds a transform, not the conduit, so back-closure does not engage (it considers only the input node's direct consumers) and both caller writes enter the graph. The first event drives the unary users.get invocation (closesAfter 1), which emits and closes its input from below; the conduit becomes non-accepting. The second event arrives at the non-accepting conduit and becomes a write-rejection error event — a per-event failure carrying the rejected event — routed via onError to a reporter transform. Output: the first result, then the rejection report.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            { "whenInput": { "id": "u1" }, "emit": [ { "id": "u1", "name": "Alice" } ] }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "pass": { "type": "transform", "transform": "$" },
+          "get": {
+            "type": "operation",
+            "operation": "users.get",
+            "onError": "report"
+          },
+          "report": {
+            "type": "transform",
+            "transform": "{ \"rejected\": event.id, \"reason\": error }"
+          },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "pass" },
+          { "from": "pass", "to": "get" },
+          { "from": "get", "to": "out" },
+          { "from": "report", "to": "out" }
+        ]
+      },
+      "writes": [ { "id": "u1" }, { "id": "u2" } ],
+      "expected": {
+        "output": [
+          { "id": "u1", "name": "Alice" },
+          { "rejected": "u2", "reason": "WRITE_REJECTED" }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-19",
+      "name": "Back-closure refuses caller writes at the boundary",
+      "section": "Execution semantics / Input-side closure (back-closure)",
+      "description": "The input node's only consumer is the conduit. The first write drives the unary users.get invocation (closesAfter 1), whose binding closes its input from below; the conduit becomes non-accepting and the graph back-closes the caller-facing input side. The caller's second write is refused at the boundary: it never becomes an event, so it cannot reach the conduit and no write-rejection error event exists for onError to route — output carries only the first result. Contrast OG-EX-18, where a transform between input and the conduit keeps the second write inside the graph.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            { "whenInput": { "id": "u1" }, "emit": [ { "id": "u1", "name": "Alice" } ] }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "get": {
+            "type": "operation",
+            "operation": "users.get",
+            "onError": "report"
+          },
+          "report": {
+            "type": "transform",
+            "transform": "{ \"rejected\": event.id, \"reason\": error }"
+          },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "get" },
+          { "from": "get", "to": "out" },
+          { "from": "report", "to": "out" }
+        ]
+      },
+      "writes": [ { "id": "u1" }, { "id": "u2" } ],
+      "expected": {
+        "output": [ { "id": "u1", "name": "Alice" } ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

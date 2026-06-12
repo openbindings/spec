@@ -7,40 +7,84 @@
       "id": "OG-EX-09",
       "name": "Combine with one empty source",
       "section": "combine",
-      "description": "left emits one event and right completes without emitting. combine becomes ready when right completes and emits one object with right set to null.",
+      "description": "the left conduit's invocation emits one event and the right conduit's invocation completes without emitting. combine becomes ready when right completes and emits one object with right set to null.",
       "operations": {
         "left.emit": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [ { "value": "left" } ] }
+            {
+              "emit": [
+                {
+                  "value": "left"
+                }
+              ]
+            }
           ]
         },
         "right.empty": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [] }
+            {
+              "emit": []
+            }
           ]
         }
       },
       "graph": {
         "openbindings.operation-graph": "0.2.0",
         "nodes": {
-          "in": { "type": "input" },
-          "left": { "type": "operation", "operation": "left.emit" },
-          "right": { "type": "operation", "operation": "right.empty" },
-          "combined": { "type": "combine" },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "left": {
+            "type": "operation",
+            "operation": "left.emit"
+          },
+          "right": {
+            "type": "operation",
+            "operation": "right.empty"
+          },
+          "combined": {
+            "type": "combine"
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "left" },
-          { "from": "in", "to": "right" },
-          { "from": "left", "to": "combined" },
-          { "from": "right", "to": "combined" },
-          { "from": "combined", "to": "out" }
+          {
+            "from": "in",
+            "to": "left"
+          },
+          {
+            "from": "in",
+            "to": "right"
+          },
+          {
+            "from": "left",
+            "to": "combined"
+          },
+          {
+            "from": "right",
+            "to": "combined"
+          },
+          {
+            "from": "combined",
+            "to": "out"
+          }
         ]
       },
-      "input": {},
+      "writes": [
+        {}
+      ],
       "expected": {
         "output": [
-          { "left": { "value": "left" }, "right": null }
+          {
+            "left": {
+              "value": "left"
+            },
+            "right": null
+          }
         ],
         "ordering": "exact"
       }
@@ -52,37 +96,75 @@
       "description": "Both sources complete without emitting. combine becomes ready when both have completed and emits one object with both source keys set to null.",
       "operations": {
         "left.empty": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [] }
+            {
+              "emit": []
+            }
           ]
         },
         "right.empty": {
+          "closesAfter": 1,
           "responses": [
-            { "emit": [] }
+            {
+              "emit": []
+            }
           ]
         }
       },
       "graph": {
         "openbindings.operation-graph": "0.2.0",
         "nodes": {
-          "in": { "type": "input" },
-          "left": { "type": "operation", "operation": "left.empty" },
-          "right": { "type": "operation", "operation": "right.empty" },
-          "combined": { "type": "combine" },
-          "out": { "type": "output" }
+          "in": {
+            "type": "input"
+          },
+          "left": {
+            "type": "operation",
+            "operation": "left.empty"
+          },
+          "right": {
+            "type": "operation",
+            "operation": "right.empty"
+          },
+          "combined": {
+            "type": "combine"
+          },
+          "out": {
+            "type": "output"
+          }
         },
         "edges": [
-          { "from": "in", "to": "left" },
-          { "from": "in", "to": "right" },
-          { "from": "left", "to": "combined" },
-          { "from": "right", "to": "combined" },
-          { "from": "combined", "to": "out" }
+          {
+            "from": "in",
+            "to": "left"
+          },
+          {
+            "from": "in",
+            "to": "right"
+          },
+          {
+            "from": "left",
+            "to": "combined"
+          },
+          {
+            "from": "right",
+            "to": "combined"
+          },
+          {
+            "from": "combined",
+            "to": "out"
+          }
         ]
       },
-      "input": {},
+      "writes": [
+        {}
+      ],
       "expected": {
         "output": [
-          { "left": null, "right": null }
+          {
+            "left": null,
+            "right": null
+          }
         ],
         "ordering": "exact"
       }
