@@ -16,13 +16,13 @@ Credentials are one kind of context, not the whole concept. Implementations and 
 
 The key is typically a normalized API origin (`https://api.example.com`), so that all calls to the same target share context. Callers SHOULD normalize before reading or writing (lowercase host, default port stripped, no trailing slash) and SHOULD pick a single normalization function and stick with it.
 
-## What the role does NOT prescribe
+## What this interface does NOT prescribe
 
-This role is the minimum surface a runtime needs at invocation time. It deliberately omits richer management capability:
+This interface is the minimum surface a runtime needs at invocation time. It deliberately omits richer management capability:
 
-- **Listing keys** is not part of the role. An implementation MAY expose a separate listing operation under its own contract.
-- **Inspection and rotation** are not part of the role. Implementations that want a credential manager UI should expose those as additional operations beyond this contract.
-- **Auditing** is not part of the role.
+- **Listing keys** is not part of the contract. An implementation MAY expose a separate listing operation under its own contract.
+- **Inspection and rotation** are not part of the contract. Implementations that want a credential manager UI should expose those as additional operations beyond this contract.
+- **Auditing** is not part of the contract.
 
 The intent is that any binding invoker can read and write context using just `getContext` / `setContext` / `deleteContext`; richer surfaces remain implementation-defined.
 

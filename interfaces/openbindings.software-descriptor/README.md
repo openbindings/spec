@@ -2,7 +2,7 @@
 
 A generic identity contract any piece of software MAY implement. Defines `getInfo` for self-identification: name, version, description, homepage, repository, maintainer.
 
-This role exists so that tooling, registries, and clients have a uniform way to ask "what is this thing?" regardless of what else the software does. Any implementation that fills a domain role (binding invoker, interface creator, source inspector, anything else) can also implement this role to advertise its identity.
+This interface exists so that tooling, registries, and clients have a uniform way to ask "what is this thing?" regardless of what else the software does. Any implementation that satisfies a domain interface (binding invoker, interface creator, source inspector, anything else) can also satisfy this one to advertise its identity.
 
 ## When to add it
 
@@ -12,7 +12,7 @@ Adding `software-descriptor` to an OBI is appropriate when:
 - The implementation is invoked by tools that want to log or display its identity.
 - The implementation needs to expose a build version separate from the contract version (an OBI's `version` is the contract version, not the binary version).
 
-For private or single-use implementations, the role is optional.
+For private or single-use implementations, this interface is optional.
 
 ## Field guidance
 

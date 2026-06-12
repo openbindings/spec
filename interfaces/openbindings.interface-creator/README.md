@@ -6,7 +6,7 @@ This is what powers `ob create`, on-the-fly OBI synthesis when a consumer is han
 
 ## Authentication is not extracted
 
-An OBI document carries no authentication or `security` section, so a creator does not extract credentials, security schemes, or auth requirements into the OBI. Authentication is a runtime prerequisite, not interface metadata: the binding invoker negotiates it at call time via a `CONTEXT_REQUIRED` challenge, resolved into a context store (see the [`binding-invoker`](../openbindings.binding-invoker/) role).
+An OBI document carries no authentication or `security` section, so a creator does not extract credentials, security schemes, or auth requirements into the OBI. Authentication is a runtime prerequisite, not interface metadata: the binding invoker negotiates it at call time via a `CONTEXT_REQUIRED` challenge, resolved into a context store (see the [`binding-invoker`](../openbindings.binding-invoker/) interface).
 
 A format's security metadata (for example OpenAPI's `securitySchemes`) is therefore not mapped into the document. At most it can inform what the invoker asks for at invocation time; it is never baked into the static OBI.
 

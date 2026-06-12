@@ -29,7 +29,7 @@ A source's `location` points at the artifact (a URL, file path, server address, 
 
 ## Authentication and credentials
 
-Credentials and other runtime prerequisites are **not** part of an OBI document and are not extracted into it from a format's security metadata. The binding invoker applies credentials at call time and negotiates anything missing via a `CONTEXT_REQUIRED` challenge, resolved into a context store — see the [`binding-invoker`](../interfaces/openbindings.binding-invoker/) role. A format's own security metadata (for example OpenAPI's `securitySchemes`) may inform what the invoker asks for at invocation time, but is never baked into the static document.
+Credentials and other runtime prerequisites are **not** part of an OBI document and are not extracted into it from a format's security metadata. The binding invoker applies credentials at call time and negotiates anything missing via a `CONTEXT_REQUIRED` challenge, resolved into a context store — see the [`binding-invoker`](../interfaces/openbindings.binding-invoker/) interface. A format's own security metadata (for example OpenAPI's `securitySchemes`) may inform what the invoker asks for at invocation time, but is never baked into the static document.
 
 ## Field naming across protocol locations
 

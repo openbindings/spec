@@ -2,7 +2,7 @@
     "openbindings": "0.2.0",
     "name": "OpenBindings Context Store",
     "version": "0.1.0",
-    "description": "Interface for storing and retrieving context keyed by stable identifiers (typically a normalized API origin). Context is opaque per-target runtime data — credentials, session state, consent flags, custom headers, environment variables, metadata, or any other invoker-managed state. This role models the minimum surface a runtime needs: fetch the context for an invocation, persist newly-resolved context, and remove it on logout. Implementations MAY expose richer management capabilities (listing, inspection, rotation, audit) outside this role contract; that surface is implementation-defined and not part of the role.",
+    "description": "Interface for storing and retrieving context keyed by stable identifiers (typically a normalized API origin). Context is opaque per-target runtime data — credentials, session state, consent flags, custom headers, environment variables, metadata, or any other invoker-managed state. It models the minimum surface a runtime needs: fetch the context for an invocation, persist newly-resolved context, and remove it on logout. Implementations MAY expose richer management capabilities (listing, inspection, rotation, audit) beyond this contract; that surface is implementation-defined and not part of it.",
     "schemas": {
         "Context": {
             "type": "object",

@@ -52,11 +52,11 @@ A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI
 
 The spec defines what an OBI document **is**: its shape, discovery, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.0](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior to implementations: comparison and matching, binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits).
 
-Authentication in particular is **not** part of an OBI document. It is a runtime prerequisite negotiated by the binding invoker at call time and resolved into a context store — see the [`binding-invoker`](interfaces/openbindings.binding-invoker/) role.
+Authentication in particular is **not** part of an OBI document. It is a runtime prerequisite negotiated by the binding invoker at call time and resolved into a context store — see the [`binding-invoker`](interfaces/openbindings.binding-invoker/) interface.
 
 ## Guides and tutorials
 
-This repository is the **normative and reference** source. It is self-contained for understanding and implementing the standard: the spec, the schema, the conformance corpus, the role contracts, the format specifications, and worked examples.
+This repository is the **normative and reference** source. It is self-contained for understanding and implementing the standard: the spec, the schema, the conformance corpus, the published interfaces, the format specifications, and worked examples.
 
 Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version.
 
@@ -66,7 +66,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | --- | --- |
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
-| [`interfaces/`](interfaces/) | Standard role interfaces published by the project (binding-invoker, context-store, …) |
+| [`interfaces/`](interfaces/) | Shared interfaces published by the project (binding-invoker, context-store, …) |
 | [`formats/`](formats/) | Companion binding-format specifications (e.g., operation-graph) |
 | [`examples/`](examples/) | Worked example OBI documents |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |

@@ -16,7 +16,7 @@ When a binding invoker receives a `BindingInvocationInput`, it follows this life
 
 ## Context
 
-A binding invocation usually needs more than the operation input. Credentials, headers, cookies, environment variables, session state, consent flags, custom invoker-specific values: all of it is **context**. Context is opaque to the role contract and broader than auth. Credentials are one common kind, not the whole concept.
+A binding invocation usually needs more than the operation input. Credentials, headers, cookies, environment variables, session state, consent flags, custom invoker-specific values: all of it is **context**. Context is opaque to the contract and broader than auth. Credentials are one common kind, not the whole concept.
 
 ### Stored vs per-call
 
@@ -34,7 +34,7 @@ Both have the same shape. At invocation time the invoker loads stored context fo
 
 The invoker controls the key it uses with the `ContextStore`. The convention: **normalize to the API's host** (so both `https://api.example.com` and `wss://api.example.com` resolve to `api.example.com`). This enables **cross-invoker context sharing**: an OpenAPI invoker and an AsyncAPI invoker hitting the same service independently derive the same key, so credentials obtained through one flow are available to the other without re-prompting.
 
-Storage backend is SDK-configurable (in-memory, on-disk, OS keychain, hosted vault). Management surfaces (listing, inspection, rotation, audit) are implementation-defined; the [`ContextStore`](/interfaces/context-store) role contract itself is just `getContext` / `setContext` / `deleteContext`.
+Storage backend is SDK-configurable (in-memory, on-disk, OS keychain, hosted vault). Management surfaces (listing, inspection, rotation, audit) are implementation-defined; the [`ContextStore`](../openbindings.context-store/) contract itself is just `getContext` / `setContext` / `deleteContext`.
 
 ### Well-known context fields
 
@@ -55,7 +55,7 @@ Invokers can store anything else alongside (CSRF tokens, session IDs, consent fl
 
 ### Platform callbacks
 
-When stored context is insufficient and the invoker needs interactive resolution, it asks the runtime through **platform callbacks**: functions the SDK injects at construction. The role contract does not carry callbacks (live function references cannot cross a wire); they are an SDK affordance for code-module implementations.
+When stored context is insufficient and the invoker needs interactive resolution, it asks the runtime through **platform callbacks**: functions the SDK injects at construction. The contract does not carry callbacks (live function references cannot cross a wire); they are an SDK affordance for code-module implementations.
 
 | Callback | Purpose | Example uses |
 |---|---|---|
@@ -136,7 +136,7 @@ Binding invokers SHOULD use standard error codes to enable protocol-agnostic err
 | `ERR_INPUT_CLOSED` | Caller wrote after the input side was closed (by caller or binding) | No |
 | `ERR_INVOCATION_CLOSED` | Caller wrote after the invocation reached a terminal state | No |
 | `ERR_TOO_MANY_INPUTS` | Caller wrote more inputs than the binding accepts | No |
-| `ERR_PROTOCOL` | The frame sequence violated the role's protocol (e.g., `input` before `open`, second `open`) | No |
+| `ERR_PROTOCOL` | The frame sequence violated the frame protocol (e.g., `input` before `open`, second `open`) | No |
 | `ERR_TYPE_MISMATCH` | Typed adapter received a value not matching the declared output type | No |
 | `ERR_TRANSPORT_CLOSED` | Underlying transport closed without a terminal frame | Maybe (transient) |
 | `ERR_RUNTIME` | Catch-all for unexpected implementation errors | No |
@@ -153,7 +153,7 @@ These codes are SDK conventions, not spec requirements. Third-party binding invo
 
 ## Cardinality reach depends on the binding format
 
-The binding-invoker role exposes a bidirectional I/O contract through `invokeBinding`. An implementation can only honor the full contract if its chosen binding format can carry bidirectional message streams. This is a property of the binding format, not a property of the role.
+The binding-invoker interface exposes a bidirectional I/O contract through `invokeBinding`. An implementation can only honor the full contract if its chosen binding format can carry bidirectional message streams. This is a property of the binding format, not a property of the interface.
 
 | Binding category (examples) | Unary | Server-streaming | Client-streaming | Bidirectional |
 |-----------------------------|-------|------------------|------------------|---------------|
@@ -164,7 +164,7 @@ The binding-invoker role exposes a bidirectional I/O contract through `invokeBin
 | HTTP/1.1 + SSE (`openapi` with SSE response) | Yes | Yes | No | No |
 | HTTP/1.1 request/response only (`openapi` plain REST) | Yes | No | No | No |
 
-An implementation backed by an HTTP/1.1 binding can only invoke underlying bindings whose cardinality the wire can carry; it cannot proxy a bidi binding. This is fundamental, not a current implementation gap. Implementation authors who want to honor the full role contract pick a binding format that supports bidirectional streams. Implementation authors with a constrained binding should document which cardinalities they can carry.
+An implementation backed by an HTTP/1.1 binding can only invoke underlying bindings whose cardinality the wire can carry; it cannot proxy a bidi binding. This is fundamental, not a current implementation gap. Implementation authors who want to honor the full contract pick a binding format that supports bidirectional streams. Implementation authors with a constrained binding should document which cardinalities they can carry.
 
 ## Why `invokeBinding` returns an `Invocation` handle
 
@@ -205,4 +205,4 @@ The caller's pattern adapts per operation, but the SDK signature is the same. Ca
 
 ### Connection pooling is a format library concern
 
-Different protocols handle connection reuse differently. HTTP's `http.Client` pools TCP connections automatically. gRPC's `ClientConn` cache multiplexes RPCs on one HTTP/2 connection. MCP's session pool shares one JSON-RPC session across tool calls. AsyncAPI WebSocket pools share one socket across operations on the same channel. This is protocol-specific knowledge that belongs in the format library. The role contract stays clean: `invokeBinding(input) -> Invocation`. The format library decides whether to open a new connection or reuse one and routes each invocation's I/O through the appropriate transport.
+Different protocols handle connection reuse differently. HTTP's `http.Client` pools TCP connections automatically. gRPC's `ClientConn` cache multiplexes RPCs on one HTTP/2 connection. MCP's session pool shares one JSON-RPC session across tool calls. AsyncAPI WebSocket pools share one socket across operations on the same channel. This is protocol-specific knowledge that belongs in the format library. The contract stays clean: `invokeBinding(input) -> Invocation`. The format library decides whether to open a new connection or reuse one and routes each invocation's I/O through the appropriate transport.
