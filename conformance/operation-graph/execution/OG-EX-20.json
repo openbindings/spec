@@ -1,0 +1,130 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Filter-expression boolean cast: pass/drop is JSONata 2.0's boolean cast ($boolean) of the defined result, and an undefined result fails the node with TRANSFORM_UNDEFINED. Pins the cast table for empty composites and all-falsy arrays.",
+  "fixtures": [
+    {
+      "id": "OG-EX-20",
+      "name": "Filter result [] casts to false (event dropped)",
+      "section": "Node definitions / filter",
+      "description": "A constant filter expression yielding an empty array drops the event: JSONata's boolean cast of [] is false.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "[]" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": { "output": [], "ordering": "exact" }
+    },
+    {
+      "id": "OG-EX-21",
+      "name": "Filter result with all-falsy members casts to false (event dropped)",
+      "section": "Node definitions / filter",
+      "description": "An array is true only if some member casts to true; [0, \"\"] has none, so the event is dropped.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "[0, \"\"]" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": { "output": [], "ordering": "exact" }
+    },
+    {
+      "id": "OG-EX-22",
+      "name": "Filter result with a truthy member casts to true (event passes)",
+      "section": "Node definitions / filter",
+      "description": "[0, 1] contains a member that casts to true, so the array casts to true and the event passes unchanged.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "[0, 1]" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": { "output": [{ "x": 1 }], "ordering": "exact" }
+    },
+    {
+      "id": "OG-EX-23",
+      "name": "Filter result {} casts to false (event dropped)",
+      "section": "Node definitions / filter",
+      "description": "The empty object casts to false under JSONata's boolean cast, so the event is dropped.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "{}" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": { "output": [], "ordering": "exact" }
+    },
+    {
+      "id": "OG-EX-24",
+      "name": "Filter result empty string casts to false (event dropped)",
+      "section": "Node definitions / filter",
+      "description": "The empty string casts to false under JSONata's boolean cast, so the event is dropped.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "\"\"" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": { "output": [], "ordering": "exact" }
+    },
+    {
+      "id": "OG-EX-25",
+      "name": "Undefined filter result fails the node with TRANSFORM_UNDEFINED",
+      "section": "Node definitions / filter; Transforms",
+      "description": "An expression referencing a missing field yields undefined, which neither passes nor drops: the node fails per the Transforms rule and the error event routes per onError with the event attached.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "f": { "type": "filter", "transform": "nope", "onError": "out" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "f" },
+          { "from": "f", "to": "out" }
+        ]
+      },
+      "writes": [{ "x": 1 }],
+      "expected": {
+        "output": [{ "error": "TRANSFORM_UNDEFINED", "event": { "x": 1 } }],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

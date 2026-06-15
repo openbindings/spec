@@ -1,7 +1,7 @@
 {
-    "openbindings": "0.1.0",
+    "openbindings": "0.2.0",
     "name": "OpenBindings Interface Creator",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Interface for creating OpenBindings interfaces from binding artifacts. Given a binding specification (e.g., an OpenAPI spec), an interface creator extracts operations, schemas, sources, and bindings into an OBI document.",
     "schemas": {
         "FormatInfo": {
@@ -17,7 +17,9 @@
                     "description": "Human-readable description of this format."
                 }
             },
-            "required": ["token"]
+            "required": [
+                "token"
+            ]
         },
         "CreateInterfaceSource": {
             "type": "object",
@@ -51,10 +53,20 @@
                     "description": "Human-readable description for this source."
                 }
             },
-            "required": ["format"],
-            "oneOf": [
-                { "required": ["location"] },
-                { "required": ["content"] }
+            "required": [
+                "format"
+            ],
+            "anyOf": [
+                {
+                    "required": [
+                        "location"
+                    ]
+                },
+                {
+                    "required": [
+                        "content"
+                    ]
+                }
             ],
             "additionalProperties": false
         },
@@ -67,7 +79,9 @@
                 },
                 "sources": {
                     "type": "array",
-                    "items": { "$ref": "#/schemas/CreateInterfaceSource" },
+                    "items": {
+                        "$ref": "#/schemas/CreateInterfaceSource"
+                    },
                     "description": "Binding sources to create from."
                 },
                 "name": {
@@ -92,18 +106,25 @@
         }
     },
     "operations": {
-        "listFormats": {
+        "openbindings.interface-creator.listFormats": {
             "description": "List binding formats this creator can produce interfaces from.",
             "idempotent": true,
             "output": {
                 "type": "array",
-                "items": { "$ref": "#/schemas/FormatInfo" }
+                "items": {
+                    "$ref": "#/schemas/FormatInfo"
+                }
             }
         },
-        "createInterface": {
+        "openbindings.interface-creator.createInterface": {
             "description": "Create an OpenBindings interface, optionally from binding source artifacts.",
-            "input": { "$ref": "#/schemas/CreateInterfaceInput" },
-            "output": { "$ref": "#/schemas/OpenBindingsInterface" }
+            "idempotent": true,
+            "input": {
+                "$ref": "#/schemas/CreateInterfaceInput"
+            },
+            "output": {
+                "$ref": "#/schemas/OpenBindingsInterface"
+            }
         }
     }
 }

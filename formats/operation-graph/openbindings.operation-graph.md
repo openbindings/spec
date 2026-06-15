@@ -1,6 +1,6 @@
 # `openbindings.operation-graph` Format Specification (v0.2.0)
 
-**Status**: **Working draft** of `openbindings.operation-graph@0.2.0` (2026-06-10). Not yet tagged or snapshotted; this text is normative only once tagged. This draft is a ground-up rewrite of the format around the transparency principle (see [Transparency](#transparency-the-identity-law)); it supersedes all earlier drafts of this format, including the pre-transparency draft of the same version number (available in version control history for comparison only).
+**Status**: This is **version 0.2.0** of the `openbindings.operation-graph` format specification. It is pre-1.0, and minor-version revisions MAY include breaking changes. Released format versions are identified by the format token (`openbindings.operation-graph@0.2.0`); this document, at this path, is the normative text for that token. Version 0.2.0 is a ground-up rewrite of the format around the transparency principle (see [Transparency](#transparency-the-identity-law)); it supersedes all earlier revisions, which are available in version control history for comparison only.
 
 This document defines the `openbindings.operation-graph` binding source format. It is a companion specification to the [OpenBindings Specification v0.2.0](../../openbindings.md) and depends on concepts defined there (operations, bindings, sources, transforms, invocations).
 
@@ -58,7 +58,7 @@ The core specification deliberately defines no invocation semantics: invocation 
 
 Cardinality descriptors used in this document — no-input, unary, server-streaming, client-streaming, bidirectional — are informal names for observed write/read counts under a selected binding, not declarations; per the core specification, neither an operation nor this format declares them.
 
-*Correspondence (informative).* The openbindings project's `openbindings.binding-invoker` interface expresses this same surface as a typed frame stream (`open`/`input`/`close` in; `output`/`complete`/`error` out, with `input_closed` signalling closure from below), and states the same principle: cardinality is observed by how the caller drives the frames, not declared. That interface is an informational artifact, not part of this format's normative dependencies; the definitions above stand on their own.
+*Correspondence (informative).* The openbindings project's `binding-invoker` interface expresses this same surface as a typed frame stream (`open`/`input`/`close` in; `output`/`complete`/`error` out, with `input_closed` signalling closure from below), and states the same principle: cardinality is observed by how the caller drives the frames, not declared. That interface is an informational artifact, not part of this format's normative dependencies; the definitions above stand on their own.
 
 ## Transparency (the identity law)
 
@@ -327,7 +327,7 @@ Gates events: passing events flow downstream; failing events are dropped. Two me
 { "type": "filter", "transform": "role = $input.requiredRole" }
 ```
 
-- `transform` (string): a [Transform](#transforms) expression evaluated with the event as `$` and the lineage's root input as `$input`. Truthy passes; otherwise the event is dropped.
+- `transform` (string): a [Transform](#transforms) expression evaluated with the event as `$` and the lineage's root input as `$input`. The event passes when the boolean cast of the defined result is `true`, per JSONata 2.0's boolean casting rules (the semantics of its `$boolean()` function: `false`, `null`, `0`, the empty string, an empty array, an array whose members all cast to `false`, and the empty object cast to `false`; everything else casts to `true`); otherwise the event is dropped. An undefined result neither passes nor drops: it fails the node with `TRANSFORM_UNDEFINED` per [Transforms](#transforms).
 
 ### `map`
 

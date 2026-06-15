@@ -1,0 +1,76 @@
+{
+    "openbindings": "0.2.0",
+    "name": "Key-Value Store",
+    "version": "0.1.0",
+    "description": "A generic key-value store: retrieve, store, and delete opaque values by opaque key. The key and value are opaque to this interface — it prescribes no key derivation and no value schema. Callers (such as a binding invoker's runtime resolving CONTEXT_REQUIRED challenges) choose keys and value shapes by their own conventions; this contract only standardizes get/set/delete so independent stores are interchangeable.",
+    "schemas": {
+        "Value": {
+            "description": "An opaque stored value. This interface prescribes no schema for it; callers agree on its shape out of band."
+        }
+    },
+    "operations": {
+        "openbindings.kv-store.get": {
+            "description": "Retrieve the value stored under a key. Returns null when no entry exists for the key.",
+            "idempotent": true,
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The store key. Opaque to this interface."
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "additionalProperties": false
+            },
+            "output": {
+                "description": "The stored value, or null when no entry exists for the key."
+            }
+        },
+        "openbindings.kv-store.set": {
+            "description": "Store a value under a key, replacing any existing value for that key in full.",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The store key. Opaque to this interface."
+                    },
+                    "value": {
+                        "$ref": "#/schemas/Value"
+                    }
+                },
+                "required": [
+                    "key",
+                    "value"
+                ],
+                "additionalProperties": false
+            },
+            "output": {
+                "type": "null"
+            }
+        },
+        "openbindings.kv-store.delete": {
+            "description": "Remove the entry stored under a key. Idempotent: deleting a key with no entry succeeds.",
+            "idempotent": true,
+            "input": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string",
+                        "description": "The store key. Opaque to this interface."
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "additionalProperties": false
+            },
+            "output": {
+                "type": "null"
+            }
+        }
+    }
+}

@@ -79,11 +79,18 @@ function schemaPass(schema, value) {
   return ajv.compile(schema)(value);
 }
 
-// JSONata-style truthiness for filter expressions.
+// JSONata 2.0 boolean cast ($boolean) for filter-expression results:
+// empty composites are false, and an array is true only if some member
+// casts to true. (Callers handle undefined separately: it fails the node
+// with TRANSFORM_UNDEFINED per the Transforms rule.)
 function truthy(r) {
-  if (r === false || r === undefined || r === null) return false;
-  if (r === 0 || r === "") return false;
-  if (Array.isArray(r) && r.length === 0) return false;
+  if (r === null || r === undefined) return false;
+  if (typeof r === "boolean") return r;
+  if (typeof r === "number") return r !== 0;
+  if (typeof r === "string") return r !== "";
+  if (Array.isArray(r)) return r.some(truthy);
+  if (typeof r === "function") return false;
+  if (typeof r === "object") return Object.keys(r).length > 0;
   return true;
 }
 
@@ -319,8 +326,16 @@ async function runGraph(graph, mockOps, writes) {
       }
       case "filter": {
         let pass;
-        if ("schema" in node) pass = schemaPass(node.schema, event.value);
-        else pass = truthy(await evalExpr(node.transform, event));
+        if ("schema" in node) {
+          pass = schemaPass(node.schema, event.value);
+        } else {
+          const r = await evalExpr(node.transform, event);
+          if (r === undefined) {
+            routePerEventError(node, "TRANSFORM_UNDEFINED", event);
+            return;
+          }
+          pass = truthy(r);
+        }
         if (pass) enqueueFrom(nodeKey, [event]);
         return;
       }

@@ -21,8 +21,8 @@ What it does:
 What it does NOT snapshot:
   - interfaces/ — independently versioned, location-is-identity
   - formats/ — independently versioned via format token
-  - conventions/ — independently versioned tooling conventions
-  - conformance/comparison/ — convention-owned comparison fixtures
+  - conformance/operation-graph/ — subcorpus of the operation-graph format,
+    versioned with that format, not with the core spec
   - scripts/ — repo-wide tooling, not part of any specific release
 
 What it does NOT do:

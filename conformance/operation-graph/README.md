@@ -26,7 +26,7 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions)
-    OG-EX-01.json ... OG-EX-17.json   (files; ids run OG-EX-01 ... OG-EX-19)
+    OG-EX-01.json ... OG-EX-20.json   (files; ids run OG-EX-01 ... OG-EX-25)
   validation/           (well-formedness rules; OG-VR.json)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
@@ -105,10 +105,17 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-17 | operation / Failure | conduit terminal error opted into handling via `onError`; error event has no `event` member |
 | OG-EX-18 | operation / Acceptance; back-closure | write rejection at a non-accepting conduit reached through a `transform` (back-closure is non-transitive) |
 | OG-EX-19 | back-closure | input's direct consumer goes non-accepting → the boundary refuses the caller's later writes entirely |
+| OG-EX-20 | filter / boolean cast | empty-array result casts to false; event dropped |
+| OG-EX-21 | filter / boolean cast | all-falsy-member array casts to false; event dropped |
+| OG-EX-22 | filter / boolean cast | array with a truthy member casts to true; event passes |
+| OG-EX-23 | filter / boolean cast | empty-object result casts to false; event dropped |
+| OG-EX-24 | filter / boolean cast | empty-string result casts to false; event dropped |
+| OG-EX-25 | filter / Transforms | undefined result fails the node with `TRANSFORM_UNDEFINED`, routed per `onError` with the event attached |
 
 File-to-id mapping: OG-EX-09.json holds OG-EX-09/10, OG-EX-13.json holds
-OG-EX-13–16 (the identity-law suite), and OG-EX-17.json holds OG-EX-17–19 (the
-conduit acceptance/error suite); every other file holds the single fixture of
+OG-EX-13–16 (the identity-law suite), OG-EX-17.json holds OG-EX-17–19 (the
+conduit acceptance/error suite), and OG-EX-20.json holds OG-EX-20–25 (the
+filter boolean-cast suite); every other file holds the single fixture of
 its own id.
 
 OG-EX-13 through OG-EX-16 are the corpus's encoding of the spec's conformance

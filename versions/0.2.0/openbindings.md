@@ -315,7 +315,7 @@ An operation object MAY contain:
 
 The `input` and `output` schemas are caller-facing contracts that run in opposite directions. A service implementing the operation accepts at minimum every value validating against `input` and may accept more; a caller sending any value validating against `input` is honoring the input contract. A service implementing the operation produces only values validating against `output` and may produce a narrower set; a caller receiving a successful result can rely on it validating against `output`.
 
-`aliases` declares additional names for the operation. An operation's **identifiers** are its key plus its aliases, and they share one flat namespace: every identifier is equally valid for resolving the operation, and the choice of which name to place in the key versus in `aliases` carries no semantic weight beyond the key being the operation's primary, singular name for display, logging, and binding references (the value bindings carry in `bindings[*].operation`). The namespace is document-unique (an identifier MUST NOT collide with any other operation's key or alias, per [OBI-D-05](#142-document-rules)), so any identifier resolves to at most one operation. A consumer holding an alias and a consumer holding the key refer to the same operation.
+`aliases` declares additional names for the operation. An operation's **identifiers** are its key plus its aliases, and they share one flat namespace: every identifier is equally valid for resolving the operation, and the choice of which name to place in the key versus in `aliases` carries no semantic weight beyond the key being the operation's primary, singular name for display, logging, and binding references (the value bindings carry in `bindings[*].operation`). The namespace is document-unique across all operation identifiers, including within a single operation: an identifier MUST NOT collide with any other identifier in the document, an alias MUST NOT equal its own operation's key, and an operation's aliases MUST be distinct from one another (per [OBI-D-05](#142-document-rules)). So any identifier resolves to at most one operation. A consumer holding an alias and a consumer holding the key refer to the same operation.
 
 Common uses of `aliases`: a prior name kept for continuity after a rename, a vendor-specific name some consumers look up by, or a shared-contract name that makes this operation addressable as the implementation of a published interface (e.g., `tasks.create` on a `createTask` operation). The last is how an OBI claims cross-document correspondence: it adopts the contract's operation name as an alias. The name is an ordinary identifier. The spec attaches no verification, ownership, or trust semantics to it; whether an alias legitimately names a published contract is a registry and tooling concern, not a property the document can assert or a tool can confirm from the document alone.
 
@@ -464,7 +464,8 @@ When serving an OBI at `/.well-known/openbindings`:
 - The response `Content-Type` SHOULD be `application/vnd.openbindings+json`. `application/json` MAY be used and MUST be accepted by clients.
 - Clients SHOULD send `Accept: application/vnd.openbindings+json, application/json` to signal media-type preference. Servers MAY content-negotiate on this header but MUST NOT refuse a request that lacks it when they otherwise serve an OBI at this path.
 - If the service does not publish an OBI at this path, the response is `404 Not Found`.
-- Any other response (including `3xx`, other `4xx`, `5xx`, or `200` whose body is not a valid OBI) is outside the scope of this spec; clients MAY treat such responses as if no OBI is published at this path.
+- Clients SHOULD follow `3xx` redirects when fetching this path, subject to their own redirect policy and limits. Redirects are routine deployment artifacts (HTTP-to-HTTPS upgrades, trailing-slash normalization, CDN frontends); a client that treated them as "no OBI published" would silently disagree with one that followed them. Whether following a redirect changes the document's base URI is governed by [§10. Reference resolution](#10-reference-resolution).
+- Any other response (other `4xx`, `5xx`, or `200` whose body is not a valid OBI) is outside the scope of this spec; clients MAY treat such responses as if no OBI is published at this path.
 - Discovery endpoints MAY require authentication or authorization. Whether to publish an OBI to unauthenticated clients is a deployment decision; this spec does not mandate public discovery.
 - Discovery endpoints intended for public consumption SHOULD set permissive CORS response headers (for example, `Access-Control-Allow-Origin: *`). Cross-origin discovery is a primary use case; omitting CORS silently breaks browser-side clients fetching the well-known URI. Publishers restricting discovery to specific origins MAY set CORS headers accordingly.
 
@@ -622,10 +623,10 @@ A tool self-declares the capabilities it implements in its documentation or meta
 
 A conformant **OBI document**:
 
-- **OBI-D-01**: Is valid UTF-8 encoded JSON per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). Duplicate JSON object keys within any object make the document invalid.
+- **OBI-D-01**: Is valid UTF-8 encoded JSON per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). Duplicate JSON object keys within any object make the document invalid. Verification note (informative): RFC 8259 leaves duplicate-name handling unspecified, and most JSON parsers silently keep one value rather than reporting the duplicate, so checking this clause requires a duplicate-detecting parse. A validator whose parser cannot surface duplicates leaves the clause unverified rather than failing the document; this is the same partial-verification posture as [§8. Binding sufficiency](#8-binding-sufficiency).
 - **OBI-D-02**: Validates against the JSON Schema at `openbindings.schema.json`.
 - **OBI-D-03**: Has unique operation keys within the document.
-- **OBI-D-04**: Has every map key and every operation alias matching the pattern `^[A-Za-z_][A-Za-z0-9_.-]*$`.
+- **OBI-D-04**: Has every map key (operation, binding, source, transform, schema, and example keys) and every operation alias matching the pattern `^[A-Za-z_][A-Za-z0-9_.-]*$`. The rule covers the maps this spec defines (per [§6. Document shape](#6-document-shape)); property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.
 - **OBI-D-05**: Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its `aliases` array.
 - **OBI-D-06**: Has well-formed URI references (per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1) in `sources[*].location` and schema `$ref` values.
 - **OBI-D-07**: Has every `$schema` value, where present, equal to `https://json-schema.org/draft/2020-12/schema`.
@@ -687,7 +688,6 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 
 ### 16.2. Informative references
 
-- **[RFC 6750]** M. Jones, D. Hardt, "The OAuth 2.0 Authorization Framework: Bearer Token Usage," RFC 6750, October 2012. <https://www.rfc-editor.org/rfc/rfc6750>
 - **[RFC 8785]** A. Rundgren, B. Jordan, S. Erdtman, "JSON Canonicalization Scheme (JCS)," RFC 8785, June 2020. <https://www.rfc-editor.org/rfc/rfc8785>. Cited by [§9. Canonical form (informative)](#9-canonical-form-informative).
 - **JSONata reference implementation**: JSONata Project, `jsonata` (npm). <https://github.com/jsonata-js/jsonata>. The JavaScript reference implementation for [JSONata 2.0](https://docs.jsonata.org/); cited by [§6.5. Transforms](#65-transforms) as the SHOULD-level tie-breaker where JSONata 2.0's documentation does not unambiguously define behavior.
 - **openbindings reference tools**: `ob` CLI, `openbindings-go`, `openbindings-ts` (see project README). One implementation of this spec among potentially many.
