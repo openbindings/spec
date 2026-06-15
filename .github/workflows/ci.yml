@@ -23,19 +23,9 @@ jobs:
             ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
           done
 
-      - name: Validate interface files against schema
-        run: |
-          for f in interfaces/*/*.json; do
-            echo "Validating $f..."
-            ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
-          done
-
       - name: Check canonical field ordering
-        # The checker skips frozen prior-spec snapshots (e.g. interfaces/*/0.1.json
-        # written against an older `openbindings` version) by content, so the full
-        # interface glob is safe here.
         run: |
-          node scripts/check-canonical-order.mjs examples/*.obi.json interfaces/*/*.json
+          node scripts/check-canonical-order.mjs examples/*.obi.json
 
       - name: Validate operation-graph schema is valid JSON
         run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null

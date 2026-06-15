@@ -19,7 +19,6 @@ What it does:
   - Appends the version to versions/README.md (if not already present)
 
 What it does NOT snapshot:
-  - interfaces/ — independently versioned, location-is-identity
   - formats/ — independently versioned via format token
   - conformance/operation-graph/ — subcorpus of the operation-graph format,
     versioned with that format, not with the core spec

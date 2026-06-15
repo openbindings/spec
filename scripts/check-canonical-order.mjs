@@ -6,7 +6,7 @@
 //
 // The canonical order is the CURRENT spec's. Documents written against an older spec
 // version (a smaller `openbindings` field than the newest among the inputs) are frozen,
-// immutable snapshots — e.g. interfaces/*/0.1.json — and are skipped: their field order is
+// immutable snapshots and are skipped: their field order is
 // canonical against their own era, which this checker does not carry. The newest cohort
 // among the inputs sets "current", so this needs no edit when a future spec version lands.
 //

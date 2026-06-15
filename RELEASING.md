@@ -18,7 +18,7 @@ A release snapshot captures the normative core spec at the time of release:
 
 **Not snapshotted:**
 
-- `interfaces/` — published interfaces are independently versioned and use location-based identity. Each interface version lives at a stable path (e.g., `interfaces/openbindings.binding-invoker/0.1.json`) that IS its identity; a released version file is immutable, and a breaking change ships as a new version file (`0.3.json`) beside the old one rather than editing it. Copying interfaces into a core-spec version snapshot would create a second URL for the same contract, fragmenting identity. See the spec's [Reference resolution](openbindings.md#10-reference-resolution) section.
+- The project's shared interfaces are **no longer in this repository** — they live in [openbindings/interfaces](https://github.com/openbindings/interfaces), independently versioned with location-based identity. They were never snapshotted with the core spec: copying a contract into a spec snapshot would create a second URL for the same contract, fragmenting identity.
 - `formats/` — companion format specs carry their own version in their format token (e.g., `openbindings.operation-graph@0.1.0`) and are independently versioned. They live at their canonical path and are referenced by format token, not by release version.
 - `scripts/` — repo-wide tooling (canonical-order checker, manifest generator, corpus verifier). These operate on the current working tree and aren't part of any specific release.
 

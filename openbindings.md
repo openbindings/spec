@@ -701,7 +701,7 @@ This spec does not define tool behavior beyond these minimum conformance rules. 
 
 - `openbindings.schema.json` — JSON Schema for document validity.
 - `guides/` — tutorials, format convention summaries, author guidance (informational, not normative).
-- `interfaces/` — shared-contract interfaces published by the openbindings project (informational).
+- The openbindings project's shared-contract interfaces — published at [openbindings.com/interfaces](https://openbindings.com/interfaces) (informational).
 - `formats/` — companion format specifications (authority level varies per format).
 - `conformance/` — conformance test corpus keyed to OBI-D-##/OBI-T-## rule identifiers (fixtures, manifest, fixture meta-schema, reference Go runner).
 - `CHANGELOG.md` — version history and diffs between spec versions.

@@ -75,8 +75,9 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
 
 ### Repository
 
+- **Interfaces relocated**: the project's shared interfaces moved out of this repository to [openbindings/interfaces](https://github.com/openbindings/interfaces), independently versioned with location-based identity served at `openbindings.com/interfaces/<name>/<version>.json`. The interface renames and additions below were made during the 0.2.0 cycle, before the move.
 - **New examples**: `minimal.obi.json`, `blend-coffee-shop.obi.json`, `multi-source.obi.json`
-- **New tooling**: CI workflow validating examples, interfaces, corpus consistency, canonical ordering, and local links
+- **New tooling**: CI workflow validating examples, corpus consistency, canonical ordering, and local links
 - **Renamed interface**: `openbindings.binding-executor` to `openbindings.binding-invoker`
 - **New interface**: `openbindings.source-inspector`
 - **Retired interface**: `openbindings.host` (composed meta-role; no implementation ever claimed it; consumers can match its constituent roles directly)
