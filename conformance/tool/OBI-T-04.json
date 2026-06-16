@@ -1,7 +1,7 @@
 {
   "rule": "OBI-T-04",
   "section": "14.3",
-  "description": "Refuses documents declaring a higher major openbindings version than the tool supports. While the spec is pre-1.0 (major version 0), this refusal extends to higher minor versions, per §11.1.",
+  "description": "Applies the §11.1 version acceptance and refusal rules: refuses a higher major openbindings version than the tool supports (and, while the spec is pre-1.0, a higher minor); compares by SemVer 2.0.0 precedence so build metadata is ignored and a higher patch within a supported minor is accepted; and does not accept a prerelease unless the tool declares support for that specific prerelease.",
   "notes": "Tests assume the SDK under test supports a version range bounded below `999.x` for major-version refusal cases, and bounded below `0.999.x` for pre-1.0 minor-version refusal cases. SDK conformance to OBI-T-04 is independent of which specific version the SDK supports; the test asserts the refusal behavior on documents declaring versions higher than any plausible SDK release in this version family. Lower-version cases are generally not tested because OBI-T-04 does not mandate a specific behavior for documents declaring a lower minor than the SDK supports. Three SemVer-comparison cases per §11.1 are tested against an SDK supporting the `0.2.x` family: build metadata is ignored (`0.2.0+build.1` is accepted as `0.2.0`); a higher patch within a supported minor is accepted (`0.2.1`); and a prerelease, which sorts below its release, MUST NOT be accepted unless the tool declares support for that specific prerelease (`0.2.0-rc.1` asserts default rejection by a tool that has not opted in; the opt-in exception is not separately fixtured).",
   "tests": [
     {
