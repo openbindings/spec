@@ -104,7 +104,7 @@ OpenBindings does not:
 - **Replace underlying binding formats.** OpenAPI, AsyncAPI, gRPC, MCP, and others remain authoritative for their wire formats. OBI points at them.
 - **Serve as an authoring language.** OBI is the target artifact, not a source format that compiles to multiple targets. Tools like TypeSpec and Smithy occupy that adjacent role.
 - **Define runtime or protocol semantics.** Invocation, retries, credential flow, sandboxing, and rate limiting are processor concerns.
-- **Maintain registries of formats.** Identity is URI-based; format-token authority rests with each format's community.
+- **Maintain registries of formats.** Addressing is URI-based; format-token authority rests with each format's community.
 - **Specify integrity, signing, or attestation.** Supply-chain verification composes externally over URI fetches.
 
 ## 2. Scope principle
@@ -488,7 +488,7 @@ The canonical form of an OBI document is the document serialized per [RFC 8785 (
 
 ## 10. Reference resolution
 
-OBI documents define no `id` field and carry no relative references, so a document resolves identically however it was obtained: from its origin, a cache, a redirect, stdin, or an in-memory object. Resolution never depends on where the document came from, and a document has no "home" it must be retrieved from to be understood. OBI assigns no identity of its own; the `name` and `version` fields are labels, not identifiers.
+OBI documents define no `id` field, and no reference in them resolves against the URI a document was fetched from, so a document resolves identically however it was obtained: from its origin, a cache, a redirect, stdin, or an in-memory object. Resolution never depends on where the document came from, and a document has no "home" it must be retrieved from to be understood. OBI assigns no identity of its own; the `name` and `version` fields are labels, not identifiers.
 
 Every reference in an OBI document is **absolute or same-document**:
 
@@ -509,7 +509,7 @@ OBI documents carry two independent version concepts.
 
 ### 11.1. `openbindings` field (spec version)
 
-The `openbindings` field identifies which version of this specification the document is declared against. The value MUST be a [Semantic Versioning 2.0.0](https://semver.org/) string (e.g., `0.2.0`, `1.0.0`).
+The `openbindings` field identifies which version of this specification the document is declared against. The value MUST be a [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string (e.g., `0.2.0`, `1.0.0`).
 
 Tools MUST refuse to parse documents that declare a higher major version than the tool supports. Within the same major version (1.0.0 and later):
 
@@ -521,7 +521,7 @@ Major-version refusal is mandatory because a major bump may change the meaning o
 
 Pre-1.0 (major version 0): minor versions MAY include breaking changes, per pre-1.0 SemVer convention. The same refusal principle applies at finer granularity: tools MUST refuse to parse pre-1.0 documents that declare a higher minor version than the tool supports.
 
-These refusal rules compare versions by [Semantic Versioning 2.0.0](https://semver.org/) precedence (which ignores build metadata). A prerelease (for example `0.2.0-rc.1`) sorts below its release and is a distinct, potentially incompatible draft: a tool MUST NOT accept a prerelease unless it declares support for that specific prerelease, so supporting `0.2.0` does not imply supporting `0.2.0-rc.1`. Patch is never a refusal trigger (only major, and pre-1.0 minor, are), so a higher patch within a supported minor is accepted as non-breaking.
+These refusal rules compare versions by [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) precedence (which ignores build metadata). A prerelease (for example `0.2.0-rc.1`) sorts below its release and is a distinct, potentially incompatible draft: a tool MUST NOT accept a prerelease unless it declares support for that specific prerelease, so supporting `0.2.0` does not imply supporting `0.2.0-rc.1`. Patch is never a refusal trigger (only major, and pre-1.0 minor, are), so a higher patch within a supported minor is accepted as non-breaking.
 
 ### 11.2. `version` field (contract version)
 
