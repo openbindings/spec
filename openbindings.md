@@ -122,13 +122,7 @@ Readers evaluating conformance should read the rest of this document in light of
 
 ## 3. Scope of this specification
 
-OpenBindings (OBI) is a **portable interface description format**. Services publish an OBI document describing their operations and how to reach them; tools consume OBIs to drive protocol-specific clients, power registries, feed agents, and so on.
-
-This spec defines **what an OBI document is**: its shape, discovery convention, reference-resolution rules, and forward-compatibility rules. It also defines **a minimum conformance floor for tools** that preserves document portability across implementations.
-
-It does not define **higher-level tool behavior** (comparison, matching, credential and context resolution, binding invocation, registry semantics) or **binding format conventions** (`ref` syntax, format-token governance, binding-artifact addressing). Tool behavior is each tool's concern; binding format conventions are governed by each format's own authoritative specification. The openbindings project does not maintain a registry of formats. (This spec does define the transform evaluation language -- JSONata 2.0 -- for tools that evaluate transforms; see [Transforms]. What remains tool-defined is the surrounding runtime: sandboxing, error handling, resource limits, and invocation lifecycle.)
-
-The openbindings project publishes reference tools (`ob` CLI, `openbindings-go`, `openbindings-ts`) as implementations of this spec. Third-party tools are free to adopt their conventions or publish their own.
+This spec defines **what an OBI document is** (its shape, discovery convention, reference-resolution rules, and versioning) and **a minimum conformance floor for tools** that preserves document portability. It does not define higher-level tool behavior or binding-format conventions; those rest with implementations and with each format's own specification, per [§2. Scope principle](#2-scope-principle) and the out-of-scope list in [§1.2. Out of scope](#12-out-of-scope). The one behavioral exception is the transform evaluation language: JSONata 2.0 is mandated for tools that evaluate transforms (see [Transforms]), while the runtime around it (sandboxing, error handling, resource limits, invocation lifecycle) stays tool-defined.
 
 ---
 
@@ -488,7 +482,7 @@ OBI's interop guarantee for a given binding is no stronger than the format's own
 
 Some applications need a stable byte representation of an OBI document — for content addressing, integrity attestation, signature verification, or prompt-cache stability when feeding OBIs to language models. This section names one so tools and downstream specifications can refer to it consistently; it is informative, and conformance does not require producing or consuming canonical-form documents.
 
-The canonical form of an OBI document is the document serialized per [RFC 8785 (JSON Canonicalization Scheme, JCS)](https://www.rfc-editor.org/rfc/rfc8785), which pins UTF-8 encoding, lexicographic member ordering, ECMAScript-style number serialization, string-escape rules, and whitespace. JCS does not permit `NaN` or `±Infinity`, so a document containing those has no canonical form (no rule here generates them). Canonical form is distinct from any readable ordering a tool emits while authoring; a tool MAY use both — a readable order for authoring, JCS for canonicalization.
+The canonical form of an OBI document is the document serialized per [RFC 8785 (JSON Canonicalization Scheme, JCS)](https://www.rfc-editor.org/rfc/rfc8785), a deterministic byte serialization of JSON. JCS does not permit `NaN` or `±Infinity`, so a document containing those has no canonical form (no rule here generates them). Canonical form is distinct from any readable ordering a tool emits while authoring; a tool MAY use both: a readable order for authoring, JCS for canonicalization.
 
 ---
 
@@ -500,8 +494,6 @@ Every reference in an OBI document is **absolute or same-document**:
 
 1. `sources[*].location` is an absolute URI, or a format-defined absolute address that needs no base URI to interpret (for example, a gRPC `host:port`). It is never a relative reference. A source MAY instead embed its artifact as `content`.
 2. A schema `$ref` is a same-document fragment (beginning with `#`) or an absolute URI; a schema `$id`, when present, is absolute.
-
-Because no reference is relative, no base URI is ever consulted.
 
 Same-document `$ref`s resolve within the document. When the fragment is a JSON Pointer, [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) escape rules apply (`~0` for `~`, `~1` for `/`). An absolute `$ref` addresses an external schema a tool fetches; that schema's own `$ref`s then follow JSON Schema 2020-12 semantics, anchored by its `$id`. A tool MAY decline to fetch external schemas, and a document whose `$ref`s are all same-document fragments is resolvable with no network access at all; the interfaces the OpenBindings project publishes follow that convention.
 
@@ -528,6 +520,8 @@ Tools MUST refuse to parse documents that declare a higher major version than th
 Major-version refusal is mandatory because a major bump may change the meaning of existing fields; a tool that silently processed a newer-major document using older rules would risk applying pre-break meanings to post-break fields and produce wrong output. Post-1.0 minor bumps only add optional fields, so older tools safely ignore unknown additions.
 
 Pre-1.0 (major version 0): minor versions MAY include breaking changes, per pre-1.0 SemVer convention. The same refusal principle applies at finer granularity: tools MUST refuse to parse pre-1.0 documents that declare a higher minor version than the tool supports.
+
+These refusal rules compare versions by [Semantic Versioning 2.0.0](https://semver.org/) precedence (which ignores build metadata). A prerelease (for example `0.2.0-rc.1`) sorts below its release and is a distinct, potentially incompatible draft: a tool MUST NOT accept a prerelease unless it declares support for that specific prerelease, so supporting `0.2.0` does not imply supporting `0.2.0-rc.1`. Patch is never a refusal trigger (only major, and pre-1.0 minor, are), so a higher patch within a supported minor is accepted as non-breaking.
 
 ### 11.2. `version` field (contract version)
 

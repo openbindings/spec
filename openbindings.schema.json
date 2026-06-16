@@ -182,7 +182,7 @@
         "location": {
           "type": "string",
           "minLength": 1,
-          "description": "URI or path to the binding specification."
+          "description": "Absolute URI (or format-defined absolute address) of the binding specification."
         },
         "content": {
           "oneOf": [
