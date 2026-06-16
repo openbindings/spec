@@ -1,85 +1,36 @@
 {
   "rule": "OBI-D-08",
   "section": "14.2",
-  "description": "Has no $vocabulary keyword in any schema within the document.",
-  "notes": "Recursive enforcement: $vocabulary is forbidden at any nesting depth, not only at the top level of a schema. Per §14.2, the spec's JSON Schema artifact only enforces this at top level; recursive enforcement is an implementer obligation under OBI-D-08 prose.",
+  "description": "Has every bindings[*].operation value present as a key in the document's operations map.",
   "tests": [
     {
-      "description": "schemas with no $vocabulary anywhere",
+      "description": "binding references an existing operation key",
       "document": {
         "openbindings": "0.2.0",
-        "schemas": { "Task": { "type": "object", "properties": { "id": { "type": "string" } } } },
-        "operations": { "createTask": {} }
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
       },
       "valid": true
     },
     {
-      "description": "top-level schema declares $vocabulary",
+      "description": "binding references a non-existent operation key",
       "document": {
         "openbindings": "0.2.0",
-        "schemas": {
-          "Task": {
-            "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
-            "type": "object"
-          }
-        },
-        "operations": { "createTask": {} }
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
+        "bindings": { "createTask.http": { "operation": "nonexistentOp", "source": "httpApi" } }
       },
       "valid": false,
       "violates": ["OBI-D-08"]
     },
     {
-      "description": "operation input schema declares $vocabulary",
+      "description": "binding operation value matches an alias rather than a key in the operations map",
       "document": {
         "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {
-            "input": {
-              "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
-              "type": "object"
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-08"]
-    },
-    {
-      "description": "$vocabulary in a nested property subschema",
-      "document": {
-        "openbindings": "0.2.0",
-        "schemas": {
-          "Task": {
-            "type": "object",
-            "properties": {
-              "metadata": {
-                "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
-                "type": "object"
-              }
-            }
-          }
-        },
-        "operations": { "createTask": {} }
-      },
-      "valid": false,
-      "violates": ["OBI-D-08"]
-    },
-    {
-      "description": "$vocabulary in a $defs subschema",
-      "document": {
-        "openbindings": "0.2.0",
-        "schemas": {
-          "Task": {
-            "type": "object",
-            "$defs": {
-              "Inner": {
-                "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operations": { "createTask": {} }
+        "operations": { "createTask": { "aliases": ["addTask"] } },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
+        "bindings": { "addTask.http": { "operation": "addTask", "source": "httpApi" } }
       },
       "valid": false,
       "violates": ["OBI-D-08"]

@@ -25,7 +25,7 @@
         "sources": {
           "httpApi": {
             "format": "openapi@3.1",
-            "location": "./openapi.json",
+            "location": "https://api.example.com/openapi.json",
             "x-cache-ttl-seconds": 300
           }
         },

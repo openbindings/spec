@@ -10,7 +10,7 @@
 //
 // Usage:
 //   go run ./conformance/runners/go             # all fixtures
-//   go run ./conformance/runners/go -rule=OBI-D-04   # single rule
+//   go run ./conformance/runners/go -rule=OBI-D-03   # single rule
 //   go run ./conformance/runners/go -verbose    # per-test output
 //   go run ./conformance/runners/go -json       # machine-readable summary
 
@@ -85,7 +85,7 @@ func main() {
 		jsonOutput  bool
 	)
 	flag.StringVar(&corpusDir, "corpus", findDefaultCorpus(), "path to the conformance/ directory")
-	flag.StringVar(&ruleFilter, "rule", "", "limit to fixtures for this rule (e.g. OBI-D-04)")
+	flag.StringVar(&ruleFilter, "rule", "", "limit to fixtures for this rule (e.g. OBI-D-03)")
 	flag.BoolVar(&verbose, "verbose", false, "print per-test results")
 	flag.BoolVar(&jsonOutput, "json", false, "emit JSON summary instead of human-readable output")
 	flag.Parse()

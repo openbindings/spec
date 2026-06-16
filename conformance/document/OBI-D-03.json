@@ -1,20 +1,254 @@
 {
   "rule": "OBI-D-03",
   "section": "14.2",
-  "description": "Has unique operation keys within the document.",
-  "notes": "JSON object semantics (per RFC 8259 and OBI-D-01) already require unique keys within an object. Duplicate-key violations cannot be expressed as inline JSON fixtures because the test harness's JSON parser would normalize or reject them. This rule is testable only via raw-text fixtures, which are out of scope for this corpus's inline format. The positive case below confirms the rule's basic shape.",
+  "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z_][A-Za-z0-9_.-]*$.",
   "tests": [
     {
-      "description": "multiple operations with distinct keys",
+      "description": "operation key with simple alphanumeric identifier",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": {},
-          "listTasks": {},
-          "deleteTask": {}
+          "createTask": {}
         }
       },
       "valid": true
+    },
+    {
+      "description": "operation key with underscore prefix",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "_internalOp": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with dot grouping",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "tasks.create": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with hyphen",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create-task": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding key with dotted suffix grouping",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" }
+        },
+        "bindings": {
+          "createTask.http": { "operation": "createTask", "source": "httpApi" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation alias matching identifier pattern",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": ["create_task", "make.task", "make-task"]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "1createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "operation key starting with hyphen",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "-createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "operation key containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create task": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "operation key containing slash",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "create/task": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "operation key with non-ASCII Unicode",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "créerTâche": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "operation alias starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": ["1createTask"]
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "source key with whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "http api": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "schema key starting with digit",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "1Task": { "type": "object" }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "transforms map key with hyphen-prefix",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "transforms": {
+          "-normalize": "payload"
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "empty string operation key (regex requires at least one character)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03"]
+    },
+    {
+      "description": "single underscore as operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "_": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "single ASCII letter as operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "a": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with trailing hyphen (allowed; only start-char is constrained)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask-": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key with trailing dot (allowed; only start-char is constrained)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask.": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "multi-violation isolation: document violates both OBI-D-03 (bad identifier) and OBI-D-08 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "1badKey": {}
+        },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-03", "OBI-D-08"]
     }
   ]
 }

@@ -1,45 +1,72 @@
 {
   "rule": "OBI-D-06",
   "section": "14.2",
-  "description": "Has well-formed URI references (per RFC 3986 §4.1) in sources[*].location and schema $ref values.",
+  "description": "Has every $schema value, where present, equal to https://json-schema.org/draft/2020-12/schema.",
   "tests": [
     {
-      "description": "relative URI reference in source location",
+      "description": "schema with explicit 2020-12 $schema",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } }
+        "schemas": {
+          "Task": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
       },
       "valid": true
     },
     {
-      "description": "fragment-only $ref in inline schema",
+      "description": "schema without $schema (omission permitted)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": { "Task": { "type": "object" } },
-        "operations": {
-          "createTask": { "output": { "$ref": "#/schemas/Task" } }
-        }
+        "operations": { "createTask": {} }
       },
       "valid": true
     },
     {
-      "description": "URI containing disallowed angle-bracket characters in source location",
+      "description": "schema with 2019-09 $schema value",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./<bad>/openapi.json" } }
+        "schemas": {
+          "Task": {
+            "$schema": "https://json-schema.org/draft/2019-09/schema",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
       },
       "valid": false,
       "violates": ["OBI-D-06"]
     },
     {
-      "description": "URI containing a backtick in schema $ref",
+      "description": "schema with draft-07 $schema value",
       "document": {
         "openbindings": "0.2.0",
-        "schemas": { "Task": { "type": "object" } },
+        "schemas": {
+          "Task": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object"
+          }
+        },
+        "operations": { "createTask": {} }
+      },
+      "valid": false,
+      "violates": ["OBI-D-06"]
+    },
+    {
+      "description": "operation input schema with wrong $schema",
+      "document": {
+        "openbindings": "0.2.0",
         "operations": {
-          "createTask": { "output": { "$ref": "#/schemas/`Task`" } }
+          "createTask": {
+            "input": {
+              "$schema": "https://json-schema.org/draft/2019-09/schema",
+              "type": "object"
+            }
+          }
         }
       },
       "valid": false,

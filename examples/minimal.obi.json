@@ -30,7 +30,7 @@
   "sources": {
     "restApi": {
       "format": "openapi@3.1",
-      "location": "./openapi.json"
+      "location": "https://api.example.com/openapi.json"
     }
   },
   "bindings": {

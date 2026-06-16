@@ -21,7 +21,7 @@ Flags:
 
 ```
   -corpus PATH    path to the conformance/ directory (auto-detected by default)
-  -rule  RULE     limit to fixtures for one rule, e.g. OBI-D-04
+  -rule  RULE     limit to fixtures for one rule, e.g. OBI-D-03
   -verbose        print per-test pass/fail
   -json           emit JSON summary instead of human output
 ```

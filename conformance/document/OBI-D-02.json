@@ -2,7 +2,7 @@
   "rule": "OBI-D-02",
   "section": "14.2",
   "description": "Validates against the JSON Schema at openbindings.schema.json.",
-  "notes": "OBI-D-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema catches but no more specific OBI-D rule names. Violations the schema catches that DO have a specific semantic rule (e.g., OBI-D-04 identifier pattern, OBI-D-13 SemVer) are listed under the semantic rule, not OBI-D-02.",
+  "notes": "OBI-D-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema catches but no more specific OBI-D rule names. Violations the schema catches that DO have a specific semantic rule (e.g., OBI-D-03 identifier pattern, OBI-D-12 SemVer) are listed under the semantic rule, not OBI-D-02.",
   "tests": [
     {
       "description": "minimal valid document",
@@ -37,7 +37,7 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
         "bindings": { "createTask.http": { "source": "httpApi" } }
       },
       "valid": false,
@@ -48,7 +48,7 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
-        "sources": { "httpApi": { "location": "./openapi.json" } }
+        "sources": { "httpApi": { "location": "https://api.example.com/openapi.json" } }
       },
       "valid": false,
       "violates": ["OBI-D-02"]

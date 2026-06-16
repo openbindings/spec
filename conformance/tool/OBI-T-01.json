@@ -10,7 +10,7 @@
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
         "sources": {
-          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "./somewhere" }
+          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "https://api.example.com/somewhere" }
         },
         "bindings": {
           "createTask.exotic": { "operation": "createTask", "source": "exotic" }
@@ -24,8 +24,8 @@
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
         "sources": {
-          "http": { "format": "openapi@3.1", "location": "./openapi.json" },
-          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "./somewhere" }
+          "http": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" },
+          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "https://api.example.com/somewhere" }
         },
         "bindings": {
           "createTask.http": { "operation": "createTask", "source": "http", "ref": "#/paths/~1tasks/post" },

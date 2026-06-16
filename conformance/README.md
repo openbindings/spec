@@ -4,12 +4,12 @@ Test fixtures for OpenBindings document and tool conformance, keyed to the rule 
 
 ## Status
 
-**Document validity coverage is complete for OBI-D-01 through OBI-D-13; OBI-D-14 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (100 tests at this version).**
+**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (101 tests at this version).**
 
 | Rule range | Coverage |
 |---|---|
-| OBI-D-01 to OBI-D-13 | Complete |
-| OBI-D-14 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
+| OBI-D-01 to OBI-D-12 | Complete |
+| OBI-D-13 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
 | OBI-T-01, OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D) |
 | OBI-T-02, OBI-T-05 | **Deferred.** Diagnostic-emission rules (ignore unknown fields; surface diagnostics for uninterpreted schema keywords) that SHOULD warn. The spec deliberately leaves diagnostic shape tool-defined; pinning it via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
 | OBI-T-06 | **Deferred.** Applies to tools that resolve `ref` values per binding-format conventions. Conformance is per-format and depends on each format community's `ref` syntax; a portable corpus would need a per-format fixture set. |
@@ -72,7 +72,7 @@ Field semantics:
 - `tests[*].description`: human-readable description of what this specific case tests.
 - `tests[*].document`: an OBI document, embedded inline.
 - `tests[*].valid`: `true` if the document satisfies the named rule, `false` if it violates the rule.
-- `tests[*].violates` (optional, only meaningful when `valid: false`): the set of OBI-D-## or OBI-T-## rules the document is intended to test as violated. Lists the SEMANTIC rules being exercised. By convention, OBI-D-02 (schema validation) is NOT listed when a more specific rule already names the violation, even though the schema would also catch it via `propertyNames` patterns or similar enforcement. For example, a fixture with an invalid identifier pattern lists `["OBI-D-04"]` only, not `["OBI-D-04", "OBI-D-02"]`. OBI-D-02 appears in `violates` only for purely structural failures (missing required field, wrong value type) where no more specific semantic rule applies. **Semantics: minimum set.** A conformant validator MUST report at least the listed rules. Reporting a superset (additional rules also violated) is not a fixture or SDK defect; it indicates the SDK detected violations beyond the fixture's primary purpose. Runners that wish to check isolation MAY require the SDK's report to be exactly the listed set; the corpus does not mandate exact-set checking.
+- `tests[*].violates` (optional, only meaningful when `valid: false`): the set of OBI-D-## or OBI-T-## rules the document is intended to test as violated. Lists the SEMANTIC rules being exercised. By convention, OBI-D-02 (schema validation) is NOT listed when a more specific rule already names the violation, even though the schema would also catch it via `propertyNames` patterns or similar enforcement. For example, a fixture with an invalid identifier pattern lists `["OBI-D-03"]` only, not `["OBI-D-03", "OBI-D-02"]`. OBI-D-02 appears in `violates` only for purely structural failures (missing required field, wrong value type) where no more specific semantic rule applies. **Semantics: minimum set.** A conformant validator MUST report at least the listed rules. Reporting a superset (additional rules also violated) is not a fixture or SDK defect; it indicates the SDK detected violations beyond the fixture's primary purpose. Runners that wish to check isolation MAY require the SDK's report to be exactly the listed set; the corpus does not mandate exact-set checking.
 
 In addition, fixtures MAY include a file-level `notes` field (string) holding rationale text about the rule's coverage in the corpus — for example, why some test cases are intentionally out of format, or why a rule has positive-only coverage. The `notes` field is informational and not consumed by harnesses; it documents authoring intent for human reviewers.
 
@@ -88,7 +88,7 @@ The corpus tracks the spec version it was authored against. Spec changes that af
 
 This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits (notably the diagnostic-shape rules OBI-T-02/OBI-T-05, the per-format `ref` rule OBI-T-06, and the invocation-time behavioral rules OBI-T-07 through OBI-T-12) and are documented as deferred until a richer fixture format exists; gaps are noted per-rule above.
 
-OBI-D-12 (example validation) fixtures depend on the SDK under test having a JSON Schema 2020-12 validator wired into validation; SDKs without that capability will report mismatches on the negative cases. This is a per-SDK conformance gap, not a corpus defect.
+OBI-D-11 (example validation) fixtures depend on the SDK under test having a JSON Schema 2020-12 validator wired into validation; SDKs without that capability will report mismatches on the negative cases. This is a per-SDK conformance gap, not a corpus defect.
 
 ## Forward-compatibility annotation: `requiresMaxTested`
 

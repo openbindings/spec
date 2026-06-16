@@ -1,60 +1,66 @@
 {
   "rule": "OBI-D-05",
   "section": "14.2",
-  "description": "Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its aliases array.",
+  "description": "Carries only absolute or same-document references: every sources[*].location is an absolute URI or a format-defined absolute address (never a relative reference); every schema $ref is a same-document fragment or an absolute URI; every schema $id is absolute. All such references are well-formed per RFC 3986 §4.1.",
   "tests": [
     {
-      "description": "operations with distinct keys and distinct aliases",
+      "description": "absolute URI in source location",
       "document": {
         "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "fragment-only $ref in inline schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": { "Task": { "type": "object" } },
         "operations": {
-          "createTask": { "aliases": ["addTask", "newTask"] },
-          "listTasks": { "aliases": ["getTasks"] }
+          "createTask": { "output": { "$ref": "#/schemas/Task" } }
         }
       },
       "valid": true
     },
     {
-      "description": "two operations where one's alias matches another's key",
+      "description": "relative URI reference in source location",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "./openapi.json" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-05"]
+    },
+    {
+      "description": "relative URI reference in schema $ref",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": { "aliases": ["listTasks"] },
-          "listTasks": {}
+          "createTask": { "output": { "$ref": "./schemas.json#/Task" } }
         }
       },
       "valid": false,
       "violates": ["OBI-D-05"]
     },
     {
-      "description": "two operations sharing an alias",
+      "description": "absolute URI containing disallowed angle-bracket characters in source location",
       "document": {
         "openbindings": "0.2.0",
-        "operations": {
-          "createTask": { "aliases": ["addItem"] },
-          "createPost": { "aliases": ["addItem"] }
-        }
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://example.com/<bad>/openapi.json" } }
       },
       "valid": false,
       "violates": ["OBI-D-05"]
     },
     {
-      "description": "operation with duplicate aliases in its own array",
+      "description": "URI containing a backtick in schema $ref",
       "document": {
         "openbindings": "0.2.0",
+        "schemas": { "Task": { "type": "object" } },
         "operations": {
-          "createTask": { "aliases": ["addTask", "addTask"] }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-05"]
-    },
-    {
-      "description": "operation whose alias matches its own key",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": { "aliases": ["createTask"] }
+          "createTask": { "output": { "$ref": "#/schemas/`Task`" } }
         }
       },
       "valid": false,
