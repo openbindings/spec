@@ -4,7 +4,7 @@ Test fixtures for OpenBindings document and tool conformance, keyed to the rule 
 
 ## Status
 
-**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (104 tests at this version).**
+**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (102 tests at this version).**
 
 | Rule range | Coverage |
 |---|---|

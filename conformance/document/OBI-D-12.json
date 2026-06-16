@@ -2,6 +2,7 @@
   "rule": "OBI-D-12",
   "section": "14.2",
   "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
+  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §11.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected.",
   "tests": [
     {
       "description": "current released spec version",
@@ -15,19 +16,8 @@
       "requiresMaxTested": "1.0.0"
     },
     {
-      "description": "pre-release version",
-      "document": { "openbindings": "0.2.0-rc.1", "operations": {} },
-      "valid": true
-    },
-    {
       "description": "version with build metadata",
       "document": { "openbindings": "1.0.0+build.123", "operations": {} },
-      "valid": true,
-      "requiresMaxTested": "1.0.0"
-    },
-    {
-      "description": "pre-release combined with build metadata",
-      "document": { "openbindings": "1.0.0-alpha+build.001", "operations": {} },
       "valid": true,
       "requiresMaxTested": "1.0.0"
     },
