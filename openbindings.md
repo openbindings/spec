@@ -95,7 +95,7 @@ An OBI does not replace the binding formats it points at. Each format remains au
 - **One operation, many bindings.** A single operation contract can be exposed over multiple protocols simultaneously without duplicating the contract.
 - **Vendor-independent correspondence.** An operation can carry the same name a shared contract uses, so consumers recognize it by that shared name rather than by who runs the service (see [§6.1. Operations](#61-operations)).
 - **Convention-driven discovery.** A service publishes its interface at `/.well-known/openbindings`, so tools can find it without configuration.
-- **Context-free references.** Every reference is absolute or same-document, so a document resolves identically wherever it was obtained (origin, cache, or stdin): no base URI, and no separate name-to-location registry step.
+- **Context-free references.** Every reference is absolute or same-document, so a document resolves identically wherever it was obtained (origin, cache, or stdin): no reference takes its base from the fetch location, and no separate name-to-location registry step.
 
 ### 1.2. Out of scope
 
