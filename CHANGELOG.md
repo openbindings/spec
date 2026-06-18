@@ -46,7 +46,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
 - **Conformance corpus (`conformance/`).** Fixture-based test corpus keyed to rule IDs. 102 tests across 13 document rules and 3 tool rules. Includes `manifest.json`, `fixture.schema.json`, a reference Go runner, plus verification and manifest generation scripts.
 - **Abstract, editors, license/IP, and notational conventions** as standalone front-matter sections.
 - **Normative and informative references (section 16).**
-- **`minLength: 1`** on `sources[*].location` and string `content` in the JSON Schema. Empty-string locations are now invalid.
+- **`minLength: 1`** on `sources[*].format`, `sources[*].location`, and string `content` in the JSON Schema. Empty-string format tokens, locations, and content are now invalid.
 - **`propertyNames` constraints** in the JSON Schema enforcing the key pattern on every map.
 - **Schema-level enforcement of cross-reference patterns and uniqueness.** Cross-reference values (`bindings[*].operation`, `bindings[*].source`) and `TransformOrRef.$ref` are now pattern-constrained in the JSON Schema. The `aliases` array carries `uniqueItems: true`. These backstop existing prose rules (OBI-D-04, OBI-D-08 through OBI-D-13) with structural validation that catches typos before cross-reference resolution.
 

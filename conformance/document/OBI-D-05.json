@@ -1,7 +1,8 @@
 {
   "rule": "OBI-D-05",
   "section": "14.2",
-  "description": "Carries only absolute or same-document references: every sources[*].location is an absolute URI or a format-defined absolute address (never a relative reference); every schema $ref is a same-document fragment or an absolute URI; every schema $id is absolute. All such references are well-formed per RFC 3986 §4.1.",
+  "description": "Carries only absolute or same-document OBI-defined references: every sources[*].location is an absolute URI or a format-defined absolute address (never a relative reference); every schema $ref is a same-document fragment or an absolute URI; every schema $id is absolute; every named-transform $ref in bindings[*].inputTransform/outputTransform is a same-document fragment. URI-form references are well-formed per RFC 3986 §4.1; a format-defined absolute address (e.g. a gRPC host:port) is well-formed per its own format and is exempt. bindings[*].ref is interpreted by the binding format and is out of scope for this rule.",
+  "notes": "Format-defined absolute addresses (e.g. a gRPC host:port) are exempt from RFC 3986 URI well-formedness; their validity is per-format and cannot be checked by a format-agnostic validator, so positive cases for them are not fixtured here (same per-format testability limitation as OBI-D-13 and OBI-T-06). The relative-reference and malformed-URI negatives below apply to the URI-form branch.",
   "tests": [
     {
       "description": "absolute URI in source location",

@@ -54,6 +54,16 @@
       "violates": ["OBI-D-02"]
     },
     {
+      "description": "source `format` is an empty string (violates minLength: 1)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": { "httpApi": { "format": "", "location": "https://api.example.com/openapi.json" } }
+      },
+      "valid": false,
+      "violates": ["OBI-D-02"]
+    },
+    {
       "description": "source missing both `location` and `content`",
       "document": {
         "openbindings": "0.2.0",
