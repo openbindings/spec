@@ -26,7 +26,7 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions)
-    OG-EX-01.json ... OG-EX-20.json   (files; ids run OG-EX-01 ... OG-EX-25)
+    OG-EX-01.json ... OG-EX-34.json   (files; ids run OG-EX-01 ... OG-EX-34)
   validation/           (well-formedness rules; OG-VR.json)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
@@ -111,17 +111,31 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-23 | filter / boolean cast | empty-object result casts to false; event dropped |
 | OG-EX-24 | filter / boolean cast | empty-string result casts to false; event dropped |
 | OG-EX-25 | filter / Transforms | undefined result fails the node with `TRANSFORM_UNDEFINED`, routed per `onError` with the event attached |
+| OG-EX-26 | Identity law / other cardinalities | server-streaming: one write into the held session, a three-event stream out, faithful in-order conduit |
+| OG-EX-27 | Identity law / other cardinalities | bidirectional: three writes into one held session, three responses out, multi-in/multi-out conduit fidelity |
+| OG-EX-28 | buffer | `until` flush: the matching event is excluded and dropped, then reset and continue; trailing partial flushed at completion |
+| OG-EX-29 | buffer | `through` flush: the matching event is included, then reset and continue; accumulation ending on a match leaves no trailing batch |
+| OG-EX-30 | buffer | `limit` as a tumbling window of disjoint batches, trailing partial batch flushed at completion |
+| OG-EX-31 | exit / Determinism | `exit` with `error:false` emits the event to output (early return) then terminates, discarding in-flight events |
+| OG-EX-32 | map / Errors | a defined non-array `map` result fails with `MAP_NOT_ARRAY`, routed per `onError` with the event attached |
+| OG-EX-33 | transform / Errors | an undefined `transform` result fails with `TRANSFORM_UNDEFINED` (the table's transform-node case, complementing OG-EX-25) |
+| OG-EX-34 | Runtime context | `$input` is undefined for an event merged from disagreeing lineages, so reading it fails the node with `TRANSFORM_UNDEFINED` |
 
 File-to-id mapping: OG-EX-09.json holds OG-EX-09/10, OG-EX-13.json holds
-OG-EX-13–16 (the identity-law suite), OG-EX-17.json holds OG-EX-17–19 (the
-conduit acceptance/error suite), and OG-EX-20.json holds OG-EX-20–25 (the
-filter boolean-cast suite); every other file holds the single fixture of
-its own id.
+OG-EX-13–16 and OG-EX-26–27 (the identity-law suite), OG-EX-17.json holds
+OG-EX-17–19 (the conduit acceptance/error suite), OG-EX-20.json holds
+OG-EX-20–25 (the filter boolean-cast suite), OG-EX-28.json holds OG-EX-28–30
+(the buffer flush-condition suite), and OG-EX-32.json holds OG-EX-32–33 (the
+transform/map failure-identifier suite); every other file holds the single
+fixture of its own id.
 
-OG-EX-13 through OG-EX-16 are the corpus's encoding of the spec's conformance
-anchor: the same trivial wrapper graph, exercised across unary, no-input,
-client-streaming, and terminal-error scenarios. OG-EX-18 and OG-EX-19 pin the
-two sides of the input-side closure rule: a built-in between `input` and the
+OG-EX-13 through OG-EX-16 plus OG-EX-26 and OG-EX-27 are the corpus's encoding
+of the spec's conformance anchor: the same trivial wrapper graph, exercised
+across all five selected-binding cardinalities the identity law's acceptance
+criterion names — no-input (OG-EX-14), unary (OG-EX-13), server-streaming
+(OG-EX-26), client-streaming (OG-EX-15), and bidirectional (OG-EX-27) — plus
+the terminal-error consequence (OG-EX-16). OG-EX-18 and OG-EX-19 pin the two
+sides of the input-side closure rule: a built-in between `input` and the
 conduit keeps closure caller-owned (so a late write is rejected *inside* the
 graph), while a direct conduit consumer back-closes the boundary (so a late
 write never enters the graph at all).
