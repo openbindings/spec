@@ -95,6 +95,11 @@
                 "default": "exact",
                 "description": "`exact` requires the output array to match in order; `set` requires the same multiset of events, since concurrency makes the order implementation-defined."
               },
+              "arrayOrdering": {
+                "enum": ["exact", "set"],
+                "default": "exact",
+                "description": "Applies to array-valued output events. `exact` (default) compares array elements positionally; `set` compares them as a multiset, for a collector (e.g. a buffer) fed by concurrent `each` invocations or fan-in paths whose element order the spec's \"Determinism and portability\" section leaves implementation-defined. Distinct from `ordering`, which governs the order of the output-event stream itself."
+              },
               "error": {
                 "type": "boolean",
                 "default": false,

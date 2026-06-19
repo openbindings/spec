@@ -39,6 +39,11 @@ jobs:
           npm install --no-audit --no-fund
           node run.mjs
 
+      - name: Run operation-graph reference runner (adversarial interleavings)
+        run: |
+          cd conformance/operation-graph/runners/js
+          node run.mjs --adversarial --trials=512
+
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 

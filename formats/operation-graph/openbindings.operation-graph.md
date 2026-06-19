@@ -35,16 +35,40 @@ This format is versioned independently via its format token (`openbindings.opera
 
 ## Overview
 
+### At a glance
+
+An operation graph is a small dataflow program that *is* a binding: it implements one operation's contract by wiring other operations together. Nodes are steps; edges carry streams of events between them. The smallest graph is a bare passthrough — `input → output`, piping every caller write straight back out — but the canonical graph wraps a single operation:
+
+```json
+{
+  "openbindings.operation-graph": "0.2.0",
+  "nodes": {
+    "in":  { "type": "input" },
+    "get": { "type": "operation", "operation": "users.get" },
+    "out": { "type": "output" }
+  },
+  "edges": [
+    { "from": "in",  "to": "get" },
+    { "from": "get", "to": "out" }
+  ]
+}
+```
+
+Three ideas carry the whole format:
+
+- **Nodes are *what*; edges are *how data flows*.** A node's `type` fixes its behavior; an edge is a plain wire with no logic on it.
+- **Every node is an operation invocation.** An `operation` node invokes an operation chosen at runtime; the built-ins (`each`, `transform`, `filter`, `map`, `buffer`, `combine`, `exit`) invoke behavior this spec defines; `input` and `output` are the graph's own invocation, surfaced.
+- **Cardinality is never declared — it emerges.** Nothing says how many inputs or outputs a graph has; that falls out of its contents and the bindings selected at runtime. The governing guarantee is the [identity law](#transparency-the-identity-law): the wrapper above must behave exactly like invoking `users.get` directly.
+
+New readers may prefer to skim the [normative examples](#normative-examples) first — they trace eight graphs end to end — and return here for the precise model.
+
+### The model
+
 An operation graph is a **binding**. It fulfills an operation's contract by composing other operations as a directed graph of typed nodes connected by edges.
 
 Everything in a graph is an operation invocation. An `operation` node invokes an operation whose behavior is bound at runtime through the processor's ordinary binding selection. Every other processing node invokes an operation whose behavior is bound by this specification — a **built-in**. Two binding authorities, one node model. The `input` and `output` nodes are the graph's own invocation, surfaced as nodes: `input` is the stream of values the caller writes; `output` is the stream of values the caller reads.
 
 Edges carry **streams of events**. A node receives the merged streams of its incoming edges and emits a stream along all of its outgoing edges. Cardinality appears nowhere in this format: a graph does not declare how many inputs it accepts or how many outputs it produces, an `operation` node does not know or assume the cardinality of the operation it invokes, and no behavior anywhere is conditioned on cardinality. Cardinality belongs to bindings, is resolved at runtime, and is delegated to exactly the place the core specification delegates it. A graph's boundary cardinality is **emergent** from its contents.
-
-The graph has two structural primitives:
-
-- **Nodes** define _what_ happens. Each node has a `type` that determines its behavior. Nodes do not contain routing logic.
-- **Edges** define _how data flows_. Each edge is a simple wire connecting one node's output to another node's input. Edges carry no logic, conditions, or transforms.
 
 ## Invocation model
 
@@ -194,6 +218,8 @@ Every node has the same shape: it receives the merged event streams of its incom
   Error policy follows the two liftings. **Per-event failures** — an `each` invocation failing, a `WRITE_REJECTED` at a non-accepting `operation` node, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED` — are silent by default: if `onError` is not set, the error event is dropped and does not propagate. Graphs often process many events, and one transient failure should not kill the stream. **Conduit terminal errors** are fatal by default: if an `operation` node's held invocation terminates with an error and the node does not set `onError`, the graph invocation terminates with that error. The [identity law](#transparency-the-identity-law) forces this asymmetry — terminal status is on the equivalence surface, so the bare wrapper must surface the inner invocation's terminal error exactly as direct invocation would. Setting `onError` on an `operation` node opts its terminal error into in-graph handling instead. In both regimes the author is in control: wire `onError` to a `transform` for fallback values, to an operation for logging, or to an `exit` node with `error: true` to make per-event failures fatal. A node type with no defined failure modes (`exit`, `buffer`, `combine`, and a schema-based `filter`) never fires `onError`; declaring it on such a node is valid and inert.
 
 **Two binding authorities.** Every node is an operation invocation. An `operation` node invokes an operation whose behavior is bound at runtime by binding selection; a **built-in** node invokes an operation whose behavior is bound by this specification — its documented operational expectation is its binding. The built-ins are `each`, `transform`, `filter`, `map`, `buffer`, `combine`, and `exit`. The boundary nodes `input` and `output` are not invocations of their own; they are the graph's own invocation, surfaced.
+
+> **Note on terms.** A graph *is a binding* in the [core sense](../../openbindings.md#63-bindings): a `bindings` entry selects it as an operation's target. When this document says "two binding **authorities**," it means *what fixes a node's behavior* — runtime selection for an `operation` node, this specification for a built-in — not a second kind of core `bindings` entry.
 
 **The lifting rule.** A node's behavior over a stream follows from what it is:
 
@@ -517,6 +543,14 @@ Implementation-defined behavior (conforming implementations MAY differ):
 
 Authors who need a byte-stable output order should funnel results through a single path before `output` — for example, collect into a `buffer` and sort within a `transform` — or keep concurrency inside nested single-write sub-graphs.
 
+### What is not guaranteed (informative)
+
+A graph's *topology* is easily mistaken for an *ordering*; they are not the same. The clearest trap is the `map → each → buffer` shape of [Example 4](#example-4-map-and-collect): `map` emits the ids in array order, but `each` opens one invocation per id and those invocations run concurrently. Because **interleaving across concurrent `each` invocations' outputs** is implementation-defined, the order in which results arrive at the `buffer`, and so the element order of the single array it emits, is not guaranteed. Example 4 guarantees the *multiset* of results, not the *sequence*: a consumer reading `[Alice, Bob, Carol]` positionally relies on one implementation's scheduling, not on this format. The "single linear path" of edges is a red herring — the `each` node is a concurrency point sitting on it.
+
+A second instance is concurrent paths racing a shared sink. A `map` or fan-out feeding both an `output` path and an `exit` does not guarantee *how many* events reach `output` before the `exit` fires; `exit` terminates "when an event reaches this node," and which concurrently-in-flight events were already emitted is a timing property the [identity law](#transparency-the-identity-law)'s equivalence surface excludes.
+
+Both are removed by the techniques above, not by assuming a schedule. The exit race also has a structural fix: route the racing events through a `buffer`, whose partial contents an `exit` discards (it never emits mid-race), so the early return is deterministic. Pinning an order the engine does not promise is the most common portability defect in operation graphs.
+
 ## Runtime context
 
 Transform and filter expressions evaluate with:
@@ -704,7 +738,7 @@ Fetches pages in a cycle until no more exist, collects the results, returns the 
 }
 ```
 
-**Execution**: the caller writes `{}`; `listUsers` (a conduit) returns `{ "ids": ["u1","u2","u3"] }` and back-closes the input; `unpack` emits three events; `getDetails` opens three invocations (possibly concurrent), one per id; `collect` flushes the three results when `getDetails` completes; `out` emits the array. The `map → each` pairing is the canonical per-item pattern; `map → operation` here would pipe three ids into one unary invocation and reject two — the diagnostic case.
+**Execution**: the caller writes `{}`; `listUsers` (a conduit) returns `{ "ids": ["u1","u2","u3"] }` and back-closes the input; `unpack` emits three events; `getDetails` opens three invocations (possibly concurrent), one per id; `collect` flushes the three results when `getDetails` completes; `out` emits the array, whose element order is not guaranteed because `getDetails` runs concurrently (see [What is not guaranteed](#what-is-not-guaranteed-informative)). The `map → each` pairing is the canonical per-item pattern; `map → operation` here would pipe three ids into one unary invocation and reject two — the diagnostic case.
 
 ### Example 5: Per-event parallel join via nesting
 

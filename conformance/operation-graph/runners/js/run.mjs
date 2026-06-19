@@ -44,7 +44,9 @@ const Ajv2020 = ajv2020.Ajv2020 ?? ajv2020.default ?? ajv2020;
 const ajv = new Ajv2020({ strict: false, allErrors: false });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const EXEC_DIR = resolve(__dirname, "..", "..", "execution");
+const EXEC_DIR = process.env.OG_EXEC_DIR
+  ? resolve(process.env.OG_EXEC_DIR)
+  : resolve(__dirname, "..", "..", "execution");
 
 // --- helpers ---------------------------------------------------------------
 
@@ -62,10 +64,10 @@ function canonical(v) {
 }
 const deepEqual = (a, b) => canonical(a) === canonical(b);
 
-function multisetEqual(a, b) {
+function multisetEqual(a, b, key = canonical) {
   if (a.length !== b.length) return false;
-  const sa = a.map(canonical).sort();
-  const sb = b.map(canonical).sort();
+  const sa = a.map(key).sort();
+  const sb = b.map(key).sort();
   return sa.every((x, i) => x === sb[i]);
 }
 
@@ -122,7 +124,7 @@ const mergedRoot = (ids) => {
   return set.size === 1 ? [...set][0] : NO_ROOT;
 };
 
-async function runGraph(graph, mockOps, writes) {
+async function runGraph(graph, mockOps, writes, sched) {
   const nodes = graph.nodes;
   const edges = graph.edges;
 
@@ -177,6 +179,7 @@ async function runGraph(graph, mockOps, writes) {
   }
 
   const queue = [];
+  const pendingEach = []; // deferred each-invocations, settled by the scheduler
   const enqueueFrom = (fromKey, events) => {
     for (const ev of events)
       for (const to of outEdges[fromKey])
@@ -267,6 +270,31 @@ async function runGraph(graph, mockOps, writes) {
     ]);
   };
 
+  // Settle one `each` invocation: match its single write against the mock and
+  // either route a per-event failure or emit its outputs downstream.
+  function settleEach(t) {
+    const mock = mockOps?.[t.node.operation];
+    if (!mock)
+      throw new Error(`fixture has no mock for operation '${t.node.operation}'`);
+    const resp = matchResponse(mock, t.node.operation, [t.value]);
+    if ("fail" in resp) {
+      routePerEventError(t.node, resp.fail, {
+        value: t.value,
+        counts: t.counts,
+        rootId: t.rootId,
+      });
+      return;
+    }
+    enqueueFrom(
+      t.nodeKey,
+      resp.emit.map((v) => ({
+        value: v,
+        counts: { ...t.counts },
+        rootId: t.rootId,
+      }))
+    );
+  }
+
   async function processArrival(nodeKey, fromKey, event) {
     const node = nodes[nodeKey];
     switch (node.type) {
@@ -300,28 +328,13 @@ async function runGraph(graph, mockOps, writes) {
         const count = (event.counts[nodeKey] ?? 0) + 1;
         if (node.maxIterations && count > node.maxIterations) return; // safety drop
         const counts = { ...event.counts, [nodeKey]: count };
-        const mock = mockOps?.[node.operation];
-        if (!mock)
-          throw new Error(
-            `fixture has no mock for operation '${node.operation}'`
-          );
-        const resp = matchResponse(mock, node.operation, [event.value]);
-        if ("fail" in resp) {
-          routePerEventError(node, resp.fail, {
-            value: event.value,
-            counts,
-            rootId: event.rootId,
-          });
-          return;
-        }
-        enqueueFrom(
-          nodeKey,
-          resp.emit.map((v) => ({
-            value: v,
-            counts: { ...counts },
-            rootId: event.rootId,
-          }))
-        );
+        const token = { nodeKey, node, value: event.value, counts, rootId: event.rootId };
+        // Each invocation is independent. In adversarial mode it is deferred so
+        // the scheduler can settle concurrently-pending invocations in any order
+        // (modelling the spec's implementation-defined `each` interleaving); in
+        // default mode it settles immediately, preserving FIFO behavior.
+        if (sched) pendingEach.push(token);
+        else settleEach(token);
         return;
       }
       case "filter": {
@@ -420,9 +433,38 @@ async function runGraph(graph, mockOps, writes) {
   }
 
   async function drain() {
-    while (queue.length && !terminated) {
-      const { to, from, event } = queue.shift();
-      await processArrival(to, from, event);
+    if (!sched) {
+      while (queue.length && !terminated) {
+        const { to, from, event } = queue.shift();
+        await processArrival(to, from, event);
+      }
+      return;
+    }
+    // Adversarial scheduling: at each step choose uniformly at random among the
+    // legal next actions — deliver any queued event that is the head of its
+    // (from,to) edge (per-edge order preserved; cross-edge interleaving free),
+    // or settle any pending `each` invocation (their completion order is
+    // implementation-defined). Seeded, so a failing interleaving reproduces.
+    while ((queue.length || pendingEach.length) && !terminated) {
+      const choices = [];
+      for (let i = 0; i < queue.length; i++) {
+        const it = queue[i];
+        let blocked = false;
+        for (let j = 0; j < i; j++)
+          if (queue[j].from === it.from && queue[j].to === it.to) {
+            blocked = true;
+            break;
+          }
+        if (!blocked) choices.push({ q: i });
+      }
+      for (let p = 0; p < pendingEach.length; p++) choices.push({ e: p });
+      const pick = choices[Math.floor(sched.rng() * choices.length)];
+      if ("q" in pick) {
+        const [{ to, from, event }] = queue.splice(pick.q, 1);
+        await processArrival(to, from, event);
+      } else {
+        settleEach(pendingEach.splice(pick.e, 1)[0]);
+      }
     }
   }
 
@@ -531,6 +573,7 @@ async function runGraph(graph, mockOps, writes) {
 
 function compare(actual, expected) {
   const ordering = expected.ordering ?? "exact";
+  const arrayOrdering = expected.arrayOrdering ?? "exact";
   if (expected.error === true) {
     if (!actual.error)
       return "expected fatal termination, but graph completed normally";
@@ -539,13 +582,49 @@ function compare(actual, expected) {
   } else if (actual.error) {
     return `graph terminated with an error (${canonical(actual.errorDetail)}), but the fixture expected output`;
   }
+  // `ordering` governs the order of output *events*. `arrayOrdering: "set"`
+  // additionally treats an array-valued output event as a multiset, for a
+  // collector (e.g. a buffer) fed by concurrent `each` invocations or fan-in
+  // paths whose element order the spec's "Determinism and portability" section
+  // leaves implementation-defined.
+  const eventKey = (e) =>
+    arrayOrdering === "set" && Array.isArray(e)
+      ? "[" + e.map(canonical).sort().join(",") + "]"
+      : canonical(e);
   const ok =
     ordering === "set"
-      ? multisetEqual(actual.output, expected.output)
-      : deepEqual(actual.output, expected.output);
+      ? multisetEqual(actual.output, expected.output, eventKey)
+      : actual.output.length === expected.output.length &&
+        actual.output.every((e, i) => eventKey(e) === eventKey(expected.output[i]));
   if (!ok)
-    return `output mismatch (${ordering})\n      got:    ${canonical(actual.output)}\n      expect: ${canonical(expected.output)}`;
+    return `output mismatch (ordering=${ordering}, arrayOrdering=${arrayOrdering})\n      got:    ${canonical(actual.output)}\n      expect: ${canonical(expected.output)}`;
   return null;
+}
+
+// Default: one deterministic FIFO run per fixture (fast). `--adversarial`: run
+// each fixture under many seeded-random legal interleavings and require every
+// trial to satisfy its declared ordering/arrayOrdering. This is what turns the
+// portability labels from author-asserted into machine-verified: a fixture
+// labeled stricter than its graph actually guarantees fails here, with a seed
+// that reproduces the offending interleaving.
+const argv = process.argv.slice(2);
+const adversarial = argv.includes("--adversarial");
+const numArg = (name, dflt) => {
+  const a = argv.find((x) => x.startsWith(`--${name}=`));
+  return a ? Number(a.slice(name.length + 3)) : dflt;
+};
+const TRIALS = numArg("trials", 64);
+const SEED0 = numArg("seed", 0x9e3779b9) >>> 0;
+
+// Small seeded PRNG (mulberry32) so a failing interleaving is reproducible.
+function mulberry32(a) {
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 const files = readdirSync(EXEC_DIR)
@@ -557,24 +636,52 @@ let fail = 0;
 for (const file of files) {
   const doc = JSON.parse(readFileSync(join(EXEC_DIR, file), "utf8"));
   for (const fx of doc.fixtures) {
-    let actual;
-    try {
-      actual = await runGraph(fx.graph, fx.operations, fx.writes);
-    } catch (e) {
-      console.log(`FAIL ${fx.id} (${basename(file)}): threw: ${e.message}`);
-      fail++;
+    if (!adversarial) {
+      let actual;
+      try {
+        actual = await runGraph(fx.graph, fx.operations, fx.writes);
+      } catch (e) {
+        console.log(`FAIL ${fx.id} (${basename(file)}): threw: ${e.message}`);
+        fail++;
+        continue;
+      }
+      const problem = compare(actual, fx.expected);
+      if (problem) {
+        console.log(`FAIL ${fx.id} ${fx.name}: ${problem}`);
+        fail++;
+      } else {
+        console.log(`PASS ${fx.id} ${fx.name}`);
+        pass++;
+      }
       continue;
     }
-    const problem = compare(actual, fx.expected);
-    if (problem) {
-      console.log(`FAIL ${fx.id} ${fx.name}: ${problem}`);
+    // Adversarial: many seeded interleavings; every trial must satisfy compare().
+    let bad = null;
+    for (let k = 0; k < TRIALS && !bad; k++) {
+      const seed = (SEED0 + Math.imul(k, 0x9e3779b1)) >>> 0;
+      try {
+        const actual = await runGraph(fx.graph, fx.operations, fx.writes, {
+          rng: mulberry32(seed),
+        });
+        const problem = compare(actual, fx.expected);
+        if (problem) bad = { seed, msg: problem };
+      } catch (e) {
+        bad = { seed, msg: "threw: " + e.message };
+      }
+    }
+    if (bad) {
+      console.log(
+        `FAIL ${fx.id} ${fx.name} [reproduce: --seed=${bad.seed} --trials=1]: ${bad.msg}`
+      );
       fail++;
     } else {
-      console.log(`PASS ${fx.id} ${fx.name}`);
+      console.log(`PASS ${fx.id} ${fx.name} (${TRIALS} interleavings)`);
       pass++;
     }
   }
 }
 
-console.log(`\n${pass} passed, ${fail} failed`);
+console.log(
+  `\n${pass} passed, ${fail} failed${adversarial ? ` (${TRIALS} interleavings each)` : ""}`
+);
 process.exit(fail ? 1 : 0);

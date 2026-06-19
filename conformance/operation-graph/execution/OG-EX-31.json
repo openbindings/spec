@@ -1,13 +1,13 @@
 {
   "format": "openbindings.operation-graph@0.2.0",
   "kind": "execution",
-  "description": "exit with error:false (early return), the complement to OG-EX-07's error:true. The event reaching the exit node is emitted to the graph's output stream and the graph invocation then terminates immediately; all still-in-flight events are discarded. Pins the early-return clause of 'Node definitions / exit' and the determinism rule that the output includes any event emitted by an exit with error:false. The exit node has no outgoing edge (OG-V-16): it emits to the output stream directly, not through the output node, which stays reachable (OG-V-06) via the item path.",
+  "description": "exit with error:false (early return), the complement to OG-EX-07's error:true. The event reaching the exit node is emitted to the graph's output stream and the graph invocation then terminates immediately; all still-in-flight events are discarded. Pins the early-return clause of 'Node definitions / exit' and the determinism rule that the output includes any event emitted by an exit with error:false. The exit node has no outgoing edge (OG-V-16): it emits to the output stream directly, not through the output node, which stays reachable (OG-V-06) via the item path through a buffer whose partial contents the exit discards.",
   "fixtures": [
     {
       "id": "OG-EX-31",
       "name": "exit error:false emits the event then terminates, discarding in-flight events",
       "section": "Node definitions / exit; Determinism and portability",
-      "description": "unpack emits a cancel sentinel followed by two items. The sentinel matches the cancel filter and reaches the exit (error:false), which emits it to the output stream and terminates the graph; the two item events, still in flight toward the output node, are discarded and never emitted. The sentinel is first, so no item is emitted before termination and the output is exactly the early-returned sentinel, deterministically.",
+      "description": "unpack emits a cancel sentinel and two items. The sentinel matches the cancel filter and reaches the exit (error:false), which emits it to the output stream and terminates the graph. The two items pass the item filter into a buffer, which only flushes at normal completion, so the exit's termination discards the buffered items before any reaches the output node. The output is exactly the early-returned sentinel under every interleaving: an exit preempts the end-of-stream flush, so the cross-path race between the cancel and item paths cannot leak an item. This exercises the spec's 'in-flight events (including partial buffer contents) are discarded' clause directly.",
       "graph": {
         "openbindings.operation-graph": "0.2.0",
         "nodes": {
@@ -15,6 +15,7 @@
           "unpack": { "type": "map", "transform": "items" },
           "cancel": { "type": "filter", "schema": { "required": ["cancel"] } },
           "item": { "type": "filter", "schema": { "required": ["id"] } },
+          "collect": { "type": "buffer" },
           "done": { "type": "exit", "error": false },
           "out": { "type": "output" }
         },
@@ -23,7 +24,8 @@
           { "from": "unpack", "to": "cancel" },
           { "from": "unpack", "to": "item" },
           { "from": "cancel", "to": "done" },
-          { "from": "item", "to": "out" }
+          { "from": "item", "to": "collect" },
+          { "from": "collect", "to": "out" }
         ]
       },
       "writes": [{ "items": [{ "cancel": true }, { "id": 1 }, { "id": 2 }] }],

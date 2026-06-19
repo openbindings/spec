@@ -74,7 +74,8 @@ A fixture supplies:
 - `writes` — the values the caller writes to the graph invocation, in order.
   Each roots an event lineage; `[]` is a no-input invocation. The caller closes
   the input side after the last write (unless back-closure closes it first).
-- `expected` — the expected `output` events, an `ordering` of `exact` or `set`,
+- `expected` — the expected `output` events, an `ordering` of `exact` or `set`
+  (plus an optional `arrayOrdering`, below),
   and for fatal cases `error: true` with the `errorDetail`: the event that
   reached an `exit` node with `error: true`, or for an unhandled conduit
   terminal error, the unwrapped inner terminal error value itself (the value
@@ -83,6 +84,11 @@ A fixture supplies:
 `ordering: set` is used where the graph has concurrent paths whose interleaving
 is implementation-defined (see the spec's "Determinism and portability"
 section); the runner compares the output as a multiset in that case.
+`arrayOrdering: set` is the analogous knob for an array-valued output event
+whose *element* order is implementation-defined — a collector (e.g. a `buffer`)
+fed by concurrent `each` invocations — which `ordering` alone cannot express,
+because the non-determinism lives inside one event rather than across the
+event stream.
 
 | Fixture | Keyed to | Exercises |
 |---|---|---|
@@ -90,7 +96,7 @@ section); the runner compares the output as a multiset in that case.
 | OG-EX-02 | Example 3 (parallel combine) | `combine` readiness: single-emission conduit sources yield exactly one combined event, no partial |
 | OG-EX-03 | Example 6 (fan-out filters) | server-streaming conduit, schema and expression `filter`, per-event `each` handlers (`set`) |
 | OG-EX-04 | Edge definition / Dead ends | fire-and-forget: dead-end branch executes but is excluded from output |
-| OG-EX-05 | Example 4 (map and collect) | the canonical `map → each` pairing, `buffer` collect |
+| OG-EX-05 | Example 4 (map and collect) | the canonical `map → each` pairing, `buffer` collect; concurrent `each` leaves the collected array's element order implementation-defined (`arrayOrdering: set`) |
 | OG-EX-06 | Example 7 (onError fallback) | per-event `each` failure routed to a fallback `transform` (error event carries `event`) |
 | OG-EX-07 | Example 8 (fatal per-event error) | `each` failure made fatal: `onError` to `exit` with `error: true` |
 | OG-EX-08 | maxIterations and event lineage | merge node (buffer) on an `each` cycle; element-wise-max lineage keeps `maxIterations` bounding the loop |
@@ -196,7 +202,8 @@ implementing the transparency-rewrite semantics:
   still reach it, so upstream responses land before downstream flushes.
 
 `ordering: exact` fixtures are compared in order; `ordering: set` fixtures are
-compared as a multiset, matching the spec's determinism contract. The CI runs
+compared as a multiset, and `arrayOrdering: set` compares an array-valued output
+event as a multiset too, matching the spec's determinism contract. The CI runs
 the runner on every push.
 
 This is a *reference* oracle: it and the fixtures are maintained together, so it
@@ -204,3 +211,42 @@ confirms the fixtures are self-consistent and reproduce the spec's stated
 execution traces. Running an independent implementation (an SDK's operation-graph
 engine) against the same corpus is the stronger cross-implementation check and is
 the natural next step; the corpus is designed to be consumed unmodified.
+
+### Adversarial scheduling (`--adversarial`)
+
+The default run is a single deterministic FIFO drain. It is fast but has a blind
+spot: it produces exactly one of the many legal event orderings, so a fixture
+that pins an outcome the spec leaves *implementation-defined* (a concurrent-`each`
+collection order, a cross-path race) still passes. The labels that mark those
+cases (`ordering: set`, `arrayOrdering: set`) are then only as trustworthy as the
+author's judgement.
+
+`node run.mjs --adversarial` closes that gap. For each fixture it runs many
+seeded trials, and on each trial the scheduler chooses uniformly at random among
+the legal next actions:
+
+- deliver any queued event that is the **head of its `(from, to)` edge**, so
+  per-edge order is preserved (the spec's per-edge guarantee) while cross-edge
+  interleaving is free; and
+- settle any **pending `each` invocation**, since invocations run concurrently
+  and their completion order is implementation-defined. Sequentially-produced
+  invocations (a pagination cycle) are never pending together and stay ordered;
+  concurrently-dispatched ones (one `map` fanning into an `each`) race.
+
+Every trial must still satisfy the fixture's declared `ordering`/`arrayOrdering`.
+A fixture labeled stricter than its graph actually guarantees fails, printing a
+seed that reproduces the offending interleaving:
+
+```
+node run.mjs --adversarial                              # 64 trials/fixture
+node run.mjs --adversarial --trials=256                 # more interleavings
+node run.mjs --adversarial --seed=2027808460 --trials=1 # reproduce one
+```
+
+This turns the portability labels from author-asserted into machine-verified and
+is the regression guard against the next mislabel; running it as a second CI step
+(alongside the default run) is recommended. `OG_EXEC_DIR` points the runner at an
+alternate corpus directory. Scope: it randomizes event interleaving and
+`each`-completion order, not end-of-stream stateful-node completion order, and it
+treats an `each` invocation's outputs as a unit (it does not yet reorder within a
+single multi-emit invocation's output stream; no current fixture has one).
