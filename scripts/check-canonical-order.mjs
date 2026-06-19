@@ -25,9 +25,9 @@ const CANON = {
     "description", "deprecated", "tags", "aliases",
     "idempotent", "input", "output", "examples",
   ],
-  Source: ["format", "location", "content", "description", "priority"],
+  Source: ["format", "location", "content", "description", "preference"],
   BindingEntry: [
-    "operation", "source", "ref", "priority", "description",
+    "operation", "source", "ref", "preference", "description",
     "deprecated", "inputTransform", "outputTransform",
   ],
   OperationExample: ["description", "input", "output"],

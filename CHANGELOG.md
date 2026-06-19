@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **`priority` renamed to `preference`, direction inverted (breaking).** The per-binding/per-source selection hint `priority` becomes `preference`, and its direction flips: higher values are now more preferred (was: lower). An absent `preference` is the neutral baseline of `0`, so absence and the explicit floor coincide and a binding's effective preference defaults to `0` rather than a notional `+∞`. Negative values are permitted and rank below the baseline. The `deprecated` tier rule is unchanged in mechanism (a non-deprecated binding still outranks a deprecated one regardless of magnitude), but its worked example flips: a non-deprecated `preference: 0` now beats a deprecated `preference: 1000`. Hard rename, no alias: a document still using `priority` carries it as an unknown field, so the hint is ignored and identical numbers sort the opposite way. Touches §6.3 (Bindings), §6.4 (Sources), the informative request-lifecycle prose, OBI-T-09 and its rationale, and the JSON Schema.
+
 ## 0.2.0
 
 This release narrows the spec to what an OBI document IS: shape, discovery, references, versioning, and the conformance floor. Behavioral material from 0.1.0 (comparison rules, matching algorithms, transform execution, security method shapes) moves out of the spec; how tools handle these concerns is now tool-defined. Many breaking changes; per OBI-T-04, a 0.1.x tool MUST refuse a 0.2.0 document.
