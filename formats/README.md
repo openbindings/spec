@@ -22,7 +22,7 @@ A binding's `ref` identifies a specific entry within its source artifact. Its sy
 | Connect | `connect` | `package.Service/Method` (shares protobuf with gRPC) | `blend.CoffeeShop/GetMenu` |
 | MCP | `mcp@<date>` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
 | GraphQL | `graphql` | `<RootType>/<field>`, root PascalCase | `Mutation/createUser` |
-| Usage (CLI) | `usage@2.x` | space-separated command path | `db migrate run` |
+| openbindings.usage (CLI) | `openbindings.usage@0.1.0` | JSON Pointer to a unit | `#/units/db.migrate.run` |
 | operation-graph | `openbindings.operation-graph@0.2.0` | JSON Pointer to a graph definition | `#/graphs/paginateAll` |
 
 A source's `location` points at the artifact (a URL, file path, server address, or endpoint); `content` may inline it. When `ref` is absent, the binding targets the artifact as a whole. Refer to each format's specification or library for the precise source and addressing rules.
@@ -44,6 +44,7 @@ When defining a new format, decide and document:
 3. **Source expectations** — what `location` and `content` mean for the format.
 4. **Input conventions** — any format-specific input-schema properties (e.g., GraphQL's `_query` const).
 5. **Invocation shape** — which operations are unary, server-streaming, client-streaming, or bidirectional, and how each maps to the invoker's I/O.
+6. **The referent test** — does the value your `ref` resolves to, plus your documented conventions, amount to a *complete invocation recipe* (where each input field goes, how values are encoded, what the response is, which outcomes are success)? Machine-interface artifacts (OpenAPI, protobuf, MCP) pass natively. When the artifact describes a **human surface** (a CLI descriptor, a UI automation target) or otherwise lacks invocation semantics, do not extend the artifact's format and do not stow the missing half in OBI extension members: define a binding-unit *document* that wraps or references the pristine artifact and completes the recipe — the unit becomes the referent, versioned by your format. [`openbindings.usage`](usage/openbindings.usage.md) is the worked example.
 
 Authentication is intentionally absent from this list: it is negotiated at invocation time (above), not declared by the format in the OBI.
 
