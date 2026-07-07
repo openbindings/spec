@@ -22,10 +22,37 @@ A binding's `ref` identifies a specific entry within its source artifact. Its sy
 | Connect | `connect` | `package.Service/Method` (shares protobuf with gRPC) | `blend.CoffeeShop/GetMenu` |
 | MCP | `mcp@<date>` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
 | GraphQL | `graphql` | `<RootType>/<field>`, root PascalCase | `Mutation/createUser` |
-| openbindings.usage (CLI) | `openbindings.usage@0.1.0` | JSON Pointer to a unit | `#/units/db.migrate.run` |
+| usage (CLI, [jdx usage](https://usage.jdx.dev)) | `usage@2.x` | space-separated command path into the artifact (empty = root command) | `db migrate run` |
 | operation-graph | `openbindings.operation-graph@0.2.0` | JSON Pointer to a graph definition | `#/graphs/paginateAll` |
 
 A source's `location` points at the artifact (a URL, file path, server address, or endpoint); `content` may inline it. When `ref` is absent, the binding targets the artifact as a whole. Refer to each format's specification or library for the precise source and addressing rules.
+
+## The completeness spectrum (specification + configuration = complete invocation)
+
+A binding-source format answers three **wire questions** per operation, or leaves them to its consumers:
+
+1. **Routing** — which transport channel does each input field ride (path/query/header/body; argv/stdin/file)?
+2. **Decode** — how do the returned bytes become the output value?
+3. **Classify** — which completion outcomes (HTTP statuses, exit codes) are success?
+
+Complete specifications answer all three from the artifact (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The gap is made up in consumer configuration, never by OB authoring the missing coverage into a document and never by the OBI absorbing format conventions.** An OBI stays abstract; the artifact stays pristine.
+
+Implementations SHOULD expose three generic, format-agnostic hooks — an **output decoder**, a **result classifier**, and a **field router** — consulted per axis in a decline chain: *per-invocation configuration → invoker-level configuration → the format's built-in*. An unconsulted axis and an unmentioned field fall through; a declined hook never blocks the next tier. The reference SDKs (Go and TypeScript) ship this seam as `OutputDecoder`/`ResultClassifier`/`FieldRouter`.
+
+### Recommended built-in defaults
+
+Where the specification does not answer, the built-in default MUST be **content-independent** — decided by declarations and wire framing, never by sniffing payload bytes (a payload-dependent default makes the same document behave differently per response, and a wrong guess passes silently). The project's recommended defaults, as shipped by the reference implementations:
+
+| Format family | Routing | Decode | Classify |
+| --- | --- | --- | --- |
+| OpenAPI (HTTP) | spec: parameter locations | **header rule**: the response's `Content-Type` header decides — strict JSON for `application/json` and `+json` suffixes (a declared-JSON body that fails to parse is a loud error, never a silent string), text otherwise | **2xx rule**: success iff status ∈ 2xx; declared `responses` refine failure *details*, never classification |
+| AsyncAPI | spec: channel/message | the operation's declared message `contentType` (same JSON/text split); convention envelopes (`{error}`/`{data}` unwrapping) are a consumer hook, not a built-in | not consulted (transport-level HTTP errors are transport, not a format verdict) |
+| usage (CLI) | assumption: argv (consumer hooks route fields to stdin / `-`-operand / temp file) | assumption: stdout as text, trailing newlines stripped (command-substitution semantics) | assumption: exit 0 |
+| gRPC / Connect | spec: protobuf | spec: protobuf | spec: status codes |
+
+Two of these are worth naming as **pinned rules** for any HTTP-lane implementation, because divergence here silently changes what documents mean across SDKs: (1) *the header decides the decode lane* — never the payload shape; (2) *success is 2xx and declared responses never change classification* — a declared 404 response documents a failure's shape, it does not bless the failure.
+
+Implementations SHOULD report which rule answered each axis (the reference SDKs stamp `x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance on invocation metadata, and warn when an assumption decoded into a contract that could not catch a wrong lane).
 
 ## Authentication and credentials
 
@@ -44,7 +71,7 @@ When defining a new format, decide and document:
 3. **Source expectations** — what `location` and `content` mean for the format.
 4. **Input conventions** — any format-specific input-schema properties (e.g., GraphQL's `_query` const).
 5. **Invocation shape** — which operations are unary, server-streaming, client-streaming, or bidirectional, and how each maps to the invoker's I/O.
-6. **The referent test** — does the value your `ref` resolves to, plus your documented conventions, amount to a *complete invocation recipe* (where each input field goes, how values are encoded, what the response is, which outcomes are success)? Machine-interface artifacts (OpenAPI, protobuf, MCP) pass natively. When the artifact describes a **human surface** (a CLI descriptor, a UI automation target) or otherwise lacks invocation semantics, do not extend the artifact's format and do not stow the missing half in OBI extension members: define a binding-unit *document* that wraps or references the pristine artifact and completes the recipe — the unit becomes the referent, versioned by your format. [`openbindings.usage`](usage/openbindings.usage.md) is the worked example.
+6. **The completeness test** — does the value your `ref` resolves to, plus the format's authoritative specification, amount to a *complete invocation recipe* (where each input field goes, how values are encoded, how the response decodes, which outcomes are success)? Machine-interface artifacts (OpenAPI, protobuf, MCP) pass natively. Where the artifact is **lacking** — it describes a human surface (a CLI descriptor) or otherwise omits invocation semantics — do NOT author the missing half yourself: not by extending the artifact's format, not by stowing it in OBI extension members, and not by defining a wrapper document that "completes" the artifact. Document content-independent **assumptions** for each unanswered wire question, and let implementations expose **consumer hooks** that override them (see *The completeness spectrum* below). The configuration burden a format leaves its consumers is honest information about the format's completeness; pressure to reduce it belongs upstream, on the format's own specification.
 
 Authentication is intentionally absent from this list: it is negotiated at invocation time (above), not declared by the format in the OBI.
 
