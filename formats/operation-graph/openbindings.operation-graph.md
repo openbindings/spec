@@ -64,7 +64,7 @@ New readers may prefer to skim the [normative examples](#normative-examples) fir
 
 ### The model
 
-An operation graph is a **binding**. It fulfills an operation's contract by composing other operations as a directed graph of typed nodes connected by edges.
+An operation graph is a **binding**. It satisfies an operation's contract by composing other operations as a directed graph of typed nodes connected by edges.
 
 Everything in a graph is an operation invocation. An `operation` node invokes an operation whose behavior is bound at runtime through the processor's ordinary binding selection. Every other processing node invokes an operation whose behavior is bound by this specification — a **built-in**. Two binding authorities, one node model. The `input` and `output` nodes are the graph's own invocation, surfaced as nodes: `input` is the stream of values the caller writes; `output` is the stream of values the caller reads.
 

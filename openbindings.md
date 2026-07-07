@@ -261,7 +261,7 @@ A realistic OBI layers in shared schemas reused across operations, a named trans
 
 How these relate: an **operation** is the portable contract, independent of any protocol. A **source** points at a binding artifact. A **binding** links one operation to one source and optionally attaches a **transform** that bridges shape differences. An operation is addressable by its key or any of its **aliases**; both are equally valid for resolution.
 
-Whether one OBI is compatible with another is a matter of tool-defined comparison and matching semantics; this spec defines neither. Cross-document correspondence — an operation claiming to fulfill a shared contract by carrying that contract's name as its key or an alias — is detailed in [§6.1. Operations](#61-operations).
+Whether one OBI is compatible with another is a matter of tool-defined comparison and matching semantics; this spec defines neither. Cross-document correspondence — an operation claiming to satisfy a shared contract by carrying that contract's name as its key or an alias — is detailed in [§6.1. Operations](#61-operations).
 
 ---
 
