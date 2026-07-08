@@ -2,6 +2,8 @@
 
 **Status: non-normative reference for binding-format authors and implementers.** Not part of the core specification.
 
+The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no OpenBindings-conformance weight, but state the conventions of record that a format's own documentation adopts when it follows this guidance.
+
 OpenBindings is binding-format-agnostic. The core spec defines the OBI document (operations, sources, bindings, refs) but deliberately does not define what a `ref` looks like, how credentials are applied, or how input maps to a protocol-specific request for any particular format. Those are each format's own concern, governed by the format's authoritative specification (and, where it has none, by the convention its widely-used implementations establish).
 
 This directory holds the **companion format specifications** the openbindings project authors (currently [operation-graph](operation-graph/openbindings.operation-graph.md)). This README catalogs the `ref` conventions for common formats and the design guidance for authoring a new one.

@@ -2,7 +2,7 @@
 
 ## Abstract
 
-OpenBindings (OBI) is a portable interface description format. A service describes its operations (input/output contracts, examples) once, and exposes them over OpenAPI, AsyncAPI, gRPC, MCP, or any other binding format. The contract lives at the operation layer; the protocols live at the binding layer.
+OpenBindings is a portable interface description format; its documents are OBIs (OpenBindings interface documents). A service describes its operations (input/output contracts, examples) once, and exposes them over OpenAPI, AsyncAPI, gRPC, MCP, or any other binding format. The contract lives at the operation layer; the protocols live at the binding layer.
 
 ```json
 {
@@ -560,6 +560,10 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - **Security considerations:** see [§13. Security considerations](#13-security-considerations)
 - **Interoperability considerations:** see [§14. Conformance](#14-conformance)
 - **Applications that use this media type:** tools that produce or consume OpenBindings documents
+- **Optional parameters:** none
+- **Restrictions on usage:** none
+- **Intended usage:** COMMON
+- **Contact:** the OpenBindings maintainers, via [github.com/openbindings](https://github.com/openbindings)
 - **Change controller:** openbindings project
 - **Published specification:** this specification
 

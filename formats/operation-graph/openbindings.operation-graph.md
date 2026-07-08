@@ -562,7 +562,7 @@ There is no accumulated state (`$steps` or similar). Events carry their own data
 
 ## Validation rules
 
-The following rules apply to each operation graph definition (the value at which a binding's `ref` resolves). Enforcement is a tool obligation: a tool acting on an operation-graph binding MUST validate the graph against these rules before acting on it ([OG-T-01](#conformance)). Each rule carries a stable identifier (`OG-V-##`) so validators, fixtures, and errata can cite it unambiguously; identifiers are stable within a major version of this format and MUST NOT be reused or renumbered.
+The following rules apply to each operation graph definition (the value at which a binding's `ref` resolves). Enforcement is a tool obligation: a tool acting on an operation-graph binding MUST validate the graph against these rules before acting on it ([OG-T-01](#conformance)). Each rule carries a stable identifier (`OG-V-##`) so validators, fixtures, and errata can cite it unambiguously; identifiers are stable within a major version of this format and MUST NOT be reused or renumbered. The per-node field-presence requirements marked (REQUIRED) in the node definitions above are equally normative and are encoded by this format's JSON Schema; a validator applies both the enumerated rules and node well-formedness.
 
 - **OG-V-01**: The graph MUST declare an `openbindings.operation-graph` field matching the SemVer 2.0.0 pattern.
 - **OG-V-02**: The graph MUST contain exactly one node with `"type": "input"`.
