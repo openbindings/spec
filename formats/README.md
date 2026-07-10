@@ -16,16 +16,18 @@ A source declares an **exact** format version (e.g., `openapi@3.1`) describing a
 
 A binding's `ref` identifies a specific entry within its source artifact. Its syntax is the format's own; the table is a reference, not a normative requirement.
 
-| Format | Token | `ref` shape | Example |
+| Format | Token (as a source declares it) | `ref` shape | Example |
 | --- | --- | --- | --- |
-| OpenAPI | `openapi@3.x` | JSON Pointer into the document (`/` → `~1`, method lowercase) | `#/paths/~1users/get` |
-| AsyncAPI | `asyncapi@3.x` | JSON Pointer to the operation | `#/operations/sendMessage` |
+| OpenAPI | `openapi@3.1` | JSON Pointer into the document (`/` → `~1`, method lowercase) | `#/paths/~1users/get` |
+| AsyncAPI | `asyncapi@3.0` | JSON Pointer to the operation | `#/operations/sendMessage` |
 | gRPC | `grpc` | `package.Service/Method` | `blend.CoffeeShop/GetMenu` |
 | Connect | `connect` | `package.Service/Method` (shares protobuf with gRPC) | `blend.CoffeeShop/GetMenu` |
-| MCP | `mcp@<date>` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
+| MCP | `mcp@2025-11-25` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
 | GraphQL | `graphql` | `<RootType>/<field>`, root PascalCase | `Mutation/createUser` |
-| usage (CLI, [jdx usage](https://usage.jdx.dev)) | `usage@2.x` | space-separated command path into the artifact (empty = root command) | `db migrate run` |
+| usage (CLI, [jdx usage](https://usage.jdx.dev)) | `usage@2.0` | space-separated command path into the artifact (empty = root command) | `db migrate run` |
 | operation-graph | `openbindings.operation-graph@0.2.0` | JSON Pointer to a graph definition | `#/graphs/paginateAll` |
+
+Tokens above are exact-version examples of what a **source** declares; a tool advertising the **range** it handles writes `openapi@^3.0.0` or similar (see *Format tokens: exact vs. range* above).
 
 A source's `location` points at the artifact (a URL, file path, server address, or endpoint); `content` may inline it. When `ref` is absent, the binding targets the artifact as a whole. Refer to each format's specification or library for the precise source and addressing rules.
 
@@ -70,10 +72,10 @@ When defining a new format, decide and document:
 
 1. **Format token** — name and versioning strategy (versionless, caret range, or exact).
 2. **`ref` syntax** — how a `ref` unambiguously identifies an entry within the artifact, and what an absent `ref` means.
-3. **Source expectations** — what `location` and `content` mean for the format.
+3. **Source expectations** — what `location` names for the format (the artifact itself, or the live service it describes), what `content` carries, and what a source bearing BOTH means (see [`openbindings.md` §6.4](../openbindings.md#64-sources): artifact-located formats are content-authoritative with location as provenance; service-addressed formats pin the artifact in `content` while `location` remains the invocation target; a format that says nothing is content-authoritative).
 4. **Input conventions** — any format-specific input-schema properties (e.g., GraphQL's `_query` const).
 5. **Invocation shape** — which operations are unary, server-streaming, client-streaming, or bidirectional, and how each maps to the invoker's I/O.
-6. **The completeness test** — does the value your `ref` resolves to, plus the format's authoritative specification, amount to a *complete invocation recipe* (where each input field goes, how values are encoded, how the response decodes, which outcomes are success)? Machine-interface artifacts (OpenAPI, protobuf, MCP) pass natively. Where the artifact is **lacking** — it describes a human surface (a CLI descriptor) or otherwise omits invocation semantics — do NOT author the missing half yourself: not by extending the artifact's format, not by stowing it in OBI extension members, and not by defining a wrapper document that "completes" the artifact. Document content-independent **assumptions** for each unanswered wire question, and let implementations expose **consumer hooks** that override them (see *The completeness spectrum* below). The configuration burden a format leaves its consumers is honest information about the format's completeness; pressure to reduce it belongs upstream, on the format's own specification.
+6. **The completeness test** — does the value your `ref` resolves to, plus the format's authoritative specification, amount to a *complete invocation recipe* (where each input field goes, how values are encoded, how the response decodes, which outcomes are success)? Machine-interface artifacts (OpenAPI, protobuf, MCP) pass natively. Where the artifact is **lacking** — it describes a human surface (a CLI descriptor) or otherwise omits invocation semantics — do NOT author the missing half yourself: not by extending the artifact's format, not by stowing it in OBI extension members, and not by defining a wrapper document that "completes" the artifact. Document content-independent **assumptions** for each unanswered wire question, and let implementations expose **consumer hooks** that override them (see *The completeness spectrum* above). The configuration burden a format leaves its consumers is honest information about the format's completeness; pressure to reduce it belongs upstream, on the format's own specification.
 
 Authentication is intentionally absent from this list: it is negotiated at invocation time (above), not declared by the format in the OBI.
 

@@ -26,19 +26,19 @@ OpenBindings defines a standard way to describe **what a service does** — its 
 A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification, without redefining the contract for each one. OBI sits one layer above those formats: each format stays authoritative over its own wire shape, and OBI adds the operation-level overlay that survives across protocols.
 
 ```
-┌──────────────────────────────────────────┐
-│            OpenBindings Interface          │
+┌────────────────────────────────────────────┐
+│          OpenBindings Interface            │
 │                                            │
 │  operations:                               │
 │    placeOrder   (aliases: orders.create)   │
-│    getMenu                                  │
-│    orderUpdates (event)                     │
+│    getMenu                                 │
+│    orderUpdates (event)                    │
 │                                            │
 │  bindings:                                 │
-│    placeOrder   → OpenAPI   POST /orders    │
-│    placeOrder   → MCP       tools/order      │
-│    orderUpdates → AsyncAPI  SSE /events      │
-└──────────────────────────────────────────┘
+│    placeOrder   → OpenAPI   POST /orders   │
+│    placeOrder   → MCP       tools/order    │
+│    orderUpdates → AsyncAPI  SSE /events    │
+└────────────────────────────────────────────┘
 ```
 
 ### Core concepts
@@ -50,7 +50,7 @@ A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, discovery, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.0](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior to implementations: comparison and matching, binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits).
+The spec defines what an OBI document **is**: its shape, discovery, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.0](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§14](openbindings.md#14-conformance) floor — to implementations: comparison and matching, binding-selection tactics past the deprecation-tier rule, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits).
 
 Authentication in particular is **not** part of an OBI document. It is a runtime prerequisite negotiated by the binding invoker at call time and resolved into the runtime's store — see the [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface.
 
@@ -81,11 +81,11 @@ The openbindings project publishes reference implementations. The spec privilege
 | --- | --- |
 | [openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK to read, write, and invoke OBI documents (with per-format packages) |
 | [openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo (core SDK + per-format packages) |
-| [ob](https://github.com/openbindings/ob) | The `ob` CLI: create, invoke, and serve OBIs, with a built-in multi-protocol demo (`ob demo`) |
+| [ob](https://github.com/openbindings/ob) | The `ob` CLI: synthesize, invoke, and serve OBIs locally (`ob start`), with a built-in multi-protocol demo (`ob demo`) |
 
 ## Status
 
-OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is **v0.2.0**; immutable released snapshots live under [`versions/`](versions/). See [CHANGELOG.md](CHANGELOG.md) for what changed and [`openbindings.md` §11](openbindings.md#11-versioning) for the versioning model.
+OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is the **v0.2.0 draft** (unreleased; the latest release is 0.1.0). Immutable released snapshots live under [`versions/`](versions/) and are cut at tag time, never before. See [CHANGELOG.md](CHANGELOG.md) for what is changing and [`openbindings.md` §11](openbindings.md#11-versioning) for the versioning model.
 
 ## Contributing
 

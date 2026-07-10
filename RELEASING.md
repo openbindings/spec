@@ -6,6 +6,16 @@ This repo uses **immutable snapshots** for released spec versions, and regular p
 
 - Released versions are **immutable**: once published under `versions/X.Y.Z/`, they should not change.
 - Changes happen via PRs and are released as a **new version**.
+- **A snapshot exists only for a tagged release.** The snapshot and the tag
+  are cut together (workflow steps 2–3, one sitting); a `versions/X.Y.Z/`
+  directory with no `vX.Y.Z` tag is a lie about what has shipped. The root
+  documents are the working draft of the NEXT version, and `versions/`
+  contains only what was actually released.
+- **One version string, one text.** The moment the working draft would
+  diverge breakingly from the latest released snapshot, the draft's
+  self-declared version (the `openbindings.md` heading, the CHANGELOG
+  section) must already be the next version. Two normative texts under one
+  identifier is exactly the divergence OBI-T-04 exists to prevent.
 
 ## What gets snapshotted
 
@@ -48,7 +58,14 @@ A release snapshot captures the normative core spec at the time of release:
    - (Optional) Use the helper script: `scripts/release.sh <next>`
 
 3. Tag the release
-   - Tag the repo with `v<next>` (e.g., `v0.1.1`).
+   - Tag the repo with `v<next>` (e.g., `v0.1.1`), in the same sitting as
+     step 2 — the snapshot must never exist untagged.
+
+4. Open the next draft
+   - Retitle the CHANGELOG's top section to the next version, marked
+     `(unreleased, in draft)`.
+   - When the first breaking change lands, bump the draft's self-declared
+     version in `openbindings.md` and the examples' `openbindings` fields.
 
 ## Errata
 

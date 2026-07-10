@@ -4,19 +4,23 @@ Test fixtures for OpenBindings document and tool conformance, keyed to the rule 
 
 ## Status
 
-**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency) is positive-only by design (shares OBI-T-06's per-format testability limitation). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (103 tests at this version).**
+**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency), OBI-D-14 (textual/JSON content), and OBI-D-15 (embedded self-containment) are partial or deferred by their per-format nature (below). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (103 tests at this version).**
 
 | Rule range | Coverage |
 |---|---|
 | OBI-D-01 to OBI-D-12 | Complete |
 | OBI-D-13 | **Partial (positive-only).** Binding sufficiency is a semantic property of how a tool resolves a `ref` against its source artifact. Negative cases (refs that need external registries / vendor catalogs / environment lookup to identify their target) cannot be expressed in the document-level fixture format without per-format harness logic. This rule shares OBI-T-06's testability limitation; it does not contribute to the manifest's `rulesCoveredDocument` count and is reported as `rulesPartialDocument` instead. |
-| OBI-T-01, OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D) |
+| OBI-D-14 | **Deferred.** JSON strings are always textual, so a document-level fixture cannot express a binary `content` value; the rule binds the authoring act (an embedding tool converting artifact bytes) rather than a parseable document state. Fixtures pending a fixture format that carries pre-embedding artifact bytes. |
+| OBI-D-15 | **Deferred.** Whether embedded content is self-contained is per-format knowledge (a protobuf `import`, an OpenAPI relative `$ref`): the same per-format testability limitation as OBI-D-13 and OBI-T-06. A portable corpus would need per-format fixture sets. |
+| OBI-T-01, OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D). OBI-T-04's downward refusal (documents below the tool's minimum supported version) shares the existing T-04 fixture format; fixtures for the downward direction are pending. |
 | OBI-T-02, OBI-T-05 | **Deferred.** Diagnostic-emission rules (ignore unknown fields; surface diagnostics for uninterpreted schema keywords) that SHOULD warn. The spec deliberately leaves diagnostic shape tool-defined; pinning it via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
 | OBI-T-06 | **Deferred.** Applies to tools that resolve `ref` values per binding-format conventions. Conformance is per-format and depends on each format community's `ref` syntax; a portable corpus would need a per-format fixture set. |
 | OBI-T-07, OBI-T-08 | **Deferred.** Invocation-time validation of caller-provided input and source-produced output. Fixtures need richer shape: caller input + expected validation outcome separate from the OBI document. Pending fixture format design. |
 | OBI-T-09 | **Deferred.** Selection among multiple candidate bindings for one operation (non-deprecated ranked ahead of deprecated, then by `preference`), applied only over the candidates a tool can act on. Fixtures need a multi-binding scenario + expected selection, including candidate-set filtering by tool capability. Pending fixture format design. |
 | OBI-T-10 | **Deferred.** Transform evaluation per JSONata 2.0. Fixtures need richer shape: transform input + expected transform output. Pending fixture format design. |
 | OBI-T-11 | **Deferred.** MUST handle `$ref` cycles without infinite loops; the spec explicitly allows either successful resolution or terminating-with-error as conformant. The current `valid: true|false` shape can't express "either accept or reject is fine, but the tool must terminate." Pending either a format extension (`expected_termination: true`) or a harness convention separate from the fixture. |
+| OBI-T-13, OBI-T-14 | **Deferred.** The discovery wire contract (serving and fetching `/.well-known/openbindings`) is HTTP behavior: fixtures need a live-endpoint harness (a served path + expected response handling), not a document. Pending an HTTP-shaped fixture format. |
+| OBI-T-15 | **Deferred.** The location/content pairing interpretation is per-format (the same deferral as OBI-T-06); the content-authoritative default for convention-less formats needs an invocation-shaped fixture. Pending fixture format design. |
 | OBI-T-12 | **Deferred.** Operation-name resolution against the flat key+aliases namespace. Fixtures need a resolve-by-name scenario + the expected resolved operation (or a no-match outcome). Pending fixture format design. |
 
 ## Layout

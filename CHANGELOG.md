@@ -1,14 +1,24 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (unreleased, in draft)
 
-### Changed
+Version 0.2.0 has never been released; this section is its living draft
+record. Entries under **Draft changes** describe the draft's own evolution;
+the sections after them describe 0.2.0 as a whole against 0.1.0.
+
+### Draft changes
+
+- **OBI-T-08 defines its subject.** The operation's result is the value an invocation yields as its success outcome; which outcomes constitute success is the binding format's concern. Failure outcomes are invocation errors, not results, and are not subject to output validation. Previously "result" was unqualified, permitting a reading in which error envelopes had to validate against the `output` schema.
+
+- **Version refusal runs downward (§11.1, OBI-T-04).** A tool MUST refuse documents declaring a version below the minimum it supports (pre-1.0: any unsupported lower minor). Previously only upward refusal was mandated, so a tool could conformantly process an older document under newer rules — with the `priority`→`preference` inversion, silently sorting the same numbers backwards. Legitimizes the reference SDKs' existing `MinSupportedVersion` behavior as the normative floor.
+
+- **§6.4's normative MUSTs get rule identifiers.** OBI-D-14 (`content` carries textual/JSON forms only; binary artifacts ride `location`), OBI-D-15 (embedded `content` is self-contained), OBI-T-15 (the location/content pairing is interpreted per the binding format's conventions; convention-less formats are content-authoritative). These MUSTs previously lived only in §6.4 prose, invisible to the conformance corpus's drift oracle. The corpus README records their coverage posture (per-format, same limitation class as OBI-D-13/OBI-T-06), and adds the missing deferral entries for OBI-T-13/OBI-T-14.
+
+- **The `location`/`content` pairing is the binding format's concern (§6.4).** What a `location` names is format-defined: for most formats the artifact's own address (an OpenAPI document's URL); for a format whose artifact describes a live service that can serve its own description, the service's format-defined address (a gRPC `host:port`), from which the artifact is discoverable. `content` always carries the artifact. Where a location names the artifact, embedded content remains authoritative and the location is provenance (the previous rule, unchanged for that species); where a location addresses the service, there is no competition — content pins the artifact and location remains the invocation target; a format whose conventions do not address the pairing is content-authoritative. Previously an unconditional content-precedence rule demoted any co-present `location` to provenance, which mis-modeled service-addressed formats: a gRPC source pinning its schema as `content` had no conformant slot for its dial address. Embedded-content self-containment and the no-resolution-base rule are unchanged. Touches §5 (Source terminology), §6.4 prose and field table, and §10 item 1.
 
 - **Transform evaluation environment closed (OBI-T-10).** A tool MUST NOT extend the JSONata evaluation environment with host-reaching bindings (filesystem, network, environment variables, process state) for document-supplied expressions; the same transform over the same input now portably behaves identically on every conforming tool (§6.5, OBI-T-10 + rationale, §13/§13.1 cross-references). This resolves the 2026-05-27 review's top finding (no normative security floor) at its semantics-grounded core: environment closure is normative because host bindings break transform *portability* before they break security. Mandating fetch policy and resource bounds was considered and REJECTED on scope grounds — the spec's obligation is to name the exposure its format creates (§13 does); scheme allow-lists, network-range restrictions, and size caps are processor policy per §2, documented per tool.
 
 - **`priority` renamed to `preference`, direction inverted (breaking).** The per-binding/per-source selection hint `priority` becomes `preference`, and its direction flips: higher values are now more preferred (was: lower). An absent `preference` is the neutral baseline of `0`, so absence and the explicit floor coincide and a binding's effective preference defaults to `0` rather than a notional `+∞`. Negative values are permitted and rank below the baseline. The `deprecated` tier rule is unchanged in mechanism (a non-deprecated binding still outranks a deprecated one regardless of magnitude), but its worked example flips: a non-deprecated `preference: 0` now beats a deprecated `preference: 1000`. Hard rename, no alias: a document still using `priority` carries it as an unknown field, so the hint is ignored and identical numbers sort the opposite way. Touches §6.3 (Bindings), §6.4 (Sources), the informative request-lifecycle prose, OBI-T-09 and its rationale, and the JSON Schema.
-
-## 0.2.0
 
 This release narrows the spec to what an OBI document IS: shape, discovery, references, versioning, and the conformance floor. Behavioral material from 0.1.0 (comparison rules, matching algorithms, transform execution, security method shapes) moves out of the spec; how tools handle these concerns is now tool-defined. Many breaking changes; per OBI-T-04, a 0.1.x tool MUST refuse a 0.2.0 document.
 
