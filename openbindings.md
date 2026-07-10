@@ -626,6 +626,8 @@ A tool self-declares the capabilities it implements in its documentation or meta
 
 ### 14.2. Document rules
 
+Document rules bind the document; verifying a clause takes capabilities. Checking OBI-D-01's duplicate clause requires a duplicate-detecting parse; OBI-D-05's format-defined addresses and OBI-D-13/OBI-D-15 take per-format knowledge; OBI-D-11 takes fully resolving the operation schemas, which for a schema carrying an external `$ref` means fetching. A validator that lacks a capability a clause requires leaves that clause **unverified** rather than failing the document: conformance is a fixed property of the document, and unverified is not non-conformant (the partial-verification posture of [§8. Binding sufficiency](#8-binding-sufficiency)). Per-rule verification notes below are instances of this posture.
+
 A conformant **OBI document**:
 
 - **OBI-D-01**: Is valid UTF-8 encoded JSON per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). Duplicate JSON object keys within any object make the document invalid. Verification note (informative): RFC 8259 leaves duplicate-name handling unspecified, and most JSON parsers silently keep one value rather than reporting the duplicate, so checking this clause requires a duplicate-detecting parse. A validator whose parser cannot surface duplicates leaves the clause unverified rather than failing the document; this is the same partial-verification posture as [§8. Binding sufficiency](#8-binding-sufficiency).

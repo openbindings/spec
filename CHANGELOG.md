@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **§14.2 states the partial-verification posture once, generally**: a
+  validator lacking a capability a clause requires (duplicate-detecting
+  parse, per-format knowledge, external fetching) leaves the clause
+  unverified rather than failing the document. Previously stated ad hoc
+  at D-01/§8/D-15; now covers D-11 and D-05's format-defined addresses
+  too. No rule changes meaning.
+
 - **§7.1/OBI-T-13: discovery content-negotiation bounded** — negotiation
   may vary the representation only when the request's `Accept` explicitly
   prefers a non-OBI type and admits no OBI-acceptable one; absent
