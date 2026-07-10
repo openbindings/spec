@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **§6.2: `format` is an annotation, never an assertion, at OBI
+  boundaries** (T-07/T-08, D-11). 2020-12's implementation-configurable
+  format assertion is closed off: a T-07 pass must mean the same thing on
+  every tool, and format semantics wobble across schema libraries.
+  Enforced syntax belongs to `pattern`. Both SDKs already conform;
+  behavior now pinned by tests in each.
+
 - **OBI-T-07/T-08 validate against the fully resolved schema**: a
   governing schema the tool cannot fully resolve (an external `$ref` it
   declines or fails to fetch) is an invocation error naming the

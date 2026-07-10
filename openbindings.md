@@ -346,6 +346,8 @@ The constraint governs schemas within the OBI document itself. Schemas fetched b
 
 This spec does not restrict which 2020-12 keywords may appear. Tools that only preserve schemas through round-trips need not interpret any keywords.
 
+At OBI validation boundaries ([OBI-T-07/OBI-T-08](#143-tool-rules), [OBI-D-11](#142-document-rules)), the `format` keyword is an annotation, never an assertion: a tool MUST NOT reject a value for violating `format`. JSON Schema 2020-12's default dialect — the dialect pinned here — makes `format` annotation-only but permits implementations to offer assertion as a configuration; OBI closes that door at its boundaries, because format-assertion semantics vary across schema libraries and a pass at the operation boundary must mean the same thing on every tool. Authors needing enforced value syntax use assertion keywords such as `pattern`, which evaluate identically everywhere.
+
 ### 6.3. Bindings
 
 A binding object MUST contain:
