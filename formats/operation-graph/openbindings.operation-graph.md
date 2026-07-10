@@ -138,11 +138,11 @@ The `openbindings.` prefix indicates formats governed by the OpenBindings projec
 
 The addressable unit of this binding format is the [Operation graph definition](#operation-graph-definition), not the JSON document that contains it. An operation graph source document is therefore any JSON document containing at least one operation graph definition addressable by JSON Pointer. The shape of the surrounding document is unconstrained.
 
-A single document MAY contain multiple operation graphs, including graphs declaring different versions of this format. Each graph carries its own version field; the document itself has no version field.
+A single document MAY contain multiple operation graphs, including graphs declaring different versions of this format. Each graph carries its own version field; the document itself has no version field. A document whose root is itself a graph definition is valid; so is a graph embedded at any other JSON Pointer location within an arbitrary host document. Tools MUST NOT reject a document because its shape does not match the conventional layout below.
 
 ### Conventional shape (non-normative)
 
-For files whose primary purpose is to hold operation graphs, the RECOMMENDED top-level shape is a `graphs` map keyed by graph name:
+For files whose primary purpose is to hold operation graphs, the recommended top-level shape is a `graphs` map keyed by graph name:
 
 ```json
 {
@@ -156,7 +156,7 @@ For files whose primary purpose is to hold operation graphs, the RECOMMENDED top
 }
 ```
 
-This is a convention, not a requirement. Tools MUST NOT reject documents that do not match it. A document whose root is itself a graph definition is also valid; so is a graph embedded at any other JSON Pointer location within an arbitrary host document.
+This is a convention, not a requirement (see [Source documents](#source-documents) for the normative statement of what containing shapes are valid).
 
 ## Binding `ref` syntax
 
@@ -591,7 +591,7 @@ These rules apply to the graph definition itself; the enclosing JSON document ha
 A tool's obligations follow the capabilities it exercises, mirroring the [core specification's conformance model (§14.1)](../../openbindings.md#141-tool-obligations). Tool rules carry stable identifiers (`OG-T-##`) under the same stability guarantee as the validation rules: stable within a major version of this format, never reused or renumbered.
 
 - **OG-T-01** (acting on an operation-graph binding: validating, generating code, invoking): MUST validate the target graph definition against the [validation rules](#validation-rules) (OG-V-01 through OG-V-17) and MUST fail the binding rather than act on a graph that violates them.
-- **OG-T-02** (all processors): MUST refuse graphs declaring a higher major `openbindings.operation-graph` version than the tool supports; while this format is pre-1.0, the refusal extends to higher minor versions. This mirrors the core spec's OBI-T-04, applied to this format's own version field.
+- **OG-T-02** (all processors): MUST refuse graphs declaring a higher major `openbindings.operation-graph` version than the tool supports, and MUST refuse graphs declaring a version below the minimum it supports; while this format is pre-1.0, both refusals extend to minor versions (a higher minor, or a lower minor outside the supported range, refuses). A tool MUST NOT accept a graph declaring a prerelease version unless it declares support for that specific prerelease. This mirrors the core spec's OBI-T-04, applied to this format's own version field.
 - **OG-T-03** (executing graphs): MUST evaluate node expressions as JSONata 2.0, per the [core specification's Transforms section](../../openbindings.md#65-transforms) and the [Transforms](#transforms) rules of this document.
 - **OG-T-04** (executing graphs): MUST implement the [Execution semantics](#execution-semantics), including the portable behavior in [Determinism and portability](#determinism-and-portability), and MUST satisfy the [identity law](#transparency-the-identity-law); the acceptance criterion is the identity-law test stated there.
 

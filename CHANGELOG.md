@@ -8,6 +8,19 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **operation-graph OG-T-02 completes its OBI-T-04 mirror**: version refusal
+  now runs downward as well (refuse below the supported minimum; pre-1.0 both
+  bounds apply to minors) and prereleases refuse absent declared support —
+  OG-T-02's text claimed the mirror; the core rule gained these clauses in
+  this draft. Register fix in the same document: the normative
+  shape-tolerance rule (tools MUST NOT reject non-conventional document
+  shapes) moved from the non-normative Conventional-shape section into
+  Source documents, and the section's capitalized RECOMMENDED is lowercased
+  to match its non-normative stamp.
+- **Schema `content` description aligned with OBI-T-15**: dropped the
+  superseded blanket "implementations MUST prefer content" sentence in
+  favor of the pairing-per-format-conventions rule.
+
 - **OBI-T-08 defines its subject.** The operation's result is the value an invocation yields as its success outcome; which outcomes constitute success is the binding format's concern. Failure outcomes are invocation errors, not results, and are not subject to output validation. Previously "result" was unqualified, permitting a reading in which error envelopes had to validate against the `output` schema.
 
 - **Version refusal runs downward (§11.1, OBI-T-04).** A tool MUST refuse documents declaring a version below the minimum it supports (pre-1.0: any unsupported lower minor). Previously only upward refusal was mandated, so a tool could conformantly process an older document under newer rules — with the `priority`→`preference` inversion, silently sorting the same numbers backwards. Legitimizes the reference SDKs' existing `MinSupportedVersion` behavior as the normative floor.
