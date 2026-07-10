@@ -8,6 +8,16 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **New rule OBI-D-16: same-document schema `$ref`s resolve.** A dangling
+  internal pointer (`#/schemas/Missing`) now invalidates the document,
+  completing one posture for internal references alongside OBI-D-08/09/10
+  (binding→operation, binding→source, transform refs): same-document
+  references are document integrity, offline-decidable by any validator;
+  external `$ref` resolution stays an evaluation-time concern. Refs under
+  a nested `$id` are that schema resource's business and out of scope.
+  Matches interface-description ecosystem practice (OpenAPI/AsyncAPI
+  validators, GraphQL SDL, protobuf, Smithy). Corpus: 6 fixtures.
+
 - **OBI-D-05 tightened: same-document schema `$ref`s are JSON Pointer
   fragments** — plain-name (`$anchor`) fragments are not used at OBI
   positions; the `schemas` map is the document's named-schema mechanism.

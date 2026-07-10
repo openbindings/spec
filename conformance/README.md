@@ -4,7 +4,7 @@ Test fixtures for OpenBindings document and tool conformance, keyed to the rule 
 
 ## Status
 
-**Document validity coverage is complete for OBI-D-01 through OBI-D-12; OBI-D-13 (binding sufficiency), OBI-D-14 (textual/JSON content), and OBI-D-15 (embedded self-containment) are partial or deferred by their per-format nature (below). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (103 tests at this version).**
+**Document validity coverage is complete for OBI-D-01 through OBI-D-12 and OBI-D-16 (same-document schema $ref integrity); OBI-D-13 (binding sufficiency), OBI-D-14 (textual/JSON content), and OBI-D-15 (embedded self-containment) are partial or deferred by their per-format nature (below). OBI-T (tool behavior) coverage spans the parse/load-shaped rules (OBI-T-01, OBI-T-03, OBI-T-04); the remaining tool rules are deferred pending richer fixture formats. See `manifest.json` for current counts (111 tests at this version).**
 
 | Rule range | Coverage |
 |---|---|
