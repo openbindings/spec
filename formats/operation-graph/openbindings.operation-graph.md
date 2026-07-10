@@ -465,6 +465,7 @@ When a node has processed all incoming events and will produce no more output, i
 - A `buffer` flushes any remaining accumulated events (per its variant) when all incoming edges complete, then completes; if nothing is accumulated, it emits no final batch.
 - A `combine` follows its readiness rules: if source completion makes it ready it emits once, then completes when all sources have completed.
 - A node's output is complete when the node itself is complete and all its output events have been delivered.
+- For completion purposes, a declared `onError` reference counts as an incoming edge from the declaring node: a node fed only by error routes completes when every node declaring it as an `onError` target has completed. This matches how `onError` references already count for reachability (OG-V-06) and cycle safety (OG-V-09) — a node that could still receive a routed error event is not complete, and error events routed to it are never dropped as late arrivals.
 
 ### Input-side closure (back-closure)
 

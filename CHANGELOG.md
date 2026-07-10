@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **operation-graph: completion counts `onError` references as incoming
+  edges** — a node fed only by error routes completes when every node
+  declaring it as an `onError` target has completed, completing the triad
+  with reachability (OG-V-06) and cycle safety (OG-V-09). Existing corpus
+  fixtures (OG-EX-06/07/17/18/19) already pin the behavior; both engines
+  conform via quiescence.
+
 - **Format-author guidance demoted to the authoring guide**: §6.3's
   JSON-Pointer-for-new-formats SHOULD and §6.4's token-convention
   recommendation now point at `formats/README.md`, the non-normative
