@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **operation-graph security: cross-graph nesting named and bounded** —
+  per-graph budgets reset at each nesting level, so mutually recursive
+  graph bindings had no bound; implementations SHOULD carry a recursion
+  budget across nested graph invocations (Go engine: context-carried,
+  budget 32, tested; TS engine: named follow-up — the isomorphic SDK has
+  no context-value channel).
+
 - **operation-graph rules its own secondary semantics** (companion-spec
   independence principle: OG depends on core only at the absolute core —
   the concepts it plugs into — and makes its own secondary rulings). New

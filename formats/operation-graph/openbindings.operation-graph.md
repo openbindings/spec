@@ -872,6 +872,7 @@ The security considerations that apply to any OpenBindings processor — transfo
 - **Cycle amplification**: fan-out within a cycle multiplies events per iteration; `maxIterations` bounds per-lineage invocations, not total event count.
 - **Error chains**: `onError` routing can chain invocations in response to failures. The primary bound is normative: error events inherit lineage and `onError` routes count as cycle edges, so error loops must pass through an `each` with `maxIterations` (OG-V-09, OG-V-10). Implementations MAY additionally cap error-chain depth as defense in depth.
 - **Held invocations**: `operation` conduits hold live invocations (and their connections) for the graph invocation's lifetime; the [Flow control](#flow-control) bounds and the caller's cancellation are the containment mechanisms.
+- **Cross-graph nesting**: an `operation` or `each` node's selected binding may itself be an operation graph, and graphs may recurse mutually; `maxIterations` and the per-invocation event cap reset at each nesting level, so nesting depth is unbounded by this format's per-graph rules. Implementations SHOULD carry a recursion budget across nested graph invocations and terminate the invocation with an error when it is exceeded. The budget error is the inner invocation's terminal error; the containing graph handles it under the ordinary error semantics (fatal for an unhandled `operation` conduit, per-event for `each`).
 
 ## Deferred from 0.2.0
 
