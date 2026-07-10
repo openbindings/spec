@@ -8,6 +8,18 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **operation-graph rules its own secondary semantics** (companion-spec
+  independence principle: OG depends on core only at the absolute core —
+  the concepts it plugs into — and makes its own secondary rulings). New
+  rule **OG-V-18** states the embedded-schema constraints natively
+  (2020-12 object form, pinned `$schema`, no `$vocabulary`; previously
+  incorporated by reference from core §6.2 with no enforcement home);
+  OG-T-03's evaluation semantics and the security considerations are now
+  self-owned with informative core-alignment notes; OG-T-01's range
+  extends to OG-V-18. Corpus gains 5 OG-V-18 fixtures (negatives failed
+  both pre-fix engines, then went green); both SDK validators enforce
+  with parity messages.
+
 - **operation-graph: expression throws are not `TRANSFORM_UNDEFINED`** —
   an evaluation failure (throw) is a per-event failure whose `error`
   value is processor-defined diagnostic prose, MUST NOT be conflated

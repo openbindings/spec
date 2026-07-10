@@ -1469,6 +1469,186 @@
           "valid": false
         }
       ]
+    },
+    {
+      "rule": "OG-V-18",
+      "title": "Embedded schemas (filter.schema, buffer.until, buffer.through) are 2020-12 objects: $schema, when present, is the 2020-12 URI; $vocabulary appears nowhere within them.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "filter.schema with no $schema (2020-12 by default)",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "filter",
+                "schema": {
+                  "required": [
+                    "x"
+                  ]
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": true
+        },
+        {
+          "description": "filter.schema with pinned 2020-12 $schema",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "filter",
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "required": [
+                    "x"
+                  ]
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": true
+        },
+        {
+          "description": "filter.schema pinned to draft-07",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "filter",
+                "schema": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "required": [
+                    "x"
+                  ]
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": false
+        },
+        {
+          "description": "buffer.until with $vocabulary nested in a subschema",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "buffer",
+                "until": {
+                  "properties": {
+                    "done": {
+                      "$vocabulary": {
+                        "https://example.com/vocab": true
+                      },
+                      "const": true
+                    }
+                  }
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": false
+        },
+        {
+          "description": "buffer.through pinned to draft-07",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "buffer",
+                "through": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "required": [
+                    "fin"
+                  ]
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": false
+        }
+      ]
     }
   ]
 }

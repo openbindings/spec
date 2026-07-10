@@ -167,7 +167,10 @@ OG-V-09 (every cycle carries an `each` with `maxIterations`) and OG-V-10
 OG-V-11 (operation references resolve in the containing OBI) cannot be judged
 from a graph in isolation, so its tests carry an `operations` array listing the
 keys the containing OBI declares. OG-V-17 (no `onError` on the boundary nodes)
-is schema-enforced via the per-type field whitelists.
+is schema-enforced via the per-type field whitelists. OG-V-18 (embedded
+schemas: 2020-12 object form, pinned `$schema`, no `$vocabulary` anywhere
+within) is validator-enforced — the format schema types those positions as
+objects but cannot check nested keywords.
 
 ## Reference runner
 

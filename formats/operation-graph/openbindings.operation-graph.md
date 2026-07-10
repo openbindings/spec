@@ -190,7 +190,7 @@ An operation graph is a JSON object:
 }
 ```
 
-- `openbindings.operation-graph` (REQUIRED, string): the version of this format the graph was authored against. MUST match the SemVer 2.0.0 pattern. Tools MUST refuse graphs declaring a higher major version than they support and, while this format is pre-1.0, graphs declaring a higher minor version ([OG-T-02](#conformance)), mirroring the core spec's OBI-T-04. Each graph in a document declares its own version independently.
+- `openbindings.operation-graph` (REQUIRED, string): the version of this format the graph was authored against. MUST match the SemVer 2.0.0 pattern. Tools refuse graphs declaring versions outside the range they support ([OG-T-02](#conformance)). Each graph in a document declares its own version independently.
 - `description` (OPTIONAL, string): a human-readable description of what the graph does.
 - `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is a [Node](#node-definitions). Node keys MUST be unique within the graph (enforced by JSON object semantics).
 - `edges` (REQUIRED): an array of [Edge](#edge-definition) objects defining the connections between nodes.
@@ -415,13 +415,13 @@ The `exit` node MUST NOT have any outgoing edges.
 
 ### Transforms
 
-Wherever a node embeds a dynamic expression, the value is a plain [JSONata 2.0](https://docs.jsonata.org/) expression string. Tools claiming `openbindings.operation-graph@0.2.0` conformance MUST support JSONata 2.0 transforms ([OG-T-03](#conformance)), following the [core specification's Transforms section](../../openbindings.md#65-transforms).
+Wherever a node embeds a dynamic expression, the value is a plain [JSONata 2.0](https://docs.jsonata.org/) expression string. Tools claiming `openbindings.operation-graph@0.2.0` conformance MUST support JSONata 2.0 transforms ([OG-T-03](#conformance)). This format rules its own evaluation semantics: "JSONata 2.0" denotes the language at its 2.x major version as defined by its published documentation and reference implementation; the evaluation environment is closed over the event, this format's documented bindings (`$input`), and JSONata's standard library — a tool MUST NOT extend it with bindings that reach host state (filesystem, network, environment variables, process state) for graph-supplied expressions; where the documentation leaves behavior unspecified or ambiguous, tools SHOULD follow the reference implementation. These are the same commitments the core specification makes for binding transforms (§6.5) — deliberately aligned, independently ruled.
 
 If a transform expression evaluates to `undefined` (no result), the node fails with `TRANSFORM_UNDEFINED`. If it evaluates to `null`, the event becomes `null` and flows downstream normally. This applies to all nodes that use transforms (`transform`, `map`, `filter`).
 
 ### Embedded schemas
 
-Wherever a node embeds a JSON Schema (`filter.schema`, `buffer.until`, `buffer.through`), the schema is subject to the [core specification's schema constraints (§6.2)](../../openbindings.md#62-schemas): JSON Schema 2020-12 in object form, `$schema` (when present) pinned to the 2020-12 meta-schema URI, and no `$vocabulary`.
+Wherever a node embeds a JSON Schema (`filter.schema`, `buffer.until`, `buffer.through`), this format rules the schema's form itself ([OG-V-18](#validation-rules)): JSON Schema 2020-12 in object form; `$schema`, when present, equal to `https://json-schema.org/draft/2020-12/schema`; and no `$vocabulary` anywhere within it. These are the same constraints the core specification places on schemas at OBI positions (§6.2) — deliberately aligned, independently ruled, so a graph engine validates a graph with no core-spec lookup.
 
 ## Edge definition
 
@@ -582,6 +582,7 @@ The following rules apply to each operation graph definition (the value at which
 - **OG-V-15**: If a node declares `onError`, the referenced node key MUST exist in the graph.
 - **OG-V-16**: `exit` nodes MUST NOT have any outgoing edges.
 - **OG-V-17**: The `input` and `output` nodes MUST NOT declare `onError`. The boundary nodes are not invocations of their own and cannot fail as nodes; only processing nodes support `onError` (see [Node model](#node-model)).
+- **OG-V-18**: Every schema embedded in a graph definition (`filter.schema`, `buffer.until`, `buffer.through`) is a JSON Schema 2020-12 object; its `$schema`, when present, equals `https://json-schema.org/draft/2020-12/schema`; and `$vocabulary` appears nowhere within it (see [Embedded schemas](#embedded-schemas)).
 
 **Diagnostics (non-normative).** Validators SHOULD warn when a multi-emission path (e.g., a `map`) feeds an `operation` node — usually a missing `each` — and MAY warn when none of the `input` node's direct consumers is an `operation` node, since back-closure considers only direct consumers ([Input-side closure](#input-side-closure-back-closure)) and such a graph's callers always own input closure. The latter covers the `input → transform → operation` shape, which does not back-close like the bare wrapper even though an `operation` node sits one hop away; see [Deferred from 0.2.0](#deferred-from-020) (transitive back-closure).
 
@@ -591,9 +592,9 @@ These rules apply to the graph definition itself; the enclosing JSON document ha
 
 A tool's obligations follow the capabilities it exercises, mirroring the [core specification's conformance model (§14.1)](../../openbindings.md#141-tool-obligations). Tool rules carry stable identifiers (`OG-T-##`) under the same stability guarantee as the validation rules: stable within a major version of this format, never reused or renumbered.
 
-- **OG-T-01** (acting on an operation-graph binding: validating, generating code, invoking): MUST validate the target graph definition against the [validation rules](#validation-rules) (OG-V-01 through OG-V-17) and MUST fail the binding rather than act on a graph that violates them.
+- **OG-T-01** (acting on an operation-graph binding: validating, generating code, invoking): MUST validate the target graph definition against the [validation rules](#validation-rules) (OG-V-01 through OG-V-18) and MUST fail the binding rather than act on a graph that violates them.
 - **OG-T-02** (all processors): MUST refuse graphs declaring a higher major `openbindings.operation-graph` version than the tool supports, and MUST refuse graphs declaring a version below the minimum it supports; while this format is pre-1.0, both refusals extend to minor versions (a higher minor, or a lower minor outside the supported range, refuses). A tool MUST NOT accept a graph declaring a prerelease version unless it declares support for that specific prerelease. This mirrors the core spec's OBI-T-04, applied to this format's own version field.
-- **OG-T-03** (executing graphs): MUST evaluate node expressions as JSONata 2.0, per the [core specification's Transforms section](../../openbindings.md#65-transforms) and the [Transforms](#transforms) rules of this document.
+- **OG-T-03** (executing graphs): MUST evaluate node expressions as JSONata 2.0 per the [Transforms](#transforms) rules of this document, whose evaluation commitments deliberately align with the core specification's binding transforms (§6.5).
 - **OG-T-04** (executing graphs): MUST implement the [Execution semantics](#execution-semantics), including the portable behavior in [Determinism and portability](#determinism-and-portability), and MUST satisfy the [identity law](#transparency-the-identity-law); the acceptance criterion is the identity-law test stated there.
 
 The specification repository carries a conformance corpus for this format under `conformance/operation-graph/` — execution fixtures (including the identity-law suite), validation fixtures keyed to `OG-V-##` identifiers, and a reference runner. The corpus is the empirical check for these obligations; running an independent implementation against it unmodified is the intended conformance test.
@@ -865,7 +866,7 @@ Conduit terminal errors are fatal by default (see [Errors](#errors)), so a bare 
 
 ## Security considerations
 
-Operation graphs inherit the security considerations of the [core OpenBindings specification v0.2.0](../../openbindings.md#13-security-considerations), including transform evaluation sandboxing, artifact fetching restrictions, and schema processing limits. Format-specific concerns:
+The security considerations that apply to any OpenBindings processor — transform evaluation sandboxing, artifact fetching restrictions, schema processing limits (see the [core specification's Security considerations](../../openbindings.md#13-security-considerations)) — apply to graph processors equally. Format-specific concerns:
 
 - **Event amplification**: `map` converts one event into many, and `each` converts each event into an invocation. A `map` inside a cycle is the primary amplification vector: N events per iteration under `maxIterations` M can reach N^M. Implementations SHOULD enforce a maximum total event count per graph invocation and terminate with an error when exceeded.
 - **Cycle amplification**: fan-out within a cycle multiplies events per iteration; `maxIterations` bounds per-lineage invocations, not total event count.
