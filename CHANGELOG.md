@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **§6.5 pins undefined-vs-null transform results**: a `null` result is a
+  value; an undefined result SHOULD be treated as expression failure
+  (invocation error), with undefined handling otherwise named a
+  non-portable axis documents must not rely on. Matches both SDKs'
+  shipped behavior and operation-graph's TRANSFORM_UNDEFINED (which
+  remains MUST for graphs).
+
 - **operation-graph OG-T-02 completes its OBI-T-04 mirror**: version refusal
   now runs downward as well (refuse below the supported minimum; pre-1.0 both
   bounds apply to minors) and prereleases refuse absent declared support —
