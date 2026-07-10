@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **OBI-D-05 tightened: same-document schema `$ref`s are JSON Pointer
+  fragments** — plain-name (`$anchor`) fragments are not used at OBI
+  positions; the `schemas` map is the document's named-schema mechanism.
+  Closes the gap where §10 defined resolution only for pointer fragments
+  while D-05's form rule admitted any fragment. Conformance corpus gains
+  positive and negative cases.
+
 - **§6.5 pins undefined-vs-null transform results**: a `null` result is a
   value; an undefined result SHOULD be treated as expression failure
   (invocation error), with undefined handling otherwise named a
