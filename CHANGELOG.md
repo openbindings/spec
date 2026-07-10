@@ -8,6 +8,12 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Format-author guidance demoted to the authoring guide**: §6.3's
+  JSON-Pointer-for-new-formats SHOULD and §6.4's token-convention
+  recommendation now point at `formats/README.md`, the non-normative
+  convention of record — the core spec binds documents and tools, never
+  future format specifications. No document or tool obligation changes.
+
 - **§14.2 states the partial-verification posture once, generally**: a
   validator lacking a capability a clause requires (duplicate-detecting
   parse, per-format knowledge, external fetching) leaves the clause
