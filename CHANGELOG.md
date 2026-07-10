@@ -8,6 +8,14 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **OBI-T-07/T-08 validate against the fully resolved schema**: a
+  governing schema the tool cannot fully resolve (an external `$ref` it
+  declines or fails to fetch) is an invocation error naming the
+  unresolvable reference — never a partial pass. Closes the loophole
+  where §10's MAY-decline could hollow out a T-07 pass into a silent
+  false positive. Both SDKs already fail closed; behavior now pinned by
+  tests in each.
+
 - **New rule OBI-D-16: same-document schema `$ref`s resolve.** A dangling
   internal pointer (`#/schemas/Missing`) now invalidates the document,
   completing one posture for internal references alongside OBI-D-08/09/10
