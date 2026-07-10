@@ -8,6 +8,12 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **operation-graph: expression throws are not `TRANSFORM_UNDEFINED`** —
+  an evaluation failure (throw) is a per-event failure whose `error`
+  value is processor-defined diagnostic prose, MUST NOT be conflated
+  with the undefined-result identifier; routing on it is non-portable by
+  the table's existing catch-all posture. Both engines already conform.
+
 - **operation-graph: completion counts `onError` references as incoming
   edges** — a node fed only by error routes completes when every node
   declaring it as an `onError` target has completed, completing the triad
