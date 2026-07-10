@@ -53,13 +53,12 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   at D-01/§8/D-15; now covers D-11 and D-05's format-defined addresses
   too. No rule changes meaning.
 
-- **§7.1/OBI-T-13: discovery content-negotiation bounded** — negotiation
-  may vary the representation only when the request's `Accept` explicitly
-  prefers a non-OBI type and admits no OBI-acceptable one; absent
-  `Accept`, or any Accept admitting an OBI type (including wildcards),
-  receives the OBI body. Ordinary RFC 9110 proactive negotiation with the
-  OBI as default representation: publishers may dual-serve a human HTML
-  page to browsers without affecting any conforming tool.
+- **§7.1/OBI-T-13: discovery content-negotiation deferred to HTTP** —
+  the spec pins one fact (the OBI is the path's default representation;
+  an Accept-less request receives it) and otherwise defers negotiation
+  to RFC 9110 rather than restating its mechanics. Publishers may
+  dual-serve a human HTML page to browsers; clients sending the
+  recommended Accept always receive the OBI.
 
 - **§6.2: `format` is an annotation, never an assertion, at OBI
   boundaries** (T-07/T-08, D-11). 2020-12's implementation-configurable
