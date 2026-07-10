@@ -1647,6 +1647,41 @@
             ]
           },
           "valid": false
+        },
+        {
+          "description": "a property NAMED $vocabulary is schema content, not the keyword",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "filter",
+                "schema": {
+                  "properties": {
+                    "$vocabulary": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": true
         }
       ]
     }
