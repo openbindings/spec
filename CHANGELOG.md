@@ -8,6 +8,14 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **§7.1/OBI-T-13: discovery content-negotiation bounded** — negotiation
+  may vary the representation only when the request's `Accept` explicitly
+  prefers a non-OBI type and admits no OBI-acceptable one; absent
+  `Accept`, or any Accept admitting an OBI type (including wildcards),
+  receives the OBI body. Ordinary RFC 9110 proactive negotiation with the
+  OBI as default representation: publishers may dual-serve a human HTML
+  page to browsers without affecting any conforming tool.
+
 - **§6.2: `format` is an annotation, never an assertion, at OBI
   boundaries** (T-07/T-08, D-11). 2020-12's implementation-configurable
   format assertion is closed off: a T-07 pass must mean the same thing on
