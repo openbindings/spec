@@ -8,6 +8,24 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **`$dynamicRef`/`$dynamicAnchor` barred at OBI positions** (§10 clause 2,
+  OBI-D-05, OBI-D-16 note): the dynamic pair resolves against the runtime
+  dynamic scope — resolution dependent on the evaluation path, precisely the
+  context-dependence OBI-D-05 exists to exclude — and `$dynamicAnchor` would
+  be a second named-schema mechanism competing with the `schemas` map,
+  exactly as the already-barred plain-name `$anchor`. A `$dynamicRef` whose
+  resolution engages no dynamic anchor is `$ref` restated, so barring the
+  keyword at OBI positions loses nothing. Within a schema declaring its own
+  `$id`, both keywords keep full JSON Schema 2020-12 semantics as that
+  resource's internal business — the same scope carve-out OBI-D-05/OBI-D-16
+  already apply to `$ref` and `$anchor`. Corpus: OBI-D-05 gains dynamic-pair
+  negatives, the embedded-resource positive, and a keyword-position guard (a
+  property *named* `$dynamicRef` is data, not a keyword). Closes a blind
+  spot found by two independent clean-room reviews: the rules previously
+  constrained `$ref` by name only, so a dynamic reference at an OBI position
+  defeated the context-free guarantee in spirit while passing a literal
+  validator.
+
 - **Post-1.0 refusal granularity clarified to major-only** (§11.1,
   OBI-T-04): within a supported major, a differing minor is not a refusal
   trigger in either direction — newer minors only add optional fields
