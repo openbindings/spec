@@ -8,6 +8,14 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Transform evaluation environment fully closed (both specs)**: no
+  extensions for document-supplied expressions — neither host-reaching
+  bindings nor pure custom functions; format-defined bindings (OG's
+  `$input`) are part of the environment, not extensions. operation-graph
+  additionally: embedded schemas are self-contained (`$ref` banned,
+  OG-V-18 extended, corpus negative added); evaluation-failure `error`
+  values pinned as strings.
+
 - **"External" defined; resolution judged statically** — an absolute
   `$ref` matching an embedded schema's `$id` resolves within the document
   (standard 2020-12 identity resolution, no fetch); "external" means not

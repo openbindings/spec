@@ -1472,7 +1472,7 @@
     },
     {
       "rule": "OG-V-18",
-      "title": "Embedded schemas (filter.schema, buffer.until, buffer.through) are 2020-12 objects: $schema, when present, is the 2020-12 URI; $vocabulary appears nowhere within them.",
+      "title": "Embedded schemas (filter.schema, buffer.until, buffer.through) are self-contained 2020-12 objects: $schema, when present, is the 2020-12 URI; $vocabulary and $ref appear nowhere within them.",
       "schemaEnforced": false,
       "tests": [
         {
@@ -1682,6 +1682,37 @@
             ]
           },
           "valid": true
+        },
+        {
+          "description": "filter.schema with a $ref is not self-contained",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "f": {
+                "type": "filter",
+                "schema": {
+                  "$ref": "#/schemas/Task"
+                }
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "f"
+              },
+              {
+                "from": "f",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": false
         }
       ]
     }
