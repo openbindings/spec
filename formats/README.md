@@ -64,7 +64,9 @@ Credentials and other runtime prerequisites are **not** part of an OBI document 
 
 ## Field naming across protocol locations
 
-Many formats present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a binding source can be represented with unique field names across its effective input/output surface. When collisions are unavoidable (e.g., `id` as both a path parameter and a body field), format-specific or invoker-specific handling is required.
+Many formats present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a binding source can be represented with unique field names across its effective input/output surface.
+
+When collisions are unavoidable (e.g., `id` as both a path parameter and a body field), the convention of record — implemented by the reference openapi packages — is **one name, one value, delivered to every declared wire location**: the flattened contract carries one field (the body's schema, deterministically), synthesis emits a warning (`openapi.param_body_collision`) so the merge is never silent, and at invocation the single caller value rides the parameter location AND stays in the body. The flattened contract says *what*; the wire locations are plumbing. A format whose colliding declarations genuinely carry different values cannot be represented by the flatten and needs format-specific handling.
 
 ## Authoring a new binding format
 
