@@ -6,7 +6,7 @@ The key words MUST, SHOULD, and MAY in this document are to be interpreted as de
 
 OpenBindings is binding-format-agnostic. The core spec defines the OBI document (operations, sources, bindings, refs) but deliberately does not define what a `ref` looks like, how credentials are applied, or how input maps to a protocol-specific request for any particular format. Those are each format's own concern, governed by the format's authoritative specification (and, where it has none, by the convention its widely-used implementations establish).
 
-This directory holds the **companion format specifications** the openbindings project authors (currently [operation-graph](operation-graph/openbindings.operation-graph.md)). This README catalogs the `ref` conventions for common formats and the design guidance for authoring a new one.
+This directory holds two genres of document. **Companion format specifications** — formats the openbindings project authors, normative for their own tokens (currently [operation-graph](operation-graph/openbindings.operation-graph.md)). And **per-format conventions records** — one document per supported format, named by its token, recording the OB-overlay conventions the format's own specification does not decide (what the reference implementations do, tagged by tier, however small the answers turn out to be): [openapi](openapi.md), [asyncapi](asyncapi.md), [grpc](grpc.md), [connect](connect.md), [mcp](mcp.md), [graphql](graphql.md), [usage](usage.md), [workers-rpc](workers-rpc.md). This README carries the cross-format doctrine and the index; per-format detail lives in the per-format documents.
 
 ## Format tokens: exact vs. range
 
@@ -18,23 +18,25 @@ A binding's `ref` identifies a specific entry within its source artifact. Its sy
 
 | Format | Token (as a source declares it) | `ref` shape | Example |
 | --- | --- | --- | --- |
-| OpenAPI | `openapi@3.1` | JSON Pointer into the document (`/` → `~1`, method lowercase) | `#/paths/~1users/get` |
-| AsyncAPI | `asyncapi@3.0` | JSON Pointer to the operation | `#/operations/sendMessage` |
-| gRPC | `grpc` | `package.Service/Method` | `blend.CoffeeShop/GetMenu` |
-| Connect | `connect` | `package.Service/Method` (shares protobuf with gRPC) | `blend.CoffeeShop/GetMenu` |
-| MCP | `mcp@2025-11-25` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
-| GraphQL | `graphql` | `<RootType>/<field>`, root PascalCase | `Mutation/createUser` |
-| usage (CLI, [jdx usage](https://usage.jdx.dev)) | `usage@2.0` | space-separated command path into the artifact (empty = root command) | `db migrate run` |
-| operation-graph | `openbindings.operation-graph@0.2.0` | JSON Pointer to a graph definition | `#/graphs/paginateAll` |
+| [OpenAPI](openapi.md) | `openapi@3.1` | JSON Pointer to the operation object (`/` → `~1`, method lowercase) | `#/paths/~1users/get` |
+| [AsyncAPI](asyncapi.md) | `asyncapi@3.0` | JSON Pointer to the operation | `#/operations/sendMessage` |
+| [gRPC](grpc.md) | `grpc` | `package.Service/Method` | `blend.CoffeeShop/GetMenu` |
+| [Connect](connect.md) | `connect` | `package.Service/Method` (shares protobuf with gRPC) | `blend.CoffeeShop/GetMenu` |
+| [MCP](mcp.md) | `mcp@2025-11-25` | `<entity>/<name>`, entity ∈ `tools`/`resources`/`prompts` | `tools/get_weather` |
+| [GraphQL](graphql.md) | `graphql` | `<RootType>/<field>`, root PascalCase | `Mutation/createUser` |
+| [usage](usage.md) (CLI, [jdx usage](https://usage.jdx.dev)) | `usage@2.0` | space-separated command path into the artifact (empty = root command) | `db migrate run` |
+| [Workers RPC](workers-rpc.md) | `workers-rpc@^1.0.0` (verbatim) | `WorkerEntrypoint` method name | `getUser` |
+| [operation-graph](operation-graph/openbindings.operation-graph.md) | `openbindings.operation-graph@0.2.0` | JSON Pointer to a graph definition | `#/graphs/paginateAll` |
 
 Tokens above are exact-version examples of what a **source** declares; a tool advertising the **range** it handles writes `openapi@^3.0.0` or similar (see *Format tokens: exact vs. range* above).
 
 A source's `location` points at the artifact (a URL, file path, server address, or endpoint); `content` may inline it. When `ref` is absent, the binding targets the artifact as a whole. Refer to each format's specification or library for the precise source and addressing rules.
 
-What a `location` names — and therefore how a source carrying both `location` and `content` is interpreted ([`openbindings.md` OBI-T-15](../openbindings.md#143-tool-rules)) — differs by format. As the reference implementations record it:
+What a `location` names — and therefore how a source carrying both `location` and `content` is interpreted ([`openbindings.md` OBI-T-15](../openbindings.md#143-tool-rules)) — differs by format; each per-format document records it under *Source expectations*. In summary:
 
 - **Artifact-located** (`openapi`, `asyncapi`, `usage`, `operation-graph`): `location` names the artifact itself (the document's URL). With `content` present, the embedded artifact is authoritative and `location` is provenance.
 - **Service-addressed** (`grpc`, `connect`, `mcp`, `graphql`): `location` addresses the live service (a gRPC `host:port`, an MCP or GraphQL endpoint URL), from which the artifact is discoverable (reflection, introspection, `tools/list`). With `content` present, `content` pins the artifact and `location` remains the invocation target.
+- **Symbolic** (`workers-rpc`): the target is supplied out of band by the runtime and `location` is a label; see [workers-rpc.md](workers-rpc.md).
 
 A format not listed here that documents no pairing convention is content-authoritative by the core rule's default (OBI-T-15).
 
