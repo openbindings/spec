@@ -8,6 +8,13 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **"External" defined; resolution judged statically** — an absolute
+  `$ref` matching an embedded schema's `$id` resolves within the document
+  (standard 2020-12 identity resolution, no fetch); "external" means not
+  resolvable within the document. T-07/T-08's fully-resolved requirement
+  is judged over the whole governing schema before validating. Both align
+  the text with verified behavior in both SDKs.
+
 - **OBI-D-05 pointer-form rule gains the $id scope carve-out** (matching
   OBI-D-16): fragments within a schema declaring its own `$id` — plain-name
   anchors included — are that resource's internal business. Fixes a
