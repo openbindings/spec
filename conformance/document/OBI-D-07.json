@@ -8,8 +8,19 @@
       "description": "schemas with no $vocabulary anywhere",
       "document": {
         "openbindings": "0.2.0",
-        "schemas": { "Task": { "type": "object", "properties": { "id": { "type": "string" } } } },
-        "operations": { "createTask": {} }
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
       },
       "valid": true
     },
@@ -19,14 +30,20 @@
         "openbindings": "0.2.0",
         "schemas": {
           "Task": {
-            "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
+            "$vocabulary": {
+              "https://json-schema.org/draft/2020-12/vocab/core": true
+            },
             "type": "object"
           }
         },
-        "operations": { "createTask": {} }
+        "operations": {
+          "createTask": {}
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-07"]
+      "violates": [
+        "OBI-D-07"
+      ]
     },
     {
       "description": "operation input schema declares $vocabulary",
@@ -35,14 +52,18 @@
         "operations": {
           "createTask": {
             "input": {
-              "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
+              "$vocabulary": {
+                "https://json-schema.org/draft/2020-12/vocab/core": true
+              },
               "type": "object"
             }
           }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-07"]
+      "violates": [
+        "OBI-D-07"
+      ]
     },
     {
       "description": "$vocabulary in a nested property subschema",
@@ -53,16 +74,22 @@
             "type": "object",
             "properties": {
               "metadata": {
-                "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
+                "$vocabulary": {
+                  "https://json-schema.org/draft/2020-12/vocab/core": true
+                },
                 "type": "object"
               }
             }
           }
         },
-        "operations": { "createTask": {} }
+        "operations": {
+          "createTask": {}
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-07"]
+      "violates": [
+        "OBI-D-07"
+      ]
     },
     {
       "description": "$vocabulary in a $defs subschema",
@@ -73,16 +100,44 @@
             "type": "object",
             "$defs": {
               "Inner": {
-                "$vocabulary": { "https://json-schema.org/draft/2020-12/vocab/core": true },
+                "$vocabulary": {
+                  "https://json-schema.org/draft/2020-12/vocab/core": true
+                },
                 "type": "string"
               }
             }
           }
         },
-        "operations": { "createTask": {} }
+        "operations": {
+          "createTask": {}
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-07"]
+      "violates": [
+        "OBI-D-07"
+      ]
+    },
+    {
+      "description": "a property NAMED $vocabulary under `properties` is schema content, not the keyword (keyword-position-aware walking; a grep-style walker false-positives here)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getMeta": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "$vocabulary": {
+                  "type": "object"
+                },
+                "$schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

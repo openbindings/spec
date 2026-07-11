@@ -53,7 +53,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-16"
+      ]
     },
     {
       "description": "dangling nested subschema $ref",
@@ -71,7 +74,10 @@
         },
         "schemas": {}
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-16"
+      ]
     },
     {
       "description": "$ref under a nested $id is out of scope (resource-internal)",
@@ -111,6 +117,27 @@
           "getTask": {
             "output": {
               "$ref": "https://example.com/schemas/task.json"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$ref-shaped DATA under `const` is an instance value, not a reference (keyword-position-aware walking; a naive walker would flag the dangling-looking pointer)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getDefault": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "link": {
+                  "const": {
+                    "$ref": "#/schemas/Missing"
+                  }
+                }
+              }
             }
           }
         }

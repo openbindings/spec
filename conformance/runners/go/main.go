@@ -37,11 +37,12 @@ type Fixture struct {
 }
 
 type Test struct {
-	Description       string          `json:"description"`
-	Document          json.RawMessage `json:"document"`
-	Valid             bool            `json:"valid"`
-	Violates          []string        `json:"violates,omitempty"`
-	RequiresMaxTested string          `json:"requiresMaxTested,omitempty"`
+	Description          string          `json:"description"`
+	Document             json.RawMessage `json:"document"`
+	Valid                bool            `json:"valid"`
+	Violates             []string        `json:"violates,omitempty"`
+	RequiresMaxTested    string          `json:"requiresMaxTested,omitempty"`
+	RequiresMinSupported string          `json:"requiresMinSupported,omitempty"`
 }
 
 type Result struct {
@@ -79,10 +80,10 @@ type Mismatch struct {
 
 func main() {
 	var (
-		corpusDir   string
-		ruleFilter  string
-		verbose     bool
-		jsonOutput  bool
+		corpusDir  string
+		ruleFilter string
+		verbose    bool
+		jsonOutput bool
 	)
 	flag.StringVar(&corpusDir, "corpus", findDefaultCorpus(), "path to the conformance/ directory")
 	flag.StringVar(&ruleFilter, "rule", "", "limit to fixtures for this rule (e.g. OBI-D-03)")
@@ -210,6 +211,22 @@ func runOne(rule string, t Test) Result {
 				Test:    t.Description,
 				Skipped: true,
 				Reason:  fmt.Sprintf("requires SDK MaxTested >= %s; current is %s", t.RequiresMaxTested, openbindings.MaxTestedVersion),
+			}
+		}
+	}
+	if t.RequiresMinSupported != "" {
+		// Skip when the SDK's supported range extends below the version the
+		// downward-refusal test needs it to refuse (MinSupported < required).
+		// A required version below or equal to MinSupported means the test
+		// applies. Exact string equality suffices for the release-form
+		// versions the corpus uses.
+		lower, err := openbindings.IsLowerThanMinSupported(t.RequiresMinSupported)
+		if err == nil && !lower && t.RequiresMinSupported != openbindings.MinSupportedVersion {
+			return Result{
+				Rule:    rule,
+				Test:    t.Description,
+				Skipped: true,
+				Reason:  fmt.Sprintf("requires SDK MinSupported >= %s; current is %s", t.RequiresMinSupported, openbindings.MinSupportedVersion),
 			}
 		}
 	}

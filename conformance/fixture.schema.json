@@ -10,11 +10,11 @@
     "rule": {
       "type": "string",
       "pattern": "^OBI-[DT]-[0-9]+$",
-      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §16 of the OpenBindings spec."
+      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §14 of the OpenBindings spec."
     },
     "section": {
       "type": "string",
-      "description": "The spec section the rule is defined in (e.g., '16.2' for document rules, '16.3' for tool rules)."
+      "description": "The spec section the rule is defined in (e.g., '14.2' for document rules, '14.3' for tool rules)."
     },
     "description": {
       "type": "string",
@@ -63,6 +63,11 @@
             "type": "string",
             "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
             "description": "When set, the test only applies to SDKs whose MaxTestedVersion is at least this SemVer 2.0.0 version. Used for forward-compatible OBI-T-04 scenarios (e.g., a post-1.0 SDK MUST accept same-major-higher-minor documents) that cannot be evaluated against a pre-1.0 SDK without contradicting OBI-T-04. Runners SHOULD skip tests whose requiresMaxTested exceeds the SDK's MaxTestedVersion."
+          },
+          "requiresMinSupported": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+            "description": "When set, the test only applies to SDKs whose MinSupportedVersion is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the SDK's minimum MUST be refused), which are meaningless for an SDK whose supported range extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the SDK's MinSupportedVersion, reporting skips separately."
           }
         }
       }

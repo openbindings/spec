@@ -295,7 +295,7 @@ The fatal default is forced by the [identity law](#transparency-the-identity-law
 
 An `operation` node MUST NOT participate in a cycle (OG-V-10): a node whose inner input closes only on upstream completion cannot sit on a loop whose completion depends on it.
 
-**Diagnostic (non-normative).** A multi-emission path — most commonly a `map` — feeding an `operation` node is usually a missing `each`: with a unary selected binding it yields one result and converts the remaining events into write-rejection error events. The pattern is legitimate when the inner operation genuinely consumes an input stream, so validators SHOULD warn, not fail.
+**Diagnostic (non-normative).** A multi-emission path — most commonly a `map` — feeding an `operation` node is usually a missing `each`: with a unary selected binding it yields one result and converts the remaining events into write-rejection error events. The pattern is legitimate when the inner operation genuinely consumes an input stream, so validators should warn, not fail.
 
 ### `each`
 
@@ -584,7 +584,7 @@ The following rules apply to each operation graph definition (the value at which
 - **OG-V-17**: The `input` and `output` nodes MUST NOT declare `onError`. The boundary nodes are not invocations of their own and cannot fail as nodes; only processing nodes support `onError` (see [Node model](#node-model)).
 - **OG-V-18**: Every schema embedded in a graph definition (`filter.schema`, `buffer.until`, `buffer.through`) is a JSON Schema 2020-12 object; its `$schema`, when present, equals `https://json-schema.org/draft/2020-12/schema`; `$vocabulary` appears nowhere within it; and `$ref` appears nowhere within it — embedded schemas are self-contained (see [Embedded schemas](#embedded-schemas)).
 
-**Diagnostics (non-normative).** Validators SHOULD warn when a multi-emission path (e.g., a `map`) feeds an `operation` node — usually a missing `each` — and MAY warn when none of the `input` node's direct consumers is an `operation` node, since back-closure considers only direct consumers ([Input-side closure](#input-side-closure-back-closure)) and such a graph's callers always own input closure. The latter covers the `input → transform → operation` shape, which does not back-close like the bare wrapper even though an `operation` node sits one hop away; see [Deferred from 0.2.0](#deferred-from-020) (transitive back-closure).
+**Diagnostics (non-normative).** Validators should warn when a multi-emission path (e.g., a `map`) feeds an `operation` node — usually a missing `each` — and may warn when none of the `input` node's direct consumers is an `operation` node, since back-closure considers only direct consumers ([Input-side closure](#input-side-closure-back-closure)) and such a graph's callers always own input closure. The latter covers the `input → transform → operation` shape, which does not back-close like the bare wrapper even though an `operation` node sits one hop away; see [Deferred from 0.2.0](#deferred-from-020) (transitive back-closure).
 
 These rules apply to the graph definition itself; the enclosing JSON document has no specified shape and is not subject to validation by this specification.
 
@@ -597,7 +597,7 @@ A tool's obligations follow the capabilities it exercises, mirroring the [core s
 - **OG-T-03** (executing graphs): MUST evaluate node expressions as JSONata 2.0 per the [Transforms](#transforms) rules of this document, whose evaluation commitments deliberately align with the core specification's binding transforms (§6.5).
 - **OG-T-04** (executing graphs): MUST implement the [Execution semantics](#execution-semantics), including the portable behavior in [Determinism and portability](#determinism-and-portability), and MUST satisfy the [identity law](#transparency-the-identity-law); the acceptance criterion is the identity-law test stated there.
 
-The specification repository carries a conformance corpus for this format under `conformance/operation-graph/` — execution fixtures (including the identity-law suite), validation fixtures keyed to `OG-V-##` identifiers, and a reference runner. The corpus is the empirical check for these obligations; running an independent implementation against it unmodified is the intended conformance test.
+The specification repository carries a conformance corpus for this format under `conformance/operation-graph/` — execution fixtures (including the identity-law suite), validation fixtures keyed to `OG-V-##` identifiers, and a reference runner. The corpus is the empirical check for these obligations; running an independent implementation against it unmodified is the intended way to exercise them. As with the core corpus, it is reference material, not part of this specification: the normative text governs, fixtures yield to prose where they disagree, and a rule without fixtures is no less binding.
 
 ## Extensions
 
