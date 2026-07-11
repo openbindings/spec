@@ -8,6 +8,19 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Post-1.0 refusal granularity clarified to major-only** (§11.1,
+  OBI-T-04): within a supported major, a differing minor is not a refusal
+  trigger in either direction — newer minors only add optional fields
+  (older tools ignore the additions) and existing fields never change
+  meaning, so a higher minor reads by ignoring its additions and a lower
+  minor reads under rules that still hold. Refusal triggers post-1.0 are
+  major-only either way; pre-1.0 they stay minor-granular either way.
+  Resolves an internal contradiction where a "range, either direction"
+  sentence read as minor-granular against the same section's own trigger
+  enumeration, and aligns the prose with the behavior both SDKs already
+  ship (the refusal gate was major-only post-1.0; only the wording
+  diverged). Prose-only; no conformance change.
+
 - **Transform evaluation environment fully closed (both specs)**: no
   extensions for document-supplied expressions — neither host-reaching
   bindings nor pure custom functions; format-defined bindings (OG's
