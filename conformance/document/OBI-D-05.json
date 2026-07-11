@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-05",
   "section": "14.2",
-  "description": "Carries only absolute or same-document OBI-defined references: every sources[*].location is an absolute URI or a format-defined absolute address (never a relative reference); every schema $ref is a same-document fragment in JSON Pointer form (plain-name $anchor fragments are not used at OBI positions) or an absolute URI; every schema $id is absolute; every named-transform $ref in bindings[*].inputTransform/outputTransform is a same-document fragment. $dynamicRef and $dynamicAnchor do not appear at OBI positions (dynamic resolution follows the runtime dynamic scope rather than the document); within a schema declaring its own $id both are that resource's internal business, per the same scope rule as $ref/$anchor. URI-form references are well-formed per RFC 3986 §4.1; a format-defined absolute address (e.g. a gRPC host:port) is well-formed per its own format and is exempt. bindings[*].ref is interpreted by the binding format and is out of scope for this rule.",
-  "notes": "Format-defined absolute addresses (e.g. a gRPC host:port) are exempt from RFC 3986 URI well-formedness; their validity is per-format and cannot be checked by a format-agnostic validator, so positive cases for them are not fixtured here (same per-format testability limitation as OBI-D-13 and OBI-T-06). The relative-reference and malformed-URI negatives below apply to the URI-form branch.",
+  "description": "Carries only absolute or same-document OBI-defined references: every sources[*].location is an absolute URI or a format-defined absolute address (never a relative reference); every schema $ref is a same-document fragment in JSON Pointer form (plain-name $anchor fragments are not used at OBI positions) or an absolute URI; every schema $id at an OBI position is absolute (a nested $id within a schema declaring its own $id resolves against that resource's base per 2020-12 and is resource-internal); every named-transform $ref in bindings[*].inputTransform/outputTransform is a same-document fragment. $dynamicRef and $dynamicAnchor do not appear at OBI positions (dynamic resolution follows the runtime dynamic scope rather than the document); within a schema declaring its own $id both are that resource's internal business, per the same scope rule as $ref/$anchor. URI-form references are well-formed per RFC 3986 §4.1; a format-defined absolute address (e.g. a gRPC host:port) is well-formed per its own format and is exempt. bindings[*].ref is interpreted by the binding format and is out of scope for this rule.",
+  "notes": "Format-defined absolute addresses (e.g. a gRPC host:port) are exempt from RFC 3986 URI well-formedness; their validity is per-format and cannot be checked by a format-agnostic validator, so positive cases for them are not fixtured here (same per-format testability limitation as OBI-D-13 and OBI-T-06). The relative-reference clause is format-agnostically decidable per the rule's verification note: a location with no ':' before its first '/', '?', or '#' is a relative reference in form (RFC 3986 section 4.2) and every validator rejects it -- including a bare name like example.com; only colon-bearing non-URI strings are per-format. The relative-reference and malformed-URI negatives below apply to the URI-form branch.",
   "tests": [
     {
       "description": "absolute URI in source location",
@@ -38,6 +38,25 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "bare name in source location (no colon before the first separator: relative-reference form, rejectable without format knowledge)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "format": "openapi@3.1",
+            "location": "example.com"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
     },
     {
       "description": "relative URI reference in source location",
@@ -251,6 +270,32 @@
                 "items": {
                   "$dynamicRef": "#node"
                 }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a nested relative $id inside an embedded $id-declaring schema is resource-internal (resolves against the resource base per 2020-12; out of D-05's scope)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "$defs": {
+              "kind": {
+                "$id": "kind.schema.json",
+                "type": "string"
               }
             }
           }

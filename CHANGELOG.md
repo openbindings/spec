@@ -8,6 +8,56 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **`idempotent` is a three-state claim** (§6.1): `true` asserts idempotency
+  (unchanged), an explicit `false` now asserts NON-idempotency — re-invocation
+  with the same input may produce additional observable effects, so consumers
+  MUST NOT treat invocations as safely repeatable — and absence remains no
+  claim in either direction. Previously an explicit `false` was unreadable
+  (no-claim vs asserted non-idempotency). Both SDK representations already
+  preserve the distinction (Go `*bool`, TS optional boolean), so the change
+  is prose-only.
+
+- **OBI-D-05 verification floor made explicit** (verification note): the
+  relative-reference clause is decidable without format knowledge — a
+  location with no `:` before its first `/`, `?`, or `#` is a relative
+  reference in form (RFC 3986 §4.2) and every validator rejects it, so
+  `./openapi.json` fails everywhere rather than sitting unverified. A
+  consequence, now stated: a bare name like `example.com` is
+  relative-reference form and not a conformant location (formats wanting
+  DNS-name addresses carry a scheme or another colon-bearing form). Only
+  colon-bearing non-URI strings take per-format knowledge. Aligns the §14.2
+  capability note with the corpus negatives and both SDK validators, which
+  already used this discriminator; corpus gains the bare-name negative.
+
+- **Clarification batch from the blind-reconstruction review** (each item
+  names existing latitude, closes an inherited-RFC edge, or aligns prose
+  with verified behavior in both SDKs; none changes a design decision):
+  - OBI-T-08: the static resolvability judgment SHOULD precede driving the
+    binding, so a doomed invocation causes no side effects (both SDKs
+    already preflight both directions).
+  - OBI-T-09: eager-vs-lazy candidate-set determination named tool-defined.
+  - OBI-T-14: the "no OBI published" MAY-collapse does not extend to a 200
+    carrying an OBI whose version the client refuses (OBI-T-04) — a version
+    refusal is reported as such, preserving the upgrade/downgrade
+    diagnostic (the reference SDK already surfaces it distinctly).
+  - OBI-D-01: a leading byte-order mark is invalid (RFC 8259 §8.1 forbids
+    adding one; I-JSON excludes it; both SDK parsers reject it).
+  - §6.5: transform parse-validity named a non-document-rule — malformed
+    expressions surface at evaluation, validators may warn.
+  - §15/OBI-T-02: the transform-reference object (`$ref` object form of
+    `inputTransform`/`outputTransform`) added to the enumerated OBI object
+    locations.
+  - §7.1: followable redirects enumerated (301/302/303/307/308).
+  - §10/OBI-D-05: a nested `$id` inside an embedded `$id`-declaring schema
+    resolves against that resource's base per 2020-12 and MAY be relative —
+    the same resource-internal scope rule as `$ref`/`$anchor`; only
+    OBI-position `$id`s must be absolute. Corpus positive added; both SDK
+    walkers align.
+  - §10/OBI-D-16: same-document fragments are the RFC 6901 §6 URI-fragment
+    representation — percent-decoded before pointer evaluation
+    (`#/schemas/T%61sk` ≡ `#/schemas/Task`). Corpus positive added; both
+    SDK resolvers align.
+
 - **`$dynamicRef`/`$dynamicAnchor` barred at OBI positions** (§10 clause 2,
   OBI-D-05, OBI-D-16 note): the dynamic pair resolves against the runtime
   dynamic scope — resolution dependent on the evaluation path, precisely the
