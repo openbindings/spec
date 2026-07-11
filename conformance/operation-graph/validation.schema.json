@@ -19,7 +19,7 @@
         "properties": {
           "rule": {
             "type": "string",
-            "pattern": "^OG-V-(0[1-9]|1[0-7])$",
+            "pattern": "^OG-V-(0[1-9]|1[0-8])$",
             "description": "The stable validation-rule identifier (OG-V-##) from the format spec's Validation rules section."
           },
           "title": { "type": "string" },
