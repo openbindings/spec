@@ -8,6 +8,12 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **OBI-D-05 pointer-form rule gains the $id scope carve-out** (matching
+  OBI-D-16): fragments within a schema declaring its own `$id` — plain-name
+  anchors included — are that resource's internal business. Fixes a
+  same-day over-application: both SDK validators rejected legal
+  resource-internal anchors; corpus gains the positive case.
+
 - **operation-graph security: cross-graph nesting named and bounded** —
   per-graph budgets reset at each nesting level, so mutually recursive
   graph bindings had no bound; implementations SHOULD carry a recursion

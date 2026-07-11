@@ -154,6 +154,37 @@
         }
       },
       "valid": false
+    },
+    {
+      "description": "plain-name fragment inside an embedded $id-declaring schema is resource-internal (out of D-05's scope)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "$ref": "#kindAnchor"
+              }
+            },
+            "$defs": {
+              "kind": {
+                "$anchor": "kindAnchor",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }
