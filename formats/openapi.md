@@ -62,3 +62,4 @@ Operation keys sanitize `operationId` (else path+method), deduplicated determini
 - NDJSON/chunked streaming framings.
 - Content negotiation on requests (`Content-Type` is always JSON today; artifacts declaring only non-JSON request media types are not honored).
 - Token-vs-artifact version mismatch diagnostics.
+- Multi-file synthesis with external-file `$ref`s in a request/response body schema: the Go reference inliner resolves only internal `#/components/schemas/<name>` refs, so a genuine external-file `$ref` in an operation schema can survive into emitted embedded `content` (a dangling reference against OBI-D-15 self-containment); the TS package's full dereference resolves HTTP-reachable external refs. Single-document specs with internal refs bundle cleanly on both sides. Aligning Go to a full-closure walker is tracked as reference-implementation work.

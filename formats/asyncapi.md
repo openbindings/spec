@@ -49,3 +49,4 @@ Credential application is spec-driven per scheme (declared header/query/cookie f
 - Non-HTTP/WS protocol bindings (kafka, mqtt, amqp, …).
 - Whole-artifact (absent-ref) addressing.
 - Resource policy is tool-defined; the reference packages cap events/responses at 10 MiB per delivery unit (deliberately per-unit, so long-lived subscriptions are unbounded in total) and bound WS idle at 30 s via the pool.
+- WS backpressure under a slow consumer is unsettled: the per-unit byte cap governs single deliveries, not queue depth, and the reference packages diverge — the Go package buffers received frames unboundedly (never fails a slow consumer, but memory can grow), the TS package bounds the queue at 1024 frames and fails past it. A queued-frame policy is a pending ruling, not yet a convention.

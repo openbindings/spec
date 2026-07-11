@@ -44,3 +44,4 @@ Context credentials apply as HTTP headers on the transport (`bearerToken` → `A
 - Credentialed discovery (synthesis/inspection currently connects unauthenticated).
 - Resource subscriptions, sampling, elicitation — MCP features outside the current binding surface.
 - Session lifecycle (pooling vs per-invocation) and client identity are tool-defined; the reference packages differ today and alignment is tracked as SDK work, not a convention.
+- Progress-notification `total: 0`: the reference packages diverge on whether an explicit zero survives (TS preserves it via an optional field; Go's MCP library unmarshals `total` as a plain omit-empty field where zero means unknown, so an explicit `0` is indistinguishable from absent). Library-forced, not a chosen convention.
