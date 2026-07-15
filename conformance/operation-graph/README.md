@@ -2,7 +2,7 @@
 
 Fixtures for the `openbindings.operation-graph` binding format, keyed to its
 companion specification at
-[`formats/operation-graph/openbindings.operation-graph.md`](../../formats/operation-graph/openbindings.operation-graph.md).
+[`binding-specs/operation-graph/openbindings.operation-graph.md`](../../binding-specs/operation-graph/openbindings.operation-graph.md).
 
 The corpus tracks the **transparency rewrite** of the format: `operation` is
 the cardinality-agnostic conduit (one held invocation per graph invocation),
