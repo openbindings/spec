@@ -28,7 +28,7 @@ jobs:
           node scripts/check-canonical-order.mjs examples/*.obi.json
 
       - name: Validate operation-graph schema is valid JSON
-        run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null
+        run: python3 -m json.tool binding-specs/operation-graph/openbindings.operation-graph.schema.json > /dev/null
 
       - name: Verify operation-graph examples and conformance subcorpus
         run: node scripts/verify-operation-graph.mjs

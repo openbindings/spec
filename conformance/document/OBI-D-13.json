@@ -9,15 +9,24 @@
       "description": "binding with self-sufficient ref into embedded source content",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
+        "operations": {
+          "createTask": {}
+        },
         "sources": {
           "httpApi": {
-            "format": "openapi@3.1",
+            "bindingSpec": "openbindings.openapi@1",
             "content": {
               "openapi": "3.1.0",
-              "info": { "title": "Tasks", "version": "1.0.0" },
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
               "paths": {
-                "/tasks": { "post": { "summary": "create" } }
+                "/tasks": {
+                  "post": {
+                    "summary": "create"
+                  }
+                }
               }
             }
           }
@@ -36,9 +45,14 @@
       "description": "binding with self-sufficient JSON Pointer ref into externally located source",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
+        "operations": {
+          "createTask": {}
+        },
         "sources": {
-          "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" }
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
         },
         "bindings": {
           "createTask.http": {
@@ -54,9 +68,14 @@
       "description": "binding with absent ref (targets the source as a whole per the format's convention)",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "rawHandle": {} },
+        "operations": {
+          "rawHandle": {}
+        },
         "sources": {
-          "mcpServer": { "format": "mcp@2025-11-25", "location": "https://example.com/mcp" }
+          "mcpServer": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://example.com/mcp"
+          }
         },
         "bindings": {
           "rawHandle.mcp": {

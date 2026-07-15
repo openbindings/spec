@@ -6,83 +6,140 @@
   "tests": [
     {
       "description": "minimal valid document",
-      "document": { "openbindings": "0.2.0", "operations": {} },
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {}
+      },
       "valid": true
     },
     {
       "description": "missing required `operations` field",
-      "document": { "openbindings": "0.2.0" },
+      "document": {
+        "openbindings": "0.2.0"
+      },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "missing required `openbindings` field",
-      "document": { "operations": {} },
+      "document": {
+        "operations": {}
+      },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "operation aliases is a string instead of array",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": { "aliases": "create" }
+          "createTask": {
+            "aliases": "create"
+          }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "binding missing required `operation` field",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "source": "httpApi" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "source": "httpApi"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "source missing required `format` field",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "location": "https://api.example.com/openapi.json" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "location": "https://api.example.com/openapi.json"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "source `format` is an empty string (violates minLength: 1)",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "", "location": "https://api.example.com/openapi.json" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "",
+            "location": "https://api.example.com/openapi.json"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "source missing both `location` and `content`",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     },
     {
       "description": "operation deprecated flag is a string instead of boolean",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": { "deprecated": "yes" }
+          "createTask": {
+            "deprecated": "yes"
+          }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-02"]
+      "violates": [
+        "OBI-D-02"
+      ]
     }
   ]
 }

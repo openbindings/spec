@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Streaming fan-out with filters: route each event from a streaming conduit to per-event each handlers by shape. Mirrors the format spec's Example 6.",
   "fixtures": [

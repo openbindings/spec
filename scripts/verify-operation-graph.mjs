@@ -33,7 +33,7 @@ import { spawnSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SPEC_ROOT = resolve(__dirname, "..");
-const OG_DIR = join(SPEC_ROOT, "formats", "operation-graph");
+const OG_DIR = join(SPEC_ROOT, "binding-specs", "operation-graph");
 const OG_SCHEMA = join(OG_DIR, "openbindings.operation-graph.schema.json");
 const OG_SPEC_MD = join(OG_DIR, "openbindings.operation-graph.md");
 const CORPUS = join(SPEC_ROOT, "conformance", "operation-graph");

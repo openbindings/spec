@@ -1,35 +1,58 @@
 {
   "rule": "OBI-T-01",
   "section": "14.3",
-  "description": "Does not fail processing a document solely because the document contains an unsupported binding format. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.",
+  "description": "Does not fail processing a document solely because the document contains an unsupported binding specification. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.",
   "notes": "All tests are positive (valid: true). The rule is anti-failure: it asserts the tool does NOT refuse to process these inputs. A tool that emits diagnostics while still processing the document is conformant (the rule says 'MAY surface diagnostics'). Tests only verify the SDK didn't refuse the document.",
   "tests": [
     {
-      "description": "document declares an unknown binding format",
+      "description": "document declares an unknown binding specification",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
+        "operations": {
+          "createTask": {}
+        },
         "sources": {
-          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "https://api.example.com/somewhere" }
+          "exotic": {
+            "bindingSpec": "totally-fictional-format@9.9.9",
+            "location": "https://api.example.com/somewhere"
+          }
         },
         "bindings": {
-          "createTask.exotic": { "operation": "createTask", "source": "exotic" }
+          "createTask.exotic": {
+            "operation": "createTask",
+            "source": "exotic"
+          }
         }
       },
       "valid": true
     },
     {
-      "description": "document mixes a supported and an unsupported binding format; the supported binding stays actionable",
+      "description": "document mixes a supported and an unsupported binding specification; the supported binding stays actionable",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
+        "operations": {
+          "createTask": {}
+        },
         "sources": {
-          "http": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" },
-          "exotic": { "format": "totally-fictional-format@9.9.9", "location": "https://api.example.com/somewhere" }
+          "http": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          },
+          "exotic": {
+            "bindingSpec": "totally-fictional-format@9.9.9",
+            "location": "https://api.example.com/somewhere"
+          }
         },
         "bindings": {
-          "createTask.http": { "operation": "createTask", "source": "http", "ref": "#/paths/~1tasks/post" },
-          "createTask.exotic": { "operation": "createTask", "source": "exotic" }
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "http",
+            "ref": "#/paths/~1tasks/post"
+          },
+          "createTask.exotic": {
+            "operation": "createTask",
+            "source": "exotic"
+          }
         }
       },
       "valid": true

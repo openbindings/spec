@@ -7,9 +7,21 @@
       "description": "binding references an existing source key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
       },
       "valid": true
     },
@@ -17,12 +29,26 @@
       "description": "binding references a non-existent source key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "operation": "createTask", "source": "missingSource" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "missingSource"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-09"]
+      "violates": [
+        "OBI-D-09"
+      ]
     }
   ]
 }

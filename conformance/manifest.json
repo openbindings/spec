@@ -3,9 +3,9 @@
   "corpusVersion": "0.1.0",
   "totals": {
     "files": 17,
-    "tests": 116,
-    "positives": 54,
-    "negatives": 62,
+    "tests": 123,
+    "positives": 58,
+    "negatives": 65,
     "rulesCoveredDocument": 13,
     "rulesCoveredTool": 3,
     "rulesPartialDocument": 1,
@@ -48,9 +48,9 @@
       "path": "document/OBI-D-05.json",
       "rule": "OBI-D-05",
       "section": "14.2",
-      "tests": 9,
-      "positives": 4,
-      "negatives": 5
+      "tests": 15,
+      "positives": 7,
+      "negatives": 8
     },
     {
       "path": "document/OBI-D-06.json",
@@ -121,8 +121,8 @@
       "path": "document/OBI-D-16.json",
       "rule": "OBI-D-16",
       "section": "14.2",
-      "tests": 7,
-      "positives": 5,
+      "tests": 8,
+      "positives": 6,
       "negatives": 2
     },
     {

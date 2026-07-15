@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Buffer flush conditions (spec 'Node definitions / buffer'). Each fixture turns one caller write into a deterministic single-path event stream with a map, so the flushed-batch sequence is fully determined. OG-EX-28 pins until (the matching event is excluded and dropped, then the buffer resets and continues). OG-EX-29 pins through (the matching event is included, then the buffer resets and continues). OG-EX-30 pins limit as a tumbling window of disjoint batches, with the trailing partial batch flushed at upstream completion. Together with OG-EX-11 (limit precedence over until) and OG-EX-12 (a no-condition buffer that accumulates nothing emits nothing) these cover the buffer variants.",
   "fixtures": [

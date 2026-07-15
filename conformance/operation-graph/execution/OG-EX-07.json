@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Fatal per-event error with exit: make any single item's each-invocation failure terminate the graph. (Conduit terminal errors are fatal by default and need no such wiring; see OG-EX-16.) Mirrors the format spec's Example 8 (error path).",
   "fixtures": [

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Bounded cycle through a buffer. This fixture is not drawn from a spec example; it exercises the maxIterations event-lineage rule on an each node (a merge node on a cycle must not reset an iteration count). The cycle passes through a buffer (a merge node): step -> gate(buffer) -> unwrap -> step. Because the buffer preserves the operation's per-lineage count across the flush (element-wise max, here over a single-element batch), maxIterations bounds step to exactly 3 invocations, so the counter stops at n=3. If a merge reset the count instead, the cycle would never reach the bound and would not terminate, so this fixture pins the lineage safety rule.",
   "fixtures": [

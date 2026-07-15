@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "format is an annotation at embedded-schema evaluation: a filter never gates on format (Embedded schemas; aligned with core 6.2).",
   "fixtures": [

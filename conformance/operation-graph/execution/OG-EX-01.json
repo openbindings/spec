@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Pagination aggregation: fetch pages in a cycle until no nextCursor, buffer them, reduce to a flat items array. Mirrors the format spec's Example 2 and its execution trace.",
   "fixtures": [

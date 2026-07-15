@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "validation",
   "description": "Well-formedness fixtures keyed to the stable OG-V-## validation-rule identifiers in the operation-graph format spec. valid:true graphs must validate against the op-graph JSON Schema; for schemaEnforced rules, valid:false graphs must be rejected by it. Negative graphs for non-schemaEnforced rules are otherwise schema-valid so that only the named rule is violated.",
   "notes": "OG-V-11 (operation and each nodes reference operations in the containing OBI) cannot be decided from a graph in isolation, so its tests carry an `operations` array for the verifier to resolve against. OG-V-14 requires every node's type to be one of the defined node types; unknown types are non-conformant and schema-enforced, so both the missing-type and unknown-type cases are fixtured as negatives.",

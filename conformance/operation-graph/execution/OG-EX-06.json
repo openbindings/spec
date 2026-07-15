@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Error handling with onError: fetch an item's detail, falling back to a default value when the fetch fails. Mirrors the format spec's Example 7 (error path).",
   "fixtures": [

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "The identity law: input -> operation(y) -> output is observationally indistinguishable from a direct invocation of y. These fixtures exercise the conformance anchor (the trivial wrapper, spec Example 1) across all five selected-binding cardinalities named in the law's acceptance criterion (spec 'Transparency', the testable-law paragraph) -- no-input, unary, server-streaming, client-streaming, and bidirectional -- plus the terminal-error consequence. Together they pin consequences 1, 2, and 4 of the law and its cross-cardinality acceptance criterion.",
   "fixtures": [

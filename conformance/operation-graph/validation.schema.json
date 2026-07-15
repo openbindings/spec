@@ -6,7 +6,7 @@
   "type": "object",
   "required": ["format", "kind", "rules"],
   "properties": {
-    "format": { "const": "openbindings.operation-graph@0.2.0" },
+    "format": { "const": "openbindings.operation-graph@1" },
     "kind": { "const": "validation" },
     "description": { "type": "string" },
     "notes": { "type": "string" },

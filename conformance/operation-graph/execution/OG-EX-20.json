@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Filter-expression boolean cast: pass/drop is JSONata 2.0's boolean cast ($boolean) of the defined result, and an undefined result fails the node with TRANSFORM_UNDEFINED. Pins the cast table for empty composites and all-falsy arrays.",
   "fixtures": [

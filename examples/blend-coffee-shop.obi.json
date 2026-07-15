@@ -2,150 +2,249 @@
   "openbindings": "0.2.0",
   "name": "OpenBlendings",
   "version": "1.0.0",
-  "description": "A coffee shop with bindings in six formats: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six binding formats.",
+  "description": "A coffee shop with bindings across six families: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six binding specifications.",
   "schemas": {
     "MenuItem": {
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
         "sizes": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "label": { "type": "string" },
-              "price": { "type": "number" }
+              "label": {
+                "type": "string"
+              },
+              "price": {
+                "type": "number"
+              }
             },
-            "required": ["label", "price"]
+            "required": [
+              "label",
+              "price"
+            ]
           }
         }
       },
-      "required": ["id", "name", "sizes"]
+      "required": [
+        "id",
+        "name",
+        "sizes"
+      ]
     },
     "Menu": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
-          "items": { "$ref": "#/schemas/MenuItem" }
+          "items": {
+            "$ref": "#/schemas/MenuItem"
+          }
         }
       }
     },
     "PlaceOrderInput": {
       "type": "object",
       "properties": {
-        "drink": { "type": "string", "description": "Menu item ID" },
-        "size": { "type": "string", "description": "Size label (v1, v2, or v3)" },
-        "customer": { "type": "string", "description": "Customer name" }
+        "drink": {
+          "type": "string",
+          "description": "Menu item ID"
+        },
+        "size": {
+          "type": "string",
+          "description": "Size label (v1, v2, or v3)"
+        },
+        "customer": {
+          "type": "string",
+          "description": "Customer name"
+        }
       },
-      "required": ["drink", "size", "customer"]
+      "required": [
+        "drink",
+        "size",
+        "customer"
+      ]
     },
     "Order": {
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "drink": { "type": "string" },
-        "size": { "type": "string" },
-        "customer": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
+        "drink": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "customer": {
+          "type": "string"
+        },
         "status": {
           "type": "string",
-          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
+          "enum": [
+            "received",
+            "preparing",
+            "ready",
+            "picked_up",
+            "cancelled"
+          ]
         },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "drink", "size", "customer", "status", "createdAt"]
+      "required": [
+        "id",
+        "drink",
+        "size",
+        "customer",
+        "status",
+        "createdAt"
+      ]
     },
     "OrderStatusInput": {
       "type": "object",
       "properties": {
-        "orderId": { "type": "string" }
+        "orderId": {
+          "type": "string"
+        }
       },
-      "required": ["orderId"]
+      "required": [
+        "orderId"
+      ]
     },
     "CancelOrderInput": {
       "type": "object",
       "properties": {
-        "orderId": { "type": "string" }
+        "orderId": {
+          "type": "string"
+        }
       },
-      "required": ["orderId"]
+      "required": [
+        "orderId"
+      ]
     },
     "CancelOrderOutput": {
       "type": "object",
       "properties": {
-        "success": { "type": "boolean" },
-        "message": { "type": "string" }
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
       }
     },
     "OrderUpdate": {
       "type": "object",
       "properties": {
-        "orderId": { "type": "string" },
+        "orderId": {
+          "type": "string"
+        },
         "status": {
           "type": "string",
-          "enum": ["received", "preparing", "ready", "picked_up", "cancelled"]
+          "enum": [
+            "received",
+            "preparing",
+            "ready",
+            "picked_up",
+            "cancelled"
+          ]
         },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["orderId", "status", "updatedAt"]
+      "required": [
+        "orderId",
+        "status",
+        "updatedAt"
+      ]
     }
   },
   "operations": {
     "getMenu": {
       "description": "Returns the full menu with drinks, sizes, and prices.",
       "idempotent": true,
-      "output": { "$ref": "#/schemas/Menu" }
+      "output": {
+        "$ref": "#/schemas/Menu"
+      }
     },
     "placeOrder": {
       "description": "Place a new order. Returns the order with its ID and initial status.",
-      "input": { "$ref": "#/schemas/PlaceOrderInput" },
-      "output": { "$ref": "#/schemas/Order" }
+      "input": {
+        "$ref": "#/schemas/PlaceOrderInput"
+      },
+      "output": {
+        "$ref": "#/schemas/Order"
+      }
     },
     "getOrderStatus": {
       "description": "Check the current status of an order by ID.",
       "idempotent": true,
-      "input": { "$ref": "#/schemas/OrderStatusInput" },
-      "output": { "$ref": "#/schemas/Order" }
+      "input": {
+        "$ref": "#/schemas/OrderStatusInput"
+      },
+      "output": {
+        "$ref": "#/schemas/Order"
+      }
     },
     "cancelOrder": {
       "description": "Cancel a pending order. Only works if the order has not started preparation.",
-      "input": { "$ref": "#/schemas/CancelOrderInput" },
-      "output": { "$ref": "#/schemas/CancelOrderOutput" }
+      "input": {
+        "$ref": "#/schemas/CancelOrderInput"
+      },
+      "output": {
+        "$ref": "#/schemas/CancelOrderOutput"
+      }
     },
     "orderUpdates": {
       "description": "Stream of order state transitions. Emitted whenever an order changes status.",
-      "output": { "$ref": "#/schemas/OrderUpdate" }
+      "output": {
+        "$ref": "#/schemas/OrderUpdate"
+      }
     }
   },
   "sources": {
     "rest": {
-      "format": "openapi@3.1",
+      "bindingSpec": "openbindings.openapi@1",
       "location": "https://blend.openbindings.com/openapi.json",
       "description": "REST API for the ordering app"
     },
     "events": {
-      "format": "asyncapi@3.0",
+      "bindingSpec": "openbindings.asyncapi@1",
       "location": "https://blend.openbindings.com/asyncapi.json",
       "description": "SSE event stream for the barista dashboard"
     },
     "mcp": {
-      "format": "mcp@2025-11-25",
+      "bindingSpec": "openbindings.mcp@1",
       "location": "https://blend.openbindings.com/mcp",
       "description": "MCP tools for AI assistants"
     },
     "grpc": {
-      "format": "grpc",
+      "bindingSpec": "openbindings.grpc@1",
       "location": "blend.openbindings.com:9090",
       "description": "gRPC service for backend microservices"
     },
     "connect": {
-      "format": "connect",
+      "bindingSpec": "openbindings.connect@1",
       "location": "https://blend.openbindings.com",
       "description": "Connect (Buf) — same protobuf service over HTTP/1.1 + JSON"
     },
     "graphql": {
-      "format": "graphql",
+      "bindingSpec": "graphql",
       "location": "https://blend.openbindings.com/graphql",
       "description": "GraphQL API — flexible queries and subscriptions"
     }

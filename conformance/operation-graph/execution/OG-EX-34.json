@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Runtime context: $input at a cross-lineage merge. $input is the root input event of the current event's lineage; for an event descending from a merge of contributors with different roots, $input is unbound (undefined). Here two caller writes (two lineages) merge in a no-condition buffer; a downstream transform reads $input, which is undefined because the contributors disagree on a root, so the expression's result is undefined and the node fails with TRANSFORM_UNDEFINED per the Transforms rule. The single-write common case where $input is a defined constant is already exercised by OG-EX-01 ($input.filter).",
   "fixtures": [

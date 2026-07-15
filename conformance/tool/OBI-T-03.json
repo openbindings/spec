@@ -8,8 +8,15 @@
       "description": "document with x- extension at the root level",
       "document": {
         "openbindings": "0.2.0",
-        "x-vendor-metadata": { "owner": "platform-team", "tags": ["internal"] },
-        "operations": { "createTask": {} }
+        "x-vendor-metadata": {
+          "owner": "platform-team",
+          "tags": [
+            "internal"
+          ]
+        },
+        "operations": {
+          "createTask": {}
+        }
       },
       "valid": true
     },
@@ -24,7 +31,7 @@
         },
         "sources": {
           "httpApi": {
-            "format": "openapi@3.1",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "https://api.example.com/openapi.json",
             "x-cache-ttl-seconds": 300
           }
@@ -43,8 +50,12 @@
       "description": "document with x- field whose key resembles a core field name",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "x-operations": { "spurious": "should be ignored as extension, not interpreted as the operations map" }
+        "operations": {
+          "createTask": {}
+        },
+        "x-operations": {
+          "spurious": "should be ignored as extension, not interpreted as the operations map"
+        }
       },
       "valid": true
     },
@@ -54,7 +65,9 @@
         "openbindings": "0.2.0",
         "operations": {
           "createTask": {
-            "input": { "type": "object" },
+            "input": {
+              "type": "object"
+            },
             "examples": {
               "happy": {
                 "x-source": "production-traffic-sample",
