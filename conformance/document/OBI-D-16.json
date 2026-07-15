@@ -1,0 +1,167 @@
+{
+  "rule": "OBI-D-16",
+  "section": "14.2",
+  "description": "Every schema $ref that is a same-document fragment resolves, from the OBI document root per section 10, to a location that exists within the document. The fragment is the pointer's URI-fragment representation per RFC 6901 section 6: percent-decoded before evaluation. Refs within a schema declaring its own $id are out of scope; absolute-URI $refs are external (evaluation-time).",
+  "tests": [
+    {
+      "description": "percent-encoded fragment decodes before RFC 6901 evaluation (#/schemas/T%61sk addresses the schemas key Task)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/T%61sk"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "same-document $ref resolving to a schemas-map entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bare # resolves to the document root",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echoDoc": {
+            "output": {
+              "$ref": "#"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dangling same-document $ref (missing schemas entry)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Missing"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-16"
+      ]
+    },
+    {
+      "description": "dangling nested subschema $ref",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "listTasks": {
+            "output": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/Nope"
+              }
+            }
+          }
+        },
+        "schemas": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-16"
+      ]
+    },
+    {
+      "description": "$ref under a nested $id is out of scope (resource-internal)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "parent": {
+                "$ref": "#/$defs/base"
+              }
+            },
+            "$defs": {
+              "base": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "external absolute $ref is not this rule's concern",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "https://example.com/schemas/task.json"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$ref-shaped DATA under `const` is an instance value, not a reference (keyword-position-aware walking; a naive walker would flag the dangling-looking pointer)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getDefault": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "link": {
+                  "const": {
+                    "$ref": "#/schemas/Missing"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "The per-event failure identifiers MAP_NOT_ARRAY and TRANSFORM_UNDEFINED at the node types the spec's error-identifier table names, beyond the filter case already pinned by OG-EX-25. OG-EX-32 pins a map node whose expression yields a defined non-array (MAP_NOT_ARRAY). OG-EX-33 pins a transform node whose expression yields undefined (TRANSFORM_UNDEFINED). Both are per-event failures: with onError set the error event (carrying the offending event) routes to the named node; unset, they would drop silently.",
+  "fixtures": [
+    {
+      "id": "OG-EX-32",
+      "name": "map of a defined non-array fails with MAP_NOT_ARRAY",
+      "section": "Node definitions / map; Errors (error identifiers)",
+      "description": "The map expression count yields the number 5, a defined non-array result, so the node fails with MAP_NOT_ARRAY rather than unpacking. The node sets onError to the output node, so the error event { error: MAP_NOT_ARRAY, event: <the input> } is emitted; the normal map->out path carries nothing on failure.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "unpack": { "type": "map", "transform": "count", "onError": "out" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "unpack" },
+          { "from": "unpack", "to": "out" }
+        ]
+      },
+      "writes": [{ "count": 5 }],
+      "expected": {
+        "output": [{ "error": "MAP_NOT_ARRAY", "event": { "count": 5 } }],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-33",
+      "name": "transform yielding undefined fails with TRANSFORM_UNDEFINED",
+      "section": "Node definitions / transform; Transforms; Errors (error identifiers)",
+      "description": "The transform expression references a field absent from the event, so it evaluates to undefined (no result) and the node fails with TRANSFORM_UNDEFINED per the Transforms rule, exactly as OG-EX-25 pins for a filter. onError routes the error event { error: TRANSFORM_UNDEFINED, event: <the input> } to the output node.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "reshape": { "type": "transform", "transform": "missing", "onError": "out" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "reshape" },
+          { "from": "reshape", "to": "out" }
+        ]
+      },
+      "writes": [{ "a": 1 }],
+      "expected": {
+        "output": [{ "error": "TRANSFORM_UNDEFINED", "event": { "a": 1 } }],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

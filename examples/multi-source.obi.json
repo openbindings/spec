@@ -1,5 +1,5 @@
 {
-  "openbindings": "0.1.0",
+  "openbindings": "0.2.0",
   "name": "User Service",
   "version": "2.0.0",
   "description": "A user service available through two OpenAPI sources — a public API and an internal admin API — unified under one interface.",

@@ -1,0 +1,59 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Empty buffer completion: a no-condition buffer that accumulates zero events emits nothing (not an empty array) when its upstream completes.",
+  "fixtures": [
+    {
+      "id": "OG-EX-12",
+      "name": "Empty no-condition buffer emits nothing",
+      "section": "Node definitions / buffer; Execution algorithm",
+      "description": "The single input event is dropped by a filter, so the buffer's incoming edge completes with nothing accumulated. The buffer emits no array; the graph output stream is empty.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "description": "filter drops all events; downstream no-condition buffer receives nothing.",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "drop": {
+            "type": "filter",
+            "schema": {
+              "required": [
+                "zzz"
+              ]
+            }
+          },
+          "buf": {
+            "type": "buffer"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "drop"
+          },
+          {
+            "from": "drop",
+            "to": "buf"
+          },
+          {
+            "from": "buf",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "x": 1
+        }
+      ],
+      "expected": {
+        "output": [],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

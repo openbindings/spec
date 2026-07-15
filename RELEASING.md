@@ -6,6 +6,16 @@ This repo uses **immutable snapshots** for released spec versions, and regular p
 
 - Released versions are **immutable**: once published under `versions/X.Y.Z/`, they should not change.
 - Changes happen via PRs and are released as a **new version**.
+- **A snapshot exists only for a tagged release.** The snapshot and the tag
+  are cut together (workflow steps 2–3, one sitting); a `versions/X.Y.Z/`
+  directory with no `vX.Y.Z` tag is a lie about what has shipped. The root
+  documents are the working draft of the NEXT version, and `versions/`
+  contains only what was actually released.
+- **One version string, one text.** The moment the working draft would
+  diverge breakingly from the latest released snapshot, the draft's
+  self-declared version (the `openbindings.md` heading, the CHANGELOG
+  section) must already be the next version. Two normative texts under one
+  identifier is exactly the divergence OBI-T-04 exists to prevent.
 
 ## What gets snapshotted
 
@@ -14,12 +24,13 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
-- `conformance/` — the conformance test suite
+- `conformance/` — the core conformance test corpus: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise (§14) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version.
 
 **Not snapshotted:**
 
-- `interfaces/` — role interfaces are independently versioned and use location-based identity. Each interface lives at a stable, versioned path (e.g., `interfaces/openbindings.host/0.1.json`) that IS its identity. Copying interfaces into a version snapshot would create a second URL for the same contract, fragmenting identity. See the spec's [Interface identity](#interface-identity-location-based) section.
+- The project's shared interfaces are **no longer in this repository** — they live in [openbindings/interfaces](https://github.com/openbindings/interfaces), independently versioned with location-based identity. They were never snapshotted with the core spec: copying a contract into a spec snapshot would create a second URL for the same contract, fragmenting identity.
 - `formats/` — companion format specs carry their own version in their format token (e.g., `openbindings.operation-graph@0.1.0`) and are independently versioned. They live at their canonical path and are referenced by format token, not by release version.
+- `scripts/` — repo-wide tooling (canonical-order checker, manifest generator, corpus verifier). These operate on the current working tree and aren't part of any specific release.
 
 ## Workflow
 
@@ -27,6 +38,7 @@ A release snapshot captures the normative core spec at the time of release:
 
    - Ensure `openbindings.md` reflects what you intend to release.
    - Ensure any companion format specs under `formats/` are ready.
+   - Regenerate `conformance/manifest.json` (`node scripts/generate-conformance-manifest.mjs`) and run `node scripts/verify-corpus.mjs` to confirm the corpus is in sync with the spec.
 
 2. Cut a release snapshot
 
@@ -35,12 +47,25 @@ A release snapshot captures the normative core spec at the time of release:
      - `openbindings.md` → `versions/<next>/openbindings.md`
      - `openbindings.schema.json` → `versions/<next>/openbindings.schema.json`
      - `EDITORS.md` → `versions/<next>/editors.md`
-     - `conformance/` → `versions/<next>/conformance/`
+     - Core conformance artifacts → `versions/<next>/conformance/`:
+       - `conformance/README.md`
+       - `conformance/manifest.json`
+       - `conformance/fixture.schema.json`
+       - `conformance/document/`
+       - `conformance/tool/`
+       - `conformance/runners/`
    - Update `versions/README.md` to include the new version.
    - (Optional) Use the helper script: `scripts/release.sh <next>`
 
 3. Tag the release
-   - Tag the repo with `v<next>` (e.g., `v0.1.1`).
+   - Tag the repo with `v<next>` (e.g., `v0.1.1`), in the same sitting as
+     step 2 — the snapshot must never exist untagged.
+
+4. Open the next draft
+   - Retitle the CHANGELOG's top section to the next version, marked
+     `(unreleased, in draft)`.
+   - When the first breaking change lands, bump the draft's self-declared
+     version in `openbindings.md` and the examples' `openbindings` fields.
 
 ## Errata
 

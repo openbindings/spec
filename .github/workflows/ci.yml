@@ -23,19 +23,48 @@ jobs:
             ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
           done
 
-      - name: Validate interface files against schema
+      - name: Check canonical field ordering
         run: |
-          for f in interfaces/*.json; do
-            echo "Validating $f..."
-            ajv validate -s openbindings.schema.json -d "$f" --spec=draft2020 -c ajv-formats
-          done
-
-      - name: Validate conformance fixtures are valid JSON
-        run: |
-          for f in conformance/*.json; do
-            echo "Checking $f..."
-            python3 -m json.tool "$f" > /dev/null
-          done
+          node scripts/check-canonical-order.mjs examples/*.obi.json
 
       - name: Validate operation-graph schema is valid JSON
         run: python3 -m json.tool formats/operation-graph/openbindings.operation-graph.schema.json > /dev/null
+
+      - name: Verify operation-graph examples and conformance subcorpus
+        run: node scripts/verify-operation-graph.mjs
+
+      - name: Run operation-graph reference runner (executes execution fixtures)
+        run: |
+          cd conformance/operation-graph/runners/js
+          npm install --no-audit --no-fund
+          node run.mjs
+
+      - name: Run operation-graph reference runner (adversarial interleavings)
+        run: |
+          cd conformance/operation-graph/runners/js
+          node run.mjs --adversarial --trials=512
+
+      - name: Verify conformance corpus consistency
+        run: node scripts/verify-corpus.mjs
+
+      - name: Check conformance manifest is up-to-date
+        run: |
+          node scripts/generate-conformance-manifest.mjs
+          git diff --exit-code conformance/manifest.json
+
+      - name: Check local markdown links
+        run: |
+          rc=0
+          while IFS= read -r file; do
+            dir=$(dirname "$file")
+            grep -oP '\[(?:[^\]]*)\]\(\K[^)#][^)]*?\.(?:md|json|yaml|yml)' "$file" 2>/dev/null | while IFS= read -r target; do
+              case "$target" in http://*|https://*) continue;; esac
+              target_file="${target%%#*}"
+              resolved="$dir/$target_file"
+              if [ ! -f "$resolved" ]; then
+                echo "BROKEN LINK: $file -> $target (resolved: $resolved)"
+                exit 1
+              fi
+            done || rc=1
+          done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './temp_ref/*')
+          exit $rc

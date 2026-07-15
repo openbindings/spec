@@ -1,0 +1,34 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Runtime context: $input at a cross-lineage merge. $input is the root input event of the current event's lineage; for an event descending from a merge of contributors with different roots, $input is unbound (undefined). Here two caller writes (two lineages) merge in a no-condition buffer; a downstream transform reads $input, which is undefined because the contributors disagree on a root, so the expression's result is undefined and the node fails with TRANSFORM_UNDEFINED per the Transforms rule. The single-write common case where $input is a defined constant is already exercised by OG-EX-01 ($input.filter).",
+  "fixtures": [
+    {
+      "id": "OG-EX-34",
+      "name": "$input is undefined for an event merged from disagreeing lineages",
+      "section": "Runtime context",
+      "description": "Two caller writes each root a lineage. A no-condition buffer accumulates both across lineages and flushes one array event whose contributors have different roots, so $input is unbound for it. The downstream transform's expression is bare $input, which evaluates to undefined, failing the node with TRANSFORM_UNDEFINED; onError routes the error event (carrying the merged array as its event) to output. This pins the merge clause of Runtime context: $input is defined iff all contributors share one root.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "collect": { "type": "buffer" },
+          "root": { "type": "transform", "transform": "$input", "onError": "out" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "collect" },
+          { "from": "collect", "to": "root" },
+          { "from": "root", "to": "out" }
+        ]
+      },
+      "writes": [{ "a": 1 }, { "a": 2 }],
+      "expected": {
+        "output": [
+          { "error": "TRANSFORM_UNDEFINED", "event": [{ "a": 1 }, { "a": 2 }] }
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

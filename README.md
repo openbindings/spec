@@ -13,7 +13,7 @@
 
 <p align="center">
   <a href="https://openbindings.com">Website</a> &middot;
-  <a href="openbindings.md">Read the Spec</a> &middot;
+  <a href="openbindings.md">Read the spec</a> &middot;
   <a href="https://github.com/openbindings/ob">CLI</a>
 </p>
 
@@ -21,93 +21,80 @@
 
 ## What is OpenBindings?
 
-OpenBindings defines a standard way to describe **what a service does** — its operations, schemas, and compatibility guarantees — separately from **how you access it**.
+OpenBindings defines a standard way to describe **what a service does** — its operations and their input/output contracts — separately from **how you reach it** over any particular protocol.
 
-A single OpenBindings Interface (OBI) can reference bindings in OpenAPI, AsyncAPI, MCP, gRPC, or any other binding specification, without redefining the contract for each one.
+A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification, without redefining the contract for each one. OBI sits one layer above those formats: each format stays authoritative over its own wire shape, and OBI adds the operation-level overlay that survives across protocols.
 
 ```
-┌─────────────────────────────────────┐
-│         OpenBindings Interface      │
-│                                     │
-│  operations:                        │
-│    echo   (method)                  │
-│    greet  (method)                  │
-│    tick   (event)                   │
-│                                     │
-│  bindings:                          │
-│    echo  → OpenAPI  POST /api/echo  │
-│    echo  → MCP      tools/echo      │
-│    tick  → AsyncAPI  SSE /events    │
-└─────────────────────────────────────┘
+┌────────────────────────────────────────────┐
+│          OpenBindings Interface            │
+│                                            │
+│  operations:                               │
+│    placeOrder   (aliases: orders.create)   │
+│    getMenu                                 │
+│    orderUpdates (event)                    │
+│                                            │
+│  bindings:                                 │
+│    placeOrder   → OpenAPI   POST /orders   │
+│    placeOrder   → MCP       tools/order    │
+│    orderUpdates → AsyncAPI  SSE /events    │
+└────────────────────────────────────────────┘
 ```
 
 ### Core concepts
 
-- **Operations** are the contract — named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples).
-- **Bindings** map operations to concrete binding specifications without redefining the contract.
-- **Sources** reference external binding artifacts (OpenAPI documents, AsyncAPI specs, MCP servers) by format and location.
+- **Operations** are the contract: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples).
+- **Bindings** map an operation to a concrete protocol target without redefining the contract. One operation can carry many bindings.
+- **Sources** reference external binding artifacts (OpenAPI documents, AsyncAPI specs, MCP servers, …) by format and location.
+- **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
 
-## Read the spec
+## The specification
 
-| Document                                               | Description                             |
-| ------------------------------------------------------ | --------------------------------------- |
-| [`openbindings.md`](openbindings.md)                   | Working draft (latest)                  |
-| [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for OBI document validation |
-| [`versions/0.1.0/`](versions/0.1.0/)                   | v0.1.0 release snapshot                 |
+The spec defines what an OBI document **is**: its shape, discovery, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.0](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§14](openbindings.md#14-conformance) floor — to implementations: comparison and matching, binding-selection tactics past the deprecation-tier rule, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits).
 
-## Ecosystem
+Authentication in particular is **not** part of an OBI document. It is a runtime prerequisite negotiated by the binding invoker at call time and resolved into the runtime's store — see the [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface.
 
-**SDKs**
+## Guides and tutorials
 
-| Repository                                                                      | Description                                              |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [openbindings/openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK for reading, writing, and executing OBI documents |
-| [openbindings/openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo (core SDK + format packages)     |
+This repository is the **normative and reference** source. It is self-contained for understanding and implementing the standard: the spec, the schema, the conformance corpus, the format specifications, and worked examples. The project's shared interfaces are published separately in [openbindings/interfaces](https://github.com/openbindings/interfaces).
 
-**CLI**
+Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version.
 
-| Repository                                            | Description                                                                |
-| ----------------------------------------------------- | -------------------------------------------------------------------------- |
-| [openbindings/ob](https://github.com/openbindings/ob) | `ob` -- the OpenBindings CLI for creating, executing, and serving OBIs. Ships with a built-in multi-protocol demo (`ob demo`). |
+## In this repository
 
-**Binding format libraries**
+| Path | What it is |
+| --- | --- |
+| [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
+| [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
+| [`formats/`](formats/) | Companion binding-format specifications (e.g., operation-graph) |
+| [`examples/`](examples/) | Worked example OBI documents |
+| [`conformance/`](conformance/) | Conformance test corpus + reference runner |
+| [`versions/`](versions/) | Immutable released snapshots |
 
-Format libraries implement binding execution and interface creation for specific binding specifications. They live inside the SDK repos as subpackages.
+The specification is self-contained and does not depend on any of the reference or tooling material above.
 
-| Package (Go)                          | Package (TypeScript)         | Format token                         |
-| ------------------------------------- | ---------------------------- | ------------------------------------ |
-| `openbindings-go/formats/openapi`     | `@openbindings/openapi`      | `openapi@^3.0.0`                     |
-| `openbindings-go/formats/asyncapi`    | `@openbindings/asyncapi`     | `asyncapi@^3.0.0`                    |
-| `openbindings-go/formats/grpc`        |                              | `grpc`                               |
-| `openbindings-go/formats/connect`     |                              | `connect`                            |
-| `openbindings-go/formats/mcp`         | `@openbindings/mcp`          | `mcp@2025-11-25`                     |
-| `openbindings-go/formats/graphql`     | `@openbindings/graphql`      | `graphql`                            |
-| `openbindings-go/formats/usage`       |                              | `usage@^2.0.0`                       |
-| `openbindings-go/formats/workersrpc`  | `@openbindings/workers-rpc`  | `workers-rpc`                        |
-| `openbindings-go/formats/operationgraph` |                           | `openbindings.operation-graph@0.1.0` |
+## Implementations
 
-## Repository structure
+The openbindings project publishes reference implementations. The spec privileges no implementation; third-party tools are free to build their own.
 
-```
-openbindings.md              Specification (v0.1.0)
-openbindings.schema.json     JSON Schema
-versions/                    Immutable released snapshots
-interfaces/                  Standard OBI interfaces published by the project
-conformance/                 Conformance test fixtures
-examples/                    Spec examples
-formats/                     Binding format specifications (e.g., operation-graph)
-guides/                      Implementation guidance and patterns
-scripts/                     Release tooling
-```
+| Project | Description |
+| --- | --- |
+| [openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK to read, write, and invoke OBI documents (with per-format packages) |
+| [openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo (core SDK + per-format packages) |
+| [ob](https://github.com/openbindings/ob) | The `ob` CLI: synthesize, invoke, and serve OBIs locally (`ob start`), with a built-in multi-protocol demo (`ob demo`) |
+
+## Status
+
+OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is the **v0.2.0 draft** (unreleased; the latest release is 0.1.0). Immutable released snapshots live under [`versions/`](versions/) and are cut at tag time, never before. See [CHANGELOG.md](CHANGELOG.md) for what is changing and [`openbindings.md` §11](openbindings.md#11-versioning) for the versioning model.
 
 ## Contributing
 
 OpenBindings is developed in the open. Contributions, feedback, and discussion are welcome.
 
-- [Contributing Guide](CONTRIBUTING.md)
+- [Contributing guide](CONTRIBUTING.md)
 - [Governance](GOVERNANCE.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)
 - [Releasing](RELEASING.md)
 - [Editors](EDITORS.md)
 

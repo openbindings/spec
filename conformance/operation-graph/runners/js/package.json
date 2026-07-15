@@ -1,0 +1,14 @@
+{
+  "name": "openbindings-operation-graph-runner",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Reference runner for the openbindings.operation-graph execution conformance fixtures. Operations are mocked, so it needs only a JSONata evaluator and a JSON Schema validator, not the binding-invocation stack.",
+  "scripts": {
+    "test": "node run.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "jsonata": "^2.0.6"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Buffer flush conditions (spec 'Node definitions / buffer'). Each fixture turns one caller write into a deterministic single-path event stream with a map, so the flushed-batch sequence is fully determined. OG-EX-28 pins until (the matching event is excluded and dropped, then the buffer resets and continues). OG-EX-29 pins through (the matching event is included, then the buffer resets and continues). OG-EX-30 pins limit as a tumbling window of disjoint batches, with the trailing partial batch flushed at upstream completion. Together with OG-EX-11 (limit precedence over until) and OG-EX-12 (a no-condition buffer that accumulates nothing emits nothing) these cover the buffer variants.",
+  "fixtures": [
+    {
+      "id": "OG-EX-28",
+      "name": "Buffer until: matching event excluded and dropped, then reset and continue",
+      "section": "Node definitions / buffer",
+      "description": "unpack emits a, b, FLUSH, c, d. The buffer flushes when an event matches until ({const: FLUSH}); the matching FLUSH is not included and is dropped, then the buffer resets and keeps accumulating. The trailing partial batch [c, d] is flushed when the upstream completes. No FLUSH delimiter appears in any output batch.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "unpack": { "type": "map", "transform": "items" },
+          "buf": { "type": "buffer", "until": { "const": "FLUSH" } },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "unpack" },
+          { "from": "unpack", "to": "buf" },
+          { "from": "buf", "to": "out" }
+        ]
+      },
+      "writes": [{ "items": ["a", "b", "FLUSH", "c", "d"] }],
+      "expected": {
+        "output": [
+          ["a", "b"],
+          ["c", "d"]
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-29",
+      "name": "Buffer through: matching event included, then reset and continue",
+      "section": "Node definitions / buffer",
+      "description": "unpack emits a, b, END, c, END. The buffer flushes when an event matches through ({const: END}); the matching END is included in the flushed batch, then the buffer resets and keeps accumulating. Both END delimiters terminate their batch and appear in it. Accumulation ends exactly at the second END, so no trailing partial batch is flushed at completion.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "unpack": { "type": "map", "transform": "items" },
+          "buf": { "type": "buffer", "through": { "const": "END" } },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "unpack" },
+          { "from": "unpack", "to": "buf" },
+          { "from": "buf", "to": "out" }
+        ]
+      },
+      "writes": [{ "items": ["a", "b", "END", "c", "END"] }],
+      "expected": {
+        "output": [
+          ["a", "b", "END"],
+          ["c", "END"]
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-30",
+      "name": "Buffer limit: tumbling window of disjoint batches with a trailing partial flush",
+      "section": "Node definitions / buffer",
+      "description": "unpack emits a, b, c, d, e into a buffer with limit 2. The buffer flushes a disjoint batch every time it accumulates 2 events ([a,b], then [c,d]), then resets and continues. The trailing partial batch [e] is flushed when the upstream completes, so no event is silently discarded.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "unpack": { "type": "map", "transform": "items" },
+          "buf": { "type": "buffer", "limit": 2 },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "unpack" },
+          { "from": "unpack", "to": "buf" },
+          { "from": "buf", "to": "out" }
+        ]
+      },
+      "writes": [{ "items": ["a", "b", "c", "d", "e"] }],
+      "expected": {
+        "output": [
+          ["a", "b"],
+          ["c", "d"],
+          ["e"]
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

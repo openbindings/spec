@@ -15,15 +15,19 @@ What it does:
   - Copies the working spec (openbindings.md) into versions/<version>/openbindings.md
   - Copies the working JSON Schema (openbindings.schema.json) into versions/<version>/openbindings.schema.json
   - Copies EDITORS.md into versions/<version>/editors.md
-  - Copies the conformance suite (conformance/) into versions/<version>/conformance/
+  - Copies the core conformance corpus into versions/<version>/conformance/
   - Appends the version to versions/README.md (if not already present)
 
 What it does NOT snapshot:
-  - interfaces/ — independently versioned, location-is-identity
   - formats/ — independently versioned via format token
+  - conformance/operation-graph/ — subcorpus of the operation-graph format,
+    versioned with that format, not with the core spec
+  - scripts/ — repo-wide tooling, not part of any specific release
 
 What it does NOT do:
   - It does not commit, tag, or push anything.
+  - It does not regenerate conformance/manifest.json or run verify-corpus.mjs.
+    Run those manually before invoking this script.
 EOF
 }
 
@@ -56,6 +60,10 @@ if [[ ! -f "$working_editors" ]]; then
   echo "error: missing working editors at $working_editors" >&2
   exit 2
 fi
+if [[ ! -d "$working_conformance" ]]; then
+  echo "error: missing working conformance directory at $working_conformance" >&2
+  exit 2
+fi
 
 dest_dir="$repo_root/versions/$version"
 dest_spec="$dest_dir/openbindings.md"
@@ -72,9 +80,13 @@ mkdir -p "$dest_dir"
 cp "$working_spec" "$dest_spec"
 cp "$working_schema" "$dest_schema"
 cp "$working_editors" "$dest_editors"
-if [[ -d "$working_conformance" ]]; then
-  cp -r "$working_conformance" "$dest_conformance"
-fi
+mkdir -p "$dest_conformance"
+cp "$working_conformance/README.md" "$dest_conformance/README.md"
+cp "$working_conformance/manifest.json" "$dest_conformance/manifest.json"
+cp "$working_conformance/fixture.schema.json" "$dest_conformance/fixture.schema.json"
+cp -R "$working_conformance/document" "$dest_conformance/document"
+cp -R "$working_conformance/tool" "$dest_conformance/tool"
+cp -R "$working_conformance/runners" "$dest_conformance/runners"
 
 versions_readme="$repo_root/versions/README.md"
 if [[ -f "$versions_readme" ]]; then

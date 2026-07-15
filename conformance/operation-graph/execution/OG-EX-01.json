@@ -1,0 +1,128 @@
+{
+  "format": "openbindings.operation-graph@0.2.0",
+  "kind": "execution",
+  "description": "Pagination aggregation: fetch pages in a cycle until no nextCursor, buffer them, reduce to a flat items array. Mirrors the format spec's Example 2 and its execution trace.",
+  "fixtures": [
+    {
+      "id": "OG-EX-01",
+      "name": "Pagination aggregation",
+      "section": "Normative examples / Example 2",
+      "description": "fetchPage (an each node) opens one items.fetchPage invocation per cursor event, twice in all (page 1 yields nextCursor pg2; page 2 has no cursor and stops the cycle). collectPages drains both page events; aggregate reduces them to one items array.",
+      "operations": {
+        "items.fetchPage": {
+          "responses": [
+            {
+              "whenInput": {
+                "filter": "active"
+              },
+              "emit": [
+                {
+                  "items": [
+                    "a",
+                    "b"
+                  ],
+                  "nextCursor": "pg2"
+                }
+              ]
+            },
+            {
+              "whenInput": {
+                "filter": "active",
+                "cursor": "pg2"
+              },
+              "emit": [
+                {
+                  "items": [
+                    "c"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "fetchPage": {
+            "type": "each",
+            "operation": "items.fetchPage",
+            "maxIterations": 100
+          },
+          "hasMore": {
+            "type": "filter",
+            "schema": {
+              "required": [
+                "nextCursor"
+              ]
+            }
+          },
+          "prepareCursor": {
+            "type": "transform",
+            "transform": "{ \"filter\": $input.filter, \"cursor\": nextCursor }"
+          },
+          "collectPages": {
+            "type": "buffer"
+          },
+          "aggregate": {
+            "type": "transform",
+            "transform": "{ \"items\": $reduce($, function($a, $v){ $append($a, $v.items) }, []) }"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "fetchPage"
+          },
+          {
+            "from": "fetchPage",
+            "to": "collectPages"
+          },
+          {
+            "from": "fetchPage",
+            "to": "hasMore"
+          },
+          {
+            "from": "hasMore",
+            "to": "prepareCursor"
+          },
+          {
+            "from": "prepareCursor",
+            "to": "fetchPage"
+          },
+          {
+            "from": "collectPages",
+            "to": "aggregate"
+          },
+          {
+            "from": "aggregate",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "filter": "active"
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "items": [
+              "a",
+              "b",
+              "c"
+            ]
+          }
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}
