@@ -7,9 +7,21 @@
       "description": "binding references an existing operation key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
       },
       "valid": true
     },
@@ -17,23 +29,55 @@
       "description": "binding references a non-existent operation key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "operation": "nonexistentOp", "source": "httpApi" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "nonexistentOp",
+            "source": "httpApi"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-08"]
+      "violates": [
+        "OBI-D-08"
+      ]
     },
     {
       "description": "binding operation value matches an alias rather than a key in the operations map",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": { "aliases": ["addTask"] } },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "addTask.http": { "operation": "addTask", "source": "httpApi" } }
+        "operations": {
+          "createTask": {
+            "aliases": [
+              "addTask"
+            ]
+          }
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "addTask.http": {
+            "operation": "addTask",
+            "source": "httpApi"
+          }
+        }
       },
       "valid": false,
-      "violates": ["OBI-D-08"]
+      "violates": [
+        "OBI-D-08"
+      ]
     }
   ]
 }

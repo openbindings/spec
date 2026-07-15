@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Fire-and-forget side effect: process an event and also trigger a notification, but only the process result is operation-graph output. Mirrors the format spec's Dead ends pattern (Edge definition); fire-and-forget is no longer a numbered example.",
   "fixtures": [

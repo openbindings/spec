@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Map and collect: list user IDs, unpack them into separate events, fetch each user, and collect the results into one array. Mirrors the format spec's Example 4 and its execution trace.",
   "fixtures": [

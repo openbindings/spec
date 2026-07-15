@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Parallel combine: call two operations concurrently and join their results. Mirrors the format spec's Example 3. This fixture pins the corrected combine semantics: because each source emits exactly once, combine waits until both are ready and emits a single joined object, with no intermediate null-bearing partial.",
   "fixtures": [

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Combine readiness caused by source completion. These fixtures pin the rule that a combine node emits when completion, rather than a data event, makes every incoming source ready.",
   "fixtures": [

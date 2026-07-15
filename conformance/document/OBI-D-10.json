@@ -7,9 +7,21 @@
       "description": "binding without transforms",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "bindings": { "createTask.http": { "operation": "createTask", "source": "httpApi" } }
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
       },
       "valid": true
     },
@@ -17,8 +29,15 @@
       "description": "binding with inline JSONata transform string",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
@@ -33,14 +52,25 @@
       "description": "binding with $ref to existing named transform",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "transforms": { "fromApi": "{ \"id\": task_id }" },
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "fromApi": "{ \"id\": task_id }"
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
             "source": "httpApi",
-            "outputTransform": { "$ref": "#/transforms/fromApi" }
+            "outputTransform": {
+              "$ref": "#/transforms/fromApi"
+            }
           }
         }
       },
@@ -50,37 +80,63 @@
       "description": "binding inputTransform $ref points to non-existent transform key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "transforms": { "fromApi": "{ \"id\": task_id }" },
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "fromApi": "{ \"id\": task_id }"
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
             "source": "httpApi",
-            "inputTransform": { "$ref": "#/transforms/missingTransform" }
+            "inputTransform": {
+              "$ref": "#/transforms/missingTransform"
+            }
           }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-10"]
+      "violates": [
+        "OBI-D-10"
+      ]
     },
     {
       "description": "binding outputTransform $ref points to non-existent transform key",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "createTask": {} },
-        "sources": { "httpApi": { "format": "openapi@3.1", "location": "https://api.example.com/openapi.json" } },
-        "transforms": { "fromApi": "{ \"id\": task_id }" },
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "fromApi": "{ \"id\": task_id }"
+        },
         "bindings": {
           "createTask.http": {
             "operation": "createTask",
             "source": "httpApi",
-            "outputTransform": { "$ref": "#/transforms/missingTransform" }
+            "outputTransform": {
+              "$ref": "#/transforms/missingTransform"
+            }
           }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-10"]
+      "violates": [
+        "OBI-D-10"
+      ]
     }
   ]
 }

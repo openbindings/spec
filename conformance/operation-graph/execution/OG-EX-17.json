@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Conduit error handling and input-side acceptance. OG-EX-17 pins the onError opt-in for conduit terminal errors (the error event has no event member). OG-EX-18 pins write rejection at a non-accepting conduit reached through a built-in, which also pins that back-closure is non-transitive (the transform between input and the conduit keeps closure caller-owned, so the second write enters the graph and is rejected at the node). OG-EX-19 pins back-closure proper: when the input node's direct consumer is a non-accepting conduit, the caller-facing input side closes and later writes never enter the graph at all.",
   "fixtures": [

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Empty buffer completion: a no-condition buffer that accumulates zero events emits nothing (not an empty array) when its upstream completes.",
   "fixtures": [

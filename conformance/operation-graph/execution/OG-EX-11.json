@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "Buffer flush precedence: when an event both reaches `limit` and matches `until`, `limit` takes precedence (it is evaluated first), so the event is flushed as part of the batch rather than treated as an excluded delimiter.",
   "fixtures": [

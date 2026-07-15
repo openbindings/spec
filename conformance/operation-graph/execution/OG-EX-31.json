@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.operation-graph@0.2.0",
+  "format": "openbindings.operation-graph@1",
   "kind": "execution",
   "description": "exit with error:false (early return), the complement to OG-EX-07's error:true. The event reaching the exit node is emitted to the graph's output stream and the graph invocation then terminates immediately; all still-in-flight events are discarded. Pins the early-return clause of 'Node definitions / exit' and the determinism rule that the output includes any event emitted by an exit with error:false. The exit node has no outgoing edge (OG-V-16): it emits to the output stream directly, not through the output node, which stays reachable (OG-V-06) via the item path through a buffer whose partial contents the exit discards.",
   "fixtures": [

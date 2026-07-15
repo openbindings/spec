@@ -7,36 +7,77 @@
     "User": {
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "name": { "type": "string" },
-        "role": { "type": "string", "enum": ["user", "admin"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "user",
+            "admin"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "email", "name", "role"]
+      "required": [
+        "id",
+        "email",
+        "name",
+        "role"
+      ]
     },
     "GetUserInput": {
       "type": "object",
       "properties": {
-        "userId": { "type": "string" }
+        "userId": {
+          "type": "string"
+        }
       },
-      "required": ["userId"]
+      "required": [
+        "userId"
+      ]
     },
     "CreateUserInput": {
       "type": "object",
       "properties": {
-        "email": { "type": "string", "format": "email" },
-        "name": { "type": "string" },
-        "role": { "type": "string", "enum": ["user", "admin"] }
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "user",
+            "admin"
+          ]
+        }
       },
-      "required": ["email", "name"]
+      "required": [
+        "email",
+        "name"
+      ]
     },
     "ListUsersOutput": {
       "type": "object",
       "properties": {
         "users": {
           "type": "array",
-          "items": { "$ref": "#/schemas/User" }
+          "items": {
+            "$ref": "#/schemas/User"
+          }
         }
       }
     }
@@ -45,28 +86,38 @@
     "getUser": {
       "description": "Retrieve a user by ID.",
       "idempotent": true,
-      "input": { "$ref": "#/schemas/GetUserInput" },
-      "output": { "$ref": "#/schemas/User" }
+      "input": {
+        "$ref": "#/schemas/GetUserInput"
+      },
+      "output": {
+        "$ref": "#/schemas/User"
+      }
     },
     "createUser": {
       "description": "Create a new user account.",
-      "input": { "$ref": "#/schemas/CreateUserInput" },
-      "output": { "$ref": "#/schemas/User" }
+      "input": {
+        "$ref": "#/schemas/CreateUserInput"
+      },
+      "output": {
+        "$ref": "#/schemas/User"
+      }
     },
     "listUsers": {
       "description": "List all users. Only available through the admin API.",
       "idempotent": true,
-      "output": { "$ref": "#/schemas/ListUsersOutput" }
+      "output": {
+        "$ref": "#/schemas/ListUsersOutput"
+      }
     }
   },
   "sources": {
     "publicApi": {
-      "format": "openapi@3.1",
+      "bindingSpec": "openbindings.openapi@1",
       "location": "https://api.example.com/openapi.json",
       "description": "Public-facing REST API"
     },
     "adminApi": {
-      "format": "openapi@3.1",
+      "bindingSpec": "openbindings.openapi@1",
       "location": "https://admin.example.com/openapi.json",
       "description": "Internal admin REST API"
     }
