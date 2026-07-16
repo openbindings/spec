@@ -1,0 +1,377 @@
+{
+  "rule": "ASYNC-D-03",
+  "bindingSpec": "openbindings.asyncapi@1",
+  "section": "7",
+  "description": "`ref` is present and is a JSON Pointer `#/operations/<operation-key>` addressing an operations-map entry — the only conformant spelling; a bare operation key without the pointer prefix is not conformant, keys containing `/` or `~` carry RFC 6901 escaping, and an entry that is a Reference Object resolves through it before the operation-object test.",
+  "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an AsyncAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the ref alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
+  "tests": [
+    {
+      "description": "pointer addressing a declared operations-map entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key containing / carries RFC 6901 escaping: tasks/create is addressed as tasks~1create",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "tasks/create": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.events": {
+            "operation": "createTask",
+            "source": "events",
+            "ref": "#/operations/tasks~1create"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operation key containing ~ carries RFC 6901 escaping: night~audit is addressed as night~0audit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "nightAudit": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Audit", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "audit": { "address": "/audit" } },
+              "operations": {
+                "night~audit": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/audit" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "nightAudit.events": {
+            "operation": "nightAudit",
+            "source": "events",
+            "ref": "#/operations/night~0audit"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "RFC 6901 decode order matters: the key a~1b escapes to a~01b (decoding ~1 before ~0 would corrupt it)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "tildeOp": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Edge", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "edge": { "address": "/edge" } },
+              "operations": {
+                "a~1b": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/edge" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "tildeOp.events": {
+            "operation": "tildeOp",
+            "source": "events",
+            "ref": "#/operations/a~01b"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "operations-map entry that is a Reference Object resolves through it before the operation-object test",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": { "$ref": "#/components/operations/publishTaskOp" }
+              },
+              "components": {
+                "operations": {
+                  "publishTaskOp": {
+                    "action": "receive",
+                    "channel": { "$ref": "#/channels/tasks" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "ref is required",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "https://example.com/asyncapi.json"
+          }
+        },
+        "bindings": {
+          "publishTask.events": { "operation": "publishTask", "source": "events" }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    },
+    {
+      "description": "bare operation key without the pointer prefix is not conformant: the pointer is the only conformant spelling",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    },
+    {
+      "description": "channels are not binding targets: only operations are addressable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/channels/tasks"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    },
+    {
+      "description": "the artifact as a whole is not a binding target: this family defines no whole-artifact invocation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    },
+    {
+      "description": "unescaped / in the operation key makes the pointer address a deeper path, not an operations-map entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "tasks/create": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.events": {
+            "operation": "createTask",
+            "source": "events",
+            "ref": "#/operations/tasks/create"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    },
+    {
+      "description": "well-formed pointer whose operation is absent from the embedded artifact makes the binding unresolvable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "deleteTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "deleteTask.events": {
+            "operation": "deleteTask",
+            "source": "events",
+            "ref": "#/operations/deleteTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-03"]
+    }
+  ]
+}

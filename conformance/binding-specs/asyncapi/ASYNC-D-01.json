@@ -1,0 +1,124 @@
+{
+  "rule": "ASYNC-D-01",
+  "bindingSpec": "openbindings.asyncapi@1",
+  "section": "5",
+  "description": "`content`, when present, is the parsed AsyncAPI document object or its source text as a string under §3's grammar pin. No other JSON type is an accepted `content` value under this specification.",
+  "notes": "ASYNC-D-01 is the type-level discrimination between the two accepted representations. Whether a string parses under the YAML 1.2 grammar pin, and whether the artifact's asyncapi field names an accepted line, are load-time processor obligations (ASYNC-P-01) and are not fixtured here.",
+  "tests": [
+    {
+      "description": "object content: the parsed AsyncAPI document",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": {
+              "asyncapi": "3.0.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "servers": {
+                "prod": { "host": "events.example.com", "protocol": "https" }
+              },
+              "channels": { "tasks": { "address": "/tasks" } },
+              "operations": {
+                "publishTask": {
+                  "action": "receive",
+                  "channel": { "$ref": "#/channels/tasks" }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content: the document's source text (JSON spelling, a valid subset of the YAML 1.2 grammar pin)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": "{\"asyncapi\":\"3.0.0\",\"info\":{\"title\":\"Tasks\",\"version\":\"1.0.0\"},\"servers\":{\"prod\":{\"host\":\"events.example.com\",\"protocol\":\"https\"}},\"channels\":{\"tasks\":{\"address\":\"/tasks\"}},\"operations\":{\"publishTask\":{\"action\":\"receive\",\"channel\":{\"$ref\":\"#/channels/tasks\"}}}}"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content carrying a JSON number is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": { "bindingSpec": "openbindings.asyncapi@1", "content": 42 }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-01"]
+    },
+    {
+      "description": "content carrying a JSON array is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "content": [{ "asyncapi": "3.0.0" }]
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-01"]
+    },
+    {
+      "description": "content carrying JSON null is a present member (core presence rule) and is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": { "bindingSpec": "openbindings.asyncapi@1", "content": null }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-01"]
+    }
+  ]
+}
