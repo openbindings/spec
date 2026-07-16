@@ -8,6 +8,16 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- `openbindings.connect@1` §9.2 pins the **response-side unknown-member
+  posture** the text left ambiguous: an unknown member in a response frame is
+  not an unmarshal failure — it is tolerated and dropped, matching the binary
+  wire's inherent skip of unknown fields (protobuf's additive-evolution
+  contract), so one pinned schema meets one additively evolved server
+  identically over the connect and grpc wires. Input-side refusal is
+  unchanged and the asymmetry's rationale is stated; the FDS carriage pin
+  keeps refusing unknown members. CONN-P-02's rule line now states both
+  directions. Clarification of an ambiguity, not a behavior change.
+
 - §6 gains a **Formality** paragraph: a binding specification is governing
   rules under a stable identifier at any formality — published, internal, or
   implementation-defined — with reach (not standing) determined by formality;
