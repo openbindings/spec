@@ -1,0 +1,251 @@
+{
+  "rule": "MCP-D-01",
+  "bindingSpec": "openbindings.mcp@1",
+  "section": "5",
+  "description": "`content`, when present, is a pinned listing: pagination-exhausted entity arrays under `tools`/`resources`/`resourceTemplates`/`prompts` members in the 2025-11-25 result shapes, each optional, no other members. Pagination members (`nextCursor`, `_meta`) and any other member are not part of the representation, and their presence makes the content invalid.",
+  "tests": [
+    {
+      "description": "pinned listing carrying all four entity members in the 2025-11-25 result shapes",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                {
+                  "name": "get_weather",
+                  "description": "Get the weather",
+                  "inputSchema": { "type": "object" }
+                }
+              ],
+              "resources": [{ "uri": "file:///logs", "name": "logs" }],
+              "resourceTemplates": [
+                { "uriTemplate": "file:///logs/{date}", "name": "log-by-date" }
+              ],
+              "prompts": [{ "name": "summarize" }]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "pinned listing with only a tools member: each member is optional",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "pinned listing carrying nextCursor: pagination members are not part of the representation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ],
+              "nextCursor": "page2"
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "pinned listing carrying _meta: pagination carriage is not part of the representation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ],
+              "_meta": {}
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "pinned listing carrying any other member is outside the grammar",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ],
+              "serverInfo": { "name": "weather-server" }
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "entity member that is not an array is not the pinned representation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": {
+                "get_weather": { "inputSchema": { "type": "object" } }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "tool entry missing its name is not in the 2025-11-25 Tool result shape",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [{ "inputSchema": { "type": "object" } }]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "content carrying a JSON string is not a pinned listing: no other JSON type or shape is accepted",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": "tools: get_weather"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    },
+    {
+      "description": "content carrying JSON null is a present member (core presence rule) and is not a pinned listing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": null
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-01"]
+    }
+  ]
+}

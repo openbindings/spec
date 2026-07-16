@@ -44,6 +44,9 @@ jobs:
           cd conformance/operation-graph/runners/js
           node run.mjs --adversarial --trials=512
 
+      - name: Verify binding-specs conformance subcorpus
+        run: node scripts/verify-binding-specs.mjs
+
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 

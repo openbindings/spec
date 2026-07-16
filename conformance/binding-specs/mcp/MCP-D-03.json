@@ -1,0 +1,334 @@
+{
+  "rule": "MCP-D-03",
+  "bindingSpec": "openbindings.mcp@1",
+  "section": "7",
+  "description": "`ref` is present and is `<entity>/<remainder>`: `<entity>` exactly one of `tools`, `resources`, `prompts`; `<remainder>` everything after the first `/`, taken verbatim for every entity, matched byte-exactly against the listing. A ref matching nothing is unresolvable; a ref matching more than one entry is ambiguous and likewise unresolvable.",
+  "notes": "Resolution-dependent tests carry a pinned listing (content), so the verdict is offline-decidable per §3; grammar tests (presence, entity token, missing separator) are decidable from the ref alone. A location-only source's resolution is checkable only against the live exhausted listing and is fixtured here only as a grammar-valid positive.",
+  "tests": [
+    {
+      "description": "tools ref resolving byte-exactly against the pinned listing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "resources ref whose remainder itself contains / — everything after the first / is taken verbatim",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "readLogs": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "resources": [{ "uri": "file:///logs", "name": "logs" }]
+            }
+          }
+        },
+        "bindings": {
+          "readLogs.server": {
+            "operation": "readLogs",
+            "source": "server",
+            "ref": "resources/file:///logs"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "resource template addressed by its template string, byte-exact, under the resources entity",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "readLogByDate": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "resourceTemplates": [
+                { "uriTemplate": "file:///logs/{date}", "name": "log-by-date" }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "readLogByDate.server": {
+            "operation": "readLogByDate",
+            "source": "server",
+            "ref": "resources/file:///logs/{date}"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "prompts ref resolving against the pinned listing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "summarize": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "prompts": [{ "name": "summarize" }]
+            }
+          }
+        },
+        "bindings": {
+          "summarize.server": {
+            "operation": "summarize",
+            "source": "server",
+            "ref": "prompts/summarize"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "grammar-valid ref on a location-only source: resolution against the live listing is unverifiable offline, and the ref gives a validator nothing to refuse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "ref is required",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": { "operation": "getWeather", "source": "server" }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "ref without the entity/remainder separator",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "entity token outside tools/resources/prompts",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "widgets/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "resourceTemplates is not an entity token: templates are addressed under resources/ by their template string",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "readLogByDate": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "resourceTemplates": [
+                { "uriTemplate": "file:///logs/{date}", "name": "log-by-date" }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "readLogByDate.server": {
+            "operation": "readLogByDate",
+            "source": "server",
+            "ref": "resourceTemplates/file:///logs/{date}"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "ref matching nothing in the pinned listing makes the binding unresolvable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getForecast": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getForecast.server": {
+            "operation": "getForecast",
+            "source": "server",
+            "ref": "tools/get_forecast"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "matching is byte-exact: a case-mismatched remainder resolves to nothing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/Get_Weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "ref matching more than one pinned entry is ambiguous and unresolvable — loudly, never first-match (MCP names are only SHOULD-unique)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } },
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": { "city": { "type": "string" } }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    },
+    {
+      "description": "empty remainder matches no pinned entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-03"]
+    }
+  ]
+}

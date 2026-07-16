@@ -1,0 +1,119 @@
+{
+  "rule": "OAPI-D-01",
+  "bindingSpec": "openbindings.openapi@1",
+  "section": "5",
+  "description": "`content`, when present, is the parsed OpenAPI document object or its source text as a string. No other JSON type is an accepted `content` value under this specification.",
+  "notes": "OAPI-D-01 is the type-level discrimination between the two accepted representations. Whether a string parses under the YAML 1.2 grammar pin, and whether the artifact's openapi field names an accepted line, are load-time processor obligations (OAPI-P-01) and are not fixtured here.",
+  "tests": [
+    {
+      "description": "object content: the parsed OpenAPI document",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "content": {
+              "openapi": "3.1.0",
+              "info": { "title": "Tasks", "version": "1.0.0" },
+              "paths": {
+                "/tasks": {
+                  "post": { "responses": { "200": { "description": "Created" } } }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content: the document's source text (JSON spelling, a valid subset of the YAML 1.2 grammar pin)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "content": "{\"openapi\":\"3.1.0\",\"info\":{\"title\":\"Tasks\",\"version\":\"1.0.0\"},\"paths\":{\"/tasks\":{\"post\":{\"responses\":{\"200\":{\"description\":\"Created\"}}}}}}"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content carrying a JSON number is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": { "bindingSpec": "openbindings.openapi@1", "content": 42 }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-01"]
+    },
+    {
+      "description": "content carrying a JSON array is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "content": [{ "openapi": "3.1.0" }]
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-01"]
+    },
+    {
+      "description": "content carrying JSON null is a present member (core presence rule) and is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": { "bindingSpec": "openbindings.openapi@1", "content": null }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-01"]
+    }
+  ]
+}
