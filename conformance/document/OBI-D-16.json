@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-16",
-  "section": "14.2",
+  "section": "10.2",
   "description": "Every schema $ref that is a same-document fragment resolves, from the OBI document root per section 10, to a location that exists within the document. The fragment is the pointer's URI-fragment representation per RFC 6901 section 6: percent-decoded before evaluation. Refs within a schema declaring its own $id are out of scope; absolute-URI $refs are external (evaluation-time).",
   "tests": [
     {

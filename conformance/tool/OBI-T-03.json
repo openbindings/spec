@@ -1,6 +1,6 @@
 {
   "rule": "OBI-T-03",
-  "section": "14.3",
+  "section": "10.3",
   "description": "Treats x- prefixed fields as extensions. Unknown x- fields MUST NOT change the meaning of core fields for conformance purposes.",
   "notes": "These fixtures test the acceptance side of OBI-T-03: that a tool processes documents containing x- extension fields without refusing them. The 'MUST NOT change the meaning of core fields' clause is not directly testable in this single-document format because verifying it would require comparing tool behavior with and without x- fields present (a comparative test out of scope for this fixture shape). Acceptance tests below establish the necessary baseline; the no-meaning-change clause is a per-tool behavioral guarantee best verified through the SDK's own implementation tests.",
   "tests": [
