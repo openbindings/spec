@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-03",
-  "section": "14.2",
+  "section": "10.2",
   "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z_][A-Za-z0-9_.-]*$.",
   "tests": [
     {

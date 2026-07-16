@@ -12,6 +12,10 @@
 //      valid:true graph validates against the op-graph JSON Schema. For rules
 //      marked schemaEnforced:true, every valid:false graph is rejected by the
 //      schema (the JSON Schema alone is sufficient to catch the violation).
+//      Document-shaped tests (the OG-D source rules, which carry an OBI
+//      `document` instead of a `graph`) are self-checked: the verifier judges
+//      the named rule against the document's operation-graph sources and
+//      bindings and compares its own verdict with the fixture's `valid`.
 //
 // JSON Schema validation shells out to ajv-cli, the same validator the CI uses
 // for the core schema. Exits 0 on success, 1 on any failure, 2 on IO/usage.
@@ -108,6 +112,124 @@ function listJson(dir) {
     .map((n) => join(dir, n));
 }
 
+// ---------------------------------------------------------------------------
+// OG-D source-rule self-checks for document-shaped validation fixtures.
+// The verifier judges the named rule against the fixture document's
+// operation-graph sources/bindings so fixture verdicts are machine-checked,
+// the same way OG-V-11's operation-set resolution is.
+// ---------------------------------------------------------------------------
+
+const OG_BINDING_SPEC = "openbindings.operation-graph@1";
+
+const isPlainObject = (v) =>
+  typeof v === "object" && v !== null && !Array.isArray(v);
+
+function ogSources(doc) {
+  return Object.entries(doc.sources ?? {}).filter(
+    ([, src]) => src && src.bindingSpec === OG_BINDING_SPEC
+  );
+}
+
+function ogBindings(doc) {
+  const ogKeys = new Set(ogSources(doc).map(([k]) => k));
+  return Object.entries(doc.bindings ?? {}).filter(([, b]) =>
+    ogKeys.has(b?.source)
+  );
+}
+
+// Parses a source's content into the source document it carries: an object
+// is the parsed document; a string is JSON source text (RFC 8259). Returns
+// undefined when content is absent or not an accepted representation.
+function parseOgContent(src) {
+  if (!("content" in src)) return undefined;
+  if (isPlainObject(src.content)) return src.content;
+  if (typeof src.content === "string") {
+    try {
+      return JSON.parse(src.content);
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+function pointerResolve(doc, pointer) {
+  if (pointer === "") return { found: true, value: doc };
+  if (!pointer.startsWith("/")) return { found: false };
+  let cur = doc;
+  for (const raw of pointer.slice(1).split("/")) {
+    const tok = raw.replaceAll("~1", "/").replaceAll("~0", "~");
+    if (Array.isArray(cur)) {
+      const idx = /^\d+$/.test(tok) ? Number(tok) : -1;
+      if (idx < 0 || idx >= cur.length) return { found: false };
+      cur = cur[idx];
+    } else if (isPlainObject(cur)) {
+      if (!Object.prototype.hasOwnProperty.call(cur, tok)) return { found: false };
+      cur = cur[tok];
+    } else {
+      return { found: false };
+    }
+  }
+  return { found: true, value: cur };
+}
+
+// Judges an OG-D rule against a fixture document. Returns true (satisfied),
+// false (violated), or undefined (rule not covered by this checker).
+function checkSourceRule(rule, doc) {
+  switch (rule) {
+    case "OG-D-01":
+      // content, when present, is the parsed source document as an object
+      // or its JSON source text as a string.
+      return ogSources(doc).every(
+        ([, src]) =>
+          !("content" in src) ||
+          isPlainObject(src.content) ||
+          typeof src.content === "string"
+      );
+    case "OG-D-02":
+      // location, when present, is an absolute URI.
+      return ogSources(doc).every(([, src]) => {
+        if (!("location" in src)) return true;
+        if (typeof src.location !== "string") return false;
+        try {
+          new URL(src.location);
+          return true;
+        } catch {
+          return false;
+        }
+      });
+    case "OG-D-03":
+      // ref is present and is a JSON Pointer fragment resolving to a graph
+      // definition ("#" addressing a root-level graph). Judged against
+      // embedded content; fixtures for this rule always embed it.
+      return ogBindings(doc).every(([, b]) => {
+        if (typeof b.ref !== "string" || !b.ref.startsWith("#")) return false;
+        const [, srcObj] =
+          ogSources(doc).find(([k]) => k === b.source) ?? [];
+        if (!srcObj) return false;
+        const sourceDoc = parseOgContent(srcObj);
+        if (sourceDoc === undefined) return false;
+        let fragment = b.ref.slice(1);
+        try {
+          fragment = decodeURIComponent(fragment);
+        } catch {
+          return false;
+        }
+        const r = pointerResolve(sourceDoc, fragment);
+        return (
+          r.found &&
+          isPlainObject(r.value) &&
+          Object.prototype.hasOwnProperty.call(
+            r.value,
+            "openbindings.operation-graph"
+          )
+        );
+      });
+    default:
+      return undefined;
+  }
+}
+
 // 1. Inline spec examples
 const specGraphs = extractSpecGraphs(readFileSync(OG_SPEC_MD, "utf8"));
 let specOk = 0;
@@ -168,8 +290,22 @@ for (const file of listJson(join(CORPUS, "validation"))) {
   for (const block of doc.rules) {
     for (const t of block.tests) {
       valTests++;
-      const r = ajvOk(OG_SCHEMA, t.graph);
       const tlabel = `${label} rule ${block.rule} "${t.description}"`;
+      // Document-shaped tests (OG-D source rules) carry an OBI document, not
+      // a graph: self-check the named rule against the document's
+      // operation-graph sources/bindings instead of the op-graph schema.
+      if (t.document !== undefined) {
+        const verdict = checkSourceRule(block.rule, t.document);
+        if (verdict === undefined) {
+          errors.push(`${tlabel}: document-shaped test under rule ${block.rule}, which this verifier has no source-rule check for`);
+        } else if (verdict !== t.valid) {
+          errors.push(
+            `${tlabel}: verifier judges ${block.rule} as ${verdict ? "satisfied" : "violated"}, but fixture says valid=${t.valid}`
+          );
+        }
+        continue;
+      }
+      const r = ajvOk(OG_SCHEMA, t.graph);
       if (t.valid && !r.ok)
         errors.push(
           `${tlabel}: expected a schema-valid graph, but the op-graph schema rejected it\n${r.out}`

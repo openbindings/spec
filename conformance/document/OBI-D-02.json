@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-02",
-  "section": "14.2",
+  "section": "10.2",
   "description": "Validates against the JSON Schema at openbindings.schema.json.",
   "notes": "OBI-D-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema catches but no more specific OBI-D rule names. Violations the schema catches that DO have a specific semantic rule (e.g., OBI-D-03 identifier pattern, OBI-D-12 SemVer) are listed under the semantic rule, not OBI-D-02.",
   "tests": [

@@ -10,11 +10,11 @@
     "rule": {
       "type": "string",
       "pattern": "^OBI-[DT]-[0-9]+$",
-      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §14 of the OpenBindings spec."
+      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §10 of the OpenBindings spec."
     },
     "section": {
       "type": "string",
-      "description": "The spec section the rule is defined in (e.g., '14.2' for document rules, '14.3' for tool rules)."
+      "description": "The spec section the rule is defined in (e.g., '10.2' for document rules, '10.3' for tool rules)."
     },
     "description": {
       "type": "string",

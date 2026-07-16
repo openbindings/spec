@@ -27,7 +27,10 @@ operation-graph/
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions)
     OG-EX-01.json ... OG-EX-34.json   (files; ids run OG-EX-01 ... OG-EX-34)
-  validation/           (well-formedness rules; OG-VR.json)
+  validation/           (validation-shaped rule fixtures)
+    OG-VR.json          (graph well-formedness rules, OG-V-01..18)
+    OG-DR.json          (source rules, OG-D-01..03; document-shaped tests)
+    OG-TR.json          (tool rules OG-T-01/OG-T-02; graph-shaped tests)
   runners/js/           (reference execution runner: engine + JSONata + ajv)
 ```
 
@@ -48,7 +51,13 @@ uses for the core schema.
    marked `schemaEnforced: true`, every `valid: false` graph is rejected by the
    schema. OG-V-11 tests additionally carry an `operations` set, and the
    verifier resolves the `operation` field of every `operation` and `each` node
-   against it.
+   against it. Document-shaped tests (the OG-D source rules in `OG-DR.json`,
+   which carry an OBI `document` instead of a `graph`) are self-checked: the
+   verifier judges the named rule against the document's operation-graph
+   sources and bindings — content representation for OG-D-01, absolute-URI
+   form for OG-D-02, ref presence/pointer-form/resolution-to-a-graph for
+   OG-D-03 — and compares its verdict with the fixture's `valid`, the same
+   way it resolves OG-V-11's operation set.
 
 `scripts/verify-operation-graph.mjs` does not execute graphs; it pins their
 shape. Executing them and diffing the output stream is the job of the reference
@@ -171,6 +180,23 @@ is schema-enforced via the per-type field whitelists. OG-V-18 (embedded
 schemas: 2020-12 object form, pinned `$schema`, no `$vocabulary` anywhere
 within) is validator-enforced — the format schema types those positions as
 objects but cannot check nested keywords.
+
+## Source and tool rules (OG-D, OG-T)
+
+The format spec's Conformance section defines three source rules (OG-D-01..03,
+binding OBI content governed by this specification) and four tool rules
+(OG-T-01..04, binding implementations claiming `openbindings.operation-graph@1`
+support). Their coverage:
+
+| Rule | Coverage |
+|---|---|
+| OG-D-01 | `validation/OG-DR.json`. Document-shaped tests: `content`, when present, is the parsed source document (object) or its JSON source text (string); number, array, and present-but-`null` content are negatives. |
+| OG-D-02 | `validation/OG-DR.json`. `location`, when present, is an absolute URI; relative-in-form values are negatives (they also violate core OBI-D-05 — the overlap is inherent, OG-D-02 restates absoluteness and narrows the form for this family). |
+| OG-D-03 | `validation/OG-DR.json`. `ref` present, a JSON Pointer fragment, resolving to a graph definition — including `"#"` for a root-level graph and resolution inside string content; absent ref, bare graph keys, dangling pointers, and non-graph targets are negatives. Resolution-dependent tests always embed content; a location-only source leaves resolution unverified and is not fixtured. |
+| OG-T-01 | `validation/OG-TR.json`, representative cases (a graph a tool may act on; beyond-schema OG-V violations that must fail the binding before any action). The full obligation is the entire OG-V negative set in `OG-VR.json`: every `valid: false` graph there is one a conformant tool refuses to act on. |
+| OG-T-02 | `validation/OG-TR.json`. Version refusal on the graph's own `openbindings.operation-graph` field, mirroring core OBI-T-04: build metadata ignored, higher patch never refuses, prerelease refused unless declared, pre-1.0 minor-granular refusal in both directions. Gated tests use `requiresMaxTested` / `requiresMinSupported` (the core corpus's annotations, applied to the tool's supported operation-graph format range). |
+| OG-T-03 | Covered by the execution corpus. Every expression-bearing execution fixture pins evaluation outcomes under the pinned language (JSONata 2.1, jsonata-js 2.1.1 tiebreak) — most directly the filter boolean-cast suite (OG-EX-20..25) and the failure-identifier suite (OG-EX-25, -32, -33, -34). No separate rule-keyed fixture exists; it would duplicate the execution suite. |
+| OG-T-04 | Covered by the execution corpus: the identity-law suite (OG-EX-13..16, -26, -27) is the spec's stated acceptance criterion, and the remaining OG-EX fixtures pin the Execution semantics and Determinism-and-portability behavior rule by rule (see the fixture table above). |
 
 ## Reference runner
 

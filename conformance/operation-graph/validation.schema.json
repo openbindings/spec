@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/operation-graph-validation-fixture-0.2.0.json",
   "title": "openbindings.operation-graph validation fixture file",
-  "description": "Well-formedness fixtures keyed to the stable OG-V-## validation-rule identifiers in the openbindings.operation-graph spec. Each rule block carries `schemaEnforced`, declaring whether the op-graph JSON Schema alone is sufficient to catch violations of that rule; a runner uses it to decide whether to assert schema rejection on the negative cases.",
+  "description": "Well-formedness fixtures keyed to the stable rule identifiers in the openbindings.operation-graph spec: graph validation rules (OG-V-##), source rules (OG-D-##), and the validation- and version-shaped tool rules (OG-T-##). Each rule block carries `schemaEnforced`, declaring whether the op-graph JSON Schema alone is sufficient to catch violations of that rule; a runner uses it to decide whether to assert schema rejection on the negative cases. Graph-shaped tests carry `graph`; document-shaped tests (the OG-D source rules, which bind OBI content rather than graph definitions) carry `document` instead — an OBI document embedding an operation-graph source/binding.",
   "type": "object",
   "required": ["format", "kind", "rules"],
   "properties": {
@@ -19,34 +19,52 @@
         "properties": {
           "rule": {
             "type": "string",
-            "pattern": "^OG-V-(0[1-9]|1[0-8])$",
-            "description": "The stable validation-rule identifier (OG-V-##) from the format spec's Validation rules section."
+            "pattern": "^OG-(V-(0[1-9]|1[0-8])|D-0[1-3]|T-0[1-4])$",
+            "description": "The stable rule identifier from the format spec: a validation rule (OG-V-##) from its Validation rules section, or a source rule (OG-D-##) / tool rule (OG-T-##) from its Conformance section."
           },
           "title": { "type": "string" },
           "schemaEnforced": {
             "type": "boolean",
-            "description": "True if the op-graph JSON Schema alone rejects every violation of this rule; false if catching it requires a structural validator beyond JSON Schema (reachability, cycle analysis, cross-references)."
+            "description": "True if the op-graph JSON Schema alone rejects every violation of this rule; false if catching it requires a structural validator beyond JSON Schema (reachability, cycle analysis, cross-references), or if the rule is document-shaped or tool-shaped (OG-D/OG-T blocks always declare false: the op-graph schema does not judge OBI documents or tool behavior)."
           },
           "tests": {
             "type": "array",
             "minItems": 1,
             "items": {
               "type": "object",
-              "required": ["description", "graph", "valid"],
+              "required": ["description", "valid"],
+              "oneOf": [
+                { "required": ["graph"] },
+                { "required": ["document"] }
+              ],
               "properties": {
                 "description": { "type": "string" },
                 "graph": {
                   "type": "object",
-                  "description": "An operation graph definition. valid:true graphs MUST validate against the op-graph JSON Schema; valid:false graphs for schemaEnforced rules MUST be rejected by it."
+                  "description": "An operation graph definition, for graph-shaped rules. valid:true graphs MUST validate against the op-graph JSON Schema (except OG-T-02 refusal-gated acceptance tests skipped by a version gate); valid:false graphs for schemaEnforced rules MUST be rejected by it."
+                },
+                "document": {
+                  "type": "object",
+                  "description": "An OBI document embedding an operation-graph source and binding, for document-shaped rules (OG-D-##). The named rule is judged against the document's operation-graph sources and bindings; documents are otherwise core-valid so only the named rule discriminates."
                 },
                 "valid": {
                   "type": "boolean",
-                  "description": "Whether the graph satisfies the named validation rule."
+                  "description": "Whether the graph (or document) satisfies the named rule. For OG-T-02, whether a tool supporting the 0.2.x line accepts (true) or refuses (false) the graph's declared version."
                 },
                 "operations": {
                   "type": "array",
                   "items": { "type": "string" },
                   "description": "For OG-V-11 tests only: the operation keys the containing OBI declares. The runner resolves the `operation` field of every operation and each node against this set."
+                },
+                "requiresMaxTested": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+                  "description": "For OG-T-02 tests: the test only applies to tools whose maximum tested openbindings.operation-graph format version is at least this SemVer 2.0.0 version. Mirrors the core corpus's requiresMaxTested annotation, applied to this format's own version field. Runners SHOULD skip (and report separately) tests whose gate exceeds the tool's range."
+                },
+                "requiresMinSupported": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+                  "description": "For OG-T-02 downward-refusal tests: the test only applies to tools whose minimum supported openbindings.operation-graph format version is at least this SemVer 2.0.0 version. Mirrors the core corpus's requiresMinSupported annotation, applied to this format's own version field. Runners SHOULD skip (and report separately) tests whose gate exceeds the tool's range."
                 }
               },
               "additionalProperties": false

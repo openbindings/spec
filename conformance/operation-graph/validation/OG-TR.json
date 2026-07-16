@@ -1,0 +1,133 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "validation",
+  "description": "Tool-rule fixtures for the validation- and version-shaped OG-T rules. OG-T-01 (validate before acting; fail the binding rather than act on a violating graph) has representative cases here; its full obligation is the entire OG-V negative set in OG-VR.json, of which these cases are a sample. OG-T-02 (version refusal on this format's own openbindings.operation-graph field, mirroring core OBI-T-04) is expressed with the same version-gate annotations the core corpus uses, applied to the tool's supported operation-graph format range.",
+  "notes": "valid:false under OG-T-01 means a conformant tool refuses to act on the graph; valid:false under OG-T-02 means a conformant tool refuses the graph's declared version, reported distinctly from graph non-conformance. OG-T-02 tests assume a tool supporting the 0.2.x line, bounded below 999.x for major refusal and 0.999.x for pre-1.0 minor refusal; downward refusal is gated with requiresMinSupported and post-1.0 forward-compat with requiresMaxTested, mirroring the core corpus's OBI-T-04 fixture. Both blocks declare schemaEnforced: false — the negative graphs here are schema-valid (a cross-reference violation, a refused but syntactically valid version); the schema-rejection assertion belongs to OG-VR.json's schema-enforced rule blocks.",
+  "rules": [
+    {
+      "rule": "OG-T-01",
+      "title": "A tool acting on an operation-graph binding MUST validate the target graph against OG-V-01..18 and MUST fail the binding rather than act on a violating graph.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "a graph satisfying the validation rules may be acted on",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "an edge referencing an undefined node key (OG-V-07, beyond schema) must fail the binding before any action",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [
+              { "from": "in", "to": "out" },
+              { "from": "in", "to": "ghost" }
+            ]
+          }
+        },
+        {
+          "description": "an orphan node unreachable from input (OG-V-06, beyond schema) must fail the binding before any action",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": { "type": "input" },
+              "out": { "type": "output" },
+              "stranded": { "type": "transform", "transform": "$" }
+            },
+            "edges": [
+              { "from": "in", "to": "out" },
+              { "from": "stranded", "to": "out" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "rule": "OG-T-02",
+      "title": "Tools MUST refuse graphs declaring an openbindings.operation-graph version outside their supported range (pre-1.0: minor-granular, both directions), MUST NOT accept undeclared prereleases, and compare by SemVer 2.0.0 precedence with build metadata ignored; a higher patch within a supported major.minor never refuses.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "graph declares the current format version (tool supporting the 0.2.x line accepts)",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "build metadata is ignored for comparison; 0.2.0+build.1 is treated as 0.2.0 and accepted",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0+build.1",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "a higher patch within a supported major.minor is non-breaking and is never a refusal trigger",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.99",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "a prerelease is not accepted unless the tool declares support for that specific prerelease (default rejection)",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0-rc.1",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "graph declares a major version higher than any plausible tool supports",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "999.0.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "pre-1.0 graph declares a higher minor than any plausible tool supports (refusal extends to minors while the format is pre-1.0)",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.999.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "post-1.0 forward-compat: a tool supporting major 1 accepts a same-major-higher-minor graph",
+          "valid": true,
+          "requiresMaxTested": "1.5.0",
+          "graph": {
+            "openbindings.operation-graph": "1.5.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        },
+        {
+          "description": "downward refusal: a graph declaring a minor below the tool's minimum supported version is refused rather than interpreted under the wrong rules",
+          "valid": false,
+          "requiresMinSupported": "0.2.0",
+          "graph": {
+            "openbindings.operation-graph": "0.1.0",
+            "nodes": { "in": { "type": "input" }, "out": { "type": "output" } },
+            "edges": [{ "from": "in", "to": "out" }]
+          }
+        }
+      ]
+    }
+  ]
+}

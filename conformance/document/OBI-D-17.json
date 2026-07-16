@@ -1,0 +1,254 @@
+{
+  "rule": "OBI-D-17",
+  "section": "10.2",
+  "description": "Has every schema contained in the document — every specified operation input/output, every entry in schemas, and their subschemas as JSON Schema 2020-12 defines them — well-formed: valid against the JSON Schema 2020-12 meta-schemas and satisfying the constraints of §5.2. Verification uses locally available meta-schemas and MUST NOT require a network fetch. The rule does not require proving satisfiability, resolving external resources, or rejecting unknown keywords.",
+  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; subschemas are covered recursively as JSON Schema 2020-12 defines them, so one meta-schema validation of each top-level position covers its whole subtree. 0.2.0 admits boolean schemas at every schema position (§5.2: true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is deliberately narrow: the positives include an unparseable `pattern` regular expression and an unresolvable external $ref, both of which pass the meta-schemas per the rule text and surface only when the schema is used. Negative cases list OBI-D-17 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
+  "tests": [
+    {
+      "description": "object schemas with nested subschemas at operation input and output are well-formed",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string", "minLength": 1 },
+                "tags": { "type": "array", "items": { "type": "string" } }
+              },
+              "required": ["title"]
+            },
+            "output": {
+              "oneOf": [
+                { "type": "object", "properties": { "id": { "type": "string" } } },
+                { "type": "null" }
+              ]
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "boolean schema true at operation input is a well-formed schema (contract specified, every value satisfies it)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "ping": { "input": true }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "boolean schema false at operation output is a well-formed schema (contract specified, no value satisfies it)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "fireAndForget": { "output": false }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "empty object schema {} at operation input is well-formed (the equivalent spelling of true)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "ping": { "input": {} }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "boolean schema as an entry in the top-level schemas map is well-formed",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Anything": true
+        },
+        "operations": {
+          "echo": { "input": { "$ref": "#/schemas/Anything" } }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "boolean schemas at nested subschema positions (properties value, additionalProperties, items) are well-formed",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "configure": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "locked": false,
+                "values": { "type": "array", "items": true }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "unknown keywords are legitimate annotations, not well-formedness violations",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "x-internal": true,
+              "futureKeyword": { "arbitrary": "annotation" }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an unparseable pattern regular expression passes the meta-schemas (operability of keyword values is not established by this rule)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string", "pattern": "([unclosed" }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an unresolvable external $ref passes: well-formedness does not require resolving external resources",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "https://schemas.example.com/never-published/task.json" }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "type keyword with a number value at operation input is not a schema in the pinned dialect",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": { "type": 42 }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "type keyword naming an unknown simple type fails the meta-schemas",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": { "type": "str" }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a string at operation output is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "output": "not-a-schema"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a number as an entry in the top-level schemas map is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": 42
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a keyword value of the wrong JSON type at a nested subschema position (minLength as a string) fails recursively",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string", "minLength": "3" }
+            }
+          }
+        },
+        "operations": {
+          "createTask": { "input": { "$ref": "#/schemas/Task" } }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "required as a string instead of an array inside an items subschema at operation input",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTasks": {
+            "input": {
+              "type": "array",
+              "items": { "type": "object", "required": "title" }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "oneOf as an object instead of an array at operation output",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": { "oneOf": { "type": "string" } }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a number as a subschema inside an anyOf array is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": { "anyOf": [{ "type": "string" }, 42] }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    }
+  ]
+}

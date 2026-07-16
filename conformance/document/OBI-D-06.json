@@ -1,6 +1,6 @@
 {
   "rule": "OBI-D-06",
-  "section": "14.2",
+  "section": "10.2",
   "description": "Has every $schema value, where present, equal to https://json-schema.org/draft/2020-12/schema.",
   "tests": [
     {

@@ -1,0 +1,233 @@
+{
+  "rule": "OBI-D-18",
+  "section": "10.2",
+  "description": "Has every transform expression in the document — every value in the transforms map and every inline string value of bindings[*].inputTransform and bindings[*].outputTransform — parsing as a syntactically valid expression of the pinned transform language (§5.5: JSONata 2.1, with jsonata-js 2.1.1's parse acceptance as the normative tiebreak). The rule is syntactic membership only: it does not establish that evaluation succeeds, that referenced data exists, or that dynamic errors will not occur.",
+  "notes": "Parse-only scope: positives include expressions whose evaluation would fail (a path into absent data, a call to an unregistered function) because those are evaluation outcomes under §5.5 clause 4, not document defects. The normative tiebreak is jsonata-js 2.1.1's parse acceptance; every expression in this fixture has an accept/reject status that is stable across known JSONata parser implementations (including pre-2.1 lines), so a validator backed by a different parser produces the same verdicts on this corpus. An empty string is not a parseable JSONata expression and is a negative case. Named transforms count whether or not any binding references them (the rule covers every value in the transforms map).",
+  "tests": [
+    {
+      "description": "named transform with a simple object-construction expression parses",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "fromApi": "{ \"id\": task_id, \"title\": task_title, \"done\": is_done }"
+        },
+        "bindings": {
+          "getTask.http": {
+            "operation": "getTask",
+            "source": "httpApi",
+            "outputTransform": { "$ref": "#/transforms/fromApi" }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "non-trivial expression (predicate filter, object construction, string concatenation, function application, arithmetic) parses",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "listExpensive": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "listExpensive.http": {
+            "operation": "listExpensive",
+            "source": "httpApi",
+            "outputTransform": "items[price > 10].{ \"label\": name & \" ($\" & $string(price) & \")\", \"total\": price * quantity }"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "inline inputTransform string parses",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "inputTransform": "{ \"task_title\": title }"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "expression that parses but would fail at evaluation (path into absent data yields undefined) — parse-validity is syntactic membership only",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "reachesAbsentData": "payload.does.not.exist"
+        },
+        "bindings": {
+          "getTask.http": {
+            "operation": "getTask",
+            "source": "httpApi",
+            "outputTransform": { "$ref": "#/transforms/reachesAbsentData" }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "expression calling an unregistered function parses — function resolution is an evaluation outcome, not syntax",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "callsUnknownFunction": "$definitelyNotARealFunction(payload)"
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "named transform with an unbalanced parenthesis does not parse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "broken": "(a + b"
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
+    {
+      "description": "named transform with a dangling binary operator does not parse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "dangling": "a +"
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
+    {
+      "description": "inline inputTransform with an unclosed predicate bracket does not parse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "inputTransform": "items["
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
+    {
+      "description": "inline outputTransform with a missing member value does not parse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "getTask.http": {
+            "operation": "getTask",
+            "source": "httpApi",
+            "outputTransform": "{ \"id\": }"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
+    {
+      "description": "an empty string at a transform position is not a parseable expression of the pinned language",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "empty": ""
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    }
+  ]
+}

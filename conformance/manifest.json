@@ -2,11 +2,11 @@
   "specVersion": "0.2.0",
   "corpusVersion": "0.1.0",
   "totals": {
-    "files": 17,
-    "tests": 123,
-    "positives": 58,
-    "negatives": 65,
-    "rulesCoveredDocument": 13,
+    "files": 19,
+    "tests": 150,
+    "positives": 72,
+    "negatives": 78,
+    "rulesCoveredDocument": 15,
     "rulesCoveredTool": 3,
     "rulesPartialDocument": 1,
     "rulesPartialTool": 0
@@ -15,7 +15,7 @@
     {
       "path": "document/OBI-D-01.json",
       "rule": "OBI-D-01",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 2,
       "positives": 2,
       "negatives": 0
@@ -23,7 +23,7 @@
     {
       "path": "document/OBI-D-02.json",
       "rule": "OBI-D-02",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 9,
       "positives": 1,
       "negatives": 8
@@ -31,7 +31,7 @@
     {
       "path": "document/OBI-D-03.json",
       "rule": "OBI-D-03",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 21,
       "positives": 10,
       "negatives": 11
@@ -39,7 +39,7 @@
     {
       "path": "document/OBI-D-04.json",
       "rule": "OBI-D-04",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 5,
       "positives": 1,
       "negatives": 4
@@ -47,7 +47,7 @@
     {
       "path": "document/OBI-D-05.json",
       "rule": "OBI-D-05",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 15,
       "positives": 7,
       "negatives": 8
@@ -55,7 +55,7 @@
     {
       "path": "document/OBI-D-06.json",
       "rule": "OBI-D-06",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 5,
       "positives": 2,
       "negatives": 3
@@ -63,7 +63,7 @@
     {
       "path": "document/OBI-D-07.json",
       "rule": "OBI-D-07",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 6,
       "positives": 2,
       "negatives": 4
@@ -71,7 +71,7 @@
     {
       "path": "document/OBI-D-08.json",
       "rule": "OBI-D-08",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 3,
       "positives": 1,
       "negatives": 2
@@ -79,7 +79,7 @@
     {
       "path": "document/OBI-D-09.json",
       "rule": "OBI-D-09",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 2,
       "positives": 1,
       "negatives": 1
@@ -87,7 +87,7 @@
     {
       "path": "document/OBI-D-10.json",
       "rule": "OBI-D-10",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 5,
       "positives": 3,
       "negatives": 2
@@ -95,7 +95,7 @@
     {
       "path": "document/OBI-D-11.json",
       "rule": "OBI-D-11",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 11,
       "positives": 6,
       "negatives": 5
@@ -103,7 +103,7 @@
     {
       "path": "document/OBI-D-12.json",
       "rule": "OBI-D-12",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 11,
       "positives": 3,
       "negatives": 8
@@ -111,7 +111,7 @@
     {
       "path": "document/OBI-D-13.json",
       "rule": "OBI-D-13",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 3,
       "positives": 3,
       "negatives": 0,
@@ -120,15 +120,31 @@
     {
       "path": "document/OBI-D-16.json",
       "rule": "OBI-D-16",
-      "section": "14.2",
+      "section": "10.2",
       "tests": 8,
       "positives": 6,
       "negatives": 2
     },
     {
+      "path": "document/OBI-D-17.json",
+      "rule": "OBI-D-17",
+      "section": "10.2",
+      "tests": 17,
+      "positives": 9,
+      "negatives": 8
+    },
+    {
+      "path": "document/OBI-D-18.json",
+      "rule": "OBI-D-18",
+      "section": "10.2",
+      "tests": 10,
+      "positives": 5,
+      "negatives": 5
+    },
+    {
       "path": "tool/OBI-T-01.json",
       "rule": "OBI-T-01",
-      "section": "14.3",
+      "section": "10.3",
       "tests": 2,
       "positives": 2,
       "negatives": 0
@@ -136,7 +152,7 @@
     {
       "path": "tool/OBI-T-03.json",
       "rule": "OBI-T-03",
-      "section": "14.3",
+      "section": "10.3",
       "tests": 4,
       "positives": 4,
       "negatives": 0
@@ -144,7 +160,7 @@
     {
       "path": "tool/OBI-T-04.json",
       "rule": "OBI-T-04",
-      "section": "14.3",
+      "section": "10.3",
       "tests": 11,
       "positives": 4,
       "negatives": 7
