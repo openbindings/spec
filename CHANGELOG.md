@@ -8,6 +8,26 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **`openbindings.grpc@1` clarification pins from the layering audit** (§9.3,
+  §3, §9.5). Three wire behaviors the reference implementation already
+  exhibits, each surfaced by the audit's stranger tests and now pinned in the
+  spec. (1) §9.3 gives the **transport** configuration point's value shape: the
+  string `"plaintext"` or `"tls"`, or an object drawn from the closed member
+  set `ca` / `clientCert` / `clientKey` / `serverName` (the first three
+  PEM-encoded strings, `serverName` a verification hostname; `clientCert` and
+  `clientKey` required together; unknown members and non-string values refused).
+  (2) §3 pins that the invocation's **resolved context applies to the
+  reflection RPCs** exactly as to the bound method's call, over the same target
+  and transport, so an auth-gated reflection endpoint resolves under the same
+  credentials rather than dialing anonymously. (3) §9.5 pins the **non-bearer
+  credential carriage**: an API key as `authorization: ApiKey <key>`, basic as
+  `authorization: Basic <base64>`, and context headers on their own metadata
+  keys — the three `authorization` schemes sharing one key and mutually
+  exclusive in bearer → apiKey → basic precedence, an unplaceable key
+  (empty, grammar-violating, or `grpc-`-prefixed) surfaced pre-dispatch.
+  Behavior unchanged (the reference invoker already conforms); rule IDs
+  unchanged; fixtures untouched. Clarification pins, not behavior changes.
+
 - `openbindings.connect@1` §9.2 pins the **response-side unknown-member
   posture** the text left ambiguous: an unknown member in a response frame is
   not an unmarshal failure — it is tolerated and dropped, matching the binary
