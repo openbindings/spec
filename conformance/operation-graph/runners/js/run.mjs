@@ -212,11 +212,13 @@ async function runGraph(graph, mockOps, writes, sched) {
       });
       return;
     }
-    // The graph's terminal error is the inner terminal error itself (identity
-    // law: the value direct invocation would surface), not an error-event
-    // wrapper around it.
-    terminated = true;
-    errorResult = { error: true, errorDetail: message };
+    // Fatal to the graph invocation, but routed through the queue behind the
+    // outputs this conduit already enqueued: the drain emits those before it
+    // reaches this terminal marker (the identity law's terminal-status clause
+    // — the terminal follows the stream it terminates). The graph's terminal
+    // error is the inner terminal error itself (the value direct invocation
+    // would surface), not an error-event wrapper around it.
+    queue.push({ terminal: { error: true, errorDetail: message } });
   };
 
   // Close the conduit's held invocation and produce its response.
@@ -231,15 +233,21 @@ async function runGraph(graph, mockOps, writes, sched) {
       throw new Error(`fixture has no mock for operation '${node.operation}'`);
     const resp = matchResponse(mock, node.operation, c.writes);
     const rootId = mergedRoot(c.roots);
+    // A response may emit, fail, or emit-then-fail. The emitted events are the
+    // outputs the invocation produced before any terminal; enqueue them first,
+    // then route the terminal error behind them (the identity law: a conduit's
+    // pre-failure outputs surface before the graph terminates).
+    const emitted = resp.emit ?? [];
+    if (emitted.length)
+      enqueueFrom(
+        nodeKey,
+        emitted.map((v) => ({ value: v, counts: { ...c.counts }, rootId }))
+      );
     if ("fail" in resp) {
       conduitTerminalError(nodeKey, node, resp.fail, c.counts, rootId);
       return true;
     }
-    enqueueFrom(
-      nodeKey,
-      resp.emit.map((v) => ({ value: v, counts: { ...c.counts }, rootId }))
-    );
-    return resp.emit.length > 0 || outEdges[nodeKey].length === 0;
+    return emitted.length > 0 || outEdges[nodeKey].length === 0;
   };
 
   const flushBuffer = (key) => {
@@ -277,22 +285,25 @@ async function runGraph(graph, mockOps, writes, sched) {
     if (!mock)
       throw new Error(`fixture has no mock for operation '${t.node.operation}'`);
     const resp = matchResponse(mock, t.node.operation, [t.value]);
+    // Emit-then-fail is symmetric to the conduit: emit the invocation's
+    // outputs first, then route the per-event failure.
+    const emitted = resp.emit ?? [];
+    if (emitted.length)
+      enqueueFrom(
+        t.nodeKey,
+        emitted.map((v) => ({
+          value: v,
+          counts: { ...t.counts },
+          rootId: t.rootId,
+        }))
+      );
     if ("fail" in resp) {
       routePerEventError(t.node, resp.fail, {
         value: t.value,
         counts: t.counts,
         rootId: t.rootId,
       });
-      return;
     }
-    enqueueFrom(
-      t.nodeKey,
-      resp.emit.map((v) => ({
-        value: v,
-        counts: { ...t.counts },
-        rootId: t.rootId,
-      }))
-    );
   }
 
   async function processArrival(nodeKey, fromKey, event) {
@@ -435,8 +446,15 @@ async function runGraph(graph, mockOps, writes, sched) {
   async function drain() {
     if (!sched) {
       while (queue.length && !terminated) {
-        const { to, from, event } = queue.shift();
-        await processArrival(to, from, event);
+        const item = queue.shift();
+        if (item.terminal) {
+          // A conduit's fatal terminal, reached in FIFO order after the
+          // outputs it enqueued ahead of this marker: terminate now.
+          terminated = true;
+          errorResult = item.terminal;
+          break;
+        }
+        await processArrival(item.to, item.from, item.event);
       }
       return;
     }
@@ -449,19 +467,35 @@ async function runGraph(graph, mockOps, writes, sched) {
       const choices = [];
       for (let i = 0; i < queue.length; i++) {
         const it = queue[i];
+        if (it.terminal) {
+          // A fatal terminal follows the stream it terminates: it fires only
+          // once every event enqueued ahead of it has drained, i.e. when it
+          // reaches the head of the queue.
+          if (i === 0) choices.push({ q: i });
+          continue;
+        }
         let blocked = false;
-        for (let j = 0; j < i; j++)
-          if (queue[j].from === it.from && queue[j].to === it.to) {
+        for (let j = 0; j < i; j++) {
+          const pj = queue[j];
+          if (!pj.terminal && pj.from === it.from && pj.to === it.to) {
             blocked = true;
             break;
           }
+        }
         if (!blocked) choices.push({ q: i });
       }
       for (let p = 0; p < pendingEach.length; p++) choices.push({ e: p });
       const pick = choices[Math.floor(sched.rng() * choices.length)];
       if ("q" in pick) {
-        const [{ to, from, event }] = queue.splice(pick.q, 1);
-        await processArrival(to, from, event);
+        const it = queue[pick.q];
+        if (it.terminal) {
+          queue.splice(pick.q, 1);
+          terminated = true;
+          errorResult = it.terminal;
+        } else {
+          const [{ to, from, event }] = queue.splice(pick.q, 1);
+          await processArrival(to, from, event);
+        }
       } else {
         settleEach(pendingEach.splice(pick.e, 1)[0]);
       }

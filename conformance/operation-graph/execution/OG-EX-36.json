@@ -1,0 +1,84 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Identity-law conduit fidelity when the held invocation emits before it fails. A bare identity wrapper (input -> operation -> output) over a stream that emits [{n:1},{n:2},{n:3}] and then terminates with a fatal error (the operation node has no onError). The events the conduit produced before the failure must reach the output in order, and only then does the graph terminate with the inner terminal error surfaced verbatim (the identity law's terminal-status clause: the value stream a direct invocation would surface, then that invocation's terminal). An engine that fires the graph terminal out of band, without first draining the outputs the conduit already queued, yields [] instead of [{n:1},{n:2},{n:3}] and fails this fixture; the shape is the exact emit-then-fatal case the mock previously could not express (it emitted XOR failed).",
+  "fixtures": [
+    {
+      "id": "OG-EX-36",
+      "name": "Conduit emits then fails fatally, no onError",
+      "section": "The identity law; Conduit fidelity and determinism",
+      "description": "stream is a streaming operation that emits {n:1}, {n:2}, {n:3} and then terminates with UPSTREAM_GONE. The graph is the identity wrapper in -> stream -> out with no onError, so the terminal error is fatal to the graph invocation. The three emitted events reach the output in order before the graph terminates with UPSTREAM_GONE, the inner terminal error itself (not wrapped in an error-event shape). This pins that a conduit's pre-failure outputs are not discarded by the terminal.",
+      "operations": {
+        "stream": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "sub": true
+              },
+              "emit": [
+                {
+                  "n": 1
+                },
+                {
+                  "n": 2
+                },
+                {
+                  "n": 3
+                }
+              ],
+              "fail": "UPSTREAM_GONE"
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "description": "The identity wrapper: caller writes flow into one held invocation whose output stream is surfaced verbatim.",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "stream": {
+            "type": "operation",
+            "operation": "stream"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "stream"
+          },
+          {
+            "from": "stream",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "sub": true
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "n": 1
+          },
+          {
+            "n": 2
+          },
+          {
+            "n": 3
+          }
+        ],
+        "ordering": "exact",
+        "error": true,
+        "errorDetail": "UPSTREAM_GONE"
+      }
+    }
+  ]
+}
