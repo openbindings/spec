@@ -99,7 +99,7 @@ An OBI does not replace the binding artifacts it points at. Each binding specifi
 - **One operation, many bindings.** A single operation contract can be realized over multiple protocols simultaneously without duplicating the contract.
 - **Vendor-independent correspondence.** An operation can adopt the name a shared contract publishes, so consumers recognize it by that shared name rather than by who runs the service (see [§5.1. Operations](#51-operations)).
 - **Context-free references.** Every OBI-defined document reference is absolute or same-document, so a document resolves identically wherever it was obtained (origin, cache, redirect, stdin, or memory). (`bindings[*].ref` is interpreted by the binding specification, not by this rule; see [§7. Reference resolution](#7-reference-resolution).)
-- **Offline-decidable conformance.** Every document rule in [§10.2](#102-document-rules) is decidable from the document and locally available resources; no rule's outcome depends on network state.
+- **Offline-decidable conformance.** Every document rule in [§10.2](#102-document-rules) is decidable from the document and locally available resources; no rule's outcome depends on network state. Rules that require binding-specification knowledge are resolved by partial verification — unverified is not non-conformant ([§10.5](#105-verification-conclusions)) — never by reaching the network.
 
 ### 1.2. Out of scope
 
@@ -146,6 +146,8 @@ The rules in this specification instantiate six invariants. They are stated here
 ## 3. Terminology
 
 - **OBI**: shorthand for "OpenBindings interface document."
+- **Tool**: any software that acts on OBI documents. A tool's obligations follow the capabilities it exercises, not a fixed class ([§10.1](#101-tool-obligations)); the rules of [§10.3](#103-tool-rules) are addressed to "a conformant tool."
+- **Processor**: a tool in its baseline reading capacity — parsing, validating, indexing, or rendering a document, without resolving references, evaluating transforms, or acting on sources. Rules marked "(all processors)" bind every tool, including one that does no more than read; a tool that exercises further capabilities owes the correspondingly scoped rules in addition.
 - **Operation**: a named protocol-independent unit of capability with optional per-value input/output schemas. Stored under a key in the document's `operations` map. An operation is not a complete binding-independent invocation signature; it does not declare interaction pattern or cardinality.
 - **Binding**: an author-declared realization of an operation through a specific entry in a source. Stored under a key in the document's `bindings` map.
 - **Binding specification**: one stable semantic definition, under one defining authority, of how a family of sources and their bindings are interpreted and acted upon ([§6](#6-binding-specifications)). It may span several documents and incorporate upstream standards (the OpenAPI specification, the protobuf language) by reference.
