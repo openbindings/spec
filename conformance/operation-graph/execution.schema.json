@@ -59,10 +59,10 @@
                       },
                       "fail": {
                         "type": "string",
-                        "description": "If present, the invocation terminates with this error instead of emitting. At an `each` node this is a per-event failure; at an `operation` conduit it is a terminal error — fatal to the graph unless the node sets onError."
+                        "description": "If present, the invocation terminates with this error. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure; at an `operation` conduit it is a terminal error — fatal to the graph unless the node sets onError."
                       }
                     },
-                    "oneOf": [
+                    "anyOf": [
                       { "required": ["emit"] },
                       { "required": ["fail"] }
                     ],
