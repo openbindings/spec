@@ -487,7 +487,7 @@ If the caller cancels the graph invocation, or an `exit` node is reached, cancel
 
 **Conduit terminal errors.** When an `operation` node's held invocation terminates with an error, the failure belongs to the invocation as a whole. If the node sets `onError`, an error event (`{ "error": "<error>" }`, with no `event` member) is routed to the named node, the node completes and is non-accepting, and the graph continues. If the node does not set `onError`, the graph invocation terminates with that error — previously emitted outputs are not retracted, in-flight events and inner invocations are cancelled, and the caller-facing input side closes — exactly as for an `exit` node with `error: true` whose error detail is the inner terminal error. The graph's terminal error is the inner terminal error itself, the value direct invocation would surface, not an error-event wrapper around it; the `{ "error": ... }` shape exists only for events routed inside the graph. This fatal default is required by the [identity law](#11-transparency-the-identity-law)'s terminal-status clause; see [`operation`](#operation).
 
-**Error identifiers.** When the failure is one this specification defines, the `error` member carries its identifier, in SCREAMING_SNAKE_CASE per the identifier convention of the openbindings interfaces (e.g., the binding-invoker's `CONTEXT_REQUIRED` and `ERR_*` codes):
+**Error identifiers.** When the failure is one this specification defines, the `error` member carries its identifier, in SCREAMING_SNAKE_CASE:
 
 | Identifier | Raised by |
 |---|---|
