@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/transforms-conformance-fixture-0.2.0.json",
+  "title": "transform differential-conformance fixture file",
+  "description": "Describes a set of JSONata transform cases. Two kinds share this file shape: `agree` cases (the cross-SDK gate) pin the NORMATIVE jsonata-js output that every conformant engine MUST reproduce; `known-divergence` cases catalog, per root-cause pattern, where the implementation engine deviates from that normative output. An outcome is a small envelope so `undefined` stays distinct from a `null` value and error identity is a message substring rather than exact text.",
+  "type": "object",
+  "required": ["kind", "language", "expectedEngine", "cases"],
+  "properties": {
+    "kind": { "enum": ["agree", "known-divergence"] },
+    "language": { "const": "jsonata" },
+    "expectedEngine": {
+      "type": "string",
+      "description": "The engine that produced every `expected` outcome — the normative tiebreak the spec pins (jsonata-js@2.1.1)."
+    },
+    "actualEngine": {
+      "type": "string",
+      "description": "known-divergence only: the engine that produced every `actual` outcome (e.g. gnata@0.2.2)."
+    },
+    "description": { "type": "string" },
+    "rootCauses": {
+      "type": "object",
+      "description": "known-divergence only: prose for each root-cause label (A-F).",
+      "additionalProperties": { "type": "string" }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "known-divergence" } } },
+      "then": {
+        "properties": {
+          "cases": { "items": { "required": ["rootCause", "actual"] } }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "outcome": {
+      "type": "object",
+      "description": "The result of evaluating `expr` against `input`. `value` carries any JSON value; `status: undefined` is JSONata's no-result signal (distinct from a null value); `status: error` records only a message substring, since exact error text is engine-specific. `orderNondeterministic` (an `actual` only) marks a value whose array-element ORDER varies per process — compared as a multiset, never positionally.",
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["value", "undefined", "error"] },
+        "value": {},
+        "errorContains": { "type": "string" },
+        "orderNondeterministic": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": ["id", "description", "expr", "input", "expected"],
+      "properties": {
+        "id": { "type": "string" },
+        "rootCause": {
+          "enum": ["A", "B", "C", "D", "E", "F"],
+          "description": "known-divergence only: which root-cause pattern this case exercises."
+        },
+        "description": { "type": "string" },
+        "expr": { "type": "string", "description": "The JSONata expression under test." },
+        "input": { "description": "The JSON value the expression evaluates against (JSONata's context, $)." },
+        "expected": { "$ref": "#/$defs/outcome" },
+        "actual": {
+          "$ref": "#/$defs/outcome",
+          "description": "known-divergence only: the implementation-engine outcome."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

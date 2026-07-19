@@ -1,0 +1,336 @@
+{
+ "kind": "known-divergence",
+ "language": "jsonata",
+ "expectedEngine": "jsonata-js@2.1.1",
+ "actualEngine": "gnata@0.2.2",
+ "description": "Where ob's adopted Go engine (gnata) deviates from the normative jsonata-js in ob's ACTUAL transform pipeline (input pre-parsed to the Go JSON value model). None is reachable by any shipped OB transform; each is regression-guarded, so a gnata change that closes one is caught and the case can be promoted to agree. The spec's normative requirement remains full jsonata-js. NOTE: the big-integer-precision divergence gnata shows on raw bytes does NOT occur here \u2014 ob's pipeline rounds large integers to float64 before the transform runs, so ob and jsonata-js agree.",
+ "rootCauses": {
+  "W": "Wildcard over an array (items.*) yields nested per-element arrays rather than a flattened sequence.",
+  "F": "$filter returning exactly one match yields a single-element array [x] rather than x.",
+  "M": "$match returns {match,start,end,groups}; jsonata-js returns {match,index,groups}.",
+  "R": "RE2 (Go regexp) rejects Perl lookahead/lookbehind/backreferences with an error where jsonata-js evaluates them."
+ },
+ "cases": [
+  {
+   "id": "wild-star-arr",
+   "rootCause": "W",
+   "description": "wildcard over array elems",
+   "expr": "items.*",
+   "input": {
+    "items": [
+     {
+      "name": "a",
+      "price": 5,
+      "quantity": 1
+     },
+     {
+      "name": "b",
+      "price": 20,
+      "quantity": 3
+     }
+    ]
+   },
+   "expected": {
+    "status": "value",
+    "value": [
+     "a",
+     5,
+     1,
+     "b",
+     20,
+     3
+    ]
+   },
+   "actual": {
+    "status": "value",
+    "value": [
+     [
+      "a",
+      5,
+      1
+     ],
+     [
+      "b",
+      20,
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ho-filter",
+   "rootCause": "F",
+   "description": "filter",
+   "expr": "$filter(items, function($x){ $x.price > 10 })",
+   "input": {
+    "items": [
+     {
+      "name": "a",
+      "price": 5,
+      "quantity": 1
+     },
+     {
+      "name": "b",
+      "price": 20,
+      "quantity": 3
+     }
+    ]
+   },
+   "expected": {
+    "status": "value",
+    "value": {
+     "name": "b",
+     "price": 20,
+     "quantity": 3
+    }
+   },
+   "actual": {
+    "status": "value",
+    "value": [
+     {
+      "name": "b",
+      "price": 20,
+      "quantity": 3
+     }
+    ]
+   }
+  },
+  {
+   "id": "w-filter1-alone",
+   "rootCause": "F",
+   "description": "filter 1 match alone",
+   "expr": "$filter(items, function($x){$x.price>10})",
+   "input": {
+    "items": [
+     {
+      "name": "a",
+      "price": 5
+     },
+     {
+      "name": "b",
+      "price": 20
+     }
+    ]
+   },
+   "expected": {
+    "status": "value",
+    "value": {
+     "name": "b",
+     "price": 20
+    }
+   },
+   "actual": {
+    "status": "value",
+    "value": [
+     {
+      "name": "b",
+      "price": 20
+     }
+    ]
+   }
+  },
+  {
+   "id": "w-filter1-inobj",
+   "rootCause": "F",
+   "description": "filter 1 match in obj",
+   "expr": "{ \"v\": $filter(items, function($x){$x.price>10}) }",
+   "input": {
+    "items": [
+     {
+      "name": "a",
+      "price": 5
+     },
+     {
+      "name": "b",
+      "price": 20
+     }
+    ]
+   },
+   "expected": {
+    "status": "value",
+    "value": {
+     "v": {
+      "name": "b",
+      "price": 20
+     }
+    }
+   },
+   "actual": {
+    "status": "value",
+    "value": {
+     "v": [
+      {
+       "name": "b",
+       "price": 20
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "x-match",
+   "rootCause": "M",
+   "description": "$match regex struct",
+   "expr": "$match(\"ab12cd\", /[0-9]+/)",
+   "input": {
+    "merged": true
+   },
+   "expected": {
+    "status": "value",
+    "value": {
+     "match": "12",
+     "index": 2,
+     "groups": []
+    }
+   },
+   "actual": {
+    "status": "value",
+    "value": {
+     "end": 4,
+     "groups": [],
+     "match": "12",
+     "start": 2
+    }
+   }
+  },
+  {
+   "id": "fn-match",
+   "rootCause": "M",
+   "description": "match",
+   "expr": "$match(\"a12\", /[0-9]+/)",
+   "input": {
+    "merged": true
+   },
+   "expected": {
+    "status": "value",
+    "value": {
+     "match": "12",
+     "index": 1,
+     "groups": []
+    }
+   },
+   "actual": {
+    "status": "value",
+    "value": {
+     "end": 3,
+     "groups": [],
+     "match": "12",
+     "start": 1
+    }
+   }
+  },
+  {
+   "id": "re-plain",
+   "rootCause": "M",
+   "description": "d: plain regex control",
+   "expr": "$match(\"a12b34\", /[0-9]+/)",
+   "input": {},
+   "expected": {
+    "status": "value",
+    "value": [
+     {
+      "match": "12",
+      "index": 1,
+      "groups": []
+     },
+     {
+      "match": "34",
+      "index": 4,
+      "groups": []
+     }
+    ]
+   },
+   "actual": {
+    "status": "value",
+    "value": [
+     {
+      "end": 3,
+      "groups": [],
+      "match": "12",
+      "start": 1
+     },
+     {
+      "end": 6,
+      "groups": [],
+      "match": "34",
+      "start": 4
+     }
+    ]
+   }
+  },
+  {
+   "id": "re-lookahead-contains",
+   "rootCause": "R",
+   "description": "d: lookahead in $contains",
+   "expr": "$contains(\"foobar\", /foo(?=bar)/)",
+   "input": {},
+   "expected": {
+    "status": "value",
+    "value": true
+   },
+   "actual": {
+    "status": "error",
+    "errorContains": "evaluate jsonata expression: D3137: inva"
+   }
+  },
+  {
+   "id": "re-lookahead-match",
+   "rootCause": "R",
+   "description": "d: lookahead in $match",
+   "expr": "$match(\"foobar\", /foo(?=bar)/)",
+   "input": {},
+   "expected": {
+    "status": "value",
+    "value": {
+     "match": "foo",
+     "index": 0,
+     "groups": []
+    }
+   },
+   "actual": {
+    "status": "error",
+    "errorContains": "evaluate jsonata expression: D3137: inva"
+   }
+  },
+  {
+   "id": "re-lookbehind",
+   "rootCause": "R",
+   "description": "d: lookbehind",
+   "expr": "$match(\"foobar\", /(?<=foo)bar/)",
+   "input": {},
+   "expected": {
+    "status": "value",
+    "value": {
+     "match": "bar",
+     "index": 3,
+     "groups": []
+    }
+   },
+   "actual": {
+    "status": "error",
+    "errorContains": "evaluate jsonata expression: D3137: inva"
+   }
+  },
+  {
+   "id": "re-backref",
+   "rootCause": "R",
+   "description": "d: backreference",
+   "expr": "$match(\"abab\", /(ab)\\1/)",
+   "input": {},
+   "expected": {
+    "status": "value",
+    "value": {
+     "match": "abab",
+     "index": 0,
+     "groups": [
+      "ab"
+     ]
+    }
+   },
+   "actual": {
+    "status": "error",
+    "errorContains": "evaluate jsonata expression: D3137: inva"
+   }
+  }
+ ]
+}
