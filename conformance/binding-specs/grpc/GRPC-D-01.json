@@ -3,7 +3,7 @@
   "bindingSpec": "openbindings.grpc@1",
   "section": "5",
   "description": "`content`, when present, is single-file proto source text (string; `google/protobuf/*` imports only) or a `google.protobuf.FileDescriptorSet` in canonical protobuf JSON (object; unknown members and bracket-keyed extension members refused). No other JSON type or shape is an accepted `content` value.",
-  "notes": "The accepted schema RANGE (proto2 groups, required presence, DELIMITED encoding, editions json_format) is evaluated per bound-method closure and attributed to GRPC-P-03, not this rule; range cases are not fixtured here. Verifying the proto-string carriage requires a protobuf compiler; a validator without one reports those tests unverified rather than passing or failing them.",
+  "notes": "The accepted schema RANGE (proto2 groups, required presence, DELIMITED encoding, editions json_format) is evaluated per bound-method closure and attributed to GRPC-P-03, not this rule; range cases are not fixtured here. Verifying the proto-string carriage requires a protobuf compiler; a validator without one reports those tests unverified rather than passing or failing them. The shared-type positive (a message reused in two sibling fields) pins that ordinary DAG reuse in the SOURCE gives a conformant processor nothing to refuse at bind time; synthesis fidelity for that shape — the full schema surviving in every sibling position rather than truncating to a bare object — is a §10 synthesis-convention concern, verified in the SDK module tests, not decidable from the document here.",
   "tests": [
     {
       "description": "string content: single-file proto3 source text with no imports",
@@ -101,6 +101,28 @@
             "operation": "getMenu",
             "source": "shop",
             "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content: a user message type reused in two sibling fields (Pair.a and Pair.b are both Point) compiles and is accepted — DAG reuse in the source is not a bind-time defect",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getPair": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com:443",
+            "content": "syntax = \"proto3\";\npackage blend;\nservice CoffeeShop {\n  rpc GetPair(PairRequest) returns (Pair);\n}\nmessage PairRequest {}\nmessage Point {\n  string label = 1;\n}\nmessage Pair {\n  Point a = 1;\n  Point b = 2;\n}\n"
+          }
+        },
+        "bindings": {
+          "getPair.shop": {
+            "operation": "getPair",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetPair"
           }
         }
       },
