@@ -26,6 +26,31 @@
       "valid": true
     },
     {
+      "description": "binding references source \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "constructor"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
       "description": "binding references a non-existent source key",
       "document": {
         "openbindings": "0.2.0",

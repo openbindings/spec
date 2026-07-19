@@ -77,6 +77,37 @@
       "valid": true
     },
     {
+      "description": "binding inputTransform $ref points to \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with a transforms map present but no such transform (guards against an implementation resolving the named-transform reference through a language object's prototype chain rather than the document's own transforms map)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://api.example.com/openapi.json"
+          }
+        },
+        "transforms": {
+          "fromApi": "{ \"id\": task_id }"
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "httpApi",
+            "inputTransform": {
+              "$ref": "#/transforms/constructor"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
       "description": "binding inputTransform $ref points to non-existent transform key",
       "document": {
         "openbindings": "0.2.0",
