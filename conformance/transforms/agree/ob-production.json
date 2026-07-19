@@ -1,0 +1,779 @@
+{
+  "kind": "agree",
+  "language": "jsonata",
+  "expectedEngine": "jsonata-js@2.1.1",
+  "description": "Every distinct JSONata transform shipped in ob's own OBIs (ob.obi.json, ob.bound.obi.json, serve.obi.json, demo) \u2014 the CLI machine-lane arg mappers. All agree across both engines; this pins that guarantee.",
+  "cases": [
+    {
+      "id": "obp-01-sift-merge",
+      "description": "serve source-add machine lane",
+      "expr": "$merge([$sift($$, function($v, $k) { $k != \"bindingSpec\" }), $exists($$.bindingSpec) ? {\"binding-spec\": $$.bindingSpec} : {}, {\"format\": \"json\"}])",
+      "input": {
+        "interface": "x.obi.json",
+        "bindingSpec": "openapi"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "interface": "x.obi.json",
+          "binding-spec": "openapi",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-02-type-merge",
+      "description": "common object passthrough (10x)",
+      "expr": "$merge([$type($$) = \"object\" ? $$ : {}, {\"format\": \"json\"}])",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "interface": "x.obi.json",
+          "operation": "users.get",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-03-url-value",
+      "description": "kv url+value merge",
+      "expr": "$merge([{ \"url\": key }, value])",
+      "input": {
+        "key": "https://example.com",
+        "value": {
+          "a": 1,
+          "b": 2
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "url": "https://example.com",
+          "a": 1,
+          "b": 2
+        }
+      }
+    },
+    {
+      "id": "obp-04-op-add",
+      "description": "operation add mapper",
+      "expr": "$merge([{\"obi-path\": $$.interface, \"key\": $$.key, \"description\": $$.description, \"alias\": $$.aliases, \"tag\": $$.tags, \"input-schema\": $$.input, \"output-schema\": $$.output}, $exists($$.idempotent) ? {\"idempotent\": $string($$.idempotent)} : {}])",
+      "input": {
+        "interface": "x.obi.json",
+        "key": "op1",
+        "description": "d",
+        "aliases": [
+          "a"
+        ],
+        "tags": [
+          "t"
+        ],
+        "input": {
+          "type": "object"
+        },
+        "output": {
+          "type": "string"
+        },
+        "idempotent": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "key": "op1",
+          "description": "d",
+          "alias": [
+            "a"
+          ],
+          "tag": [
+            "t"
+          ],
+          "input-schema": {
+            "type": "object"
+          },
+          "output-schema": {
+            "type": "string"
+          },
+          "idempotent": "true"
+        }
+      }
+    },
+    {
+      "id": "obp-05-op-update",
+      "description": "operation update mapper",
+      "expr": "$merge([{\"obi-path\": $$.interface, \"operation\": $$.operation, \"description\": $$.description, \"input-schema\": $$.input, \"output-schema\": $$.output, \"add-tag\": $$.addTags, \"remove-tag\": $$.removeTags, \"own\": $$.own}, $exists($$.idempotent) ? {\"idempotent\": $string($$.idempotent)} : {}, $exists($$.deprecated) ? {\"deprecated\": $string($$.deprecated)} : {}])",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "description": "d",
+        "input": {
+          "type": "object"
+        },
+        "output": {
+          "type": "string"
+        },
+        "addTags": [
+          "a"
+        ],
+        "removeTags": [
+          "b"
+        ],
+        "own": true,
+        "idempotent": false,
+        "deprecated": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "description": "d",
+          "input-schema": {
+            "type": "object"
+          },
+          "output-schema": {
+            "type": "string"
+          },
+          "add-tag": [
+            "a"
+          ],
+          "remove-tag": [
+            "b"
+          ],
+          "own": true,
+          "idempotent": "false",
+          "deprecated": "true"
+        }
+      }
+    },
+    {
+      "id": "obp-06-source-add",
+      "description": "source add nested mapper",
+      "expr": "$merge([{\"obi-path\": $$.interface, \"source\": $$.source.bindingSpec & \":\" & $$.source.location, \"key\": $$.source.name, \"uri\": $$.source.outputLocation, \"description\": $$.source.description, \"yes\": true}, $$.source.embed ? {\"resolve\": \"content\"} : {}])",
+      "input": {
+        "interface": "x.obi.json",
+        "source": {
+          "bindingSpec": "openapi",
+          "location": "https://ex.com/o.json",
+          "name": "s1",
+          "outputLocation": "out.json",
+          "description": "d",
+          "embed": true
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "source": "openapi:https://ex.com/o.json",
+          "key": "s1",
+          "uri": "out.json",
+          "description": "d",
+          "yes": true,
+          "resolve": "content"
+        }
+      }
+    },
+    {
+      "id": "obp-07-correlate",
+      "description": "demo correlation predicate",
+      "expr": "place != null and subscribe != null and subscribe.orderId = place.orderId and subscribe.status in ['ready', 'picked_up']",
+      "input": {
+        "place": {
+          "orderId": "o1"
+        },
+        "subscribe": {
+          "orderId": "o1",
+          "status": "ready"
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": true
+      }
+    },
+    {
+      "id": "obp-08-subscribe-field",
+      "description": "bare field-ref to object",
+      "expr": "subscribe",
+      "input": {
+        "subscribe": {
+          "orderId": "o1",
+          "status": "ready"
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "orderId": "o1",
+          "status": "ready"
+        }
+      }
+    },
+    {
+      "id": "obp-09-input-string",
+      "description": "wrap input as string (4x)",
+      "expr": "{ \"input\": $string($$) }",
+      "input": {
+        "a": 1,
+        "b": [
+          2,
+          3
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "input": "{\"a\":1,\"b\":[2,3]}"
+        }
+      }
+    },
+    {
+      "id": "obp-10-url-key",
+      "description": "url from key",
+      "expr": "{ \"url\": key }",
+      "input": {
+        "key": "https://example.com/a"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "url": "https://example.com/a"
+        }
+      }
+    },
+    {
+      "id": "obp-11-compare",
+      "description": "compare mapper",
+      "expr": "{\"baseline\": $$.baseline, \"comparison\": $$.comparison, \"from-sources\": $$.fromSources, \"only\": $$.only, \"format\": \"json\"}",
+      "input": {
+        "baseline": "b.json",
+        "comparison": "c.json",
+        "fromSources": [
+          "s1"
+        ],
+        "only": [
+          "op1"
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "baseline": "b.json",
+          "comparison": "c.json",
+          "from-sources": [
+            "s1"
+          ],
+          "only": [
+            "op1"
+          ],
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-12-binding-spec",
+      "description": "binding-spec mapper",
+      "expr": "{\"binding-spec\": $$.bindingSpec, \"format\": \"json\"}",
+      "input": {
+        "bindingSpec": "openapi"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "binding-spec": "openapi",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-13-migrate",
+      "description": "migrate mapper",
+      "expr": "{\"interface\": $$.interface, \"target-obi\": $$.target, \"dry-run\": $$.dryRun, \"yes\": true, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "target": "y.obi.json",
+        "dryRun": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "interface": "x.obi.json",
+          "target-obi": "y.obi.json",
+          "dry-run": true,
+          "yes": true,
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-14-validate",
+      "description": "validate mapper",
+      "expr": "{\"locator\": $$.interface, \"strict\": $$.strict, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "strict": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "locator": "x.obi.json",
+          "strict": true,
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-15-binding-op",
+      "description": "binding-scoped mapper",
+      "expr": "{\"obi\": $$.interface, \"operation\": $$.operation, \"binding\": $$.binding, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "binding": "users.get.openapi"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi": "x.obi.json",
+          "operation": "users.get",
+          "binding": "users.get.openapi",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-16-op-format",
+      "description": "op mapper",
+      "expr": "{\"obi\": $$.interface, \"operation\": $$.operation, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi": "x.obi.json",
+          "operation": "users.get",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-17-tag",
+      "description": "tag mapper",
+      "expr": "{\"obi\": $$.interface, \"tag\": $$.tag, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "tag": "beta"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi": "x.obi.json",
+          "tag": "beta",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-18-obipath-self",
+      "description": "obi-path from scalar $$",
+      "expr": "{\"obi-path\": $$, \"format\": \"json\"}",
+      "input": "x.obi.json",
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-19-obipath",
+      "description": "obi-path mapper (2x)",
+      "expr": "{\"obi-path\": $$.interface, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-20-key-force",
+      "description": "key force mapper",
+      "expr": "{\"obi-path\": $$.interface, \"key\": $$.keys, \"force\": $$.force}",
+      "input": {
+        "interface": "x.obi.json",
+        "keys": [
+          "k1",
+          "k2"
+        ],
+        "force": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "key": [
+            "k1",
+            "k2"
+          ],
+          "force": true
+        }
+      }
+    },
+    {
+      "id": "obp-21-key",
+      "description": "key mapper",
+      "expr": "{\"obi-path\": $$.interface, \"key\": $$.key}",
+      "input": {
+        "interface": "x.obi.json",
+        "key": "k1"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "key": "k1"
+        }
+      }
+    },
+    {
+      "id": "obp-22-name-version",
+      "description": "meta mapper",
+      "expr": "{\"obi-path\": $$.interface, \"name\": $$.name, \"version\": $$.version, \"description\": $$.description}",
+      "input": {
+        "interface": "x.obi.json",
+        "name": "svc",
+        "version": "1.0.0",
+        "description": "d"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "name": "svc",
+          "version": "1.0.0",
+          "description": "d"
+        }
+      }
+    },
+    {
+      "id": "obp-23-rename",
+      "description": "rename mapper",
+      "expr": "{\"obi-path\": $$.interface, \"old-key\": $$.oldKey, \"new-key\": $$.newKey}",
+      "input": {
+        "interface": "x.obi.json",
+        "oldKey": "a",
+        "newKey": "b"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "old-key": "a",
+          "new-key": "b"
+        }
+      }
+    },
+    {
+      "id": "obp-24-alias",
+      "description": "alias mapper (2x)",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"alias\": $$.aliases}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "aliases": [
+          "u"
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "alias": [
+            "u"
+          ]
+        }
+      }
+    },
+    {
+      "id": "obp-25-codegen-name",
+      "description": "codegen-name mapper",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"name\": $$.codegenName, \"clear\": $$.clear}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "codegenName": "GetUser",
+        "clear": false
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "name": "GetUser",
+          "clear": false
+        }
+      }
+    },
+    {
+      "id": "obp-26-output-schema",
+      "description": "output-schema mapper",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"schema\": $$.outputSchema, \"clear\": $$.clear}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "outputSchema": {
+          "type": "string"
+        },
+        "clear": false
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "schema": {
+            "type": "string"
+          },
+          "clear": false
+        }
+      }
+    },
+    {
+      "id": "obp-27-bind",
+      "description": "bind mapper",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"source\": $$.source, \"ref\": $$.ref, \"preference\": $$.preference, \"input-transform\": $$.inputTransform, \"output-transform\": $$.outputTransform, \"transform-stub\": $$.transformStub, \"force\": $$.force}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "source": "s1",
+        "ref": "#/paths/x",
+        "preference": 1,
+        "inputTransform": "$",
+        "outputTransform": "$",
+        "transformStub": false,
+        "force": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "source": "s1",
+          "ref": "#/paths/x",
+          "preference": 1,
+          "input-transform": "$",
+          "output-transform": "$",
+          "transform-stub": false,
+          "force": true
+        }
+      }
+    },
+    {
+      "id": "obp-28-op-source",
+      "description": "op source mapper",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"source\": $$.source}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get",
+        "source": "s1"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get",
+          "source": "s1"
+        }
+      }
+    },
+    {
+      "id": "obp-29-op-only",
+      "description": "op-only mapper",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation}",
+      "input": {
+        "interface": "x.obi.json",
+        "operation": "users.get"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "operation": "users.get"
+        }
+      }
+    },
+    {
+      "id": "obp-30-source-key",
+      "description": "source-key mapper",
+      "expr": "{\"obi-path\": $$.interface, \"source-key\": $$.sourceKeys, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "sourceKeys": [
+          "s1",
+          "s2"
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "obi-path": "x.obi.json",
+          "source-key": [
+            "s1",
+            "s2"
+          ],
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-31-synth",
+      "description": "synthesize mapper",
+      "expr": "{\"path\": \"-\", \"name\": $$.name, \"version\": $$.version, \"description\": $$.description, \"spec-version\": $$.openbindings}",
+      "input": {
+        "name": "svc",
+        "version": "1.0.0",
+        "description": "d",
+        "openbindings": "0.2.0"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "path": "-",
+          "name": "svc",
+          "version": "1.0.0",
+          "description": "d",
+          "spec-version": "0.2.0"
+        }
+      }
+    },
+    {
+      "id": "obp-32-codegen",
+      "description": "codegen mapper",
+      "expr": "{\"source\": $$.interface, \"lang\": $$.language, \"package\": $$.package, \"format\": \"json\"}",
+      "input": {
+        "interface": "x.obi.json",
+        "language": "go",
+        "package": "pkg"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "source": "x.obi.json",
+          "lang": "go",
+          "package": "pkg",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-33-diff-cand",
+      "description": "diff candidate mapper",
+      "expr": "{\"target\": $$.target, \"candidate\": $$.candidate, \"format\": \"json\"}",
+      "input": {
+        "target": "t.obi.json",
+        "candidate": "c.obi.json"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "target": "t.obi.json",
+          "candidate": "c.obi.json",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-34-graft",
+      "description": "graft mapper",
+      "expr": "{\"target\": $$.target, \"source\": $$.source, \"from-sources\": $$.fromSources, \"only\": $$.only, \"op\": $$.operations, \"exclude-op\": $$.excludeOperations, \"ops-only\": $$.opsOnly, \"no-bindings\": $$.noBindings, \"no-sources\": $$.noSources, \"yes\": true, \"format\": \"json\"}",
+      "input": {
+        "target": "t.obi.json",
+        "source": "s.obi.json",
+        "fromSources": [
+          "a"
+        ],
+        "only": [
+          "op1"
+        ],
+        "operations": [
+          "op2"
+        ],
+        "excludeOperations": [
+          "op3"
+        ],
+        "opsOnly": false,
+        "noBindings": false,
+        "noSources": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "target": "t.obi.json",
+          "source": "s.obi.json",
+          "from-sources": [
+            "a"
+          ],
+          "only": [
+            "op1"
+          ],
+          "op": [
+            "op2"
+          ],
+          "exclude-op": [
+            "op3"
+          ],
+          "ops-only": false,
+          "no-bindings": false,
+          "no-sources": true,
+          "yes": true,
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-35-url-format",
+      "description": "url format mapper (2x)",
+      "expr": "{\"url\": $$.key, \"format\": \"json\"}",
+      "input": {
+        "key": "https://example.com/x"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "url": "https://example.com/x",
+          "format": "json"
+        }
+      }
+    },
+    {
+      "id": "obp-36-url-value2",
+      "description": "url value mapper",
+      "expr": "{\"url\": $$.key, \"value\": $$.value}",
+      "input": {
+        "key": "https://example.com/x",
+        "value": "v1"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "url": "https://example.com/x",
+          "value": "v1"
+        }
+      }
+    }
+  ]
+}

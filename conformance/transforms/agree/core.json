@@ -1,0 +1,1553 @@
+{
+  "kind": "agree",
+  "language": "jsonata",
+  "expectedEngine": "jsonata-js@2.1.1",
+  "description": "Portable transform subset: expressions both jsonata-js (normative) and jsonata-go v1.5.4 evaluate identically. This is the cross-SDK GATE.",
+  "cases": [
+    {
+      "id": "root-id-obj",
+      "description": "identity $ on object",
+      "expr": "$",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "merged": true
+        }
+      }
+    },
+    {
+      "id": "root-id-arr",
+      "description": "identity $ on array",
+      "expr": "$",
+      "input": [
+        1,
+        2,
+        3
+      ],
+      "expected": {
+        "status": "value",
+        "value": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "root-input-var",
+      "description": "unbound $input var",
+      "expr": "$input",
+      "input": {
+        "input": "x"
+      },
+      "expected": {
+        "status": "undefined"
+      }
+    },
+    {
+      "id": "path-deep-scalar",
+      "description": "deep path to scalar",
+      "expr": "a.b.c",
+      "input": {
+        "a": {
+          "b": {
+            "c": 5
+          }
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": 5
+      }
+    },
+    {
+      "id": "path-seq",
+      "description": "path yields multi sequence",
+      "expr": "items.name",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "path-flatten",
+      "description": "nested array flatten",
+      "expr": "items.tags",
+      "input": {
+        "items": [
+          {
+            "tags": [
+              "x",
+              "y"
+            ]
+          },
+          {
+            "tags": [
+              "z"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          "x",
+          "y",
+          "z"
+        ]
+      }
+    },
+    {
+      "id": "field-scalar",
+      "description": "bare field ref to scalar",
+      "expr": "price",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": 10
+      }
+    },
+    {
+      "id": "obj-field-array",
+      "description": "field ref to array in obj construct",
+      "expr": "{ \"v\": items }",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "v": [
+            {
+              "name": "a",
+              "price": 5,
+              "quantity": 1
+            },
+            {
+              "name": "b",
+              "price": 20,
+              "quantity": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "obj-field-scalar",
+      "description": "field ref to scalar",
+      "expr": "{ \"v\": price }",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "v": 10
+        }
+      }
+    },
+    {
+      "id": "obj-two-fields",
+      "description": "two scalar fields",
+      "expr": "{ \"a\": name, \"b\": price }",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "a": "widget",
+          "b": 10
+        }
+      }
+    },
+    {
+      "id": "obj-computed-key",
+      "description": "computed key from field",
+      "expr": "{ name: price }",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "widget": 10
+        }
+      }
+    },
+    {
+      "id": "obj-count-root",
+      "description": "count over batch (reachable)",
+      "expr": "{ \"n\": $count($) }",
+      "input": [
+        {
+          "page": "P",
+          "nextCursor": "c"
+        },
+        {
+          "page": "P",
+          "nextCursor": "c"
+        },
+        {
+          "page": "P",
+          "nextCursor": "c"
+        }
+      ],
+      "expected": {
+        "status": "value",
+        "value": {
+          "n": 3
+        }
+      }
+    },
+    {
+      "id": "obj-sum",
+      "description": "sum in obj construct",
+      "expr": "{ \"t\": $sum(items.price) }",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "t": 25
+        }
+      }
+    },
+    {
+      "id": "obj-array-literal",
+      "description": "array literal value",
+      "expr": "{ \"v\": [1,2,3] }",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "v": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "id": "obj-path-value",
+      "description": "path sequence as value",
+      "expr": "{ \"v\": items.name }",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "v": [
+            "a",
+            "b"
+          ]
+        }
+      }
+    },
+    {
+      "id": "obj-empty",
+      "description": "empty object",
+      "expr": "{}",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {}
+      }
+    },
+    {
+      "id": "obj-nested-fields",
+      "description": "nested obj construct, field",
+      "expr": "{ \"outer\": { \"inner\": price } }",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "outer": {
+            "inner": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "r-filter-cursor",
+      "description": "OG-EX-01 prepareCursor",
+      "expr": "{ \"filter\": $input.filter, \"cursor\": nextCursor }",
+      "input": {
+        "filter": "x",
+        "nextCursor": "abc"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "cursor": "abc"
+        }
+      }
+    },
+    {
+      "id": "r-fallback",
+      "description": "OG-EX-06 fallback",
+      "expr": "{ \"id\": event.id, \"name\": \"unknown\", \"error\": error }",
+      "input": {
+        "event": {
+          "id": "e1"
+        },
+        "error": {
+          "code": "boom"
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "id": "e1",
+          "name": "unknown",
+          "error": {
+            "code": "boom"
+          }
+        }
+      }
+    },
+    {
+      "id": "r-idtask",
+      "description": "OBI-D-10",
+      "expr": "{ \"id\": task_id }",
+      "input": {
+        "task_id": "T9",
+        "other": 1
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "id": "T9"
+        }
+      }
+    },
+    {
+      "id": "r-reduce-agg",
+      "description": "OG-EX-01 aggregate reduce",
+      "expr": "{ \"items\": $reduce($, function($a, $v){ $append($a, $v.items) }, []) }",
+      "input": [
+        {
+          "items": [
+            1,
+            2
+          ]
+        },
+        {
+          "items": [
+            3
+          ]
+        }
+      ],
+      "expected": {
+        "status": "value",
+        "value": {
+          "items": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "id": "r-items-degraded",
+      "description": "OG-EX-17 fallback",
+      "expr": "{ \"items\": [], \"degraded\": error }",
+      "input": {
+        "error": {
+          "code": "x"
+        }
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "items": [],
+          "degraded": {
+            "code": "x"
+          }
+        }
+      }
+    },
+    {
+      "id": "r-rejected",
+      "description": "OG-EX-17 report",
+      "expr": "{ \"rejected\": event.id, \"reason\": error }",
+      "input": {
+        "event": {
+          "id": "e2"
+        },
+        "error": "why"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "rejected": "e2",
+          "reason": "why"
+        }
+      }
+    },
+    {
+      "id": "r-tasktitle",
+      "description": "OBI-D-18 input",
+      "expr": "{ \"task_title\": title }",
+      "input": {
+        "title": "Buy milk"
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "task_title": "Buy milk"
+        }
+      }
+    },
+    {
+      "id": "r-label",
+      "description": "OBI-D-18 outputTransform predicate+construct",
+      "expr": "items[price > 10].{ \"label\": name & \" ($\" & $string(price) & \")\", \"total\": price * quantity }",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "label": "b ($20)",
+          "total": 60
+        }
+      }
+    },
+    {
+      "id": "idx-0-arr",
+      "description": "$[0] on array",
+      "expr": "$[0]",
+      "input": [
+        {
+          "page": "P",
+          "nextCursor": "c"
+        },
+        {
+          "page": "P",
+          "nextCursor": "c"
+        },
+        {
+          "page": "P",
+          "nextCursor": "c"
+        }
+      ],
+      "expected": {
+        "status": "value",
+        "value": {
+          "page": "P",
+          "nextCursor": "c"
+        }
+      }
+    },
+    {
+      "id": "pred-eq",
+      "description": "predicate single match",
+      "expr": "items[name=\"a\"]",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "name": "a",
+          "price": 5,
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "pred-multi",
+      "description": "predicate multi match",
+      "expr": "items[price>0]",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "pred-idx",
+      "description": "positional predicate",
+      "expr": "items[0]",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "name": "a",
+          "price": 5,
+          "quantity": 1
+        }
+      }
+    },
+    {
+      "id": "pred-neg-idx",
+      "description": "negative index",
+      "expr": "items[-1]",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "name": "b",
+          "price": 20,
+          "quantity": 3
+        }
+      }
+    },
+    {
+      "id": "pred-field-after",
+      "description": "field after predicate",
+      "expr": "items[price>10].name",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": "b"
+      }
+    },
+    {
+      "id": "cond-tern",
+      "description": "ternary",
+      "expr": "price > 5 ? \"big\" : \"small\"",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "big"
+      }
+    },
+    {
+      "id": "cond-exists",
+      "description": "exists in cond",
+      "expr": "$exists(missing) ? \"y\" : \"n\"",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "n"
+      }
+    },
+    {
+      "id": "str-concat",
+      "description": "string concat",
+      "expr": "name & \"!\"",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "widget!"
+      }
+    },
+    {
+      "id": "str-concat-num",
+      "description": "concat number coercion",
+      "expr": "\"n=\" & price",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "n=10"
+      }
+    },
+    {
+      "id": "str-substr",
+      "description": "substring",
+      "expr": "$substring(name, 0, 3)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "wid"
+      }
+    },
+    {
+      "id": "str-upper",
+      "description": "uppercase",
+      "expr": "$uppercase(name)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "WIDGET"
+      }
+    },
+    {
+      "id": "str-join",
+      "description": "join",
+      "expr": "$join(items.name, \",\")",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": "a,b"
+      }
+    },
+    {
+      "id": "str-split",
+      "description": "split",
+      "expr": "$split(\"a,b,c\", \",\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "str-len",
+      "description": "length",
+      "expr": "$length(name)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": 6
+      }
+    },
+    {
+      "id": "str-pad",
+      "description": "pad",
+      "expr": "$pad(\"x\", 3, \"-\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "x--"
+      }
+    },
+    {
+      "id": "str-replace-lit",
+      "description": "replace literal",
+      "expr": "$replace(\"aXbXc\", \"X\", \"-\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "a-b-c"
+      }
+    },
+    {
+      "id": "str-trim",
+      "description": "trim",
+      "expr": "$trim(\"  hi  \")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "hi"
+      }
+    },
+    {
+      "id": "bool-and",
+      "description": "and",
+      "expr": "true and false",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": false
+      }
+    },
+    {
+      "id": "bool-not-exists",
+      "description": "OG-EX-03 isSuccess",
+      "expr": "$not($exists(error))",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": true
+      }
+    },
+    {
+      "id": "bool-in",
+      "description": "in operator",
+      "expr": "\"a\" in items.name",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": true
+      }
+    },
+    {
+      "id": "bool-cast-empty",
+      "description": "boolean of empty array",
+      "expr": "$boolean([])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": false
+      }
+    },
+    {
+      "id": "agg-sum",
+      "description": "sum",
+      "expr": "$sum(items.price)",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": 25
+      }
+    },
+    {
+      "id": "agg-count",
+      "description": "count",
+      "expr": "$count(items)",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": 2
+      }
+    },
+    {
+      "id": "agg-max",
+      "description": "max",
+      "expr": "$max(items.price)",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": 20
+      }
+    },
+    {
+      "id": "agg-avg",
+      "description": "average",
+      "expr": "$average(items.price)",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": 12.5
+      }
+    },
+    {
+      "id": "ho-map",
+      "description": "map",
+      "expr": "$map(items, function($x){ $x.price * 2 })",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          10,
+          40
+        ]
+      }
+    },
+    {
+      "id": "ho-filter-multi",
+      "description": "filter multi match",
+      "expr": "$filter(items, function($x){ $x.price > 0 })",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "ho-reduce",
+      "description": "reduce sum",
+      "expr": "$reduce([1,2,3,4], function($a,$b){ $a+$b })",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 10
+      }
+    },
+    {
+      "id": "ho-reduce-init",
+      "description": "reduce with init",
+      "expr": "$reduce([1,2,3], function($a,$b){ $a+$b }, 100)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 106
+      }
+    },
+    {
+      "id": "ho-sort",
+      "description": "sort desc",
+      "expr": "$sort(items, function($l,$r){ $l.price > $r.price })",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "ho-sort-simple",
+      "description": "sort simple",
+      "expr": "$sort([3,1,2])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "num-round-even",
+      "description": "round banker's 2.5",
+      "expr": "$round(2.5)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 2
+      }
+    },
+    {
+      "id": "num-round-dec",
+      "description": "round to 2 dp",
+      "expr": "$round(2.567, 2)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 2.57
+      }
+    },
+    {
+      "id": "num-string-num",
+      "description": "string of number",
+      "expr": "$string(price)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "10"
+      }
+    },
+    {
+      "id": "num-number-parse",
+      "description": "parse number",
+      "expr": "$number(\"42\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 42
+      }
+    },
+    {
+      "id": "num-abs",
+      "description": "abs",
+      "expr": "$abs(-5)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 5
+      }
+    },
+    {
+      "id": "num-power",
+      "description": "power",
+      "expr": "$power(2, 10)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 1024
+      }
+    },
+    {
+      "id": "num-sqrt",
+      "description": "sqrt",
+      "expr": "$sqrt(16)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 4
+      }
+    },
+    {
+      "id": "num-formatnumber",
+      "description": "formatNumber picture",
+      "expr": "$formatNumber(1234.567, \"#,##0.00\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "1,234.57"
+      }
+    },
+    {
+      "id": "num-formatbase",
+      "description": "formatBase hex",
+      "expr": "$formatBase(255, 16)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "ff"
+      }
+    },
+    {
+      "id": "obj-lookup",
+      "description": "lookup",
+      "expr": "$lookup($, \"name\")",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "widget"
+      }
+    },
+    {
+      "id": "obj-merge-literal",
+      "description": "merge literals",
+      "expr": "$merge([{\"a\":1},{\"b\":2}])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "a": 1,
+          "b": 2
+        }
+      }
+    },
+    {
+      "id": "obj-type",
+      "description": "type of number (2.x)",
+      "expr": "$type(price)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "number"
+      }
+    },
+    {
+      "id": "obj-exists-false",
+      "description": "exists false",
+      "expr": "$exists(missing)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": false
+      }
+    },
+    {
+      "id": "obj-append-arr",
+      "description": "append arrays",
+      "expr": "$append([1], [2,3])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "obj-append-undef",
+      "description": "append with undefined",
+      "expr": "$append(missing, [1])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "var-bind",
+      "description": "block variable binding",
+      "expr": "($x := price; $x * 2)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": 20
+      }
+    },
+    {
+      "id": "var-multi",
+      "description": "multi bind block",
+      "expr": "($a := 1; $b := 2; $a + $b)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 3
+      }
+    },
+    {
+      "id": "var-chain-sum",
+      "description": "chain operator ~>",
+      "expr": "items.price ~> $sum()",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": 25
+      }
+    },
+    {
+      "id": "var-chain-str",
+      "description": "chain 2",
+      "expr": "$uppercase(name) ~> $substring(0, 2)",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "WI"
+      }
+    },
+    {
+      "id": "var-func-def",
+      "description": "user func def",
+      "expr": "($double := function($x){ $x*2 }; $double(price))",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": 20
+      }
+    },
+    {
+      "id": "x-distinct",
+      "description": "$distinct",
+      "expr": "$distinct([1,1,2,3,3])",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "x-single",
+      "description": "$single (1.7+)",
+      "expr": "$single(items, function($x){ $x.price > 10 })",
+      "input": {
+        "items": [
+          {
+            "name": "a",
+            "price": 5,
+            "quantity": 1
+          },
+          {
+            "name": "b",
+            "price": 20,
+            "quantity": 3
+          }
+        ]
+      },
+      "expected": {
+        "status": "value",
+        "value": {
+          "name": "b",
+          "price": 20,
+          "quantity": 3
+        }
+      }
+    },
+    {
+      "id": "x-error-branch",
+      "description": "$error not taken",
+      "expr": "$exists(name) ? \"x\" : $error(\"nope\")",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "value",
+        "value": "x"
+      }
+    },
+    {
+      "id": "x-contains-re",
+      "description": "$contains regex",
+      "expr": "$contains(\"hello\", /l+/)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": true
+      }
+    },
+    {
+      "id": "x-tomillis",
+      "description": "toMillis",
+      "expr": "$toMillis(\"1970-01-01T00:00:00.000Z\")",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": 0
+      }
+    },
+    {
+      "id": "x-frommillis",
+      "description": "fromMillis epoch",
+      "expr": "$fromMillis(0)",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "1970-01-01T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "x-type-now",
+      "description": "type of now (deterministic shape)",
+      "expr": "$type($now())",
+      "input": {
+        "merged": true
+      },
+      "expected": {
+        "status": "value",
+        "value": "string"
+      }
+    },
+    {
+      "id": "u-cond-noelse",
+      "description": "ternary no-else -> undefined",
+      "expr": "price > 100 ? \"big\"",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "undefined"
+      }
+    },
+    {
+      "id": "u-missing-field",
+      "description": "missing field ref -> undefined",
+      "expr": "missing",
+      "input": {
+        "id": 7,
+        "name": "widget",
+        "price": 10,
+        "quantity": 2
+      },
+      "expected": {
+        "status": "undefined"
+      }
+    }
+  ]
+}
