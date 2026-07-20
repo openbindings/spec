@@ -6,9 +6,9 @@
     "tests": 155,
     "positives": 75,
     "negatives": 80,
-    "rulesCoveredDocument": 15,
+    "rulesCoveredDocument": 14,
     "rulesCoveredTool": 3,
-    "rulesPartialDocument": 1,
+    "rulesPartialDocument": 2,
     "rulesPartialTool": 0
   },
   "files": [
@@ -18,7 +18,8 @@
       "section": "10.2",
       "tests": 2,
       "positives": 2,
-      "negatives": 0
+      "negatives": 0,
+      "coverage": "positive-only"
     },
     {
       "path": "document/OBI-D-02.json",

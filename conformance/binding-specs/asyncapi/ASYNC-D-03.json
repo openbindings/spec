@@ -108,7 +108,7 @@
       "valid": true
     },
     {
-      "description": "RFC 6901 decode order matters: the key a~1b escapes to a~01b (decoding ~1 before ~0 would corrupt it)",
+      "description": "RFC 6901 decode order matters: the key a~1b escapes to a~01b (~1 is decoded before ~0; decoding ~0 first would corrupt it to a/b)",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "tildeOp": {} },
