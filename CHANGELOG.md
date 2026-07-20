@@ -8,6 +8,14 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Conformance corpus aligned to the committed 0.2.0 text** (sdk-review
+  batch). OBI-D-03 fixtures flipped to the leading-digit grammar; an OBI-D-05
+  literal-form failure case added and the stale OBI-D-16 percent-decode case
+  corrected; OBI-D-08/09/10 gained `constructor`-key fixtures (prototype-chain
+  pinning for JS-family implementations); GRPC-D-01/CONN-D-01 gained
+  shared-type (DAG-reuse) source coverage; the operation-graph corpus gained
+  the OG-VR empty-operations validation fixture.
+
 - **`openbindings.grpc@1` clarification pins from the layering audit** (§9.3,
   §3, §9.5). Three wire behaviors the reference implementation already
   exhibits, each surfaced by the audit's stranger tests and now pinned in the
