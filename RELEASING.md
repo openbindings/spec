@@ -16,6 +16,10 @@ This repo uses **immutable snapshots** for released spec versions, and regular p
   self-declared version (the `openbindings.md` heading, the CHANGELOG
   section) must already be the next version. Two normative texts under one
   identifier is exactly the divergence OBI-T-04 exists to prevent.
+- **Releases are dated by their tags.** Release tags are annotated
+  (`git tag -a vX.Y.Z -m ...`). The CHANGELOG's in-progress section is
+  headed `## X.Y.Z (working draft)`; at release it is retitled
+  `## X.Y.Z — YYYY-MM-DD`, the date being the day the tag is created.
 
 ## What gets snapshotted
 
@@ -59,12 +63,15 @@ A release snapshot captures the normative core spec at the time of release:
    - (Optional) Use the helper script: `scripts/release.sh <next>`
 
 3. Tag the release
-   - Tag the repo with `v<next>` (e.g., `v0.1.1`), in the same sitting as
-     step 2 — the snapshot must never exist untagged.
+   - Retitle the CHANGELOG's `## <next> (working draft)` section to
+     `## <next> — YYYY-MM-DD`, dated to the tag.
+   - Tag the repo with an annotated tag: `git tag -a v<next> -m ...`
+     (e.g., `v0.1.1`), in the same sitting as step 2 — the snapshot must
+     never exist untagged.
 
 4. Open the next draft
-   - Retitle the CHANGELOG's top section to the next version, marked
-     `(unreleased, in draft)`.
+   - Start a new top section in the CHANGELOG for the next version, headed
+     `(working draft)`.
    - When the first breaking change lands, bump the draft's self-declared
      version in `openbindings.md` and the examples' `openbindings` fields.
 

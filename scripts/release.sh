@@ -19,9 +19,12 @@ What it does:
   - Appends the version to versions/README.md (if not already present)
 
 What it does NOT snapshot:
-  - formats/ — independently versioned via format token
-  - conformance/operation-graph/ — subcorpus of the operation-graph format,
-    versioned with that format, not with the core spec
+  - binding-specs/ — binding specifications revise on their own cadence,
+    identified per family by integer revision (e.g. openbindings.usage@1),
+    independent of the core spec's semver
+  - conformance/binding-specs/, conformance/operation-graph/,
+    conformance/transforms/ — non-core corpora, keyed to binding-specification
+    identifiers and the transform language, not to the core rule identifiers
   - scripts/ — repo-wide tooling, not part of any specific release
 
 What it does NOT do:
