@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (unreleased, in draft)
+## 0.2.0 (working draft)
 
 Version 0.2.0 has never been released; this section is its living draft
 record. Entries under **Draft changes** describe the draft's own evolution;
@@ -388,7 +388,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
   - **Per-event scoping idiom documented.** `buffer`/`combine` are invocation-scoped; per-lineage joins and batches are expressed by nesting a single-write graph behind an operation referenced from `each` (invocation scope one level down is lineage scope).
   - **Conformance subcorpus added** under `conformance/operation-graph/`: thirty-four execution fixtures (one per normative example; an identity-law suite exercising the trivial wrapper across all five selected-binding cardinalities the law's acceptance criterion names (no-input, unary, server-streaming, client-streaming, bidirectional) plus terminal-status parity; conduit `onError` handling, write rejection, and back-closure at the boundary; the merge-in-cycle lineage rule; `combine` completion-readiness; the buffer flush conditions (`limit` precedence, `until`/`through`/`limit` tumbling windows, and empty-buffer completion); the `filter` boolean-cast table; `exit` early-return; the `MAP_NOT_ARRAY` and `TRANSFORM_UNDEFINED` failure identifiers; and `$input` at a cross-lineage merge, with mocked per-invocation operation responses and expected output streams) and validation fixtures keyed to the OG-V-## well-formedness identifiers, verified in CI by `scripts/verify-operation-graph.mjs` (which also checks every inline spec example against the op-graph schema). A reference runner (`conformance/operation-graph/runners/js/`) executes the fixtures against a deterministic engine implementing the conduit/`each`/back-closure semantics and diffs the output stream, also in CI.
 
-## 0.1.0
+## 0.1.0 — 2026-04-15
 
 Initial public release.
 
