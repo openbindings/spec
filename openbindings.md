@@ -32,7 +32,7 @@ See `EDITORS.md` for the current editor roster.
 
 ## Status of this document
 
-This is **version 0.2.0** of the OpenBindings specification. It is pre-1.0, and minor-version revisions MAY include breaking changes per [§8. Versioning](#8-versioning). Substantive changes are recorded in `CHANGELOG.md` and cite stable rule identifiers (`OBI-D-##`/`OBI-T-##`/`OBI-B-##`) where applicable.
+This is **version 0.2.0** of the OpenBindings specification. This text is the unreleased working draft of that version; the latest release is **0.1.0** (immutable released snapshots live under `versions/`). It is pre-1.0, and minor-version revisions MAY include breaking changes per [§8. Versioning](#8-versioning). Substantive changes are recorded in `CHANGELOG.md` and cite stable rule identifiers (`OBI-D-##`/`OBI-T-##`/`OBI-B-##`) where applicable.
 
 ## License and intellectual property
 

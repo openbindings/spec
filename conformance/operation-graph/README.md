@@ -26,7 +26,7 @@ operation-graph/
   execution.schema.json (fixture-file shape for execution fixtures)
   validation.schema.json(fixture-file shape for validation fixtures)
   execution/            (replayable graph executions)
-    OG-EX-01.json ... OG-EX-34.json   (files; ids run OG-EX-01 ... OG-EX-34)
+    OG-EX-01.json ... OG-EX-38.json   (files; ids run OG-EX-01 ... OG-EX-38)
   validation/           (validation-shaped rule fixtures)
     OG-VR.json          (graph well-formedness rules, OG-V-01..18)
     OG-DR.json          (source rules, OG-D-01..03; document-shaped tests)
@@ -135,6 +135,10 @@ event stream.
 | OG-EX-32 | map / Errors | a defined non-array `map` result fails with `MAP_NOT_ARRAY`, routed per `onError` with the event attached |
 | OG-EX-33 | transform / Errors | an undefined `transform` result fails with `TRANSFORM_UNDEFINED` (the table's transform-node case, complementing OG-EX-25) |
 | OG-EX-34 | Runtime context | `$input` is undefined for an event merged from disagreeing lineages, so reading it fails the node with `TRANSFORM_UNDEFINED` |
+| OG-EX-35 | Embedded schemas | `format` is an annotation at embedded-schema evaluation (aligned with core §6.2): a `filter` schema carrying `format: email` never gates, so a non-email string passes through |
+| OG-EX-36 | Identity law / conduit fidelity | conduit emits then fails fatally (no `onError`): the three pre-failure events reach output in order before the graph terminates with the inner terminal error, surfaced verbatim |
+| OG-EX-37 | maxIterations and event lineage | `maxIterations` as the sole loop terminator: a wildcard (always-more) mock makes the iteration count observable, so an off-by-one in the cap check changes the count and fails |
+| OG-EX-38 | maxIterations and event lineage | merge node (buffer) on a cycle must not lower the per-lineage count (element-wise max): under a wildcard mock, a count-lowering merge would escape the cap and amplify without bound |
 
 File-to-id mapping: OG-EX-09.json holds OG-EX-09/10, OG-EX-13.json holds
 OG-EX-13–16 and OG-EX-26–27 (the identity-law suite), OG-EX-17.json holds
