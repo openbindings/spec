@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed for the snapshot-immutability diff against the PR base
 
       - name: Install ajv-cli
         run: npm install -g ajv-cli ajv-formats
@@ -54,6 +56,23 @@ jobs:
         run: |
           node scripts/generate-conformance-manifest.mjs
           git diff --exit-code conformance/manifest.json
+
+      - name: Enforce immutability of released snapshots
+        # Released snapshots under versions/X.Y.Z/ are immutable
+        # (RELEASING.md Principles; CONTRIBUTING.md): a PR may only ADD
+        # files there (a new release's snapshot). versions/README.md is the
+        # one mutable file — its index gains an entry per release.
+        if: github.event_name == 'pull_request'
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          violations=$(git diff --no-renames --name-status "$base"...HEAD -- versions/ | awk -F'\t' '$1 != "A" && $2 != "versions/README.md" { print }')
+          if [ -n "$violations" ]; then
+            echo "::error::Released snapshots are immutable; these files under versions/ were changed:"
+            echo "$violations"
+            echo "Corrections to released text ship as errata in the next release (RELEASING.md)."
+            exit 1
+          fi
+          echo "no released snapshot files changed"
 
       - name: Check local markdown links
         run: |
