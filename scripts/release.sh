@@ -17,6 +17,7 @@ What it does:
   - Copies EDITORS.md into versions/<version>/editors.md
   - Copies the core conformance corpus into versions/<version>/conformance/
   - Appends the version to versions/README.md (if not already present)
+    and updates its "The latest release is ..." line
 
 What it does NOT snapshot:
   - binding-specs/ — binding specifications revise on their own cadence,
@@ -103,6 +104,9 @@ if [[ -f "$versions_readme" ]]; then
       echo "  - Conformance: \`$version/conformance/\`"
     } >>"$versions_readme"
   fi
+  tmp="$(mktemp)"
+  sed "s/The latest release is \*\*[0-9][0-9.]*\*\*/The latest release is **$version**/" "$versions_readme" >"$tmp"
+  mv "$tmp" "$versions_readme"
 fi
 
 cat <<EOF
@@ -113,6 +117,10 @@ Created snapshot:
   - $dest_conformance/
 
 Next steps:
-  - Review the diff
-  - Commit and tag: v$version
+  - Review the diff, including the versions/README.md prose: the
+    working-draft sentence still names the version just released and
+    must move to the next draft
+  - Retitle the CHANGELOG section: "## $version (working draft)" ->
+    "## $version — YYYY-MM-DD" (dated to the tag)
+  - Commit, then tag (annotated) in the same sitting: git tag -a v$version
 EOF

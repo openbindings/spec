@@ -17,9 +17,11 @@ This repo uses **immutable snapshots** for released spec versions, and regular p
   section) must already be the next version. Two normative texts under one
   identifier is exactly the divergence OBI-T-04 exists to prevent.
 - **Releases are dated by their tags.** Release tags are annotated
-  (`git tag -a vX.Y.Z -m ...`). The CHANGELOG's in-progress section is
-  headed `## X.Y.Z (working draft)`; at release it is retitled
-  `## X.Y.Z — YYYY-MM-DD`, the date being the day the tag is created.
+  (`git tag -a vX.Y.Z -m ...`; from 0.2.0 on — the v0.1.0 tag predates
+  this convention and is lightweight). The CHANGELOG's in-progress
+  section is headed `## X.Y.Z (working draft)`; at release it is
+  retitled `## X.Y.Z — YYYY-MM-DD`, the date being the day the tag is
+  created.
 
 ## What gets snapshotted
 
@@ -28,7 +30,7 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
-- `conformance/` — the **core** conformance test corpus only: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise ([§10.6](openbindings.md#106-retired-rule-identifiers)) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version.
+- `conformance/` — the **core** conformance test corpus only: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise ([§10.6](openbindings.md#106-retired-rule-identifiers)) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version. (The 0.1.0 snapshot predates this corpus layout; its `conformance/` holds that era's three flat fixture files, and stays as released.)
 
 **Not snapshotted:**
 
