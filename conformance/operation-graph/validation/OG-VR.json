@@ -925,6 +925,36 @@
             ]
           },
           "valid": true
+        },
+        {
+          "description": "an operation node against an EMPTY operations set is unresolvable (a direct binding invocation supplies no operations map; OG-V-11, §281)",
+          "operations": [],
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "call": {
+                "type": "operation",
+                "operation": "items.fetch"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "call"
+              },
+              {
+                "from": "call",
+                "to": "out"
+              }
+            ]
+          },
+          "valid": false
         }
       ]
     },
