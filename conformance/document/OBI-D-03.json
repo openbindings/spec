@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-03",
   "section": "10.2",
-  "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z_][A-Za-z0-9_.-]*$.",
+  "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z0-9_][A-Za-z0-9_.-]*$. The grammar permits a leading digit (2fa.verify): names are opaque data labels, not host-language identifiers. Only the start character is constrained to an alphanumeric or underscore; a leading dot or hyphen, embedded whitespace, slashes, non-ASCII characters, and the empty string remain rejected.",
   "tests": [
     {
       "description": "operation key with simple alphanumeric identifier",
@@ -82,17 +82,24 @@
       "valid": true
     },
     {
-      "description": "operation key starting with digit",
+      "description": "operation key starting with digit (the grammar permits a leading digit)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "1createTask": {}
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-03"
-      ]
+      "valid": true
+    },
+    {
+      "description": "operation key with leading digit and dot grouping (2fa.verify, the spec's cited example)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "2fa.verify": {}
+        }
+      },
+      "valid": true
     },
     {
       "description": "operation key starting with hyphen",
@@ -147,7 +154,7 @@
       ]
     },
     {
-      "description": "operation alias starting with digit",
+      "description": "operation alias starting with digit (the grammar permits a leading digit)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -158,10 +165,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-03"
-      ]
+      "valid": true
     },
     {
       "description": "source key with whitespace",
@@ -183,7 +187,7 @@
       ]
     },
     {
-      "description": "schema key starting with digit",
+      "description": "schema key starting with digit (the grammar permits a leading digit)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -195,10 +199,7 @@
           "createTask": {}
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-03"
-      ]
+      "valid": true
     },
     {
       "description": "transforms map key with hyphen-prefix",
@@ -270,11 +271,11 @@
       "valid": true
     },
     {
-      "description": "multi-violation isolation: document violates both OBI-D-03 (bad identifier) and OBI-D-08 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
+      "description": "multi-violation isolation: document violates both OBI-D-03 (bad identifier: a leading hyphen is rejected) and OBI-D-08 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "1badKey": {}
+          "-badKey": {}
         },
         "sources": {
           "httpApi": {

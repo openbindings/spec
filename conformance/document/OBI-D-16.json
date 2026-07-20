@@ -1,10 +1,10 @@
 {
   "rule": "OBI-D-16",
   "section": "10.2",
-  "description": "Every schema $ref that is a same-document fragment resolves, from the OBI document root per section 10, to a location that exists within the document. The fragment is the pointer's URI-fragment representation per RFC 6901 section 6: percent-decoded before evaluation. Refs within a schema declaring its own $id are out of scope; absolute-URI $refs are external (evaluation-time).",
+  "description": "Every schema $ref that is a same-document fragment resolves, from the OBI document root per section 10, to a location that exists within the document. Same-document fragments are in literal form (section 7): the pointer's characters are written unencoded and evaluated as an RFC 6901 pointer directly, with no percent-decoding step (a percent-encoded fragment is rejected at the literal-form gate, OBI-D-05, before resolution). Refs within a schema declaring its own $id are out of scope; absolute-URI $refs are external (evaluation-time).",
   "tests": [
     {
-      "description": "percent-encoded fragment decodes before RFC 6901 evaluation (#/schemas/T%61sk addresses the schemas key Task)",
+      "description": "percent-encoded fragment is not in literal form: #/schemas/T%61sk is rejected at OBI-D-05 (it is not decoded and resolved to the schemas key Task)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -20,7 +20,10 @@
           }
         }
       },
-      "valid": true
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
     },
     {
       "description": "same-document $ref resolving to a schemas-map entry",

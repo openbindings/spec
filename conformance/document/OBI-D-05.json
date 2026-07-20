@@ -136,6 +136,28 @@
       ]
     },
     {
+      "description": "percent-encoded same-document fragment $ref is not in literal form (the target Task exists once the fragment is decoded, so the sole violation is the literal-form rule: same-document fragments are written with the pointer's characters unencoded)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/T%61sk"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
       "description": "same-document JSON Pointer fragment $ref",
       "document": {
         "openbindings": "0.2.0",
