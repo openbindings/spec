@@ -119,10 +119,10 @@ core, and resolution clauses are fixtured via embedded content.
 | MCP-D-01 | 2/7 | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives |
 | MCP-D-02 | 2/4 | required absolute http/https address; content-only-source negative |
 | MCP-D-03 | 5/8 | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings) |
-| GRPC-D-01 | 3/5 | proto-string + FDS carriages; import-prefix, unknown-member, extension-member, and type negatives |
+| GRPC-D-01 | 4/5 | proto-string + FDS carriages, shared-type (DAG-reuse) source; import-prefix, unknown-member, extension-member, and type negatives |
 | GRPC-D-02 | 6/9 | all three port-explicit address forms and host shapes; component, portless, undefined-scheme, and content-only negatives |
 | GRPC-D-03 | 3/7 | packaged + packageless service refs; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas) |
-| CONN-D-01 | 3/3 | incorporated carriages + descriptorless-mode positive; import, type, unknown-member negatives |
+| CONN-D-01 | 4/3 | incorporated carriages + descriptorless-mode positive + shared-type (DAG-reuse) source; import, type, unknown-member negatives |
 | CONN-D-02 | 3/8 | base-URL grammar incl. path prefix; trailing-slash, component, scheme, and content-only negatives |
 | CONN-D-03 | 2/4 | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives |
 | ASYNC-D-01 | 2/3 | object + string representations; number/array/null negatives |
