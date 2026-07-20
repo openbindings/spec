@@ -43,6 +43,8 @@ For a `location`-only source, the document's base URI is the `location`, per the
 
 A binding's `ref` is REQUIRED — the OAS defines no whole-artifact invocation — and MUST be a JSON Pointer of the form `#/paths/<escaped-path>/<method>`, addressing an **operation object**: the path segment carries [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) escaping (`/` → `~1`), and `<method>` is one of the OAS's HTTP method keys, **lowercase exactly as the artifact spells them** (**OAPI-D-03**). `#/paths/~1tasks/post` addresses the POST operation on `/tasks`.
 
+The pointer is a **verbatim string**. Its `#/` shape is JSON Pointer notation, not an invitation to URI processing: no percent-decoding is ever applied, at authoring or at resolution. Each addressable operation has exactly one conformant spelling — the RFC 6901-escaped form above — and a `ref` matches it byte-for-byte, extending the core specification's literal-form doctrine (core [§7](../../openbindings.md#7-reference-resolution)) to this family's selector. A percent-encoded rendering of that spelling (`#/paths/~1users~1%7BuserId%7D/get` for `#/paths/~1users~1{userId}/get`) is not the spelling and denotes nothing.
+
 Pointer evaluation follows **OAS reference resolution**, not raw JSON traversal: a path item that is a `$ref` (including a 3.1 `components.pathItems` target) is resolved before the method segment evaluates, so bundled artifacts using path-item references stay addressable. A well-formed `ref` whose path or method is absent from the resolved artifact makes the binding unresolvable; verification requires the artifact, per the core's partial-verification posture.
 
 Only `paths` operations are addressable. **Webhooks and callbacks are excluded** from revision 1: they describe inbound calls the service makes to the consumer, an interaction this revision does not bind. The exclusion is a definition, not an open item.
@@ -134,7 +136,7 @@ Rules carry stable identifiers under the same discipline as the core's: never re
 
 - **OAPI-D-01**: `content`, when present, is the parsed OpenAPI document object or its source text as a string, per [§5](#5-content).
 - **OAPI-D-02**: `location`, when present, is an absolute URI addressing the OpenAPI document, per [§4](#4-location).
-- **OAPI-D-03**: `ref` is present, and is a JSON Pointer `#/paths/<escaped-path>/<lowercase-method>` addressing an operation object under OAS reference resolution, per [§7](#7-ref).
+- **OAPI-D-03**: `ref` is present, and is a JSON Pointer `#/paths/<escaped-path>/<lowercase-method>` addressing an operation object under OAS reference resolution, in the pointer's one verbatim spelling — never percent-decoded — per [§7](#7-ref).
 - **OAPI-P-01**: Accepted lines, the string-content grammar pin, and loud refusal discriminate per [§3](#3-accepted-source-representations).
 - **OAPI-P-02**: Parameter serialization follows the OAS `style`/`explode`/`allowReserved` rules and defaults, with `content`-form parameters serialized per their declared media type, per [§9.1](#91-input-mapping--the-flattened-model).
 - **OAPI-P-03**: Input fields map per the flattened model — merge rules, cross-location same-name refusal, collision delivery, evaluation-free body passthrough, pre-dispatch refusal of unmatched fields when no body is declared, required-declaration refusals including the missing-path-parameter case, the remaining-body rule, and synthetic `body` unwrapping — per [§9.1](#91-input-mapping--the-flattened-model).

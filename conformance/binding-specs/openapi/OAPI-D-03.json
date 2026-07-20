@@ -2,7 +2,7 @@
   "rule": "OAPI-D-03",
   "bindingSpec": "openbindings.openapi@1",
   "section": "7",
-  "description": "`ref` is present, and is a JSON Pointer `#/paths/<escaped-path>/<method>` addressing an operation object under OAS reference resolution: the path segment carries RFC 6901 escaping, and the method is one of the OAS's HTTP method keys, lowercase exactly as the artifact spells them.",
+  "description": "`ref` is present, and is a JSON Pointer `#/paths/<escaped-path>/<method>` addressing an operation object under OAS reference resolution: the path segment carries RFC 6901 escaping, and the method is one of the OAS's HTTP method keys, lowercase exactly as the artifact spells them. The pointer is a verbatim string in its one conformant spelling, matched byte-for-byte and never percent-decoded.",
   "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an OpenAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer form, method key, casing) are decidable from the ref alone. The path-item $ref positive pins the rule's OAS-resolution clause: a path item that is a $ref (including a 3.1 components.pathItems target) resolves before the method segment evaluates.",
   "tests": [
     {
@@ -227,6 +227,46 @@
             "operation": "getUser",
             "source": "api",
             "ref": "#/paths//users/{userId}/get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-03"]
+    },
+    {
+      "description": "percent-encoded rendering of an otherwise-valid target denotes nothing: the pointer is a verbatim string, never percent-decoded, and `#/paths/~1users~1%7BuserId%7D/get` is not the one spelling `#/paths/~1users~1{userId}/get`",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getUser": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "content": {
+              "openapi": "3.1.0",
+              "info": { "title": "Users", "version": "1.0.0" },
+              "paths": {
+                "/users/{userId}": {
+                  "get": {
+                    "parameters": [
+                      {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" }
+                      }
+                    ],
+                    "responses": { "200": { "description": "OK" } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "getUser.api": {
+            "operation": "getUser",
+            "source": "api",
+            "ref": "#/paths/~1users~1%7BuserId%7D/get"
           }
         }
       },
