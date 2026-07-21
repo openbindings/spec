@@ -8,6 +8,24 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- `openbindings.openapi@1` §9.1 pins two corners of the **unmatched-field
+  passthrough rule** the text left unstated (ratified 2026-07-20). (1) The
+  passthrough exception exists because an object body gives an extra field a
+  legitimate destination; when the declared request body is **non-object**
+  (the flattened contract carries the synthetic `body` property — a string,
+  binary, array, any non-object shape), that reason evaporates and the
+  catalog's default posture — the grpc/connect families' loud unknown-field
+  refusal — resumes: a field matching neither a declared parameter nor
+  `body` has no destination and is refused before dispatch, the same species
+  of refusal as the unflattenable cross-location collision and the
+  missing-required-path-parameter rule. (2) For object bodies, passthrough
+  fields **join the body value before request-media selection**: they are
+  body properties like any declared ones and ride whatever encoding the body
+  rides (JSON, multipart, form-urlencoded), never a side channel. OAPI-P-03's
+  rule line now states both. Conformance for these corners rides the
+  reference SDKs' mirrored behavioral tests, per the corpus doctrine for
+  P-rules; no fixtures added.
+
 - **Three corpus-authority rulings (ratified 2026-07-20).**
   *Added — OBI-T-18 and OBI-T-19 minted.* Two of §5.1's binding MUSTs lived
   in prose outside the §10.3 catalogue and now carry stable identifiers:
