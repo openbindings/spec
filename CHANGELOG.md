@@ -8,6 +8,44 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Three corpus-authority rulings (ratified 2026-07-20).**
+  *Added — OBI-T-18 and OBI-T-19 minted.* Two of §5.1's binding MUSTs lived
+  in prose outside the §10.3 catalogue and now carry stable identifiers:
+  **OBI-T-18** (all processors; does not reject a document because an
+  author-attested `idempotent` claim appears inaccurate — semantic truth is
+  author-attested, structural validity is the only enforcement) and
+  **OBI-T-19** (when validating examples; does not resolve an example–schema
+  mismatch by treating the example as an exception — the schema is
+  authoritative). §5.1 cites both inline; the third such sentence — a
+  consumer MUST NOT infer an idempotency claim from absence — addresses
+  consumers, whom no conformance class binds, and gains the unbound-audience
+  note (matching the publisher-SHOULD note) instead of an identifier.
+  Corpus: OBI-T-18 fixtured with anti-rejection positives; OBI-T-19
+  discriminated by the existing OBI-D-11 negatives (README coverage row).
+  *Added — `requiresSupports` corpus annotation.* An acceptance gate:
+  administer a test only to tools whose OBI-T-04 version-acceptance
+  predicate accepts the annotation's version, otherwise skip and report the
+  skip separately (skips are never failures). Replaces OBI-T-04 positives'
+  universalized presumption of release-line support, which §8.1 explicitly
+  declines to impose ("not an inference this specification imposes"); the
+  gate keys on the tool's own acceptance set (`IsSupportedVersion` /
+  `isSupportedVersion` in the reference SDKs), not the tested-range
+  declarations, which the reference SDKs would wrongly skip under. Applied
+  to the current-version and build-metadata positives (0.2.0) and the
+  higher-patch positive (0.2.1); declared in `fixture.schema.json`; honored
+  by the reference Go runner.
+  *Clarified — pointer-shaped binding refs are verbatim strings.* The `#/`
+  shape is JSON Pointer notation, not URI processing: no percent-decoding is
+  ever applied, each addressable target has exactly one conformant spelling
+  (RFC 6901 escaping included) matched byte-for-byte, and a percent-encoded
+  rendering is not that spelling and denotes nothing — the core's
+  literal-form doctrine (§7) extended to the family selectors. Stated in
+  `openbindings.openapi@1` §7, `openbindings.asyncapi@1` §7, and
+  `openbindings.operation-graph@1` §7 (whose `ref` is pointer-shaped: a JSON
+  Pointer fragment, bare graph keys already non-conformant), with the
+  OAPI-D-03 / ASYNC-D-03 / OG-D-03 rule lines amended and percent-encoded-
+  spelling negatives added to the OAPI-D-03 and ASYNC-D-03 fixtures.
+
 - **Conformance corpus aligned to the committed 0.2.0 text** (sdk-review
   batch). OBI-D-03 fixtures flipped to the leading-digit grammar; an OBI-D-05
   literal-form failure case added and the stale OBI-D-16 percent-decode case
