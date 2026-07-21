@@ -8,6 +8,44 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R3 (og unknown fields) + R11 (acquisition
+  success)** (ratified 2026-07-21).
+  - **R3 — `openbindings.operation-graph@1` tolerates unknown fields, aligning
+    with the core.** Prose (§20) and the shipped
+    `openbindings.operation-graph.schema.json` disagreed: the schema closed
+    every object (`additionalProperties: false`), while §20 spoke only of `x-`
+    fields, leaving a non-`x-` unknown field accepted by a prose-following tool
+    and rejected by a schema-following one, with no precedence clause. §20 now
+    states that an unknown non-`x-` field is **ignored** (never a validation
+    failure or refusal), exactly as core OBI-T-02 treats one, with a SHOULD
+    diagnostic — a graph is executed, so a mistyped field silently doing
+    nothing is worth flagging, not refusing over. The schema opens
+    (`additionalProperties: true` at all 13 object sites; the redundant `x-`
+    `patternProperties` removed), and §19 gains the missing precedence
+    sentence: the schema is a derived artifact and **where prose and schema
+    conflict, the prose governs**. Fixtures: the OG-V-17 block (onError on
+    input/output — a standing *prose* prohibition, unaffected by R3) is
+    reclassified from schema-enforced to prose-enforced; the OG-V-14
+    `maxIterations`-on-an-operation-node case, which no prose rule actually
+    forbids, is converted from a (mis-keyed) rejection to the toleration R3
+    mandates. *A defined field appearing on a node type that does not define
+    it — like `maxIterations` on `operation` — is now tolerated absent an
+    explicit prohibition; whether any such misuse deserves a named prohibition
+    rule the way OG-V-17 forbids boundary-node `onError` is left open, not
+    decided here.*
+  - **R11 — acquisition success belongs to the address scheme; `exec:` owes
+    its own.** `openbindings.usage@1` §4 identified an exec address's artifact
+    with the vector's standard output but never stated what a non-zero exit
+    means, leaving a truncated-then-failed generator readable as a smaller
+    valid descriptor. §4 now requires **exit 0** for the dereference to
+    succeed; any other termination is a loud failure and the stdout bytes are
+    not an artifact (stderr is diagnostic, never the artifact). The catalog
+    README's template (item 4) states the general posture: URI-addressed
+    families inherit acquisition-failure semantics from the scheme (an HTTP
+    status, a `file://` error) and need say nothing — the terseness is
+    deference — while a family that mints an address form with no incorporating
+    scheme owes the success condition itself, `exec:` being the pattern.
+
 - **Spec-refinement run 1 — R4, openapi passthrough into non-JSON bodies**
   (ratified 2026-07-21). §9.1 let an undeclared caller field pass through into
   any object request body "riding whatever encoding the selected media type

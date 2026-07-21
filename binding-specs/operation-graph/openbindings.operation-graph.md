@@ -563,7 +563,9 @@ There is no accumulated state (`$steps` or similar). Events carry their own data
 
 ## 19. Validation rules
 
-The following rules apply to each operation graph definition (the value at which a binding's `ref` resolves). Enforcement is a tool obligation: a tool acting on an operation-graph binding MUST validate the graph against these rules before acting on it ([OG-T-01](#24-conformance)). Each rule carries a stable identifier (`OG-V-##`) so validators, fixtures, and errata can cite it unambiguously; identifiers are never reused, never renumbered. The per-node field-presence requirements marked (REQUIRED) in the node definitions above are equally normative and are encoded by this format's JSON Schema; a validator applies both the enumerated rules and node well-formedness.
+The following rules apply to each operation graph definition (the value at which a binding's `ref` resolves). Enforcement is a tool obligation: a tool acting on an operation-graph binding MUST validate the graph against these rules before acting on it ([OG-T-01](#24-conformance)). Each rule carries a stable identifier (`OG-V-##`) so validators, fixtures, and errata can cite it unambiguously; identifiers are never reused, never renumbered. The per-node field-presence requirements marked (REQUIRED) in the node definitions above are equally normative and are encoded by this format's JSON Schema; a validator applies both the enumerated rules and node well-formedness (required fields present, defined fields well-typed).
+
+This format's `openbindings.operation-graph.schema.json` expresses the structural portion for validator tooling. It is a **derived artifact, not a second source of truth: where prose and schema conflict, the prose governs** (the same posture core [§10](../../openbindings.md#10-conformance) takes toward `openbindings.schema.json`). Well-formedness does **not** mean a closed object: an unknown field is tolerated per [§20](#20-extensions), never a validation failure, so the schema does not reject one and neither does a conforming tool.
 
 - **OG-V-01**: The graph MUST declare an `openbindings.operation-graph` field matching the SemVer 2.0.0 pattern.
 - **OG-V-02**: The graph MUST contain exactly one node with `"type": "input"`.
@@ -593,6 +595,7 @@ These rules apply to the graph definition itself; the enclosing JSON document ha
 - Graph definitions MAY include extension fields whose keys begin with `x-` at any object location within the graph (the graph itself, nodes, edges).
 - Tools MUST ignore `x-` fields they do not understand.
 - `x-` fields MUST NOT change the meaning of any defined field for purposes of validation, execution, or compatibility.
+- A field that is neither defined by this format nor `x-`-prefixed is **ignored**, exactly as the core specification treats an unknown field ([OBI-T-02](../../openbindings.md#103-tool-rules)): it is never a validation failure and never a refusal. Tools SHOULD surface a diagnostic for an unknown non-`x-` field to catch typos — the graph is executed, so a mistyped field silently doing nothing is worth flagging, but not worth refusing over.
 
 The enclosing JSON document is unconstrained, so extension schemes outside the graph definition are the host document's concern.
 

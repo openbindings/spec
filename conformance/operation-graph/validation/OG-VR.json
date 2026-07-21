@@ -1250,7 +1250,7 @@
           "valid": false
         },
         {
-          "description": "maxIterations is not valid on an operation conduit (it belongs to each)",
+          "description": "a field not defined for the operation node type (maxIterations, which belongs to each) is tolerated and ignored, not a validation failure — an unknown field at that location per §20; a tool SHOULD diagnose it",
           "graph": {
             "openbindings.operation-graph": "0.2.0",
             "nodes": {
@@ -1277,7 +1277,7 @@
               }
             ]
           },
-          "valid": false
+          "valid": true
         }
       ]
     },
@@ -1422,7 +1422,7 @@
     {
       "rule": "OG-V-17",
       "title": "The input and output nodes MUST NOT declare onError.",
-      "schemaEnforced": true,
+      "schemaEnforced": false,
       "tests": [
         {
           "description": "onError on a processing node is permitted",

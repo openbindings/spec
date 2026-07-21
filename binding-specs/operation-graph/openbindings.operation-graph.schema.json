@@ -43,8 +43,7 @@
           }
         }
       },
-      "patternProperties": { "^x-": {} },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "Node": {
       "type": "object",
@@ -71,8 +70,7 @@
             "properties": {
               "type": true
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -83,8 +81,7 @@
             "properties": {
               "type": true
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -107,8 +104,7 @@
                 "description": "Total budget in milliseconds for the held invocation, from the node's first drive until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with TIMEOUT_EXCEEDED, handled as a conduit terminal error."
               }
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -136,8 +132,7 @@
                 "description": "Per-invocation budget in milliseconds, from drive until that invocation's output stream completes. On expiry, that invocation fails as a node failure for the triggering event."
               }
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -165,8 +160,7 @@
             "not": {
               "required": ["until", "through"]
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -185,8 +179,7 @@
                     "description": "JSON Schema. Events that validate pass; others are dropped."
                   }
                 },
-                "patternProperties": { "^x-": {} },
-                "additionalProperties": false
+                "additionalProperties": true
               },
               {
                 "required": ["transform"],
@@ -198,8 +191,7 @@
                     "description": "Transform expression. Events where the expression evaluates truthy pass; others are dropped."
                   }
                 },
-                "patternProperties": { "^x-": {} },
-                "additionalProperties": false
+                "additionalProperties": true
               }
             ]
           }
@@ -218,8 +210,7 @@
                 "description": "Transform expression. The result replaces the event."
               }
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -236,8 +227,7 @@
                 "description": "Transform expression. The result MUST be an array; each element is emitted as a separate event."
               }
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -249,8 +239,7 @@
               "type": true,
               "onError": true
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         },
         {
@@ -267,8 +256,7 @@
                 "description": "If true, the operation graph terminates with an error. If false (default), the event is emitted to output before termination."
               }
             },
-            "patternProperties": { "^x-": {} },
-            "additionalProperties": false
+            "additionalProperties": true
           }
         }
       ]
@@ -289,8 +277,7 @@
           "description": "The key of the target node."
         }
       },
-      "patternProperties": { "^x-": {} },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "Transform": {
       "type": "string",
