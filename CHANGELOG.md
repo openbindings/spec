@@ -8,6 +8,62 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R1 + R6, asyncapi and the configuration seam**
+  (ratified 2026-07-21). Spec text only; reference-SDK follow-through
+  (relaxing the enum refusals, demoting the pinned-shape error strings) is
+  tracked separately and lands in the SDK repos.
+  - **R1 — configuration carriage is implementation surface, not specification
+    content.** A binding specification pins each configuration point's *default*
+    and the *meaning* of an override (what may be supplied, which supplies are
+    refused, substitution order); it does not pin the concrete value a consumer
+    hands to a point. Pinning that shape changed nothing an OBI means and forced
+    every implementation's configuration API into one JSON shape. `asyncapi`
+    §9.2's "Configuration value shapes" paragraph is replaced by a semantics
+    paragraph plus an explicit note that carriage is implementation surface;
+    ASYNC-P-04 loses "carry it identically". `grpc` §9.3's transport point keeps
+    its channel-security semantics (plaintext/TLS election; CA, mutual-TLS
+    identity with the both-or-neither pairing, serverName) and demotes the
+    string/object JSON shape to implementation surface. `usage` §9.2/USAGE-P-05
+    stops binding "consultation order" as a conformance obligation — a
+    fixed-defaults implementation, which the catalog README blesses, exposes no
+    consultation order — and scopes it to implementations that expose tiers.
+    openapi, mcp, and connect needed no carriage change (they never pinned one).
+  - **R1 enum sub-question — a declared `enum` informs, it does not gate**,
+    applied to both enum-bearing points and both HTTP-family siblings. A server
+    variable's or address parameter's `enum` is the author's expectation, not a
+    boundary: the same configuration point admits a complete-URL or
+    whole-address override that bypasses the declaration entirely, so refusing a
+    narrower substitution while permitting the wider one is incoherent. A
+    supplied value outside an `enum` is no longer refused (an implementation MAY
+    surface it as choice metadata); what stays refused is an *undeclared* name
+    (a typo) and, at the server point, no resolvable server (undispatchable).
+    Stated in `asyncapi` §9.2 and `openapi` §9.3. (`openbindings.openapi@1`'s
+    "per the OAS" enum claim lived only in reference-SDK code, never the spec;
+    its correction is SDK-side.)
+  - **R1 dissolves the held null-address item.** `asyncapi`'s address point now
+    states that consumer configuration may supply the channel's whole address —
+    the case AsyncAPI itself defines with an `address` of `null` ("unknown …
+    generated dynamically at runtime") — as semantics, with the carriage
+    unpinned. No pinned-shape contradiction remains.
+  - **R6 — asyncapi's input-encoding rule is made total; the media taxonomy is
+    deleted.** ASYNC-P-03 §9.1 previously trichotomized declared content types
+    into JSON-family, an undefined "text-family", and an excluded-family list
+    (binary/avro/protobuf). The rule is now total over the operation value
+    domain and needs no taxonomy: a JSON-family type serializes the value as
+    JSON; any other declared type carries a **string** value as its bytes
+    (charset per the type, UTF-8 default), a non-string value against a
+    non-JSON type refused before dispatch; no declaration defaults to JSON. The
+    undefined "text-family" term and the excluded-family list are removed.
+    `application/xml`, `application/yaml`, `text/csv`, and the like now send
+    without a membership test. The limit on binary falls out of the value
+    domain (arbitrary bytes are not expressible as a JSON string), a
+    self-describing gap rather than a media exclusion — a future revision may
+    define a bytes boundary encoding (openapi's Base64 part encoding is the
+    pattern; tracked as R12). The plural-governing-set case (an operation whose
+    `messages` resolve to more than one distinct effective type) is a
+    pre-dispatch refusal, and its asymmetry with §9.3's decode conflict rule
+    (which falls to the text lane) is stated as warranted.
+
 - **Spec-refinement run 1 — R2, version-inference discipline** (ratified
   2026-07-21). OG-T-02 and the conformance corpus still ran the model core
   §8.1 deleted, which states that "backward compatibility is not forward

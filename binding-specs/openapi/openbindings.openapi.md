@@ -99,7 +99,7 @@ The target URL is the resolved server joined with the operation's path template.
 
 - The **effective server list** is the OAS's: the operation's `servers`, else the path item's, else the document's, else the OAS-defined implied server of `url: "/"`.
 - The default — this specification's own choice, not an OAS rule — selects the effective list's **first entry**, with each server variable substituted by its declared default.
-- Consumer configuration may instead select another entry of the effective list, supply server-variable values, or supply a complete base URL outright.
+- Consumer configuration may instead select another entry of the effective list, supply server-variable values, or supply a complete base URL outright. A variable's declared `enum` is the author's expectation, not a boundary this specification enforces — the same point admits a complete-URL override that bypasses the declaration, so a supplied value outside the `enum` is not refused (an implementation MAY surface it as choice metadata). The concrete carriage of a supplied override is implementation surface, not specification content; the reference SDKs document their shapes.
 
 A relative effective-server URL (the implied `/` included) resolves against the artifact's base URI ([§6](#6-composition)) per RFC 3986. The one pre-dispatch refusal is a server URL that cannot resolve to an absolute URL — the implied `/` with no base URI, for instance.
 

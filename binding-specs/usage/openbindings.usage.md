@@ -64,7 +64,7 @@ Credentials are not input fields. A processor MUST NOT place credential material
 
 ### 9.2. Configuration points
 
-Three named configuration points cover what the descriptor cannot declare (**USAGE-P-05**). At each, consumer configuration is consulted first — per-invocation, then consumer-level — and this specification's default answers when no configuration speaks; a declined override falls through to the next tier. All defaults are content-independent: decided by declarations and framing, never by payload bytes.
+Three named configuration points cover what the descriptor cannot declare (**USAGE-P-05**). What this specification pins at each is the **default** and what a consumer override *means*; the seam through which an override arrives is the implementation's own surface. Where an implementation exposes consumer configuration, it is consulted before the default — a per-invocation tier ahead of a consumer-level tier where both exist — and a declined override falls through; an implementation that exposes no configuration seam applies the defaults directly and is no less conformant for it (the [catalog README](../README.md) states this seam is not a required architecture). All defaults are content-independent: decided by declarations and framing, never by payload bytes.
 
 | Point | Default | Overrides |
 | --- | --- | --- |
@@ -93,7 +93,7 @@ Rules carry stable identifiers under the same discipline as the core's: never re
 - **USAGE-P-02**: A processor MUST NOT dereference an exec address without explicit authorization; default deny, per [§4](#4-location).
 - **USAGE-P-03**: Execution is a direct process spawn, never a shell, bound to the invocation lifetime, per [§8](#8-target-and-interaction).
 - **USAGE-P-04**: Input fields map to the effective command surface per [§9.1](#91-input-mapping); an unmatched field is refused before spawn.
-- **USAGE-P-05**: The route, decode, and classify configuration points behave per [§9.2](#92-configuration-points), including their defaults, consultation order, and pre-spawn refusal of impossible routings.
+- **USAGE-P-05**: The route, decode, and classify configuration points behave per [§9.2](#92-configuration-points): their defaults, the meaning of each override, and the pre-spawn refusal of impossible routings. Where an implementation exposes configuration tiers, the more specific is consulted first and a declined override falls through; exposing no seam and applying the defaults is conformant. The carriage of a configuration value is implementation surface, not this rule's content.
 - **USAGE-P-06**: Credential material never rides argv; environment variables are the credential channel, per [§9.1](#91-input-mapping).
 
 Conformance fixtures keyed to these identifiers are published with the project's conformance corpus. Deterministic *generation* of OBI documents from usage descriptors (operation-key derivation from command paths, schema carriage) is a synthesis concern outside this specification; the project's interface-synthesizer and reference-tool documentation record those conventions.
