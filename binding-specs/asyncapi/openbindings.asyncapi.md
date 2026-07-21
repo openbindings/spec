@@ -137,6 +137,7 @@ Conformance fixtures keyed to these identifiers are published with the project's
 - **[RFC 9110]** "HTTP Semantics." <https://www.rfc-editor.org/rfc/rfc9110>
 - **[RFC 6455]** "The WebSocket Protocol." <https://www.rfc-editor.org/rfc/rfc6455>
 - **[RFC 6901]** "JavaScript Object Notation (JSON) Pointer." <https://www.rfc-editor.org/rfc/rfc6901>
+- **[RFC 3986]** "Uniform Resource Identifier (URI): Generic Syntax." <https://www.rfc-editor.org/rfc/rfc3986>
 - **[SSE]** WHATWG, "HTML Living Standard," §Server-sent events. <https://html.spec.whatwg.org/multipage/server-sent-events.html>. Incorporated for event framing only ([§8](#8-target-and-interaction)).
 - **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository.
 - **[BCP 14]** RFC 2119 / RFC 8174 (key words).

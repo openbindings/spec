@@ -127,7 +127,7 @@ Conformance fixtures keyed to these identifiers are published with the project's
 
 ## 11. References
 
-- **[MCP]** "Model Context Protocol," specification revision 2025-11-25. <https://modelcontextprotocol.io/specification/>. Incorporated authority for the protocol ([§2](#2-scope-and-incorporated-authorities)).
+- **[MCP]** "Model Context Protocol," specification revision 2025-11-25. <https://modelcontextprotocol.io/specification/2025-11-25>. Incorporated authority for the protocol ([§2](#2-scope-and-incorporated-authorities)).
 - **[RFC 6570]** "URI Template." <https://www.rfc-editor.org/rfc/rfc6570>. Incorporated for resource-template expansion ([§9.1](#91-input-mapping)).
 - **[RFC 9110]** "HTTP Semantics." <https://www.rfc-editor.org/rfc/rfc9110>. Cited for header-field credential carriage ([§9.5](#95-credentials)).
 - **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository.
