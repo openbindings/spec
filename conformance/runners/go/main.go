@@ -43,6 +43,7 @@ type Test struct {
 	Violates             []string        `json:"violates,omitempty"`
 	RequiresMaxTested    string          `json:"requiresMaxTested,omitempty"`
 	RequiresMinSupported string          `json:"requiresMinSupported,omitempty"`
+	RequiresSupports     string          `json:"requiresSupports,omitempty"`
 }
 
 type Result struct {
@@ -227,6 +228,23 @@ func runOne(rule string, t Test) Result {
 				Test:    t.Description,
 				Skipped: true,
 				Reason:  fmt.Sprintf("requires SDK MinSupported >= %s; current is %s", t.RequiresMinSupported, openbindings.MinSupportedVersion),
+			}
+		}
+	}
+	if t.RequiresSupports != "" {
+		// Acceptance gate: administer the test only to tools whose OBI-T-04
+		// version-acceptance predicate accepts the annotation's version.
+		// IsSupportedVersion is that predicate for this SDK — the acceptance
+		// set, not the tested range (a 0.2.0-tested SDK accepts 0.2.1 via its
+		// own release-line declaration). Skips are reported separately, never
+		// as failures.
+		accepts, err := openbindings.IsSupportedVersion(t.RequiresSupports)
+		if err == nil && !accepts {
+			return Result{
+				Rule:    rule,
+				Test:    t.Description,
+				Skipped: true,
+				Reason:  fmt.Sprintf("requires an SDK whose OBI-T-04 acceptance predicate accepts %s; this SDK refuses it", t.RequiresSupports),
 			}
 		}
 	}
