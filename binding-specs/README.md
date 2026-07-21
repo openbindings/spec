@@ -65,6 +65,15 @@ Two of these are the conventions the reference implementations hold fixed across
 
 Implementations SHOULD report which rule answered each axis (the reference SDKs stamp `x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance on invocation metadata, and warn when an assumption decoded into a contract that could not catch a wrong lane; a third-party implementation's provenance surface and names are its own).
 
+### The bytes boundary
+
+The operation value domain is JSON (core [§5](../openbindings.md#5-document-model)), so a value that is neither a JSON value nor a string — arbitrary bytes — needs a **boundary encoding** to cross the seam. This is one instance of the decode/routing answers above, not a separate mechanism, and it is governed by two principles in order:
+
+1. **Follow the artifact where it declares an encoding.** OpenAPI's `contentEncoding` (`base64`/`base64url`), gRPC/Connect's ProtoJSON `bytes`, and MCP's resource `blob` all define how bytes ride; a binding specification incorporates its family's answer and does not override it. The artifact keeps authority over its own bytes.
+2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI's `format: binary`, a 3.1 raw-binary shape). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi@1` §9.2 is the pattern: "this specification's boundary encoding for bytes"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
+
+A family whose revision does not define bytes carriage on some axis **declares the gap** rather than leaving it silent (`openbindings.openapi@1`'s raw-binary request-body refusal and "no base64 response lane"; `openbindings.asyncapi@1`'s value-domain note on non-string, non-JSON payloads; `openbindings.usage@1`'s text-only stdout default). Closing such a gap is a later revision's work, following the two principles above.
+
 ## Authentication and credentials
 
 Credentials and other runtime prerequisites are **not** part of an OBI document and are not extracted into it from an artifact's security metadata. The binding invoker applies credentials at call time and negotiates anything missing via a `CONTEXT_REQUIRED` challenge, resolved into the runtime's store — see the [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface. An artifact's own security metadata (for example OpenAPI's `securitySchemes`) may inform what the invoker asks for at invocation time, but is never baked into the static document.

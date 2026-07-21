@@ -8,6 +8,28 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R12 (bytes boundary) + maxIterations diagnostic**
+  (ratified 2026-07-21).
+  - **R12** — the catalog README gains a "bytes boundary" doctrine section:
+    the operation value domain is JSON, so bytes need a boundary encoding;
+    a specification **follows the artifact's declared encoding** where one
+    exists (OAS `contentEncoding`, ProtoJSON `bytes`, MCP `blob`) and
+    **defaults to Base64 only in the gap**. Base64 is the project's
+    *recommended* default, restated per specification, never a cross-spec
+    mandate (the catalog has no mechanism for one). A family that does not
+    define bytes carriage on some axis **declares the gap**; `openbindings.usage@1`
+    gains an explicit binary-output gap note (its text-only stdout default,
+    no base64 lane in revision 1) to match the openapi and asyncapi gap
+    declarations already present. No gap is closed; core and source artifacts
+    inherit nothing.
+  - **maxIterations-on-wrong-node** — `openbindings.operation-graph@1` §20's
+    tolerance rule now states that a field this format defines for *another*
+    node type (a `maxIterations` on an `operation` node) is tolerated and
+    inert like any unknown field, with the diagnostic naming the node type the
+    field applies to. It is **not** given a named prohibition rule — only
+    OG-V-17's boundary-node `onError` is a field-placement failure. (A general
+    misplacement rule would readmit the per-type whitelist R3 removed.)
+
 - **Spec-refinement run 1 — R3 (og unknown fields) + R11 (acquisition
   success)** (ratified 2026-07-21).
   - **R3 — `openbindings.operation-graph@1` tolerates unknown fields, aligning

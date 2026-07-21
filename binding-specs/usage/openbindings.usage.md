@@ -74,6 +74,8 @@ Three named configuration points cover what the descriptor cannot declare (**USA
 
 An impossible routing — two fields routed to stdin, a stdin route with no slot on the surface — is refused before spawn. Per-CLI knowledge (a tool that emits JSON, alternate success exits, a field that must ride stdin) is packaged as consumer configuration at these points, never authored into the artifact or the OBI.
 
+**Binary output** has no boundary encoding in revision 1: the decode default is text (UTF-8, invalid sequences a loud decode error), so a command emitting bytes that are not valid UTF-8 fails loudly rather than decoding to a guessed value. A consumer needing raw or non-text bytes overrides at the decode point; a base64 output lane is a declared gap this revision does not fill (the [catalog README](../README.md#the-bytes-boundary) records the pattern a later revision would follow). The same holds for a binary value routed to stdin or a temp file.
+
 ### 9.3. Success and the output value
 
 Which outcomes of an invocation are successes is decided by the **classify** point. For a successful outcome, the operation's single output value is the product of the **decode** point applied to the process's standard output. Failure outcomes are not operation results and have no representation in this specification; what a consumer surfaces about them is its own concern.
