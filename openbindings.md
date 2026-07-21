@@ -706,7 +706,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 - **Type/subtype:** `application/vnd.openbindings+json`
 - **Required parameters:** none
-- **Encoding considerations:** 8-bit UTF-8 per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259)
+- **Encoding considerations:** binary. OBI documents are UTF-8 encoded JSON ([OBI-D-01](#102-document-rules)); the value matches the `application/json` registration of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259), which JSON carries because it has no line structure
 - **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)
 - **Security considerations:** see [§9. Security considerations](#9-security-considerations)
 - **Interoperability considerations:** see [§10. Conformance](#10-conformance)

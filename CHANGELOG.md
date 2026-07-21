@@ -8,6 +8,45 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — verified mechanical corrections** (2026-07-21).
+  Five fixes from the opinion-audit review (tracker: `spec-refinement.md`;
+  each was reproduced against its cited authority before application). No
+  fixture verdicts change, and the conformance manifest regenerates
+  identical.
+  - Core **§11 IANA registration**: encoding considerations corrected from
+    "8-bit UTF-8 per RFC 8259" to **`binary`**. RFC 8259 §11 registers
+    `application/json` as `binary` deliberately — MIME `8bit` (RFC 6838
+    §4.8, RFC 2046 §4.1.1) requires CRLF-delimited lines of at most 998
+    octets, which minified JSON does not satisfy — so the previous value
+    both misattributed the cited RFC and would have been corrected in IANA
+    review. UTF-8 remains stated as the character encoding via OBI-D-01.
+  - `openbindings.operation-graph@1` **§3** gains the duplicate-object-key
+    refusal its openapi and asyncapi siblings already carry, and **§12**'s
+    node-key parenthetical no longer claims uniqueness is "enforced by JSON
+    object semantics" — true of the parsed object representation, false of
+    the string representation, where RFC 8259 §4 leaves duplicate handling
+    to the parser and two conforming parsers can read one source text as
+    two different graphs. Compatible clarification: the identifier stands.
+  - `openbindings.asyncapi@1` **§9.5** gains the credential/channel-value
+    name-collision refusal, ported from the `openbindings.openapi@1`
+    sibling's §9.6 (OAPI-P-10). A websockets binding's declared `query` and
+    `headers` values ride the same upgrade request a query- or
+    header-riding credential rides; the collision is now refused before
+    dispatch rather than resolved by silent overwrite. ASYNC-P-07 names it.
+  - `conformance/document/OBI-D-13.json` test 3: the absent-`ref` positive
+    is re-homed from an `openbindings.mcp@1` source onto
+    `openbindings.usage@1`. MCP-D-03 makes `ref` REQUIRED — the fixture
+    contradicted both the mcp specification and its own sibling fixture
+    `MCP-D-03.json` — while usage's §7 defines the root command as the
+    absent-`ref` target, which is what the test means to exercise.
+  - `conformance/tool/OBI-T-04.json`: file description and test descriptions
+    restated in §8.1's explicit-supported-set vocabulary, replacing
+    pre-rewrite SemVer-precedence-inference framing. Removes a quotation
+    attributed to §8.1 ("refusal runs downward as well") that appears
+    nowhere in the specification, and drops "should accept per §8.1"
+    framings asserting the cross-version inference §8.1 explicitly
+    disclaims. Verdicts and gating annotations are unchanged.
+
 - `openbindings.asyncapi@1` §9.2's **server pin gains a `variables` member**
   (ratified 2026-07-21): the server configuration point's value is now
   `{ "key": "<server-name>", "variables": { "<variable-name>":
