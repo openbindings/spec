@@ -39,13 +39,16 @@ Staleness is the pin's failure mode, and it is defined rather than surprising: t
 
 ## 7. `ref`
 
-A binding's `ref` is REQUIRED and MUST be `<entity>/<remainder>` (**MCP-D-03**): `<entity>` is exactly one of `tools`, `resources`, `prompts`, and `<remainder>` is **everything after the first `/`**, taken verbatim for every entity (it may itself contain `/`), and matched **byte-exactly**:
+A binding's `ref` is REQUIRED and MUST be `<entity>/<remainder>` (**MCP-D-03**): `<entity>` is exactly one of `tools`, `resources`, `resourceTemplates`, `prompts`, and `<remainder>` is **everything after the first `/`**, taken verbatim for every entity (it may itself contain `/`), and matched **byte-exactly**:
 
 - `tools/<name>` — a declared tool's `name` (`tools/get_weather`).
 - `prompts/<name>` — a declared prompt's `name` (`prompts/summarize`).
-- `resources/<uri-or-template>` — matched first against declared resources' `uri` values, then against declared resource templates' `uriTemplate` values (`resources/file:///logs`, `resources/file:///logs/{date}`). A template is addressed by its template string, byte-exact — never by a URI that the template happens to match.
+- `resources/<uri>` — a declared resource's `uri`, from the `resources/list` collection (`resources/file:///logs`).
+- `resourceTemplates/<uriTemplate>` — a declared resource template's `uriTemplate` string, from the `resources/templates/list` collection, matched byte-exact — never by a URI that the template happens to expand to (`resourceTemplates/file:///logs/{date}`).
 
-Resolution is against the listing ([§3](#3-accepted-source-representations)) and is REQUIRED before dispatch for every entity — a processor does not dispatch a `tools/call` or `prompts/get` blind on the ref name: a `ref` matching nothing in the listing makes the binding unresolvable and is refused, uniformly across entities. MCP names are only SHOULD-unique; a listing in which a `ref` matches more than one entry makes that `ref` ambiguous, and the binding is likewise unresolvable — loudly, never first-match. With a pinned listing, resolution is offline-checkable; without one it is checkable only against the live (exhausted) listing, per the core's partial-verification posture.
+The four entities mirror MCP's own four listable collections (`tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`), each addressed in its own namespace. Because resources and resource templates are separate entities, a resource `uri` and a template `uriTemplate` that happen to be byte-identical (an RFC 6570 template may carry zero expressions) never collide — they are reached by distinct `ref`s.
+
+Resolution is against the listing ([§3](#3-accepted-source-representations)) and is REQUIRED before dispatch for every entity — a processor does not dispatch a `tools/call` or `prompts/get` blind on the ref name: a `ref` matching nothing in its entity's collection makes the binding unresolvable and is refused, uniformly across entities. MCP names are only SHOULD-unique; a listing in which a `ref` matches more than one entry **within its entity's collection** makes that `ref` ambiguous, and the binding is likewise unresolvable — loudly, never first-match. With a pinned listing, resolution is offline-checkable; without one it is checkable only against the live (exhausted) listing, per the core's partial-verification posture.
 
 ## 8. Target and interaction
 

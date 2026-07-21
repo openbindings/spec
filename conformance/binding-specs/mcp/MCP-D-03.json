@@ -9,14 +9,21 @@
       "description": "tools ref resolving byte-exactly against the pinned listing",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
-                { "name": "get_weather", "inputSchema": { "type": "object" } }
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object"
+                  }
+                }
               ]
             }
           }
@@ -35,13 +42,20 @@
       "description": "resources ref whose remainder itself contains / — everything after the first / is taken verbatim",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "readLogs": {} },
+        "operations": {
+          "readLogs": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
-              "resources": [{ "uri": "file:///logs", "name": "logs" }]
+              "resources": [
+                {
+                  "uri": "file:///logs",
+                  "name": "logs"
+                }
+              ]
             }
           }
         },
@@ -56,17 +70,22 @@
       "valid": true
     },
     {
-      "description": "resource template addressed by its template string, byte-exact, under the resources entity",
+      "description": "resource template addressed under the resourceTemplates entity by its template string, byte-exact — its own namespace, distinct from resources/",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "readLogByDate": {} },
+        "operations": {
+          "readLogByDate": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "resourceTemplates": [
-                { "uriTemplate": "file:///logs/{date}", "name": "log-by-date" }
+                {
+                  "uriTemplate": "file:///logs/{date}",
+                  "name": "log-by-date"
+                }
               ]
             }
           }
@@ -75,7 +94,7 @@
           "readLogByDate.server": {
             "operation": "readLogByDate",
             "source": "server",
-            "ref": "resources/file:///logs/{date}"
+            "ref": "resourceTemplates/file:///logs/{date}"
           }
         }
       },
@@ -85,13 +104,19 @@
       "description": "prompts ref resolving against the pinned listing",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "summarize": {} },
+        "operations": {
+          "summarize": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
-              "prompts": [{ "name": "summarize" }]
+              "prompts": [
+                {
+                  "name": "summarize"
+                }
+              ]
             }
           }
         },
@@ -109,7 +134,9 @@
       "description": "grammar-valid ref on a location-only source: resolution against the live listing is unverifiable offline, and the ref gives a validator nothing to refuse",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
@@ -130,7 +157,9 @@
       "description": "ref is required",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
@@ -138,17 +167,24 @@
           }
         },
         "bindings": {
-          "getWeather.server": { "operation": "getWeather", "source": "server" }
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server"
+          }
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
       "description": "ref without the entity/remainder separator",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
@@ -164,13 +200,17 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
       "description": "entity token outside tools/resources/prompts",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
@@ -186,47 +226,66 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
-      "description": "resourceTemplates is not an entity token: templates are addressed under resources/ by their template string",
+      "description": "a resource uri and a byte-identical template uriTemplate coexist; resources/<uri> resolves to the static resource with no ambiguity, because resources and resourceTemplates are separate namespaces",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "readLogByDate": {} },
+        "operations": {
+          "readLogs": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
+              "resources": [
+                {
+                  "uri": "file:///logs",
+                  "name": "logs"
+                }
+              ],
               "resourceTemplates": [
-                { "uriTemplate": "file:///logs/{date}", "name": "log-by-date" }
+                {
+                  "uriTemplate": "file:///logs",
+                  "name": "logs-tmpl"
+                }
               ]
             }
           }
         },
         "bindings": {
-          "readLogByDate.server": {
-            "operation": "readLogByDate",
+          "readLogs.server": {
+            "operation": "readLogs",
             "source": "server",
-            "ref": "resourceTemplates/file:///logs/{date}"
+            "ref": "resources/file:///logs"
           }
         }
       },
-      "valid": false,
-      "violates": ["MCP-D-03"]
+      "valid": true
     },
     {
       "description": "ref matching nothing in the pinned listing makes the binding unresolvable",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getForecast": {} },
+        "operations": {
+          "getForecast": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
-                { "name": "get_weather", "inputSchema": { "type": "object" } }
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object"
+                  }
+                }
               ]
             }
           }
@@ -240,20 +299,29 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
       "description": "matching is byte-exact: a case-mismatched remainder resolves to nothing",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
-                { "name": "get_weather", "inputSchema": { "type": "object" } }
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object"
+                  }
+                }
               ]
             }
           }
@@ -267,25 +335,38 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
       "description": "ref matching more than one pinned entry is ambiguous and unresolvable — loudly, never first-match (MCP names are only SHOULD-unique)",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
-                { "name": "get_weather", "inputSchema": { "type": "object" } },
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object"
+                  }
+                },
                 {
                   "name": "get_weather",
                   "inputSchema": {
                     "type": "object",
-                    "properties": { "city": { "type": "string" } }
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               ]
@@ -301,20 +382,29 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     },
     {
       "description": "empty remainder matches no pinned entry",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "getWeather": {} },
+        "operations": {
+          "getWeather": {}
+        },
         "sources": {
           "server": {
             "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
-                { "name": "get_weather", "inputSchema": { "type": "object" } }
+                {
+                  "name": "get_weather",
+                  "inputSchema": {
+                    "type": "object"
+                  }
+                }
               ]
             }
           }
@@ -328,7 +418,9 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-03"]
+      "violates": [
+        "MCP-D-03"
+      ]
     }
   ]
 }

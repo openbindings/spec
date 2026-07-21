@@ -39,7 +39,7 @@ When `content` is present it is the artifact the processor interprets, per the c
 
 ## 7. `ref`
 
-A binding's `ref`, when present, MUST be a non-empty **command path**: the command names along the descriptor's command tree, separated by single spaces (`db migrate run`) (**USAGE-D-03**). Resolution walks the tree from the root command; each segment matches a command's declared name or any of its declared aliases, exactly and case-sensitively. Flags declared on ancestor commands as inherited/global accumulate onto the resolved command's effective surface, per the usage specification.
+A binding's `ref`, when present, MUST be a non-empty **command path**: the command names along the descriptor's command tree, separated by single spaces (`db migrate run`) (**USAGE-D-03**). Resolution walks the tree from the root command; each segment matches a command's declared name or any of its declared aliases, exactly and case-sensitively. A flag an ancestor command declares `global` accumulates onto the resolved command's effective surface. The usage specification defines the `global` attribute but does not state its scope of application; this specification pins the ancestor-chain reading — a `global` flag reaches the declaring command and its descendants — so that one descriptor yields one effective surface in every implementation.
 
 The **root command** is addressed by omitting `ref`. An empty-string `ref` is not conformant — this specification gives each meaning one spelling. A `ref` that resolves to no command in the artifact makes the binding unresolvable; verifying resolution requires the artifact, and a validator without it leaves the check unverified per the core's partial-verification posture.
 

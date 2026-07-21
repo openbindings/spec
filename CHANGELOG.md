@@ -8,6 +8,56 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R5, R7, R8, R9, R10 (upstream fidelity + mcp
+  addressing)** (ratified 2026-07-21).
+  - **R5 — `openbindings.mcp@1` gains a fourth `ref` entity,
+    `resourceTemplates`.** MCP retrieves resources and resource templates from
+    two separate collections (`resources/list`, `resources/templates/list`);
+    the three-entity `ref` vocabulary collapsed them into one `resources/`
+    space, which manufactured an ambiguity (an RFC 6570 template may carry zero
+    expressions, so a resource `uri` and a template `uriTemplate` can be
+    byte-identical and match one ref). `<entity>` is now `tools`, `resources`,
+    `resourceTemplates`, `prompts` — one per MCP listable collection —
+    addressed in distinct namespaces, so the collision is impossible by
+    construction. The ordered "first against resources, then against templates"
+    clause is deleted, and the ambiguity rule scopes to within one entity's
+    collection. §7, MCP-D-03, the catalog README index row, and the MCP-D-03
+    conformance fixtures are updated. This lands inside `@1`'s initial
+    publication (tooling adoption not yet begun), not a new revision.
+  - **R7 — `openbindings.operation-graph@1` self-containment stated as a
+    property.** OG-V-18 banned `$ref` in embedded schemas but not the dialect's
+    other reference keywords, while §14 claimed the rule is "the same
+    constraints the core specification places on schemas at OBI positions" —
+    false, since core OBI-D-05 also excludes `$dynamicRef`, `$dynamicAnchor`,
+    and `$anchor`-fragment references. OG-V-18 now states the property (no
+    keyword references anything outside the schema) with the full keyword set
+    as its enumeration, matching OBI-D-05 keyword-for-keyword. `$id` is left
+    alone deliberately, tracking the core's own posture.
+  - **R8 — `openbindings.usage@1` flag inheritance re-attributed.** §7 claimed
+    ancestor "inherited/global" flag accumulation "per the usage specification";
+    upstream has no "inherited" concept and does not state a scope of
+    application for `global` (confirmed against usage.jdx.dev). The word
+    `inherited` is dropped, and the ancestor-chain scope is now owned as this
+    specification's determinism pin rather than attributed to upstream.
+  - **R9 — `openbindings.openapi@1` 3.1 binary signal follows the OAS.** The
+    3.1.x binary-signal test said "a string schema carrying
+    `contentMediaType`/`contentEncoding`", inverting OAS 3.1 §"Working with
+    Binary Data": raw binary omits `type` (schema carries `contentMediaType`),
+    while `type: string` with `contentEncoding` is the encoded case. §9.2 now
+    recognizes both shapes; the Base64 boundary default attaches to the raw
+    shape (and 3.0.x `format: binary`), the declared encoding to the encoded
+    shape.
+  - **R10 — grpc and connect scope "refused before dispatch" correctly.**
+    `openbindings.grpc@1` said every input unmarshal failure is refused before
+    dispatch, unimplementable for client-streaming and bidirectional methods,
+    whose later input values arrive with the RPC in flight (the gRPC protocol
+    offers no un-dispatch, only cancellation). GRPC-P-03/§9.1 now scope the
+    pre-dispatch guarantee to the first input value (and wholly to unary and
+    server-streaming); a later value's failure terminates the invocation as a
+    locally-originated failure outcome and cancels the RPC, already-emitted
+    outputs standing. `openbindings.connect@1`, which incorporates the grpc
+    rule, has its local restatement (CONN-P-02/§9.2) corrected to match.
+
 - **Spec-refinement run 1 — R1 + R6, asyncapi and the configuration seam**
   (ratified 2026-07-21). Spec text only; reference-SDK follow-through
   (relaxing the enum refusals, demoting the pinned-shape error strings) is
