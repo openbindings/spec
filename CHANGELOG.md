@@ -8,6 +8,27 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- `openbindings.asyncapi@1` §9.2's **server pin gains a `variables` member**
+  (ratified 2026-07-21): the server configuration point's value is now
+  `{ "key": "<server-name>", "variables": { "<variable-name>":
+  "<string-value>" }? }` xor `{ "url": "<connection-url>" }` — `variables`
+  is optional and composes only with `key`; names are the artifact's own
+  declared variable names (a supplied name the selected server does not
+  declare is refused, never ignored); values are strings, upstream's Server
+  Variable value space; a supplied value outside the variable's declared
+  `enum` is refused (upstream states SHOULD, hardened to a refusal, this
+  specification's own pin). Substitution is supplied value, else declared
+  default, else refusal. Grounding: AsyncAPI, unlike OpenAPI, declares a
+  Server Variable's `default` OPTIONAL, so an undefaulted variable is
+  satisfiable only by consumer supply — the pin previously omitted the very
+  carriage its own assembly sentence ("from consumer-supplied values, else
+  the variable's declared `default`") presupposes; this resolves that
+  internal contradiction toward upstream intent, and matches the openapi
+  sibling's §9.3, which already sanctions supplying server-variable values.
+  ASYNC-P-04's rule line now names the supplied-else-default substitution
+  and its refusals; the assembly rule's text stands unchanged. Conformance
+  rides the reference SDKs' mirrored behavioral tests, per the corpus
+  doctrine for P-rules; no fixtures added.
 - `openbindings.openapi@1` §9.2 refuses **degenerate media/schema
   combinations** before dispatch instead of inventing a wire form (ratified
   2026-07-21): a request-media selection landing on `multipart/form-data`
