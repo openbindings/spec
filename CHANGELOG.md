@@ -8,6 +8,25 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R4, openapi passthrough into non-JSON bodies**
+  (ratified 2026-07-21). §9.1 let an undeclared caller field pass through into
+  any object request body "riding whatever encoding the selected media type
+  gives the body — JSON, multipart, form-urlencoded", but for a passthrough
+  field the artifact declares nothing, and the OAS derives multipart and
+  form-urlencoded part carriage from per-property declarations (3.1's Encoding
+  Object is self-contradictory in the residual branch), so "the artifact's
+  declarations decide" was unsatisfiable exactly where §9.1 routed the field.
+  Passthrough is now permitted only where the selected request media gives the
+  field a destination **without invention** — the JSON family — and an
+  unmatched field is refused before dispatch when no body is declared, when the
+  body is non-object, or when the object body's selected media is
+  `multipart/form-data` or `application/x-www-form-urlencoded`. Stated as a
+  property of the value domain, not a format allowance: a future media whose
+  serialization is derivable without a per-property declaration qualifies by
+  the same test. This applies the same no-invention test the degenerate
+  media/schema refusal (§9.2) already used one paragraph away. OAPI-P-03
+  updated.
+
 - **Spec-refinement run 1 — R5, R7, R8, R9, R10 (upstream fidelity + mcp
   addressing)** (ratified 2026-07-21).
   - **R5 — `openbindings.mcp@1` gains a fourth `ref` entity,
