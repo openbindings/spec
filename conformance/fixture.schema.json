@@ -4,7 +4,12 @@
   "title": "OpenBindings Conformance Fixture",
   "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file).",
   "type": "object",
-  "required": ["rule", "section", "description", "tests"],
+  "required": [
+    "rule",
+    "section",
+    "description",
+    "tests"
+  ],
   "additionalProperties": false,
   "properties": {
     "rule": {
@@ -27,7 +32,9 @@
     },
     "coverage": {
       "type": "string",
-      "enum": ["positive-only"],
+      "enum": [
+        "positive-only"
+      ],
       "description": "If present, marks this fixture as providing partial coverage of its rule. 'positive-only' means the fixture has no discriminating negative cases (typically because negative cases cannot be expressed in the document-level fixture format without per-format harness logic, cf. OBI-T-06). A fixture marked this way is counted separately in the manifest and does not contribute to a 'complete coverage' claim. Absence means complete coverage."
     },
     "tests": {
@@ -36,7 +43,11 @@
       "description": "Test cases for this rule. Each case bundles an OBI document with the expected validity verdict.",
       "items": {
         "type": "object",
-        "required": ["description", "document", "valid"],
+        "required": [
+          "description",
+          "document",
+          "valid"
+        ],
         "additionalProperties": false,
         "properties": {
           "description": {
@@ -58,11 +69,6 @@
               "type": "string",
               "pattern": "^OBI-[DT]-[0-9]+$"
             }
-          },
-          "requiresMaxTested": {
-            "type": "string",
-            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
-            "description": "When set, the test only applies to SDKs whose MaxTestedVersion is at least this SemVer 2.0.0 version. Used for forward-compatible OBI-T-04 scenarios (e.g., a post-1.0 SDK MUST accept same-major-higher-minor documents) that cannot be evaluated against a pre-1.0 SDK without contradicting OBI-T-04. Runners SHOULD skip tests whose requiresMaxTested exceeds the SDK's MaxTestedVersion."
           },
           "requiresMinSupported": {
             "type": "string",

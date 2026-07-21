@@ -8,6 +8,47 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R2, version-inference discipline** (ratified
+  2026-07-21). OG-T-02 and the conformance corpus still ran the model core
+  §8.1 deleted, which states that "backward compatibility is not forward
+  comprehension: no comparison of two version strings establishes what a given
+  implementation contains."
+  - **`openbindings.operation-graph@1` OG-T-02 is restated on the artifact
+    axis.** A graph unit's version field is *artifact* self-identification, not
+    a spec version, so it is governed the way every sibling governs accepted
+    artifact versions — by the specification's declared line (§3: the 0.2.x
+    line) — and not by OBI-T-04's per-tool supported set, which applies to an
+    OBI's own `openbindings` field. OG-T-02 now refuses a unit outside the
+    accepted line in either direction and at either level, reports that
+    refusal distinctly from graph non-conformance, ignores build metadata when
+    testing membership, and treats a prerelease as a non-member (a tool MAY
+    still accept a prerelease it declares support for). Consequences fall out
+    rather than being separately ruled: a higher patch is accepted *because it
+    is in the declared line*, not by inference; the pre-1.0 minor
+    special-casing is deleted; and the claim that this "mirrors the core
+    spec's OBI-T-04" is deleted as a cross-axis error. §3 and §12's
+    version-field prose lose "a processor's supported range" for the declared
+    line.
+  - **`requiresMaxTested` is retired from the conformance corpus**, from
+    `fixture.schema.json`, and from the operation-graph validation schema.
+    `MaxTestedVersion` is a *tested* declaration, not an *acceptance*
+    declaration, so gating acceptance-presuming positives on it is a category
+    error — the argument the corpus's own `requiresSupports` paragraph already
+    made and had not applied to these cases. OBI-D-12's two gated positives
+    move to `requiresSupports`; `requiresMinSupported` and `requiresSupports`
+    are unaffected and remain the corpus's two gates.
+  - **The forward-compatibility fixtures retire rather than being re-gated.**
+    Under an explicit-set §8.1 there is no forward-compatibility behavior left
+    to assert: re-gating "a tool supporting major 1 accepts 1.5.0" with
+    `requiresSupports: "1.5.0"` reduces it to "a tool that accepts 1.5.0
+    accepts 1.5.0". Retired from `conformance/tool/OBI-T-04.json` and from the
+    operation-graph OG-T-02 block.
+  - **The operation-graph OG-T-02 fixtures become universal.** With membership
+    declared by the specification rather than derived per tool, no acceptance
+    gate applies to any of them: the downward-refusal case loses its
+    `requiresMinSupported` gate and all seven cases now run against every
+    tool.
+
 - **Spec-refinement run 1 — verified mechanical corrections** (2026-07-21).
   Five fixes from the opinion-audit review (tracker: `spec-refinement.md`;
   each was reproduced against its cited authority before application). No

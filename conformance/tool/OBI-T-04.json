@@ -87,15 +87,6 @@
       ]
     },
     {
-      "description": "post-1.0: document declares a same-major-higher-minor version (administered only to tools whose acceptance predicate accepts it)",
-      "document": {
-        "openbindings": "1.5.0",
-        "operations": {}
-      },
-      "valid": true,
-      "requiresMaxTested": "1.5.0"
-    },
-    {
       "description": "downward refusal: pre-1.0 document declares a lower minor outside the SDK's supported set (refused rather than processed under the wrong rules)",
       "document": {
         "openbindings": "0.1.0",

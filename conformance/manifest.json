@@ -3,8 +3,8 @@
   "corpusVersion": "0.1.0",
   "totals": {
     "files": 20,
-    "tests": 158,
-    "positives": 78,
+    "tests": 157,
+    "positives": 77,
     "negatives": 80,
     "rulesCoveredDocument": 14,
     "rulesCoveredTool": 4,
@@ -162,8 +162,8 @@
       "path": "tool/OBI-T-04.json",
       "rule": "OBI-T-04",
       "section": "10.3",
-      "tests": 11,
-      "positives": 4,
+      "tests": 10,
+      "positives": 3,
       "negatives": 7
     },
     {
