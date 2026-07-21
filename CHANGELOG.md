@@ -8,6 +8,29 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- `openbindings.openapi@1` §9.2 refuses **degenerate media/schema
+  combinations** before dispatch instead of inventing a wire form (ratified
+  2026-07-21): a request-media selection landing on `multipart/form-data`
+  or `application/x-www-form-urlencoded` while the declared body schema
+  does not flatten under §9.1's declaration-only determination (no
+  `properties` and no explicit `object` type — the synthetic-`body`
+  shapes), or landing on `text/plain` while it does. The OAS specifies
+  multipart and form-urlencoded serialization exclusively over object
+  properties — its multipart considerations define the payload as an
+  object whose properties become the parts, and its Encoding Object is
+  keyed by property name — so no rule exists to implement for propertyless
+  shapes, and anything emitted would be implementation invention; the text
+  lane is the inverse, a single-string wire that cannot carry a flattening
+  schema's object contract. The refusal is decided by declarations alone
+  and reaches only operations declaring no JSON-family request media:
+  selection prefers the JSON family, which carries any shape, so a
+  co-declared JSON media type makes the contract and the wire agree.
+  OAPI-P-04's rule line now names the refusal; a future revision may
+  define carriage if the OAS or a real artifact supplies a serialization
+  rule (`openbindings.openapi@2`). Conformance rides the reference SDKs'
+  mirrored behavioral tests, per the corpus doctrine for P-rules; no
+  fixtures added.
+
 - `openbindings.openapi@1` §9.1 pins the flattened model's **object-or-not
   determination as declaration-only** (ruled 2026-07-20): a request-body
   schema is object for the section iff it declares `properties` or an
