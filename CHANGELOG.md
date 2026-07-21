@@ -8,6 +8,20 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- `openbindings.openapi@1` §9.1 pins the flattened model's **object-or-not
+  determination as declaration-only** (ruled 2026-07-20): a request-body
+  schema is object for the section iff it declares `properties` or an
+  explicit `object` type; a **typeless** schema (a bare `{}` or a
+  description-only schema) is non-object and rides the synthetic `body`
+  property exactly as an array or scalar does — what the schema might admit
+  at runtime never participates. The text previously glossed non-object as
+  "(array or scalar)", leaving typeless schemas unstated: the reference
+  SDKs' synthesizers wrapped them synthetic while their invokers flattened
+  them, so a caller following the published contract got `{"body": X}` on
+  the wire where the contract promised `X`. The synthesized contract is
+  authoritative — the invokers moved. Conformance rides the SDKs' mirrored
+  behavioral tests, per the corpus doctrine for P-rules; no fixtures added.
+
 - `openbindings.openapi@1` §9.1 pins two corners of the **unmatched-field
   passthrough rule** the text left unstated (ratified 2026-07-20). (1) The
   passthrough exception exists because an object body gives an extra field a
