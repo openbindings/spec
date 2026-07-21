@@ -328,6 +328,19 @@ for (const file of listJson(join(CORPUS, "validation"))) {
             `${tlabel}: operation refs resolve=${allResolve} against [${ops.join(", ")}], but fixture says valid=${t.valid}`
           );
       }
+      // OG-V-17 is a prose prohibition, not schema-enforced (the format's
+      // schema no longer closes objects — R3), so verify it as a rule here:
+      // no input/output node may declare onError.
+      if (block.rule === "OG-V-17") {
+        const boundaryOnError = Object.values(t.graph.nodes ?? {}).some(
+          (n) => n && (n.type === "input" || n.type === "output") && n.onError !== undefined
+        );
+        const satisfied = !boundaryOnError;
+        if (satisfied !== t.valid)
+          errors.push(
+            `${tlabel}: OG-V-17 satisfied=${satisfied} (boundary onError present=${boundaryOnError}), but fixture says valid=${t.valid}`
+          );
+      }
     }
   }
 }
