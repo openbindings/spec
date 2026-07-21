@@ -115,7 +115,7 @@ core, and resolution clauses are fixtured via embedded content.
 | USAGE-D-03 | 4/4 | command-path grammar, alias segment, omitted-ref root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL) |
 | OAPI-D-01 | 2/3 | object + string representations; number/array/null negatives |
 | OAPI-D-02 | 2/3 | absolute-URI address; relative-in-form negatives |
-| OAPI-D-03 | 3/9 | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, webhooks, and dangling-target negatives |
+| OAPI-D-03 | 3/10 | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, percent-encoded-spelling, webhooks, and dangling-target negatives |
 | MCP-D-01 | 2/7 | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives |
 | MCP-D-02 | 2/4 | required absolute http/https address; content-only-source negative |
 | MCP-D-03 | 5/8 | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings) |
@@ -127,7 +127,7 @@ core, and resolution clauses are fixtured via embedded content.
 | CONN-D-03 | 2/4 | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives |
 | ASYNC-D-01 | 2/3 | object + string representations; number/array/null negatives |
 | ASYNC-D-02 | 2/3 | absolute-URI address; relative-in-form negatives |
-| ASYNC-D-03 | 5/6 | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, and dangling negatives |
+| ASYNC-D-03 | 5/7 | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
 
 ## Layout
 

@@ -1,0 +1,32 @@
+{
+  "rule": "OBI-T-18",
+  "section": "10.3",
+  "description": "Does not reject a document because an author-attested `idempotent` claim appears inaccurate: the claim's semantic truth is author-attested, structural validity is the only enforcement, and a tool MAY use the claim as input to its own decisions.",
+  "notes": "All tests are positive (valid: true), the OBI-T-01 anti-failure pattern: the rule asserts the tool does NOT reject these documents. Operation names are chosen to tempt plausibility heuristics — a write-shaped name claiming idempotent: true, a read-shaped name claiming idempotent: false, a mass-delete name claiming idempotent: true. A tool that flips any verdict to invalid is judging the claim's semantic truth, which is author-attested (§5.1); apparent inaccuracy is never a document defect. The absence half of §5.1's idempotency clause (a consumer MUST NOT infer a claim from absence) addresses consumers, whom no conformance class binds, and is deliberately not fixtured.",
+  "tests": [
+    {
+      "description": "write-shaped operation claims idempotent: true — the claim appears inaccurate for a creation; a tool MUST NOT reject on plausibility",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": { "idempotent": true } }
+      },
+      "valid": true
+    },
+    {
+      "description": "read-shaped operation claims idempotent: false — apparent inaccuracy in the other direction; same acceptance",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "listTasks": { "idempotent": false } }
+      },
+      "valid": true
+    },
+    {
+      "description": "mass-delete name claims idempotent: true — bait for a method-name heuristic, though §5.1 itself notes repeated deletion can be idempotent; either way the attestation stands",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "deleteAllRecords": { "idempotent": true } }
+      },
+      "valid": true
+    }
+  ]
+}

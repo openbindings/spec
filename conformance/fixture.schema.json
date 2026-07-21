@@ -68,6 +68,11 @@
             "type": "string",
             "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
             "description": "When set, the test only applies to SDKs whose MinSupportedVersion is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the SDK's minimum MUST be refused), which are meaningless for an SDK whose supported range extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the SDK's MinSupportedVersion, reporting skips separately."
+          },
+          "requiresSupports": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+            "description": "When set, administer this test only to tools whose OBI-T-04 version-acceptance predicate accepts this SemVer 2.0.0 version; otherwise runners SHOULD skip it, reporting the skip separately (skips are never failures). An acceptance gate keyed to the tool's own declared acceptance set (for the reference SDKs, IsSupportedVersion / isSupportedVersion), not to the tested-range declarations: a tool's acceptance set and its tested range are distinct declarations — per §8.1, a release-line support declaration is the tool's own, not an inference the specification imposes. Used for OBI-T-04 positives whose verdict presumes acceptance of a specific version."
           }
         }
       }

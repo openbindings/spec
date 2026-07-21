@@ -2,12 +2,12 @@
   "specVersion": "0.2.0",
   "corpusVersion": "0.1.0",
   "totals": {
-    "files": 19,
-    "tests": 155,
-    "positives": 75,
+    "files": 20,
+    "tests": 158,
+    "positives": 78,
     "negatives": 80,
     "rulesCoveredDocument": 14,
-    "rulesCoveredTool": 3,
+    "rulesCoveredTool": 4,
     "rulesPartialDocument": 2,
     "rulesPartialTool": 0
   },
@@ -165,6 +165,14 @@
       "tests": 11,
       "positives": 4,
       "negatives": 7
+    },
+    {
+      "path": "tool/OBI-T-18.json",
+      "rule": "OBI-T-18",
+      "section": "10.3",
+      "tests": 3,
+      "positives": 3,
+      "negatives": 0
     }
   ]
 }
