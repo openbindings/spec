@@ -1,7 +1,7 @@
 {
   "format": "openbindings.operation-graph@1",
   "kind": "execution",
-  "description": "The per-event failure identifiers MAP_NOT_ARRAY and TRANSFORM_UNDEFINED at the node types the spec's error-identifier table names, beyond the filter case already pinned by OG-EX-25. OG-EX-32 pins a map node whose expression yields a defined non-array (MAP_NOT_ARRAY). OG-EX-33 pins a transform node whose expression yields undefined (TRANSFORM_UNDEFINED). Both are per-event failures: with onError set the error event (carrying the offending event) routes to the named node; unset, they would drop silently.",
+  "description": "The per-event failure identifiers MAP_NOT_ARRAY and TRANSFORM_UNDEFINED at the node types the spec's error-identifier table names, beyond the filter case already pinned by OG-EX-25. OG-EX-32 pins a map node whose expression yields a defined non-array (MAP_NOT_ARRAY). OG-EX-33 pins a transform node whose expression yields undefined (TRANSFORM_UNDEFINED). Both are per-event failures: with onError set the error event (carrying the offending event) routes to the named node; unset, that error event is fatal.",
   "fixtures": [
     {
       "id": "OG-EX-32",

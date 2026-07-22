@@ -57,6 +57,9 @@ jobs:
           node scripts/generate-conformance-manifest.mjs
           git diff --exit-code conformance/manifest.json
 
+      - name: Verify release snapshot layout
+        run: node scripts/verify-release-snapshot.mjs
+
       - name: Enforce immutability of released snapshots
         # Released snapshots under versions/X.Y.Z/ are immutable
         # (RELEASING.md Principles; CONTRIBUTING.md): a PR may only ADD

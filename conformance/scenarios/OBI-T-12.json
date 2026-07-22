@@ -1,0 +1,97 @@
+{
+  "format": "openbindings.core-tool-scenarios@1",
+  "rule": "OBI-T-12",
+  "section": "10.3",
+  "description": "Portable operation-name resolution against the flat key-plus-alias namespace, including canonical-key binding selection.",
+  "scenarios": [
+    {
+      "id": "T12-S-01",
+      "description": "A primary operation key resolves to itself and selects bindings by that key.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": { "createTask": {} },
+          "sources": { "s": { "bindingSpec": "example.test@1", "content": {} } },
+          "bindings": {
+            "primary": { "operation": "createTask", "source": "s" }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": ["primary"]
+      }
+    },
+    {
+      "id": "T12-S-02",
+      "description": "An alias has equal authority and resolves to the operation's canonical key; bindings are never selected by the alias spelling.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": { "aliases": ["tasks.create", "addTask"] }
+          },
+          "sources": { "s": { "bindingSpec": "example.test@1", "content": {} } },
+          "bindings": {
+            "canonical": { "operation": "createTask", "source": "s" }
+          }
+        },
+        "name": "tasks.create"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": ["canonical"]
+      }
+    },
+    {
+      "id": "T12-S-03",
+      "description": "A name matching no key or alias does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": { "aliases": ["tasks.create"] }
+          }
+        },
+        "name": "tasks.delete"
+      },
+      "expected": { "outcome": "not-found" }
+    },
+    {
+      "id": "T12-S-04",
+      "description": "A host-language prototype name is not an operation unless the document defines it.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": { "ordinary": {} }
+        },
+        "name": "constructor"
+      },
+      "expected": { "outcome": "not-found" }
+    },
+    {
+      "id": "T12-S-05",
+      "description": "A document may genuinely define an operation with a host-language prototype name.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": { "constructor": {} }
+        },
+        "name": "constructor"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "constructor",
+        "bindingKeys": []
+      }
+    }
+  ]
+}

@@ -4,11 +4,7 @@
   "title": "openbindings.operation-graph validation fixture file",
   "description": "Well-formedness fixtures keyed to the stable rule identifiers in the openbindings.operation-graph spec: graph validation rules (OG-V-##), source rules (OG-D-##), and the validation- and version-shaped tool rules (OG-T-##). Each rule block carries `schemaEnforced`, declaring whether the op-graph JSON Schema alone is sufficient to catch violations of that rule; a runner uses it to decide whether to assert schema rejection on the negative cases. Graph-shaped tests carry `graph`; document-shaped tests (the OG-D source rules, which bind OBI content rather than graph definitions) carry `document` instead — an OBI document embedding an operation-graph source/binding.",
   "type": "object",
-  "required": [
-    "format",
-    "kind",
-    "rules"
-  ],
+  "required": ["format", "kind", "rules"],
   "properties": {
     "format": {
       "const": "openbindings.operation-graph@1"
@@ -27,16 +23,11 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "rule",
-          "title",
-          "schemaEnforced",
-          "tests"
-        ],
+        "required": ["rule", "title", "schemaEnforced", "tests"],
         "properties": {
           "rule": {
             "type": "string",
-            "pattern": "^OG-(V-(0[1-9]|1[0-8])|D-0[1-3]|T-0[1-4])$",
+            "pattern": "^OG-(V-(0[1-9]|1[0-9])|D-0[1-3]|T-0[1-4])$",
             "description": "The stable rule identifier from the format spec: a validation rule (OG-V-##) from its Validation rules section, or a source rule (OG-D-##) / tool rule (OG-T-##) from its Conformance section."
           },
           "title": {
@@ -51,20 +42,13 @@
             "minItems": 1,
             "items": {
               "type": "object",
-              "required": [
-                "description",
-                "valid"
-              ],
+              "required": ["description", "valid"],
               "oneOf": [
                 {
-                  "required": [
-                    "graph"
-                  ]
+                  "required": ["graph"]
                 },
                 {
-                  "required": [
-                    "document"
-                  ]
+                  "required": ["document"]
                 }
               ],
               "properties": {
@@ -81,7 +65,7 @@
                 },
                 "valid": {
                   "type": "boolean",
-                  "description": "Whether the graph (or document) satisfies the named rule. For OG-T-02, whether a tool supporting the 0.2.x line accepts (true) or refuses (false) the graph's declared version."
+                  "description": "Whether the graph (or document) satisfies the named rule. For OG-T-02, whether the graph declares exactly the incorporated graph-unit edition 0.2.0 (true) or a version the binding-specification revision refuses (false)."
                 },
                 "operations": {
                   "type": "array",

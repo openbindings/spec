@@ -30,7 +30,15 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
-- `conformance/` — the **core** conformance test corpus only: `document/`, `tool/`, fixture meta-schema, manifest, and runner. Snapshotted because the corpus is keyed to the OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-stability promise ([§10.6](openbindings.md#106-retired-rule-identifiers)) binds rule IDs to specific spec text, so the corpus and spec must be reachable together at the snapshot version. (The 0.1.0 snapshot predates this corpus layout; its `conformance/` holds that era's three flat fixture files, and stays as released.)
+- `conformance/` — the **core** conformance test corpus only: `document/`,
+  `tool/`, `scenarios/`, both core fixture/scenario meta-schemas, the manifest,
+  README, and core runner. Snapshotted because the corpus is keyed to the
+  OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-
+  stability promise ([§10.6](openbindings.md#106-retired-rule-identifiers))
+  binds rule IDs to specific spec text, so the corpus and spec must be
+  reachable together at the snapshot version. (The 0.1.0 snapshot predates
+  this corpus layout; its `conformance/` holds that era's three flat fixture
+  files, and stays as released.)
 
 **Not snapshotted:**
 
@@ -58,8 +66,10 @@ A release snapshot captures the normative core spec at the time of release:
        - `conformance/README.md`
        - `conformance/manifest.json`
        - `conformance/fixture.schema.json`
+       - `conformance/tool-scenario.schema.json`
        - `conformance/document/`
        - `conformance/tool/`
+       - `conformance/scenarios/`
        - `conformance/runners/`
    - Update `versions/README.md` to include the new version.
    - (Optional) Use the helper script: `scripts/release.sh <next>`

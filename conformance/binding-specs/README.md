@@ -1,17 +1,17 @@
 # Binding-specification conformance subcorpus
 
-Fixtures for the source rules (D-rules) of the six published binding
-specifications, keyed to each family's companion specification under
+Source fixtures (D-rules) and portable processor scenarios (P-rules) for the
+six published binding specifications, keyed to each family's companion specification under
 [`binding-specs/`](../../binding-specs/):
 
-| Family | Identifier | Specification | Rules |
-|---|---|---|---|
-| usage | `openbindings.usage@1` | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md) | USAGE-D-01..03 |
-| openapi | `openbindings.openapi@1` | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md) | OAPI-D-01..03 |
-| mcp | `openbindings.mcp@1` | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md) | MCP-D-01..03 |
-| grpc | `openbindings.grpc@1` | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md) | GRPC-D-01..03 |
-| connect | `openbindings.connect@1` | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md) | CONN-D-01..03 |
-| asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 |
+| Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
+| -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
+| usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
+| openapi  | `openbindings.openapi@1`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
+| mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..08      |
+| grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
+| connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
+| asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
 
 This is a per-family subcorpus, governed by the family binding
 specifications, not by the core OBI-D / OBI-T rules. It lives alongside the
@@ -19,10 +19,11 @@ core corpus but is verified separately: the core tooling
 (`verify-corpus.mjs`, `generate-conformance-manifest.mjs`) scans only
 `document/` and `tool/`, so it neither picks up nor is broken by this
 directory. The dedicated verifier is `scripts/verify-binding-specs.mjs`
-(run in CI). The six families share one fixture shape — unlike the
-operation-graph subcorpus, which has its own runners and two fixture kinds —
-so they share one [`fixture.schema.json`](fixture.schema.json) and six
-sibling directories under this subtree.
+(run in CI). The six families share one source-fixture shape in
+[`fixture.schema.json`](fixture.schema.json) and one portable behavior shape
+in [`processor-scenario.schema.json`](processor-scenario.schema.json). Source
+fixtures live in six family directories; processor scenarios live in the
+parallel [`processor/`](processor/) directory.
 
 As with the core corpus, fixtures are reference material, not part of any
 specification: each family spec's prose is the sole source of conformance,
@@ -70,14 +71,47 @@ Two boundaries keep the verdicts honest:
   validator.
 
 D-rules bind documents; each family's P-rules bind processors (wire
-behavior, configuration points, classification) and are out of this
-subcorpus's scope — their parity mechanism at this milestone is the
-mirrored cross-SDK behavioral conformance suites, per the core corpus
-README. Where a family attributes a constraint to a P-rule (the YAML
+behavior, configuration points, classification). The rule-keyed D fixture
+format remains document-only. A separate portable processor-scenario format
+under `processor/` covers all six published artifact/protocol families. Where a
+family attributes a constraint to a P-rule (the YAML
 grammar pin and `openapi`/`asyncapi` line discrimination under
 OAPI-P-01/ASYNC-P-01, gRPC's bound-closure schema range under GRPC-P-03),
-this subcorpus deliberately does not fixture it, even when the constraint
+the D fixtures deliberately do not duplicate it, even when the constraint
 reads document-shaped; the fixture files note each such exclusion.
+
+The portable P-rule corpus follows the catalog's deference order. Its
+expected outcome is one of: a required behavior inherited or defined by
+the specification; a permitted set preserved from the upstream authority; a
+behavior selected by declared consumer configuration; or a required loud
+refusal. It MUST NOT turn an artifact-permitted alternative into one
+OpenBindings-preferred byte sequence merely to make SDK traces identical.
+
+## Portable processor scenarios
+
+[`processor-scenario.schema.json`](processor-scenario.schema.json) defines a
+family-neutral harness exchange. Each scenario carries native source material,
+one binding, semantic configuration-point values, caller input, and an optional
+scripted peer/process outcome. A family adapter translates those semantic
+inputs into an implementation's configuration API and normalizes the observed
+dispatch, outputs, and terminal disposition. The scenario passes when the
+normalized observation satisfies every assertion in any one `expected`
+alternative.
+
+Several alternatives are a feature: they preserve an artifact-permitted set
+without giving array order preference semantics. `OAPI-PS-04` permits either
+declared JSON request media, and `USAGE-PS-07` permits either artifact-allowed
+optional-delimiter spelling. Configuration objects name specification points
+(`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
+not prescribe an SDK's concrete configuration type.
+
+The current corpus contains 97 scenarios covering every P-rule of usage,
+OpenAPI, AsyncAPI, MCP, gRPC, and Connect (47 distinct rules). It includes
+artifact-permitted alternatives, required configuration, pre-dispatch refusal,
+late streaming failure, lossless result preservation, and reserved-protocol
+collision cases. It is portable semantic reference material now; an adapter
+for each independent SDK remains required before it becomes
+cross-implementation execution evidence.
 
 ## Fixture file format
 
@@ -108,26 +142,26 @@ All 18 rules are fixtured with at least one positive and one negative case;
 no rule needed a deferral row — every family D-rule has an offline-decidable
 core, and resolution clauses are fixtured via embedded content.
 
-| Rule | Tests (+/−) | Notes |
-|---|---|---|
-| USAGE-D-01 | 1/3 | content string; number/object/null negatives |
-| USAGE-D-02 | 4/5 | document + exec address forms; relative-in-form, empty-token, and empty-command negatives |
-| USAGE-D-03 | 4/4 | command-path grammar, alias segment, omitted-ref root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL) |
-| OAPI-D-01 | 2/3 | object + string representations; number/array/null negatives |
-| OAPI-D-02 | 2/3 | absolute-URI address; relative-in-form negatives |
-| OAPI-D-03 | 3/10 | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, percent-encoded-spelling, webhooks, and dangling-target negatives |
-| MCP-D-01 | 2/7 | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives |
-| MCP-D-02 | 2/4 | required absolute http/https address; content-only-source negative |
-| MCP-D-03 | 5/8 | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings) |
-| GRPC-D-01 | 4/5 | proto-string + FDS carriages, shared-type (DAG-reuse) source; import-prefix, unknown-member, extension-member, and type negatives |
-| GRPC-D-02 | 6/9 | all three port-explicit address forms and host shapes; component, portless, undefined-scheme, and content-only negatives |
-| GRPC-D-03 | 3/7 | packaged + packageless service refs; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas) |
-| CONN-D-01 | 4/3 | incorporated carriages + descriptorless-mode positive + shared-type (DAG-reuse) source; import, type, unknown-member negatives |
-| CONN-D-02 | 3/8 | base-URL grammar incl. path prefix; trailing-slash, component, scheme, and content-only negatives |
-| CONN-D-03 | 2/4 | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives |
-| ASYNC-D-01 | 2/3 | object + string representations; number/array/null negatives |
-| ASYNC-D-02 | 2/3 | absolute-URI address; relative-in-form negatives |
-| ASYNC-D-03 | 5/7 | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
+| Rule       | Tests (+/−) | Notes                                                                                                                                                                                |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| USAGE-D-01 | 1/3         | content string; number/object/null negatives                                                                                                                                         |
+| USAGE-D-02 | 4/5         | document + exec address forms; relative-in-form, empty-token, and empty-command negatives                                                                                            |
+| USAGE-D-03 | 4/4         | command-path grammar, alias segment, omitted-ref root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL)                                                 |
+| OAPI-D-01  | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
+| OAPI-D-02  | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
+| OAPI-D-03  | 3/10        | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, percent-encoded-spelling, webhooks, and dangling-target negatives                        |
+| MCP-D-01   | 2/7         | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives                                                                                                   |
+| MCP-D-02   | 2/4         | required absolute http/https address; content-only-source negative                                                                                                                   |
+| MCP-D-03   | 5/8         | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings)                              |
+| GRPC-D-01  | 4/5         | proto-string + FDS carriages, shared-type (DAG-reuse) source; import-prefix, unknown-member, extension-member, and type negatives                                                    |
+| GRPC-D-02  | 6/9         | all three port-explicit address forms and host shapes; component, portless, undefined-scheme, and content-only negatives                                                             |
+| GRPC-D-03  | 3/7         | packaged + packageless service refs; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas)                                                             |
+| CONN-D-01  | 4/3         | incorporated carriages + descriptorless-mode positive + shared-type (DAG-reuse) source; import, type, unknown-member negatives                                                       |
+| CONN-D-02  | 3/8         | base-URL grammar incl. path prefix; trailing-slash, component, scheme, and content-only negatives                                                                                    |
+| CONN-D-03  | 2/4         | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives                                                                                      |
+| ASYNC-D-01 | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
+| ASYNC-D-02 | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
+| ASYNC-D-03 | 5/7         | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
 
 ## Layout
 
@@ -135,6 +169,9 @@ core, and resolution clauses are fixtured via embedded content.
 binding-specs/
   README.md            (this file)
   fixture.schema.json  (shared fixture shape for all six families)
+  processor-scenario.schema.json (portable P-rule scenario shape)
+  processor/            usage.json, openapi.json, asyncapi.json,
+                        mcp.json, grpc.json, connect.json
   usage/               USAGE-D-01.json ... USAGE-D-03.json
   openapi/             OAPI-D-01.json  ... OAPI-D-03.json
   mcp/                 MCP-D-01.json   ... MCP-D-03.json
@@ -150,15 +187,18 @@ to a processor claiming support for the fixture's `bindingSpec`, and
 compares the processor's accept/refuse behavior for the family-scoped
 material against `valid`, under the verdict semantics above.
 
-`node scripts/verify-binding-specs.mjs` (run in CI) keeps the corpus
-internally consistent: every fixture file validates against this subtree's
+`node scripts/verify-binding-specs.mjs` (run in CI) keeps both corpus forms
+internally consistent: every D-rule fixture file validates against this subtree's
 `fixture.schema.json`; each file's `rule` matches its filename, family
 directory, and `bindingSpec`; the cited `section` exists in the family
 spec; every family D-rule extracted from the six specifications is either
 fixtured here or listed as deferred in this README; every negative test
 carries `violates`, and every `violates` entry names a rule the family spec
-or the core spec actually defines. It does not judge verdicts — that is the
-job of family processors consuming the corpus.
+or the core spec actually defines. Processor scenario files validate against
+their own schema; family, identifier, section, scenario ids, and every
+referenced P-rule are cross-checked, and the verifier requires complete P-rule
+coverage for all six families. It does not judge D verdicts or
+execute P scenarios — those are the jobs of family processors and adapters.
 
 ## Adding fixtures
 

@@ -11,9 +11,7 @@
       "operations": {
         "items.list": {
           "closesAfter": 1,
-          "responses": [
-            { "fail": "backend_unavailable" }
-          ]
+          "responses": [{ "fail": "backend_unavailable" }]
         }
       },
       "graph": {
@@ -37,9 +35,9 @@
           { "from": "fallback", "to": "out" }
         ]
       },
-      "writes": [ { "filter": "active" } ],
+      "writes": [{ "filter": "active" }],
       "expected": {
-        "output": [ { "items": [], "degraded": "backend_unavailable" } ],
+        "output": [{ "items": [], "degraded": "backend_unavailable" }],
         "ordering": "exact"
       }
     },
@@ -52,7 +50,10 @@
         "users.get": {
           "closesAfter": 1,
           "responses": [
-            { "whenInput": { "id": "u1" }, "emit": [ { "id": "u1", "name": "Alice" } ] }
+            {
+              "whenInput": { "id": "u1" },
+              "emit": [{ "id": "u1", "name": "Alice" }]
+            }
           ]
         }
       },
@@ -79,7 +80,7 @@
           { "from": "report", "to": "out" }
         ]
       },
-      "writes": [ { "id": "u1" }, { "id": "u2" } ],
+      "writes": [{ "id": "u1" }, { "id": "u2" }],
       "expected": {
         "output": [
           { "id": "u1", "name": "Alice" },
@@ -97,7 +98,10 @@
         "users.get": {
           "closesAfter": 1,
           "responses": [
-            { "whenInput": { "id": "u1" }, "emit": [ { "id": "u1", "name": "Alice" } ] }
+            {
+              "whenInput": { "id": "u1" },
+              "emit": [{ "id": "u1", "name": "Alice" }]
+            }
           ]
         }
       },
@@ -122,10 +126,11 @@
           { "from": "report", "to": "out" }
         ]
       },
-      "writes": [ { "id": "u1" }, { "id": "u2" } ],
+      "writes": [{ "id": "u1" }, { "id": "u2" }],
       "expected": {
-        "output": [ { "id": "u1", "name": "Alice" } ],
-        "ordering": "exact"
+        "output": [{ "id": "u1", "name": "Alice" }],
+        "ordering": "exact",
+        "refusedWrites": 1
       }
     }
   ]

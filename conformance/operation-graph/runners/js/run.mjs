@@ -10,7 +10,8 @@
 //
 // Semantics implemented (the transparency rewrite):
 //   - `operation` is the conduit: one held invocation per graph invocation.
-//     Arriving events are written into it in order; a mock with `closesAfter`
+//     It opens with the graph and its output is consumed immediately. Arriving
+//     events are written into it in order; a mock with `closesAfter`
 //     closes its input from below after that many writes (the node becomes
 //     non-accepting and later events are write-rejection error events); a mock
 //     without it consumes the stream and responds at input completion. An
@@ -124,7 +125,7 @@ const mergedRoot = (ids) => {
   return set.size === 1 ? [...set][0] : NO_ROOT;
 };
 
-async function runGraph(graph, mockOps, writes, sched) {
+async function runGraph(graph, mockOps, writes, sched, awaitOutputsBeforeWrites) {
   const nodes = graph.nodes;
   const edges = graph.edges;
 
@@ -186,18 +187,34 @@ async function runGraph(graph, mockOps, writes, sched) {
         queue.push({ to, from: fromKey, event: ev });
   };
 
-  // Per-event failure: route { error, event } per onError, or drop.
+  // Per-event failure: route { error, event } per onError, or terminate with
+  // that complete error event as the graph's terminal detail.
   const routePerEventError = (node, message, event) => {
-    if (node.onError)
+    const errorEvent = { error: message, event: event.value };
+    if (node.onError) {
       queue.push({
         to: node.onError,
         from: null,
         event: {
-          value: { error: message, event: event.value },
+          value: errorEvent,
           counts: event.counts,
           rootId: event.rootId,
         },
       });
+      return;
+    }
+    queue.push({ terminal: { error: true, errorDetail: errorEvent } });
+  };
+
+  // Evaluation throws have one portable graph-visible identifier. Engine- or
+  // expression-specific prose is diagnostic-only and must not change events.
+  const evaluateForNode = async (node, event) => {
+    try {
+      return { ok: true, value: await evalExpr(node.transform, event) };
+    } catch {
+      routePerEventError(node, "EXPRESSION_EVALUATION_FAILED", event);
+      return { ok: false };
+    }
   };
 
   // Conduit terminal error: opt-in handling via onError ({ error }, no event
@@ -250,6 +267,32 @@ async function runGraph(graph, mockOps, writes, sched) {
     return emitted.length > 0 || outEdges[nodeKey].length === 0;
   };
 
+  // Open a held invocation. Every operation conduit is opened at graph start,
+  // before caller writes are admitted, and output available on open is queued
+  // immediately. Startup output has no caller-write lineage, so $input is
+  // undefined downstream until an event with a root contributes.
+  const openConduit = (nodeKey) => {
+    const c = conduits[nodeKey];
+    const node = nodes[nodeKey];
+    const mock = mockOps?.[node.operation];
+    if (!mock)
+      throw new Error(`fixture has no mock for operation '${node.operation}'`);
+    const opened = mock.onOpen;
+    const emitted = opened?.emit ?? [];
+    if (emitted.length)
+      enqueueFrom(
+        nodeKey,
+        emitted.map((value) => ({ value, counts: {}, rootId: NO_ROOT }))
+      );
+    if (opened && "fail" in opened) {
+      c.done = true;
+      c.accepting = false;
+      conduitTerminalError(nodeKey, node, opened.fail, {}, NO_ROOT);
+      return;
+    }
+    if (mock.closesAfter === 0) completeConduit(nodeKey);
+  };
+
   const flushBuffer = (key) => {
     const b = buffers[key];
     if (!b || b.acc.length === 0) return false;
@@ -284,6 +327,25 @@ async function runGraph(graph, mockOps, writes, sched) {
     const mock = mockOps?.[t.node.operation];
     if (!mock)
       throw new Error(`fixture has no mock for operation '${t.node.operation}'`);
+    const opened = mock.onOpen;
+    const openedEmitted = opened?.emit ?? [];
+    if (openedEmitted.length)
+      enqueueFrom(
+        t.nodeKey,
+        openedEmitted.map((v) => ({
+          value: v,
+          counts: { ...t.counts },
+          rootId: t.rootId,
+        }))
+      );
+    if (opened && "fail" in opened) {
+      routePerEventError(t.node, opened.fail, {
+        value: t.value,
+        counts: t.counts,
+        rootId: t.rootId,
+      });
+      return;
+    }
     const resp = matchResponse(mock, t.node.operation, [t.value]);
     // Emit-then-fail is symmetric to the conduit: emit the invocation's
     // outputs first, then route the per-event failure.
@@ -353,7 +415,9 @@ async function runGraph(graph, mockOps, writes, sched) {
         if ("schema" in node) {
           pass = schemaPass(node.schema, event.value);
         } else {
-          const r = await evalExpr(node.transform, event);
+          const evaluated = await evaluateForNode(node, event);
+          if (!evaluated.ok) return;
+          const r = evaluated.value;
           if (r === undefined) {
             routePerEventError(node, "TRANSFORM_UNDEFINED", event);
             return;
@@ -364,7 +428,9 @@ async function runGraph(graph, mockOps, writes, sched) {
         return;
       }
       case "transform": {
-        const r = await evalExpr(node.transform, event);
+        const evaluated = await evaluateForNode(node, event);
+        if (!evaluated.ok) return;
+        const r = evaluated.value;
         if (r === undefined) {
           routePerEventError(node, "TRANSFORM_UNDEFINED", event);
           return;
@@ -375,7 +441,9 @@ async function runGraph(graph, mockOps, writes, sched) {
         return;
       }
       case "map": {
-        const r = await evalExpr(node.transform, event);
+        const evaluated = await evaluateForNode(node, event);
+        if (!evaluated.ok) return;
+        const r = evaluated.value;
         if (!Array.isArray(r)) {
           routePerEventError(node, "MAP_NOT_ARRAY", event);
           return;
@@ -548,6 +616,21 @@ async function runGraph(graph, mockOps, writes, sched) {
 
   // --- run -------------------------------------------------------------
 
+  // Initiate every held invocation and begin consuming startup output before
+  // accepting or awaiting the first caller write. This is the causal part of
+  // the identity law: a direct operation's output-before-input cannot become
+  // input-dependent merely because it is wrapped by a graph.
+  for (const key of Object.keys(conduits)) openConduit(key);
+  await drain();
+  if (
+    !terminated &&
+    awaitOutputsBeforeWrites != null &&
+    output.length < awaitOutputsBeforeWrites
+  )
+    throw new Error(
+      `startup deadlock: caller awaited ${awaitOutputsBeforeWrites} output(s) before writing, graph produced ${output.length}`
+    );
+
   // Caller writes are admitted sequentially; each roots a lineage.
   for (let i = 0; i < writes.length; i++) {
     if (terminated) break;
@@ -616,6 +699,11 @@ function compare(actual, expected) {
   } else if (actual.error) {
     return `graph terminated with an error (${canonical(actual.errorDetail)}), but the fixture expected output`;
   }
+  if (
+    expected.refusedWrites != null &&
+    actual.refusedWrites !== expected.refusedWrites
+  )
+    return `refused-write mismatch\n      got:    ${actual.refusedWrites}\n      expect: ${expected.refusedWrites}`;
   // `ordering` governs the order of output *events*. `arrayOrdering: "set"`
   // additionally treats an array-valued output event as a multiset, for a
   // collector (e.g. a buffer) fed by concurrent `each` invocations or fan-in
@@ -673,7 +761,13 @@ for (const file of files) {
     if (!adversarial) {
       let actual;
       try {
-        actual = await runGraph(fx.graph, fx.operations, fx.writes);
+        actual = await runGraph(
+          fx.graph,
+          fx.operations,
+          fx.writes,
+          undefined,
+          fx.awaitOutputsBeforeWrites
+        );
       } catch (e) {
         console.log(`FAIL ${fx.id} (${basename(file)}): threw: ${e.message}`);
         fail++;
@@ -694,9 +788,13 @@ for (const file of files) {
     for (let k = 0; k < TRIALS && !bad; k++) {
       const seed = (SEED0 + Math.imul(k, 0x9e3779b1)) >>> 0;
       try {
-        const actual = await runGraph(fx.graph, fx.operations, fx.writes, {
-          rng: mulberry32(seed),
-        });
+        const actual = await runGraph(
+          fx.graph,
+          fx.operations,
+          fx.writes,
+          { rng: mulberry32(seed) },
+          fx.awaitOutputsBeforeWrites
+        );
         const problem = compare(actual, fx.expected);
         if (problem) bad = { seed, msg: problem };
       } catch (e) {

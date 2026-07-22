@@ -1,14 +1,17 @@
 {
   "specVersion": "0.2.0",
-  "corpusVersion": "0.1.0",
+  "corpusVersion": "0.2.0",
   "totals": {
-    "files": 20,
-    "tests": 157,
+    "files": 24,
+    "fixtureFiles": 20,
+    "scenarioFiles": 4,
+    "tests": 162,
+    "scenarios": 19,
     "positives": 77,
-    "negatives": 80,
-    "rulesCoveredDocument": 14,
-    "rulesCoveredTool": 4,
-    "rulesPartialDocument": 2,
+    "negatives": 85,
+    "rulesCoveredDocument": 15,
+    "rulesCoveredTool": 8,
+    "rulesPartialDocument": 1,
     "rulesPartialTool": 0
   },
   "files": [
@@ -16,10 +19,9 @@
       "path": "document/OBI-D-01.json",
       "rule": "OBI-D-01",
       "section": "10.2",
-      "tests": 2,
+      "tests": 7,
       "positives": 2,
-      "negatives": 0,
-      "coverage": "positive-only"
+      "negatives": 5
     },
     {
       "path": "document/OBI-D-02.json",
@@ -173,6 +175,32 @@
       "tests": 3,
       "positives": 3,
       "negatives": 0
+    }
+  ],
+  "scenarioFiles": [
+    {
+      "path": "scenarios/OBI-T-11.json",
+      "rule": "OBI-T-11",
+      "section": "10.3",
+      "scenarios": 2
+    },
+    {
+      "path": "scenarios/OBI-T-12.json",
+      "rule": "OBI-T-12",
+      "section": "10.3",
+      "scenarios": 5
+    },
+    {
+      "path": "scenarios/OBI-T-16.json",
+      "rule": "OBI-T-16",
+      "section": "10.3",
+      "scenarios": 7
+    },
+    {
+      "path": "scenarios/OBI-T-17.json",
+      "rule": "OBI-T-17",
+      "section": "10.3",
+      "scenarios": 5
     }
   ]
 }

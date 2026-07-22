@@ -1,0 +1,89 @@
+{
+  "format": "openbindings.core-tool-scenarios@1",
+  "rule": "OBI-T-17",
+  "section": "10.3",
+  "description": "Verification conclusions follow the document-rule evidence: violations are decisive, incomplete verification prevents a conformant conclusion, and reports identify both violated and unverified rules.",
+  "scenarios": [
+    {
+      "id": "T17-S-01",
+      "description": "Satisfied applicable rules and inapplicable rules permit a conformant conclusion",
+      "action": "conclude-verification",
+      "given": {
+        "evidence": {
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-13": "not-applicable"
+        }
+      },
+      "expected": { "conclusion": "conformant", "violated": [], "unverified": [] }
+    },
+    {
+      "id": "T17-S-02",
+      "description": "An unverified applicable rule prevents a conformant conclusion",
+      "action": "conclude-verification",
+      "given": {
+        "evidence": {
+          "OBI-D-02": "satisfied",
+          "OBI-D-11": "unverified"
+        }
+      },
+      "expected": {
+        "conclusion": "conformance-undetermined",
+        "violated": [],
+        "unverified": ["OBI-D-11"]
+      }
+    },
+    {
+      "id": "T17-S-03",
+      "description": "A violation is decisive while incomplete checks remain visible",
+      "action": "conclude-verification",
+      "given": {
+        "evidence": {
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "violated",
+          "OBI-D-17": "unverified"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant",
+        "violated": ["OBI-D-03"],
+        "unverified": ["OBI-D-17"]
+      }
+    },
+    {
+      "id": "T17-S-04",
+      "description": "A non-conformant report identifies every observed violation and every incomplete check",
+      "action": "conclude-verification",
+      "given": {
+        "evidence": {
+          "OBI-D-18": "unverified",
+          "OBI-D-09": "violated",
+          "OBI-D-02": "violated",
+          "OBI-D-13": "not-applicable",
+          "OBI-D-11": "unverified"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant",
+        "violated": ["OBI-D-02", "OBI-D-09"],
+        "unverified": ["OBI-D-11", "OBI-D-18"]
+      }
+    },
+    {
+      "id": "T17-S-05",
+      "description": "A violated rule determines non-conformance even when all other considered rules are inapplicable",
+      "action": "conclude-verification",
+      "given": {
+        "evidence": {
+          "OBI-D-13": "not-applicable",
+          "OBI-D-16": "violated"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant",
+        "violated": ["OBI-D-16"],
+        "unverified": []
+      }
+    }
+  ]
+}

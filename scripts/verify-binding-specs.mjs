@@ -44,6 +44,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SPEC_ROOT = resolve(__dirname, "..");
 const CORPUS = join(SPEC_ROOT, "conformance", "binding-specs");
 const FIXTURE_SCHEMA = join(CORPUS, "fixture.schema.json");
+const PROCESSOR_DIR = join(CORPUS, "processor");
+const PROCESSOR_SCHEMA = join(CORPUS, "processor-scenario.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 
@@ -121,6 +123,14 @@ function extractAllRuleIds(md, prefix) {
   let m;
   while ((m = re.exec(md)) !== null) ids.add(m[1]);
   return ids;
+}
+
+function extractFamilyPRules(md, prefix) {
+  const rules = new Set();
+  const re = new RegExp(`^\\s*-\\s*\\*\\*(${prefix}-P-\\d+)\\*\\*[^:]*:`, "gm");
+  let m;
+  while ((m = re.exec(md)) !== null) rules.add(m[1]);
+  return rules;
 }
 
 function extractCoreRules(md) {
@@ -282,6 +292,68 @@ for (const ruleId of deferred) {
   }
 }
 
+// Portable P-rule scenario files for all six published families. These files preserve permitted
+// alternatives explicitly; the verifier checks shape, identity, citations,
+// and rule coverage, while family adapters execute them against SDKs.
+const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect"];
+const processorRuleCoverage = new Map();
+const processorScenarioIds = new Set();
+let processorFiles = 0;
+let processorScenarios = 0;
+
+for (const dir of processorTargets) {
+  const fam = FAMILIES[dir];
+  const path = join(PROCESSOR_DIR, `${dir}.json`);
+  if (!existsSync(path)) {
+    errors.push(`processor/${dir}.json: missing portable P-rule scenario file`);
+    continue;
+  }
+  let fixture;
+  try {
+    fixture = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    errors.push(`processor/${dir}.json: failed to parse JSON: ${e.message}`);
+    continue;
+  }
+  processorFiles++;
+  const shape = ajvOk(PROCESSOR_SCHEMA, fixture);
+  if (!shape.ok) {
+    errors.push(`processor/${dir}.json: does not match processor-scenario.schema.json\n${shape.out}`);
+    continue;
+  }
+  if (fixture.family !== dir)
+    errors.push(`processor/${dir}.json: family '${fixture.family}' does not match filename`);
+  if (fixture.bindingSpec !== fam.bindingSpec)
+    errors.push(`processor/${dir}.json: bindingSpec '${fixture.bindingSpec}' is not '${fam.bindingSpec}'`);
+
+  for (const [i, scenario] of fixture.scenarios.entries()) {
+    processorScenarios++;
+    if (processorScenarioIds.has(scenario.id))
+      errors.push(`processor/${dir}.json.scenarios[${i}]: duplicate id '${scenario.id}'`);
+    processorScenarioIds.add(scenario.id);
+    if (!scenario.id.startsWith(`${fam.prefix}-PS-`))
+      errors.push(`processor/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
+    if (!sectionExists(specTexts[dir], scenario.section))
+      errors.push(`processor/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
+    for (const rule of scenario.rules) {
+      if (!rule.startsWith(`${fam.prefix}-P-`) || !allRuleIds.has(rule))
+        errors.push(`processor/${dir}.json.scenarios[${i}]: rule '${rule}' is not a defined ${dir} P-rule`);
+      if (!processorRuleCoverage.has(rule)) processorRuleCoverage.set(rule, []);
+      processorRuleCoverage.get(rule).push(scenario.id);
+    }
+  }
+}
+
+let processorPRules = 0;
+for (const dir of processorTargets) {
+  const fam = FAMILIES[dir];
+  for (const rule of extractFamilyPRules(specTexts[dir], fam.prefix)) {
+    processorPRules++;
+    if (!processorRuleCoverage.has(rule))
+      errors.push(`Processor rule ${rule} (${dir}) has no portable processor scenario`);
+  }
+}
+
 rmSync(tmp, { recursive: true, force: true });
 
 console.log(`Family D-rules defined across six specs: ${definedDRules.size}`);
@@ -290,6 +362,9 @@ console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);
 console.log(
   `Tests: ${tests} (${positives} positive, ${negatives} negative)`
+);
+console.log(
+  `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules} targeted P-rules`
 );
 
 if (errors.length) {

@@ -1,0 +1,200 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Eager operation-conduit startup and output/input independence required by the identity law.",
+  "fixtures": [
+    {
+      "id": "OG-EX-39",
+      "name": "Conduit surfaces output before first input",
+      "section": "Transparency (the identity law) / causal availability",
+      "description": "The held invocation emits a greeting when opened, before the caller writes. The graph surfaces it immediately, then pipes the later input and response in order.",
+      "operations": {
+        "chat.open": {
+          "onOpen": { "emit": [{ "kind": "ready" }] },
+          "closesAfter": 1,
+          "responses": [
+            { "whenInput": { "say": "hello" }, "emit": [{ "reply": "hello" }] }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "chat": { "type": "operation", "operation": "chat.open" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "chat" },
+          { "from": "chat", "to": "out" }
+        ]
+      },
+      "writes": [{ "say": "hello" }],
+      "expected": {
+        "output": [{ "kind": "ready" }, { "reply": "hello" }],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-40",
+      "name": "Caller may await server output before writing",
+      "section": "Invocation start",
+      "description": "A caller waits for one output before making its first write. Eager startup produces it; an implementation that waits for input before opening the conduit deadlocks and fails this scenario.",
+      "operations": {
+        "session.begin": {
+          "onOpen": { "emit": ["challenge"] },
+          "closesAfter": 1,
+          "responses": [{ "whenInput": "response", "emit": ["accepted"] }]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "session": { "type": "operation", "operation": "session.begin" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "session" },
+          { "from": "session", "to": "out" }
+        ]
+      },
+      "awaitOutputsBeforeWrites": 1,
+      "writes": ["response"],
+      "expected": {
+        "output": ["challenge", "accepted"],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-41",
+      "name": "Bidirectional session interleaves startup and completion output",
+      "section": "operation / conduit fidelity",
+      "description": "The stream-consuming invocation emits readiness on open, accepts two writes, and emits its remaining stream after caller input completion. Startup output and later output remain in invocation emission order.",
+      "operations": {
+        "chat.exchange": {
+          "onOpen": { "emit": [{ "state": "ready" }] },
+          "responses": [
+            {
+              "whenInputs": [{ "say": "one" }, { "say": "two" }],
+              "emit": [{ "heard": "one" }, { "heard": "two" }]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "chat": { "type": "operation", "operation": "chat.exchange" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "chat" },
+          { "from": "chat", "to": "out" }
+        ]
+      },
+      "awaitOutputsBeforeWrites": 1,
+      "writes": [{ "say": "one" }, { "say": "two" }],
+      "expected": {
+        "output": [
+          { "state": "ready" },
+          { "heard": "one" },
+          { "heard": "two" }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-42",
+      "name": "Input may close from below during startup",
+      "section": "Invocation start / Input-side closure",
+      "description": "The selected no-input binding closes its input as soon as it opens. The direct conduit back-closes the graph boundary before either caller write; both writes are refused and the no-input output still surfaces.",
+      "operations": {
+        "clock.now": {
+          "closesAfter": 0,
+          "responses": [{ "whenInputs": [], "emit": [{ "now": "instant" }] }]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "clock": { "type": "operation", "operation": "clock.now" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "clock" },
+          { "from": "clock", "to": "out" }
+        ]
+      },
+      "awaitOutputsBeforeWrites": 1,
+      "writes": ["late-one", "late-two"],
+      "expected": {
+        "output": [{ "now": "instant" }],
+        "ordering": "exact",
+        "refusedWrites": 2
+      }
+    },
+    {
+      "id": "OG-EX-43",
+      "name": "Startup output precedes immediate terminal failure",
+      "section": "operation / Failure",
+      "description": "The invocation emits once and then fails while opening. The graph delivers the pre-failure output before terminating with the unwrapped inner error, exactly as direct invocation would.",
+      "operations": {
+        "feed.open": {
+          "onOpen": { "emit": ["opening"], "fail": "OPEN_FAILED" },
+          "responses": [{ "emit": [] }]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "feed": { "type": "operation", "operation": "feed.open" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "feed" },
+          { "from": "feed", "to": "out" }
+        ]
+      },
+      "writes": [],
+      "expected": {
+        "output": ["opening"],
+        "ordering": "exact",
+        "error": true,
+        "errorDetail": "OPEN_FAILED"
+      }
+    },
+    {
+      "id": "OG-EX-44",
+      "name": "No-input invocation may emit before caller close",
+      "section": "Transparency (the identity law) / no-input",
+      "description": "The held invocation emits on open, then emits again when the caller closes an empty input stream. No value is synthesized and neither output is delayed until a first write that never occurs.",
+      "operations": {
+        "watch.once": {
+          "onOpen": { "emit": ["started"] },
+          "responses": [{ "whenInputs": [], "emit": ["complete"] }]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "watch": { "type": "operation", "operation": "watch.once" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "watch" },
+          { "from": "watch", "to": "out" }
+        ]
+      },
+      "writes": [],
+      "expected": {
+        "output": ["started", "complete"],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

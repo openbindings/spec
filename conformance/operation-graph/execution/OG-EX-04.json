@@ -1,11 +1,11 @@
 {
   "format": "openbindings.operation-graph@1",
   "kind": "execution",
-  "description": "Fire-and-forget side effect: process an event and also trigger a notification, but only the process result is operation-graph output. Mirrors the format spec's Dead ends pattern (Edge definition); fire-and-forget is no longer a numbered example.",
+  "description": "Side-effect-only dead end: process an event and also trigger a notification, but only the process result is operation-graph output. The graph still waits for the dead-end invocation; the pattern is not fire-and-forget.",
   "fixtures": [
     {
       "id": "OG-EX-04",
-      "name": "Fire-and-forget side effect",
+      "name": "Side-effect-only dead end",
       "section": "Edge definition / Dead ends",
       "description": "in fans out to items.process and notifications.send. Only process has a path to out, so only its result is output. notify is a dead end: it still executes (the runner should observe notifications.send was invoked), but its result is discarded and is not in the expected output.",
       "operations": {

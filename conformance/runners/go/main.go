@@ -17,6 +17,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -39,6 +40,8 @@ type Fixture struct {
 type Test struct {
 	Description          string          `json:"description"`
 	Document             json.RawMessage `json:"document"`
+	DocumentText         *string         `json:"documentText,omitempty"`
+	DocumentBase64       string          `json:"documentBase64,omitempty"`
 	Valid                bool            `json:"valid"`
 	Violates             []string        `json:"violates,omitempty"`
 	RequiresMaxTested    string          `json:"requiresMaxTested,omitempty"`
@@ -100,8 +103,16 @@ func main() {
 	if ruleFilter != "" {
 		files = filterByRule(files, ruleFilter)
 	}
+	scenarioFiles, err := listScenarioFiles(corpusDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "list tool scenarios: %v\n", err)
+		os.Exit(2)
+	}
+	if ruleFilter != "" {
+		scenarioFiles = filterByRule(scenarioFiles, ruleFilter)
+	}
 
-	results := runAll(files)
+	results := append(runAll(files), runAllToolScenarios(scenarioFiles)...)
 	summary := summarize(results)
 
 	if jsonOutput {
@@ -117,6 +128,25 @@ func main() {
 	if summary.Failed > 0 {
 		os.Exit(1)
 	}
+}
+
+func listScenarioFiles(root string) ([]string, error) {
+	dir := filepath.Join(root, "scenarios")
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("read %s: %w", dir, err)
+	}
+	var out []string
+	for _, e := range entries {
+		if filepath.Ext(e.Name()) == ".json" {
+			out = append(out, filepath.Join(dir, e.Name()))
+		}
+	}
+	sort.Strings(out)
+	return out, nil
 }
 
 func findDefaultCorpus() string {
@@ -248,11 +278,12 @@ func runOne(rule string, t Test) Result {
 			}
 		}
 	}
-	var iface openbindings.Interface
-	parseErr := json.Unmarshal(t.Document, &iface)
-	var validateErr error
-	if parseErr == nil {
-		validateErr = iface.Validate()
+	documentBytes, inputErr := testDocumentBytes(t)
+	var parseErr, validateErr error
+	if inputErr == nil {
+		_, validateErr = openbindings.ValidateDocument(documentBytes)
+	} else {
+		parseErr = inputErr
 	}
 	actualValid := parseErr == nil && validateErr == nil
 	r := Result{
@@ -272,6 +303,23 @@ func runOne(rule string, t Test) Result {
 		}
 	}
 	return r
+}
+
+func testDocumentBytes(t Test) ([]byte, error) {
+	switch {
+	case t.Document != nil:
+		return []byte(t.Document), nil
+	case t.DocumentText != nil:
+		return []byte(*t.DocumentText), nil
+	case t.DocumentBase64 != "":
+		data, err := base64.StdEncoding.DecodeString(t.DocumentBase64)
+		if err != nil {
+			return nil, fmt.Errorf("decode documentBase64: %w", err)
+		}
+		return data, nil
+	default:
+		return nil, fmt.Errorf("fixture supplies no document carriage")
+	}
 }
 
 func summarize(results []Result) Summary {

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/operation-graph-execution-fixture-0.2.0.json",
   "title": "openbindings.operation-graph execution fixture file",
-  "description": "Describes one or more execution fixtures for the openbindings.operation-graph format. Each fixture pairs a graph, a set of mocked operation behaviors, and the stream of caller writes with the expected output stream, so a runner can replay the graph deterministically and compare. Mocks are matched per invocation: an `operation` conduit opens one invocation receiving every arriving event as a write; an `each` node opens one single-write invocation per arriving event. This schema constrains fixture shape only; a runner validates each `graph` against the op-graph schema separately.",
+  "description": "Describes one or more execution fixtures for the openbindings.operation-graph format. Each fixture pairs a graph, a set of mocked operation behaviors, and the stream of caller writes with the expected output stream, so a runner can replay the graph deterministically and compare. Mocks are matched per invocation: an `operation` conduit opens when the graph opens and receives every arriving event as a write; an `each` node opens one single-write invocation per arriving event. This schema constrains fixture shape only; a runner validates each `graph` against the op-graph schema separately.",
   "type": "object",
   "required": ["format", "kind", "fixtures"],
   "properties": {
@@ -35,6 +35,16 @@
               "type": "object",
               "required": ["responses"],
               "properties": {
+                "onOpen": {
+                  "type": "object",
+                  "description": "Behavior that occurs as soon as an invocation opens, before any input write. `emit` models output-before-input; `fail` models an immediate terminal error. Emit precedes fail when both are present.",
+                  "properties": {
+                    "emit": { "type": "array" },
+                    "fail": { "type": "string" }
+                  },
+                  "anyOf": [{ "required": ["emit"] }, { "required": ["fail"] }],
+                  "additionalProperties": false
+                },
                 "closesAfter": {
                   "type": "integer",
                   "minimum": 0,
@@ -59,7 +69,7 @@
                       },
                       "fail": {
                         "type": "string",
-                        "description": "If present, the invocation terminates with this error. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure; at an `operation` conduit it is a terminal error — fatal to the graph unless the node sets onError."
+                        "description": "If present, the invocation terminates with this error. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure and at an `operation` conduit it is a terminal error; either is fatal to the graph unless the node sets onError."
                       }
                     },
                     "anyOf": [
@@ -81,6 +91,11 @@
           "writes": {
             "type": "array",
             "description": "The values the caller writes to the graph invocation, in order; each becomes one event at the input node and roots a lineage. An empty array is a no-input invocation. The caller closes the input side after the last write (unless back-closure closes it first)."
+          },
+          "awaitOutputsBeforeWrites": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Models a caller that waits to observe at least this many graph outputs before making its first write. The runner refuses to proceed if graph startup cannot produce them, exposing a startup/input causal deadlock."
           },
           "expected": {
             "type": "object",
@@ -107,6 +122,11 @@
               },
               "errorDetail": {
                 "description": "When error is true, the expected error detail: the event that reached the exit node, or for an unhandled conduit terminal error, the inner terminal error value itself (the value direct invocation would surface; not wrapped in the error-event shape)."
+              },
+              "refusedWrites": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "When present, the exact number of caller writes refused at the graph boundary after input back-closure."
               }
             },
             "additionalProperties": false

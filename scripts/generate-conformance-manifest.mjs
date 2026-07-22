@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Generates conformance/manifest.json by walking the fixture files in
-// conformance/document/ and conformance/tool/. Re-run after adding or
-// modifying fixtures.
+// Generates conformance/manifest.json by walking validity fixtures in
+// conformance/{document,tool}/ and portable action/outcome scenarios in
+// conformance/scenarios/. Re-run after adding or modifying either format.
 //
 // Usage: node scripts/generate-conformance-manifest.mjs
 
@@ -31,6 +31,21 @@ function listFixtures() {
     }
   }
   return out;
+}
+
+function listScenarioFiles() {
+  const dir = join(CONFORMANCE_ROOT, "scenarios");
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch (e) {
+    if (e.code === "ENOENT") return [];
+    throw e;
+  }
+  return entries
+    .filter((name) => name.endsWith(".json"))
+    .sort()
+    .map((name) => ({ relPath: `scenarios/${name}`, absPath: join(dir, name) }));
 }
 
 function loadFixture(absPath) {
@@ -66,6 +81,16 @@ const files = fixtures.map(({ relPath, absPath }) => {
   };
 });
 
+const scenarioFiles = listScenarioFiles().map(({ relPath, absPath }) => {
+  const file = loadFixture(absPath);
+  return {
+    path: relPath,
+    rule: file.rule,
+    section: file.section,
+    scenarios: file.scenarios?.length ?? 0,
+  };
+});
+
 const totals = files.reduce(
   (acc, f) => {
     acc.tests += f.tests;
@@ -82,16 +107,23 @@ const totals = files.reduce(
 // separately as `rulesPartial...`.
 const isComplete = (f) => !f.coverage;
 const documentRules = files.filter((f) => f.rule.startsWith("OBI-D-") && isComplete(f)).length;
-const toolRules = files.filter((f) => f.rule.startsWith("OBI-T-") && isComplete(f)).length;
+const toolRuleIDs = new Set([
+  ...files.filter((f) => f.rule.startsWith("OBI-T-") && isComplete(f)).map((f) => f.rule),
+  ...scenarioFiles.map((f) => f.rule),
+]);
+const toolRules = toolRuleIDs.size;
 const documentRulesPartial = files.filter((f) => f.rule.startsWith("OBI-D-") && !isComplete(f)).length;
 const toolRulesPartial = files.filter((f) => f.rule.startsWith("OBI-T-") && !isComplete(f)).length;
 
 const manifest = {
   specVersion: readSpecVersion(),
-  corpusVersion: "0.1.0",
+  corpusVersion: "0.2.0",
   totals: {
-    files: files.length,
+    files: files.length + scenarioFiles.length,
+    fixtureFiles: files.length,
+    scenarioFiles: scenarioFiles.length,
     tests: totals.tests,
+    scenarios: scenarioFiles.reduce((sum, file) => sum + file.scenarios, 0),
     positives: totals.positives,
     negatives: totals.negatives,
     rulesCoveredDocument: documentRules,
@@ -100,9 +132,11 @@ const manifest = {
     rulesPartialTool: toolRulesPartial,
   },
   files,
+  scenarioFiles,
 };
 
 const outPath = join(CONFORMANCE_ROOT, "manifest.json");
 writeFileSync(outPath, JSON.stringify(manifest, null, 2) + "\n");
 console.log(`Wrote ${outPath}`);
-console.log(`  ${files.length} files, ${totals.tests} tests (${totals.positives} positive, ${totals.negatives} negative)`);
+console.log(`  ${files.length} fixture files, ${totals.tests} tests (${totals.positives} positive, ${totals.negatives} negative)`);
+console.log(`  ${scenarioFiles.length} scenario files, ${manifest.totals.scenarios} scenarios`);

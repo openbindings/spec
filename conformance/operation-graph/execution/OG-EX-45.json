@@ -1,0 +1,67 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Portable expression-evaluation failure and explicit unconditional-session semantics for operation nodes.",
+  "fixtures": [
+    {
+      "id": "OG-EX-45",
+      "name": "Expression throws use a portable identifier",
+      "section": "Errors / Error identifiers",
+      "description": "JSONata $error throws with processor-specific prose, but the graph-visible error event uses the fixed EXPRESSION_EVALUATION_FAILED identifier.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "explode": {
+            "type": "transform",
+            "transform": "$error('implementation-specific detail')",
+            "onError": "out"
+          },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "explode" },
+          { "from": "explode", "to": "out" }
+        ]
+      },
+      "writes": [{ "id": "x" }],
+      "expected": {
+        "output": [
+          { "error": "EXPRESSION_EVALUATION_FAILED", "event": { "id": "x" } }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-46",
+      "name": "An operation session opens even when an upstream filter drops every event",
+      "section": "operation / unconditional session",
+      "description": "The filter drops the caller event, but the downstream operation node denotes an unconditional held session. Its startup output is visible and it completes as a zero-write invocation. Authors needing conditional invocation use each.",
+      "operations": {
+        "session.observe": {
+          "onOpen": { "emit": ["opened"] },
+          "responses": [{ "whenInputs": [], "emit": ["closed-empty"] }]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "drop": { "type": "filter", "transform": "false" },
+          "session": { "type": "operation", "operation": "session.observe" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "drop" },
+          { "from": "drop", "to": "session" },
+          { "from": "session", "to": "out" }
+        ]
+      },
+      "writes": [{ "ignored": true }],
+      "expected": {
+        "output": ["opened", "closed-empty"],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

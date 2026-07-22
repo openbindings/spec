@@ -792,10 +792,7 @@
       "tests": [
         {
           "description": "all operation and each nodes resolve against the containing OBI's operations",
-          "operations": [
-            "items.fetch",
-            "items.process"
-          ],
+          "operations": ["items.fetch", "items.process"],
           "graph": {
             "openbindings.operation-graph": "0.2.0",
             "nodes": {
@@ -833,10 +830,7 @@
         },
         {
           "description": "an operation node references a key absent from the OBI's operations",
-          "operations": [
-            "items.fetch",
-            "items.process"
-          ],
+          "operations": ["items.fetch", "items.process"],
           "graph": {
             "openbindings.operation-graph": "0.2.0",
             "nodes": {
@@ -874,9 +868,7 @@
         },
         {
           "description": "an each node references a key absent from the OBI's operations",
-          "operations": [
-            "items.fetch"
-          ],
+          "operations": ["items.fetch"],
           "graph": {
             "openbindings.operation-graph": "0.2.0",
             "nodes": {
@@ -974,9 +966,7 @@
               "f": {
                 "type": "filter",
                 "schema": {
-                  "required": [
-                    "x"
-                  ]
+                  "required": ["x"]
                 }
               },
               "out": {
@@ -1036,9 +1026,7 @@
               "f": {
                 "type": "filter",
                 "schema": {
-                  "required": [
-                    "x"
-                  ]
+                  "required": ["x"]
                 },
                 "transform": "true"
               },
@@ -1248,36 +1236,6 @@
             ]
           },
           "valid": false
-        },
-        {
-          "description": "a field not defined for the operation node type (maxIterations, which belongs to each) is tolerated and ignored, not a validation failure — an unknown field at that location per §20; a tool SHOULD diagnose it",
-          "graph": {
-            "openbindings.operation-graph": "0.2.0",
-            "nodes": {
-              "in": {
-                "type": "input"
-              },
-              "op": {
-                "type": "operation",
-                "operation": "x",
-                "maxIterations": 3
-              },
-              "out": {
-                "type": "output"
-              }
-            },
-            "edges": [
-              {
-                "from": "in",
-                "to": "op"
-              },
-              {
-                "from": "op",
-                "to": "out"
-              }
-            ]
-          },
-          "valid": true
         }
       ]
     },
@@ -1516,9 +1474,7 @@
               "f": {
                 "type": "filter",
                 "schema": {
-                  "required": [
-                    "x"
-                  ]
+                  "required": ["x"]
                 }
               },
               "out": {
@@ -1550,9 +1506,7 @@
                 "type": "filter",
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
-                  "required": [
-                    "x"
-                  ]
+                  "required": ["x"]
                 }
               },
               "out": {
@@ -1584,9 +1538,7 @@
                 "type": "filter",
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
-                  "required": [
-                    "x"
-                  ]
+                  "required": ["x"]
                 }
               },
               "out": {
@@ -1656,9 +1608,7 @@
                 "type": "buffer",
                 "through": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
-                  "required": [
-                    "fin"
-                  ]
+                  "required": ["fin"]
                 }
               },
               "out": {
@@ -1740,6 +1690,62 @@
                 "from": "f",
                 "to": "out"
               }
+            ]
+          },
+          "valid": false
+        }
+      ]
+    },
+    {
+      "rule": "OG-V-19",
+      "title": "Graph-controlled objects admit only defined fields and x- extensions.",
+      "schemaEnforced": true,
+      "tests": [
+        {
+          "description": "x- extensions are admitted at graph, node, and edge levels",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "x-owner": "example",
+            "nodes": {
+              "in": { "type": "input", "x-note": true },
+              "out": { "type": "output" }
+            },
+            "edges": [{ "from": "in", "to": "out", "x-trace": "direct" }]
+          },
+          "valid": true
+        },
+        {
+          "description": "a mistyped timeout is rejected instead of silently removing a safety budget",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": { "type": "input" },
+              "call": { "type": "operation", "operation": "x", "timeot": 1000 },
+              "out": { "type": "output" }
+            },
+            "edges": [
+              { "from": "in", "to": "call" },
+              { "from": "call", "to": "out" }
+            ]
+          },
+          "valid": false
+        },
+        {
+          "description": "a field belonging to another node type is rejected",
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": { "type": "input" },
+              "call": {
+                "type": "operation",
+                "operation": "x",
+                "maxIterations": 3
+              },
+              "out": { "type": "output" }
+            },
+            "edges": [
+              { "from": "in", "to": "call" },
+              { "from": "call", "to": "out" }
             ]
           },
           "valid": false

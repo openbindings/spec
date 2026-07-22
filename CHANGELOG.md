@@ -8,14 +8,174 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Core conformance hardening loop** (2026-07-22). The remaining
+  evidence-shaped gaps now have portable, cross-implementation coverage
+  without expanding the core's behavioral scope:
+
+  - OBI-D-01 fixtures can carry exact Unicode text or Base64-encoded bytes in
+    addition to parsed JSON. Duplicate keys, malformed JSON, malformed UTF-8,
+    and a leading BOM now reach the parser unchanged; this caught and fixed a
+    TypeScript byte-decoding path that had silently stripped the BOM.
+  - Nineteen action/outcome scenarios cover cycle termination (OBI-T-11),
+    flat key/alias operation resolution (OBI-T-12), complete-graph per-value
+    schema validation with distinct outcomes (OBI-T-16), and partial-
+    verification conclusions (OBI-T-17). Independent Go and TypeScript
+    adapters execute the same semantic corpus; its format standardizes no SDK
+    method, exception, or report serialization.
+  - The Go SDK exposes a structured schema-graph-unavailable error so callers
+    need not parse diagnostics, and both SDKs expose the same T17 conclusion
+    algorithm with deterministic rule-identifier lists.
+  - The full cross-repository run caught operation-graph drift that isolated
+    reference checks had not: both SDKs now execute all 47 graph scenarios,
+    including exact graph-unit version refusal, closed defined-field
+    placement, startup output before caller writes, and fatal unhandled
+    per-event failures. The JavaScript reference runner also passes all 47
+    under 512 adversarial interleavings.
+  - The core corpus verifier now validates fixtures and portable tool
+    scenarios against their published JSON Schemas in addition to its
+    rule-coverage and semantic checks. Fixture metadata no longer implies a
+    normative rule-diagnostic API where the core intentionally defines none.
+    Release snapshots now carry the scenario schema and scenario files, and
+    CI smoke-tests that core/non-core boundary; the documentation site serves
+    the scenario schema at its canonical `$id` URL.
+  - An informative implementer map now connects parsing, version acceptance,
+    document verification, operation/schema resolution, value validation,
+    transform evaluation, and binding-target action to their normative entry
+    points while preserving the core rule that invocation implies none of the
+    optional capabilities by itself.
+
+- **Binding-specification grade-raising pass** (2026-07-22). The release
+  candidates now apply the catalog's deference order at the remaining
+  ambiguous boundaries. Lower-confidence proposals were treated as targeted
+  design-review questions and resolved as explicit decisions rather than
+  private implementation defaults:
+
+  - `openbindings.openapi@1` separates final-status classification from
+    response-declaration lookup. Lookup is exact status → range → `default`;
+    a `default` response may govern a 2xx response's shape but never makes a
+    non-2xx response successful. `Accept` advertises only declared concrete
+    success media and is omitted when that set is empty. Request flattening is
+    evaluated per Media Type Object's own schema, so one unrepresentable body
+    alternative does not poison a distinct artifact-declared candidate. The
+    OAS ignored-header rule is incorporated, and artifact-distinct header
+    parameters that collide on HTTP's case-insensitive channel refuse rather
+    than acquire overwrite semantics.
+  - `openbindings.asyncapi@1` pins HTTP binding 0.3.0 and WebSockets binding
+    0.1.0, keeps target overrides within the selected artifact protocol,
+    requires artifact-message selection rather than payload sniffing, and
+    adds named `protocolFields`, `encode`, and `decode` choices only where the
+    artifact leaves a required answer open. Reply-bearing WebSocket publishes,
+    unsupported message headers, non-string protocol-field serialization, and
+    ambiguous/missing media without configuration refuse rather than guess.
+  - `openbindings.usage@1` makes the descriptor's non-empty `bin` the target
+    identity (`name` and `exec:` acquisition are not fallbacks), preserves the
+    exact command alias selected by `ref`, derives canonical field identities
+    and argv order from descriptor declarations, distinguishes count,
+    repeatable, and variadic forms, and refuses collisions or order-dependent
+    overrides. A `target` point may relocate the binary but cannot create
+    missing identity; an optional `--` remains an artifact-permitted set via
+    the `delimiter` point, while `automatic` and `preserve` retain their exact
+    upstream meanings. The accepted interpreter is now pinned exactly to usage
+    v3.5.6; artifact-declared environment fallback and dynamic choices are
+    preserved from explicitly configured environment values, while external
+    `include` and dynamic `mount` composition refuse explicitly instead of
+    acquiring private filesystem/shell semantics.
+  - `openbindings.connect@1` keeps schema-mode ProtoJSON behavior distinct from
+    binary protobuf and tightens descriptorless mode to its faithful JSON
+    subset: exactly one explicit input value and one non-empty JSON success
+    body. It refuses absence rather than inventing `{}` or `null` for an
+    unknown protobuf shape.
+  - `openbindings.operation-graph@1` now accepts exactly graph-unit `0.2.0`
+    rather than unseen `0.2.x` editions. Every held `operation` invocation
+    opens with the graph, output consumption starts before caller input is
+    awaited, and timeouts start at graph invocation; this preserves direct
+    output-before-input causality and prevents transparent-wrapper deadlock.
+    Six executable scenarios (OG-EX-39..44) cover startup output, callers that
+    await output before writing, bidirectional startup, immediate back-closure,
+    startup failure, and empty-input completion. Unhandled per-event failures
+    are now fatal unless an explicit `onError` route handles them, matching the
+    existing terminal-error integrity floor; the expanded 47-scenario graph
+    corpus passes under adversarial scheduler interleavings. OG-V-19 also
+    closes graph, node, and edge objects except for their explicit `x-`
+    extension namespace, so misspelled executable fields and fields placed on
+    the wrong node type are refused. This deliberately supersedes the earlier
+    same-draft R3/maxIterations toleration entries retained below as history.
+  - GraphQL and Workers RPC are restructured as full authoring-template
+    **design-review candidates** without minting identifiers. Each has a
+    proposed revision-1 boundary, provisional rules, exact exclusions, and
+    resolved semantic decisions plus explicit evidence/adoption gates. GraphQL pins the September 2025 core,
+    a GraphQL-over-HTTP commit, and `graphql-transport-ws` 6.1.0; Workers RPC
+    narrows Cloudflare's capability-rich RPC domain to zero/one JSON argument
+    and zero/one JSON result under an immutable upstream source snapshot.
+  - A portable processor-scenario corpus now provides 97 semantic scenarios
+    covering all 47 P-rules across Usage, OpenAPI, AsyncAPI, MCP, gRPC, and
+    Connect. Permitted
+    alternatives are represented as alternatives, not canonicalized traces.
+    The verifier checks schema, identity, citations, and rule coverage; SDK
+    adapters remain implementation work before this becomes independent
+    cross-SDK execution evidence.
+  - The final adversarial boundary pass closes several cross-implementation
+    gaps without adding artifact-independent preference: Usage explicitly
+    excludes configuration-file and external-parse lanes it cannot carry
+    faithfully; OpenAPI distinguishes an empty representation from JSON
+    `null` and uses parameter-aware media matching; AsyncAPI applies the same
+    parameter-aware reply matching; and OpenAPI, AsyncAPI, MCP, Connect, and
+    the GraphQL candidate refuse redirects that would rewrite the bound method
+    or discard its body. Connect and MCP also refuse configured metadata that
+    collides with protocol-owned framing or session fields. Core OBI-D-13 now
+    distinguishes a carried symbolic target name resolved to a live handle
+    from external state that supplies missing identity.
+
+- **Binding-specification deference order and fidelity corrections**
+  (2026-07-22). The catalog now makes its authority rule operational:
+  **incorporate → preserve alternatives → configure → refuse → default**.
+  Completeness does not license normalization; an explicit refusal is
+  preferable to inventing equality, framing, authentication, or transport
+  semantics the upstream artifact did not supply. The published revision-1
+  drafts are corrected accordingly before release:
+
+  - `openbindings.asyncapi@1` no longer interprets standalone HTTP `send` as
+    SSE or makes a selected WebSocket `send` operation bidirectional. HTTP
+    `send` is excluded, WebSocket `send` is output-only, an HTTP `receive`
+    requires its artifact-declared method rather than defaulting to POST,
+    undeclared HTTP response bodies produce no result, and operations whose
+    selected messages declare headers are refused until a future explicit
+    envelope can preserve them. Multiple effective servers require artifact-
+    member selection instead of a lexicographic/first-member preference, and
+    declared variable/parameter enums are enforced for substitutions.
+  - `openbindings.mcp@1` declares a singleton 2025-11-25 revision envelope
+    and refuses tools with required task augmentation; optional task support
+    uses the ordinary call the artifact permits. Task creation/results are
+    excluded rather than approximated.
+  - `openbindings.openapi@1` refuses parameter/body and cross-location
+    same-name collisions that its flattened input cannot distinguish; the old
+    one-value-delivered-to-both convention is removed. Request media preserve
+    the artifact-declared candidate set instead of using an OpenBindings
+    preference ladder; multiple effective servers require selection rather
+    than defaulting to the first member, and variable enums govern substitutions.
+  - `openbindings.grpc@1` removes port-number TLS inference, uses ProtoJSON's
+    upstream default parser/printer options, and stops inventing bearer/basic/
+    API-key metadata conventions. Bare targets require an explicit transport
+    election. `openbindings.connect@1` likewise leaves artifact-silent
+    authentication to explicitly configured HTTP headers and clarifies
+    parameterized JSON media types.
+  - `openbindings.usage@1` pins only the observable value-to-stdin/file
+    correspondence while leaving process-environment authentication naming to
+    consumer configuration. The GraphQL and Workers RPC drafts are corrected
+    toward executable-document fidelity and a JSON-only operation boundary.
+  - The P-rule corpus guidance now distinguishes required behavior,
+    upstream-permitted sets, configured choices, and refusal; it does not
+    canonicalize permitted alternatives merely for trace equality.
+
 - **Spec-refinement run 1 — R12 (bytes boundary) + maxIterations diagnostic**
   (ratified 2026-07-21).
+
   - **R12** — the catalog README gains a "bytes boundary" doctrine section:
     the operation value domain is JSON, so bytes need a boundary encoding;
     a specification **follows the artifact's declared encoding** where one
     exists (OAS `contentEncoding`, ProtoJSON `bytes`, MCP `blob`) and
     **defaults to Base64 only in the gap**. Base64 is the project's
-    *recommended* default, restated per specification, never a cross-spec
+    _recommended_ default, restated per specification, never a cross-spec
     mandate (the catalog has no mechanism for one). A family that does not
     define bytes carriage on some axis **declares the gap**; `openbindings.usage@1`
     gains an explicit binary-output gap note (its text-only stdout default,
@@ -23,15 +183,22 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
     declarations already present. No gap is closed; core and source artifacts
     inherit nothing.
   - **maxIterations-on-wrong-node** — `openbindings.operation-graph@1` §20's
-    tolerance rule now states that a field this format defines for *another*
+    tolerance rule now states that a field this format defines for _another_
     node type (a `maxIterations` on an `operation` node) is tolerated and
     inert like any unknown field, with the diagnostic naming the node type the
     field applies to. It is **not** given a named prohibition rule — only
     OG-V-17's boundary-node `onError` is a field-placement failure. (A general
     misplacement rule would readmit the per-type whitelist R3 removed.)
+    **Superseded before release:** the later grade-raising pass added OG-V-19
+    and now refuses this placement; see the current entry above.
 
 - **Spec-refinement run 1 — R3 (og unknown fields) + R11 (acquisition
   success)** (ratified 2026-07-21).
+
+  _Historical draft state: the operation-graph portion of R3 was superseded
+  before release by OG-V-19 in the grade-raising pass above. The R11 Usage
+  decision remains current._
+
   - **R3 — `openbindings.operation-graph@1` tolerates unknown fields, aligning
     with the core.** Prose (§20) and the shipped
     `openbindings.operation-graph.schema.json` disagreed: the schema closed
@@ -46,15 +213,15 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
     `patternProperties` removed), and §19 gains the missing precedence
     sentence: the schema is a derived artifact and **where prose and schema
     conflict, the prose governs**. Fixtures: the OG-V-17 block (onError on
-    input/output — a standing *prose* prohibition, unaffected by R3) is
+    input/output — a standing _prose_ prohibition, unaffected by R3) is
     reclassified from schema-enforced to prose-enforced; the OG-V-14
     `maxIterations`-on-an-operation-node case, which no prose rule actually
     forbids, is converted from a (mis-keyed) rejection to the toleration R3
-    mandates. *A defined field appearing on a node type that does not define
+    mandates. _A defined field appearing on a node type that does not define
     it — like `maxIterations` on `operation` — is now tolerated absent an
     explicit prohibition; whether any such misuse deserves a named prohibition
     rule the way OG-V-17 forbids boundary-node `onError` is left open, not
-    decided here.*
+    decided here._
   - **R11 — acquisition success belongs to the address scheme; `exec:` owes
     its own.** `openbindings.usage@1` §4 identified an exec address's artifact
     with the vector's standard output but never stated what a non-zero exit
@@ -89,6 +256,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 - **Spec-refinement run 1 — R5, R7, R8, R9, R10 (upstream fidelity + mcp
   addressing)** (ratified 2026-07-21).
+
   - **R5 — `openbindings.mcp@1` gains a fourth `ref` entity,
     `resourceTemplates`.** MCP retrieves resources and resource templates from
     two separate collections (`resources/list`, `resources/templates/list`);
@@ -141,9 +309,10 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   (ratified 2026-07-21). Spec text only; reference-SDK follow-through
   (relaxing the enum refusals, demoting the pinned-shape error strings) is
   tracked separately and lands in the SDK repos.
+
   - **R1 — configuration carriage is implementation surface, not specification
-    content.** A binding specification pins each configuration point's *default*
-    and the *meaning* of an override (what may be supplied, which supplies are
+    content.** A binding specification pins each configuration point's _default_
+    and the _meaning_ of an override (what may be supplied, which supplies are
     refused, substitution order); it does not pin the concrete value a consumer
     hands to a point. Pinning that shape changed nothing an OBI means and forced
     every implementation's configuration API into one JSON shape. `asyncapi`
@@ -164,7 +333,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
     whole-address override that bypasses the declaration entirely, so refusing a
     narrower substitution while permitting the wider one is incoherent. A
     supplied value outside an `enum` is no longer refused (an implementation MAY
-    surface it as choice metadata); what stays refused is an *undeclared* name
+    surface it as choice metadata); what stays refused is an _undeclared_ name
     (a typo) and, at the server point, no resolvable server (undispatchable).
     Stated in `asyncapi` §9.2 and `openapi` §9.3. (`openbindings.openapi@1`'s
     "per the OAS" enum claim lived only in reference-SDK code, never the spec;
@@ -198,8 +367,9 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   §8.1 deleted, which states that "backward compatibility is not forward
   comprehension: no comparison of two version strings establishes what a given
   implementation contains."
+
   - **`openbindings.operation-graph@1` OG-T-02 is restated on the artifact
-    axis.** A graph unit's version field is *artifact* self-identification, not
+    axis.** A graph unit's version field is _artifact_ self-identification, not
     a spec version, so it is governed the way every sibling governs accepted
     artifact versions — by the specification's declared line (§3: the 0.2.x
     line) — and not by OBI-T-04's per-tool supported set, which applies to an
@@ -208,15 +378,15 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
     refusal distinctly from graph non-conformance, ignores build metadata when
     testing membership, and treats a prerelease as a non-member (a tool MAY
     still accept a prerelease it declares support for). Consequences fall out
-    rather than being separately ruled: a higher patch is accepted *because it
-    is in the declared line*, not by inference; the pre-1.0 minor
+    rather than being separately ruled: a higher patch is accepted _because it
+    is in the declared line_, not by inference; the pre-1.0 minor
     special-casing is deleted; and the claim that this "mirrors the core
     spec's OBI-T-04" is deleted as a cross-axis error. §3 and §12's
     version-field prose lose "a processor's supported range" for the declared
     line.
   - **`requiresMaxTested` is retired from the conformance corpus**, from
     `fixture.schema.json`, and from the operation-graph validation schema.
-    `MaxTestedVersion` is a *tested* declaration, not an *acceptance*
+    `MaxTestedVersion` is a _tested_ declaration, not an _acceptance_
     declaration, so gating acceptance-presuming positives on it is a category
     error — the argument the corpus's own `requiresSupports` paragraph already
     made and had not applied to these cases. OBI-D-12's two gated positives
@@ -239,6 +409,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   each was reproduced against its cited authority before application). No
   fixture verdicts change, and the conformance manifest regenerates
   identical.
+
   - Core **§11 IANA registration**: encoding considerations corrected from
     "8-bit UTF-8 per RFC 8259" to **`binary`**. RFC 8259 §11 registers
     `application/json` as `binary` deliberately — MIME `8bit` (RFC 6838
@@ -276,7 +447,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 - `openbindings.asyncapi@1` §9.2's **server pin gains a `variables` member**
   (ratified 2026-07-21): the server configuration point's value is now
   `{ "key": "<server-name>", "variables": { "<variable-name>":
-  "<string-value>" }? }` xor `{ "url": "<connection-url>" }` — `variables`
+"<string-value>" }? }` xor `{ "url": "<connection-url>" }` — `variables`
   is optional and composes only with `key`; names are the artifact's own
   declared variable names (a supplied name the selected server does not
   declare is refused, never ignored); values are strings, upstream's Server
@@ -297,23 +468,23 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 - `openbindings.openapi@1` §9.2 refuses **degenerate media/schema
   combinations** before dispatch instead of inventing a wire form (ratified
   2026-07-21): a request-media selection landing on `multipart/form-data`
-  or `application/x-www-form-urlencoded` while the declared body schema
+  or `application/x-www-form-urlencoded` while that Media Type Object's schema
   does not flatten under §9.1's declaration-only determination (no
   `properties` and no explicit `object` type — the synthetic-`body`
-  shapes), or landing on `text/plain` while it does. The OAS specifies
+  shapes), or landing on `text/plain` while its schema does. The OAS specifies
   multipart and form-urlencoded serialization exclusively over object
   properties — its multipart considerations define the payload as an
   object whose properties become the parts, and its Encoding Object is
   keyed by property name — so no rule exists to implement for propertyless
   shapes, and anything emitted would be implementation invention; the text
   lane is the inverse, a single-string wire that cannot carry a flattening
-  schema's object contract. The refusal is decided by declarations alone
-  and reaches only operations declaring no JSON-family request media:
-  selection prefers the JSON family, which carries any shape, so a
-  co-declared JSON media type makes the contract and the wire agree.
-  OAPI-P-04's rule line now names the refusal; a future revision may
-  define carriage if the OAS or a real artifact supplies a serialization
-  rule (`openbindings.openapi@2`). Conformance rides the reference SDKs'
+  schema's object contract. The refusal is decided per media candidate by
+  declarations (and the required string type for text). No JSON-family
+  preference is imposed: a co-declared admissible JSON candidate remains an
+  unordered artifact alternative, while explicitly selecting an inadmissible
+  candidate refuses. OAPI-P-03/P-04 name the candidate-specific rule; a future
+  revision may define carriage if the OAS or a real artifact supplies a
+  serialization rule (`openbindings.openapi@2`). Conformance rides the reference SDKs'
   mirrored behavioral tests, per the corpus doctrine for P-rules; no
   fixtures added.
 
@@ -350,7 +521,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   P-rules; no fixtures added.
 
 - **Three corpus-authority rulings (ratified 2026-07-20).**
-  *Added — OBI-T-18 and OBI-T-19 minted.* Two of §5.1's binding MUSTs lived
+  _Added — OBI-T-18 and OBI-T-19 minted._ Two of §5.1's binding MUSTs lived
   in prose outside the §10.3 catalogue and now carry stable identifiers:
   **OBI-T-18** (all processors; does not reject a document because an
   author-attested `idempotent` claim appears inaccurate — semantic truth is
@@ -363,7 +534,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   note (matching the publisher-SHOULD note) instead of an identifier.
   Corpus: OBI-T-18 fixtured with anti-rejection positives; OBI-T-19
   discriminated by the existing OBI-D-11 negatives (README coverage row).
-  *Added — `requiresSupports` corpus annotation.* An acceptance gate:
+  _Added — `requiresSupports` corpus annotation._ An acceptance gate:
   administer a test only to tools whose OBI-T-04 version-acceptance
   predicate accepts the annotation's version, otherwise skip and report the
   skip separately (skips are never failures). Replaces OBI-T-04 positives'
@@ -375,7 +546,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   to the current-version and build-metadata positives (0.2.0) and the
   higher-patch positive (0.2.1); declared in `fixture.schema.json`; honored
   by the reference Go runner.
-  *Clarified — pointer-shaped binding refs are verbatim strings.* The `#/`
+  _Clarified — pointer-shaped binding refs are verbatim strings._ The `#/`
   shape is JSON Pointer notation, not URI processing: no percent-decoding is
   ever applied, each addressable target has exactly one conformant spelling
   (RFC 6901 escaping included) matched byte-for-byte, and a percent-encoded
@@ -436,7 +607,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 - **HTTP discovery extracted to a normative companion** (`http-discovery.md`). The core no longer defines the well-known endpoint; §1.4 keeps one informative acquisition pointer. The companion pins the serving and fetching contract as `DISC-S-01..04` / `DISC-C-01..04` — preserving the rule that a version refusal is never collapsed into "no OBI published" — and carries the IANA well-known URI suffix registration; the core retains the `application/vnd.openbindings+json` media-type registration.
 
-- **Binding-specifications catalog** (`binding-specs/`, renamed from `formats/`). One normative genre replaces the companion-spec/conventions-record split: a page mints its identifier only when it meets the OBI-B-02 floor. Seven specifications published, each authored spec-first and adversarially reviewed with upstream verification: `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, and `openbindings.operation-graph@1` (migrated from the `openbindings.operation-graph@0.2.0` token; graph semantics byte-preserved, the graph-unit format keeps its own version field). Behavior corrections landed spec-side against the prior conventions records, notably: **asyncapi's `send`/`receive` mapping inverted** to AsyncAPI 3.0's application-perspective rule (invoking `send` subscribes, `receive` publishes) with **conjunctive** security derivation; grpc/connect **unknown input fields refused** per ProtoJSON's own default (was silent discard); grpc accepts `FileDescriptorSet` content in canonical JSON with bound-method-closure acceptance and a pinned v1→v1alpha reflection fallback; connect gains a defined descriptorless mode, 200-exact unary classification, and a GET-lane exclusion; mcp pins pagination-exhausted listings, a presence-preserving progress-value shape behind a solicitation-off configuration point, and always-array resource results; openapi specifies `style`/`explode` serialization, request media negotiation, and the OAS effective-server list; usage legalizes `exec:` addresses behind a normative default-deny gate. The catalog README carries the identifier discipline (`openbindings.<name>@<rev>`, integer revisions, citations denote revisions), the authoring template, and the completeness doctrine. Reference-tool adoption of the identifiers rides the coordinated cross-repo change.
+- **Binding-specifications catalog** (`binding-specs/`, renamed from `formats/`). One normative genre replaces the companion-spec/conventions-record split: a page mints its identifier only when it meets the OBI-B-02 floor. Seven specifications published, each authored spec-first and adversarially reviewed with upstream verification: `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, and `openbindings.operation-graph@1` (migrated from the `openbindings.operation-graph@0.2.0` token; the graph-unit format keeps its own exact version field and its semantic revisions are recorded separately above). Behavior corrections landed spec-side against the prior conventions records, notably: **asyncapi's `send`/`receive` mapping inverted** to AsyncAPI 3.0's application-perspective rule (invoking `send` subscribes, `receive` publishes) with **conjunctive** security derivation; grpc/connect **unknown input fields refused** per ProtoJSON's own default (was silent discard); grpc accepts `FileDescriptorSet` content in canonical JSON with bound-method-closure acceptance and a pinned v1→v1alpha reflection fallback; connect gains a defined descriptorless mode, 200-exact unary classification, and a GET-lane exclusion; mcp pins pagination-exhausted listings, a presence-preserving progress-value shape behind a solicitation-off configuration point, and lossless complete result objects; openapi specifies `style`/`explode` serialization, request media negotiation, and the OAS effective-server list; usage legalizes `exec:` addresses behind a normative default-deny gate. The catalog README carries the identifier discipline (`openbindings.<name>@<rev>`, integer revisions, citations denote revisions), the authoring template, and the completeness doctrine. Reference-tool adoption of the identifiers rides the coordinated cross-repo change.
 
 - **`idempotent` is a three-state claim** (§6.1): `true` asserts idempotency
   (unchanged), an explicit `false` now asserts NON-idempotency — re-invocation
@@ -462,6 +633,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 - **Clarification batch from the blind-reconstruction review** (each item
   names existing latitude, closes an inherited-RFC edge, or aligns prose
   with verified behavior in both SDKs; none changes a design decision):
+
   - OBI-T-08: the static resolvability judgment SHOULD precede driving the
     binding, so a doomed invocation causes no side effects (both SDKs
     already preflight both directions).
@@ -500,7 +672,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   resource's internal business — the same scope carve-out OBI-D-05/OBI-D-16
   already apply to `$ref` and `$anchor`. Corpus: OBI-D-05 gains dynamic-pair
   negatives, the embedded-resource positive, and a keyword-position guard (a
-  property *named* `$dynamicRef` is data, not a keyword). Closes a blind
+  property _named_ `$dynamicRef` is data, not a keyword). Closes a blind
   spot found by two independent clean-room reviews: the rules previously
   constrained `$ref` by name only, so a dynamic reference at an OBI position
   defeated the context-free guarantee in spirit while passing a literal
@@ -652,7 +824,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 - **The `location`/`content` pairing is the binding format's concern (§6.4).** What a `location` names is format-defined: for most formats the artifact's own address (an OpenAPI document's URL); for a format whose artifact describes a live service that can serve its own description, the service's format-defined address (a gRPC `host:port`), from which the artifact is discoverable. `content` always carries the artifact. Where a location names the artifact, embedded content remains authoritative and the location is provenance (the previous rule, unchanged for that species); where a location addresses the service, there is no competition — content pins the artifact and location remains the invocation target; a format whose conventions do not address the pairing is content-authoritative. Previously an unconditional content-precedence rule demoted any co-present `location` to provenance, which mis-modeled service-addressed formats: a gRPC source pinning its schema as `content` had no conformant slot for its dial address. Embedded-content self-containment and the no-resolution-base rule are unchanged. Touches §5 (Source terminology), §6.4 prose and field table, and §10 item 1.
 
-- **Transform evaluation environment closed (OBI-T-10).** A tool MUST NOT extend the JSONata evaluation environment with host-reaching bindings (filesystem, network, environment variables, process state) for document-supplied expressions; the same transform over the same input now portably behaves identically on every conforming tool (§6.5, OBI-T-10 + rationale, §13/§13.1 cross-references). This resolves the 2026-05-27 review's top finding (no normative security floor) at its semantics-grounded core: environment closure is normative because host bindings break transform *portability* before they break security. Mandating fetch policy and resource bounds was considered and REJECTED on scope grounds — the spec's obligation is to name the exposure its format creates (§13 does); scheme allow-lists, network-range restrictions, and size caps are processor policy per §2, documented per tool.
+- **Transform evaluation environment closed (OBI-T-10).** A tool MUST NOT extend the JSONata evaluation environment with host-reaching bindings (filesystem, network, environment variables, process state) for document-supplied expressions; the same transform over the same input now portably behaves identically on every conforming tool (§6.5, OBI-T-10 + rationale, §13/§13.1 cross-references). This resolves the 2026-05-27 review's top finding (no normative security floor) at its semantics-grounded core: environment closure is normative because host bindings break transform _portability_ before they break security. Mandating fetch policy and resource bounds was considered and REJECTED on scope grounds — the spec's obligation is to name the exposure its format creates (§13 does); scheme allow-lists, network-range restrictions, and size caps are processor policy per §2, documented per tool.
 
 - **`priority` renamed to `preference`, direction inverted (breaking).** The per-binding/per-source selection hint `priority` becomes `preference`, and its direction flips: higher values are now more preferred (was: lower). An absent `preference` is the neutral baseline of `0`, so absence and the explicit floor coincide and a binding's effective preference defaults to `0` rather than a notional `+∞`. Negative values are permitted and rank below the baseline. The `deprecated` tier rule is unchanged in mechanism (a non-deprecated binding still outranks a deprecated one regardless of magnitude), but its worked example flips: a non-deprecated `preference: 0` now beats a deprecated `preference: 1000`. Hard rename, no alias: a document still using `priority` carries it as an unknown field, so the hint is ignored and identical numbers sort the opposite way. Touches §6.3 (Bindings), §6.4 (Sources), the informative request-lifecycle prose, OBI-T-09 and its rationale, and the JSON Schema.
 
@@ -734,7 +906,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
 - Format registry guidance (well-known format token list)
 - Ref conventions section (JSON Pointer / XPath guidance)
 - Precedence and drift section
-- YAML support (for OBI documents themselves; a binding specification may accept YAML source *artifacts*, as `openbindings.openapi@1` does)
+- YAML support (for OBI documents themselves; a binding specification may accept YAML source _artifacts_, as `openbindings.openapi@1` does)
 - Mandatory invocation-boundary validation (retired OBI-T-07/T-08; validation is claim-triggered, OBI-T-16)
 - Binding-selection algorithm and deprecated tier (retired OBI-T-09)
 - In-core discovery section and its tool rules (retired OBI-T-13/T-14; moved to the HTTP Discovery companion)
@@ -768,7 +940,7 @@ This release narrows the spec to what an OBI document IS: shape, discovery, refe
   - **Input-side closure (back-closure) defined.** The graph closes its caller-facing input side when every direct consumer of the `input` node is non-accepting, mirroring an inner binding that closes its own input; transitive back-closure through pure nodes is explicitly deferred. Write rejection at a non-accepting conduit is a defined per-event error (`WRITE_REJECTED`).
   - **Conduit error model aligned with the identity law.** A terminal error on an `operation` conduit's held invocation is fatal to the graph invocation by default (terminal-status parity with direct invocation); setting `onError` on the node opts it into in-graph handling instead. Per-event failures (`each` invocation errors, write rejections, `MAP_NOT_ARRAY`, undefined transforms) remain routed-or-dropped. The error event's `event` member is now OPTIONAL: present exactly when the failure is attributable to a single event, absent for conduit terminal errors. `onError` is restricted to processing nodes (OG-V-17: not on `input`/`output`).
   - **Invocation model section added.** The format now defines the invocation surface its semantics are stated over (writes, input-side close and close responsibility, output completion, terminal status, cancellation), since the core spec deliberately delegates invocation semantics. The `openbindings.binding-invoker` role's frame stream is cited as the informative correspondence.
-  - **Error identifiers defined.** Spec-defined failures carry SCREAMING_SNAKE_CASE identifiers (`TIMEOUT_EXCEEDED`, `WRITE_REJECTED`, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED`), matching the role interfaces' convention (`CONTEXT_REQUIRED`, `ERR_*`); failures originating in an inner invocation surface the inner terminal error verbatim. Replaces the prior lowercase ad-hoc tokens.
+  - **Error identifiers defined.** Spec-defined failures carry SCREAMING*SNAKE_CASE identifiers (`TIMEOUT_EXCEEDED`, `WRITE_REJECTED`, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED`), matching the role interfaces' convention (`CONTEXT_REQUIRED`, `ERR*\*`); failures originating in an inner invocation surface the inner terminal error verbatim. Replaces the prior lowercase ad-hoc tokens.
   - **Stable rule identifiers and a conformance section.** Validation rules carry `OG-V-01`–`OG-V-17` and tool obligations are consolidated as `OG-T-01`–`OG-T-04` (validate-before-acting, version refusal mirroring OBI-T-04, JSONata 2.0, execution semantics + identity law), with the core spec's no-renumbering stability guarantee and a pointer to the conformance corpus.
   - **`$input` redefined as the lineage root.** Each caller write roots a lineage; `$input` is the root input event of the current event's lineage, and is defined at a merge only when all contributing events share one root.
   - **Flow control section added.** In-transit queues SHOULD be bounded; conduit/`each` nodes SHOULD consume inner outputs with bounded read-ahead so saturation backpressures the transport, and write admission at `input` SHOULD be bounded so a saturated graph backpressures its caller.

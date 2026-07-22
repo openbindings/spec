@@ -8,11 +8,7 @@
     "OperationGraph": {
       "type": "object",
       "description": "An operation graph: a directed graph of typed nodes connected by edges, in which every processing node is an operation invocation — bound at runtime (operation) or bound by the specification (built-ins).",
-      "required": [
-        "openbindings.operation-graph",
-        "nodes",
-        "edges"
-      ],
+      "required": ["openbindings.operation-graph", "nodes", "edges"],
       "properties": {
         "openbindings.operation-graph": {
           "type": "string",
@@ -43,7 +39,8 @@
           }
         }
       },
-      "additionalProperties": true
+      "patternProperties": { "^x-": true },
+      "additionalProperties": false
     },
     "Node": {
       "type": "object",
@@ -52,7 +49,18 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["input", "output", "operation", "each", "transform", "filter", "map", "buffer", "combine", "exit"],
+          "enum": [
+            "input",
+            "output",
+            "operation",
+            "each",
+            "transform",
+            "filter",
+            "map",
+            "buffer",
+            "combine",
+            "exit"
+          ],
           "description": "The node type. 'operation' is the cardinality-agnostic conduit (one invocation per graph invocation); the remaining processing types are built-ins — operations whose binding is the specification. Must be one of the types defined by this format version (OG-V-14); custom node types require a distinct format token or profile."
         },
         "onError": {
@@ -70,7 +78,8 @@
             "properties": {
               "type": true
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -81,7 +90,8 @@
             "properties": {
               "type": true
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -101,10 +111,11 @@
               "timeout": {
                 "type": "integer",
                 "minimum": 1,
-                "description": "Total budget in milliseconds for the held invocation, from the node's first drive until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with TIMEOUT_EXCEEDED, handled as a conduit terminal error."
+                "description": "Total budget in milliseconds for the held invocation, from graph-invocation startup until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with TIMEOUT_EXCEEDED, handled as a conduit terminal error."
               }
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -132,7 +143,8 @@
                 "description": "Per-invocation budget in milliseconds, from drive until that invocation's output stream completes. On expiry, that invocation fails as a node failure for the triggering event."
               }
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -160,7 +172,8 @@
             "not": {
               "required": ["until", "through"]
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -179,7 +192,8 @@
                     "description": "JSON Schema. Events that validate pass; others are dropped."
                   }
                 },
-                "additionalProperties": true
+                "patternProperties": { "^x-": true },
+                "additionalProperties": false
               },
               {
                 "required": ["transform"],
@@ -191,7 +205,8 @@
                     "description": "Transform expression. Events where the expression evaluates truthy pass; others are dropped."
                   }
                 },
-                "additionalProperties": true
+                "patternProperties": { "^x-": true },
+                "additionalProperties": false
               }
             ]
           }
@@ -210,7 +225,8 @@
                 "description": "Transform expression. The result replaces the event."
               }
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -227,7 +243,8 @@
                 "description": "Transform expression. The result MUST be an array; each element is emitted as a separate event."
               }
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -239,7 +256,8 @@
               "type": true,
               "onError": true
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         },
         {
@@ -256,7 +274,8 @@
                 "description": "If true, the operation graph terminates with an error. If false (default), the event is emitted to output before termination."
               }
             },
-            "additionalProperties": true
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
           }
         }
       ]
@@ -277,12 +296,13 @@
           "description": "The key of the target node."
         }
       },
-      "additionalProperties": true
+      "patternProperties": { "^x-": true },
+      "additionalProperties": false
     },
     "Transform": {
       "type": "string",
       "minLength": 1,
-      "description": "A JSONata 2.0 expression string."
+      "description": "A JSONata 2.1 expression string."
     }
   }
 }

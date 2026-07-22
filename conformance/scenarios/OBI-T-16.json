@@ -1,0 +1,151 @@
+{
+  "format": "openbindings.core-tool-scenarios@1",
+  "rule": "OBI-T-16",
+  "section": "10.3",
+  "description": "Operation-boundary validation uses the complete statically reachable schema graph, treats format as annotation, applies schemas per value, and distinguishes graph unavailability from instance mismatch.",
+  "scenarios": [
+    {
+      "id": "T16-S-01",
+      "description": "A value satisfying a complete governing schema validates successfully",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": { "input": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello"]
+      },
+      "expected": { "results": ["valid"] }
+    },
+    {
+      "id": "T16-S-02",
+      "description": "An available graph that rejects the instance reports instance mismatch",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": { "output": { "type": "string" } }
+          }
+        },
+        "operation": "echo",
+        "side": "output",
+        "values": [42]
+      },
+      "expected": { "results": ["instance-mismatch"] }
+    },
+    {
+      "id": "T16-S-03",
+      "description": "An unavailable statically reachable alternative prevents success even when another alternative matches",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": {
+                "anyOf": [
+                  { "type": "string" },
+                  { "$ref": "https://schemas.example.invalid/missing.json" }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["already-matches", 42]
+      },
+      "expected": { "results": ["graph-unavailable", "graph-unavailable"] }
+    },
+    {
+      "id": "T16-S-04",
+      "description": "An unreferenced definition is outside the governing schema's statically reachable graph",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": {
+                "type": "string",
+                "$defs": {
+                  "unused": { "$ref": "https://schemas.example.invalid/unused.json" }
+                }
+              }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["available"]
+      },
+      "expected": { "results": ["valid"] }
+    },
+    {
+      "id": "T16-S-05",
+      "description": "Format remains annotation-only at the operation boundary",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "acceptContact": { "input": { "type": "string", "format": "email" } }
+          }
+        },
+        "operation": "acceptContact",
+        "side": "input",
+        "values": ["not-an-email"]
+      },
+      "expected": { "results": ["valid"] }
+    },
+    {
+      "id": "T16-S-06",
+      "description": "A multi-value interaction validates each value independently rather than as one aggregate",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "events": { "output": { "type": "string" } }
+          }
+        },
+        "operation": "events",
+        "side": "output",
+        "values": ["first", 2, "third"]
+      },
+      "expected": { "results": ["valid", "instance-mismatch", "valid"] }
+    },
+    {
+      "id": "T16-S-07",
+      "description": "An absolute reference satisfied by an embedded schema identifier is locally available",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Contact": {
+              "$id": "https://schemas.example.test/contact.json",
+              "type": "object",
+              "required": ["name"],
+              "properties": { "name": { "type": "string" } }
+            }
+          },
+          "operations": {
+            "acceptContact": {
+              "input": { "$ref": "https://schemas.example.test/contact.json" }
+            }
+          }
+        },
+        "operation": "acceptContact",
+        "side": "input",
+        "values": [{ "name": "Ada" }, { "name": 7 }]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    }
+  ]
+}

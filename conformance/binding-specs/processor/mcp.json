@@ -1,0 +1,527 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@1",
+  "bindingSpec": "openbindings.mcp@1",
+  "family": "mcp",
+  "description": "Portable processor scenarios for MCP negotiation, listing resolution, whole-value input mapping, progress, lossless results, task refusal, classification, and credentials.",
+  "scenarios": [
+    {
+      "id": "MCP-PS-01",
+      "rules": ["MCP-P-01"],
+      "section": "3",
+      "description": "A negotiated MCP revision outside the binding specification's singleton envelope is refused before listing or invocation.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc" },
+        "binding": { "ref": "tools/weather" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": { "negotiatedProtocolVersion": "2026-01-01" }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/listingRequests", "absent": true },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-02",
+      "rules": ["MCP-P-02"],
+      "section": "3",
+      "description": "A live tool listing is followed through nextCursor exhaustion before ref resolution and dispatch.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc" },
+        "binding": { "ref": "tools/weather" },
+        "invocation": { "inputPresent": true, "input": { "city": "Oslo" } },
+        "peer": {
+          "negotiatedProtocolVersion": "2025-11-25",
+          "capabilities": { "tools": {} },
+          "toolPages": [
+            {
+              "tools": [
+                { "name": "clock", "inputSchema": { "type": "object" } }
+              ],
+              "nextCursor": "p2"
+            },
+            {
+              "tools": [
+                { "name": "weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          ],
+          "toolResult": { "content": [{ "type": "text", "text": "clear" }] }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/listingRequests/tools", "equals": [null, "p2"] },
+            { "path": "/dispatch/method", "equals": "tools/call" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-03",
+      "rules": ["MCP-P-03"],
+      "section": "9.1",
+      "description": "A static resource takes no input; supplying even null as a present input is refused before resources/read.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "resources": [{ "uri": "file:///readme", "name": "readme" }]
+          }
+        },
+        "binding": { "ref": "resources/file:///readme" },
+        "invocation": { "inputPresent": true, "input": null }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-13",
+      "rules": ["MCP-P-03"],
+      "section": "9.1",
+      "description": "A resource template preserves RFC 6570 exploded-list values instead of narrowing every variable to a scalar string.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "resourceTemplates": [
+              {
+                "name": "search",
+                "uriTemplate": "https://data.example/search{?tag*}"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "ref": "resourceTemplates/https://data.example/search{?tag*}"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "tag": ["red", "blue"] }
+        },
+        "peer": {
+          "result": {
+            "contents": [
+              {
+                "uri": "https://data.example/search?tag=red&tag=blue",
+                "text": "ok"
+              }
+            ]
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/params/uri",
+              "equals": "https://data.example/search?tag=red&tag=blue"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-04",
+      "rules": ["MCP-P-04"],
+      "section": "9.2",
+      "description": "Solicited progress emits params without progressToken, preserves explicit zero, and precedes the one final result value.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [{ "name": "build", "inputSchema": { "type": "object" } }]
+          }
+        },
+        "binding": { "ref": "tools/build" },
+        "configuration": { "solicit": true },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": {
+          "progress": [
+            {
+              "progressToken": "t1",
+              "progress": 0,
+              "total": 0,
+              "message": "starting"
+            }
+          ],
+          "toolResult": { "content": [{ "type": "text", "text": "done" }] },
+          "lateProgress": [{ "progressToken": "t1", "progress": 1 }]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                { "progress": 0, "total": 0, "message": "starting" },
+                { "content": [{ "type": "text", "text": "done" }] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-05",
+      "rules": ["MCP-P-05"],
+      "section": "9.3",
+      "description": "A successful tool result preserves content, structuredContent, explicit false isError, metadata, and permitted extension members together.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [
+              { "name": "inspect", "inputSchema": { "type": "object" } }
+            ]
+          }
+        },
+        "binding": { "ref": "tools/inspect" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "toolResult": {
+            "content": [{ "type": "text", "text": "human" }],
+            "structuredContent": { "value": 7 },
+            "isError": false,
+            "_meta": { "trace": "abc" }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs/0",
+              "equals": {
+                "content": [{ "type": "text", "text": "human" }],
+                "structuredContent": { "value": 7 },
+                "isError": false,
+                "_meta": { "trace": "abc" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-06",
+      "rules": ["MCP-P-06"],
+      "section": "9.4",
+      "description": "A tools/call result carrying isError true is a failure outcome and is not emitted as a successful operation value.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [{ "name": "fail", "inputSchema": { "type": "object" } }]
+          }
+        },
+        "binding": { "ref": "tools/fail" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": {
+          "toolResult": {
+            "content": [{ "type": "text", "text": "bad input" }],
+            "isError": true
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [{ "path": "/outputs", "equals": [] }]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-07",
+      "rules": ["MCP-P-07"],
+      "section": "9.5",
+      "description": "A generic credential with no named HTTP-header carriage is surfaced for context resolution rather than mapped to Authorization.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": { "prompts": [{ "name": "hello" }] }
+        },
+        "binding": { "ref": "prompts/hello" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "generic": "secret" } }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-08",
+      "rules": ["MCP-P-08"],
+      "section": "7",
+      "description": "A tool that requires task augmentation is unresolvable in revision 1 and is refused before ordinary tools/call dispatch.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [
+              {
+                "name": "long",
+                "inputSchema": { "type": "object" },
+                "execution": { "taskSupport": "required" }
+              }
+            ]
+          }
+        },
+        "binding": { "ref": "tools/long" },
+        "invocation": { "inputPresent": true, "input": {} }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-09",
+      "rules": ["MCP-P-05"],
+      "section": "9.3",
+      "description": "A resource result remains the complete protocol object; JSON-looking text is not reparsed or unwrapped.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "resources": [
+              {
+                "uri": "data://record",
+                "name": "record",
+                "mimeType": "application/json"
+              }
+            ]
+          }
+        },
+        "binding": { "ref": "resources/data://record" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "resourceResult": {
+            "contents": [
+              {
+                "uri": "data://record",
+                "mimeType": "application/json",
+                "text": "{\"x\":1}",
+                "_meta": { "etag": "1" }
+              }
+            ],
+            "_meta": { "server": "mcp" }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs/0",
+              "equals": {
+                "contents": [
+                  {
+                    "uri": "data://record",
+                    "mimeType": "application/json",
+                    "text": "{\"x\":1}",
+                    "_meta": { "etag": "1" }
+                  }
+                ],
+                "_meta": { "server": "mcp" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-10",
+      "rules": ["MCP-P-05"],
+      "section": "9.3",
+      "description": "A prompt result preserves description, messages, content-block members, and metadata without projection.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": { "prompts": [{ "name": "review" }] }
+        },
+        "binding": { "ref": "prompts/review" },
+        "invocation": { "inputPresent": true, "input": { "topic": "spec" } },
+        "peer": {
+          "promptResult": {
+            "description": "Review it",
+            "messages": [
+              { "role": "user", "content": { "type": "text", "text": "spec" } }
+            ],
+            "_meta": { "id": 1 }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs/0",
+              "equals": {
+                "description": "Review it",
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": { "type": "text", "text": "spec" }
+                  }
+                ],
+                "_meta": { "id": 1 }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-11",
+      "rules": ["MCP-P-02"],
+      "section": "6",
+      "description": "Pinned content displaces every list request even though invocation still uses the addressed live server.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": { "prompts": [{ "name": "hello" }] }
+        },
+        "binding": { "ref": "prompts/hello" },
+        "invocation": { "inputPresent": false },
+        "peer": { "promptResult": { "messages": [] } }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/listingRequests", "equals": [] },
+            { "path": "/dispatch/method", "equals": "prompts/get" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-12",
+      "rules": ["MCP-P-02"],
+      "section": "7",
+      "description": "Duplicate byte-exact names within one listed entity family make the ref ambiguous rather than first-match.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [
+              { "name": "same", "inputSchema": { "type": "object" } },
+              {
+                "name": "same",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": { "x": { "type": "string" } }
+                }
+              }
+            ]
+          }
+        },
+        "binding": { "ref": "tools/same" },
+        "invocation": { "inputPresent": true, "input": {} }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-14",
+      "rules": ["MCP-P-06"],
+      "section": "9.4",
+      "description": "A 303 response is not followed by turning a Streamable HTTP protocol POST into the transport's semantically different GET stream.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": {
+            "tools": [
+              { "name": "echo", "inputSchema": { "type": "object" } }
+            ]
+          }
+        },
+        "binding": { "ref": "tools/echo" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": {
+          "status": 303,
+          "headers": { "Location": "https://other.example/rpc" },
+          "body": ""
+        },
+        "runtime": { "redirectPolicy": "ordinary-user-agent" }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/dispatch/method", "equals": "tools/call" },
+            { "path": "/dispatch/httpMethod", "equals": "POST" },
+            { "path": "/redirectDispatch", "absent": true },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MCP-PS-15",
+      "rules": ["MCP-P-07"],
+      "section": "9.5",
+      "description": "A named credential cannot replace the MCP session-routing field, even with different header casing.",
+      "given": {
+        "source": {
+          "location": "https://mcp.example/rpc",
+          "content": { "prompts": [{ "name": "hello" }] }
+        },
+        "binding": { "ref": "prompts/hello" },
+        "invocation": { "inputPresent": false },
+        "runtime": {
+          "credentials": {
+            "headers": { "MCP-SESSION-ID": "credential-value" }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    }
+  ]
+}

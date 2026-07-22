@@ -1,8 +1,8 @@
 {
   "format": "openbindings.operation-graph@1",
   "kind": "validation",
-  "description": "Tool-rule fixtures for the validation- and version-shaped OG-T rules. OG-T-01 (validate before acting; fail the binding rather than act on a violating graph) has representative cases here; its full obligation is the entire OG-V negative set in OG-VR.json, of which these cases are a sample. OG-T-02 (version refusal on this format's own openbindings.operation-graph field, mirroring core OBI-T-04) is expressed with the same version-gate annotations the core corpus uses, applied to the tool's supported operation-graph format range.",
-  "notes": "valid:false under OG-T-01 means a conformant tool refuses to act on the graph; valid:false under OG-T-02 means a conformant tool refuses the graph's declared version, reported distinctly from graph non-conformance. OG-T-02 membership is the specification's declared unit-format line (0.2.x), not a per-tool range, so these tests are universal: no acceptance gate applies to any of them. Both blocks declare schemaEnforced: false — the negative graphs here are schema-valid (a cross-reference violation, a refused but syntactically valid version); the schema-rejection assertion belongs to OG-VR.json's schema-enforced rule blocks.",
+  "description": "Tool-rule fixtures for the validation- and version-shaped OG-T rules. OG-T-01 (validate before acting; fail the binding rather than act on a violating graph) has representative cases here; its full obligation is the entire OG-V negative set in OG-VR.json, of which these cases are a sample. OG-T-02 pins the exact graph-unit edition incorporated by this binding-specification revision.",
+  "notes": "valid:false under OG-T-01 means a conformant tool refuses to act on the graph; valid:false under OG-T-02 means a conformant tool refuses the graph's declared version, reported distinctly from graph non-conformance. This revision incorporates exactly 0.2.0: SemVer precedence, build metadata equivalence, and inferred patch compatibility do not widen that set. Both blocks declare schemaEnforced: false — the negative graphs here are schema-valid (a cross-reference violation, a refused but syntactically valid version); the schema-rejection assertion belongs to OG-VR.json's schema-enforced rule blocks.",
   "rules": [
     {
       "rule": "OG-T-01",
@@ -88,11 +88,11 @@
     },
     {
       "rule": "OG-T-02",
-      "title": "Tools MUST refuse graphs declaring an openbindings.operation-graph version outside their supported range (pre-1.0: minor-granular, both directions), MUST NOT accept undeclared prereleases, and compare by SemVer 2.0.0 precedence with build metadata ignored; a higher patch within a supported major.minor never refuses.",
+      "title": "Tools MUST accept exactly graph-unit version 0.2.0 under this binding-specification revision and refuse every other declared version distinctly from graph non-conformance.",
       "schemaEnforced": false,
       "tests": [
         {
-          "description": "graph declares a version in the accepted 0.2.x line",
+          "description": "graph declares the exact incorporated graph-unit edition",
           "valid": true,
           "graph": {
             "openbindings.operation-graph": "0.2.0",
@@ -113,8 +113,8 @@
           }
         },
         {
-          "description": "build metadata is ignored when testing line membership; 0.2.0+build.1 is treated as 0.2.0 and accepted",
-          "valid": true,
+          "description": "build metadata produces a different declaration and does not widen the exact incorporated set",
+          "valid": false,
           "graph": {
             "openbindings.operation-graph": "0.2.0+build.1",
             "nodes": {
@@ -134,8 +134,8 @@
           }
         },
         {
-          "description": "a higher patch is accepted because it is in the accepted line, not by inference from comparison",
-          "valid": true,
+          "description": "an unseen higher patch is refused until a binding-specification revision incorporates it",
+          "valid": false,
           "graph": {
             "openbindings.operation-graph": "0.2.99",
             "nodes": {

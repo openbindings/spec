@@ -16,6 +16,8 @@ What it does:
   - Copies the working JSON Schema (openbindings.schema.json) into versions/<version>/openbindings.schema.json
   - Copies EDITORS.md into versions/<version>/editors.md
   - Copies the core conformance corpus into versions/<version>/conformance/
+    (validity fixtures, portable tool scenarios, both meta-schemas, manifest,
+    README, and runner)
   - Appends the version to versions/README.md (if not already present)
     and updates its "The latest release is ..." line
 
@@ -88,8 +90,10 @@ mkdir -p "$dest_conformance"
 cp "$working_conformance/README.md" "$dest_conformance/README.md"
 cp "$working_conformance/manifest.json" "$dest_conformance/manifest.json"
 cp "$working_conformance/fixture.schema.json" "$dest_conformance/fixture.schema.json"
+cp "$working_conformance/tool-scenario.schema.json" "$dest_conformance/tool-scenario.schema.json"
 cp -R "$working_conformance/document" "$dest_conformance/document"
 cp -R "$working_conformance/tool" "$dest_conformance/tool"
+cp -R "$working_conformance/scenarios" "$dest_conformance/scenarios"
 cp -R "$working_conformance/runners" "$dest_conformance/runners"
 
 versions_readme="$repo_root/versions/README.md"

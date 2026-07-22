@@ -36,7 +36,7 @@ The addressable unit of this binding specification is the [Operation graph defin
 
 A single document MAY contain multiple operation graphs, including graphs declaring different versions of this format. Each graph carries its own version field; the document itself has no version field. A document whose root is itself a graph definition is valid; so is a graph embedded at any other JSON Pointer location within an arbitrary host document. Tools MUST NOT reject a document because its shape does not match the conventional layout below.
 
-Two carried representations are accepted, discriminated structurally: **object** `content`, the parsed source document; and **string** `content`, its JSON source text, parsed per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) — this family is JSON-native and defines no other grammar. Duplicate object keys are refused loudly: RFC 8259 leaves duplicate handling to the parser, so a source text carrying them has no single meaning, and a graph is not addressable from a text two parsers read differently. Revision 1 of this specification governs graph units of the **0.2.x** format line (a later 0.2.x edition arrives by compatible in-place revision of this document, per its [§1](#1-status-and-identifier) discipline): a graph whose own version field declares a version outside **that line** is refused loudly per [OG-T-02](#24-conformance), and a new unit-format line is adopted by revision of this document, never sight-unseen. Which unit versions are accepted is this specification's declaration — the same way every binding specification in this catalog states its accepted artifact versions — not an inference a processor draws by comparing version strings.
+Two carried representations are accepted, discriminated structurally: **object** `content`, the parsed source document; and **string** `content`, its JSON source text, parsed per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) — this family is JSON-native and defines no other grammar. Duplicate object keys are refused loudly: RFC 8259 leaves duplicate handling to the parser, so a source text carrying them has no single meaning, and a graph is not addressable from a text two parsers read differently. Revision 1 of this specification governs graph units declaring **exactly `0.2.0`**. Any other value is refused loudly per [OG-T-02](#24-conformance), including a later `0.2.x` value this document has not incorporated. A later graph-unit edition is adopted by compatible revision of this document only after review, never sight-unseen.
 
 ### Conventional shape (non-normative)
 
@@ -66,7 +66,7 @@ A source's `content`, when present, MUST be one of the two representations of [�
 
 ## 6. Composition
 
-When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)); a co-present `location` is the document's origin — provenance and refresh, never a competing artifact. Operation-graph documents are **self-contained by construction**: embedded schemas reference nothing outside themselves ([OG-V-18](#19-validation-rules)) and no URI-bearing cross-document reference exists — operation keys resolve against the containing OBI's operations map ([OG-V-11](#19-validation-rules)), never against a base — so this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is *none*).
+When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)); a co-present `location` is the document's origin — provenance and refresh, never a competing artifact. Operation-graph documents are **self-contained by construction**: embedded schemas reference nothing outside themselves ([OG-V-18](#19-validation-rules)) and no URI-bearing cross-document reference exists — operation keys resolve against the containing OBI's operations map ([OG-V-11](#19-validation-rules)), never against a base — so this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_).
 
 ## 7. `ref`
 
@@ -82,21 +82,21 @@ A `ref` that does not resolve, or whose resolved value is not a valid operation 
 
 ## 8. Target and interaction
 
-The binding target is the operation graph the binding's `ref` addresses ([§7](#7-ref)): the graph *is* the binding, satisfying the bound operation's contract by composing other operations ([§10](#10-overview)). The interaction pattern is never declared — a graph's boundary cardinality is emergent from its contents and the bindings selected at runtime ([§10](#10-overview)) — and the invocation surface this specification works with is named by the invocation model below.
+The binding target is the operation graph the binding's `ref` addresses ([§7](#7-ref)): the graph _is_ the binding, satisfying the bound operation's contract by composing other operations ([§10](#10-overview)). The interaction pattern is never declared — a graph's boundary cardinality is emergent from its contents and the bindings selected at runtime ([§10](#10-overview)) — and the invocation surface this specification works with is named by the invocation model below.
 
 ### Invocation model
 
-The core specification deliberately defines no invocation semantics: invocation is a processor concern ([core §1.2](../../openbindings.md#12-out-of-scope)), and an operation's interaction pattern is determined by its selected binding, not declared ([core §5.1](../../openbindings.md#51-operations)). This format's subject matter *is* invocation, so it needs names for the surface the core delegates. This section defines that vocabulary as used by the rest of this document. It names the observable surface of an operation invocation; it does not constrain how processors implement it.
+The core specification deliberately defines no invocation semantics: invocation is a processor concern ([core §1.2](../../openbindings.md#12-out-of-scope)), and an operation's interaction pattern is determined by its selected binding, not declared ([core §5.1](../../openbindings.md#51-operations)). This format's subject matter _is_ invocation, so it needs names for the surface the core delegates. This section defines that vocabulary as used by the rest of this document. It names the observable surface of an operation invocation; it does not constrain how processors implement it.
 
 - **Invocation**: one use of an operation through a selected binding, from initiation until terminal status.
-- **Input side**: the sequence of values the caller **writes** into the invocation, in order, followed by a **close**. **Close responsibility**: the input side is closed by the caller, or *from below* by the selected binding when the binding can know that no further input is meaningful (a unary binding closes after its first read). When the binding cannot know, closure rests with the caller; a caller that neither writes nor closes owns the resulting hang.
+- **Input side**: the sequence of values the caller **writes** into the invocation, in order, followed by a **close**. **Close responsibility**: the input side is closed by the caller, or _from below_ by the selected binding when the binding can know that no further input is meaningful (a unary binding closes after its first read). When the binding cannot know, closure rests with the caller; a caller that neither writes nor closes owns the resulting hang.
 - **Output side**: the sequence of values the invocation emits, in order, ending in completion.
 - **Terminal status**: an invocation ends in exactly one of **normal completion** or a **terminal error**; a terminal error carries the error the processor surfaces to the caller.
 - **Cancellation**: the caller may cancel an invocation at any point; cancellation tears down the invocation and any work it carries.
 
 Cardinality descriptors used in this document — no-input, unary, server-streaming, client-streaming, bidirectional — are informal names for observed write/read counts under a selected binding, not declarations; per the core specification, neither an operation nor this format declares them.
 
-*Correspondence (informative).* The openbindings project's `binding-invoker` interface expresses this same surface as a typed frame stream (`open`/`input`/`close` in; `output`/`complete`/`error` out, with `input_closed` signalling closure from below), and states the same principle: cardinality is observed by how the caller drives the frames, not declared. That interface is an informational artifact, not part of this format's normative dependencies; the definitions above stand on their own.
+_Correspondence (informative)._ The openbindings project's `binding-invoker` interface expresses this same surface as a typed frame stream (`open`/`input`/`close` in; `output`/`complete`/`error` out, with `input_closed` signalling closure from below), and states the same principle: cardinality is observed by how the caller drives the frames, not declared. That interface is an informational artifact, not part of this format's normative dependencies; the definitions above stand on their own.
 
 ## 9. Operation-boundary correspondence
 
@@ -110,18 +110,18 @@ At the core's **binding-level** transform positions — `inputTransform`/`output
 
 ### At a glance
 
-An operation graph is a small dataflow program that *is* a binding: it implements one operation's contract by wiring other operations together. Nodes are steps; edges carry streams of events between them. The smallest graph is a bare passthrough — `input → output`, piping every caller write straight back out — but the canonical graph wraps a single operation:
+An operation graph is a small dataflow program that _is_ a binding: it implements one operation's contract by wiring other operations together. Nodes are steps; edges carry streams of events between them. The smallest graph is a bare passthrough — `input → output`, piping every caller write straight back out — but the canonical graph wraps a single operation:
 
 ```json
 {
   "openbindings.operation-graph": "0.2.0",
   "nodes": {
-    "in":  { "type": "input" },
+    "in": { "type": "input" },
     "get": { "type": "operation", "operation": "users.get" },
     "out": { "type": "output" }
   },
   "edges": [
-    { "from": "in",  "to": "get" },
+    { "from": "in", "to": "get" },
     { "from": "get", "to": "out" }
   ]
 }
@@ -129,7 +129,7 @@ An operation graph is a small dataflow program that *is* a binding: it implement
 
 Three ideas carry the whole format:
 
-- **Nodes are *what*; edges are *how data flows*.** A node's `type` fixes its behavior; an edge is a plain wire with no logic on it.
+- **Nodes are _what_; edges are _how data flows_.** A node's `type` fixes its behavior; an edge is a plain wire with no logic on it.
 - **Every node is an operation invocation.** An `operation` node invokes an operation chosen at runtime; the built-ins (`each`, `transform`, `filter`, `map`, `buffer`, `combine`, `exit`) invoke behavior this spec defines; `input` and `output` are the graph's own invocation, surfaced.
 - **Cardinality is never declared — it emerges.** Nothing says how many inputs or outputs a graph has; that falls out of its contents and the bindings selected at runtime. The governing guarantee is the [identity law](#11-transparency-the-identity-law): the wrapper above must behave exactly like invoking `users.get` directly.
 
@@ -161,6 +161,8 @@ Explicitly **excluded** from the equivalence surface:
 - **Transport metadata.** Operation graphs are a format that carries no leading or trailing metadata; a graph binding's metadata is empty regardless of inner operations' metadata.
 - **Timing and buffering.** The wrapper may add latency or buffering hops; equivalence is over streams and outcomes, not schedules.
 
+Excluding schedules does not exclude **causal availability**: the wrapper MUST initiate the inner invocation without waiting for a caller write, and MUST consume an output that the inner invocation can produce before input. An implementation may delay delivery, but it may not introduce a dependency on future input that direct invocation does not have. Otherwise a caller that waits for an initial server output before writing would complete directly and deadlock through the wrapper.
+
 The law is testable. A conforming implementation's acceptance criterion is: the trivial wrapper graph, executed over a controlled binding, passes the same invocation-conformance scenarios as a direct invocation of the wrapped operation — across no-input, unary, server-streaming, client-streaming, and bidirectional selected bindings.
 
 Consequences of the law, which the rest of this document realizes:
@@ -179,18 +181,18 @@ An operation graph is a JSON object:
   "openbindings.operation-graph": "0.2.0",
   "description": "Fetches a user.",
   "nodes": {
-    "in":  { "type": "input" },
+    "in": { "type": "input" },
     "get": { "type": "operation", "operation": "users.get" },
     "out": { "type": "output" }
   },
   "edges": [
-    { "from": "in",  "to": "get" },
+    { "from": "in", "to": "get" },
     { "from": "get", "to": "out" }
   ]
 }
 ```
 
-- `openbindings.operation-graph` (REQUIRED, string): the version of this format the graph was authored against. MUST match the SemVer 2.0.0 pattern. Tools refuse graphs declaring a version outside the unit-format line this revision accepts ([OG-T-02](#24-conformance)). Each graph in a document declares its own version independently.
+- `openbindings.operation-graph` (REQUIRED, string): the version of this format the graph was authored against. Under this revision its value MUST be exactly `0.2.0` ([OG-T-02](#24-conformance)). Each graph in a document declares its own version independently.
 - `description` (OPTIONAL, string): a human-readable description of what the graph does.
 - `nodes` (REQUIRED): a map of named nodes. Each key is a node identifier matching `^[A-Za-z_][A-Za-z0-9_.-]*$`; each value is a [Node](#14-node-definitions). Node keys MUST be unique within the graph (for object `content` this follows from the parsed data model; for string `content` it rests on [§3](#3-accepted-source-representations)'s duplicate-key refusal).
 - `edges` (REQUIRED): an array of [Edge](#15-edge-definition) objects defining the connections between nodes.
@@ -212,20 +214,20 @@ Every node has the same shape: it receives the merged event streams of its incom
 }
 ```
 
-  - `error` (any): the failure's identifier string (see [Error identifiers](#errors)) or, for a failure originating in an inner invocation, the inner terminal error value surfaced verbatim (which need not be a string).
-  - `event` (any, OPTIONAL): the event being processed when the failure occurred. Present exactly when the failure is attributable to a single event (a per-event failure); absent for an `operation` conduit's terminal error, which belongs to the invocation as a whole, not to any one write (see [`operation`](#operation)).
+- `error` (any): the failure's identifier string (see [Error identifiers](#errors)) or, for a failure originating in an inner invocation, the inner terminal error value surfaced verbatim (which need not be a string).
+- `event` (any, OPTIONAL): the event being processed when the failure occurred. Present exactly when the failure is attributable to a single event (a per-event failure); absent for an `operation` conduit's terminal error, which belongs to the invocation as a whole, not to any one write (see [`operation`](#operation)).
 
-  Error policy follows the two liftings. **Per-event failures** — an `each` invocation failing, a `WRITE_REJECTED` at a non-accepting `operation` node, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED` — are silent by default: if `onError` is not set, the error event is dropped and does not propagate. Graphs often process many events, and one transient failure should not kill the stream. **Conduit terminal errors** are fatal by default: if an `operation` node's held invocation terminates with an error and the node does not set `onError`, the graph invocation terminates with that error. The [identity law](#11-transparency-the-identity-law) forces this asymmetry — terminal status is on the equivalence surface, so the bare wrapper must surface the inner invocation's terminal error exactly as direct invocation would. Setting `onError` on an `operation` node opts its terminal error into in-graph handling instead. In both regimes the author is in control: wire `onError` to a `transform` for fallback values, to an operation for logging, or to an `exit` node with `error: true` to make per-event failures fatal. A node type with no defined failure modes (`exit`, `buffer`, `combine`, and a schema-based `filter`) never fires `onError`; declaring it on such a node is valid and inert.
+Error policy is **fatal unless explicitly handled**. For a **per-event failure** — an `each` invocation failing, a `WRITE_REJECTED` at a non-accepting `operation` node, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED` — the portable error event is `{ "error": <detail>, "event": <event> }`. If `onError` is set, that event is routed to the named node and the graph continues; otherwise the graph invocation terminates with the error event as its terminal detail. For a **conduit terminal error**, `onError` likewise opts the error into graph handling, but the routed event is `{ "error": <detail> }` with no event member; without `onError`, the graph terminates with the inner terminal error itself, exactly as direct invocation would. The [identity law](#11-transparency-the-identity-law) requires the latter unwrapped detail. This symmetric fatal default makes loss an authored choice: route `onError` to a transform for a fallback, to an operation for logging, to an `exit` node for explicit termination, or to a filtering/dead-end path for explicit disposal. A node type with no defined failure modes (`exit`, `buffer`, `combine`, and a schema-based `filter`) never fires `onError`; declaring it on such a node is valid and inert.
 
 **Two binding authorities.** Every node is an operation invocation. An `operation` node invokes an operation whose behavior is bound at runtime by binding selection; a **built-in** node invokes an operation whose behavior is bound by this specification — its documented operational expectation is its binding. The built-ins are `each`, `transform`, `filter`, `map`, `buffer`, `combine`, and `exit`. The boundary nodes `input` and `output` are not invocations of their own; they are the graph's own invocation, surfaced.
 
-> **Note on terms.** A graph *is a binding* in the [core sense](../../openbindings.md#53-bindings): a `bindings` entry selects it as an operation's target. When this document says "two binding **authorities**," it means *what fixes a node's behavior* — runtime selection for an `operation` node, this specification for a built-in — not a second kind of core `bindings` entry.
+> **Note on terms.** A graph _is a binding_ in the [core sense](../../openbindings.md#53-bindings): a `bindings` entry selects it as an operation's target. When this document says "two binding **authorities**," it means _what fixes a node's behavior_ — runtime selection for an `operation` node, this specification for a built-in — not a second kind of core `bindings` entry.
 
 **The lifting rule.** A node's behavior over a stream follows from what it is:
 
-- *Stateless per-event built-ins* (`transform`, `filter`, `map`) have exactly one lifting over a stream — apply per event — because for a stateless function, "one instance over the stream" and "an instance per event" are indistinguishable. No choice exists, so none is offered.
-- *Stateful built-ins* (`buffer`, `combine`) are by definition one instance per graph invocation; their cross-event state is what they are.
-- *Operations* carry session identity — state, connection, side-effect scope, lifecycle — so two distinct liftings exist: one invocation written every arriving event (`operation`, the conduit) and one invocation per arriving event (`each`). Both are cardinality-agnostic toward the inner operation: the conduit asserts nothing, and `each` fixes only the graph's own write count per session, which any caller of any operation is entitled to do. The two coincide when exactly one event arrives, and differ at zero events and at two or more (see [`operation`](#operation) and [`each`](#each)).
+- _Stateless per-event built-ins_ (`transform`, `filter`, `map`) have exactly one lifting over a stream — apply per event — because for a stateless function, "one instance over the stream" and "an instance per event" are indistinguishable. No choice exists, so none is offered.
+- _Stateful built-ins_ (`buffer`, `combine`) are by definition one instance per graph invocation; their cross-event state is what they are.
+- _Operations_ carry session identity — state, connection, side-effect scope, lifecycle — so two distinct liftings exist: one invocation written every arriving event (`operation`, the conduit) and one invocation per arriving event (`each`). Both are cardinality-agnostic toward the inner operation: the conduit asserts nothing, and `each` fixes only the graph's own write count per session, which any caller of any operation is entitled to do. The two coincide when exactly one event arrives, and differ at zero events and at two or more (see [`operation`](#operation) and [`each`](#each)).
 
 Built-ins exist exactly where external operations cannot reach — cross-event state within a graph invocation (`buffer`, `combine`), invocation instantiation (`each`), control (`exit`) — or where hermeticity demands it: `transform`, `filter`, and `map` could be modeled as external operations, but binding them in the spec keeps graphs executable without network dependencies and keeps their evaluation deterministic.
 
@@ -267,29 +269,31 @@ An operation graph MUST have exactly one `output` node. The `output` node MUST N
 
 The conduit: the invocation handle, as a node. An `operation` node holds **one invocation** of the named operation per graph invocation and pipes its incoming stream into it:
 
-- The invocation is created inert and is first driven by the node's first arriving event, or by the completion of the node's incoming edges if no event ever arrives (the empty stream — a no-input invocation).
+- The invocation is opened when the graph invocation opens, before the graph waits for or accepts its first caller write. Its output side is consumed immediately and independently of its input side. An output available before any input therefore flows downstream without waiting for an arriving event.
 - Each arriving event is written to the invocation as one input, in arrival order.
 - When the node's incoming edges complete, the node closes the invocation's input side.
 - Each output the invocation emits flows downstream as one event, in emission order.
 - The node has no knowledge of, opinion on, or behavior conditioned by the operation's cardinality. Binding selection at runtime determines everything, exactly as for a top-level invocation.
 
+Opening is deliberately **not gated by whether an upstream event later reaches the node**. An `operation` node denotes a live invocation session whose input happens to be a stream; it is not a conditional task. A filter, transform, or fan-out upstream controls which writes enter that already-open session, but does not select whether the session exists. Authors who want “invoke only for events that reach this branch” use [`each`](#each) after the filtering branch; zero events then means zero invocations. This uniform session rule keeps an `operation` node's no-input and output-before-input behavior independent of incidental graph topology. The identity law requires it for the trivial wrapper, while this paragraph explicitly defines its intentional extension to every `operation` node.
+
 Fields:
 
 - `operation` (REQUIRED, string): the operation key to invoke.
-- `timeout` (OPTIONAL, integer >= 1): total budget in milliseconds for the invocation, measured from the moment the node first drives it until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with `TIMEOUT_EXCEEDED`, handled as a conduit terminal error (see **Failure** below).
+- `timeout` (OPTIONAL, integer >= 1): total budget in milliseconds for the invocation, measured from graph-invocation start until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with `TIMEOUT_EXCEEDED`, handled as a conduit terminal error (see **Failure** below).
 
 The containing OBI document is the operation namespace: `operation` resolves against that document's `operations` map only (OG-V-11), and this format defines no cross-document operation reference. To orchestrate an external service, declare an operation for it in the containing OBI and bind that operation to the external service's artifact through an ordinary source; the graph then references it by its local key like any other operation.
 
 An operation node invokes the named operation through the containing OBI processor's ordinary operation-invocation path. This format does not inspect or interpret the referenced operation's bindings directly: binding selection, context resolution, input/output transforms, source loading, and format-specific `ref` handling are performed by the processor the same way they are for a top-level invocation. Because binding selection is a processor concern, a graph whose behavior depends on which of several non-equivalent bindings is selected is not fully portable; authors who need portable behavior should ensure referenced operations have behaviorally equivalent bindings, or only one actionable binding in the relevant processing environment.
 
-**Acceptance.** The node mirrors its invocation's input side. While the invocation accepts input, the node accepts events. When the invocation's input side closes from below (the selected binding closes it, e.g. a unary binding after its first read) or the invocation terminates, the node becomes **non-accepting**: subsequent arriving events are not written; each becomes a `WRITE_REJECTED` error event routed per `onError` (dropped if unset). Non-acceptance participates in [Input-side closure](#input-side-closure-back-closure).
+**Acceptance.** The node mirrors its invocation's input side. While the invocation accepts input, the node accepts events. When the invocation's input side closes from below (the selected binding closes it, e.g. a unary binding after its first read) or the invocation terminates, the node becomes **non-accepting**: subsequent arriving events are not written; each becomes a `WRITE_REJECTED` error event handled per `onError` or fatal when unhandled. Non-acceptance participates in [Input-side closure](#input-side-closure-back-closure).
 
 **Failure.** A terminal error on the held invocation (including `TIMEOUT_EXCEEDED` from this node's `timeout`) is a failure of the invocation as a whole, not of any single write, and is handled in one of two ways:
 
 - If the node sets `onError`, an error event carrying the terminal error is routed to the named node — without an `event` member, since the failure is not attributable to one event — the node's output completes, the node is non-accepting thereafter, and the graph continues.
 - If the node does not set `onError`, the graph invocation terminates with the invocation's terminal error, exactly as if an `exit` node with `error: true` had been reached with the inner terminal error as the error detail: previously emitted outputs are not retracted, in-flight events and inner invocations are cancelled, and the caller-facing input side is closed.
 
-The fatal default is forced by the [identity law](#11-transparency-the-identity-law): terminal status is on the equivalence surface, so the bare wrapper must surface the inner invocation's terminal error identically to direct invocation. Write rejections at a non-accepting node are per-event failures, not terminal errors; they are routed per `onError` (with the rejected event attached) or dropped, and never terminate the graph by default.
+The conduit terminal-error default is forced by the [identity law](#11-transparency-the-identity-law): terminal status is on the equivalence surface, so the bare wrapper must surface the inner invocation's terminal error identically to direct invocation. Write rejections at a non-accepting node are per-event failures, not conduit terminal errors; they are routed per `onError` with the rejected event attached, or terminate the graph with that error event when unhandled.
 
 **Cardinality notes (informative).** With exactly one arriving event, `operation` and [`each`](#each) coincide: one invocation, one write. With zero events, `operation` performs one no-input invocation (required by the identity law) while `each` performs none. With two or more, `operation` writes them all into one session while `each` opens a session per event. The old per-event behavior of this format lived entirely at the one-event point where the two forms are indistinguishable.
 
@@ -415,6 +419,8 @@ The `exit` node MUST NOT have any outgoing edges.
 
 ### Transforms
 
+**Authority snapshot.** JSONata 2.1 means the official [`version-2.1.0` documentation source](https://github.com/jsonata-js/jsonata/tree/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0), and the jsonata-js 2.1.1 behavioral tiebreak means official tag commit [`5d1473277e0022d8580e00f891b12080eb3edd74`](https://github.com/jsonata-js/jsonata/tree/5d1473277e0022d8580e00f891b12080eb3edd74). The rendered documentation and later repository revisions are informative unless this binding specification deliberately advances the pin.
+
 Wherever a node embeds a dynamic expression, the value is a plain [JSONata](https://docs.jsonata.org/) expression string in the **JSONata 2.1** language, with jsonata-js 2.1.1 as the normative behavioral tiebreak — the same pin the core makes for binding transforms at 0.2.0 (core [§5.5](../../openbindings.md#55-transforms)), deliberately aligned but independently stated, so this identifier's meaning never drifts with a future core re-pin: a language change here arrives only by revision of this document. Tools claiming `openbindings.operation-graph@1` conformance MUST support it ([OG-T-03](#24-conformance)). The evaluation environment is this specification's own rule: closed over the event, this specification's documented bindings (`$input`), and JSONata's standard library — a tool MUST NOT extend it further for graph-supplied expressions, neither with host-reaching bindings (filesystem, network, environment variables, process state) nor with pure custom functions. These are the same commitments the core specification makes for binding transforms — deliberately aligned, the language pinned here and the closure independently ruled.
 
 If a transform expression evaluates to `undefined` (no result), the node fails with `TRANSFORM_UNDEFINED`. If it evaluates to `null`, the event becomes `null` and flows downstream normally. This applies to all nodes that use transforms (`transform`, `map`, `filter`).
@@ -438,7 +444,7 @@ Edges carry no logic — no conditions, no transforms, no priorities. They are w
 
 **Fan-in**: multiple edges targeting one node merge their streams. Per-event nodes process merged events in arrival order; `buffer` accumulates them together; `combine` tracks latest-per-source; an `operation` node writes them into its one invocation in arrival order.
 
-**Dead ends**: a node with no path to `output` is legal; its events are discarded, but its side effects (inner invocations) occur. This is the fire-and-forget pattern.
+**Dead ends**: a node with no path to `output` is legal; its events are discarded, but its side effects occur. In particular, every `operation` node is opened even if no event reaches it; use `each` when invocation itself must be conditional on an event. A dead end is a side-effect-only path, not fire-and-forget: its inner invocations remain in flight and graph completion still waits for them unless cancellation or an `exit` tears them down.
 
 **Ordering**: events delivered along a single edge preserve the order the source produced them; cross-edge interleaving at fan-in is implementation-defined (see [Determinism and portability](#17-determinism-and-portability)).
 
@@ -446,7 +452,9 @@ Edges carry no logic — no conditions, no transforms, no priorities. They are w
 
 ### Invocation start
 
-When a graph-bound operation is invoked, the graph binding surfaces the invocation through the boundary nodes: each value the caller writes is accepted (subject to [Input-side closure](#input-side-closure-back-closure)) and emitted as one event at the `input` node, in write order, each rooting a lineage; each event reaching the `output` node is emitted to the caller as one output. The caller closing the input side completes the `input` node's output stream.
+When a graph-bound operation is invoked, the implementation first opens the one held invocation for **every `operation` node**, starts each declared timeout budget, and begins consuming every held invocation's output side. It completes that startup before waiting for or accepting the first caller write. Opening is not ordered by node-key or edge order, and no graph may depend on relative startup timing; the requirement is that caller input and inner output can progress independently. This is the session semantic defined under [`operation`](#operation), not an inference that every topological branch was selected: `operation` nodes are unconditional sessions, while `each` nodes are event-conditioned invocations.
+
+The graph binding then surfaces the invocation through the boundary nodes: each value the caller writes is accepted (subject to [Input-side closure](#input-side-closure-back-closure)) and emitted as one event at the `input` node, in write order, each rooting a lineage; each event reaching the `output` node is emitted to the caller as one output. The caller closing the input side completes the `input` node's output stream.
 
 A binding that selects an operation-graph source MAY carry the core specification's binding-level `inputTransform`/`outputTransform`. Per the core, they apply per item at the operation boundary, outside the graph: `inputTransform` reshapes each caller write before it becomes an event at the `input` node, and `outputTransform` reshapes each event the `output` node emits before output validation (core [§5.2](../../openbindings.md#52-schemas), [OBI-T-16](../../openbindings.md#103-tool-rules)). The graph itself never sees untransformed input or emits untransformed output when those fields are declared.
 
@@ -483,20 +491,21 @@ If the caller cancels the graph invocation, or an `exit` node is reached, cancel
 
 ### Errors
 
-**Per-event failures.** When a node fails while processing an event (an `each` invocation's terminal error or `TIMEOUT_EXCEEDED`, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED`, a `WRITE_REJECTED` at a non-accepting `operation` node, or any other failure attributable to a single event), the failing event does not propagate along the node's normal outgoing edges. If `onError` is set, an error event (`{ "error": "<error>", "event": <eventBeingProcessed> }`) is routed to the named node; otherwise it is dropped. Other in-flight events continue normally. To make per-event failures fatal, wire `onError` to an `exit` node with `error: true`.
+**Per-event failures.** When a node fails while processing an event (an `each` invocation's terminal error or `TIMEOUT_EXCEEDED`, `MAP_NOT_ARRAY`, `TRANSFORM_UNDEFINED`, a `WRITE_REJECTED` at a non-accepting `operation` node, or any other failure attributable to a single event), the failing event does not propagate along the node's normal outgoing edges. Its error event is `{ "error": "<error>", "event": <eventBeingProcessed> }`. If `onError` is set, that event is routed to the named node and other in-flight events continue normally. If `onError` is absent, the graph invocation terminates with that complete error event as its terminal error detail; previously emitted caller outputs stand, while in-flight events and inner invocations are cancelled and caller input closes. Explicit disposal is expressed by routing `onError` to a path that intentionally emits nothing, never by omission.
 
 **Conduit terminal errors.** When an `operation` node's held invocation terminates with an error, the failure belongs to the invocation as a whole. If the node sets `onError`, an error event (`{ "error": "<error>" }`, with no `event` member) is routed to the named node, the node completes and is non-accepting, and the graph continues. If the node does not set `onError`, the graph invocation terminates with that error — previously emitted outputs are not retracted, in-flight events and inner invocations are cancelled, and the caller-facing input side closes — exactly as for an `exit` node with `error: true` whose error detail is the inner terminal error. The graph's terminal error is the inner terminal error itself, the value direct invocation would surface, not an error-event wrapper around it; the `{ "error": ... }` shape exists only for events routed inside the graph. This fatal default is required by the [identity law](#11-transparency-the-identity-law)'s terminal-status clause; see [`operation`](#operation).
 
 **Error identifiers.** When the failure is one this specification defines, the `error` member carries its identifier, in SCREAMING_SNAKE_CASE:
 
-| Identifier | Raised by |
-|---|---|
-| `TIMEOUT_EXCEEDED` | an `operation` or `each` node whose `timeout` budget expires |
-| `WRITE_REJECTED` | a non-accepting `operation` node receiving an event |
-| `MAP_NOT_ARRAY` | a `map` node whose expression yields a defined, non-array result |
-| `TRANSFORM_UNDEFINED` | a `transform`, `filter`, or `map` node whose expression yields no result (undefined) |
+| Identifier                     | Raised by                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| `TIMEOUT_EXCEEDED`             | an `operation` or `each` node whose `timeout` budget expires                         |
+| `WRITE_REJECTED`               | a non-accepting `operation` node receiving an event                                  |
+| `MAP_NOT_ARRAY`                | a `map` node whose expression yields a defined, non-array result                     |
+| `TRANSFORM_UNDEFINED`          | a `transform`, `filter`, or `map` node whose expression yields no result (undefined) |
+| `EXPRESSION_EVALUATION_FAILED` | a `transform`, `filter`, or `map` node whose expression evaluation throws            |
 
-A failure originating inside an inner invocation (the operation itself fails) surfaces the inner terminal error as the `error` value verbatim; such values are processor- and service-defined, need not be strings, and are not drawn from this table. An expression **evaluation failure** (a throw — a JSONata `$error()`, a type error, an unknown function — as distinct from an undefined result) is likewise a per-event failure whose `error` value is a processor-defined diagnostic **string**; it MUST NOT be `TRANSFORM_UNDEFINED`, which is reserved for expressions that evaluate to no result — the classes are distinct. Graphs routing on `error` values treat evaluation-failure prose as they treat inner-invocation errors: ordinary failure values. Which evaluations throw and which yield undefined follows the JSONata reference implementation, per this document's [Transforms](#transforms) deference. A graph cannot distinguish an inner error that happens to equal a spec identifier from the node's own failure; authors routing on `error` values should account for that. Future versions of this format may add identifiers; graphs that route on `error` values should treat unrecognized identifiers as ordinary failure values, not errors in themselves.
+A failure originating inside an inner invocation (the operation itself fails) surfaces the inner terminal error as the `error` value verbatim; such values are processor- and service-defined, need not be strings, and are not drawn from this table. An expression **evaluation failure** (a throw — a JSONata `$error()`, a type error, an unknown function — as distinct from an undefined result) is a per-event failure whose portable `error` value is `EXPRESSION_EVALUATION_FAILED`; processor-specific diagnostic prose may be surfaced out of band but never replaces that identifier in the graph event. It MUST NOT be `TRANSFORM_UNDEFINED`, which is reserved for expressions that evaluate to no result — the classes are distinct. Which evaluations throw and which yield undefined follows the JSONata reference implementation, per this document's [Transforms](#transforms) deference. A graph cannot distinguish an inner error that happens to equal a spec identifier from the node's own failure; authors routing on `error` values should account for that. Future versions of this format may add identifiers; graphs that route on `error` values should treat unrecognized identifiers as ordinary failure values, not errors in themselves.
 
 ### `maxIterations` and event lineage
 
@@ -505,8 +514,8 @@ A failure originating inside an inner invocation (the operation itself fails) su
 - An `each` node increments its own count for the event it processes before invoking; the spawned invocation's output events inherit the incremented counts. Once an arriving event's count for the node would exceed `maxIterations`, the event is dropped — not an error.
 - `transform` and `filter` pass counts through unchanged; a filtered-out event propagates nothing.
 - `map` copies the input event's counts onto every element event it emits (the amplification noted under [Security considerations](#22-security-considerations)).
-- A node that merges several events into one output — `buffer` on flush, `combine` on emit, and an `operation` node, whose single invocation's outputs follow from every event written into it — gives the merged output, for each `each` node, the **maximum** of that count among the contributing events. A merge never lowers a count, so merges cannot be used to escape a bound.
-- An `onError` route carries the failing event's lineage; for a conduit terminal error, which has no single failing event, the error event carries the merged lineage of all events written into the invocation, per the merge rule above. `onError` references count as edges for cycle detection (OG-V-09), so error loops are bounded identically to data loops.
+- A node that merges several events into one output — `buffer` on flush, `combine` on emit, and an `operation` node — gives the merged output, for each `each` node, the **maximum** of that count among the contributing events. For `buffer` and `combine`, contributors are the events in that flush/emission. For an opaque `operation` conduit, contributors are conservatively every input event whose write the held invocation accepted **before that output was emitted**; an output available on open has no contributors. A later write never retroactively changes an already-emitted output's lineage. A merge never lowers a count, so merges cannot be used to escape a bound.
+- An `onError` route carries the failing event's lineage; for a conduit terminal error, which has no single failing event, the error event carries the merged lineage of every input event whose write was accepted before the terminal error occurred, per the merge rule above. `onError` references count as edges for cycle detection (OG-V-09), so error loops are bounded identically to data loops.
 
 For `$input` attribution at merge points, see [Runtime context](#18-runtime-context).
 
@@ -514,11 +523,11 @@ Because counts only increase along a lineage and merges take the maximum, a cycl
 
 ### Flow control
 
-Events in transit between nodes are held in implementation-managed queues; this specification does not fix their capacity. Implementations SHOULD bound them. In particular, an `operation` or `each` node SHOULD consume its inner invocations' output with bounded read-ahead, so that a saturated downstream path propagates backpressure to the invocation — and through it to the transport — rather than accumulating unbounded in-graph state; and admission of caller writes at the `input` node SHOULD be similarly bounded, so a saturated graph backpressures its caller. Bounding strategy does not affect the portable behavior defined in [Determinism and portability](#17-determinism-and-portability); it affects resource behavior only. The event-amplification limits under [Security considerations](#22-security-considerations) are a termination backstop, not flow control.
+Events in transit between nodes are held in implementation-managed queues; this specification does not fix their capacity. Implementations SHOULD bound them. In particular, an `operation` or `each` node SHOULD consume its inner invocations' output with bounded read-ahead, so that a saturated downstream path propagates backpressure to the invocation — and through it to the transport — rather than accumulating unbounded in-graph state; and admission of caller writes at the `input` node SHOULD be similarly bounded, so a saturated graph backpressures its caller. In the absence of a declared timeout expiring, bounding strategy affects resource behavior and timing but not the portable event semantics below. With a declared wall-clock timeout, scheduling and backpressure can determine whether expiry occurs; that environment-sensitive outcome is explicitly outside outcome portability. The event-amplification limits under [Security considerations](#22-security-considerations) are a termination backstop, not flow control.
 
 ### Per-event scoping idiom (informative)
 
-`buffer` and `combine` are scoped to the graph invocation. When a graph processes multiple lineages (multiple caller writes, or multiplication via `map`), per-lineage batching or joining is expressed by **nesting**: place the per-event logic — the parallel fan-out, the `combine`, the `buffer` — in a separate graph, bind it to an operation, and reference that operation from an `each` node. Each event then receives its own sub-invocation, and invocation scope one level down *is* lineage scope. See [Example 5](#example-5-per-event-parallel-join-via-nesting).
+`buffer` and `combine` are scoped to the graph invocation. When a graph processes multiple lineages (multiple caller writes, or multiplication via `map`), per-lineage batching or joining is expressed by **nesting**: place the per-event logic — the parallel fan-out, the `combine`, the `buffer` — in a separate graph, bind it to an operation, and reference that operation from an `each` node. Each event then receives its own sub-invocation, and invocation scope one level down _is_ lineage scope. See [Example 5](#example-5-per-event-parallel-join-via-nesting).
 
 ## 17. Determinism and portability
 
@@ -531,7 +540,7 @@ Portable behavior (every conforming implementation MUST honor it):
 - **`map` order.** Elements are emitted in array order.
 - **Element-node evaluation.** For a deterministic expression, the result of `transform`, `filter`, or `map` is a function of the event and `$input` alone.
 - **The output multiset.** Given deterministic operations and expressions, and a graph in which every node receives its events in a fixed order, the multiset of output events is determined by the graph and its input stream. A graph with a single caller write and no reconverging concurrent paths has a fully determined output; the identity-law wrapper is fully determined for every cardinality.
-- **Eventual completion.** A graph that these semantics say completes will complete under every conforming implementation; completion is determined by the data, not by timing.
+- **Eventual completion.** In the absence of cancellation, inner-operation/environment failure, or a declared wall-clock timeout expiring, a graph that these semantics say completes will complete under every conforming implementation; completion is determined by the data, not by scheduling.
 
 Implementation-defined behavior (conforming implementations MAY differ):
 
@@ -541,14 +550,15 @@ Implementation-defined behavior (conforming implementations MAY differ):
 - **Order within a flushed `buffer`** fed by concurrent paths (same multiset, unspecified element order).
 - **Completion-detection mechanism and timing**, especially for cycles.
 - **Output-event order across concurrent paths.**
+- **Whether and when a declared wall-clock timeout expires**, because transport latency, processor scheduling, backpressure, and host load are environmental inputs. A graph that needs outcome portability across environments must not make its successful result depend on completing within such a budget; timeout remains a safety policy with a portable failure identifier, not a deterministic logical clock.
 
 Authors who need a byte-stable output order should funnel results through a single path before `output` — for example, collect into a `buffer` and sort within a `transform` — or keep concurrency inside nested single-write sub-graphs.
 
 ### What is not guaranteed (informative)
 
-A graph's *topology* is easily mistaken for an *ordering*; they are not the same. The clearest trap is the `map → each → buffer` shape of [Example 4](#example-4-map-and-collect): `map` emits the ids in array order, but `each` opens one invocation per id and those invocations run concurrently. Because **interleaving across concurrent `each` invocations' outputs** is implementation-defined, the order in which results arrive at the `buffer`, and so the element order of the single array it emits, is not guaranteed. Example 4 guarantees the *multiset* of results, not the *sequence*: a consumer reading `[Alice, Bob, Carol]` positionally relies on one implementation's scheduling, not on this format. The "single linear path" of edges is a red herring — the `each` node is a concurrency point sitting on it.
+A graph's _topology_ is easily mistaken for an _ordering_; they are not the same. The clearest trap is the `map → each → buffer` shape of [Example 4](#example-4-map-and-collect): `map` emits the ids in array order, but `each` opens one invocation per id and those invocations run concurrently. Because **interleaving across concurrent `each` invocations' outputs** is implementation-defined, the order in which results arrive at the `buffer`, and so the element order of the single array it emits, is not guaranteed. Example 4 guarantees the _multiset_ of results, not the _sequence_: a consumer reading `[Alice, Bob, Carol]` positionally relies on one implementation's scheduling, not on this format. The "single linear path" of edges is a red herring — the `each` node is a concurrency point sitting on it.
 
-A second instance is concurrent paths racing a shared sink. A `map` or fan-out feeding both an `output` path and an `exit` does not guarantee *how many* events reach `output` before the `exit` fires; `exit` terminates "when an event reaches this node," and which concurrently-in-flight events were already emitted is a timing property the [identity law](#11-transparency-the-identity-law)'s equivalence surface excludes.
+A second instance is concurrent paths racing a shared sink. A `map` or fan-out feeding both an `output` path and an `exit` does not guarantee _how many_ events reach `output` before the `exit` fires; `exit` terminates "when an event reaches this node," and which concurrently-in-flight events were already emitted is a timing property the [identity law](#11-transparency-the-identity-law)'s equivalence surface excludes.
 
 Both are removed by the techniques above, not by assuming a schedule. The exit race also has a structural fix: route the racing events through a `buffer`, whose partial contents an `exit` discards (it never emits mid-race), so the early return is deterministic. Pinning an order the engine does not promise is the most common portability defect in operation graphs.
 
@@ -557,7 +567,7 @@ Both are removed by the techniques above, not by assuming a schedule. The exit r
 Transform and filter expressions evaluate with:
 
 - `$` — the current event.
-- `$input` — the **root input event of the current event's lineage**: the caller-written value this event descends from. Immutable. For an event descending from a merge (`buffer` flush, `combine` emission, or an `operation` conduit written from multiple lineages), `$input` is defined if and only if all contributing events share one root; otherwise `$input` is unbound (undefined) during evaluation. The expression's overall result then governs, per the undefined-result rule under [Transforms](#transforms): an expression whose result is undefined fails the node with `TRANSFORM_UNDEFINED`, while an expression that handles the undefined `$input` and yields a defined result proceeds normally (a `filter` expression yielding a defined falsy result drops the event as usual). In a graph invoked with a single write — the common case — every event shares that root and `$input` behaves as a constant.
+- `$input` — the **root input event of the current event's lineage**: the caller-written value this event descends from. Immutable. For an event descending from a merge (`buffer` flush, `combine` emission, or an `operation` conduit written from multiple lineages), `$input` is defined if and only if all contributors defined by [event lineage](#maxiterations-and-event-lineage) share one root; otherwise `$input` is unbound (undefined) during evaluation. For a conduit output, the contributor cutoff is the instant that output is emitted: accepted earlier writes contribute, later writes never do. An `operation` output emitted before that invocation receives any input therefore has no root and an undefined `$input`. The expression's overall result then governs, per the undefined-result rule under [Transforms](#transforms): an expression whose result is undefined fails the node with `TRANSFORM_UNDEFINED`, while an expression that handles the undefined `$input` and yields a defined result proceeds normally (a `filter` expression yielding a defined falsy result drops the event as usual). In a graph invoked with a single write — the common case — events descending from that write share its root and `$input` behaves as a constant.
 
 There is no accumulated state (`$steps` or similar). Events carry their own data; if a downstream node needs upstream data, it must flow through the edges, or via `$input`, or via the [per-event scoping idiom](#per-event-scoping-idiom-informative).
 
@@ -565,9 +575,9 @@ There is no accumulated state (`$steps` or similar). Events carry their own data
 
 The following rules apply to each operation graph definition (the value at which a binding's `ref` resolves). Enforcement is a tool obligation: a tool acting on an operation-graph binding MUST validate the graph against these rules before acting on it ([OG-T-01](#24-conformance)). Each rule carries a stable identifier (`OG-V-##`) so validators, fixtures, and errata can cite it unambiguously; identifiers are never reused, never renumbered. The per-node field-presence requirements marked (REQUIRED) in the node definitions above are equally normative and are encoded by this format's JSON Schema; a validator applies both the enumerated rules and node well-formedness (required fields present, defined fields well-typed).
 
-This format's `openbindings.operation-graph.schema.json` expresses the structural portion for validator tooling. It is a **derived artifact, not a second source of truth: where prose and schema conflict, the prose governs** (the same posture core [§10](../../openbindings.md#10-conformance) takes toward `openbindings.schema.json`). Well-formedness does **not** mean a closed object: an unknown field is tolerated per [§20](#20-extensions), never a validation failure, so the schema does not reject one and neither does a conforming tool.
+This format's `openbindings.operation-graph.schema.json` expresses the structural portion for validator tooling. It is a **derived artifact, not a second source of truth: where prose and schema conflict, the prose governs** (the same posture core [§10](../../openbindings.md#10-conformance) takes toward `openbindings.schema.json`). Graph objects are closed except for the explicit `x-` extension namespace: an unknown non-extension field violates OG-V-19, while an `x-` field follows [§20](#20-extensions). Exact graph-unit versioning supplies forward evolution; silently ignoring an executable-field typo does not.
 
-- **OG-V-01**: The graph MUST declare an `openbindings.operation-graph` field matching the SemVer 2.0.0 pattern.
+- **OG-V-01**: The graph MUST declare an `openbindings.operation-graph` string field matching the SemVer 2.0.0 pattern. Whether this specification accepts that well-formed version is the distinct processor gate OG-T-02.
 - **OG-V-02**: The graph MUST contain exactly one node with `"type": "input"`.
 - **OG-V-03**: The graph MUST contain exactly one node with `"type": "output"`.
 - **OG-V-04**: The `input` node MUST NOT be the target of any edge.
@@ -585,6 +595,7 @@ This format's `openbindings.operation-graph.schema.json` expresses the structura
 - **OG-V-16**: `exit` nodes MUST NOT have any outgoing edges.
 - **OG-V-17**: The `input` and `output` nodes MUST NOT declare `onError`. The boundary nodes are not invocations of their own and cannot fail as nodes; only processing nodes support `onError` (see [Node model](#13-node-model)).
 - **OG-V-18**: Every schema embedded in a graph definition (`filter.schema`, `buffer.until`, `buffer.through`) is a JSON Schema 2020-12 object; its `$schema`, when present, equals `https://json-schema.org/draft/2020-12/schema`; and it is **self-contained** — no keyword references anything outside it, which forecloses `$vocabulary` and every reference keyword the dialect defines: `$ref`, `$dynamicRef`, `$dynamicAnchor`, and `$anchor`-fragment references all appear nowhere within it (see [Embedded schemas](#embedded-schemas); the same set core [OBI-D-05](../../openbindings.md#102-document-rules) excludes at OBI positions).
+- **OG-V-19**: At the graph, node, and edge object levels, every field is either defined for that exact object/type or begins with `x-`. An unknown non-`x-` field, including a field defined for a different node type, is a validation failure rather than ignored executable text.
 
 **Diagnostics (non-normative).** Validators should warn when a multi-emission path (e.g., a `map`) feeds an `operation` node — usually a missing `each` — and may warn when none of the `input` node's direct consumers is an `operation` node, since back-closure considers only direct consumers ([Input-side closure](#input-side-closure-back-closure)) and such a graph's callers always own input closure. The latter covers the `input → transform → operation` shape, which does not back-close like the bare wrapper even though an `operation` node sits one hop away; see [Deferred from 0.2.0](#23-deferred-from-020) (transitive back-closure).
 
@@ -592,10 +603,10 @@ These rules apply to the graph definition itself; the enclosing JSON document ha
 
 ## 20. Extensions
 
-- Graph definitions MAY include extension fields whose keys begin with `x-` at any object location within the graph (the graph itself, nodes, edges).
+- Graph definitions MAY include extension fields whose keys begin with `x-` at any graph-controlled object location (the graph itself, nodes, edges).
 - Tools MUST ignore `x-` fields they do not understand.
 - `x-` fields MUST NOT change the meaning of any defined field for purposes of validation, execution, or compatibility.
-- A field that is neither defined by this format nor `x-`-prefixed is **ignored**, exactly as the core specification treats an unknown field ([OBI-T-02](../../openbindings.md#103-tool-rules)): it is never a validation failure and never a refusal. Tools SHOULD surface a diagnostic for an unknown non-`x-` field to catch typos — the graph is executed, so a mistyped field silently doing nothing is worth flagging, but not worth refusing over. This covers a field this format defines for **another** node type appearing where it has no meaning (a `maxIterations` on an `operation` node, which belongs to `each`): it is tolerated and inert, not a validation failure, and the diagnostic SHOULD say which node type the field applies to. The single exception is [OG-V-17](#19-validation-rules)'s explicit prohibition of `onError` on a boundary node, which is a validation failure; no other field placement is.
+- A field that is neither defined for that exact graph/node/edge object nor `x-`-prefixed is a validation failure under OG-V-19. This intentionally differs from the core's open OBI object model: graph definitions are executable artifacts with their own exact version gate and extension namespace. A mistyped `timeot` must not silently remove a safety budget, and `maxIterations` on an `operation` node must not look effective when it belongs only to `each`.
 
 The enclosing JSON document is unconstrained, so extension schemes outside the graph definition are the host document's concern.
 
@@ -609,12 +620,12 @@ The enclosing JSON document is unconstrained, so extension schemes outside the g
     "getUser": {
       "openbindings.operation-graph": "0.2.0",
       "nodes": {
-        "in":  { "type": "input" },
+        "in": { "type": "input" },
         "get": { "type": "operation", "operation": "users.get" },
         "out": { "type": "output" }
       },
       "edges": [
-        { "from": "in",  "to": "get" },
+        { "from": "in", "to": "get" },
         { "from": "get", "to": "out" }
       ]
     }
@@ -827,7 +838,7 @@ Here `orders.enrichOne` is bound to the `enrichOrder` graph of Example 3. The ca
 
 ### Example 8: Fatal per-event error with `exit`
 
-Conduit terminal errors are fatal by default (see [Errors](#errors)), so a bare `operation` node already terminates the graph on failure. Per-event failures at an `each` node are silent by default; this example makes any single item's failure fatal by wiring `onError` to an `exit` node:
+All unhandled node failures are fatal by default (see [Errors](#errors)). This example makes the policy explicit by routing an `each` failure to an `exit` node, which also gives the graph an obvious place to add centralized error transformation later:
 
 ```json
 {
@@ -854,7 +865,7 @@ Conduit terminal errors are fatal by default (see [Errors](#errors)), so a bare 
 }
 ```
 
-**Execution (error)**: one item's invocation times out; the error event `{ "error": "TIMEOUT_EXCEEDED", "event": { ... } }` routes to `die`; the graph terminates with the error event as the error detail. Previously emitted outputs are not retracted; in-flight invocations for other items are cancelled; the stream closes as failed. Without `onError`, the failed item would be dropped silently and the other items would proceed — Example 7's behavior minus the fallback.
+**Execution (error)**: one item's invocation times out; the error event `{ "error": "TIMEOUT_EXCEEDED", "event": { ... } }` routes to `die`; the graph terminates with the error event as the error detail. Previously emitted outputs are not retracted; in-flight invocations for other items are cancelled; the stream closes as failed. Without `onError`, the graph would terminate with the same error event under the fatal default; the explicit route documents where this graph applies its policy.
 
 ## 22. Security considerations
 
@@ -885,8 +896,8 @@ A tool's obligations follow the capabilities it exercises, mirroring the [core s
 - **OG-D-01**: `content`, when present, is the parsed source document as an object or its JSON source text as a string, per [§3](#3-accepted-source-representations) and [§5](#5-content).
 - **OG-D-02**: `location`, when present, is an absolute URI addressing the source document, per [§4](#4-location).
 - **OG-D-03**: `ref` is present and is an [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) JSON Pointer fragment resolving to a graph definition (`"#"` addressing a root-level graph), in the fragment's one verbatim spelling — never percent-decoded — per [§7](#7-ref).
-- **OG-T-01** (acting on an operation-graph binding: validating, generating code, invoking): MUST validate the target graph definition against the [validation rules](#19-validation-rules) (OG-V-01 through OG-V-18) and MUST fail the binding rather than act on a graph that violates them.
-- **OG-T-02** (all processors): MUST refuse a graph whose `openbindings.operation-graph` version falls outside the unit-format line this revision accepts ([§3](#3-accepted-source-representations): the **0.2.x** line), and MUST report that refusal distinctly from graph non-conformance ([OG-T-01](#24-conformance)). Membership is this specification's declaration, never an inference drawn from comparing two version strings: every 0.2.x version is accepted because this revision accepts the line — a higher patch included — and every version outside it is refused, in either direction and at either level. Build metadata is ignored when testing membership ([SemVer] 2.0.0). A prerelease version is not a member of the line and is refused; a tool MAY additionally accept a specific prerelease it declares support for.
+- **OG-T-01** (acting on an operation-graph binding: validating, generating code, invoking): MUST validate the target graph definition against the [validation rules](#19-validation-rules) (OG-V-01 through OG-V-19) and MUST fail the binding rather than act on a graph that violates them.
+- **OG-T-02** (all processors): MUST accept this revision's graph-unit version only when `openbindings.operation-graph` is exactly the string `0.2.0`, and MUST report any other version as a version refusal distinct from graph non-conformance ([OG-T-01](#24-conformance)). SemVer precedence, build metadata equivalence, and inferred patch compatibility do not widen this exact incorporated set. A later graph-unit value is accepted only after a revision of this document incorporates it.
 - **OG-T-03** (executing graphs): MUST evaluate node expressions in the pinned language of [Transforms](#transforms) — JSONata 2.1, jsonata-js 2.1.1 tiebreak — whose evaluation commitments deliberately align with the core specification's binding transforms ([§5.5](../../openbindings.md#55-transforms)).
 - **OG-T-04** (executing graphs): MUST implement the [Execution semantics](#16-execution-semantics), including the portable behavior in [Determinism and portability](#17-determinism-and-portability), and MUST satisfy the [identity law](#11-transparency-the-identity-law); the acceptance criterion is the identity-law test stated there.
 
@@ -895,7 +906,7 @@ The specification repository carries a conformance corpus for this format under 
 ## 25. References
 
 - **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository. Incorporated authority for the concepts this specification builds on — operations, bindings, sources, transforms, invocations ([§2](#2-scope-and-incorporated-authorities)) — and the OBI-B rules this document answers.
-- **[JSONata]** "JSONata documentation," at language version 2.1, with jsonata-js 2.1.1 as the normative behavioral tiebreak. <https://docs.jsonata.org/>. Incorporated authority for graph-embedded expression evaluation ([Transforms](#transforms)).
+- **[JSONata]** "JSONata documentation," [`version-2.1.0` source snapshot](https://github.com/jsonata-js/jsonata/tree/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0), with jsonata-js 2.1.1 at official tag commit `5d1473277e0022d8580e00f891b12080eb3edd74` as the normative behavioral tiebreak. Incorporated authority for graph-embedded expression evaluation ([Transforms](#transforms)); the [rendered documentation](https://docs.jsonata.org/) is informative if it differs.
 - **[RFC 8259]** "The JavaScript Object Notation (JSON) Data Interchange Format." <https://www.rfc-editor.org/rfc/rfc8259>. Cited for string-content parsing ([§3](#3-accepted-source-representations)).
 - **[JSON Schema]** "JSON Schema 2020-12." <https://json-schema.org/draft/2020-12>. Incorporated authority for graph-embedded schemas ([Embedded schemas](#embedded-schemas)).
 - **[RFC 6901]** "JavaScript Object Notation (JSON) Pointer." <https://www.rfc-editor.org/rfc/rfc6901>. Incorporated authority for `ref` addressing ([§7](#7-ref)).

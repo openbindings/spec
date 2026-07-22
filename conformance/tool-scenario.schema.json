@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/tool-scenario.schema.json",
+  "title": "OpenBindings core tool scenarios",
+  "description": "Portable action-and-outcome scenarios for core rules whose behavior cannot be expressed as an inline document-validity verdict.",
+  "type": "object",
+  "required": ["format", "rule", "section", "description", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.core-tool-scenarios@1" },
+    "rule": { "enum": ["OBI-T-11", "OBI-T-12", "OBI-T-16", "OBI-T-17"] },
+    "section": { "const": "10.3" },
+    "description": { "type": "string", "minLength": 1 },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/schemaCycle" },
+          { "$ref": "#/$defs/resolveOperation" },
+          { "$ref": "#/$defs/validateValues" },
+          { "$ref": "#/$defs/concludeVerification" }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "rule": { "const": "OBI-T-11" } }, "required": ["rule"] },
+      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/schemaCycle" } } } }
+    },
+    {
+      "if": { "properties": { "rule": { "const": "OBI-T-12" } }, "required": ["rule"] },
+      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/resolveOperation" } } } }
+    },
+    {
+      "if": { "properties": { "rule": { "const": "OBI-T-16" } }, "required": ["rule"] },
+      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/validateValues" } } } }
+    },
+    {
+      "if": { "properties": { "rule": { "const": "OBI-T-17" } }, "required": ["rule"] },
+      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/concludeVerification" } } } }
+    }
+  ],
+  "$defs": {
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^T(11|12|16|17)-S-[0-9]{2}$"
+    },
+    "scenarioDescription": { "type": "string", "minLength": 1 },
+    "side": { "enum": ["input", "output"] },
+    "validationOutcome": {
+      "enum": ["valid", "instance-mismatch", "graph-unavailable"]
+    },
+    "schemaCycle": {
+      "type": "object",
+      "required": ["id", "description", "action", "given", "expected"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/scenarioId" },
+        "description": { "$ref": "#/$defs/scenarioDescription" },
+        "action": { "const": "resolve-schema-cycle" },
+        "given": {
+          "type": "object",
+          "required": ["document", "operation", "side", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "document": { "type": "object" },
+            "operation": { "type": "string" },
+            "side": { "$ref": "#/$defs/side" },
+            "value": {}
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": ["terminates", "allowedOutcomes"],
+          "additionalProperties": false,
+          "properties": {
+            "terminates": { "const": true },
+            "allowedOutcomes": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "enum": ["valid", "instance-mismatch", "resolver-error"] }
+            }
+          }
+        }
+      }
+    },
+    "resolveOperation": {
+      "type": "object",
+      "required": ["id", "description", "action", "given", "expected"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/scenarioId" },
+        "description": { "$ref": "#/$defs/scenarioDescription" },
+        "action": { "const": "resolve-operation" },
+        "given": {
+          "type": "object",
+          "required": ["document", "name"],
+          "additionalProperties": false,
+          "properties": {
+            "document": { "type": "object" },
+            "name": { "type": "string" }
+          }
+        },
+        "expected": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["outcome", "operationKey", "bindingKeys"],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": { "const": "resolved" },
+                "operationKey": { "type": "string" },
+                "bindingKeys": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": { "type": "string" }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["outcome"],
+              "additionalProperties": false,
+              "properties": { "outcome": { "const": "not-found" } }
+            }
+          ]
+        }
+      }
+    },
+    "validateValues": {
+      "type": "object",
+      "required": ["id", "description", "action", "given", "expected"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/scenarioId" },
+        "description": { "$ref": "#/$defs/scenarioDescription" },
+        "action": { "const": "validate-operation-values" },
+        "given": {
+          "type": "object",
+          "required": ["document", "operation", "side", "values"],
+          "additionalProperties": false,
+          "properties": {
+            "document": { "type": "object" },
+            "operation": { "type": "string" },
+            "side": { "$ref": "#/$defs/side" },
+            "values": { "type": "array", "minItems": 1 }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": ["results"],
+          "additionalProperties": false,
+          "properties": {
+            "results": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/validationOutcome" }
+            }
+          }
+        }
+      }
+    },
+    "concludeVerification": {
+      "type": "object",
+      "required": ["id", "description", "action", "given", "expected"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/scenarioId" },
+        "description": { "$ref": "#/$defs/scenarioDescription" },
+        "action": { "const": "conclude-verification" },
+        "given": {
+          "type": "object",
+          "required": ["evidence"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "pattern": "^OBI-D-[0-9]+$" },
+              "additionalProperties": {
+                "enum": ["satisfied", "violated", "unverified", "not-applicable"]
+              }
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": ["conclusion", "violated", "unverified"],
+          "additionalProperties": false,
+          "properties": {
+            "conclusion": {
+              "enum": ["conformant", "non-conformant", "conformance-undetermined"]
+            },
+            "violated": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }
+            },
+            "unverified": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
