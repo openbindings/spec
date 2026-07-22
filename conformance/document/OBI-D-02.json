@@ -72,7 +72,7 @@
       ]
     },
     {
-      "description": "source missing required `format` field",
+      "description": "source missing required `bindingSpec` field",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -90,7 +90,7 @@
       ]
     },
     {
-      "description": "source `format` is an empty string (violates minLength: 1)",
+      "description": "source `bindingSpec` is an empty string (violates minLength: 1)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

@@ -8,6 +8,271 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Spec-refinement run 1 — R12 (bytes boundary) + maxIterations diagnostic**
+  (ratified 2026-07-21).
+  - **R12** — the catalog README gains a "bytes boundary" doctrine section:
+    the operation value domain is JSON, so bytes need a boundary encoding;
+    a specification **follows the artifact's declared encoding** where one
+    exists (OAS `contentEncoding`, ProtoJSON `bytes`, MCP `blob`) and
+    **defaults to Base64 only in the gap**. Base64 is the project's
+    *recommended* default, restated per specification, never a cross-spec
+    mandate (the catalog has no mechanism for one). A family that does not
+    define bytes carriage on some axis **declares the gap**; `openbindings.usage@1`
+    gains an explicit binary-output gap note (its text-only stdout default,
+    no base64 lane in revision 1) to match the openapi and asyncapi gap
+    declarations already present. No gap is closed; core and source artifacts
+    inherit nothing.
+  - **maxIterations-on-wrong-node** — `openbindings.operation-graph@1` §20's
+    tolerance rule now states that a field this format defines for *another*
+    node type (a `maxIterations` on an `operation` node) is tolerated and
+    inert like any unknown field, with the diagnostic naming the node type the
+    field applies to. It is **not** given a named prohibition rule — only
+    OG-V-17's boundary-node `onError` is a field-placement failure. (A general
+    misplacement rule would readmit the per-type whitelist R3 removed.)
+
+- **Spec-refinement run 1 — R3 (og unknown fields) + R11 (acquisition
+  success)** (ratified 2026-07-21).
+  - **R3 — `openbindings.operation-graph@1` tolerates unknown fields, aligning
+    with the core.** Prose (§20) and the shipped
+    `openbindings.operation-graph.schema.json` disagreed: the schema closed
+    every object (`additionalProperties: false`), while §20 spoke only of `x-`
+    fields, leaving a non-`x-` unknown field accepted by a prose-following tool
+    and rejected by a schema-following one, with no precedence clause. §20 now
+    states that an unknown non-`x-` field is **ignored** (never a validation
+    failure or refusal), exactly as core OBI-T-02 treats one, with a SHOULD
+    diagnostic — a graph is executed, so a mistyped field silently doing
+    nothing is worth flagging, not refusing over. The schema opens
+    (`additionalProperties: true` at all 13 object sites; the redundant `x-`
+    `patternProperties` removed), and §19 gains the missing precedence
+    sentence: the schema is a derived artifact and **where prose and schema
+    conflict, the prose governs**. Fixtures: the OG-V-17 block (onError on
+    input/output — a standing *prose* prohibition, unaffected by R3) is
+    reclassified from schema-enforced to prose-enforced; the OG-V-14
+    `maxIterations`-on-an-operation-node case, which no prose rule actually
+    forbids, is converted from a (mis-keyed) rejection to the toleration R3
+    mandates. *A defined field appearing on a node type that does not define
+    it — like `maxIterations` on `operation` — is now tolerated absent an
+    explicit prohibition; whether any such misuse deserves a named prohibition
+    rule the way OG-V-17 forbids boundary-node `onError` is left open, not
+    decided here.*
+  - **R11 — acquisition success belongs to the address scheme; `exec:` owes
+    its own.** `openbindings.usage@1` §4 identified an exec address's artifact
+    with the vector's standard output but never stated what a non-zero exit
+    means, leaving a truncated-then-failed generator readable as a smaller
+    valid descriptor. §4 now requires **exit 0** for the dereference to
+    succeed; any other termination is a loud failure and the stdout bytes are
+    not an artifact (stderr is diagnostic, never the artifact). The catalog
+    README's template (item 4) states the general posture: URI-addressed
+    families inherit acquisition-failure semantics from the scheme (an HTTP
+    status, a `file://` error) and need say nothing — the terseness is
+    deference — while a family that mints an address form with no incorporating
+    scheme owes the success condition itself, `exec:` being the pattern.
+
+- **Spec-refinement run 1 — R4, openapi passthrough into non-JSON bodies**
+  (ratified 2026-07-21). §9.1 let an undeclared caller field pass through into
+  any object request body "riding whatever encoding the selected media type
+  gives the body — JSON, multipart, form-urlencoded", but for a passthrough
+  field the artifact declares nothing, and the OAS derives multipart and
+  form-urlencoded part carriage from per-property declarations (3.1's Encoding
+  Object is self-contradictory in the residual branch), so "the artifact's
+  declarations decide" was unsatisfiable exactly where §9.1 routed the field.
+  Passthrough is now permitted only where the selected request media gives the
+  field a destination **without invention** — the JSON family — and an
+  unmatched field is refused before dispatch when no body is declared, when the
+  body is non-object, or when the object body's selected media is
+  `multipart/form-data` or `application/x-www-form-urlencoded`. Stated as a
+  property of the value domain, not a format allowance: a future media whose
+  serialization is derivable without a per-property declaration qualifies by
+  the same test. This applies the same no-invention test the degenerate
+  media/schema refusal (§9.2) already used one paragraph away. OAPI-P-03
+  updated.
+
+- **Spec-refinement run 1 — R5, R7, R8, R9, R10 (upstream fidelity + mcp
+  addressing)** (ratified 2026-07-21).
+  - **R5 — `openbindings.mcp@1` gains a fourth `ref` entity,
+    `resourceTemplates`.** MCP retrieves resources and resource templates from
+    two separate collections (`resources/list`, `resources/templates/list`);
+    the three-entity `ref` vocabulary collapsed them into one `resources/`
+    space, which manufactured an ambiguity (an RFC 6570 template may carry zero
+    expressions, so a resource `uri` and a template `uriTemplate` can be
+    byte-identical and match one ref). `<entity>` is now `tools`, `resources`,
+    `resourceTemplates`, `prompts` — one per MCP listable collection —
+    addressed in distinct namespaces, so the collision is impossible by
+    construction. The ordered "first against resources, then against templates"
+    clause is deleted, and the ambiguity rule scopes to within one entity's
+    collection. §7, MCP-D-03, the catalog README index row, and the MCP-D-03
+    conformance fixtures are updated. This lands inside `@1`'s initial
+    publication (tooling adoption not yet begun), not a new revision.
+  - **R7 — `openbindings.operation-graph@1` self-containment stated as a
+    property.** OG-V-18 banned `$ref` in embedded schemas but not the dialect's
+    other reference keywords, while §14 claimed the rule is "the same
+    constraints the core specification places on schemas at OBI positions" —
+    false, since core OBI-D-05 also excludes `$dynamicRef`, `$dynamicAnchor`,
+    and `$anchor`-fragment references. OG-V-18 now states the property (no
+    keyword references anything outside the schema) with the full keyword set
+    as its enumeration, matching OBI-D-05 keyword-for-keyword. `$id` is left
+    alone deliberately, tracking the core's own posture.
+  - **R8 — `openbindings.usage@1` flag inheritance re-attributed.** §7 claimed
+    ancestor "inherited/global" flag accumulation "per the usage specification";
+    upstream has no "inherited" concept and does not state a scope of
+    application for `global` (confirmed against usage.jdx.dev). The word
+    `inherited` is dropped, and the ancestor-chain scope is now owned as this
+    specification's determinism pin rather than attributed to upstream.
+  - **R9 — `openbindings.openapi@1` 3.1 binary signal follows the OAS.** The
+    3.1.x binary-signal test said "a string schema carrying
+    `contentMediaType`/`contentEncoding`", inverting OAS 3.1 §"Working with
+    Binary Data": raw binary omits `type` (schema carries `contentMediaType`),
+    while `type: string` with `contentEncoding` is the encoded case. §9.2 now
+    recognizes both shapes; the Base64 boundary default attaches to the raw
+    shape (and 3.0.x `format: binary`), the declared encoding to the encoded
+    shape.
+  - **R10 — grpc and connect scope "refused before dispatch" correctly.**
+    `openbindings.grpc@1` said every input unmarshal failure is refused before
+    dispatch, unimplementable for client-streaming and bidirectional methods,
+    whose later input values arrive with the RPC in flight (the gRPC protocol
+    offers no un-dispatch, only cancellation). GRPC-P-03/§9.1 now scope the
+    pre-dispatch guarantee to the first input value (and wholly to unary and
+    server-streaming); a later value's failure terminates the invocation as a
+    locally-originated failure outcome and cancels the RPC, already-emitted
+    outputs standing. `openbindings.connect@1`, which incorporates the grpc
+    rule, has its local restatement (CONN-P-02/§9.2) corrected to match.
+
+- **Spec-refinement run 1 — R1 + R6, asyncapi and the configuration seam**
+  (ratified 2026-07-21). Spec text only; reference-SDK follow-through
+  (relaxing the enum refusals, demoting the pinned-shape error strings) is
+  tracked separately and lands in the SDK repos.
+  - **R1 — configuration carriage is implementation surface, not specification
+    content.** A binding specification pins each configuration point's *default*
+    and the *meaning* of an override (what may be supplied, which supplies are
+    refused, substitution order); it does not pin the concrete value a consumer
+    hands to a point. Pinning that shape changed nothing an OBI means and forced
+    every implementation's configuration API into one JSON shape. `asyncapi`
+    §9.2's "Configuration value shapes" paragraph is replaced by a semantics
+    paragraph plus an explicit note that carriage is implementation surface;
+    ASYNC-P-04 loses "carry it identically". `grpc` §9.3's transport point keeps
+    its channel-security semantics (plaintext/TLS election; CA, mutual-TLS
+    identity with the both-or-neither pairing, serverName) and demotes the
+    string/object JSON shape to implementation surface. `usage` §9.2/USAGE-P-05
+    stops binding "consultation order" as a conformance obligation — a
+    fixed-defaults implementation, which the catalog README blesses, exposes no
+    consultation order — and scopes it to implementations that expose tiers.
+    openapi, mcp, and connect needed no carriage change (they never pinned one).
+  - **R1 enum sub-question — a declared `enum` informs, it does not gate**,
+    applied to both enum-bearing points and both HTTP-family siblings. A server
+    variable's or address parameter's `enum` is the author's expectation, not a
+    boundary: the same configuration point admits a complete-URL or
+    whole-address override that bypasses the declaration entirely, so refusing a
+    narrower substitution while permitting the wider one is incoherent. A
+    supplied value outside an `enum` is no longer refused (an implementation MAY
+    surface it as choice metadata); what stays refused is an *undeclared* name
+    (a typo) and, at the server point, no resolvable server (undispatchable).
+    Stated in `asyncapi` §9.2 and `openapi` §9.3. (`openbindings.openapi@1`'s
+    "per the OAS" enum claim lived only in reference-SDK code, never the spec;
+    its correction is SDK-side.)
+  - **R1 dissolves the held null-address item.** `asyncapi`'s address point now
+    states that consumer configuration may supply the channel's whole address —
+    the case AsyncAPI itself defines with an `address` of `null` ("unknown …
+    generated dynamically at runtime") — as semantics, with the carriage
+    unpinned. No pinned-shape contradiction remains.
+  - **R6 — asyncapi's input-encoding rule is made total; the media taxonomy is
+    deleted.** ASYNC-P-03 §9.1 previously trichotomized declared content types
+    into JSON-family, an undefined "text-family", and an excluded-family list
+    (binary/avro/protobuf). The rule is now total over the operation value
+    domain and needs no taxonomy: a JSON-family type serializes the value as
+    JSON; any other declared type carries a **string** value as its bytes
+    (charset per the type, UTF-8 default), a non-string value against a
+    non-JSON type refused before dispatch; no declaration defaults to JSON. The
+    undefined "text-family" term and the excluded-family list are removed.
+    `application/xml`, `application/yaml`, `text/csv`, and the like now send
+    without a membership test. The limit on binary falls out of the value
+    domain (arbitrary bytes are not expressible as a JSON string), a
+    self-describing gap rather than a media exclusion — a future revision may
+    define a bytes boundary encoding (openapi's Base64 part encoding is the
+    pattern; tracked as R12). The plural-governing-set case (an operation whose
+    `messages` resolve to more than one distinct effective type) is a
+    pre-dispatch refusal, and its asymmetry with §9.3's decode conflict rule
+    (which falls to the text lane) is stated as warranted.
+
+- **Spec-refinement run 1 — R2, version-inference discipline** (ratified
+  2026-07-21). OG-T-02 and the conformance corpus still ran the model core
+  §8.1 deleted, which states that "backward compatibility is not forward
+  comprehension: no comparison of two version strings establishes what a given
+  implementation contains."
+  - **`openbindings.operation-graph@1` OG-T-02 is restated on the artifact
+    axis.** A graph unit's version field is *artifact* self-identification, not
+    a spec version, so it is governed the way every sibling governs accepted
+    artifact versions — by the specification's declared line (§3: the 0.2.x
+    line) — and not by OBI-T-04's per-tool supported set, which applies to an
+    OBI's own `openbindings` field. OG-T-02 now refuses a unit outside the
+    accepted line in either direction and at either level, reports that
+    refusal distinctly from graph non-conformance, ignores build metadata when
+    testing membership, and treats a prerelease as a non-member (a tool MAY
+    still accept a prerelease it declares support for). Consequences fall out
+    rather than being separately ruled: a higher patch is accepted *because it
+    is in the declared line*, not by inference; the pre-1.0 minor
+    special-casing is deleted; and the claim that this "mirrors the core
+    spec's OBI-T-04" is deleted as a cross-axis error. §3 and §12's
+    version-field prose lose "a processor's supported range" for the declared
+    line.
+  - **`requiresMaxTested` is retired from the conformance corpus**, from
+    `fixture.schema.json`, and from the operation-graph validation schema.
+    `MaxTestedVersion` is a *tested* declaration, not an *acceptance*
+    declaration, so gating acceptance-presuming positives on it is a category
+    error — the argument the corpus's own `requiresSupports` paragraph already
+    made and had not applied to these cases. OBI-D-12's two gated positives
+    move to `requiresSupports`; `requiresMinSupported` and `requiresSupports`
+    are unaffected and remain the corpus's two gates.
+  - **The forward-compatibility fixtures retire rather than being re-gated.**
+    Under an explicit-set §8.1 there is no forward-compatibility behavior left
+    to assert: re-gating "a tool supporting major 1 accepts 1.5.0" with
+    `requiresSupports: "1.5.0"` reduces it to "a tool that accepts 1.5.0
+    accepts 1.5.0". Retired from `conformance/tool/OBI-T-04.json` and from the
+    operation-graph OG-T-02 block.
+  - **The operation-graph OG-T-02 fixtures become universal.** With membership
+    declared by the specification rather than derived per tool, no acceptance
+    gate applies to any of them: the downward-refusal case loses its
+    `requiresMinSupported` gate and all seven cases now run against every
+    tool.
+
+- **Spec-refinement run 1 — verified mechanical corrections** (2026-07-21).
+  Five fixes from the opinion-audit review (tracker: `spec-refinement.md`;
+  each was reproduced against its cited authority before application). No
+  fixture verdicts change, and the conformance manifest regenerates
+  identical.
+  - Core **§11 IANA registration**: encoding considerations corrected from
+    "8-bit UTF-8 per RFC 8259" to **`binary`**. RFC 8259 §11 registers
+    `application/json` as `binary` deliberately — MIME `8bit` (RFC 6838
+    §4.8, RFC 2046 §4.1.1) requires CRLF-delimited lines of at most 998
+    octets, which minified JSON does not satisfy — so the previous value
+    both misattributed the cited RFC and would have been corrected in IANA
+    review. UTF-8 remains stated as the character encoding via OBI-D-01.
+  - `openbindings.operation-graph@1` **§3** gains the duplicate-object-key
+    refusal its openapi and asyncapi siblings already carry, and **§12**'s
+    node-key parenthetical no longer claims uniqueness is "enforced by JSON
+    object semantics" — true of the parsed object representation, false of
+    the string representation, where RFC 8259 §4 leaves duplicate handling
+    to the parser and two conforming parsers can read one source text as
+    two different graphs. Compatible clarification: the identifier stands.
+  - `openbindings.asyncapi@1` **§9.5** gains the credential/channel-value
+    name-collision refusal, ported from the `openbindings.openapi@1`
+    sibling's §9.6 (OAPI-P-10). A websockets binding's declared `query` and
+    `headers` values ride the same upgrade request a query- or
+    header-riding credential rides; the collision is now refused before
+    dispatch rather than resolved by silent overwrite. ASYNC-P-07 names it.
+  - `conformance/document/OBI-D-13.json` test 3: the absent-`ref` positive
+    is re-homed from an `openbindings.mcp@1` source onto
+    `openbindings.usage@1`. MCP-D-03 makes `ref` REQUIRED — the fixture
+    contradicted both the mcp specification and its own sibling fixture
+    `MCP-D-03.json` — while usage's §7 defines the root command as the
+    absent-`ref` target, which is what the test means to exercise.
+  - `conformance/tool/OBI-T-04.json`: file description and test descriptions
+    restated in §8.1's explicit-supported-set vocabulary, replacing
+    pre-rewrite SemVer-precedence-inference framing. Removes a quotation
+    attributed to §8.1 ("refusal runs downward as well") that appears
+    nowhere in the specification, and drops "should accept per §8.1"
+    framings asserting the cross-version inference §8.1 explicitly
+    disclaims. Verdicts and gating annotations are unchanged.
+
 - `openbindings.asyncapi@1` §9.2's **server pin gains a `variables` member**
   (ratified 2026-07-21): the server configuration point's value is now
   `{ "key": "<server-name>", "variables": { "<variable-name>":

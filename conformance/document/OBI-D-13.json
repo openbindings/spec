@@ -65,22 +65,22 @@
       "valid": true
     },
     {
-      "description": "binding with absent ref (targets the source as a whole per the format's convention)",
+      "description": "binding with absent ref (targets the artifact-level default the binding specification defines: usage's root command)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "rawHandle": {}
         },
         "sources": {
-          "mcpServer": {
-            "bindingSpec": "openbindings.mcp@1",
-            "location": "https://example.com/mcp"
+          "cliTool": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "https://example.com/tool/usage.kdl"
           }
         },
         "bindings": {
-          "rawHandle.mcp": {
+          "rawHandle.cli": {
             "operation": "rawHandle",
-            "source": "mcpServer"
+            "source": "cliTool"
           }
         }
       },

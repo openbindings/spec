@@ -23,7 +23,7 @@ Revision 1 accepts descriptors of the usage **2.x and 3.x** lines. A descriptor'
 A source's `location`, when present, is one of two absolute address forms (**USAGE-D-02**). Both are binding-specification-defined absolute addresses in the sense of core [OBI-D-05](../../openbindings.md#102-document-rules): neither takes a base, and each means the same thing wherever the document travels.
 
 1. **Document address** — an absolute URI addressing the descriptor document itself: `https://example.com/tool/usage.kdl`, `file:///opt/tool/usage.kdl`. Dereferencing it yields the descriptor source text.
-2. **Exec address** — the scheme-like prefix `exec:` followed by an argv vector: one command token and zero or more argument tokens, separated by single spaces (`exec:mytool usage`). The addressed artifact is the standard output of executing that vector **directly** — never through a shell. Tokens carry no quoting mechanism; a command whose arguments contain spaces is outside this form, and its generated descriptor is embedded as `content` instead. This form exists for tools whose descriptors are generated live; it is an absolute address by construction.
+2. **Exec address** — the scheme-like prefix `exec:` followed by an argv vector: one command token and zero or more argument tokens, separated by single spaces (`exec:mytool usage`). The addressed artifact is the standard output of executing that vector **directly** — never through a shell. **The dereference succeeds only when the process exits 0**; any other termination — a non-zero exit, a signal — is a loud dereference failure, and the standard-output bytes are **not** an artifact (a generator that emits a partial descriptor and then fails must never be read as a smaller valid one). Standard error is diagnostic, never the artifact. Unlike the document-address forms, `exec:` has no incorporated address scheme to supply this success condition — it is minted by this specification, so this specification states it. Tokens carry no quoting mechanism; a command whose arguments contain spaces is outside this form, and its generated descriptor is embedded as `content` instead. This form exists for tools whose descriptors are generated live; it is an absolute address by construction.
 
 A bare filesystem path (`./usage.kdl`, `/opt/tool/usage.kdl`) is a relative reference in form and is not a conformant `location` (core OBI-D-05); local descriptors ride `file://` URIs or embedded `content` — embedding is the recommended lane for emitted documents, keeping them self-contained.
 
@@ -39,7 +39,7 @@ When `content` is present it is the artifact the processor interprets, per the c
 
 ## 7. `ref`
 
-A binding's `ref`, when present, MUST be a non-empty **command path**: the command names along the descriptor's command tree, separated by single spaces (`db migrate run`) (**USAGE-D-03**). Resolution walks the tree from the root command; each segment matches a command's declared name or any of its declared aliases, exactly and case-sensitively. Flags declared on ancestor commands as inherited/global accumulate onto the resolved command's effective surface, per the usage specification.
+A binding's `ref`, when present, MUST be a non-empty **command path**: the command names along the descriptor's command tree, separated by single spaces (`db migrate run`) (**USAGE-D-03**). Resolution walks the tree from the root command; each segment matches a command's declared name or any of its declared aliases, exactly and case-sensitively. A flag an ancestor command declares `global` accumulates onto the resolved command's effective surface. The usage specification defines the `global` attribute but does not state its scope of application; this specification pins the ancestor-chain reading — a `global` flag reaches the declaring command and its descendants — so that one descriptor yields one effective surface in every implementation.
 
 The **root command** is addressed by omitting `ref`. An empty-string `ref` is not conformant — this specification gives each meaning one spelling. A `ref` that resolves to no command in the artifact makes the binding unresolvable; verifying resolution requires the artifact, and a validator without it leaves the check unverified per the core's partial-verification posture.
 
@@ -64,7 +64,7 @@ Credentials are not input fields. A processor MUST NOT place credential material
 
 ### 9.2. Configuration points
 
-Three named configuration points cover what the descriptor cannot declare (**USAGE-P-05**). At each, consumer configuration is consulted first — per-invocation, then consumer-level — and this specification's default answers when no configuration speaks; a declined override falls through to the next tier. All defaults are content-independent: decided by declarations and framing, never by payload bytes.
+Three named configuration points cover what the descriptor cannot declare (**USAGE-P-05**). What this specification pins at each is the **default** and what a consumer override *means*; the seam through which an override arrives is the implementation's own surface. Where an implementation exposes consumer configuration, it is consulted before the default — a per-invocation tier ahead of a consumer-level tier where both exist — and a declined override falls through; an implementation that exposes no configuration seam applies the defaults directly and is no less conformant for it (the [catalog README](../README.md) states this seam is not a required architecture). All defaults are content-independent: decided by declarations and framing, never by payload bytes.
 
 | Point | Default | Overrides |
 | --- | --- | --- |
@@ -73,6 +73,8 @@ Three named configuration points cover what the descriptor cannot declare (**USA
 | **classify** | success **iff** exit status 0 | any consumer-declared classification of exit statuses |
 
 An impossible routing — two fields routed to stdin, a stdin route with no slot on the surface — is refused before spawn. Per-CLI knowledge (a tool that emits JSON, alternate success exits, a field that must ride stdin) is packaged as consumer configuration at these points, never authored into the artifact or the OBI.
+
+**Binary output** has no boundary encoding in revision 1: the decode default is text (UTF-8, invalid sequences a loud decode error), so a command emitting bytes that are not valid UTF-8 fails loudly rather than decoding to a guessed value. A consumer needing raw or non-text bytes overrides at the decode point; a base64 output lane is a declared gap this revision does not fill (the [catalog README](../README.md#the-bytes-boundary) records the pattern a later revision would follow). The same holds for a binary value routed to stdin or a temp file.
 
 ### 9.3. Success and the output value
 
@@ -93,7 +95,7 @@ Rules carry stable identifiers under the same discipline as the core's: never re
 - **USAGE-P-02**: A processor MUST NOT dereference an exec address without explicit authorization; default deny, per [§4](#4-location).
 - **USAGE-P-03**: Execution is a direct process spawn, never a shell, bound to the invocation lifetime, per [§8](#8-target-and-interaction).
 - **USAGE-P-04**: Input fields map to the effective command surface per [§9.1](#91-input-mapping); an unmatched field is refused before spawn.
-- **USAGE-P-05**: The route, decode, and classify configuration points behave per [§9.2](#92-configuration-points), including their defaults, consultation order, and pre-spawn refusal of impossible routings.
+- **USAGE-P-05**: The route, decode, and classify configuration points behave per [§9.2](#92-configuration-points): their defaults, the meaning of each override, and the pre-spawn refusal of impossible routings. Where an implementation exposes configuration tiers, the more specific is consulted first and a declined override falls through; exposing no seam and applying the defaults is conformant. The carriage of a configuration value is implementation surface, not this rule's content.
 - **USAGE-P-06**: Credential material never rides argv; environment variables are the credential channel, per [§9.1](#91-input-mapping).
 
 Conformance fixtures keyed to these identifiers are published with the project's conformance corpus. Deterministic *generation* of OBI documents from usage descriptors (operation-key derivation from command paths, schema carriage) is a synthesis concern outside this specification; the project's interface-synthesizer and reference-tool documentation record those conventions.

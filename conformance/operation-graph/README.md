@@ -1,6 +1,6 @@
 # openbindings.operation-graph conformance subcorpus
 
-Fixtures for the `openbindings.operation-graph` binding format, keyed to its
+Fixtures for the `openbindings.operation-graph` binding specification, keyed to its
 companion specification at
 [`binding-specs/operation-graph/openbindings.operation-graph.md`](../../binding-specs/operation-graph/openbindings.operation-graph.md).
 
@@ -11,7 +11,7 @@ writes, and the identity law (`input → operation(y) → output` is
 observationally indistinguishable from direct invocation of `y`) is pinned by
 its own fixture suite.
 
-This is a per-format subcorpus, governed by the operation-graph format spec, not
+This is a per-specification subcorpus, governed by the operation-graph binding specification, not
 by the core OBI-D / OBI-T conformance rules. It lives alongside the core corpus
 but is governed separately: the core verifiers (`verify-corpus.mjs`,
 `generate-conformance-manifest.mjs`) only scan `document/` and `tool/`, so they
@@ -41,7 +41,7 @@ shells out to `ajv-cli` for JSON Schema validation, the same validator the CI
 uses for the core schema.
 
 1. **Spec examples.** Every operation-graph definition embedded in a fenced JSON
-   block of the format spec validates against the op-graph JSON Schema. This
+   block of the binding specification validates against the op-graph JSON Schema. This
    keeps the spec's normative examples from drifting out of shape.
 2. **Execution fixtures.** Each file matches `execution.schema.json`, and every
    fixture's `graph` validates against the op-graph schema and has exactly one
@@ -187,7 +187,7 @@ objects but cannot check nested keywords.
 
 ## Source and tool rules (OG-D, OG-T)
 
-The format spec's Conformance section defines three source rules (OG-D-01..03,
+The binding specification's Conformance section defines three source rules (OG-D-01..03,
 binding OBI content governed by this specification) and four tool rules
 (OG-T-01..04, binding implementations claiming `openbindings.operation-graph@1`
 support). Their coverage:
