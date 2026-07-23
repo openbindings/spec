@@ -29,6 +29,15 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 Per-family protocol rules (`…-P-…`, e.g. `GRPC-P-04`, `CONN-P-06`) are each family's binding-specification obligations and live in the [`binding-specs/`](binding-specs/README.md) subcorpus rather than the core rule format. Its portable processor scenarios cover every P-rule of the six published families without prescribing an SDK configuration API. The repository verifier checks their shape and rule coverage; they become cross-implementation execution evidence only when family adapters run them against independent processors. Mirrored reference-SDK behavioral suites remain additional implementation evidence, not a substitute for those portable scenarios.
 
+[`reference-sdk-correspondence.json`](reference-sdk-correspondence.json) records the
+public Go/TypeScript role and family-name correspondence used for the 0.2.0
+implementation proof. It is intentionally not a language-neutral API mandate:
+observable behavior at the OpenBindings boundary is shared, while casing,
+goroutines versus promises/async iterables, cancellation plumbing, and other
+non-boundary details remain idiomatic. The names stay close enough that a reader
+moving between SDKs can identify the corresponding role without translation by
+guesswork.
+
 ## Subcorpora
 
 Three subcorpora live alongside the core corpus, none governed by the `openbindings.md` §10 rule format; the core tooling below scans only `document/` and `tool/`. Two are per-family, governed by their family specification(s), each with its own verifier script; the third is keyed to the transform language pin of §5.5 and is gated by the reference SDK test suites rather than by a repo script:

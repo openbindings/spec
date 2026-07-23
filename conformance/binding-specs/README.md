@@ -109,9 +109,21 @@ The current corpus contains 97 scenarios covering every P-rule of usage,
 OpenAPI, AsyncAPI, MCP, gRPC, and Connect (47 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
-collision cases. It is portable semantic reference material now; an adapter
-for each independent SDK remains required before it becomes
-cross-implementation execution evidence.
+collision cases. Independent adapters in `openbindings-go` and
+`openbindings-ts` execute every scenario for every family. The corpus is
+therefore cross-implementation behavioral evidence, while the family prose
+remains authoritative and the adapters remain responsible for demonstrating
+that each normalized observation came from the real family implementation.
+
+Each reference SDK also keeps authoring tests beside the family implementation.
+Those tests cover source inspection and synthesis; the processor scenarios
+cover invocation of the resulting binding vocabulary. Together they enforce
+the authoring invariant: inspection and synthesis use the same target-eligibility
+rules as invocation, no synthesized operation is statically guaranteed to
+refuse, and a direct synthesis call fails as a whole when an accepted target
+cannot be represented faithfully. They do not claim that a synthesized
+interface is a temporal snapshot of a live service or remains usable after the
+source or peer changes.
 
 ## Fixture file format
 
