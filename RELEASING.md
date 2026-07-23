@@ -43,7 +43,7 @@ A release snapshot captures the normative core spec at the time of release:
 **Not snapshotted:**
 
 - The project's shared interfaces are **no longer in this repository** — they live in [openbindings/interfaces](https://github.com/openbindings/interfaces), independently versioned with location-based identity. They were never snapshotted with the core spec: copying a contract into a spec snapshot would create a second URL for the same contract, fragmenting identity.
-- `binding-specs/` — published binding specifications revise on their own cadence and are cited by identifier, never by release version. An identifier is `openbindings.<name>@<rev>`, where `<rev>` is a revision of the binding specification itself; artifact and dialect versions never appear in it, so a binding specification's standing does not move when the core spec releases. An incompatible change publishes the next revision, which is a different identifier ([OBI-B-03](openbindings.md#104-binding-specification-rules)).
+- `binding-specs/` — published binding specifications revise on their own cadence and are cited by identifier, never by core release version. They are not copied into `versions/<core>/`; instead, each exact revision already has its own immutable, digest-recorded publication bundle under `binding-specs/releases/`, indexed by `binding-specs/publications.json` and served from its permanent revision URL. The core snapshot therefore does not duplicate that independent archive. An incompatible change publishes the next binding-specification revision ([OBI-B-03](openbindings.md#104-binding-specification-rules)).
 - The **non-core** conformance corpora — `conformance/binding-specs/`, `conformance/operation-graph/`, `conformance/transforms/`. These are keyed to binding-specification identifiers and to the transform language, not to the core rule identifiers, so they follow what they test rather than the core release. Copy only the directories listed in step 2; taking `conformance/` wholesale would freeze corpora that are not the core spec's to freeze.
 - `scripts/` — repo-wide tooling (canonical-order checker, manifest generator, corpus verifier). These operate on the current working tree and aren't part of any specific release.
 
@@ -53,6 +53,7 @@ A release snapshot captures the normative core spec at the time of release:
 
    - Ensure `openbindings.md` reflects what you intend to release.
    - Ensure any binding specifications under `binding-specs/` that ship with this change set are ready. They are not snapshotted, but a core release that cites a specification still being drafted publishes a dangling citation.
+   - Run `node scripts/verify-binding-spec-publications.mjs`. Every binding-specification identifier cited as published must already be present in `binding-specs/publications.json`, with its immutable bundle and permanent URLs.
    - Regenerate `conformance/manifest.json` (`node scripts/generate-conformance-manifest.mjs`) and run `node scripts/verify-corpus.mjs` to confirm the corpus is in sync with the spec.
 
 2. Cut a release snapshot

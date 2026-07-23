@@ -1,0 +1,493 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@1",
+  "bindingSpec": "openbindings.usage@1",
+  "family": "usage",
+  "description": "Portable processor scenarios for usage target identity, argv construction, configuration alternatives, routing refusal, and credentials.",
+  "scenarios": [
+    {
+      "id": "USAGE-PS-01",
+      "rules": ["USAGE-P-01"],
+      "section": "3",
+      "description": "A descriptor requiring a usage version above the binding specification's pinned v3.5.6 interpreter is refused at load.",
+      "given": {
+        "source": {
+          "content": "min_usage_version \"99.0.0\"\nname \"future\"\nbin \"future\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": false },
+        "runtime": { "implementedUsageVersion": "3.5.6" }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-12",
+      "rules": ["USAGE-P-05"],
+      "section": "9.2",
+      "description": "A scalar field may use only its artifact-declared environment variable as an alternate route, preserving usage's declared carriage without inventing a name.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nflag \"--profile <name>\" env=\"TOOL_PROFILE\"\n"
+        },
+        "binding": {},
+        "configuration": { "route": { "profile": { "kind": "environment" } } },
+        "invocation": { "inputPresent": true, "input": { "profile": "ci" } }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/argv", "equals": ["tool"] },
+            { "path": "/dispatch/environment/TOOL_PROFILE", "equals": "ci" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-13",
+      "rules": ["USAGE-P-07"],
+      "section": "3",
+      "description": "A descriptor with a dynamic mount is refused at load instead of executing artifact discovery under private shell and authorization policy.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\ncmd \"run\" { mount run=\"tool emit-commands\" }\n"
+        },
+        "binding": { "ref": "run task" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/artifactDiscoveryProcess", "absent": true },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-14",
+      "rules": ["USAGE-P-07"],
+      "section": "3",
+      "description": "A descriptor with a file include is refused instead of assigning an embedded or remote artifact a private filesystem-relative base.",
+      "given": {
+        "source": {
+          "location": "https://example.com/tool/usage.kdl",
+          "content": "name \"tool\"\nbin \"tool\"\ninclude file=\"./commands.usage.kdl\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/includeReads", "equals": [] },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-17",
+      "rules": ["USAGE-P-08"],
+      "section": "3",
+      "description": "A descriptor declaring config-file discovery is refused at load rather than assigning findup, environment interpolation, and working-directory semantics privately.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nconfig {\n  file \".tool.toml\" findup=#true\n  default \"profile\" \"dev\"\n}\nflag \"--profile <name>\" config=\"profile\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/configFileReads", "equals": [] },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-18",
+      "rules": ["USAGE-P-08"],
+      "section": "3",
+      "description": "The legacy config_file/config_alias spellings are part of the same excluded upstream lane and cannot be ignored while ordinary argv construction proceeds.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nconfig_file \".tool.toml\" findup=#true\nconfig_alias \"profile\" \"settings.profile\"\nflag \"--profile <name>\" config=\"profile\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/configFileReads", "equals": [] },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-19",
+      "rules": ["USAGE-P-08"],
+      "section": "3",
+      "description": "An argument parse command is refused at load; it is not executed as an ungoverned auxiliary process and is not silently discarded.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\narg \"<file>\" parse=\"tool parse-file {}\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": true, "input": { "file": "a.txt" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            { "path": "/auxiliaryProcesses", "equals": [] },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-15",
+      "rules": ["USAGE-P-04", "USAGE-P-05"],
+      "section": "9.1",
+      "description": "A preserve-mode variadic positional emits caller-supplied double-dash strings in place as values; it inserts or removes no structural delimiter.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\narg \"<args>...\" double_dash=\"preserve\"\n"
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": true,
+          "input": { "args": ["left", "--", "right", "--"] }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/argv",
+              "equals": ["tool", "left", "--", "right", "--"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-16",
+      "rules": ["USAGE-P-04"],
+      "section": "9.1",
+      "description": "Dynamic choices come only from the artifact-declared name in the invocation's configured environment; absent declared data refuses rather than consulting ambient host state.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\narg \"<environment>\" { choices env=\"DEPLOY_ENVS\" }\n"
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": true,
+          "input": { "environment": "production" }
+        },
+        "runtime": {
+          "processEnvironment": {},
+          "ambientHostEnvironment": { "DEPLOY_ENVS": "production" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-02",
+      "rules": ["USAGE-P-02"],
+      "section": "4",
+      "description": "An exec-addressed descriptor is not acquired or executed without explicit command authorization.",
+      "given": {
+        "source": { "location": "exec:tool usage" },
+        "binding": {},
+        "invocation": { "inputPresent": false },
+        "runtime": { "authorizedExecAddresses": [] }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [{ "path": "/acquisitionProcess", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-03",
+      "rules": ["USAGE-P-03", "USAGE-P-05"],
+      "section": "8",
+      "description": "A target override changes address only; it cannot create target identity when the descriptor omits bin, and name is not a fallback.",
+      "given": {
+        "source": { "content": "name \"Friendly Tool\"\n" },
+        "binding": {},
+        "configuration": { "target": "/opt/tools/friendly" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-04",
+      "rules": ["USAGE-P-03", "USAGE-P-04"],
+      "section": "9.1",
+      "description": "A ref alias is emitted exactly as selected, and flags precede positionals in descriptor declaration order independently of input-object order.",
+      "given": {
+        "source": {
+          "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"db\" {\n  cmd \"migrate\" {\n    alias \"m\"\n    cmd \"run\" {\n      flag \"--zeta <value>\"\n      flag \"-a --alpha\"\n      arg \"<file>\"\n    }\n  }\n}\n"
+        },
+        "binding": { "ref": "db m run" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "file": "plan.sql", "alpha": true, "zeta": "Z" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/transport", "equals": "process" },
+            {
+              "path": "/dispatch/argv",
+              "equals": [
+                "mytool",
+                "db",
+                "m",
+                "run",
+                "--zeta",
+                "Z",
+                "--alpha",
+                "plan.sql"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-05",
+      "rules": ["USAGE-P-04"],
+      "section": "9.1",
+      "description": "Count, repeatable-flag, and variadic-positional declarations each retain their distinct artifact-defined argv shape.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nflag \"-v --verbose\" count=#true\nflag \"--tag <value>\" var=#true\narg \"<files>...\"\n"
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "files": ["a.txt", "b.txt"],
+            "tag": ["red", "blue"],
+            "verbose": 2
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/argv",
+              "equals": [
+                "tool",
+                "--verbose",
+                "--verbose",
+                "--tag",
+                "red",
+                "--tag",
+                "blue",
+                "a.txt",
+                "b.txt"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-06",
+      "rules": ["USAGE-P-04"],
+      "section": "9.1",
+      "description": "Two supplied flags in an overrides relation refuse because a JSON object supplies no occurrence order from which to choose the winner.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nflag \"--json\" overrides=\"yaml\"\nflag \"--yaml\" overrides=\"json\"\n"
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": true,
+          "input": { "json": true, "yaml": true }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-07",
+      "rules": ["USAGE-P-04", "USAGE-P-05"],
+      "section": "9.2",
+      "description": "An optional double-dash declaration preserves both argv spellings; the expected alternatives carry no preference order.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\narg \"<pattern>\" double_dash=\"optional\"\n"
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": true,
+          "input": { "pattern": "-literal" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "delimiter present",
+          "assertions": [
+            { "path": "/dispatch/argv", "equals": ["tool", "--", "-literal"] }
+          ]
+        },
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "delimiter absent",
+          "assertions": [
+            { "path": "/dispatch/argv", "equals": ["tool", "-literal"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-08",
+      "rules": ["USAGE-P-05"],
+      "section": "9.2",
+      "description": "Two fields routed to the single stdin channel are refused before spawn rather than interleaved by convention.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\narg \"<left>\"\narg \"<right>\"\n"
+        },
+        "binding": {},
+        "configuration": {
+          "route": {
+            "left": { "kind": "stdin", "operand": "pure" },
+            "right": { "kind": "stdin", "operand": "pure" }
+          }
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "left": "A", "right": "B" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-09",
+      "rules": ["USAGE-P-06"],
+      "section": "9.1",
+      "description": "A generic credential with no explicitly named environment-variable mapping is surfaced for context resolution and never placed on argv.",
+      "given": {
+        "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
+        "binding": {},
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "generic": "secret" } }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-10",
+      "rules": ["USAGE-P-04"],
+      "section": "9.1",
+      "description": "A non-string value for an ordinary value-bearing flag is refused when the artifact supplies no token encoding and no encode configuration is selected.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nflag \"--count <value>\"\n"
+        },
+        "binding": {},
+        "invocation": { "inputPresent": true, "input": { "count": 3 } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "USAGE-PS-11",
+      "rules": ["USAGE-P-04"],
+      "section": "9.1",
+      "description": "A selected per-field encoder may turn one non-string scalar occurrence into exactly one argv token without inventing structural spreading.",
+      "given": {
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\nflag \"--count <value>\"\n"
+        },
+        "binding": {},
+        "configuration": { "encode": { "count": "decimal-token" } },
+        "invocation": { "inputPresent": true, "input": { "count": 3 } },
+        "runtime": {
+          "encoders": { "decimal-token": { "input": 3, "output": "3" } }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/argv", "equals": ["tool", "--count", "3"] }
+          ]
+        }
+      ]
+    }
+  ]
+}

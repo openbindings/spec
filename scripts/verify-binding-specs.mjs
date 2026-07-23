@@ -46,6 +46,8 @@ const CORPUS = join(SPEC_ROOT, "conformance", "binding-specs");
 const FIXTURE_SCHEMA = join(CORPUS, "fixture.schema.json");
 const PROCESSOR_DIR = join(CORPUS, "processor");
 const PROCESSOR_SCHEMA = join(CORPUS, "processor-scenario.schema.json");
+const SYNTHESIS_DIR = join(CORPUS, "synthesis");
+const SYNTHESIS_SCHEMA = join(CORPUS, "synthesis-scenario.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 
@@ -354,6 +356,74 @@ for (const dir of processorTargets) {
   }
 }
 
+// Portable synthesis scenarios prove artifact-inventory accounting and
+// emitted target identity independently of either reference SDK's API.
+const synthesisScenarioIds = new Set();
+let synthesisFiles = 0;
+let synthesisScenarios = 0;
+for (const dir of processorTargets) {
+  const fam = FAMILIES[dir];
+  const path = join(SYNTHESIS_DIR, `${dir}.json`);
+  if (!existsSync(path)) {
+    errors.push(`synthesis/${dir}.json: missing portable synthesis scenario file`);
+    continue;
+  }
+  let fixture;
+  try {
+    fixture = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    errors.push(`synthesis/${dir}.json: failed to parse JSON: ${e.message}`);
+    continue;
+  }
+  synthesisFiles++;
+  const shape = ajvOk(SYNTHESIS_SCHEMA, fixture);
+  if (!shape.ok) {
+    errors.push(`synthesis/${dir}.json: does not match synthesis-scenario.schema.json\n${shape.out}`);
+    continue;
+  }
+  if (fixture.family !== dir)
+    errors.push(`synthesis/${dir}.json: family '${fixture.family}' does not match filename`);
+  if (fixture.bindingSpec !== fam.bindingSpec)
+    errors.push(`synthesis/${dir}.json: bindingSpec '${fixture.bindingSpec}' is not '${fam.bindingSpec}'`);
+
+  for (const [i, scenario] of fixture.scenarios.entries()) {
+    synthesisScenarios++;
+    const at = `synthesis/${dir}.json.scenarios[${i}]`;
+    if (synthesisScenarioIds.has(scenario.id))
+      errors.push(`${at}: duplicate id '${scenario.id}'`);
+    synthesisScenarioIds.add(scenario.id);
+    if (!scenario.id.startsWith(`${fam.prefix}-SS-`))
+      errors.push(`${at}: id '${scenario.id}' has the wrong family prefix`);
+    if (scenario.source.bindingSpec !== fam.bindingSpec)
+      errors.push(`${at}: source bindingSpec '${scenario.source.bindingSpec}' is not '${fam.bindingSpec}'`);
+    if (!scenario.expected.coverage.exhaustive)
+      errors.push(`${at}: portable synthesis evidence must claim an exhaustive inventory`);
+
+    const operations = new Set(scenario.expected.operations);
+    const bindings = new Set(
+      scenario.expected.bindings.map((binding) => `${binding.operationKey}\0${binding.bindingRef}`)
+    );
+    for (const binding of scenario.expected.bindings) {
+      if (!operations.has(binding.operationKey))
+        errors.push(`${at}: binding names undeclared operation '${binding.operationKey}'`);
+    }
+    for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
+      const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
+      if (entry.status === "represented") {
+        if (!bindings.has(`${entry.operationKey}\0${entry.bindingRef}`))
+          errors.push(`${entryAt}: represented disposition has no expected binding identity`);
+      } else if (entry.rule && !allRuleIds.has(entry.rule)) {
+        errors.push(`${entryAt}: rule '${entry.rule}' is not defined by the core or a published family`);
+      }
+    }
+    const derivedFull = scenario.expected.coverage.entries.every(
+      (entry) => entry.status === "represented" || entry.status === "invalid"
+    );
+    if (scenario.expected.coverage.fullyRepresented !== derivedFull)
+      errors.push(`${at}: fullyRepresented does not match the declared dispositions`);
+  }
+}
+
 rmSync(tmp, { recursive: true, force: true });
 
 console.log(`Family D-rules defined across six specs: ${definedDRules.size}`);
@@ -365,6 +435,9 @@ console.log(
 );
 console.log(
   `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules} targeted P-rules`
+);
+console.log(
+  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} published families`
 );
 
 if (errors.length) {

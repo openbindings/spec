@@ -49,6 +49,23 @@ jobs:
       - name: Verify binding-specs conformance subcorpus
         run: node scripts/verify-binding-specs.mjs
 
+      - name: Verify binding-specification publications
+        run: |
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -n "$base" ]; then
+            node scripts/verify-binding-spec-publications.mjs --base "$base"
+          else
+            node scripts/verify-binding-spec-publications.mjs
+          fi
+
+      - name: Exercise binding-specification publication lifecycle
+        run: node scripts/test-binding-spec-publication-lifecycle.mjs
+
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 
@@ -76,6 +93,32 @@ jobs:
             exit 1
           fi
           echo "no released snapshot files changed"
+
+      - name: Enforce immutability of binding-specification publications
+        # Publication bundles and individual errata are append-only. The
+        # manifests may gain entries; the verifier above proves every existing
+        # entry remains byte-equivalent to the PR or pre-push base.
+        run: |
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "$base" ]; then
+            echo "no historical base is available; current publication integrity was verified"
+            exit 0
+          fi
+          bundle_violations=$(git diff --no-renames --name-status "$base"...HEAD -- binding-specs/releases/ | awk -F'\t' '$1 != "A" { print }')
+          errata_violations=$(git diff --no-renames --name-status "$base"...HEAD -- binding-specs/errata/ | awk -F'\t' '$1 != "A" && $2 != "binding-specs/errata/README.md" { print }')
+          if [ -n "$bundle_violations" ] || [ -n "$errata_violations" ]; then
+            echo "::error::Published binding-specification bundles and errata are immutable:"
+            echo "$bundle_violations"
+            echo "$errata_violations"
+            echo "Publish a new binding-specification revision or append a new erratum."
+            exit 1
+          fi
+          echo "no published binding-specification artifact changed"
 
       - name: Check local markdown links
         run: |

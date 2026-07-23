@@ -1,0 +1,150 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Streaming fan-out with filters: route each event from a streaming conduit to per-event each handlers by shape. Mirrors the format spec's Example 6.",
+  "fixtures": [
+    {
+      "id": "OG-EX-03",
+      "name": "Streaming fan-out with filters",
+      "section": "Normative examples / Example 6",
+      "description": "events.subscribe streams three events. isError (schema filter, requires `error`) passes the one error event; isSuccess (expression filter, $not($exists(error))) passes the two success events. Each routed event gets its own handler invocation (each nodes). Each path processes independently and both handlers reach output, so the output is the multiset of all three handler results. The error and success paths run concurrently, so ordering is set.",
+      "operations": {
+        "events.subscribe": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "emit": [
+                {
+                  "error": "boom"
+                },
+                {
+                  "value": 1
+                },
+                {
+                  "value": 2
+                }
+              ]
+            }
+          ]
+        },
+        "errors.log": {
+          "responses": [
+            {
+              "emit": [
+                {
+                  "logged": true
+                }
+              ]
+            }
+          ]
+        },
+        "results.store": {
+          "responses": [
+            {
+              "whenInput": {
+                "value": 1
+              },
+              "emit": [
+                {
+                  "stored": 1
+                }
+              ]
+            },
+            {
+              "whenInput": {
+                "value": 2
+              },
+              "emit": [
+                {
+                  "stored": 2
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "stream": {
+            "type": "operation",
+            "operation": "events.subscribe"
+          },
+          "isError": {
+            "type": "filter",
+            "schema": {
+              "required": [
+                "error"
+              ]
+            }
+          },
+          "isSuccess": {
+            "type": "filter",
+            "transform": "$not($exists(error))"
+          },
+          "handleError": {
+            "type": "each",
+            "operation": "errors.log"
+          },
+          "handleSuccess": {
+            "type": "each",
+            "operation": "results.store"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "stream"
+          },
+          {
+            "from": "stream",
+            "to": "isError"
+          },
+          {
+            "from": "stream",
+            "to": "isSuccess"
+          },
+          {
+            "from": "isError",
+            "to": "handleError"
+          },
+          {
+            "from": "isSuccess",
+            "to": "handleSuccess"
+          },
+          {
+            "from": "handleError",
+            "to": "out"
+          },
+          {
+            "from": "handleSuccess",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {}
+      ],
+      "expected": {
+        "output": [
+          {
+            "logged": true
+          },
+          {
+            "stored": 1
+          },
+          {
+            "stored": 2
+          }
+        ],
+        "ordering": "set"
+      }
+    }
+  ]
+}

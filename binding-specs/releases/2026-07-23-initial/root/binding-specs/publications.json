@@ -1,0 +1,15 @@
+{
+  "format": "openbindings.binding-spec-publication-context@1",
+  "publication": "2026-07-23-initial",
+  "publishedAt": "2026-07-23",
+  "coreRelease": "0.2.0",
+  "identifiers": [
+    "openbindings.asyncapi@1",
+    "openbindings.connect@1",
+    "openbindings.grpc@1",
+    "openbindings.mcp@1",
+    "openbindings.openapi@1",
+    "openbindings.operation-graph@1",
+    "openbindings.usage@1"
+  ]
+}

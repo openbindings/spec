@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/processor-scenario.schema.json",
+  "title": "OpenBindings binding-specification processor scenarios",
+  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative.",
+  "type": "object",
+  "required": ["format", "bindingSpec", "family", "description", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.binding-spec-processor-scenarios@1" },
+    "bindingSpec": {
+      "type": "string",
+      "pattern": "^openbindings\\.(usage|openapi|asyncapi|mcp|grpc|connect)@1$"
+    },
+    "family": {
+      "enum": ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect"]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "rules",
+          "section",
+          "description",
+          "given",
+          "expected"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^(USAGE|OAPI|ASYNC|MCP|GRPC|CONN)-PS-[0-9]{2}$"
+          },
+          "rules": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(USAGE|OAPI|ASYNC|MCP|GRPC|CONN)-P-[0-9]+$"
+            }
+          },
+          "section": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "given": {
+            "type": "object",
+            "required": ["source", "binding", "invocation"],
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "object" },
+              "binding": { "type": "object" },
+              "configuration": {
+                "type": "object",
+                "description": "Values keyed by the specification's semantic configuration-point names; concrete API carriage is deliberately not implied."
+              },
+              "invocation": {
+                "type": "object",
+                "required": ["inputPresent"],
+                "properties": {
+                  "inputPresent": { "type": "boolean" },
+                  "input": {},
+                  "writes": { "type": "array" }
+                },
+                "additionalProperties": true
+              },
+              "peer": {
+                "type": "object",
+                "description": "A family-specific scripted transport/process outcome supplied by the harness adapter."
+              },
+              "runtime": {
+                "type": "object",
+                "description": "Named runtime facts such as an implemented usage version or supplied credentials."
+              }
+            }
+          },
+          "expected": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Permitted observation alternatives. Several entries preserve an upstream-permitted set; their order is not a preference.",
+            "items": {
+              "type": "object",
+              "required": ["disposition", "phase", "assertions"],
+              "additionalProperties": false,
+              "properties": {
+                "disposition": {
+                  "enum": ["complete", "error", "refusal", "context-required"]
+                },
+                "phase": {
+                  "enum": [
+                    "load",
+                    "resolution",
+                    "pre-dispatch",
+                    "dispatch",
+                    "response",
+                    "completion"
+                  ]
+                },
+                "description": { "type": "string" },
+                "assertions": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": ["path"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "pattern": "^/",
+                        "description": "JSON Pointer into the adapter's normalized observation."
+                      },
+                      "equals": {},
+                      "absent": { "const": true },
+                      "oneOf": { "type": "array", "minItems": 1 },
+                      "setEquals": { "type": "array", "uniqueItems": true },
+                      "contains": {}
+                    },
+                    "oneOf": [
+                      { "required": ["equals"] },
+                      { "required": ["absent"] },
+                      { "required": ["oneOf"] },
+                      { "required": ["setEquals"] },
+                      { "required": ["contains"] }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/fixture.schema.json",
+  "title": "OpenBindings Conformance Fixture",
+  "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file).",
+  "type": "object",
+  "required": [
+    "rule",
+    "section",
+    "description",
+    "tests"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "rule": {
+      "type": "string",
+      "pattern": "^OBI-[DT]-[0-9]+$",
+      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §10 of the OpenBindings spec."
+    },
+    "section": {
+      "type": "string",
+      "description": "The spec section the rule is defined in (e.g., '10.2' for document rules, '10.3' for tool rules)."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable description of the rule, ideally byte-faithful to the spec text."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. why some test cases are intentionally out of format. Informational; not consumed by harnesses."
+    },
+    "coverage": {
+      "type": "string",
+      "enum": [
+        "positive-only"
+      ],
+      "description": "If present, marks this fixture as providing partial coverage of its rule. 'positive-only' means the fixture has no discriminating negative cases (typically because negative cases cannot be expressed in the document-level fixture format without per-format harness logic, cf. OBI-T-06). A fixture marked this way is counted separately in the manifest and does not contribute to a 'complete coverage' claim. Absence means complete coverage."
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Test cases for this rule. Each case bundles an OBI document with the expected validity verdict.",
+      "items": {
+        "type": "object",
+        "required": [
+          "description",
+          "valid"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Description of what this specific case tests."
+          },
+          "document": {
+            "description": "An OBI document embedded as a parsed JSON value. Exactly one of document, documentText, or documentBase64 is present."
+          },
+          "documentText": {
+            "type": "string",
+            "description": "Exact Unicode text handed to the document parser. Preserves duplicate keys and malformed JSON that an embedded JSON value cannot carry. Exactly one input carriage is present."
+          },
+          "documentBase64": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "Base64 encoding of the exact bytes handed to the document parser. Carries malformed UTF-8 and byte-order marks. Exactly one input carriage is present."
+          },
+          "valid": {
+            "type": "boolean",
+            "description": "true if the document satisfies the rule (a conformant tool should accept it); false if the document violates the rule (a conformant tool should reject it)."
+          },
+          "violates": {
+            "type": "array",
+            "description": "When valid is false, the minimum set of OBI-D-## or OBI-T-## rules the document is intended to exercise as violated. Lists semantic rules only; OBI-D-02 is omitted when a more specific rule names the violation. Because the core does not standardize a diagnostic surface, a runner MAY check that a tool which reports rule identifiers includes this set; the field does not require every conformant tool to report identifiers.",
+            "items": {
+              "type": "string",
+              "pattern": "^OBI-[DT]-[0-9]+$"
+            }
+          },
+          "requiresMinSupported": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+            "description": "When set, the test only applies to SDKs whose MinSupportedVersion is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the SDK's minimum MUST be refused), which are meaningless for an SDK whose supported range extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the SDK's MinSupportedVersion, reporting skips separately."
+          },
+          "requiresSupports": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+            "description": "When set, administer this test only to tools whose OBI-T-04 version-acceptance predicate accepts this SemVer 2.0.0 version; otherwise runners SHOULD skip it, reporting the skip separately (skips are never failures). An acceptance gate keyed to the tool's own declared acceptance set (for the reference SDKs, IsSupportedVersion / isSupportedVersion), not to the tested-range declarations: a tool's acceptance set and its tested range are distinct declarations — per §8.1, a release-line support declaration is the tool's own, not an inference the specification imposes. Used for OBI-T-04 positives whose verdict presumes acceptance of a specific version."
+          }
+        },
+        "oneOf": [
+          { "required": ["document"] },
+          { "required": ["documentText"] },
+          { "required": ["documentBase64"] }
+        ]
+      }
+    }
+  }
+}

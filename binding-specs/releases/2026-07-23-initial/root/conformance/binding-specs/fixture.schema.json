@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/fixture.schema.json",
+  "title": "OpenBindings Binding-Specification Conformance Fixture",
+  "description": "JSON Schema describing the format of a binding-specification conformance fixture file (one family D-rule per file). Derived from the core corpus's fixture.schema.json: the same rule/section/description/tests shape, with the rule pattern widened to the six published families, a required bindingSpec field carrying the exact governing identifier, and section citing the family specification's section.",
+  "type": "object",
+  "required": ["rule", "bindingSpec", "section", "description", "tests"],
+  "additionalProperties": false,
+  "properties": {
+    "rule": {
+      "type": "string",
+      "pattern": "^(USAGE|OAPI|MCP|GRPC|CONN|ASYNC)-D-[0-9]+$",
+      "description": "The family source-rule identifier this fixture covers, as defined in the family binding specification's Conformance section (e.g., USAGE-D-02)."
+    },
+    "bindingSpec": {
+      "type": "string",
+      "pattern": "^openbindings\\.[a-z][a-z0-9-]*@[0-9]+$",
+      "description": "The exact binding specification identifier whose rule this fixture covers (e.g., openbindings.usage@1). Exact and opaque per core OBI-B-01; the verifier cross-checks it against the fixture's family directory."
+    },
+    "section": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The FAMILY specification section the rule is substantively defined in (e.g., '4' for a location rule) — a section of the family spec, never of the core spec."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable description of the rule, ideally byte-faithful to the family specification's rule line."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. which test cases require a family artifact parser to verify. Informational; not consumed by harnesses."
+    },
+    "coverage": {
+      "type": "string",
+      "enum": ["positive-only"],
+      "description": "If present, marks this fixture as providing partial coverage of its rule (no discriminating negative cases). Absence means complete coverage."
+    },
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Test cases for this rule. Each case bundles an OBI document with the expected validity verdict for the named family rule.",
+      "items": {
+        "type": "object",
+        "required": ["description", "document", "valid"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Description of what this specific case tests."
+          },
+          "document": {
+            "description": "An OBI document, embedded inline. Documents are otherwise valid 0.2.0 OBI documents; in negative cases the named family rule is the only thing at issue."
+          },
+          "valid": {
+            "type": "boolean",
+            "description": "true if the document's family-scoped material gives a conformant processor of the named binding specification nothing to refuse; false if such a processor refuses it at or before bind time (see the subcorpus README's verdict semantics)."
+          },
+          "violates": {
+            "type": "array",
+            "description": "When valid is false, the set of rules the document is intended to test as violated — family D-rules, plus core OBI rules where an overlap is inherent (e.g. a relative-in-form location also violates OBI-D-05). Minimum-set semantics, exactly as the core corpus defines them: a tool that reports violated rules at all must report at least these; supersets are never a defect.",
+            "items": {
+              "type": "string",
+              "pattern": "^((USAGE|OAPI|MCP|GRPC|CONN|ASYNC)-D-[0-9]+|OBI-[DT]-[0-9]+)$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -44,7 +44,7 @@ Three subcorpora live alongside the core corpus, none governed by the `openbindi
 
 | Subcorpus | Covers | Verifier |
 |---|---|---|
-| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules) and portable processor scenarios covering every P-rule of the six published binding specifications — `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
+| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules), portable processor scenarios covering every P-rule, and portable artifact-to-OBI synthesis accounting for the six published binding specifications — `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
 | [`operation-graph/`](operation-graph/README.md) | `openbindings.operation-graph@1` — graph well-formedness rules, source rules, and replayable executions | `node scripts/verify-operation-graph.mjs` (+ reference runner) |
 | [`transforms/`](transforms/README.md) | Differential transform conformance for the §5.5 language pin — `agree/` pins normative jsonata-js 2.1.1 outcomes every conformant engine must reproduce (the cross-SDK parity gate); `known-divergence/` catalogs residual implementation-engine deviations | Both reference SDK test suites (located via `OB_SPEC_CORPUS`); no repo-local verifier |
 
