@@ -1,0 +1,193 @@
+{
+  "format": "openbindings.binding-spec-adjudications@1",
+  "records": [
+    {
+      "id": "BS-A-20260723-01",
+      "date": "2026-07-23",
+      "scenarios": [
+        "OAPI-SS-03",
+        "ASYNC-SS-02",
+        "GQL-SS-03",
+        "GQL-SS-04",
+        "GRPC-SS-02",
+        "CONN-SS-02",
+        "MCP-SS-02",
+        "USAGE-SS-03"
+      ],
+      "authority": {
+        "upstreamFact": "An accepted artifact family can still present an invalid source identity or a target for which faithful OBI synthesis is impossible; returning a partial interface is not equivalent to refusing that source.",
+        "coreRules": [],
+        "bindingRules": [
+          "OAPI-P-03",
+          "ASYNC-P-01",
+          "GQL-D-01",
+          "GQL-D-02",
+          "GRPC-D-02",
+          "CONN-D-02",
+          "MCP-D-01",
+          "USAGE-D-01"
+        ]
+      },
+      "discrepancy": "The version-1 synthesis scenario exchange could compare only successful synthesis results, so it could not prove required whole-source refusal.",
+      "owner": "fixtures",
+      "resolution": "Version 2 adds an explicit refused outcome. Runners compare only the loud-failure disposition and governing rules, never language-specific exception types or diagnostic prose.",
+      "compatibility": "corpus-format-revision",
+      "status": "fixed",
+      "evidence": [
+        "conformance/binding-specs/synthesis-scenario.schema.json",
+        "conformance/binding-specs/synthesis/*.json"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-02",
+      "date": "2026-07-23",
+      "scenarios": [
+        "GRPC-SS-02"
+      ],
+      "authority": {
+        "upstreamFact": "A gRPC server is addressed by a port-explicit gRPC dial target; an HTTPS URL is not one of the binding artifact's three admitted address forms.",
+        "coreRules": [],
+        "bindingRules": [
+          "GRPC-D-02"
+        ]
+      },
+      "discrepancy": "The Go gRPC synthesizer validated outputLocation but allowed an invalid source location when protobuf content was embedded, emitting an OBI its invoker would refuse.",
+      "owner": "implementation",
+      "resolution": "Validate the source location with the same GRPC-D-02 parser used by invocation before loading embedded content or emitting the source.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-go/formats/grpc/invoker.go",
+        "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-02"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-03",
+      "date": "2026-07-23",
+      "scenarios": [
+        "CONN-SS-02"
+      ],
+      "authority": {
+        "upstreamFact": "Connect dispatch starts from an absolute HTTP(S) base URL; a gRPC dial URI cannot be concatenated with Connect's HTTP route.",
+        "coreRules": [],
+        "bindingRules": [
+          "CONN-D-02"
+        ]
+      },
+      "discrepancy": "The Go Connect synthesizer required a non-empty location but did not apply the complete base-URL grammar before emitting an OBI.",
+      "owner": "implementation",
+      "resolution": "Reuse the invocation lane's CONN-D-02 base-URL validator for source and output locations during synthesis.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-go/formats/connect/invoker.go",
+        "conformance/binding-specs/synthesis/connect.json#CONN-SS-02"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-04",
+      "date": "2026-07-23",
+      "scenarios": [
+        "GRPC-SS-02"
+      ],
+      "authority": {
+        "upstreamFact": "A gRPC server is addressed by a port-explicit gRPC dial target; an HTTPS URL is not one of the binding artifact's three admitted address forms.",
+        "coreRules": [],
+        "bindingRules": [
+          "GRPC-D-02"
+        ]
+      },
+      "discrepancy": "The TypeScript gRPC synthesizer used its dial-location validator only for outputLocation and skipped it for embedded-content source locations.",
+      "owner": "implementation",
+      "resolution": "Apply the same GRPC-D-02 location validation to every source before choosing embedded-schema or reflection discovery.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-ts/packages/grpc/src/authoring.ts",
+        "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-02"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-05",
+      "date": "2026-07-23",
+      "scenarios": [
+        "OAPI-SS-01",
+        "OAPI-SS-02",
+        "OAPI-SS-04",
+        "GRPC-SS-03"
+      ],
+      "authority": {
+        "upstreamFact": "Some represented targets remain callable only after the consumer supplies an artifact-permitted choice: an unresolved or non-unique OpenAPI server, or gRPC transport security for a bare host:port target.",
+        "coreRules": [],
+        "bindingRules": [
+          "OAPI-P-05",
+          "GRPC-P-02"
+        ]
+      },
+      "discrepancy": "Both reference SDKs emitted exhaustive synthesis coverage but left the requirements field empty for targets whose binding specifications require runtime configuration before dispatch.",
+      "owner": "implementation",
+      "resolution": "Derive stable configuration.server and configuration.transport prerequisites from the same resolution rules used by invocation, while proving that an absolute sole OpenAPI server and a scheme-qualified gRPC address add no such requirement.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-go/formats/openapi/coverage.go",
+        "openbindings-go/formats/grpc/coverage.go",
+        "openbindings-ts/packages/openapi/src/coverage.ts",
+        "openbindings-ts/packages/grpc/src/coverage.ts",
+        "conformance/binding-specs/synthesis/openapi.json#OAPI-SS-01",
+        "conformance/binding-specs/synthesis/openapi.json#OAPI-SS-04",
+        "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-03"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-06",
+      "date": "2026-07-23",
+      "scenarios": [
+        "CONN-SS-03"
+      ],
+      "authority": {
+        "upstreamFact": "Connect routing string-concatenates the method path onto an exact base URL; the revision-1 base form excludes a trailing slash rather than assigning normalization semantics.",
+        "coreRules": [],
+        "bindingRules": [
+          "CONN-D-02"
+        ]
+      },
+      "discrepancy": "The Go and TypeScript Connect authoring lanes checked only part of the source URL grammar, allowing trailing slash, query, fragment, or userinfo forms that invocation rejects or interprets differently.",
+      "owner": "implementation",
+      "resolution": "Use the complete CONN-D-02 base-URL validation in source inspection/synthesis and apply the same validation to outputLocation.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-go/formats/connect/invoker.go",
+        "openbindings-ts/packages/connect/src/authoring.ts",
+        "conformance/binding-specs/synthesis/connect.json#CONN-SS-03"
+      ]
+    },
+    {
+      "id": "BS-A-20260723-07",
+      "date": "2026-07-23",
+      "scenarios": [
+        "GRPC-SS-04",
+        "GRPC-SS-05"
+      ],
+      "authority": {
+        "upstreamFact": "The synthesized OBI's emitted gRPC location, after any requested outputLocation rewrite, determines whether transport security is explicit or remains a consumer choice.",
+        "coreRules": [],
+        "bindingRules": [
+          "GRPC-P-02"
+        ]
+      },
+      "discrepancy": "The first transport-requirement implementation derived coverage from the discovery address, allowing outputLocation rewriting to leave stale or missing callability evidence.",
+      "owner": "implementation",
+      "resolution": "Derive configuration.transport from the finalized source entry emitted in the synthesized OBI, and prove both scheme-qualified-to-bare and bare-to-scheme-qualified rewrites.",
+      "compatibility": "implementation-compatible",
+      "status": "fixed",
+      "evidence": [
+        "openbindings-go/formats/grpc/coverage.go",
+        "openbindings-ts/packages/grpc/src/authoring.ts",
+        "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-04",
+        "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-05"
+      ]
+    }
+  ]
+}

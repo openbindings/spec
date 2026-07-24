@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
   "description": "gRPC method inventory and bound-closure schema-range accounting.",
@@ -13,6 +13,7 @@
         "content": "syntax = \"proto2\";\npackage demo;\nmessage Good { optional string value = 1; }\nmessage Bad { required string value = 1; }\nservice Echo {\n  rpc Accepted(Good) returns (Good);\n  rpc Excluded(Bad) returns (Good);\n}\n"
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["Accepted"],
         "bindings": [
           { "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted" }
@@ -23,6 +24,135 @@
           "entries": [
             { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "demo.Echo/Excluded", "scope": "target", "status": "excluded", "reasonCode": "grpc.schema_range", "rule": "GRPC-P-03", "requirements": [] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GRPC-SS-02",
+      "description": "A valid schema paired with a non-gRPC target address is refused before synthesis.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "https://grpc.example.test",
+        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "GRPC-D-02"
+        ]
+      }
+    },
+    {
+      "id": "GRPC-SS-03",
+      "description": "A bare host:port target remains faithfully represented while coverage identifies the binding-spec-required transport election.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "localhost:50051",
+        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Call"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Call",
+            "bindingRef": "demo.Echo/Call"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "demo.Echo/Call",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Call",
+              "bindingRef": "demo.Echo/Call",
+              "requirements": [
+                "configuration.transport"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GRPC-SS-04",
+      "description": "A scheme-qualified discovery address rewritten to a bare emitted target reports the transport election required by the emitted OBI.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "outputLocation": "api.example.test:443",
+        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Call"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Call",
+            "bindingRef": "demo.Echo/Call"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "demo.Echo/Call",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Call",
+              "bindingRef": "demo.Echo/Call",
+              "requirements": [
+                "configuration.transport"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GRPC-SS-05",
+      "description": "A bare discovery address rewritten to a scheme-qualified emitted target carries no stale transport requirement.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "localhost:50051",
+        "outputLocation": "grpcs://api.example.test:443",
+        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Call"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Call",
+            "bindingRef": "demo.Echo/Call"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "demo.Echo/Call",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Call",
+              "bindingRef": "demo.Echo/Call",
+              "requirements": []
+            }
           ]
         }
       }

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.usage@1",
   "family": "usage",
   "description": "Usage artifact interaction inventory, root operation, and exact alias-path preservation.",
@@ -12,6 +12,7 @@
         "content": "bin \"tool\"\nflag \"--profile <name>\" global=#true\ncmd \"database\" {\n  alias \"db\"\n  cmd \"run\" {\n    alias \"r\"\n    flag \"--force\"\n  }\n}\n"
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["database", "database.run", "tool"],
         "bindings": [
           { "operationKey": "tool", "bindingRef": "" },
@@ -45,6 +46,7 @@
         "content": "bin \"tool\"\ncmd \"x\"\ncmd \"beta\" {\n  alias \"x\"\n}\n"
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": [
           "beta",
           "tool"
@@ -101,6 +103,20 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "USAGE-SS-03",
+      "description": "A non-string usage descriptor carriage is refused rather than treated as an empty command tree.",
+      "source": {
+        "bindingSpec": "openbindings.usage@1",
+        "content": {}
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "USAGE-D-01"
+        ]
       }
     }
   ]

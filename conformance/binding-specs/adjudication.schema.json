@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/adjudication.schema.json",
+  "title": "OpenBindings binding-specification conformance adjudications",
+  "description": "Disposition records for discrepancies discovered while executing the portable binding-specification corpus.",
+  "type": "object",
+  "required": ["format", "records"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "openbindings.binding-spec-adjudications@1"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "date",
+          "scenarios",
+          "authority",
+          "discrepancy",
+          "owner",
+          "resolution",
+          "compatibility",
+          "status",
+          "evidence"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^BS-A-[0-9]{8}-[0-9]{2}$"
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "scenarios": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(USAGE|OAPI|ASYNC|MCP|GRPC|CONN|GQL)-SS-[0-9]{2}$"
+            }
+          },
+          "authority": {
+            "type": "object",
+            "required": ["upstreamFact", "coreRules", "bindingRules"],
+            "additionalProperties": false,
+            "properties": {
+              "upstreamFact": {
+                "type": "string",
+                "minLength": 1
+              },
+              "coreRules": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "bindingRules": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "discrepancy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "enum": [
+              "core-spec",
+              "binding-spec",
+              "fixtures",
+              "implementation",
+              "documentation",
+              "upstream-source",
+              "none"
+            ]
+          },
+          "resolution": {
+            "type": "string",
+            "minLength": 1
+          },
+          "compatibility": {
+            "enum": [
+              "editorial",
+              "errata",
+              "implementation-compatible",
+              "corpus-format-revision",
+              "binding-revision",
+              "core-revision",
+              "no-change"
+            ]
+          },
+          "status": {
+            "enum": ["fixed", "no-change", "revision-required"]
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

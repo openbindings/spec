@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.asyncapi@1",
   "family": "asyncapi",
   "description": "AsyncAPI operation, message, reply-message, and protocol-cell accounting.",
@@ -45,6 +45,7 @@
         }
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["publish"],
         "bindings": [
           { "operationKey": "publish", "bindingRef": "#/operations/publish" }
@@ -62,6 +63,28 @@
             { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[2]=ws", "scope": "alternative", "status": "excluded", "reasonCode": "asyncapi.websocket_reply", "rule": "ASYNC-P-02", "requirements": [] }
           ]
         }
+      }
+    },
+    {
+      "id": "ASYNC-SS-02",
+      "description": "An unincorporated AsyncAPI edition is refused rather than accepted by major-line inference.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.1",
+          "info": {
+            "title": "Future patch",
+            "version": "1"
+          },
+          "channels": {},
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "ASYNC-P-01"
+        ]
       }
     }
   ]

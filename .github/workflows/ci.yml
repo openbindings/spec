@@ -136,3 +136,75 @@ jobs:
             done || rc=1
           done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './temp_ref/*')
           exit $rc
+
+  reference-go:
+    name: Go binding conformance (${{ matrix.family }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: OpenAPI
+            module: formats/openapi
+          - family: AsyncAPI
+            module: formats/asyncapi
+          - family: GraphQL
+            module: formats/graphql
+          - family: gRPC
+            module: formats/grpc
+          - family: Connect
+            module: formats/connect
+          - family: MCP
+            module: formats/mcp
+          - family: Usage
+            module: formats/usage
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/openbindings-go
+          ref: experiment/obi-first
+          path: openbindings-go
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: openbindings-go/${{ matrix.module }}/go.mod
+          cache: false
+      - name: Resolve the reference SDK core from its checkout
+        working-directory: openbindings-go
+        run: |
+          go work init . ${{ matrix.module }}
+          ver=$(awk '/github.com\/openbindings\/openbindings-go v/ {print $NF}' ${{ matrix.module }}/go.mod)
+          go work edit -replace "github.com/openbindings/openbindings-go@${ver}=."
+      - name: Execute shared processor and synthesis scenarios
+        working-directory: openbindings-go/${{ matrix.module }}
+        run: go test -run 'TestProcessorScenarios|TestSynthesisScenarios' ./...
+        env:
+          OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
+          OB_CORPUS_REQUIRED: "1"
+
+  reference-typescript:
+    name: TypeScript binding conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/openbindings-ts
+          ref: experiment/obi-first
+          path: openbindings-ts
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: openbindings-ts/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: openbindings-ts
+      - run: pnpm run build
+        working-directory: openbindings-ts
+      - name: Execute shared processor and synthesis scenarios
+        working-directory: openbindings-ts
+        run: pnpm exec vitest run packages/*/src/processor-scenarios.test.ts packages/*/src/synthesis-scenarios.test.ts
+        env:
+          OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
+          OB_CORPUS_REQUIRED: "1"

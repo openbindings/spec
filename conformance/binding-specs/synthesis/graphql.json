@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
   "description": "GraphQL root-field inventory across non-canonically named query, mutation, and subscription root types.",
@@ -66,6 +66,7 @@
         }
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["mutation_status", "status", "subscription_status", "viewer"],
         "bindings": [
           { "operationKey": "mutation_status", "bindingRef": "mutation/status" },
@@ -115,6 +116,168 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "GQL-SS-02",
+      "description": "Synthesis preserves descriptions and deprecation while excluding introspection-prefixed root fields from the callable inventory.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "data": {
+            "__schema": {
+              "queryType": {
+                "name": "Query"
+              },
+              "mutationType": null,
+              "subscriptionType": null,
+              "types": [
+                {
+                  "kind": "OBJECT",
+                  "name": "Query",
+                  "fields": [
+                    {
+                      "name": "__schema",
+                      "description": "Introspection field.",
+                      "args": [],
+                      "type": {
+                        "kind": "OBJECT",
+                        "name": "__Schema",
+                        "ofType": null
+                      },
+                      "isDeprecated": false
+                    },
+                    {
+                      "name": "currentStatus",
+                      "description": "Current service status.",
+                      "args": [],
+                      "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      },
+                      "isDeprecated": false
+                    },
+                    {
+                      "name": "legacyStatus",
+                      "description": "Legacy service status.",
+                      "args": [],
+                      "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      },
+                      "isDeprecated": true,
+                      "deprecationReason": "Use currentStatus."
+                    }
+                  ]
+                },
+                {
+                  "kind": "SCALAR",
+                  "name": "String"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "currentStatus",
+          "legacyStatus"
+        ],
+        "bindings": [
+          {
+            "operationKey": "currentStatus",
+            "bindingRef": "query/currentStatus"
+          },
+          {
+            "operationKey": "legacyStatus",
+            "bindingRef": "query/legacyStatus"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "query/currentStatus",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "currentStatus",
+              "bindingRef": "query/currentStatus",
+              "requirements": [
+                "document"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "query/legacyStatus",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "legacyStatus",
+              "bindingRef": "query/legacyStatus",
+              "requirements": [
+                "document"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-03",
+      "description": "An errored GraphQL introspection execution result is not a schema artifact and is refused before synthesis.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "errors": [
+            {
+              "message": "Introspection is disabled."
+            }
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "GQL-D-02"
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-04",
+      "description": "Embedded introspection does not replace the required absolute HTTP endpoint identity.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "content": {
+          "data": {
+            "__schema": {
+              "queryType": {
+                "name": "Query"
+              },
+              "mutationType": null,
+              "subscriptionType": null,
+              "types": [
+                {
+                  "kind": "OBJECT",
+                  "name": "Query",
+                  "fields": []
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "GQL-D-01"
+        ]
       }
     }
   ]

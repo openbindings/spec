@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
   "title": "OpenBindings binding-specification synthesis scenarios",
-  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence without prescribing an SDK API.",
+  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
   "properties": {
-    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@1" },
+    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@2" },
     "bindingSpec": {
       "type": "string",
       "pattern": "^openbindings\\.(usage|openapi|asyncapi|mcp|grpc|connect|graphql)@1$"
@@ -45,9 +45,17 @@
           },
           "expected": {
             "type": "object",
-            "required": ["operations", "bindings", "coverage"],
+            "required": ["outcome"],
             "additionalProperties": false,
             "properties": {
+              "outcome": { "enum": ["synthesized", "refused"] },
+              "rules": {
+                "description": "Rules that make whole-source refusal the faithful outcome. These identify the authority for the fixture; diagnostic error prose is intentionally not compared across implementations.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1 }
+              },
               "operations": {
                 "type": "array",
                 "uniqueItems": true,
@@ -78,7 +86,28 @@
                   }
                 }
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": { "outcome": { "const": "synthesized" } },
+                  "required": ["outcome"]
+                },
+                "then": {
+                  "required": ["operations", "bindings", "coverage"]
+                },
+                "else": {
+                  "required": ["rules"],
+                  "not": {
+                    "anyOf": [
+                      { "required": ["operations"] },
+                      { "required": ["bindings"] },
+                      { "required": ["coverage"] }
+                    ]
+                  }
+                }
+              }
+            ]
           }
         }
       }

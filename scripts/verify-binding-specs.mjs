@@ -19,6 +19,11 @@
 //      actually define. Positive tests carry no `violates`.
 //   6. Every fixture has at least one positive and one negative test unless
 //      marked `coverage: "positive-only"`.
+//   7. Portable processor and synthesis scenarios cite only rules owned by
+//      their family (or the core), and their normalized identities and
+//      coverage evidence are internally consistent.
+//   8. Adjudications resolve to live synthesis scenarios and keep core and
+//      family authority in their declared lanes.
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -48,6 +53,8 @@ const PROCESSOR_DIR = join(CORPUS, "processor");
 const PROCESSOR_SCHEMA = join(CORPUS, "processor-scenario.schema.json");
 const SYNTHESIS_DIR = join(CORPUS, "synthesis");
 const SYNTHESIS_SCHEMA = join(CORPUS, "synthesis-scenario.schema.json");
+const ADJUDICATIONS = join(CORPUS, "adjudications.json");
+const ADJUDICATION_SCHEMA = join(CORPUS, "adjudication.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 
@@ -401,6 +408,13 @@ for (const dir of processorTargets) {
       errors.push(`${at}: id '${scenario.id}' has the wrong family prefix`);
     if (scenario.source.bindingSpec !== fam.bindingSpec)
       errors.push(`${at}: source bindingSpec '${scenario.source.bindingSpec}' is not '${fam.bindingSpec}'`);
+    if (scenario.expected.outcome === "refused") {
+      for (const rule of scenario.expected.rules) {
+        if (!coreRules.has(rule) && (!rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(rule)))
+          errors.push(`${at}: refusal rule '${rule}' is not defined by the core or the ${dir} family`);
+      }
+      continue;
+    }
     if (!scenario.expected.coverage.exhaustive)
       errors.push(`${at}: portable synthesis evidence must claim an exhaustive inventory`);
 
@@ -417,8 +431,12 @@ for (const dir of processorTargets) {
       if (entry.status === "represented") {
         if (!bindings.has(`${entry.operationKey}\0${entry.bindingRef}`))
           errors.push(`${entryAt}: represented disposition has no expected binding identity`);
-      } else if (entry.rule && !allRuleIds.has(entry.rule)) {
-        errors.push(`${entryAt}: rule '${entry.rule}' is not defined by the core or a published family`);
+      } else if (
+        entry.rule
+        && !coreRules.has(entry.rule)
+        && (!entry.rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(entry.rule))
+      ) {
+        errors.push(`${entryAt}: rule '${entry.rule}' is not defined by the core or the ${dir} family`);
       }
     }
     const derivedFull = scenario.expected.coverage.entries.every(
@@ -427,6 +445,41 @@ for (const dir of processorTargets) {
     if (scenario.expected.coverage.fullyRepresented !== derivedFull)
       errors.push(`${at}: fullyRepresented does not match the declared dispositions`);
   }
+}
+
+let adjudicationCount = 0;
+try {
+  const adjudications = JSON.parse(readFileSync(ADJUDICATIONS, "utf8"));
+  const shape = ajvOk(ADJUDICATION_SCHEMA, adjudications);
+  if (!shape.ok) {
+    errors.push(`adjudications.json: does not match adjudication.schema.json\n${shape.out}`);
+  } else {
+    const ids = new Set();
+    adjudicationCount = adjudications.records.length;
+    for (const [index, record] of adjudications.records.entries()) {
+      const at = `adjudications.json.records[${index}]`;
+      if (ids.has(record.id)) errors.push(`${at}: duplicate id '${record.id}'`);
+      ids.add(record.id);
+      for (const scenario of record.scenarios) {
+        if (!synthesisScenarioIds.has(scenario))
+          errors.push(`${at}: scenario '${scenario}' is not present in the live synthesis corpus`);
+      }
+      const scenarioPrefixes = new Set(
+        record.scenarios.map((scenario) => scenario.slice(0, scenario.indexOf("-SS-")))
+      );
+      for (const rule of record.authority.coreRules) {
+        if (!coreRules.has(rule))
+          errors.push(`${at}: core authority rule '${rule}' is not defined by the core`);
+      }
+      for (const rule of record.authority.bindingRules) {
+        const prefix = rule.slice(0, rule.indexOf("-"));
+        if (!allRuleIds.has(rule) || !scenarioPrefixes.has(prefix))
+          errors.push(`${at}: binding authority rule '${rule}' is not defined by a scenario family`);
+      }
+    }
+  }
+} catch (e) {
+  errors.push(`adjudications.json: failed to parse or validate: ${e.message}`);
 }
 
 rmSync(tmp, { recursive: true, force: true });
@@ -444,6 +497,7 @@ console.log(
 console.log(
   `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} published families`
 );
+console.log(`Conformance adjudications: ${adjudicationCount}`);
 
 if (errors.length) {
   console.log(`\nErrors (${errors.length}):`);

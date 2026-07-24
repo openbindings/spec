@@ -137,21 +137,37 @@ usable after the source or peer changes.
 ## Portable synthesis scenarios
 
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json) defines the
-artifact-to-OBI proof boundary. A scenario contains one native source and
-expects the exact operation-key set, the exact `(operationKey, bindingRef)`
-target identities, and an exhaustive coverage ledger normalized to stable
-semantic fields (`sourceRef`, scope, status, rule/reason identity, and runtime
-requirements).
+artifact-to-OBI proof boundary. Its version-2 exchange distinguishes two
+outcomes. A `synthesized` scenario contains one native source and expects the
+exact operation-key set, the exact `(operationKey, bindingRef)` target
+identities, and an exhaustive coverage ledger normalized to stable semantic
+fields (`sourceRef`, scope, status, rule/reason identity, and runtime
+requirements). A `refused` scenario proves creation-time soundness: when an
+upstream-valid target cannot be represented faithfully and no independent
+artifact alternative preserves it, synthesis fails as a whole rather than
+returning a statically unbindable partial interface. Refusal scenarios cite
+the governing rules but deliberately do not compare exception types or
+diagnostic prose.
+
+Discrepancies discovered while executing this corpus are classified in
+[`adjudications.json`](adjudications.json), validated by
+[`adjudication.schema.json`](adjudication.schema.json). A record identifies
+the governing upstream fact and rules, the owning layer, the smallest
+resolution, compatibility consequences, and permanent evidence. A passing
+test is not itself authority: an implementation defect is fixed in code, a
+fixture defect in the corpus, and a semantic correction to a published
+binding specification follows its errata/revision discipline.
 
 `message` and family-specific `details` are intentionally absent from expected
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The eight
-scenarios exercise all seven published artifact/protocol families and mix faithful targets with
-artifact alternatives, binding-spec exclusions, or invalid source units. This
-corpus is designed to grow with newly discovered upstream edge cases; it is
-neither a crawler corpus nor an index format.
+(`invalid` source units do not count as upstream-valid). The twenty-three
+scenarios exercise all seven published artifact/protocol families and mix
+faithful targets with artifact alternatives, binding-spec exclusions, invalid
+source units, and required whole-source refusals. This corpus is designed to
+grow with newly discovered upstream edge cases; it is neither a crawler corpus
+nor an index format.
 
 ## Fixture file format
 
@@ -214,6 +230,8 @@ binding-specs/
   fixture.schema.json  (shared fixture shape for all seven families)
   processor-scenario.schema.json (portable P-rule scenario shape)
   synthesis-scenario.schema.json (portable artifact-to-OBI scenario shape)
+  adjudication.schema.json (discrepancy-disposition record shape)
+  adjudications.json    (review decisions from corpus findings)
   processor/            usage.json, openapi.json, asyncapi.json,
                         mcp.json, grpc.json, connect.json, graphql.json
   synthesis/            one portable authoring file per published family
@@ -239,7 +257,7 @@ version-boundary checks and representative edition-specific branches; a
 processor that implements a narrower subset reports partial support instead
 of treating a shared major/minor line as implicitly accepted.
 
-`node scripts/verify-binding-specs.mjs` (run in CI) keeps both corpus forms
+`node scripts/verify-binding-specs.mjs` (run in CI) keeps all corpus forms
 internally consistent: every D-rule fixture file validates against this subtree's
 `fixture.schema.json`; each file's `rule` matches its filename, family
 directory, and `bindingSpec`; the cited `section` exists in the family
@@ -253,6 +271,13 @@ coverage for all seven families. Synthesis scenario files are likewise checked
 for all seven families, including target/disposition consistency. It does not
 judge D verdicts or execute processor/synthesis scenarios — those are the jobs
 of family processors and adapters.
+
+The spec repository's CI also checks out both reference SDKs and executes every
+portable processor and synthesis scenario against each family implementation.
+The SDK repositories run the same corpus independently. This makes a corpus
+change, a Go behavior change, and a TypeScript behavior change part of one
+observable gate while preserving the authority order above: a mismatch is
+adjudicated before any layer is changed.
 
 ## Adding fixtures
 

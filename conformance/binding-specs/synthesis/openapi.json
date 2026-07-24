@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
   "description": "OpenAPI path-operation coverage, request-media alternatives, and reverse-direction exclusions.",
@@ -42,6 +42,7 @@
         }
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["createJob"],
         "bindings": [
           { "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post" }
@@ -50,10 +51,226 @@
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": ["configuration.server"] },
             { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1x-custom", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.request_media_excluded", "rule": "OAPI-P-04", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "#/webhooks/jobChanged/post", "scope": "target", "status": "excluded", "reasonCode": "openapi.reverse_direction", "rule": "OAPI-D-03", "requirements": [] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-02",
+      "description": "A parameter/body-property collision excludes only the affected request-media alternative when another artifact-declared candidate still carries the operation faithfully.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Candidate-specific flattening",
+            "version": "1"
+          },
+          "paths": {
+            "/messages": {
+              "post": {
+                "operationId": "sendMessage",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "query",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "sent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "sendMessage"
+        ],
+        "bindings": [
+          {
+            "operationKey": "sendMessage",
+            "bindingRef": "#/paths/~1messages/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1messages/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendMessage",
+              "bindingRef": "#/paths/~1messages/post",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1messages/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.flattening_collision",
+              "rule": "OAPI-P-03",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1messages/post/requestBody/content/text~1plain",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendMessage",
+              "bindingRef": "#/paths/~1messages/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-03",
+      "description": "Synthesis refuses the whole source when a required request body has no candidate whose flattened boundary can preserve independently declared wire values.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Unrealizable flattening",
+            "version": "1"
+          },
+          "paths": {
+            "/messages": {
+              "post": {
+                "operationId": "sendMessage",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "query",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "sent"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "OAPI-P-03"
+        ]
+      }
+    },
+    {
+      "id": "OAPI-SS-04",
+      "description": "An absolute sole server makes an ordinary path operation directly invocable without a server-selection prerequisite.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Absolute target",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test/v1"
+            }
+          ],
+          "paths": {
+            "/status": {
+              "get": {
+                "operationId": "getStatus",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "getStatus"
+        ],
+        "bindings": [
+          {
+            "operationKey": "getStatus",
+            "bindingRef": "#/paths/~1status/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1status/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "getStatus",
+              "bindingRef": "#/paths/~1status/get",
+              "requirements": []
+            }
           ]
         }
       }

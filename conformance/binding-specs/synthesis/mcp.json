@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
   "description": "MCP pagination-exhausted listing inventory, ambiguity, and invalid-entity accounting.",
@@ -23,6 +23,7 @@
         }
       },
       "expected": {
+        "outcome": "synthesized",
         "operations": ["ok"],
         "bindings": [
           { "operationKey": "ok", "bindingRef": "tools/ok" }
@@ -38,6 +39,23 @@
             { "sourceIndex": 0, "sourceRef": "resourceTemplates/{", "scope": "target", "status": "invalid", "reasonCode": "mcp.invalid_entity", "requirements": [] }
           ]
         }
+      }
+    },
+    {
+      "id": "MCP-SS-02",
+      "description": "Malformed pinned-listing entity collections are refused instead of interpreted as an empty capability surface.",
+      "source": {
+        "bindingSpec": "openbindings.mcp@1",
+        "location": "https://mcp.example.test",
+        "content": {
+          "tools": "not-a-list"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "MCP-D-01"
+        ]
       }
     }
   ]

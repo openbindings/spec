@@ -8,6 +8,27 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Synthesis round-trip review ledger** (2026-07-24). A new informative
+  conformance note separates inventory coverage, operation-boundary fidelity,
+  and concrete-protocol re-emission fidelity. It records the MCP differential
+  findings (schema placement, complete result preservation, artifact
+  retention, non-invertible mappings, configuration-dependent stream schemas,
+  exact revision gates, source-native error detail, cancellation, and
+  credential carriage), the mechanical check against the other binding
+  families, and the remaining corpus and upstream-SDK follow-ups.
+
+- **Cross-runtime binding conformance gate** (2026-07-23). Portable synthesis
+  evidence now distinguishes successful exhaustive inventories from required
+  whole-source refusal, without standardizing exception types or diagnostic
+  prose. Twenty-three synthesis scenarios cover all seven artifact/protocol
+  families, including invalid source identities, creation-time soundness,
+  artifact alternatives, explicit exclusions, and runtime configuration
+  prerequisites. Machine-checked adjudication records identify the authority,
+  owning layer, compatibility consequence, and permanent evidence for every
+  discrepancy found in this pass. Spec CI executes all 109 processor scenarios
+  and all synthesis scenarios against both reference SDKs, making
+  cross-language drift loud at the shared corpus boundary.
+
 - **Withdrawn Workers RPC experiment** (2026-07-23). The unminted Workers RPC
   candidate was removed from the active catalog. Its runtime-local,
   artifactless model did not justify a first-party specification without
@@ -29,8 +50,8 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
   specification pins GraphQL September 2025, an immutable
   GraphQL-over-HTTP revision, and the `graphql-transport-ws` protocol revision.
   Portable evidence now covers all seven published artifact/protocol
-  families: 21 D-rules, 52 P-rules across 109 processor scenarios, and one
-  exhaustive synthesis scenario per family.
+  families: 21 D-rules, 52 P-rules across 109 processor scenarios, and
+  portable synthesis success/refusal evidence for every family.
 
 - **Core conformance hardening loop** (2026-07-22). The remaining
   evidence-shaped gaps now have portable, cross-implementation coverage
