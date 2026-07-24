@@ -65,6 +65,14 @@ revision named by the manifest's `latest` map. A future revision is authored
 as a candidate, published into a new bundle, and only then becomes the latest
 mirror; it never edits its predecessor.
 
+The manifest's historical `coreRelease` field records the core version label
+of the companion snapshot archived in that bundle. It does not, by itself,
+assert that a core release tag already existed: the initial revision-1 cohorts
+were published against archived 0.2.0 working-draft semantics before the final
+0.2 core release. Permanent rendered binding-specification pages resolve core
+citations to that immutable publication-time snapshot, not to the moving 0.2
+working copy.
+
 Published prose is not rewritten for corrections. A non-semantic
 clarification is an append-only erratum under
 [`binding-specs/errata/`](errata/README.md), recorded in

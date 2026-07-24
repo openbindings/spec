@@ -11,9 +11,9 @@
 
 import {
   existsSync,
+  lstatSync,
   readFileSync,
   readdirSync,
-  statSync,
 } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
@@ -45,7 +45,7 @@ function listFiles(root) {
   function visit(dir) {
     for (const name of readdirSync(dir).sort()) {
       const full = join(dir, name);
-      const st = statSync(full);
+      const st = lstatSync(full);
       if (st.isSymbolicLink()) {
         errors.push(`publication bundle contains a symlink: ${relative(ROOT, full)}`);
       } else if (st.isDirectory()) {
@@ -168,6 +168,7 @@ for (const entry of publications) {
 }
 
 const errataIds = new Set();
+const errataDocuments = new Set();
 for (const entry of errataEntries) {
   if (!entry || typeof entry !== "object") {
     errors.push("erratum entry must be an object");
@@ -175,18 +176,56 @@ for (const entry of errataEntries) {
   }
   if (errataIds.has(entry.id)) errors.push(`duplicate erratum id ${entry.id}`);
   errataIds.add(entry.id);
+  if (errataDocuments.has(entry.document)) {
+    errors.push(`duplicate erratum document ${entry.document}`);
+  }
+  errataDocuments.add(entry.document);
   if (!byIdentifier.has(entry.identifier)) {
     errors.push(`${entry.id}: unknown binding-specification identifier ${entry.identifier}`);
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.publishedAt || "")) {
     errors.push(`${entry.id}: publishedAt must be YYYY-MM-DD`);
   }
+  const documentMatch = (entry.document || "").match(
+    /^binding-specs\/errata\/([a-z0-9-]+)\/([1-9][0-9]*)\/([0-9]{4})\.md$/
+  );
+  if (!documentMatch) {
+    errors.push(`${entry.id}: document must use binding-specs/errata/<family>/<revision>/<sequence>.md`);
+  } else {
+    const [, family, revision, sequenceText] = documentMatch;
+    const expectedIdentifier = `openbindings.${family}@${revision}`;
+    const sequence = Number(sequenceText);
+    if (entry.identifier !== expectedIdentifier) {
+      errors.push(`${entry.id}: document path implies ${expectedIdentifier}`);
+    }
+    if (entry.id !== `${entry.identifier}-erratum-${sequence}`) {
+      errors.push(`${entry.id}: id does not match document sequence ${sequence}`);
+    }
+  }
   const documentPath = join(ROOT, entry.document || "");
   if (!existsSync(documentPath)) {
     errors.push(`${entry.id}: missing erratum document ${entry.document}`);
-  } else if (sha256(readFileSync(documentPath)) !== entry.sha256) {
-    errors.push(`${entry.id}: erratum digest mismatch`);
+  } else {
+    const documentBytes = readFileSync(documentPath);
+    if (sha256(documentBytes) !== entry.sha256) {
+      errors.push(`${entry.id}: erratum digest mismatch`);
+    }
+    if (!documentBytes.toString("utf8").includes(entry.identifier)) {
+      errors.push(`${entry.id}: erratum document does not name ${entry.identifier}`);
+    }
   }
+}
+
+const actualErrataDocuments = new Set(
+  listFiles(join(ROOT, "binding-specs", "errata"))
+    .map((full) => relative(ROOT, full).split("\\").join("/"))
+    .filter((path) => path.endsWith(".md") && path !== "binding-specs/errata/README.md")
+);
+for (const document of actualErrataDocuments) {
+  if (!errataDocuments.has(document)) errors.push(`unregistered erratum document ${document}`);
+}
+for (const document of errataDocuments) {
+  if (!actualErrataDocuments.has(document)) errors.push(`errata manifest names absent document ${document}`);
 }
 
 for (const [family, identifier] of Object.entries(manifest.latest || {})) {
@@ -310,7 +349,13 @@ for (const [publication, recordPath] of publicationRecords) {
 
 if (existsSync(RELEASES_ROOT)) {
   for (const name of readdirSync(RELEASES_ROOT).sort()) {
-    if (!statSync(join(RELEASES_ROOT, name)).isDirectory()) continue;
+    const releasePath = join(RELEASES_ROOT, name);
+    const releaseStat = lstatSync(releasePath);
+    if (releaseStat.isSymbolicLink()) {
+      errors.push(`binding-specification release is a symlink: ${relative(ROOT, releasePath)}`);
+      continue;
+    }
+    if (!releaseStat.isDirectory()) continue;
     if (!publicationRecords.has(name)) {
       errors.push(`unregistered publication bundle binding-specs/releases/${name}`);
     }

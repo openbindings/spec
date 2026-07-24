@@ -19,12 +19,12 @@
 import {
   copyFileSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
   rmSync,
-  statSync,
   writeFileSync,
 } from "node:fs";
 import { createHash } from "node:crypto";
@@ -111,7 +111,7 @@ function listFiles(root) {
   function visit(dir) {
     for (const name of readdirSync(dir).sort()) {
       const full = join(dir, name);
-      const st = statSync(full);
+      const st = lstatSync(full);
       if (st.isSymbolicLink()) fail(`publication bundles cannot contain symlinks: ${full}`);
       if (st.isDirectory()) visit(full);
       else if (st.isFile()) out.push(full);
@@ -130,7 +130,7 @@ function copyTree(source, destination, filter = () => true) {
       const rel = relative(source, src);
       if (rel.split(/[\\/]/).includes("node_modules") || !filter(rel)) continue;
       const dest = join(destDir, name);
-      const st = statSync(src);
+      const st = lstatSync(src);
       if (st.isSymbolicLink()) fail(`publication sources cannot contain symlinks: ${src}`);
       if (st.isDirectory()) visit(src, dest);
       else if (st.isFile()) copyFileSync(src, dest);

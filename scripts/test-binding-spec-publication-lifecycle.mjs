@@ -12,6 +12,8 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  symlinkSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { createHash } from "node:crypto";
@@ -110,6 +112,50 @@ try {
     throw new Error("base comparison did not reject an unavailable commit");
   }
 
+  const erratumPath = join(
+    temp,
+    "binding-specs",
+    "errata",
+    "openapi",
+    "1",
+    "0001.md"
+  );
+  write(
+    erratumPath,
+    "# `openbindings.openapi@1` erratum 1\n\nEditorial clarification only.\n"
+  );
+  const errataPath = join(temp, "binding-specs", "errata.json");
+  const errataManifest = {
+    format: "openbindings.binding-spec-errata@1",
+    errata: [
+      {
+        id: "openbindings.openapi@1-erratum-1",
+        identifier: "openbindings.openapi@1",
+        publishedAt: "2026-07-24",
+        document: "binding-specs/errata/openapi/1/0001.md",
+        sha256: digest(erratumPath),
+      },
+    ],
+  };
+  writeFileSync(errataPath, `${JSON.stringify(errataManifest, null, 2)}\n`);
+  run("node", ["scripts/verify-binding-spec-publications.mjs", "--base", base]);
+
+  run("git", ["add", "."]);
+  run("git", ["commit", "-qm", "append erratum"]);
+  const errataBase = run("git", ["rev-parse", "HEAD"]).trim();
+  errataManifest.errata[0].publishedAt = "2099-01-01";
+  writeFileSync(errataPath, `${JSON.stringify(errataManifest, null, 2)}\n`);
+  const errataFailure = run(
+    "node",
+    ["scripts/verify-binding-spec-publications.mjs", "--base", errataBase],
+    1
+  );
+  if (!errataFailure.includes("published erratum entry changed")) {
+    throw new Error("base comparison did not reject mutation of an existing erratum");
+  }
+  errataManifest.errata[0].publishedAt = "2026-07-24";
+  writeFileSync(errataPath, `${JSON.stringify(errataManifest, null, 2)}\n`);
+
   write(
     join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
     "# OpenAPI\n\nDefines `openbindings.openapi@3`.\n"
@@ -137,6 +183,31 @@ try {
     join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
     "# OpenAPI\n\nDefines `openbindings.openapi@2`.\n"
   );
+  const sourceSymlink = join(temp, "binding-specs", "openapi", "linked.md");
+  symlinkSync("../../openbindings.md", sourceSymlink);
+  const symlinkFailure = run(
+    "node",
+    [
+      "scripts/publish-binding-specifications.mjs",
+      "--publication",
+      "symlinked",
+      "--published-at",
+      "2026-07-24",
+      "--core-release",
+      "0.2.0",
+      "--families",
+      "openapi@2",
+    ],
+    2
+  );
+  if (!symlinkFailure.includes("publication sources cannot contain symlinks")) {
+    throw new Error("publisher did not reject a source symlink");
+  }
+  unlinkSync(sourceSymlink);
+  rmSync(join(temp, "binding-specs", "releases", "symlinked"), {
+    recursive: true,
+    force: true,
+  });
   run("node", [
     "scripts/publish-binding-specifications.mjs",
     "--publication",

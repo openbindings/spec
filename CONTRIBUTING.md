@@ -2,6 +2,12 @@
 
 Thanks for helping improve OpenBindings.
 
+Contributions are intentionally submitted for inclusion under Apache License
+2.0 as described by §5 of that license. The exact current patent posture and
+the pre-release IPR decision are documented in [`IPR.md`](IPR.md). Do not add
+claims that a contributor or organization has accepted a separate patent
+commitment unless the corresponding executed record exists.
+
 ## Where changes go
 
 - The **working copy** of the spec is `openbindings.md`.

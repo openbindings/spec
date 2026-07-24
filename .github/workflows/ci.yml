@@ -49,6 +49,16 @@ jobs:
       - name: Verify binding-specs conformance subcorpus
         run: node scripts/verify-binding-specs.mjs
 
+      - name: Validate transform conformance corpus
+        run: |
+          for f in conformance/transforms/agree/*.json conformance/transforms/known-divergence/*.json; do
+            ajv validate -s conformance/transforms/transforms.schema.json -d "$f" --spec=draft2020
+          done
+          node scripts/verify-transform-corpus.mjs
+
+      - name: Validate binding-specification errata manifest
+        run: ajv validate -s binding-specs/errata.schema.json -d binding-specs/errata.json --spec=draft2020
+
       - name: Verify binding-specification publications
         run: |
           base=""
@@ -134,7 +144,7 @@ jobs:
                 exit 1
               fi
             done || rc=1
-          done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './temp_ref/*')
+          done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './history/*' -not -path './temp_ref/*')
           exit $rc
 
   reference-go:

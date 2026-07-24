@@ -13,7 +13,11 @@ binding-specs/errata/<family>/<revision>/<sequence>.md
 
 and a new entry in `binding-specs/errata.json`. An entry names the exact binding
 specification identifier, publication date, erratum document, and SHA-256
-digest. Existing entries and files never change.
+digest. The manifest shape is published in
+[`binding-specs/errata.schema.json`](../errata.schema.json), while the
+publication verifier additionally enforces unique identifiers, registered
+documents, digest integrity, identifier/path correspondence, and append-only
+history. Existing entries and files never change.
 
 An erratum states:
 

@@ -1,4 +1,54 @@
 {
   "format": "openbindings.binding-spec-errata@1",
-  "errata": []
+  "errata": [
+    {
+      "id": "openbindings.asyncapi@1-erratum-1",
+      "identifier": "openbindings.asyncapi@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/asyncapi/1/0001.md",
+      "sha256": "6eab9393b5e1a7f1389db93fc6538194552d449a5c7e73a743f03514d39c3abe"
+    },
+    {
+      "id": "openbindings.connect@1-erratum-1",
+      "identifier": "openbindings.connect@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/connect/1/0001.md",
+      "sha256": "8957c984868f4b7d56589777770a9516dd5fdf9d0c3dbb68a0222f199f6d241a"
+    },
+    {
+      "id": "openbindings.grpc@1-erratum-1",
+      "identifier": "openbindings.grpc@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/grpc/1/0001.md",
+      "sha256": "57ae0361aadc614d0530bfbc57d0173f54706fe6a294b96e3050fab7c8941de0"
+    },
+    {
+      "id": "openbindings.mcp@1-erratum-1",
+      "identifier": "openbindings.mcp@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/mcp/1/0001.md",
+      "sha256": "8b8380c5312d2e4ce2475bfb5cef1be50e9a2f1a608e7902326a51c6878b565d"
+    },
+    {
+      "id": "openbindings.openapi@1-erratum-1",
+      "identifier": "openbindings.openapi@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/openapi/1/0001.md",
+      "sha256": "57752c45d946a8ea7511b3edb4b45b0a2ba6e8417e98a3357f8032227fc12b53"
+    },
+    {
+      "id": "openbindings.operation-graph@1-erratum-1",
+      "identifier": "openbindings.operation-graph@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/operation-graph/1/0001.md",
+      "sha256": "5df353acf77b44c8c23e228ef09aca7cb351ec6bce0ce7f69c819abca28fcf3d"
+    },
+    {
+      "id": "openbindings.usage@1-erratum-1",
+      "identifier": "openbindings.usage@1",
+      "publishedAt": "2026-07-24",
+      "document": "binding-specs/errata/usage/1/0001.md",
+      "sha256": "9d75f45679e02ece6605576be928a8af2b7abc86eea59d79e5c946c71c747cb9"
+    }
+  ]
 }

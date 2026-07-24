@@ -22,7 +22,13 @@ const tempRoot = mkdtempSync(join(tmpdir(), "openbindings-release-"));
 try {
   mkdirSync(join(tempRoot, "scripts"), { recursive: true });
   mkdirSync(join(tempRoot, "versions"), { recursive: true });
-  for (const file of ["openbindings.md", "openbindings.schema.json", "EDITORS.md"]) {
+  for (const file of [
+    "openbindings.md",
+    "openbindings.schema.json",
+    "EDITORS.md",
+    "LICENSE",
+    "IPR.md",
+  ]) {
     copyFileSync(join(root, file), join(tempRoot, file));
   }
   copyFileSync(
@@ -51,6 +57,8 @@ try {
       "openbindings.md",
       "openbindings.schema.json",
       "editors.md",
+      "LICENSE",
+      "IPR.md",
       "conformance/README.md",
       "conformance/manifest.json",
       "conformance/fixture.schema.json",

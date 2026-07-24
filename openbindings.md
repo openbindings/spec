@@ -50,7 +50,13 @@ This is **version 0.2.0** of the OpenBindings specification. This text is the un
 
 ## License and intellectual property
 
-This specification is published under the Apache 2.0 License (see `LICENSE`). Contributions are accepted under the same license, which includes an express patent grant from each contributor covering any claims embodied by their contribution. No party has disclosed patents essential to implementing this specification.
+This specification is published under the Apache 2.0 License (see `LICENSE`).
+Apache 2.0 defines the copyright and contribution-scoped patent grants
+currently in force. The project has no separately executed
+standards-essential-claims commitment; implementers must not infer one from
+the absence of a disclosure. [`IPR.md`](IPR.md) records the precise current
+posture, received-disclosure status, and the additional decision required
+before the final 0.2 release.
 
 ## Notational conventions
 

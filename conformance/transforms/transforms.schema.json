@@ -19,7 +19,7 @@
     "description": { "type": "string" },
     "rootCauses": {
       "type": "object",
-      "description": "known-divergence only: prose for each root-cause label (A-F).",
+      "description": "known-divergence only: prose for each root-cause label used by a case.",
       "additionalProperties": { "type": "string" }
     },
     "cases": {
@@ -34,7 +34,13 @@
       "if": { "properties": { "kind": { "const": "known-divergence" } } },
       "then": {
         "properties": {
-          "cases": { "items": { "required": ["rootCause", "actual"] } }
+          "cases": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["rootCause", "actual"]
+            }
+          }
         }
       }
     }
@@ -58,7 +64,7 @@
       "properties": {
         "id": { "type": "string" },
         "rootCause": {
-          "enum": ["A", "B", "C", "D", "E", "F"],
+          "enum": ["W", "F", "M", "R"],
           "description": "known-divergence only: which root-cause pattern this case exercises."
         },
         "description": { "type": "string" },

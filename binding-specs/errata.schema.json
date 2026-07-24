@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/binding-spec-errata-1.json",
+  "title": "OpenBindings binding-specification errata manifest",
+  "type": "object",
+  "required": ["format", "errata"],
+  "properties": {
+    "format": { "const": "openbindings.binding-spec-errata@1" },
+    "errata": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "identifier", "publishedAt", "document", "sha256"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^openbindings\\.[a-z0-9-]+@[1-9][0-9]*-erratum-[1-9][0-9]*$"
+          },
+          "identifier": {
+            "type": "string",
+            "pattern": "^openbindings\\.[a-z0-9-]+@[1-9][0-9]*$"
+          },
+          "publishedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "document": {
+            "type": "string",
+            "pattern": "^binding-specs/errata/[a-z0-9-]+/[1-9][0-9]*/[0-9]{4}\\.md$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

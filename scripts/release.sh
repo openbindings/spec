@@ -15,6 +15,7 @@ What it does:
   - Copies the working spec (openbindings.md) into versions/<version>/openbindings.md
   - Copies the working JSON Schema (openbindings.schema.json) into versions/<version>/openbindings.schema.json
   - Copies EDITORS.md into versions/<version>/editors.md
+  - Copies LICENSE and IPR.md into the snapshot
   - Copies the core conformance corpus into versions/<version>/conformance/
     (validity fixtures, portable tool scenarios, both meta-schemas, manifest,
     README, and runner)
@@ -54,6 +55,8 @@ fi
 
 working_spec="$repo_root/openbindings.md"
 working_editors="$repo_root/EDITORS.md"
+working_license="$repo_root/LICENSE"
+working_ipr="$repo_root/IPR.md"
 working_schema="$repo_root/openbindings.schema.json"
 working_conformance="$repo_root/conformance"
 
@@ -67,6 +70,10 @@ if [[ ! -f "$working_schema" ]]; then
 fi
 if [[ ! -f "$working_editors" ]]; then
   echo "error: missing working editors at $working_editors" >&2
+  exit 2
+fi
+if [[ ! -f "$working_license" || ! -f "$working_ipr" ]]; then
+  echo "error: missing LICENSE or IPR.md release material" >&2
   exit 2
 fi
 if [[ ! -d "$working_conformance" ]]; then
@@ -89,6 +96,8 @@ mkdir -p "$dest_dir"
 cp "$working_spec" "$dest_spec"
 cp "$working_schema" "$dest_schema"
 cp "$working_editors" "$dest_editors"
+cp "$working_license" "$dest_dir/LICENSE"
+cp "$working_ipr" "$dest_dir/IPR.md"
 mkdir -p "$dest_conformance"
 cp "$working_conformance/README.md" "$dest_conformance/README.md"
 cp "$working_conformance/manifest.json" "$dest_conformance/manifest.json"
@@ -108,6 +117,7 @@ if [[ -f "$versions_readme" ]]; then
       echo "  - Spec: \`$version/openbindings.md\`"
       echo "  - Schema: \`$version/openbindings.schema.json\`"
       echo "  - Editors: \`$version/editors.md\`"
+      echo "  - License/IPR: \`$version/LICENSE\`, \`$version/IPR.md\`"
       echo "  - Conformance: \`$version/conformance/\`"
     } >>"$versions_readme"
   fi
@@ -121,6 +131,8 @@ Created snapshot:
   - $dest_spec
   - $dest_schema
   - $dest_editors
+  - $dest_dir/LICENSE
+  - $dest_dir/IPR.md
   - $dest_conformance/
 
 Next steps:

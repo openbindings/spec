@@ -30,6 +30,8 @@ A release snapshot captures the normative core spec at the time of release:
 - `openbindings.md` — the core specification
 - `openbindings.schema.json` — the normative JSON Schema
 - `EDITORS.md` — editors list
+- `LICENSE` and `IPR.md` — the exact copyright and patent posture represented
+  by the release
 - `conformance/` — the **core** conformance test corpus only: `document/`,
   `tool/`, `scenarios/`, both core fixture/scenario meta-schemas, the manifest,
   README, and core runner. Snapshotted because the corpus is keyed to the
@@ -52,6 +54,10 @@ A release snapshot captures the normative core spec at the time of release:
 1. Merge changes to the working copy
 
    - Ensure `openbindings.md` reflects what you intend to release.
+   - Resolve the pre-release intellectual-property decision recorded in
+     `IPR.md`, record only commitments that have actually been executed, and
+     ensure every claimed assent has a durable record. Do not cut 0.2 while
+     `IPR.md` still labels that decision outstanding.
    - Ensure any binding specifications under `binding-specs/` that ship with this change set are ready. They are not snapshotted, but a core release that cites a specification still being drafted publishes a dangling citation.
    - Run `node scripts/verify-binding-spec-publications.mjs`. Every binding-specification identifier cited as published must already be present in `binding-specs/publications.json`, with its immutable bundle and permanent URLs.
    - Regenerate `conformance/manifest.json` (`node scripts/generate-conformance-manifest.mjs`) and run `node scripts/verify-corpus.mjs` to confirm the corpus is in sync with the spec.
@@ -63,6 +69,8 @@ A release snapshot captures the normative core spec at the time of release:
      - `openbindings.md` → `versions/<next>/openbindings.md`
      - `openbindings.schema.json` → `versions/<next>/openbindings.schema.json`
      - `EDITORS.md` → `versions/<next>/editors.md`
+     - `LICENSE` → `versions/<next>/LICENSE`
+     - `IPR.md` → `versions/<next>/IPR.md`
      - Core conformance artifacts → `versions/<next>/conformance/`:
        - `conformance/README.md`
        - `conformance/manifest.json`

@@ -79,10 +79,12 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
 | [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
+| [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
 | [`binding-specs/`](binding-specs/) | Binding specifications published by the project (e.g., `openbindings.openapi@1`) |
 | [`examples/`](examples/) | Worked example OBI documents |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |
 | [`versions/`](versions/) | Immutable released snapshots |
+| [`history/`](history/) | Archived, non-normative design records; not current requirements or issue lists |
 
 The specification is self-contained and does not depend on any of the reference or tooling material above.
 
@@ -98,7 +100,7 @@ The openbindings project publishes reference implementations. The spec privilege
 
 ## Status
 
-OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is the **v0.2.0 draft** (unreleased; the latest release is 0.1.0). Immutable released snapshots live under [`versions/`](versions/) and are cut at tag time, never before. See [CHANGELOG.md](CHANGELOG.md) for what is changing and [`openbindings.md` §8](openbindings.md#8-versioning) for the versioning model.
+OpenBindings is **pre-1.0**; minor versions may include breaking changes. This repository's working specification is the **v0.2.0 draft** (unreleased; the latest release is 0.1.0). Immutable released snapshots live under [`versions/`](versions/) and are cut at tag time, never before. See [the 0.1-to-0.2 migration guide](MIGRATING-0.1-TO-0.2.md), [CHANGELOG.md](CHANGELOG.md) for the release delta, and [`openbindings.md` §8](openbindings.md#8-versioning) for the versioning model.
 
 ## Contributing
 
@@ -106,6 +108,7 @@ OpenBindings is developed in the open. Contributions, feedback, and discussion a
 
 - [Contributing guide](CONTRIBUTING.md)
 - [Governance](GOVERNANCE.md)
+- [Intellectual-property status](IPR.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 - [Security policy](SECURITY.md)
 - [Releasing](RELEASING.md)
