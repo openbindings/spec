@@ -14,6 +14,7 @@
 <p align="center">
   <a href="https://openbindings.com">Website</a> &middot;
   <a href="openbindings.md">Read the spec</a> &middot;
+  <a href="agent-primer.md">AI agent primer</a> &middot;
   <a href="https://github.com/openbindings/ob">CLI</a>
 </p>
 
@@ -23,7 +24,12 @@
 
 OpenBindings defines a standard way to describe **what a service does** — its operations and their input/output contracts — separately from **how you reach it** over any particular protocol.
 
-A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification, without redefining the contract for each one. OBI sits one layer above those formats: each format stays authoritative over its own wire shape, and OBI adds the operation-level overlay that survives across protocols.
+A single OpenBindings Interface (OBI) can point at bindings governed by
+OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification,
+without redefining the contract for each one. OBI sits one layer above those
+artifacts and protocols: each upstream authority remains authoritative over
+its own interaction, and OBI adds the operation-level overlay that survives
+across them.
 
 ```
 ┌────────────────────────────────────────────┐
@@ -45,20 +51,26 @@ A single OpenBindings Interface (OBI) can point at bindings in OpenAPI, AsyncAPI
 
 - **Operations** are the contract: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples).
 - **Bindings** map an operation to a concrete protocol target without redefining the contract. One operation can carry many bindings.
-- **Sources** reference external binding artifacts (OpenAPI documents, AsyncAPI specs, MCP servers, …) by format and location.
+- **Sources** carry or address governed artifacts and live surfaces through an exact binding-specification identifier plus `content`, `location`, or both.
 - **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, discovery, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, binding-selection tactics past the deprecation-tier rule, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits).
+The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, binding-selection policy, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). HTTP discovery is an optional companion specification, not part of the core document model.
 
-Authentication in particular is **not** part of an OBI document. It is a runtime prerequisite negotiated by the binding invoker at call time and resolved into the runtime's store — see the [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface.
+Authentication in particular is **not** part of an OBI document. It is a
+runtime prerequisite negotiated by the binding invoker at call time and
+resolved into effective invocation context; a runtime may persist durable
+values in a document store or somewhere else, but no store architecture is
+required — see the
+[`binding-invoker`](https://openbindings.com/interfaces/binding-invoker)
+interface.
 
 ## Guides and tutorials
 
 This repository is the **normative and reference** source. It is self-contained for understanding and implementing the standard: the spec, the schema, the conformance corpus, the binding specifications, and worked examples. The project's shared interfaces are published separately in [openbindings/interfaces](https://github.com/openbindings/interfaces).
 
-Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version.
+Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version. The informative [`agent-primer.md`](agent-primer.md) is kept beside the working specification so tools and agents can obtain one version-aligned explanation of the project's mental model and authority boundaries; the website renders that same file rather than maintaining another copy.
 
 ## In this repository
 
@@ -66,6 +78,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | --- | --- |
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
+| [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
 | [`binding-specs/`](binding-specs/) | Binding specifications published by the project (e.g., `openbindings.openapi@1`) |
 | [`examples/`](examples/) | Worked example OBI documents |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |
@@ -79,8 +92,8 @@ The openbindings project publishes reference implementations. The spec privilege
 
 | Project | Description |
 | --- | --- |
-| [openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK to read, write, and invoke OBI documents (with per-format packages) |
-| [openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo (core SDK + per-format packages) |
+| [openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK to read, write, and invoke OBI documents, with separately installable binding implementations |
+| [openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo: core SDK plus separately installable binding implementations |
 | [ob](https://github.com/openbindings/ob) | The `ob` CLI: synthesize, invoke, and serve OBIs locally (`ob start`), with a built-in multi-protocol demo (`ob demo`) |
 
 ## Status
