@@ -1,0 +1,139 @@
+{
+  "rule": "GQL-D-01",
+  "bindingSpec": "openbindings.graphql@1",
+  "section": "4",
+  "description": "`location` is required and is an absolute `http` or `https` GraphQL service endpoint.",
+  "tests": [
+    {
+      "description": "absolute https GraphQL endpoint",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "absolute http GraphQL endpoint with a query component",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "http://localhost:8080/graphql?tenant=demo"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "location is required even when content pins the schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "content": {
+              "data": {
+                "__schema": {
+                  "queryType": { "name": "RootQuery" },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "RootQuery",
+                      "fields": [
+                        {
+                          "name": "viewer",
+                          "args": [],
+                          "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                          "isDeprecated": false
+                        }
+                      ]
+                    },
+                    { "kind": "SCALAR", "name": "String" }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-01"]
+    },
+    {
+      "description": "a WebSocket URI is not the GraphQL HTTP endpoint",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "wss://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-01"]
+    },
+    {
+      "description": "a relative endpoint is invalid under the family and core",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-01", "OBI-D-05"]
+    }
+  ]
+}

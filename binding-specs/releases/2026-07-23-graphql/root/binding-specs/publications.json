@@ -1,0 +1,9 @@
+{
+  "format": "openbindings.binding-spec-publication-context@1",
+  "publication": "2026-07-23-graphql",
+  "publishedAt": "2026-07-23",
+  "coreRelease": "0.2.0",
+  "identifiers": [
+    "openbindings.graphql@1"
+  ]
+}

@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/openbindings.operation-graph-0.2.0.json",
+  "title": "OpenBindings Operation Graph Definition (v0.2.0)",
+  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's ref resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification. Structural validation only; behavioral rules (identity law, back-closure, cycle rules) are defined by the specification prose, which governs. Working draft accompanying the v0.2.0 specification working draft; not yet tagged.",
+  "$ref": "#/$defs/OperationGraph",
+  "$defs": {
+    "OperationGraph": {
+      "type": "object",
+      "description": "An operation graph: a directed graph of typed nodes connected by edges, in which every processing node is an operation invocation — bound at runtime (operation) or bound by the specification (built-ins).",
+      "required": ["openbindings.operation-graph", "nodes", "edges"],
+      "properties": {
+        "openbindings.operation-graph": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+          "description": "Format version this graph was authored against (SemVer 2.0.0, e.g., 0.2.0). Each graph declares its own version independently."
+        },
+        "description": {
+          "type": "string",
+          "description": "A human-readable description of what the operation graph does."
+        },
+        "nodes": {
+          "type": "object",
+          "description": "Map of named nodes. Each key is a node identifier.",
+          "propertyNames": {
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.-]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/Node"
+          }
+        },
+        "edges": {
+          "type": "array",
+          "description": "Array of edges connecting nodes. Edges carry event streams. Duplicate edges (same from/to pair) are forbidden by OG-V-08; uniqueItems backstops that rule structurally.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Edge"
+          }
+        }
+      },
+      "patternProperties": { "^x-": true },
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "description": "A typed node. Every node receives the merged streams of its incoming edges and emits a stream along its outgoing edges. The 'type' field is the discriminator: it determines the node's behavior and which other fields are valid.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "input",
+            "output",
+            "operation",
+            "each",
+            "transform",
+            "filter",
+            "map",
+            "buffer",
+            "combine",
+            "exit"
+          ],
+          "description": "The node type. 'operation' is the cardinality-agnostic conduit (one invocation per graph invocation); the remaining processing types are built-ins — operations whose binding is the specification. Must be one of the types defined by this format version (OG-V-14); custom node types require a distinct format token or profile."
+        },
+        "onError": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Node key to route error events to if this node fails. Processing nodes only; not permitted on the boundary nodes (input, output), which are not invocations of their own. If not set, per-event failures are dropped and an operation conduit's terminal error terminates the graph invocation."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "input" } }
+          },
+          "then": {
+            "properties": {
+              "type": true
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "output" } }
+          },
+          "then": {
+            "properties": {
+              "type": true
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "operation" } }
+          },
+          "then": {
+            "required": ["operation"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "operation": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Operation key in the containing OBI to invoke. The node holds one invocation per graph invocation and pipes its incoming stream into it: each arriving event is written as one input, incoming completion closes the invocation's input side, and outputs flow downstream in emission order. Cardinality-agnostic; MUST NOT participate in a cycle (OG-V-10). An unhandled terminal error on the held invocation terminates the graph invocation with that error; onError opts it into in-graph handling instead."
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Total budget in milliseconds for the held invocation, from graph-invocation startup until its output stream completes; not an idle or per-event timeout. On expiry the invocation terminates with TIMEOUT_EXCEEDED, handled as a conduit terminal error."
+              }
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "each" } }
+          },
+          "then": {
+            "required": ["operation"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "operation": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Operation key in the containing OBI to invoke once per arriving event: one invocation per event, the event written as its only input, outputs merged downstream."
+              },
+              "maxIterations": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Maximum invocations this node may open per event lineage. Required if the node is part of a cycle (OG-V-09). Events whose lineage count has reached the limit are dropped, not errored."
+              },
+              "timeout": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Per-invocation budget in milliseconds, from drive until that invocation's output stream completes. On expiry, that invocation fails as a node failure for the triggering event."
+              }
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "buffer" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true,
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Flush after accumulating this many events, then reset and continue (a tumbling window of disjoint batches). Takes precedence over until/through when both would fire on the same event."
+              },
+              "until": {
+                "type": "object",
+                "description": "JSON Schema. Flush when an event matches (exclusive — matching event not included and dropped)."
+              },
+              "through": {
+                "type": "object",
+                "description": "JSON Schema. Flush when an event matches (inclusive — matching event is included)."
+              }
+            },
+            "not": {
+              "required": ["until", "through"]
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "filter" } }
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": ["schema"],
+                "properties": {
+                  "type": true,
+                  "onError": true,
+                  "schema": {
+                    "type": "object",
+                    "description": "JSON Schema. Events that validate pass; others are dropped."
+                  }
+                },
+                "patternProperties": { "^x-": true },
+                "additionalProperties": false
+              },
+              {
+                "required": ["transform"],
+                "properties": {
+                  "type": true,
+                  "onError": true,
+                  "transform": {
+                    "$ref": "#/$defs/Transform",
+                    "description": "Transform expression. Events where the expression evaluates truthy pass; others are dropped."
+                  }
+                },
+                "patternProperties": { "^x-": true },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "transform" } }
+          },
+          "then": {
+            "required": ["transform"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "transform": {
+                "$ref": "#/$defs/Transform",
+                "description": "Transform expression. The result replaces the event."
+              }
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "map" } }
+          },
+          "then": {
+            "required": ["transform"],
+            "properties": {
+              "type": true,
+              "onError": true,
+              "transform": {
+                "$ref": "#/$defs/Transform",
+                "description": "Transform expression. The result MUST be an array; each element is emitted as a separate event."
+              }
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "combine" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "exit" } }
+          },
+          "then": {
+            "properties": {
+              "type": true,
+              "onError": true,
+              "error": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, the operation graph terminates with an error. If false (default), the event is emitted to output before termination."
+              }
+            },
+            "patternProperties": { "^x-": true },
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    "Edge": {
+      "type": "object",
+      "description": "A connection between two nodes, carrying an event stream. Edges carry no logic.",
+      "required": ["from", "to"],
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The key of the source node."
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The key of the target node."
+        }
+      },
+      "patternProperties": { "^x-": true },
+      "additionalProperties": false
+    },
+    "Transform": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A JSONata 2.1 expression string."
+    }
+  }
+}

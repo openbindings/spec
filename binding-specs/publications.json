@@ -3,6 +3,7 @@
   "latest": {
     "asyncapi": "openbindings.asyncapi@1",
     "connect": "openbindings.connect@1",
+    "graphql": "openbindings.graphql@1",
     "grpc": "openbindings.grpc@1",
     "mcp": "openbindings.mcp@1",
     "openapi": "openbindings.openapi@1",
@@ -35,6 +36,19 @@
       "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/connect/openbindings.connect.md",
       "canonicalUrl": "https://openbindings.com/binding-specs/connect/1",
       "rawUrl": "https://openbindings.com/raw/binding-specs/connect/1.md"
+    },
+    {
+      "identifier": "openbindings.graphql@1",
+      "family": "graphql",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-graphql",
+      "publicationRecord": "binding-specs/releases/2026-07-23-graphql/publication.json",
+      "publicationRecordSha256": "0b3f0bb7235886d63e186c0dac6d07a1407a9b451d18589b3c50fe837f8b431c",
+      "document": "binding-specs/releases/2026-07-23-graphql/root/binding-specs/graphql/openbindings.graphql.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/graphql/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/graphql/1.md"
     },
     {
       "identifier": "openbindings.grpc@1",

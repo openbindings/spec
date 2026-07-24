@@ -1,0 +1,121 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "bindingSpec": "openbindings.graphql@1",
+  "family": "graphql",
+  "description": "GraphQL root-field inventory across non-canonically named query, mutation, and subscription root types.",
+  "scenarios": [
+    {
+      "id": "GQL-SS-01",
+      "description": "Every non-introspection root field becomes one operation and binding; same-named fields across operation kinds receive stable collision-resolved operation keys.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "data": {
+            "__schema": {
+              "queryType": { "name": "ReadRoot" },
+              "mutationType": { "name": "WriteRoot" },
+              "subscriptionType": { "name": "StreamRoot" },
+              "types": [
+                {
+                  "kind": "OBJECT",
+                  "name": "ReadRoot",
+                  "fields": [
+                    {
+                      "name": "status",
+                      "args": [],
+                      "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                      "isDeprecated": false
+                    },
+                    {
+                      "name": "viewer",
+                      "args": [],
+                      "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                      "isDeprecated": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "OBJECT",
+                  "name": "WriteRoot",
+                  "fields": [
+                    {
+                      "name": "status",
+                      "args": [],
+                      "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                      "isDeprecated": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "OBJECT",
+                  "name": "StreamRoot",
+                  "fields": [
+                    {
+                      "name": "status",
+                      "args": [],
+                      "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                      "isDeprecated": false
+                    }
+                  ]
+                },
+                { "kind": "SCALAR", "name": "String" }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "operations": ["mutation_status", "status", "subscription_status", "viewer"],
+        "bindings": [
+          { "operationKey": "mutation_status", "bindingRef": "mutation/status" },
+          { "operationKey": "status", "bindingRef": "query/status" },
+          { "operationKey": "subscription_status", "bindingRef": "subscription/status" },
+          { "operationKey": "viewer", "bindingRef": "query/viewer" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "mutation/status",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "mutation_status",
+              "bindingRef": "mutation/status",
+              "requirements": ["document"]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "query/status",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "status",
+              "bindingRef": "query/status",
+              "requirements": ["document"]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "query/viewer",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "viewer",
+              "bindingRef": "query/viewer",
+              "requirements": ["document"]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "subscription/status",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "subscription_status",
+              "bindingRef": "subscription/status",
+              "requirements": ["document", "subscriptionTarget"]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -66,7 +66,17 @@ const FAMILIES = {
     identifier: "openbindings.asyncapi",
     document: "binding-specs/asyncapi/openbindings.asyncapi.md",
   },
+  graphql: {
+    identifier: "openbindings.graphql",
+    document: "binding-specs/graphql/openbindings.graphql.md",
+  },
 };
+const PUBLICATION_CATALOG_ENTRIES = new Set([
+  "README.md",
+  "errata.json",
+  "errata",
+  ...Object.keys(FAMILIES),
+]);
 
 function fail(message) {
   console.error(`error: ${message}`);
@@ -215,6 +225,7 @@ try {
     return (
       first !== "releases" &&
       rel !== "publications.json" &&
+      PUBLICATION_CATALOG_ENTRIES.has(first) &&
       !rel.split(/[\\/]/).includes(".DS_Store")
     );
   });

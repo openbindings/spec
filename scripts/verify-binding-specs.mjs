@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Verifies the binding-specification conformance subcorpus
-// (conformance/binding-specs/) against the six published family
+// (conformance/binding-specs/) against the seven published family
 // specifications.
 //
 // Checks performed:
@@ -11,7 +11,7 @@
 //      directory, and its `bindingSpec` is that family's exact identifier.
 //   3. Each fixture's `section` names a section heading that exists in the
 //      family specification.
-//   4. Every family D-rule defined in the six specs' Conformance sections is
+//   4. Every family D-rule defined in the seven specs' Conformance sections is
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
@@ -83,6 +83,11 @@ const FAMILIES = {
     prefix: "ASYNC",
     spec: join(SPEC_ROOT, "binding-specs", "asyncapi", "openbindings.asyncapi.md"),
   },
+  graphql: {
+    bindingSpec: "openbindings.graphql@1",
+    prefix: "GQL",
+    spec: join(SPEC_ROOT, "binding-specs", "graphql", "openbindings.graphql.md"),
+  },
 };
 
 const errors = [];
@@ -147,7 +152,7 @@ function extractCoreRules(md) {
 // formally deferred rules.
 function extractDeferredRules(readme) {
   const out = new Set();
-  const re = /\|\s*((?:USAGE|OAPI|MCP|GRPC|CONN|ASYNC)-D-\d+)\s*\|\s*\*\*Deferred/g;
+  const re = /\|\s*((?:USAGE|OAPI|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
   let m;
   while ((m = re.exec(readme)) !== null) out.add(m[1]);
   return out;
@@ -294,10 +299,10 @@ for (const ruleId of deferred) {
   }
 }
 
-// Portable P-rule scenario files for all six published families. These files preserve permitted
+// Portable P-rule scenario files for all seven published families. These files preserve permitted
 // alternatives explicitly; the verifier checks shape, identity, citations,
 // and rule coverage, while family adapters execute them against SDKs.
-const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect"];
+const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect", "graphql"];
 const processorRuleCoverage = new Map();
 const processorScenarioIds = new Set();
 let processorFiles = 0;
@@ -426,7 +431,7 @@ for (const dir of processorTargets) {
 
 rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Family D-rules defined across six specs: ${definedDRules.size}`);
+console.log(`Family D-rules defined across seven specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);

@@ -1,0 +1,332 @@
+{
+  "rule": "GRPC-D-02",
+  "bindingSpec": "openbindings.grpc@1",
+  "section": "4",
+  "description": "`location` is present and is a dial address in one of three port-explicit forms — `host:port`, `grpc://host:port`, `grpcs://host:port` — with host a DNS name, IPv4 literal, or bracketed IPv6 literal, free of path, query, fragment, and userinfo components. A `content`-only source is not conformant.",
+  "tests": [
+    {
+      "description": "host:port with port 443 (conformant address; the port supplies no transport choice)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com:443"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "host:port with a non-443 port (conformant address; the port supplies no transport choice)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "localhost:50051"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "grpc:// scheme form (plaintext)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "grpcs:// scheme form (TLS) on a non-443 port",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpcs://api.example.com:8443"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bracketed IPv6 literal host",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "[::1]:50051"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "IPv4 literal host",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "192.168.1.10:50051"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content-only source is not conformant: a schema with no server addresses nothing in this service-addressed family",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "content": "syntax = \"proto3\";\npackage blend;\nservice CoffeeShop {\n  rpc GetMenu(MenuRequest) returns (Menu);\n}\nmessage MenuRequest {}\nmessage Menu {\n  repeated string items = 1;\n}\n"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "address without an explicit port: this specification defaults no ports",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "scheme form without an explicit port is equally non-conformant",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpcs://api.example.com"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "undefined scheme spelling: no scheme other than grpc and grpcs is defined — one spelling per meaning",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "https://api.example.com:443"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "path component is not part of a dial address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com:443/api"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "query component is not part of a dial address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com:443?tls=1"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "fragment component is not part of a dial address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "api.example.com:443#prod"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "userinfo component is not part of a dial address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "admin@api.example.com:443"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "non-numeric port is outside the port-explicit forms",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "localhost:grpc"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    }
+  ]
+}

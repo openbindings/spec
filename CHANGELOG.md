@@ -8,6 +8,30 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 ### Draft changes
 
+- **Withdrawn Workers RPC experiment** (2026-07-23). The unminted Workers RPC
+  candidate was removed from the active catalog. Its runtime-local,
+  artifactless model did not justify a first-party specification without
+  complete cross-SDK implementation and portable conformance evidence.
+  Publication tooling now archives only published-family directories, so an
+  unminted candidate cannot appear inside a future immutable publication
+  bundle.
+
+- **GraphQL revision-1 promotion** (2026-07-23).
+  `openbindings.graphql@1` is now a published binding specification with an
+  immutable defining bundle, complete D/P/synthesis conformance evidence, and
+  behaviorally aligned Go and TypeScript implementations. The promotion
+  replaces the pre-bindingSpec `graphql` token. Revision 1 binds one exact
+  query, mutation, or subscription root field; requires the caller's exact
+  executable document and an explicit WebSocket target for subscriptions;
+  carries caller input wholesale as variables; preserves the complete GraphQL
+  response envelope with `errors` in-band; and never invents a selection set,
+  `_query` metadata, authentication placement, or a WebSocket URI. The
+  specification pins GraphQL September 2025, an immutable
+  GraphQL-over-HTTP revision, and the `graphql-transport-ws` protocol revision.
+  Portable evidence now covers all seven published artifact/protocol
+  families: 21 D-rules, 52 P-rules across 109 processor scenarios, and one
+  exhaustive synthesis scenario per family.
+
 - **Core conformance hardening loop** (2026-07-22). The remaining
   evidence-shaped gaps now have portable, cross-implementation coverage
   without expanding the core's behavioral scope:
@@ -607,7 +631,7 @@ the sections after them describe 0.2.0 as a whole against 0.1.0.
 
 - **HTTP discovery extracted to a normative companion** (`http-discovery.md`). The core no longer defines the well-known endpoint; §1.4 keeps one informative acquisition pointer. The companion pins the serving and fetching contract as `DISC-S-01..04` / `DISC-C-01..04` — preserving the rule that a version refusal is never collapsed into "no OBI published" — and carries the IANA well-known URI suffix registration; the core retains the `application/vnd.openbindings+json` media-type registration.
 
-- **Binding-specifications catalog** (`binding-specs/`, renamed from `formats/`). One normative genre replaces the companion-spec/conventions-record split: a page mints its identifier only when it meets the OBI-B-02 floor. Seven specifications published, each authored spec-first and adversarially reviewed with upstream verification: `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, and `openbindings.operation-graph@1` (migrated from the `openbindings.operation-graph@0.2.0` token; the graph-unit format keeps its own exact version field and its semantic revisions are recorded separately above). Behavior corrections landed spec-side against the prior conventions records, notably: **asyncapi's `send`/`receive` mapping inverted** to AsyncAPI 3.0's application-perspective rule (invoking `send` subscribes, `receive` publishes) with **conjunctive** security derivation; grpc/connect **unknown input fields refused** per ProtoJSON's own default (was silent discard); grpc accepts `FileDescriptorSet` content in canonical JSON with bound-method-closure acceptance and a pinned v1→v1alpha reflection fallback; connect gains a defined descriptorless mode, 200-exact unary classification, and a GET-lane exclusion; mcp pins pagination-exhausted listings, a presence-preserving progress-value shape behind a solicitation-off configuration point, and lossless complete result objects; openapi specifies `style`/`explode` serialization, request media negotiation, and the OAS effective-server list; usage legalizes `exec:` addresses behind a normative default-deny gate. The catalog README carries the identifier discipline (`openbindings.<name>@<rev>`, integer revisions, citations denote revisions), the authoring template, and the completeness doctrine. Reference-tool adoption of the identifiers rides the coordinated cross-repo change.
+- **Binding-specifications catalog** (`binding-specs/`, renamed from `formats/`). One normative genre replaces the companion-spec/conventions-record split: a page mints its identifier only when it meets the OBI-B-02 floor. Eight specifications published, each authored spec-first and adversarially reviewed with upstream verification: `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, `openbindings.graphql@1`, and `openbindings.operation-graph@1` (migrated from the `openbindings.operation-graph@0.2.0` token; the graph-unit format keeps its own exact version field and its semantic revisions are recorded separately above). Behavior corrections landed spec-side against the prior conventions records, notably: **asyncapi's `send`/`receive` mapping inverted** to AsyncAPI 3.0's application-perspective rule (invoking `send` subscribes, `receive` publishes) with **conjunctive** security derivation; grpc/connect **unknown input fields refused** per ProtoJSON's own default (was silent discard); grpc accepts `FileDescriptorSet` content in canonical JSON with bound-method-closure acceptance and a pinned v1→v1alpha reflection fallback; connect gains a defined descriptorless mode, 200-exact unary classification, and a GET-lane exclusion; mcp pins pagination-exhausted listings, a presence-preserving progress-value shape behind a solicitation-off configuration point, and lossless complete result objects; openapi specifies `style`/`explode` serialization, request media negotiation, and the OAS effective-server list; GraphQL requires exact executable-document configuration and preserves whole response envelopes rather than inventing selection sets; usage legalizes `exec:` addresses behind a normative default-deny gate. The catalog README carries the identifier discipline (`openbindings.<name>@<rev>`, integer revisions, citations denote revisions), the authoring template, and the completeness doctrine. Reference-tool adoption of the identifiers rides the coordinated 0.2.0 change.
 
 - **`idempotent` is a three-state claim** (§6.1): `true` asserts idempotency
   (unchanged), an explicit `false` now asserts NON-idempotency — re-invocation

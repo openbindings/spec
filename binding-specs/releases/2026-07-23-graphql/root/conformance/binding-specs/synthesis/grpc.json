@@ -1,0 +1,31 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "bindingSpec": "openbindings.grpc@1",
+  "family": "grpc",
+  "description": "gRPC method inventory and bound-closure schema-range accounting.",
+  "scenarios": [
+    {
+      "id": "GRPC-SS-01",
+      "description": "An admitted method is represented while a method whose request closure uses proto2 required presence is explicitly excluded.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto2\";\npackage demo;\nmessage Good { optional string value = 1; }\nmessage Bad { required string value = 1; }\nservice Echo {\n  rpc Accepted(Good) returns (Good);\n  rpc Excluded(Bad) returns (Good);\n}\n"
+      },
+      "expected": {
+        "operations": ["Accepted"],
+        "bindings": [
+          { "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.Echo/Excluded", "scope": "target", "status": "excluded", "reasonCode": "grpc.schema_range", "rule": "GRPC-P-03", "requirements": [] }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "bindingSpec": "openbindings.mcp@1",
+  "family": "mcp",
+  "description": "MCP pagination-exhausted listing inventory, ambiguity, and invalid-entity accounting.",
+  "scenarios": [
+    {
+      "id": "MCP-SS-01",
+      "description": "Every pinned-listing entry is represented, excluded for ambiguous identity, or identified as invalid without dialing the server.",
+      "source": {
+        "bindingSpec": "openbindings.mcp@1",
+        "location": "https://mcp.example.test",
+        "content": {
+          "tools": [
+            { "name": "ok" },
+            { "name": "duplicate" },
+            { "name": "duplicate" },
+            { "name": "" }
+          ],
+          "resourceTemplates": [
+            { "name": "bad", "uriTemplate": "{" }
+          ]
+        }
+      },
+      "expected": {
+        "operations": ["ok"],
+        "bindings": [
+          { "operationKey": "ok", "bindingRef": "tools/ok" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "tools/ok", "scope": "target", "status": "represented", "operationKey": "ok", "bindingRef": "tools/ok", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=1", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=2", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/#listing-index=3", "scope": "target", "status": "invalid", "reasonCode": "mcp.invalid_entity", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "resourceTemplates/{", "scope": "target", "status": "invalid", "reasonCode": "mcp.invalid_entity", "requirements": [] }
+          ]
+        }
+      }
+    }
+  ]
+}

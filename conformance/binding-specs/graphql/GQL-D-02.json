@@ -1,0 +1,184 @@
+{
+  "rule": "GQL-D-02",
+  "bindingSpec": "openbindings.graphql@1",
+  "section": "5",
+  "description": "`content`, when present, is one successful introspection execution-result object with no `errors` member and object `data.__schema`; it carries the root-resolution closure each binding using it needs.",
+  "notes": "The complete positive contains a non-canonical root type name to prove that the schema mapping, rather than a Query naming convention, is authoritative.",
+  "tests": [
+    {
+      "description": "absent content selects live standard introspection",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "successful introspection execution-result object with a sufficient root-resolution closure",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "data": {
+                "__schema": {
+                  "queryType": { "name": "RootQuery" },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "RootQuery",
+                      "fields": [
+                        {
+                          "name": "viewer",
+                          "args": [],
+                          "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                          "isDeprecated": false
+                        }
+                      ]
+                    },
+                    { "kind": "SCALAR", "name": "String" }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an errors member makes the carried result unsuccessful even when data is present",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "data": { "__schema": {} },
+              "errors": [{ "message": "partial introspection" }]
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-02"]
+    },
+    {
+      "description": "wrapper-stripped __schema content is not an accepted representation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "__schema": {
+                "queryType": { "name": "RootQuery" },
+                "types": []
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-02"]
+    },
+    {
+      "description": "stringified introspection JSON is not object content",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": "{\"data\":{\"__schema\":{}}}"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-02"]
+    },
+    {
+      "description": "a pin that names the root type but omits its definition is insufficient for the binding",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "data": {
+                "__schema": {
+                  "queryType": { "name": "RootQuery" },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": []
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-02"]
+    }
+  ]
+}
