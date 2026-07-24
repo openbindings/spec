@@ -1,0 +1,119 @@
+{
+  "format": "openbindings.binding-spec-publications@1",
+  "latest": {
+    "asyncapi": "openbindings.asyncapi@1",
+    "connect": "openbindings.connect@1",
+    "graphql": "openbindings.graphql@1",
+    "grpc": "openbindings.grpc@1",
+    "mcp": "openbindings.mcp@1",
+    "openapi": "openbindings.openapi@1",
+    "operation-graph": "openbindings.operation-graph@1",
+    "usage": "openbindings.usage@1"
+  },
+  "publications": [
+    {
+      "identifier": "openbindings.asyncapi@1",
+      "family": "asyncapi",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/asyncapi/openbindings.asyncapi.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/asyncapi/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/asyncapi/1.md"
+    },
+    {
+      "identifier": "openbindings.connect@1",
+      "family": "connect",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/connect/openbindings.connect.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/connect/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/connect/1.md"
+    },
+    {
+      "identifier": "openbindings.graphql@1",
+      "family": "graphql",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-graphql",
+      "publicationRecord": "binding-specs/releases/2026-07-23-graphql/publication.json",
+      "publicationRecordSha256": "0b3f0bb7235886d63e186c0dac6d07a1407a9b451d18589b3c50fe837f8b431c",
+      "document": "binding-specs/releases/2026-07-23-graphql/root/binding-specs/graphql/openbindings.graphql.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/graphql/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/graphql/1.md"
+    },
+    {
+      "identifier": "openbindings.grpc@1",
+      "family": "grpc",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/grpc/openbindings.grpc.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/grpc/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/grpc/1.md"
+    },
+    {
+      "identifier": "openbindings.mcp@1",
+      "family": "mcp",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/mcp/openbindings.mcp.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/mcp/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/mcp/1.md"
+    },
+    {
+      "identifier": "openbindings.openapi@1",
+      "family": "openapi",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/openapi/openbindings.openapi.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/openapi/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/openapi/1.md"
+    },
+    {
+      "identifier": "openbindings.operation-graph@1",
+      "family": "operation-graph",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/operation-graph/openbindings.operation-graph.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/operation-graph/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/operation-graph/1.md"
+    },
+    {
+      "identifier": "openbindings.usage@1",
+      "family": "usage",
+      "revision": 1,
+      "publishedAt": "2026-07-23",
+      "coreRelease": "0.2.0",
+      "publication": "2026-07-23-initial",
+      "publicationRecord": "binding-specs/releases/2026-07-23-initial/publication.json",
+      "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7",
+      "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/usage/openbindings.usage.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/usage/1",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/usage/1.md"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Verifies the binding-specification conformance subcorpus
-// (conformance/binding-specs/) against the six published family
+// (conformance/binding-specs/) against the seven published family
 // specifications.
 //
 // Checks performed:
@@ -11,7 +11,7 @@
 //      directory, and its `bindingSpec` is that family's exact identifier.
 //   3. Each fixture's `section` names a section heading that exists in the
 //      family specification.
-//   4. Every family D-rule defined in the six specs' Conformance sections is
+//   4. Every family D-rule defined in the seven specs' Conformance sections is
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
@@ -19,6 +19,11 @@
 //      actually define. Positive tests carry no `violates`.
 //   6. Every fixture has at least one positive and one negative test unless
 //      marked `coverage: "positive-only"`.
+//   7. Portable processor and synthesis scenarios cite only rules owned by
+//      their family (or the core), and their normalized identities and
+//      coverage evidence are internally consistent.
+//   8. Adjudications resolve to live synthesis scenarios and keep core and
+//      family authority in their declared lanes.
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -46,6 +51,10 @@ const CORPUS = join(SPEC_ROOT, "conformance", "binding-specs");
 const FIXTURE_SCHEMA = join(CORPUS, "fixture.schema.json");
 const PROCESSOR_DIR = join(CORPUS, "processor");
 const PROCESSOR_SCHEMA = join(CORPUS, "processor-scenario.schema.json");
+const SYNTHESIS_DIR = join(CORPUS, "synthesis");
+const SYNTHESIS_SCHEMA = join(CORPUS, "synthesis-scenario.schema.json");
+const ADJUDICATIONS = join(CORPUS, "adjudications.json");
+const ADJUDICATION_SCHEMA = join(CORPUS, "adjudication.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 
@@ -80,6 +89,11 @@ const FAMILIES = {
     bindingSpec: "openbindings.asyncapi@1",
     prefix: "ASYNC",
     spec: join(SPEC_ROOT, "binding-specs", "asyncapi", "openbindings.asyncapi.md"),
+  },
+  graphql: {
+    bindingSpec: "openbindings.graphql@1",
+    prefix: "GQL",
+    spec: join(SPEC_ROOT, "binding-specs", "graphql", "openbindings.graphql.md"),
   },
 };
 
@@ -145,7 +159,7 @@ function extractCoreRules(md) {
 // formally deferred rules.
 function extractDeferredRules(readme) {
   const out = new Set();
-  const re = /\|\s*((?:USAGE|OAPI|MCP|GRPC|CONN|ASYNC)-D-\d+)\s*\|\s*\*\*Deferred/g;
+  const re = /\|\s*((?:USAGE|OAPI|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
   let m;
   while ((m = re.exec(readme)) !== null) out.add(m[1]);
   return out;
@@ -292,10 +306,10 @@ for (const ruleId of deferred) {
   }
 }
 
-// Portable P-rule scenario files for all six published families. These files preserve permitted
+// Portable P-rule scenario files for all seven published families. These files preserve permitted
 // alternatives explicitly; the verifier checks shape, identity, citations,
 // and rule coverage, while family adapters execute them against SDKs.
-const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect"];
+const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect", "graphql"];
 const processorRuleCoverage = new Map();
 const processorScenarioIds = new Set();
 let processorFiles = 0;
@@ -354,9 +368,123 @@ for (const dir of processorTargets) {
   }
 }
 
+// Portable synthesis scenarios prove artifact-inventory accounting and
+// emitted target identity independently of either reference SDK's API.
+const synthesisScenarioIds = new Set();
+let synthesisFiles = 0;
+let synthesisScenarios = 0;
+for (const dir of processorTargets) {
+  const fam = FAMILIES[dir];
+  const path = join(SYNTHESIS_DIR, `${dir}.json`);
+  if (!existsSync(path)) {
+    errors.push(`synthesis/${dir}.json: missing portable synthesis scenario file`);
+    continue;
+  }
+  let fixture;
+  try {
+    fixture = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    errors.push(`synthesis/${dir}.json: failed to parse JSON: ${e.message}`);
+    continue;
+  }
+  synthesisFiles++;
+  const shape = ajvOk(SYNTHESIS_SCHEMA, fixture);
+  if (!shape.ok) {
+    errors.push(`synthesis/${dir}.json: does not match synthesis-scenario.schema.json\n${shape.out}`);
+    continue;
+  }
+  if (fixture.family !== dir)
+    errors.push(`synthesis/${dir}.json: family '${fixture.family}' does not match filename`);
+  if (fixture.bindingSpec !== fam.bindingSpec)
+    errors.push(`synthesis/${dir}.json: bindingSpec '${fixture.bindingSpec}' is not '${fam.bindingSpec}'`);
+
+  for (const [i, scenario] of fixture.scenarios.entries()) {
+    synthesisScenarios++;
+    const at = `synthesis/${dir}.json.scenarios[${i}]`;
+    if (synthesisScenarioIds.has(scenario.id))
+      errors.push(`${at}: duplicate id '${scenario.id}'`);
+    synthesisScenarioIds.add(scenario.id);
+    if (!scenario.id.startsWith(`${fam.prefix}-SS-`))
+      errors.push(`${at}: id '${scenario.id}' has the wrong family prefix`);
+    if (scenario.source.bindingSpec !== fam.bindingSpec)
+      errors.push(`${at}: source bindingSpec '${scenario.source.bindingSpec}' is not '${fam.bindingSpec}'`);
+    if (scenario.expected.outcome === "refused") {
+      for (const rule of scenario.expected.rules) {
+        if (!coreRules.has(rule) && (!rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(rule)))
+          errors.push(`${at}: refusal rule '${rule}' is not defined by the core or the ${dir} family`);
+      }
+      continue;
+    }
+    if (!scenario.expected.coverage.exhaustive)
+      errors.push(`${at}: portable synthesis evidence must claim an exhaustive inventory`);
+
+    const operations = new Set(scenario.expected.operations);
+    const bindings = new Set(
+      scenario.expected.bindings.map((binding) => `${binding.operationKey}\0${binding.bindingRef}`)
+    );
+    for (const binding of scenario.expected.bindings) {
+      if (!operations.has(binding.operationKey))
+        errors.push(`${at}: binding names undeclared operation '${binding.operationKey}'`);
+    }
+    for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
+      const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
+      if (entry.status === "represented") {
+        if (!bindings.has(`${entry.operationKey}\0${entry.bindingRef}`))
+          errors.push(`${entryAt}: represented disposition has no expected binding identity`);
+      } else if (
+        entry.rule
+        && !coreRules.has(entry.rule)
+        && (!entry.rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(entry.rule))
+      ) {
+        errors.push(`${entryAt}: rule '${entry.rule}' is not defined by the core or the ${dir} family`);
+      }
+    }
+    const derivedFull = scenario.expected.coverage.entries.every(
+      (entry) => entry.status === "represented" || entry.status === "invalid"
+    );
+    if (scenario.expected.coverage.fullyRepresented !== derivedFull)
+      errors.push(`${at}: fullyRepresented does not match the declared dispositions`);
+  }
+}
+
+let adjudicationCount = 0;
+try {
+  const adjudications = JSON.parse(readFileSync(ADJUDICATIONS, "utf8"));
+  const shape = ajvOk(ADJUDICATION_SCHEMA, adjudications);
+  if (!shape.ok) {
+    errors.push(`adjudications.json: does not match adjudication.schema.json\n${shape.out}`);
+  } else {
+    const ids = new Set();
+    adjudicationCount = adjudications.records.length;
+    for (const [index, record] of adjudications.records.entries()) {
+      const at = `adjudications.json.records[${index}]`;
+      if (ids.has(record.id)) errors.push(`${at}: duplicate id '${record.id}'`);
+      ids.add(record.id);
+      for (const scenario of record.scenarios) {
+        if (!synthesisScenarioIds.has(scenario))
+          errors.push(`${at}: scenario '${scenario}' is not present in the live synthesis corpus`);
+      }
+      const scenarioPrefixes = new Set(
+        record.scenarios.map((scenario) => scenario.slice(0, scenario.indexOf("-SS-")))
+      );
+      for (const rule of record.authority.coreRules) {
+        if (!coreRules.has(rule))
+          errors.push(`${at}: core authority rule '${rule}' is not defined by the core`);
+      }
+      for (const rule of record.authority.bindingRules) {
+        const prefix = rule.slice(0, rule.indexOf("-"));
+        if (!allRuleIds.has(rule) || !scenarioPrefixes.has(prefix))
+          errors.push(`${at}: binding authority rule '${rule}' is not defined by a scenario family`);
+      }
+    }
+  }
+} catch (e) {
+  errors.push(`adjudications.json: failed to parse or validate: ${e.message}`);
+}
+
 rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Family D-rules defined across six specs: ${definedDRules.size}`);
+console.log(`Family D-rules defined across seven specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);
@@ -366,6 +494,10 @@ console.log(
 console.log(
   `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules} targeted P-rules`
 );
+console.log(
+  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} published families`
+);
+console.log(`Conformance adjudications: ${adjudicationCount}`);
 
 if (errors.length) {
   console.log(`\nErrors (${errors.length}):`);

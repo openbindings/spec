@@ -10,17 +10,19 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "RECOMMEND
 
 ## 2. Scope and incorporated authorities
 
-This is the OpenBindings project's proposed binding specification for calls from a Cloudflare Worker to a `WorkerEntrypoint` exposed through a service binding using RPC. Cloudflare's Workers RPC model, service-binding contract, compatibility behavior, and Wrangler service-binding configuration are incorporated from the official `cloudflare/cloudflare-docs` repository at immutable commit [`65d8126a201af30378db7010e76da46c5fe8e193`](https://github.com/cloudflare/cloudflare-docs/tree/65d8126a201af30378db7010e76da46c5fe8e193). The exact source files are linked in [§11](#11-references); rendered documentation and later revisions are informative unless this candidate deliberately advances the pin. This candidate defines only the narrower OpenBindings overlay.
+This is the OpenBindings project's proposed binding specification for calls from a Cloudflare Worker to a `WorkerEntrypoint` exposed through a service binding using RPC. Cloudflare's Workers RPC model, service-binding contract, compatibility behavior, and Wrangler service-binding configuration are incorporated from the official `cloudflare/cloudflare-docs` repository at immutable commit [`65d8126a201af30378db7010e76da46c5fe8e193`](https://github.com/cloudflare/cloudflare-docs/tree/65d8126a201af30378db7010e76da46c5fe8e193). The exact source files are linked in [§11](#11-references); rendered documentation and later revisions are informative. This pin may still change while the document remains an unminted candidate; promotion freezes it for the identifier. This candidate defines only the narrower OpenBindings overlay.
 
 Cloudflare RPC can carry values and capabilities outside OpenBindings' JSON value domain. Revision 1 intentionally binds only zero- or one-argument entrypoint methods whose result is absent (`undefined`) or one finite JSON-compatible value. It excludes multiple positional arguments, streams, async iterables, functions, `RpcTarget`/RPC stubs, and every other capability-bearing or non-JSON structured-clone value. Unsupported values are refused at the OpenBindings boundary rather than assigned a project-specific encoding.
 
 Workers RPC must be enabled by the caller's Cloudflare compatibility date or flag under the incorporated platform rules. That deployment prerequisite is runtime state, not OBI content; an environment where the resolved binding does not support RPC cannot dispatch this family.
 
+The candidate defines portable binding meaning, not a Workers client API. Registry resolution, property access, the zero-or-one-value boundary, result correspondence, and cancellation effects below describe the interaction the binding denotes. Request wrappers, environment injection APIs, promise orchestration, and local cancellation plumbing remain runtime and SDK surface.
+
 ## 3. Accepted source representations
 
 This family accepts one representation: a **symbolic service-binding address** in `location`. It has no carried interface artifact. `content` is therefore forbidden rather than ignored (**proposed WRPC-D-01**). TypeScript declarations, deployed class source, Wrangler configuration objects, and runtime stubs are not alternate `content` representations in revision 1.
 
-The absence of an interface artifact means this binding cannot synthesize or validate a method schema. An OBI is authored from an independently known service contract; the runtime verifies target and method existence when the invocation is opened.
+The absence of an interface artifact means this binding cannot synthesize or validate a method schema. An OBI is authored from an independently known service contract; only resolution against a live registry and action against the remote service can establish the target slot's availability and the method's existence.
 
 ## 4. `location`
 
@@ -34,7 +36,7 @@ The URI has an empty authority and exactly one non-empty path segment. The segme
 
 This custom encoding is a last-resort OpenBindings convention because Cloudflare supplies a registry key but no portable URI for that key. It preserves every string key instead of narrowing the platform to dot-accessible JavaScript identifiers or treating the apparent authority as a DNS host. The decoded name addresses the exact request-scoped environment binding (`env[name]`) or the same key in an explicitly supplied equivalent registry.
 
-At invocation, that exact key MUST exist in the supplied registry; an absent key or a registry that supplies only an unrelated singleton is a pre-dispatch refusal. Runtime state supplies the handle, but `location` supplies its identity; the address is never decorative. Cloudflare RPC stubs deliberately appear to implement every possible method, so a processor does not claim to prove locally that the value is RPC-capable. RPC capability and remote method existence are established only by attempting the addressed call; the platform's rejection is a dispatch failure.
+Resolving the binding against a runtime registry requires that exact key to exist; an absent key or a registry that supplies only an unrelated singleton is a pre-dispatch refusal. Runtime state supplies the handle, but `location` supplies its identity; the address is never decorative. Cloudflare RPC stubs deliberately appear to implement every possible method, so a processor does not claim to prove locally that the value is RPC-capable. RPC capability and remote method existence are established only by attempting the addressed call; the platform's rejection is a dispatch failure.
 
 Under this candidate, the named service-binding slot itself — not an out-of-band globally stable Cloudflare service identifier — is the semantic target. Supplying a live handle for that exact slot is symbolic-name resolution under core [OBI-D-13](../../openbindings.md#102-document-rules); consulting configuration to discover a different target name or reinterpret the carried key is not. Authors who require identity stable independently of deployment configuration cannot express that stronger identity in revision 1 and MUST NOT treat this address as if it did.
 
@@ -54,7 +56,7 @@ For any other `ref`, the processor performs ordinary property access on the reso
 
 ## 8. Target and interaction
 
-The target is the pair of the service-binding name from `location` and method key from `ref`. One invocation opens one Cloudflare RPC method call. The caller supplies zero or one input value:
+The target is the pair of the service-binding name from `location` and method key from `ref`. The binding denotes one Cloudflare RPC method call. The caller supplies zero or one input value:
 
 - no input value calls the method with **zero arguments**;
 - one input value calls the method with **exactly one argument**, the value wholesale.
@@ -73,13 +75,13 @@ Input is validated before dispatch. A non-JSON input refuses without calling the
 
 ### 9.2. Dispatch and classification
 
-The processor resolves the exact local registry key, performs ordinary property access for the exact method name, and invokes it with zero or one argument as defined in [§8](#8-target-and-interaction) (**proposed WRPC-P-02**). An absent local registry key is a pre-dispatch refusal. A synchronous local throw, Cloudflare dispatch rejection (including a non-RPC binding or unknown remote method), rejected remote promise, serialization failure, or output-subset violation is a terminal invocation error carrying the information Cloudflare RPC makes available. Only a clean `undefined` or JSON-compatible return is successful.
+The binding denotes exact local-registry-key resolution, ordinary property access for the exact method name, and a call with zero or one argument as defined in [§8](#8-target-and-interaction) (**proposed WRPC-P-02**). An absent local registry key is a pre-dispatch refusal. A synchronous local throw, Cloudflare dispatch rejection (including a non-RPC binding or unknown remote method), rejected remote promise, serialization failure, or output-subset violation is a terminal interaction error carrying the information Cloudflare RPC makes available. Only a clean `undefined` or JSON-compatible return is successful.
 
 No decode, classification, routing, or target fallback is configurable: the platform and the explicit revision-1 subset answer those questions. In particular, consumer configuration cannot reinterpret a thrown error as an output or spread an input array into arguments.
 
 ### 9.3. Cancellation
 
-Cancellation before dispatch prevents the call. After dispatch, cancellation closes the local invocation and ignores a later result. When the Cloudflare runtime exposes no abort mechanism for the already-started RPC, the remote method MAY continue; this limitation MUST be surfaced in implementation capability documentation and MUST NOT be represented as confirmed remote cancellation (**proposed WRPC-P-03**).
+Cancellation before dispatch means no call occurs. After dispatch, the caller observes local termination and no later result, but when the Cloudflare runtime exposes no abort mechanism the remote method MAY continue. An implementation MUST NOT represent that outcome as confirmed remote cancellation (**proposed WRPC-P-03**). The cancellation API and local task mechanics are implementation surface.
 
 ### 9.4. Authentication and transform positions
 
@@ -91,7 +93,7 @@ The reference TypeScript implementation should dispatch through the service stub
 
 ## 10. Proposed conformance rules
 
-These identifiers organize review and future fixtures; they are not published rules until promotion.
+These identifiers organize review and future fixtures; they are not published rules until promotion. They test preservation of binding meaning and observable Workers RPC interaction, not conformance to one client API.
 
 - **WRPC-D-01**: `content` is absent; no carried interface representation is accepted.
 - **WRPC-D-02**: `location` is required and has exactly the canonical, case-preserving `workers-rpc:///<encoded-service-binding-name>` form of [§4](#4-location).

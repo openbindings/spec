@@ -11,6 +11,11 @@ Thanks for helping improve OpenBindings.
 
 - PRs SHOULD target `openbindings.md`.
 - PRs MUST NOT edit existing released snapshots under `versions/`.
+- PRs MUST NOT edit, remove, or rename existing binding-specification
+  publication bundles under `binding-specs/releases/`, existing publication
+  manifest entries, or existing errata. A new binding-specification revision
+  is added with `scripts/publish-binding-specifications.mjs`; a clarification
+  that changes no behavior is a new append-only erratum.
 
 ## Workflow
 

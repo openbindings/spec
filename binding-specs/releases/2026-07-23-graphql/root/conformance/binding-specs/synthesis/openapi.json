@@ -1,0 +1,62 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@1",
+  "bindingSpec": "openbindings.openapi@1",
+  "family": "openapi",
+  "description": "OpenAPI path-operation coverage, request-media alternatives, and reverse-direction exclusions.",
+  "scenarios": [
+    {
+      "id": "OAPI-SS-01",
+      "description": "A supported path operation remains callable while every request-media declaration and webhook interaction receives its own disposition.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": { "title": "Coverage", "version": "1" },
+          "paths": {
+            "/jobs": {
+              "post": {
+                "operationId": "createJob",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": { "name": { "type": "string" } }
+                      }
+                    },
+                    "application/x-custom": {
+                      "schema": { "type": "string" }
+                    }
+                  }
+                },
+                "responses": { "200": { "description": "ok" } }
+              }
+            }
+          },
+          "webhooks": {
+            "jobChanged": {
+              "post": { "responses": { "200": { "description": "ok" } } }
+            }
+          }
+        }
+      },
+      "expected": {
+        "operations": ["createJob"],
+        "bindings": [
+          { "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1x-custom", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.request_media_excluded", "rule": "OAPI-P-04", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/webhooks/jobChanged/post", "scope": "target", "status": "excluded", "reasonCode": "openapi.reverse_direction", "rule": "OAPI-D-03", "requirements": [] }
+          ]
+        }
+      }
+    }
+  ]
+}

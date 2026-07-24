@@ -6,14 +6,74 @@ The key words MUST, SHOULD, and MAY in this document are to be interpreted as de
 
 These are the **openbindings project's** binding specifications _for_ the named source families: `openbindings.openapi@1` is this project's specification for binding OpenAPI documents, published under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
 
+## Meaning first, action complete
+
+A binding specification is a **semantic specification**, in the same sense as
+the core: it defines what governed source and binding values mean. It is not an
+invocation service contract. The project's binding-invoker and
+operation-invoker interfaces define software requests, frames, context
+negotiation, and lifecycle APIs; SDKs define language-specific configuration
+and cancellation surfaces.
+
+Binding meaning nevertheless has to be **action complete**. A concrete binding
+denotes a target and interaction, so its portable meaning includes
+cardinality, value-to-protocol correspondence, successful outcomes, and any
+artifact-authorized choices or explicit exclusions needed to act on it without
+guessing. Those facts are more operational than the core document model, but
+they remain denotational: they answer _what interaction this binding denotes_,
+not _which method an invoker exposes_ or _how a runtime orchestrates it_.
+
+Accordingly, family specifications may say that a value is refused before an
+interaction begins, that emitted values stand after a late failure, or that
+abandoning an interaction maps to a protocol cancellation. Those are
+observable boundaries of the binding's meaning. They do not standardize an
+error class, retry loop, frame protocol, callback name, context store,
+connection pool, or cancellation API. Imperative words such as “dispatch” and
+“processor” in a conformance rule describe what an implementation must
+preserve when it acts on the binding; they do not move the specification into
+the invocation-interface layer.
+
 ## Identifiers
 
 Project-published binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Artifact and dialect versions never appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section states which artifact versions it accepts (core [§6](../openbindings.md#6-binding-specifications)).
 
 - Identifiers are exact, opaque strings ([OBI-B-01](../openbindings.md#104-binding-specification-rules)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
-- An incompatible change publishes the next revision — a different identifier ([OBI-B-03](../openbindings.md#104-binding-specification-rules)). Compatible clarification may retain the identifier.
+- An incompatible change publishes the next revision — a different identifier ([OBI-B-03](../openbindings.md#104-binding-specification-rules)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
+- **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. An unqualified support claim covers that complete domain; an implementation with narrower coverage reports partial support rather than presenting the identifier as fully supported.
 - **An identifier exists only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no identifier, and tooling adopts an identifier only at publication.
-- **Citations denote revisions, not files.** A citation into a published binding specification by its identifier denotes that revision's text as published, whatever the cited path later holds; a superseding revision leaves the prior revision's text available. Cross-specification citations SHOULD name stable rule identifiers alongside section links.
+- **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
+
+### Publication lifecycle
+
+The mutable family path used while authoring becomes a convenience mirror of
+the latest published revision. Publication is one explicit operation:
+
+1. finish and review the candidate document and its conformance evidence;
+2. run `scripts/publish-binding-specifications.mjs`, naming the exact family
+   revisions in the publication cohort;
+3. commit the new entry in [`publications.json`](publications.json) and the new
+   self-contained bundle under `binding-specs/releases/<publication>/`; and
+4. publish the corresponding permanent website routes.
+
+The bundle preserves the defining documents, the core text and authoring
+doctrine they cited, and the publication-time binding-specification and
+operation-graph conformance evidence. `publication.json` hashes every archived
+file, while the top-level manifest hashes that record. CI verifies the digest
+chain and rejects edits, removals, or renames beneath `binding-specs/releases/`.
+It also requires each mutable family path to remain byte-identical to the
+revision named by the manifest's `latest` map. A future revision is authored
+as a candidate, published into a new bundle, and only then becomes the latest
+mirror; it never edits its predecessor.
+
+Published prose is not rewritten for corrections. A non-semantic
+clarification is an append-only erratum under
+[`binding-specs/errata/`](errata/README.md), recorded in
+[`errata.json`](errata.json); a change to accepted sources or required,
+permitted, or refused behavior publishes the next revision. Thus the original
+bytes, later clarifications, and the current latest alias are three distinct
+things rather than one mutable page.
+
+Several upstream editions belong in one revision when the artifact identifies its own edition and target identity, interaction model, and operation-boundary correspondence remain one concept with finite deterministic edition branches. A fundamentally different correspondence may justify a more specific family; merely avoiding edition branches does not. A later revision may continue accepting older editions alongside a newly incorporated one, but no compatibility or range relation between the two binding-specification identifiers is inferred.
 
 Migration note: `openbindings.operation-graph` originally published under the token `openbindings.operation-graph@0.2.0`; it now publishes as `openbindings.operation-graph@1`, with the exact graph-unit format version (`0.2.0` in this revision) carried by each graph's version field — the identifier/artifact-version split working as designed. Tooling replaces the old token in the coordinated 0.2.0 change.
 
@@ -31,17 +91,16 @@ The **source** remains required in every case. An artifactless source is locatio
 
 | Specification   | Document                                                                           | Status                                                                                             | Identifier(s)                    | `ref` shape (summary)                                                                                                                                              |
 | --------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **published** (v1; template-structured; ships with the 0.2.0 change set — tooling adoption queued) | `openbindings.operation-graph@1` | JSON Pointer to a graph definition                                                                                                                                 |
-| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.usage@1`           | space-separated command path (absent ref = root)                                                                                                                   |
-| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.openapi@1`         | JSON Pointer to the operation object                                                                                                                               |
-| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.mcp@1`             | `<entity>/<remainder>`, entity ∈ `tools`/`resources`/`resourceTemplates`/`prompts` (one per MCP listable collection); resource by URI, template by template string |
-| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>`                                                                                                                               |
-| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.connect@1`         | `<fully-qualified-service>/<method>`                                                                                                                               |
-| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **published** (v1; ships with the 0.2.0 change set — tooling adoption queued)                      | `openbindings.asyncapi@1`        | JSON Pointer `#/operations/<operation-key>`                                                                                                                        |
-| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **design-review candidate** — proposed v1 contract; no identifier minted                           | —                                | `query/<field>`, `mutation/<field>`, or `subscription/<field>`                                                                                                     |
-| workers-rpc     | [openbindings.workers-rpc.md](workers-rpc/openbindings.workers-rpc.md)             | **design-review candidate** — proposed v1 contract; no identifier minted                           | —                                | exact `WorkerEntrypoint` method property key                                                                                                                       |
+| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.operation-graph@1` | JSON Pointer to a graph definition                                                                                                                                 |
+| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.usage@1`           | space-separated command path (absent ref = root)                                                                                                                   |
+| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.openapi@1`         | JSON Pointer to the operation object                                                                                                                               |
+| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.mcp@1`             | `<entity>/<remainder>`, entity ∈ `tools`/`resources`/`resourceTemplates`/`prompts` (one per MCP listable collection); resource by URI, template by template string |
+| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>`                                                                                                                               |
+| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.connect@1`         | `<fully-qualified-service>/<method>`                                                                                                                               |
+| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.asyncapi@1`        | JSON Pointer `#/operations/<operation-key>`                                                                                                                        |
+| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.graphql@1`         | `query/<field>`, `mutation/<field>`, or `subscription/<field>`                                                                                                     |
 
-Candidate pages remain informational until promotion. They use the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier; each page's status banner states the remaining publication gates.
+A candidate page remains informational until promotion. It uses the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier; its status banner states the remaining publication gates.
 
 ## The deference order
 
@@ -49,9 +108,9 @@ A binding specification is a semantic authority, often operating under divided a
 
 1. **Incorporate** what the artifact or protocol defines. Restate only the OpenBindings consequence; do not replace an upstream rule with a locally convenient equivalent.
 2. **Preserve alternatives** when the artifact permits several valid choices. Conformance may be a permitted set rather than one byte-identical request; a binding specification does not invent preference merely to make implementations choose alike.
-3. **Expose configuration** when invocation requires a choice the artifact does not make. The point defines the admissible choice and its effect; the runtime chooses, and its configuration API remains implementation surface.
+3. **Expose an interpretation choice** when acting on the binding requires a choice the artifact does not make. A named configuration point defines the admissible choices and their semantic effects; where or how a runtime obtains the effective choice remains implementation surface.
 4. **Refuse or exclude** behavior OpenBindings cannot represent faithfully. A loud, pre-dispatch refusal is more conformant than silently identifying distinct artifact values, discarding required information, or approximating an interaction the artifact did not declare.
-5. **Define a default only as a last resort**, where the artifact is silent, invocation still needs an answer, and neither configuration nor a narrower supported subset is adequate. The text labels that answer as this binding specification's convention and gives it a named configuration point where consumer choice is meaningful.
+5. **Define a default only as a last resort**, where the artifact is silent, actionable meaning still needs an answer, and neither an exposed choice nor a narrower supported subset is adequate. The text labels that answer as this binding specification's convention and gives it a named configuration point where consumer choice is meaningful.
 
 ### Targeted 0.2.0 design decisions
 
@@ -62,7 +121,7 @@ The adversarial review resolved the former lower-confidence questions below. The
 - **AsyncAPI protocol fields:** revision 1 admits only string-valued query/header fields and labels URI-component encoding as its OpenBindings convention. Non-string schemas refuse until an upstream serialization profile or later binding-specification revision supplies a faithful encoding.
 - **AsyncAPI WebSocket replies:** reply-bearing `receive` operations remain excluded until a request/reply session model is specified; revision 1 neither drops replies nor turns every WebSocket publish bidirectional.
 - **Operation Graph startup:** every held `operation` invocation opens at graph start. This preserves the identity law and output-before-input causality; the eager timing consequence is explicit and covered by OG-EX-39..46.
-- **Candidate publication scope:** GraphQL keeps its single-root-field check, both HTTP media lanes, pinned subscription protocol, and standard-introspection acquisition. Workers RPC keeps its zero/one-argument JSON subset, zero-output `undefined` completion, opaque-registry address, and artifactless mode under the catalog's existing completeness rule. Both remain unminted until their page-specific evidence and runtime-adoption gates pass.
+- **GraphQL revision 1:** GraphQL keeps its single-root-field check, both HTTP media lanes, pinned subscription protocol, standard-introspection acquisition, required exact-document interpretation point, and complete response envelopes. These are published semantics, not implementation defaults.
 
 These decisions are intentionally specific. “Let each implementation choose” is not an acceptable substitute; a future review keeps the rule, replaces it with a better incorporated/configured rule, or narrows the supported set explicitly.
 
@@ -129,23 +188,38 @@ outcome when its upstream contract or artifact boundary cannot yet support an
 exemplary identifier; candidate status must never be hidden by averaging its
 grade with published specifications.
 
-## The completeness spectrum (specification + configuration = complete invocation)
+## Portable actionability
 
-A binding specification answers three **wire questions** per operation — from its accepted artifacts, by its own definition, or by delegating to declared consumer configuration:
+The governing relationship is **artifact + effective choices = complete
+binding interpretation**.
+
+A binding specification answers three recurring **interaction questions** per operation — from its accepted artifacts, by its own definition, or through a declared interpretation point:
 
 1. **Routing** — which transport channel does each input field ride (path/query/header/body; argv/stdin/file)?
 2. **Decode** — how do the returned bytes become the output value?
 3. **Classify** — which completion outcomes (HTTP statuses, exit codes) are success?
 
-Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The gap is made up in consumer configuration, never by OB authoring the missing coverage into a document and never by the OBI absorbing format conventions.** An OBI stays abstract; the artifact stays pristine.
+Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The binding specification exposes the gap as a named interpretation point, never by authoring missing coverage into the artifact and never by making the OBI absorb format conventions.** An effective consumer choice completes that point when one is required. The OBI stays abstract; the artifact stays pristine.
 
-Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact effect of choosing one. A point may have a content-independent built-in that configuration overrides, or it may be **required** where any built-in would invent source semantics; in the latter case invocation without a choice refuses before dispatch. What an item may not be is silent: an undefined choice is a defect of the binding specification ([OBI-B-02](../openbindings.md#104-binding-specification-rules)), while a required choice or an explicitly unsupported aspect is a definition, not a gap.
+Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would invent source semantics; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. What an item may not be is silent: an undefined choice is a defect of the binding specification ([OBI-B-02](../openbindings.md#104-binding-specification-rules)), while a required choice or an explicitly unsupported aspect is a definition, not a gap.
 
-Implementations SHOULD expose three generic, format-agnostic hooks — an **output decoder**, a **result classifier**, and a **field router** — consulted per axis in a decline chain: _per-invocation configuration → consumer-level configuration → the binding specification's built-in, if any_. An unconsulted axis and an unmentioned field fall through; a declined hook never blocks the next tier. Reaching the end of a required point without a choice refuses before dispatch. The reference SDKs (Go and TypeScript) ship this seam as `OutputDecoder`/`ResultClassifier`/`FieldRouter`. The three-hook shape, its names, and the decline chain are the reference SDKs' design, not a required architecture: any consumer-configuration seam with equivalent reach serves. An implementation MAY expose no seam for a point with a fixed built-in; an implementation claiming dispatch support for a required point necessarily provides an equivalent way to supply its choice.
+A specification defines only the **effective choice**, not a hierarchy of
+configuration scopes. Per-call versus standing configuration, callback decline
+chains, flags, policy objects, and precedence among those sources are runtime
+and SDK design. Whatever the surface, supplying the same effective choice has
+the same semantic effect. An implementation claiming action support for a
+required point necessarily provides some way to supply a choice; a fixed point
+need not be configurable at all.
 
-### Recommended built-in defaults
+The reference Go and TypeScript SDKs expose output-decoder, result-classifier,
+and field-router hooks with their own per-call/standing decline chain. That
+architecture is documented with the SDKs and on the site's Invocation
+Configuration page; it is an informative realization of these points, not
+binding-specification doctrine.
 
-Where the artifact does not answer and the deference order reaches its final step, this guidance permits a **content-independent** built-in default — decided by declarations and wire framing, never by sniffing payload bytes (a payload-dependent default makes the same document behave differently per response, and a wrong guess passes silently). Before adopting one, authors consider a named required choice or a narrower explicitly supported subset. The project's recommended defaults, as shipped by the reference implementations:
+### Project specifications' boundary conventions
+
+Where the artifact does not answer and the deference order reaches its final step, a family specification may define a **content-independent** convention — decided by declarations and wire framing, never by sniffing payload bytes (a payload-dependent default makes the same document behave differently per response, and a wrong guess passes silently). Before adopting one, authors consider a named required choice or a narrower explicitly supported subset. The table summarizes conventions the project specifications define; their normative force comes from each linked family specification, not from this informative catalog or from the reference implementations:
 
 | Specification family | Routing                                                                           | Decode                                                                                                                                                                                                                                    | Classify                                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -159,7 +233,11 @@ Where the artifact does not answer and the deference order reaches its final ste
 
 Two of these are the conventions the reference implementations hold fixed across the HTTP lanes where classification is a convention rather than protocol-answered (`openbindings.connect@1`'s lane is 200-exact by its protocol's own rule): (1) _the header decides the decode lane_ — never the payload shape; (2) _success is 2xx and declared responses never change classification_ — a declared 404 response documents a failure's shape, it does not bless the failure. Once a binding specification here publishes, its answers to these axes are normative for its identifier; this table records the defaults project specifications adopt. A binding specification published under another authority that chooses differently defines its own rules — the point of the identifier is that consumers can tell.
 
-Implementations SHOULD report which rule answered each axis (the reference SDKs stamp `x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance on invocation metadata, and warn when an assumption decoded into a contract that could not catch a wrong lane; a third-party implementation's provenance surface and names are its own).
+Reference tooling reports which rule answered each axis using
+`x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance and may warn when a
+convention decoded into a contract that could not catch a wrong lane. That
+diagnostic surface is implementation documentation, not part of a binding's
+portable meaning.
 
 ### The bytes boundary
 
@@ -172,7 +250,7 @@ A family whose revision does not define bytes carriage on some axis **declares t
 
 ## Authentication and credentials
 
-Credentials and other runtime prerequisites are **not** part of an OBI document and are not extracted into it from an artifact's security metadata. The binding invoker applies credentials at call time and negotiates anything missing via a `CONTEXT_REQUIRED` challenge, resolved into the runtime's store — see the [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface. An artifact's own security metadata (for example OpenAPI's `securitySchemes`) may inform what the invoker asks for at invocation time, but is never baked into the static document.
+Credentials and other runtime prerequisites are **not** part of an OBI document and are not extracted into it from an artifact's security metadata. A binding specification still defines the **meaning and wire placement** of security declarations it incorporates: which declaration governs the selected target, which alternatives are permitted, and where a supplied credential rides. It does not define credential storage, prompting, refresh, or a negotiation API. The project's [`binding-invoker`](https://openbindings.com/interfaces/binding-invoker) interface defines one informative `CONTEXT_REQUIRED` realization; another runtime may acquire the same effective credential differently.
 
 ## Field naming across protocol locations
 
@@ -184,23 +262,27 @@ When declarations are distinct in the artifact but collapse to one property name
 
 A binding specification makes a family of sources and bindings mean the same thing to every independent implementation. The core states the completeness floor normatively ([OBI-B-02](../openbindings.md#104-binding-specification-rules)); the template below is the section-by-section shape project specifications use to meet it. Third parties publish under their own collision-resistant namespace (`com.example.<name>@<rev>` fits the same shape) with no project registration; the same template serves.
 
-Apply the [deference order](#the-deference-order) to every answer in the template. In particular, “complete” does not mean “choose one OpenBindings behavior whenever the artifact permits several”: preserve the permitted set, expose a choice when invocation needs one, or narrow coverage explicitly.
+Apply the [deference order](#the-deference-order) to every answer in the template. In particular, “complete” does not mean “choose one OpenBindings behavior whenever the artifact permits several”: preserve the permitted set, expose a choice when action needs one, or narrow coverage explicitly.
 
 ### The template
 
 1. **Status and identifier** — the exact identifier this document defines, its defining authority, and the revision discipline (OBI-B-01, OBI-B-03). The document may carry its own edition label; that label is not the identifier.
 2. **Scope and authorities** — every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision) and the boundary between its authority and this specification's overlay; or, where no external artifact authority exists, an explicit statement of the artifact and interaction semantics this specification defines itself. A specification MAY also incorporate a **sibling published binding specification** by exact identifier, scoped to named sections and rule identifiers (`openbindings.connect@1`'s schema layer, cited from `openbindings.grpc@1`, is the pattern) — the "citations denote revisions" discipline above governs.
-3. **Accepted source representations** (OBI-B-02 item 1) — whether each source mode accepts an artifact; every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly.
+3. **Accepted source representations** (OBI-B-02 item 1) — whether each source mode accepts an artifact; the exact upstream edition envelope and every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly. Every accepted edition receives conformance coverage for its edition-specific branches.
 4. **`location`** (item 2) — the accepted absolute-address syntax and what it addresses. **Acquisition-failure semantics follow the address scheme:** where `location` is a URI, whether a dereference succeeded is the scheme's own affair (an HTTP status, a `file://` open error, a TLS failure), and a specification need say nothing — the terseness is deference, not an omission. A specification that mints an address form with no incorporating scheme (an executable address, say) owes the success condition itself, because none is inherited (`openbindings.usage@1`'s `exec:` requires exit 0, its stdout otherwise not an artifact, is the pattern).
 5. **`content`** (item 3) — the accepted JSON values and their meaning, including any mode in which `content` is forbidden.
 6. **Composition** (item 4) — the role of a co-present `location`, including whether it supplies a reference base for embedded content, within the content-primacy floor of core [§5.4](../openbindings.md#54-sources). Service-addressed families additionally define their pin's **staleness** posture (dispatch proceeds against the pin; the live server's own error is a failure outcome) — a drift question artifact-located families do not have.
 7. **`ref`** (item 5) — syntax, resolution into an artifact or live surface, and the absent-`ref` case.
 8. **Target and interaction** (item 6) — how the bound target and its interaction pattern are identified.
-9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named configuration points for anything incorporated authorities do not answer (see _The completeness spectrum_).
+9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named interpretation points for anything incorporated authorities do not answer (see _Portable actionability_).
 10. **Conformance** (recommended) — stable rule identifiers for the specification's own requirements, and fixtures. Diagnostic and provenance-stamp names are implementation surface (reference-tool documentation), not specification content.
 11. **References.**
 
-Authentication is intentionally absent from the template: it is negotiated at invocation time (above), not declared by the binding specification in the OBI.
+Credential acquisition is intentionally absent from the template because it
+is runtime policy, not OBI content. Where an incorporated artifact or protocol
+declares security, its authority, alternatives, and wire placement still
+belong in operation-boundary correspondence; the implementation-specific
+negotiation surface does not.
 
 A specification whose address forms, artifact forms, or **execution model** create exposure beyond the core's threat surface — an executable address form, an artifact that names local resources, a composition engine with amplification or recursion surface — adds a **security consideration** with a normative floor where the exposure is of the specification's own making; `openbindings.usage@1`'s default-deny exec-address rule and `openbindings.operation-graph@1`'s security-considerations section are the patterns.
 

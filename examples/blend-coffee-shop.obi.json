@@ -244,7 +244,7 @@
       "description": "Connect (Buf) — same protobuf service over HTTP/1.1 + JSON"
     },
     "graphql": {
-      "bindingSpec": "graphql",
+      "bindingSpec": "openbindings.graphql@1",
       "location": "https://blend.openbindings.com/graphql",
       "description": "GraphQL API — flexible queries and subscriptions"
     }

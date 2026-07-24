@@ -49,6 +49,23 @@ jobs:
       - name: Verify binding-specs conformance subcorpus
         run: node scripts/verify-binding-specs.mjs
 
+      - name: Verify binding-specification publications
+        run: |
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -n "$base" ]; then
+            node scripts/verify-binding-spec-publications.mjs --base "$base"
+          else
+            node scripts/verify-binding-spec-publications.mjs
+          fi
+
+      - name: Exercise binding-specification publication lifecycle
+        run: node scripts/test-binding-spec-publication-lifecycle.mjs
+
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 
@@ -77,6 +94,32 @@ jobs:
           fi
           echo "no released snapshot files changed"
 
+      - name: Enforce immutability of binding-specification publications
+        # Publication bundles and individual errata are append-only. The
+        # manifests may gain entries; the verifier above proves every existing
+        # entry remains byte-equivalent to the PR or pre-push base.
+        run: |
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "$base" ]; then
+            echo "no historical base is available; current publication integrity was verified"
+            exit 0
+          fi
+          bundle_violations=$(git diff --no-renames --name-status "$base"...HEAD -- binding-specs/releases/ | awk -F'\t' '$1 != "A" { print }')
+          errata_violations=$(git diff --no-renames --name-status "$base"...HEAD -- binding-specs/errata/ | awk -F'\t' '$1 != "A" && $2 != "binding-specs/errata/README.md" { print }')
+          if [ -n "$bundle_violations" ] || [ -n "$errata_violations" ]; then
+            echo "::error::Published binding-specification bundles and errata are immutable:"
+            echo "$bundle_violations"
+            echo "$errata_violations"
+            echo "Publish a new binding-specification revision or append a new erratum."
+            exit 1
+          fi
+          echo "no published binding-specification artifact changed"
+
       - name: Check local markdown links
         run: |
           rc=0
@@ -93,3 +136,77 @@ jobs:
             done || rc=1
           done < <(find . -name '*.md' -not -path '*/node_modules/*' -not -path './versions/*' -not -path './temp_ref/*')
           exit $rc
+
+  reference-go:
+    name: Go binding conformance (${{ matrix.family }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: OpenAPI
+            module: formats/openapi
+          - family: AsyncAPI
+            module: formats/asyncapi
+          - family: GraphQL
+            module: formats/graphql
+          - family: gRPC
+            module: formats/grpc
+          - family: Connect
+            module: formats/connect
+          - family: MCP
+            module: formats/mcp
+          - family: Usage
+            module: formats/usage
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/openbindings-go
+          ref: experiment/obi-first
+          path: openbindings-go
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: openbindings-go/${{ matrix.module }}/go.mod
+          cache: false
+      - name: Resolve the reference SDK core from its checkout
+        working-directory: openbindings-go
+        run: |
+          go work init . ${{ matrix.module }}
+          ver=$(awk '/github.com\/openbindings\/openbindings-go v/ {print $NF}' ${{ matrix.module }}/go.mod)
+          go work edit -replace "github.com/openbindings/openbindings-go@${ver}=."
+      - name: Execute shared processor and synthesis scenarios
+        working-directory: openbindings-go/${{ matrix.module }}
+        run: go test -run 'TestProcessorScenarios|TestSynthesisScenarios' ./...
+        env:
+          OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
+          OB_CORPUS_REQUIRED: "1"
+
+  reference-typescript:
+    name: TypeScript binding conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/openbindings-ts
+          ref: experiment/obi-first
+          path: openbindings-ts
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: openbindings-ts/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: openbindings-ts
+      - run: pnpm run build
+        working-directory: openbindings-ts
+      - name: Execute shared processor and synthesis scenarios
+        working-directory: openbindings-ts
+        run: pnpm exec vitest run packages/*/src/processor-scenarios.test.ts packages/*/src/synthesis-scenarios.test.ts
+        env:
+          OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
+          OB_CORPUS_REQUIRED: "1"

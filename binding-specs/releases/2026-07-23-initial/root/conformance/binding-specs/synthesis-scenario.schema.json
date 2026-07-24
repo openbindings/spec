@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
+  "title": "OpenBindings binding-specification synthesis scenarios",
+  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence without prescribing an SDK API.",
+  "type": "object",
+  "required": ["format", "bindingSpec", "family", "description", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@1" },
+    "bindingSpec": {
+      "type": "string",
+      "pattern": "^openbindings\\.(usage|openapi|asyncapi|mcp|grpc|connect)@1$"
+    },
+    "family": {
+      "enum": ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect"]
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "source", "expected"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^(USAGE|OAPI|ASYNC|MCP|GRPC|CONN)-SS-[0-9]{2}$"
+          },
+          "description": { "type": "string", "minLength": 1 },
+          "source": {
+            "type": "object",
+            "required": ["bindingSpec"],
+            "additionalProperties": false,
+            "properties": {
+              "bindingSpec": { "type": "string" },
+              "name": { "type": "string" },
+              "location": { "type": "string" },
+              "content": {},
+              "outputLocation": { "type": "string" },
+              "embed": { "type": "boolean" },
+              "description": { "type": "string" }
+            }
+          },
+          "expected": {
+            "type": "object",
+            "required": ["operations", "bindings", "coverage"],
+            "additionalProperties": false,
+            "properties": {
+              "operations": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "bindings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["operationKey", "bindingRef"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "operationKey": { "type": "string", "minLength": 1 },
+                    "bindingRef": { "type": "string" }
+                  }
+                }
+              },
+              "coverage": {
+                "type": "object",
+                "required": ["exhaustive", "fullyRepresented", "entries"],
+                "additionalProperties": false,
+                "properties": {
+                  "exhaustive": { "type": "boolean" },
+                  "fullyRepresented": { "type": "boolean" },
+                  "entries": {
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/coverageEntry" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "coverageEntry": {
+      "type": "object",
+      "required": ["sourceIndex", "sourceRef", "scope", "status", "requirements"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceIndex": { "type": "integer", "minimum": 0 },
+        "sourceRef": { "type": "string", "minLength": 1 },
+        "scope": { "enum": ["target", "alternative", "projection"] },
+        "status": {
+          "enum": [
+            "represented",
+            "excluded",
+            "invalid",
+            "lossy",
+            "implementation-unsupported"
+          ]
+        },
+        "operationKey": { "type": "string", "minLength": 1 },
+        "bindingRef": { "type": "string" },
+        "reasonCode": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)+$"
+        },
+        "rule": { "type": "string", "minLength": 1 },
+        "requirements": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "represented" } } },
+          "then": {
+            "required": ["operationKey", "bindingRef"],
+            "not": { "required": ["reasonCode"] }
+          },
+          "else": { "required": ["reasonCode"] }
+        }
+      ]
+    }
+  }
+}

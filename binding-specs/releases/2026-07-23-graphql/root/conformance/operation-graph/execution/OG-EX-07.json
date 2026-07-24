@@ -1,0 +1,72 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Fatal per-event error with exit: make any single item's each-invocation failure terminate the graph. (Conduit terminal errors are fatal by default and need no such wiring; see OG-EX-16.) Mirrors the format spec's Example 8 (error path).",
+  "fixtures": [
+    {
+      "id": "OG-EX-07",
+      "name": "Fatal error with exit",
+      "section": "Normative examples / Example 8",
+      "description": "The item's each invocation of items.get fails with TIMEOUT_EXCEEDED. onError routes the error event to die, an exit node with error:true, which terminates the graph with an error. The error event is the error detail and is not emitted to the output stream, so output is empty and error is true.",
+      "operations": {
+        "items.get": {
+          "responses": [
+            {
+              "whenInput": {
+                "id": "item-1"
+              },
+              "fail": "TIMEOUT_EXCEEDED"
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "fetch": {
+            "type": "each",
+            "operation": "items.get",
+            "timeout": 5000,
+            "onError": "die"
+          },
+          "die": {
+            "type": "exit",
+            "error": true
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "fetch"
+          },
+          {
+            "from": "fetch",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "id": "item-1"
+        }
+      ],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": {
+          "error": "TIMEOUT_EXCEEDED",
+          "event": {
+            "id": "item-1"
+          }
+        },
+        "ordering": "exact"
+      }
+    }
+  ]
+}

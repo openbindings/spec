@@ -1,0 +1,36 @@
+{
+  "format": "openbindings.reference-sdk-correspondence@1",
+  "release": "0.2.0",
+  "principle": "Observable OpenBindings behavior is shared; names stay recognizably corresponding where language idiom permits, while concurrency, cancellation plumbing, and other non-boundary implementation details remain language-native.",
+  "roles": {
+    "bindingInvoker": {
+      "go": { "type": "BindingInvoker", "methods": ["BindingSpecs", "InvokeBinding"] },
+      "typescript": { "type": "BindingInvoker", "methods": ["bindingSpecs", "invokeBinding"] }
+    },
+    "bindingPreparer": {
+      "go": { "type": "BindingPreparer", "methods": ["PrepareBinding"] },
+      "typescript": { "type": "BindingInvoker", "methods": ["prepareBinding?"] }
+    },
+    "interfaceSynthesizer": {
+      "go": { "type": "InterfaceSynthesizer", "methods": ["BindingSpecs", "SynthesizeInterface"] },
+      "typescript": { "type": "InterfaceSynthesizer", "methods": ["bindingSpecs", "synthesizeInterface"] }
+    },
+    "coverageSynthesizer": {
+      "go": { "type": "CoverageSynthesizer", "methods": ["BindingSpecs", "SynthesizeInterface", "SynthesizeInterfaceWithCoverage"] },
+      "typescript": { "type": "CoverageSynthesizer", "methods": ["bindingSpecs", "synthesizeInterface", "synthesizeInterfaceWithCoverage"] }
+    },
+    "sourceInspector": {
+      "go": { "type": "SourceInspector", "methods": ["BindingSpecs", "InspectSource"] },
+      "typescript": { "type": "SourceInspector", "methods": ["bindingSpecs", "inspectSource"] }
+    }
+  },
+  "families": [
+    { "bindingSpec": "openbindings.openapi@1", "go": { "invoker": "openapi.Invoker", "synthesizer": "openapi.Synthesizer" }, "typescript": { "invoker": "OpenAPIInvoker", "synthesizer": "OpenAPISynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.asyncapi@1", "go": { "invoker": "asyncapi.Invoker", "synthesizer": "asyncapi.Synthesizer" }, "typescript": { "invoker": "AsyncAPIInvoker", "synthesizer": "AsyncAPISynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.mcp@1", "go": { "invoker": "mcp.Invoker", "synthesizer": "mcp.Synthesizer" }, "typescript": { "invoker": "MCPInvoker", "synthesizer": "MCPSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.grpc@1", "go": { "invoker": "grpc.Invoker", "synthesizer": "grpc.Synthesizer" }, "typescript": { "invoker": "GrpcInvoker", "synthesizer": "GrpcSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.connect@1", "go": { "invoker": "connect.Invoker", "synthesizer": "connect.Synthesizer" }, "typescript": { "invoker": "ConnectInvoker", "synthesizer": "ConnectSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.usage@1", "go": { "invoker": "usage.Invoker", "synthesizer": "usage.Synthesizer" }, "typescript": { "invoker": "UsageInvoker", "synthesizer": "UsageSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.graphql@1", "go": { "invoker": "graphql.Invoker", "synthesizer": "graphql.Synthesizer" }, "typescript": { "invoker": "GraphQLInvoker", "synthesizer": "GraphQLSynthesizer" }, "roles": ["bindingInvoker", "bindingPreparer", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] }
+  ]
+}

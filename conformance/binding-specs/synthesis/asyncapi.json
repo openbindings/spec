@@ -1,0 +1,91 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
+  "bindingSpec": "openbindings.asyncapi@1",
+  "family": "asyncapi",
+  "description": "AsyncAPI operation, message, reply-message, and protocol-cell accounting.",
+  "scenarios": [
+    {
+      "id": "ASYNC-SS-01",
+      "description": "A publish target remains represented while every governing message, reply message, and effective server/protocol cell receives a disposition.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": { "title": "Events", "version": "1" },
+          "servers": {
+            "http": { "host": "api.example", "protocol": "https" },
+            "ws": { "host": "api.example", "protocol": "wss" },
+            "broker": { "host": "api.example", "protocol": "mqtt" }
+          },
+          "channels": {
+            "events": {
+              "address": "/events",
+              "messages": {
+                "good": { "payload": { "type": "object" } },
+                "headers": {
+                  "headers": { "type": "object" },
+                  "payload": { "type": "object" }
+                }
+              }
+            },
+            "replies": {
+              "messages": {
+                "reply": { "payload": { "type": "string" } }
+              }
+            }
+          },
+          "operations": {
+            "publish": {
+              "action": "receive",
+              "channel": { "$ref": "#/channels/events" },
+              "bindings": { "http": { "method": "POST" } },
+              "reply": { "channel": { "$ref": "#/channels/replies" } }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["publish"],
+        "bindings": [
+          { "operationKey": "publish", "bindingRef": "#/operations/publish" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish", "scope": "target", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": ["configuration.server", "configuration.message"] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#message[0]=#/channels/events/messages/good", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#message[1]=#/channels/events/messages/headers", "scope": "alternative", "status": "excluded", "reasonCode": "asyncapi.message_headers", "rule": "ASYNC-P-03", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#reply-message[0]=#/channels/replies/messages/reply", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[0]=broker", "scope": "alternative", "status": "excluded", "reasonCode": "asyncapi.protocol_outside_revision", "rule": "ASYNC-P-02", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[1]=http", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[2]=ws", "scope": "alternative", "status": "excluded", "reasonCode": "asyncapi.websocket_reply", "rule": "ASYNC-P-02", "requirements": [] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-02",
+      "description": "An unincorporated AsyncAPI edition is refused rather than accepted by major-line inference.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.1",
+          "info": {
+            "title": "Future patch",
+            "version": "1"
+          },
+          "channels": {},
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "ASYNC-P-01"
+        ]
+      }
+    }
+  ]
+}

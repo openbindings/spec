@@ -1,0 +1,375 @@
+{
+  "format": "openbindings.binding-spec-publication@1",
+  "publication": "2026-07-23-graphql",
+  "publishedAt": "2026-07-23",
+  "coreRelease": "0.2.0",
+  "identifiers": [
+    "openbindings.graphql@1"
+  ],
+  "files": [
+    {
+      "path": "root/EDITORS.md",
+      "sha256": "391bf7677b6f359abcbd2c0bb8bc3090abaa6459256310ad6e045c10454e3262"
+    },
+    {
+      "path": "root/binding-specs/README.md",
+      "sha256": "aead3af529f36acc20bb8a5b3fba89878695f77330f68de433f7f0dd9dfa1dc0"
+    },
+    {
+      "path": "root/binding-specs/asyncapi/openbindings.asyncapi.md",
+      "sha256": "8ef5f9ba23eb0367307b2af7c5be9b6fbc3678b69c9ace2157054cb09050bee8"
+    },
+    {
+      "path": "root/binding-specs/connect/openbindings.connect.md",
+      "sha256": "dbaf3064264f534d0d9180d3b934fe6581e17c22dbbcc8ba5d5355f6969d6b98"
+    },
+    {
+      "path": "root/binding-specs/errata/README.md",
+      "sha256": "11ced732a5ebc28571a6a58dae08e865c455005686caf9d2371b3dfb5a1ff430"
+    },
+    {
+      "path": "root/binding-specs/errata.json",
+      "sha256": "d08f332d449092c177f1e9f22ddd04fa539583af0c147e672033892f1d6407e1"
+    },
+    {
+      "path": "root/binding-specs/graphql/openbindings.graphql.md",
+      "sha256": "c74c9cba979c18e2afe458e9f44f51e3888d913bb3f805777bbbfb5f041da0d8"
+    },
+    {
+      "path": "root/binding-specs/grpc/openbindings.grpc.md",
+      "sha256": "11fdf533984a410131662c1a98687c4a5df8ee34233410ab360e7854011dc616"
+    },
+    {
+      "path": "root/binding-specs/mcp/openbindings.mcp.md",
+      "sha256": "e678aee37ef5c95b2f27573ac4be7dd5c6abea9ac5f50ce463f209ce7761af7a"
+    },
+    {
+      "path": "root/binding-specs/openapi/openbindings.openapi.md",
+      "sha256": "d84debcd840ba1864b735d0355f2dcacf441bf511cc92f2035419b063779ad6e"
+    },
+    {
+      "path": "root/binding-specs/operation-graph/openbindings.operation-graph.md",
+      "sha256": "c42d478201bf1275abe039b4a5c5cac6aa374e1405442f4d0ad1d5389802739d"
+    },
+    {
+      "path": "root/binding-specs/operation-graph/openbindings.operation-graph.schema.json",
+      "sha256": "c8ee10325c4b358faeef53aa67f4ac21484505b3c7d7bb9e53361190362d0250"
+    },
+    {
+      "path": "root/binding-specs/publications.json",
+      "sha256": "dac513e5e6ad7ad31bfe911f1118e10aab8ece4ab5d71612b30cd5bc9dd914fe"
+    },
+    {
+      "path": "root/binding-specs/usage/openbindings.usage.md",
+      "sha256": "00ed3b23ca1fca9e293100632c915e2c042a93381d0bb13c7aec6844f274f3b4"
+    },
+    {
+      "path": "root/binding-specs/workers-rpc/openbindings.workers-rpc.md",
+      "sha256": "016ec59272f3e8031010941215f4f4b336450859b71d037fe8a7fb8b2c1c4486"
+    },
+    {
+      "path": "root/conformance/binding-specs/README.md",
+      "sha256": "70571c01c39d8bb5b6fb9776332eb90ac1d515a9a1fae1efbd1760b903dd9cf9"
+    },
+    {
+      "path": "root/conformance/binding-specs/asyncapi/ASYNC-D-01.json",
+      "sha256": "bf03bf831c60e7029ca351331ed8ee55d384f96a5392815abfec6f6e80b278e6"
+    },
+    {
+      "path": "root/conformance/binding-specs/asyncapi/ASYNC-D-02.json",
+      "sha256": "4f6cac51efb1a485b11370d27791c048768fed667f6dc2dd74129acaccb28962"
+    },
+    {
+      "path": "root/conformance/binding-specs/asyncapi/ASYNC-D-03.json",
+      "sha256": "c99928aaebaaf593fef18eea84ed004742203f8007765c6d09ed88e7d9d5feab"
+    },
+    {
+      "path": "root/conformance/binding-specs/connect/CONN-D-01.json",
+      "sha256": "0ebcc9a7304d0135585f7e0e6908292584ea3e8abd87904718582d8ef9b09c06"
+    },
+    {
+      "path": "root/conformance/binding-specs/connect/CONN-D-02.json",
+      "sha256": "f35f7fcf1ca514dd7dd3691a4845a0a32995ccf99d97f6825123e088ade5ca4f"
+    },
+    {
+      "path": "root/conformance/binding-specs/connect/CONN-D-03.json",
+      "sha256": "0d82464b7ccba8766700f301c6df85c02b434c14f51cc94c874e0fa100d7b037"
+    },
+    {
+      "path": "root/conformance/binding-specs/fixture.schema.json",
+      "sha256": "02e0b820067a527f62be38b3fe6f07c2cc72ba60990574287190dd9574bc36a8"
+    },
+    {
+      "path": "root/conformance/binding-specs/graphql/GQL-D-01.json",
+      "sha256": "8170d801e9e6de25b930d5c0984238e075ef8e5544f3239ae7db334a85ec2b5d"
+    },
+    {
+      "path": "root/conformance/binding-specs/graphql/GQL-D-02.json",
+      "sha256": "2bd3b1482edab8b6a0137946572d7647ba08ea418e8a2b889c57d6bd661cf738"
+    },
+    {
+      "path": "root/conformance/binding-specs/graphql/GQL-D-03.json",
+      "sha256": "31ad3095a8f31bd32b6a76223a252e98ba8c00140978d1debbb4fc16126f1a7d"
+    },
+    {
+      "path": "root/conformance/binding-specs/grpc/GRPC-D-01.json",
+      "sha256": "5dfca3f890b4131241971c87e4755edf0f86a968f24b97f6fc9038eaec7e9e5b"
+    },
+    {
+      "path": "root/conformance/binding-specs/grpc/GRPC-D-02.json",
+      "sha256": "5def33e1957a008ebd8ce5abf7956f6afeddbbdc7851f095e128ad6a47c09380"
+    },
+    {
+      "path": "root/conformance/binding-specs/grpc/GRPC-D-03.json",
+      "sha256": "7408558af892e267d658a391aa550e920d7b0060832182ceb524b509c1ecac64"
+    },
+    {
+      "path": "root/conformance/binding-specs/mcp/MCP-D-01.json",
+      "sha256": "4f26595c3e1436e194cf3fcca80caeaea0dcfaf56e3817cc9b074805b569863a"
+    },
+    {
+      "path": "root/conformance/binding-specs/mcp/MCP-D-02.json",
+      "sha256": "0192a378ec53b031581a1715ccc46f72674698a686384b6c0e353d2b66e5eea8"
+    },
+    {
+      "path": "root/conformance/binding-specs/mcp/MCP-D-03.json",
+      "sha256": "602a4b298318d27660d15635afb9ccae01189f52abb82e4c7d4bc17d68b4ad9f"
+    },
+    {
+      "path": "root/conformance/binding-specs/openapi/OAPI-D-01.json",
+      "sha256": "cf295a2d418edaf826dce81c827b2815e650fc9ff90cae8139cd75cda997c2af"
+    },
+    {
+      "path": "root/conformance/binding-specs/openapi/OAPI-D-02.json",
+      "sha256": "d67720637f36b058fb015f4308d34260cdc2715f8f8193c7c91d2a65132851ab"
+    },
+    {
+      "path": "root/conformance/binding-specs/openapi/OAPI-D-03.json",
+      "sha256": "08136abfa4dcc0c6294ecfc3a382b91b8dc698cc2f5cf62727dc45e04ac5eb45"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/asyncapi.json",
+      "sha256": "46618515e95847da3b57f778e724567c843bd0c960965f929419fe3091a3ee59"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/connect.json",
+      "sha256": "a108599ce91db17b2ec4c6060368ce0c8e1a2fd7252465a170cd92100854f3d0"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/graphql.json",
+      "sha256": "7cffb80c62def7f12e8cc95f8351852d66c547fcaab73d4fdc825554d0d70f98"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/grpc.json",
+      "sha256": "798f6af0cac544d2cdb05b3b06f9c5c6cce9a6c44fb9628b21c12ab3010e5ee8"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/mcp.json",
+      "sha256": "0d2676dfbf84c29b216425bbcb09b8d91381c6e7e28c3e5ac02ac60f4abe3c37"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/openapi.json",
+      "sha256": "421483ac37dbace9d57552235618e11f4f87710f7e66527d3ce4db75dabf3c54"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor/usage.json",
+      "sha256": "e9580b09af76782bc04e8294adcc21da4c5a3887baff81a847ef428ec7724924"
+    },
+    {
+      "path": "root/conformance/binding-specs/processor-scenario.schema.json",
+      "sha256": "54bff1716337e652f4ff5795fb98b58013eaffb6745c92a8b37652d8cabafcca"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/asyncapi.json",
+      "sha256": "1174c7fc8faf9839cf88dcc2af2907c5c7c235aa6379c58c30e0e2cd0d806722"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/connect.json",
+      "sha256": "ded0df1e337e1cf40b56ee897d26a29a02ed4623d744362e4b98da05f99e1c8f"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/graphql.json",
+      "sha256": "765774f492d0209427fc3829c42507e5aaf2f7345ad3fe9ec76dc5ecb5ac1c6c"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/grpc.json",
+      "sha256": "8c1167547f82906ac8b40c22dfbdd7c0c83a5da8abea18fad689ccec33d2bc42"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/mcp.json",
+      "sha256": "945be6ca548c50d574c86d4828474da9ebe4ae0c483685e2f3c9eacbc8c7c6da"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/openapi.json",
+      "sha256": "6367a86f919718aa0a6448cf9b0c9e5265b74543e26ada2d7ca181f0e74c7fa5"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis/usage.json",
+      "sha256": "86acfab17f1df0362b9eeff0b700e5e970bc8d23f625008cd66e6d0b1f04ac66"
+    },
+    {
+      "path": "root/conformance/binding-specs/synthesis-scenario.schema.json",
+      "sha256": "d7819b5d847de2e141df22cc0c932cb7ae4fecb6bd94efec09ad491970796229"
+    },
+    {
+      "path": "root/conformance/binding-specs/usage/USAGE-D-01.json",
+      "sha256": "94bb5a3e3555301fd87e5ecc1ef8b0c86b634334ec9150ff61b058344431226a"
+    },
+    {
+      "path": "root/conformance/binding-specs/usage/USAGE-D-02.json",
+      "sha256": "dd0c6b5a729d3ef80bb4573dd0ffae4641221d583772e47796b1e1245efb29d5"
+    },
+    {
+      "path": "root/conformance/binding-specs/usage/USAGE-D-03.json",
+      "sha256": "1fcf432390fc796f41184aaf5f23c1deb8f25cbd40bcef25d82e13600285067c"
+    },
+    {
+      "path": "root/conformance/fixture.schema.json",
+      "sha256": "ede56c52c5100b7c712160263626a3be749d22cac259f522f3230c40987a5aa5"
+    },
+    {
+      "path": "root/conformance/operation-graph/README.md",
+      "sha256": "da0b217682207d27adb841560922f3d55eac10ad40895e8a96a1ed39504b714d"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-01.json",
+      "sha256": "3089188cef9b77955d598df91430f50dcb91342c146d5a77d8548519e29e8ad7"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-02.json",
+      "sha256": "53905676515b80e4e9ac0557f3b2b4ef081e4df6741836cca5c6a8c184bdb658"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-03.json",
+      "sha256": "23721b2dbb671ddab274a0c2d2824019fc5928a8d05637972e3c10195b38b3bc"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-04.json",
+      "sha256": "0dbd84c88423dec2186ef754bb990ba23a1436f4e33dc0adde833e68910d3311"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-05.json",
+      "sha256": "9213c3a05046aa895938f8bdc145533b7effc248fcee1a0200905f2d18d8e494"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-06.json",
+      "sha256": "3e83c6428499ceaa78f0285c63b7f264c3b7a88d3508465931da55f4a30d2a2a"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-07.json",
+      "sha256": "7d6996684503284d8aae836b85d2d17869353eca2c173c68d1b01fe882310c33"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-08.json",
+      "sha256": "fc8a355aed8adc7f3c6aae3338afdb10b6f4bf1ca82c8199e62181df7845c7c5"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-09.json",
+      "sha256": "9c2aebd83082cc8c1bb75830782a67b9e25a4f9eb2e011dc1f056df24ef59eee"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-11.json",
+      "sha256": "f3660654ea2da865ebf29491dcff222924d58fff172c3db6411351a05e1c9b95"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-12.json",
+      "sha256": "54865d57383234117d0cce031774b312871a552f7f037a0e176508936e2d766e"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-13.json",
+      "sha256": "05ac45b7c2cdf32c349de545c1e1d0a14621b91afc4136be72c0983338a2a40a"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-17.json",
+      "sha256": "0314f17c98e904e0d779e78bcfcd31087b96757178587017969f4043f786fe1b"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-20.json",
+      "sha256": "d544d11dbca76ee2a4aae8ae280e31d7f52c1d7fbb5fd0fd2b8b36ef94580372"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-28.json",
+      "sha256": "50483398ae38077447e4c2572f0f9552e4d7968a44c7f0c99e6dd0ff353bddd9"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-31.json",
+      "sha256": "8504536d4ee03e91f9ce0945a89fda0f332432b8c75aeba5b9e44972b7be5906"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-32.json",
+      "sha256": "9d11774639e4e1d716b38ed128412079947c21b71efc74f2f16f1db0f8900c63"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-34.json",
+      "sha256": "7dda6c5e7c20aa55216f5869d8c19058e1476863a2332d41b8aaa4caf769762d"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-35.json",
+      "sha256": "4748f2037ff9ca0897680173ad1c7f6ff23fac9b8fc37bc053631ec4b902b192"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-36.json",
+      "sha256": "c5b6fb2147cc2ba353d44616226339eb6cbb85037a06b474e0c40ebf02fad970"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-37.json",
+      "sha256": "1552fb87cdf05fe6ac6915f77d3847dde5db24c18df9e6ea131b7b5b08df89b5"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-38.json",
+      "sha256": "2b309cad5f451cacbe5d359321a3c656ea74f02f5e37cf7fcd05189b3e82983d"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-39.json",
+      "sha256": "dced19e0e299cf98252f86c2f23239274aadde3c7cd76f3af6887b1216e10b07"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-45.json",
+      "sha256": "27ddd0b039198f4ba8f8f8a031b4515cdf1d1ea803c584bcbc699bcbb6e242d6"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution/OG-EX-47.json",
+      "sha256": "3b3fa3a165a86ba62ba78afd2c899fc175ad432ebf69b771ef0c3bb1e5af1e62"
+    },
+    {
+      "path": "root/conformance/operation-graph/execution.schema.json",
+      "sha256": "2ac0243337a8dfc1db2eae6069853aec359c9a63be98cb7f0a8b0649b5066b29"
+    },
+    {
+      "path": "root/conformance/operation-graph/runners/js/package-lock.json",
+      "sha256": "a48b5edb2822867dfdcd6caed779397d2773129c57ee36f9f8ace7bb45ae6b0e"
+    },
+    {
+      "path": "root/conformance/operation-graph/runners/js/package.json",
+      "sha256": "0b6d2c6898ced6f8fc4eeba9e8f894f665c0c0473b3cd26d6af1232762c905ca"
+    },
+    {
+      "path": "root/conformance/operation-graph/runners/js/run.mjs",
+      "sha256": "b56451a7fc558a5957ef4b825ba4ad1570ad2babbb8b7cb1bbd15a63b9410218"
+    },
+    {
+      "path": "root/conformance/operation-graph/validation/OG-DR.json",
+      "sha256": "71ef93663e72bf03f0de2176b642b9308041efcbb3d3c60259fe983d7c069e5f"
+    },
+    {
+      "path": "root/conformance/operation-graph/validation/OG-TR.json",
+      "sha256": "a7e9be23bde42b1adb27eb3e3fc33f07035a8faecc51ea30c0633e6da02cfd0f"
+    },
+    {
+      "path": "root/conformance/operation-graph/validation/OG-VR.json",
+      "sha256": "c4fc82b11e67d0847ac011827827b7036bda6f9ff514d2de2e31ede4a4bbef8b"
+    },
+    {
+      "path": "root/conformance/operation-graph/validation.schema.json",
+      "sha256": "61c7daa778f0624d8195fe5d90eb386f8e25cfdb9734eceb8b2e16e91a5d795a"
+    },
+    {
+      "path": "root/openbindings.md",
+      "sha256": "f4d4d37fbe333916700aa5f3cd317b8503f513c5fd7499c307f4ea9c2d14de0d"
+    },
+    {
+      "path": "root/openbindings.schema.json",
+      "sha256": "0a7de2d28d1fa244348048accca77ba73e1e3ba5c145106a980c2244b2b671a8"
+    }
+  ]
+}

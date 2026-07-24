@@ -1,0 +1,144 @@
+{
+  "rule": "MCP-D-02",
+  "bindingSpec": "openbindings.mcp@1",
+  "section": "4",
+  "description": "`location` is present and is an absolute `http`/`https` URI addressing a Streamable HTTP MCP endpoint. This family is service-addressed: a `content`-only source is not conformant, even though the core's at-least-one-of rule would admit its shape.",
+  "tests": [
+    {
+      "description": "https endpoint, location-only source",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "https://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "http endpoint with a co-present pinned listing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "http://localhost:8080/mcp",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content-only source addresses nothing: location is required in this service-addressed family",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "content": {
+              "tools": [
+                { "name": "get_weather", "inputSchema": { "type": "object" } }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-02"]
+    },
+    {
+      "description": "ws scheme is not an http/https Streamable HTTP endpoint address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "ws://mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-02"]
+    },
+    {
+      "description": "bare relative path is not an absolute http/https URI",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": { "bindingSpec": "openbindings.mcp@1", "location": "./mcp" }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "authority-looking string without a scheme is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getWeather": {} },
+        "sources": {
+          "server": {
+            "bindingSpec": "openbindings.mcp@1",
+            "location": "mcp.example.com/mcp"
+          }
+        },
+        "bindings": {
+          "getWeather.server": {
+            "operation": "getWeather",
+            "source": "server",
+            "ref": "tools/get_weather"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["MCP-D-02", "OBI-D-05"]
+    }
+  ]
+}

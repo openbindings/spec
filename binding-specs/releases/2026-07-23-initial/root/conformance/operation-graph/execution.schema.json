@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/schema/operation-graph-execution-fixture-0.2.0.json",
+  "title": "openbindings.operation-graph execution fixture file",
+  "description": "Describes one or more execution fixtures for the openbindings.operation-graph format. Each fixture pairs a graph, a set of mocked operation behaviors, and the stream of caller writes with the expected output stream, so a runner can replay the graph deterministically and compare. Mocks are matched per invocation: an `operation` conduit opens when the graph opens and receives every arriving event as a write; an `each` node opens one single-write invocation per arriving event. This schema constrains fixture shape only; a runner validates each `graph` against the op-graph schema separately.",
+  "type": "object",
+  "required": ["format", "kind", "fixtures"],
+  "properties": {
+    "format": { "const": "openbindings.operation-graph@1" },
+    "kind": { "const": "execution" },
+    "description": { "type": "string" },
+    "notes": { "type": "string" },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "section", "graph", "writes", "expected"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^OG-EX-[0-9]{2}$",
+            "description": "Stable fixture identifier, e.g. OG-EX-01."
+          },
+          "name": { "type": "string" },
+          "section": {
+            "type": "string",
+            "description": "The spec section or example this fixture is drawn from."
+          },
+          "description": { "type": "string" },
+          "operations": {
+            "type": "object",
+            "description": "Mocked behavior for each operation an `operation` or `each` node may invoke, keyed by operation key.",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["responses"],
+              "properties": {
+                "onOpen": {
+                  "type": "object",
+                  "description": "Behavior that occurs as soon as an invocation opens, before any input write. `emit` models output-before-input; `fail` models an immediate terminal error. Emit precedes fail when both are present.",
+                  "properties": {
+                    "emit": { "type": "array" },
+                    "fail": { "type": "string" }
+                  },
+                  "anyOf": [{ "required": ["emit"] }, { "required": ["fail"] }],
+                  "additionalProperties": false
+                },
+                "closesAfter": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "The selected binding closes the invocation's input side after reading this many writes (1 models a unary or server-streaming binding), at which point the invocation's outputs are determined and emitted and a holding conduit becomes non-accepting. Absent models a stream-consuming (client-streaming/bidirectional) binding: input stays open until the node closes it, and outputs are emitted at input completion."
+                },
+                "responses": {
+                  "type": "array",
+                  "description": "Response rules, matched in order against a completed invocation's write list. The first rule whose `whenInputs` deep-equals the write list, or whose `whenInput` deep-equals the sole write of a single-write invocation, or which carries neither (a wildcard), applies.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "whenInput": {
+                        "description": "Matches an invocation whose writes are exactly [this value]. Sugar for the common single-write case (`each` invocations, unary conduits)."
+                      },
+                      "whenInputs": {
+                        "type": "array",
+                        "description": "Matches an invocation whose write list deep-equals this array. An empty array matches a no-input invocation (zero writes)."
+                      },
+                      "emit": {
+                        "type": "array",
+                        "description": "Events the invocation emits when matched. More than one element models a streaming output."
+                      },
+                      "fail": {
+                        "type": "string",
+                        "description": "If present, the invocation terminates with this error. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure and at an `operation` conduit it is a terminal error; either is fatal to the graph unless the node sets onError."
+                      }
+                    },
+                    "anyOf": [
+                      { "required": ["emit"] },
+                      { "required": ["fail"] }
+                    ],
+                    "not": { "required": ["whenInput", "whenInputs"] },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "graph": {
+            "type": "object",
+            "description": "An operation graph definition. A runner validates this against the op-graph JSON Schema."
+          },
+          "writes": {
+            "type": "array",
+            "description": "The values the caller writes to the graph invocation, in order; each becomes one event at the input node and roots a lineage. An empty array is a no-input invocation. The caller closes the input side after the last write (unless back-closure closes it first)."
+          },
+          "awaitOutputsBeforeWrites": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Models a caller that waits to observe at least this many graph outputs before making its first write. The runner refuses to proceed if graph startup cannot produce them, exposing a startup/input causal deadlock."
+          },
+          "expected": {
+            "type": "object",
+            "required": ["output"],
+            "properties": {
+              "output": {
+                "type": "array",
+                "description": "Expected operation-graph output events (events reaching the output node, plus any error:false exit event)."
+              },
+              "ordering": {
+                "enum": ["exact", "set"],
+                "default": "exact",
+                "description": "`exact` requires the output array to match in order; `set` requires the same multiset of events, since concurrency makes the order implementation-defined."
+              },
+              "arrayOrdering": {
+                "enum": ["exact", "set"],
+                "default": "exact",
+                "description": "Applies to array-valued output events. `exact` (default) compares array elements positionally; `set` compares them as a multiset, for a collector (e.g. a buffer) fed by concurrent `each` invocations or fan-in paths whose element order the spec's \"Determinism and portability\" section leaves implementation-defined. Distinct from `ordering`, which governs the order of the output-event stream itself."
+              },
+              "error": {
+                "type": "boolean",
+                "default": false,
+                "description": "True when the graph is expected to terminate with an error: an exit node with error:true, or an unhandled terminal error on an operation conduit."
+              },
+              "errorDetail": {
+                "description": "When error is true, the expected error detail: the event that reached the exit node, or for an unhandled conduit terminal error, the inner terminal error value itself (the value direct invocation would surface; not wrapped in the error-event shape)."
+              },
+              "refusedWrites": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "When present, the exact number of caller writes refused at the graph boundary after input back-closure."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

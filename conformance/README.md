@@ -27,7 +27,16 @@ The corpus is reference material, not part of the specification (per `openbindin
 | OBI-T-12 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Cases cover direct keys, aliases resolving to the canonical key and its bindings, unknown identifiers, a prototype-like unknown name, and an operation actually carrying that name. |
 | OBI-B-01 to OBI-B-03 | **Not fixture-able.** These rules bind binding *specifications* — the semantic definitions sources name via `bindingSpec` — not documents or tool runs: there is no document to embed and no tool verdict to compare. Enforcement is editorial, at binding-specification promotion review (see `binding-specs/README.md`). |
 
-Per-family protocol rules (`…-P-…`, e.g. `GRPC-P-04`, `CONN-P-06`) are each family's binding-specification obligations and live in the [`binding-specs/`](binding-specs/README.md) subcorpus rather than the core rule format. Its portable processor scenarios cover every P-rule of the six published families without prescribing an SDK configuration API. The repository verifier checks their shape and rule coverage; they become cross-implementation execution evidence only when family adapters run them against independent processors. Mirrored reference-SDK behavioral suites remain additional implementation evidence, not a substitute for those portable scenarios.
+Per-family protocol rules (`…-P-…`, e.g. `GRPC-P-04`, `CONN-P-06`) are each family's binding-specification obligations and live in the [`binding-specs/`](binding-specs/README.md) subcorpus rather than the core rule format. Its portable processor scenarios cover every P-rule of the seven published artifact/protocol families without prescribing an SDK configuration API. The repository verifier checks their shape and rule coverage; they become cross-implementation execution evidence only when family adapters run them against independent processors. Mirrored reference-SDK behavioral suites remain additional implementation evidence, not a substitute for those portable scenarios.
+
+[`reference-sdk-correspondence.json`](reference-sdk-correspondence.json) records the
+public Go/TypeScript role and family-name correspondence used for the 0.2.0
+implementation proof. It is intentionally not a language-neutral API mandate:
+observable behavior at the OpenBindings boundary is shared, while casing,
+goroutines versus promises/async iterables, cancellation plumbing, and other
+non-boundary details remain idiomatic. The names stay close enough that a reader
+moving between SDKs can identify the corresponding role without translation by
+guesswork.
 
 ## Subcorpora
 
@@ -35,7 +44,7 @@ Three subcorpora live alongside the core corpus, none governed by the `openbindi
 
 | Subcorpus | Covers | Verifier |
 |---|---|---|
-| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules) and portable processor scenarios covering every P-rule of the six published binding specifications — `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
+| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules), portable processor scenarios covering every P-rule, and portable artifact-to-OBI synthesis accounting for the seven published artifact/protocol binding specifications — `openbindings.usage@1`, `openbindings.openapi@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, `openbindings.graphql@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
 | [`operation-graph/`](operation-graph/README.md) | `openbindings.operation-graph@1` — graph well-formedness rules, source rules, and replayable executions | `node scripts/verify-operation-graph.mjs` (+ reference runner) |
 | [`transforms/`](transforms/README.md) | Differential transform conformance for the §5.5 language pin — `agree/` pins normative jsonata-js 2.1.1 outcomes every conformant engine must reproduce (the cross-SDK parity gate); `known-divergence/` catalogs residual implementation-engine deviations | Both reference SDK test suites (located via `OB_SPEC_CORPUS`); no repo-local verifier |
 
