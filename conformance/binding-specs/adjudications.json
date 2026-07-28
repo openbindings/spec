@@ -188,6 +188,28 @@
         "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-04",
         "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-05"
       ]
+    },
+    {
+      "id": "BS-A-20260728-01",
+      "date": "2026-07-28",
+      "scenarios": [
+        "OAPI-SS-03"
+      ],
+      "authority": {
+        "upstreamFact": "openbindings.openapi@1 \u00a79.1 resolves an unflattenable collision by narrowing coverage (\u201crevision 1 narrows coverage instead of changing the artifact's meaning\u201d), and the interface-synthesizer contract permits the coverage surface to return a sound partial OBI when every omission is accounted for. A per-operation exclusion with durable coverage evidence is that accounting; whole-source refusal on the coverage surface contradicted the binding specification's own resolution and core \u00a710's partial-support posture.",
+        "coreRules": [],
+        "bindingRules": [
+          "OAPI-P-03"
+        ]
+      },
+      "discrepancy": "BS-A-20260723-01 pinned whole-source refusal for OAPI-SS-03 on the coverage surface, codifying implementation behavior rather than the specification's per-operation narrowing. One unrepresentable operation vetoed synthesis, inspection, and coverage evidence for every representable operation in the same document.",
+      "owner": "fixtures",
+      "resolution": "OAPI-SS-03 re-adjudicated to the synthesized outcome: a sound partial OBI whose coverage excludes the target under OAPI-P-03. Required whole-source refusal remains proven for the strict surface by SDK-local tests (tolerant-coverage tests, TS and Go). Supersedes BS-A-20260723-01 for OAPI-SS-03 only; sibling family scenarios are unchanged pending their own per-operation tolerance adjudications.",
+      "compatibility": "pre-launch-behavior-revision",
+      "status": "fixed",
+      "evidence": [
+        "conformance/binding-specs/synthesis/openapi.json"
+      ]
     }
   ]
 }

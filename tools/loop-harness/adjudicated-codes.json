@@ -1,0 +1,19 @@
+{
+  "openapi.reverse_direction": {
+    "category": "doctrine-refused",
+    "adjudication": "OAPI-D-03",
+    "rationale": "callbacks and webhooks are service-to-consumer interactions outside the family's caller-to-service direction"
+  },
+  "openapi.request_media_excluded": {
+    "category": "economically-deferred",
+    "adjudication": "OAPI-P-04",
+    "rationale": "non-JSON request media alternatives (XML et al.); operations still bind via their JSON candidate",
+    "revisitTrigger": "an artifact class appears whose ONLY request media is unsupported at material prevalence"
+  },
+  "_open_work_items_not_adjudicated": [
+    "openapi.flattening_collision \u2014 laned-envelope proposal pending the gate",
+    "openapi.unresolvable_request_body \u2014 rides the envelope decision",
+    "openapi.media_schema_mismatch \u2014 rides the envelope decision",
+    "harness.time_capped \u2014 validator path-explosion on deep shared-component docs (rev 2b); cyclic-graph crash class fixed in rev 2a"
+  ]
+}

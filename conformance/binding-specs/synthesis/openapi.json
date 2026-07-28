@@ -11,7 +11,10 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
-          "info": { "title": "Coverage", "version": "1" },
+          "info": {
+            "title": "Coverage",
+            "version": "1"
+          },
           "paths": {
             "/jobs": {
               "post": {
@@ -22,39 +25,94 @@
                     "application/json": {
                       "schema": {
                         "type": "object",
-                        "properties": { "name": { "type": "string" } }
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "application/x-custom": {
-                      "schema": { "type": "string" }
+                      "schema": {
+                        "type": "string"
+                      }
                     }
                   }
                 },
-                "responses": { "200": { "description": "ok" } }
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
               }
             }
           },
           "webhooks": {
             "jobChanged": {
-              "post": { "responses": { "200": { "description": "ok" } } }
+              "post": {
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
             }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createJob"],
+        "operations": [
+          "createJob"
+        ],
         "bindings": [
-          { "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post" }
+          {
+            "operationKey": "createJob",
+            "bindingRef": "#/paths/~1jobs/post"
+          }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": ["configuration.server"] },
-            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "createJob", "bindingRef": "#/paths/~1jobs/post", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1x-custom", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.request_media_excluded", "rule": "OAPI-P-04", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/webhooks/jobChanged/post", "scope": "target", "status": "excluded", "reasonCode": "openapi.reverse_direction", "rule": "OAPI-D-03", "requirements": [] }
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1jobs/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createJob",
+              "bindingRef": "#/paths/~1jobs/post",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createJob",
+              "bindingRef": "#/paths/~1jobs/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1x-custom",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/webhooks/jobChanged/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.reverse_direction",
+              "rule": "OAPI-D-03",
+              "requirements": []
+            }
           ]
         }
       }
@@ -163,7 +221,7 @@
     },
     {
       "id": "OAPI-SS-03",
-      "description": "Synthesis refuses the whole source when a required request body has no candidate whose flattened boundary can preserve independently declared wire values.",
+      "description": "The coverage surface synthesizes a sound partial OBI when a required request body has no candidate whose flattened boundary can preserve independently declared wire values: the operation is excluded per OAPI-P-03 and durably accounted for, never a whole-source refusal. Strict synthesis (synthesizeInterface) still refuses; that surface is exercised by SDK-local tests.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -211,10 +269,24 @@
         }
       },
       "expected": {
-        "outcome": "refused",
-        "rules": [
-          "OAPI-P-03"
-        ]
+        "outcome": "synthesized",
+        "operations": [],
+        "bindings": [],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1messages/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.flattening_collision",
+              "rule": "OAPI-P-03",
+              "requirements": []
+            }
+          ]
+        }
       }
     },
     {
