@@ -15,6 +15,9 @@ jobs:
         with:
           fetch-depth: 0 # needed for the snapshot-immutability diff against the PR base
 
+      - name: Verify Design identity assets
+        run: node scripts/verify-design-assets.mjs
+
       - name: Install ajv-cli
         run: npm install -g ajv-cli ajv-formats
 
