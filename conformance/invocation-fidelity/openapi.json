@@ -1,0 +1,209 @@
+{
+  "format": "openbindings.invocation-fidelity-scenarios@1",
+  "bindingSpec": "openbindings.openapi@1",
+  "family": "openapi",
+  "description": "End-to-end OpenAPI invocation-fidelity scenarios. Failure completions preserve the native HTTP response and its OpenAPI declaration match without turning either into an operation output.",
+  "scenarios": [
+    {
+      "id": "OAPI-FI-01",
+      "rules": ["OBI-B-02", "OAPI-P-07", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "An error-shaped JSON value returned with an artifact-defined successful status remains an ordinary output value.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Result object", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/jobs": {
+          "post": {
+            "operationId": "fidelityJobs",
+                  "responses": {
+                    "200": {
+                      "description": "operation result",
+                      "content": { "application/json": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1jobs/post" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "application/json" },
+          "body": "{\"error\":{\"code\":\"REJECTED\"}}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "error": { "code": "REJECTED" } }] },
+            { "path": "/error", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-02",
+      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "A declared JSON 404 is a failure completion whose exact response bytes, headers, status, and default Response Object match remain available.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Declared failure", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+          "get": {
+            "operationId": "fidelityItems",
+                  "responses": {
+                    "default": {
+                      "description": "failure",
+                      "content": { "application/json": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 404,
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Request-Id": "req-404"
+          },
+          "body": "{\"error\":\"missing\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/category", "equals": "service" },
+            { "path": "/error/details/status", "equals": 404 },
+            { "path": "/error/details/httpResponse/status", "equals": 404 },
+            { "path": "/error/details/httpResponse/headers/content-type", "equals": ["application/json"] },
+            { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-404"] },
+            { "path": "/error/details/httpResponse/body/base64", "equals": "eyJlcnJvciI6Im1pc3NpbmcifQ==" },
+            { "path": "/error/details/httpResponse/body/byteLength", "equals": 19 },
+            { "path": "/error/details/openapi/declared", "equals": true },
+            { "path": "/error/details/openapi/responseKey", "equals": "default" },
+            { "path": "/error/details/openapi/governingMedia", "equals": "application/json" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-03",
+      "rules": ["OBI-B-02", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "An undeclared binary 500 remains a failure completion and its body survives losslessly instead of being limited to a lossy text rendering.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Binary failure", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/binary": {
+          "get": {
+            "operationId": "fidelityBinary",
+                  "responses": { "200": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1binary/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 500,
+          "headers": { "Content-Type": "application/octet-stream" },
+          "bodyBase64": "AP+AQQ=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/details/httpResponse/body/base64", "equals": "AP+AQQ==" },
+            { "path": "/error/details/httpResponse/body/byteLength", "equals": 4 },
+            { "path": "/error/details/openapi/declared", "equals": false },
+            { "path": "/error/details/openapi/responseKey", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-04",
+      "rules": ["OBI-B-02", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "A 504 stays a native HTTP failure with retry classification and complete response evidence; it is not converted into an output object.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Gateway timeout", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/slow": {
+          "get": {
+            "operationId": "fidelitySlow",
+                  "responses": {
+                    "504": {
+                      "description": "timeout",
+                      "content": { "text/plain": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1slow/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 504,
+          "headers": { "Content-Type": "text/plain; charset=utf-8" },
+          "body": "gateway timeout"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error/code", "equals": "ERR_TIMEOUT" },
+            { "path": "/error/category", "equals": "transient" },
+            { "path": "/error/effects", "equals": "possible" },
+            { "path": "/error/details/httpResponse/body/base64", "equals": "Z2F0ZXdheSB0aW1lb3V0" },
+            { "path": "/error/details/openapi/responseKey", "equals": "504" },
+            { "path": "/error/details/openapi/governingMedia", "equals": "text/plain" }
+          ]
+        }
+      ]
+    }
+  ]
+}

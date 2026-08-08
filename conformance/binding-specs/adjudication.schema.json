@@ -97,6 +97,7 @@
               "errata",
               "implementation-compatible",
               "corpus-format-revision",
+              "pre-launch-behavior-revision",
               "binding-revision",
               "core-revision",
               "no-change"

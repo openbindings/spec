@@ -1,0 +1,118 @@
+{
+  "format": "openbindings.invocation-fidelity-scenarios@1",
+  "bindingSpec": "openbindings.grpc@1",
+  "family": "grpc",
+  "description": "End-to-end gRPC invocation-fidelity scenarios. Response messages remain outputs, non-OK final statuses remain failure completions, and native status, rich details, and trailing metadata survive the abstraction.",
+  "scenarios": [
+    {
+      "id": "GRPC-FI-01",
+      "rules": ["OBI-B-02", "GRPC-P-06", "GRPC-P-07"],
+      "section": "9.4",
+      "description": "A server-streaming RPC can emit values and then fail with a losslessly represented INTERNAL status, rich status detail, and multivalued trailing metadata.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
+        },
+        "binding": { "ref": "demo.Service/List" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "responseMessages": [{ "value": "first" }],
+          "finalStatus": "INTERNAL",
+          "statusMessage": "ledger corrupt",
+          "statusDetails": [
+            {
+              "typeUrl": "type.googleapis.com/demo.Failure",
+              "valueBase64": "AP+AQQ=="
+            }
+          ],
+          "trailingMetadata": {
+            "trace-bin": ["AP+AQQ=="],
+            "x-attempt": ["2", "3"]
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "value": "first" }] },
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/category", "equals": "service" },
+            { "path": "/error/details/grpcStatus/code", "equals": 13 },
+            { "path": "/error/details/grpcStatus/message", "equals": "ledger corrupt" },
+            { "path": "/error/details/grpcStatus/details/0/typeUrl", "equals": "type.googleapis.com/demo.Failure" },
+            { "path": "/error/details/grpcStatus/details/0/valueBase64", "equals": "AP+AQQ==" },
+            { "path": "/trailer/trace-bin", "equals": ["AP+AQQ=="] },
+            { "path": "/trailer/x-attempt", "equals": ["2", "3"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-FI-02",
+      "rules": ["OBI-B-02", "GRPC-P-06"],
+      "section": "9.4",
+      "description": "RESOURCE_EXHAUSTED retains its native code while the portable error classification marks the refusal retryable and side-effect free.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "finalStatus": "RESOURCE_EXHAUSTED",
+          "statusMessage": "quota exceeded"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error/code", "equals": "ERR_UNAVAILABLE" },
+            { "path": "/error/category", "equals": "transient" },
+            { "path": "/error/effects", "equals": "none" },
+            { "path": "/error/details/grpcStatus/code", "equals": 8 },
+            { "path": "/error/details/grpcStatus/message", "equals": "quota exceeded" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-FI-03",
+      "rules": ["OBI-B-02", "GRPC-P-03", "GRPC-P-04"],
+      "section": "9.1",
+      "description": "A local ProtoJSON validation failure is terminal but does not invent source-native gRPC status evidence; earlier bidirectional outputs remain visible.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Request) returns (stream Reply); } message Request { string value = 1; } message Reply { string ack = 1; }"
+        },
+        "binding": { "ref": "demo.Service/Chat" },
+        "invocation": {
+          "inputPresent": false,
+          "writes": [{ "value": "valid" }, { "unknown": true }]
+        },
+        "peer": {
+          "afterWrite": { "index": 0, "responses": [{ "ack": "valid" }] }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "dispatch",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "ack": "valid" }] },
+            { "path": "/error/code", "equals": "ERR_VALIDATION_FAILED" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/dispatch/cancelled", "equals": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

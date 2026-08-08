@@ -51,6 +51,8 @@ const CORPUS = join(SPEC_ROOT, "conformance", "binding-specs");
 const FIXTURE_SCHEMA = join(CORPUS, "fixture.schema.json");
 const PROCESSOR_DIR = join(CORPUS, "processor");
 const PROCESSOR_SCHEMA = join(CORPUS, "processor-scenario.schema.json");
+const FIDELITY_DIR = join(SPEC_ROOT, "conformance", "invocation-fidelity");
+const FIDELITY_SCHEMA = join(FIDELITY_DIR, "scenario.schema.json");
 const SYNTHESIS_DIR = join(CORPUS, "synthesis");
 const SYNTHESIS_SCHEMA = join(CORPUS, "synthesis-scenario.schema.json");
 const ADJUDICATIONS = join(CORPUS, "adjudications.json");
@@ -149,7 +151,7 @@ function extractFamilyPRules(md, prefix) {
 
 function extractCoreRules(md) {
   const rules = new Set();
-  const re = /^\s*-\s*\*\*(OBI-[DT]-\d+)\*\*[^:]*:/gm;
+  const re = /^\s*-\s*\*\*(OBI-[BDT]-\d+)\*\*[^:]*:/gm;
   let m;
   while ((m = re.exec(md)) !== null) rules.add(m[1]);
   return rules;
@@ -368,6 +370,47 @@ for (const dir of processorTargets) {
   }
 }
 
+// The stronger invocation-fidelity profile is kept separate from published
+// family conformance. It reuses the semantic harness but may also cite the
+// core binding-specification completeness floor.
+const fidelityTargets = ["openapi", "grpc", "connect", "graphql", "mcp", "usage"];
+let fidelityScenarios = 0;
+for (const dir of fidelityTargets) {
+  const fam = FAMILIES[dir];
+  const path = join(FIDELITY_DIR, `${dir}.json`);
+  if (!existsSync(path)) {
+    errors.push(`invocation-fidelity/${dir}.json: missing fidelity scenario file`);
+    continue;
+  }
+  let fixture;
+  try {
+    fixture = JSON.parse(readFileSync(path, "utf8"));
+  } catch (e) {
+    errors.push(`invocation-fidelity/${dir}.json: failed to parse JSON: ${e.message}`);
+    continue;
+  }
+  const shape = ajvOk(FIDELITY_SCHEMA, fixture);
+  if (!shape.ok) {
+    errors.push(`invocation-fidelity/${dir}.json: does not match scenario.schema.json\n${shape.out}`);
+    continue;
+  }
+  if (fixture.family !== dir)
+    errors.push(`invocation-fidelity/${dir}.json: family '${fixture.family}' does not match filename`);
+  if (fixture.bindingSpec !== fam.bindingSpec)
+    errors.push(`invocation-fidelity/${dir}.json: bindingSpec '${fixture.bindingSpec}' is not '${fam.bindingSpec}'`);
+  for (const [i, scenario] of fixture.scenarios.entries()) {
+    fidelityScenarios++;
+    if (!scenario.id.startsWith(`${fam.prefix}-FI-`))
+      errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
+    if (!sectionExists(specTexts[dir], scenario.section))
+      errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
+    for (const rule of scenario.rules) {
+      if (!allRuleIds.has(rule))
+        errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: rule '${rule}' is not defined by core or the family specification`);
+    }
+  }
+}
+
 // Portable synthesis scenarios prove artifact-inventory accounting and
 // emitted target identity independently of either reference SDK's API.
 const synthesisScenarioIds = new Set();
@@ -494,6 +537,7 @@ console.log(
 console.log(
   `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules} targeted P-rules`
 );
+console.log(`Invocation-fidelity scenarios: ${fidelityScenarios} across ${fidelityTargets.length} active family slice(s)`);
 console.log(
   `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} published families`
 );

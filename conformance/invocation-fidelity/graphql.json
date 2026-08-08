@@ -1,0 +1,123 @@
+{
+  "format": "openbindings.invocation-fidelity-scenarios@1",
+  "bindingSpec": "openbindings.graphql@1",
+  "family": "graphql",
+  "description": "End-to-end GraphQL fidelity scenarios. GraphQL execution-result errors remain in-band outputs, while legacy HTTP and graphql-transport-ws failures retain their native evidence.",
+  "scenarios": [
+    {
+      "id": "GQL-FI-01",
+      "rules": ["OBI-B-02", "GQL-P-03"],
+      "section": "9.3",
+      "description": "A well-formed application/graphql-response+json error result remains an output even at HTTP 400.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": { "data": { "__schema": {
+            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
+            "types": [
+              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
+              { "kind": "SCALAR", "name": "String" }
+            ]
+          } } }
+        },
+        "binding": { "ref": "query/viewer" },
+        "configuration": { "document": { "source": "query { viewer }" } },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 400,
+          "contentType": "application/graphql-response+json",
+          "body": { "errors": [{ "message": "request rejected", "extensions": { "code": "BAD_REQUEST" } }] }
+        }
+      },
+      "expected": [{
+        "disposition": "complete",
+        "phase": "completion",
+        "assertions": [
+          { "path": "/outputs", "equals": [{ "errors": [{ "message": "request rejected", "extensions": { "code": "BAD_REQUEST" } }] }] },
+          { "path": "/error", "absent": true }
+        ]
+      }]
+    },
+    {
+      "id": "GQL-FI-02",
+      "rules": ["OBI-B-02", "GQL-P-03"],
+      "section": "9.3",
+      "description": "An untrusted legacy application/json 500 remains a failure and preserves exact non-UTF-8 response bytes and headers.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": { "data": { "__schema": {
+            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
+            "types": [
+              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
+              { "kind": "SCALAR", "name": "String" }
+            ]
+          } } }
+        },
+        "binding": { "ref": "query/viewer" },
+        "configuration": { "document": { "source": "query { viewer }" } },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 500,
+          "contentType": "application/json",
+          "headers": { "X-Request-Id": "req-500" },
+          "bodyBase64": "AP+AQQ=="
+        }
+      },
+      "expected": [{
+        "disposition": "error",
+        "phase": "response",
+        "assertions": [
+          { "path": "/outputs", "equals": [] },
+          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+          { "path": "/error/category", "equals": "service" },
+          { "path": "/error/details/httpResponse/status", "equals": 500 },
+          { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-500"] },
+          { "path": "/error/details/httpResponse/body/base64", "equals": "AP+AQQ==" },
+          { "path": "/error/details/httpResponse/body/byteLength", "equals": 4 },
+          { "path": "/error/details/graphql/mediaType", "equals": "application/json" }
+        ]
+      }]
+    },
+    {
+      "id": "GQL-FI-03",
+      "rules": ["OBI-B-02", "GQL-P-03", "GQL-P-04"],
+      "section": "9.3",
+      "description": "A subscription next payload containing GraphQL errors remains an output; a later protocol error payload terminates the stream without losing either object.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": { "data": { "__schema": {
+            "queryType": null, "mutationType": null, "subscriptionType": { "name": "RootSubscription" },
+            "types": [
+              { "kind": "OBJECT", "name": "RootSubscription", "fields": [{ "name": "updates", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
+              { "kind": "SCALAR", "name": "String" }
+            ]
+          } } }
+        },
+        "binding": { "ref": "subscription/updates" },
+        "configuration": {
+          "document": { "source": "subscription { updates }" },
+          "subscriptionTarget": "wss://api.example.test/graphql"
+        },
+        "invocation": { "inputPresent": false },
+        "peer": { "messages": [
+          { "type": "connection_ack" },
+          { "type": "next", "payload": { "errors": [{ "message": "field warning", "extensions": { "severity": "warning" } }] } },
+          { "type": "error", "payload": [{ "message": "subscription rejected", "extensions": { "code": "FORBIDDEN" } }] }
+        ] }
+      },
+      "expected": [{
+        "disposition": "error",
+        "phase": "completion",
+        "assertions": [
+          { "path": "/outputs", "equals": [{ "errors": [{ "message": "field warning", "extensions": { "severity": "warning" } }] }] },
+          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+          { "path": "/error/details/graphqlTransportWs/type", "equals": "error" },
+          { "path": "/error/details/graphqlTransportWs/payload/0/message", "equals": "subscription rejected" },
+          { "path": "/error/details/graphqlTransportWs/payload/0/extensions/code", "equals": "FORBIDDEN" }
+        ]
+      }]
+    }
+  ]
+}

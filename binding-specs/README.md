@@ -33,6 +33,53 @@ connection pool, or cancellation API. Imperative words such as “dispatch” an
 preserve when it acts on the binding; they do not move the specification into
 the invocation-interface layer.
 
+## The invocation-fidelity floor
+
+The project's end-to-end target is **binding-artifact fidelity**: after an OBI
+is synthesized from a supported brownfield artifact, invoking its binding must
+leave a caller able to observe every distinction that bespoke protocol code,
+acting under the same artifact and runtime capabilities, could observe and use
+in the governed artifact or protocol semantics.
+The OBI may remove protocol-specific presentation; it must not remove
+protocol meaning.
+
+That target separates three things which must not be collapsed:
+
+1. A source interaction may produce an ordinary result value whose shape
+   signals an application condition. When the source family treats that value
+   as a successful result, it crosses the operation output boundary normally.
+2. A service, protocol, or transport may end the interaction unsuccessfully.
+   That is a failure completion, not an operation output. The binding
+   specification still identifies the source-native observations that must
+   remain available — for example a status, structured protocol details,
+   metadata, a lossless response payload, and outputs emitted before a late
+   failure.
+3. A local SDK or implementation defect that produced no source interaction is
+   an implementation failure. It is neither an output nor invented
+   source-native evidence.
+
+The preservation obligation is semantic, not a universal envelope. An
+invocation interface may carry a failure in an error frame, an SDK may throw a
+typed exception, and another runtime may return a result union; those are
+faithful presentations when the same binding-native facts survive. Conversely,
+“the consumer decides what to surface” is conformant only about presentation.
+It is not permission for a processor to make preservation optional.
+
+Cardinality and lifecycle remain emergent from the selected binding. This
+fidelity floor adds no cardinality, half-close, cancellation, or completion
+members to an operation or to the core document model. A family specification
+defines those facts only where its artifact or protocol has them, and an
+invocation surface preserves them through its own transport-neutral state
+model. The core supplies neither a lowest-common-denominator lifecycle nor a
+protocol simulation language.
+
+When a supported source distinction cannot cross an available invocation
+surface losslessly, the implementation reports the limitation or refuses that
+case loudly. Silently decoding away bytes, dropping native status details,
+turning a late failure into successful completion, or converting an
+artifact-permitted interaction into a narrower one fails this floor even when
+the happy-path output values look correct.
+
 ## Identifiers
 
 Project-published binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Artifact and dialect versions never appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section states which artifact versions it accepts (core [§6](../openbindings.md#6-binding-specifications)).

@@ -106,7 +106,9 @@ Routing replaces only the selected field's ordinary value contribution; it does 
 
 ### 9.3. Success and the output value
 
-Which outcomes of an invocation are successes is decided by the **classify** point. For a successful outcome, the operation's single output value is the product of the **decode** point applied to the process's standard output. Failure outcomes are not operation results and have no representation in this specification; what a consumer surfaces about them is its own concern.
+Which outcomes of an invocation are successes is decided by the **classify** point. For a successful outcome, the operation's single output value is the product of the **decode** point applied to the process's standard output. Standard error is not an additional output value; it remains process metadata, preserving its captured bytes and any explicit truncation fact.
+
+A completed process that classification rejects terminates the invocation as a failure, not an operation result. The terminal evidence preserves the exit status or signal termination, captured standard-output and standard-error bytes, and any explicit truncation facts. A decode failure after a completed process likewise retains that process evidence, so choosing the revision 1 text default never makes the original byte sequence unrecoverable. Spawn failures and local runtime failures carry no invented process result. This binding specification defines no portable replacement vocabulary for program-specific exit meanings; consumers may classify the terminal failure additionally without discarding the native process evidence.
 
 ### 9.4. Transform positions
 
