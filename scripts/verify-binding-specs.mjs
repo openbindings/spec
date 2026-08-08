@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // Verifies the binding-specification conformance subcorpus
-// (conformance/binding-specs/) against the seven published family
-// specifications.
+// (conformance/binding-specs/) against the seven standalone brownfield
+// synthesis-family specifications. Operation Graph has its own composition
+// corpus and is invocation-only because its operation contracts live in the
+// containing OBI.
 //
 // Checks performed:
 //   1. Every fixture file validates against the subcorpus's shared
@@ -11,7 +13,7 @@
 //      directory, and its `bindingSpec` is that family's exact identifier.
 //   3. Each fixture's `section` names a section heading that exists in the
 //      family specification.
-//   4. Every family D-rule defined in the seven specs' Conformance sections is
+//   4. Every family D-rule defined in the seven brownfield specs' Conformance sections is
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
@@ -24,6 +26,7 @@
 //      coverage evidence are internally consistent.
 //   8. Adjudications resolve to live synthesis scenarios and keep core and
 //      family authority in their declared lanes.
+//   9. The abstraction-fidelity alignment ledger validates against its schema.
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -57,6 +60,9 @@ const SYNTHESIS_DIR = join(CORPUS, "synthesis");
 const SYNTHESIS_SCHEMA = join(CORPUS, "synthesis-scenario.schema.json");
 const ADJUDICATIONS = join(CORPUS, "adjudications.json");
 const ADJUDICATION_SCHEMA = join(CORPUS, "adjudication.schema.json");
+const ABSTRACTION_FIDELITY_DIR = join(SPEC_ROOT, "conformance", "abstraction-fidelity");
+const ABSTRACTION_FIDELITY_LEDGER = join(ABSTRACTION_FIDELITY_DIR, "ledger.json");
+const ABSTRACTION_FIDELITY_SCHEMA = join(ABSTRACTION_FIDELITY_DIR, "ledger.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 
@@ -73,7 +79,7 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
   },
   mcp: {
-    bindingSpec: "openbindings.mcp@1",
+    bindingSpec: "openbindings.mcp@2",
     prefix: "MCP",
     spec: join(SPEC_ROOT, "binding-specs", "mcp", "openbindings.mcp.md"),
   },
@@ -93,7 +99,7 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "asyncapi", "openbindings.asyncapi.md"),
   },
   graphql: {
-    bindingSpec: "openbindings.graphql@1",
+    bindingSpec: "openbindings.graphql@2",
     prefix: "GQL",
     spec: join(SPEC_ROOT, "binding-specs", "graphql", "openbindings.graphql.md"),
   },
@@ -308,7 +314,7 @@ for (const ruleId of deferred) {
   }
 }
 
-// Portable P-rule scenario files for all seven published families. These files preserve permitted
+// Portable P-rule scenario files for all seven standalone brownfield synthesis families. These files preserve permitted
 // alternatives explicitly; the verifier checks shape, identity, citations,
 // and rule coverage, while family adapters execute them against SDKs.
 const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect", "graphql"];
@@ -373,7 +379,7 @@ for (const dir of processorTargets) {
 // The stronger invocation-fidelity profile is kept separate from published
 // family conformance. It reuses the semantic harness but may also cite the
 // core binding-specification completeness floor.
-const fidelityTargets = ["openapi", "grpc", "connect", "graphql", "mcp", "usage"];
+const fidelityTargets = ["openapi", "asyncapi", "grpc", "connect", "graphql", "mcp", "usage"];
 let fidelityScenarios = 0;
 for (const dir of fidelityTargets) {
   const fam = FAMILIES[dir];
@@ -525,9 +531,22 @@ try {
   errors.push(`adjudications.json: failed to parse or validate: ${e.message}`);
 }
 
+let alignmentLedgerEntries = 0;
+try {
+  const ledger = JSON.parse(readFileSync(ABSTRACTION_FIDELITY_LEDGER, "utf8"));
+  const shape = ajvOk(ABSTRACTION_FIDELITY_SCHEMA, ledger);
+  if (!shape.ok) {
+    errors.push(`abstraction-fidelity/ledger.json: does not match ledger.schema.json\n${shape.out}`);
+  } else {
+    alignmentLedgerEntries = ledger.entries.length;
+  }
+} catch (e) {
+  errors.push(`abstraction-fidelity/ledger.json: failed to parse or validate: ${e.message}`);
+}
+
 rmSync(tmp, { recursive: true, force: true });
 
-console.log(`Family D-rules defined across seven specs: ${definedDRules.size}`);
+console.log(`Family D-rules defined across seven brownfield synthesis specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);
@@ -539,9 +558,10 @@ console.log(
 );
 console.log(`Invocation-fidelity scenarios: ${fidelityScenarios} across ${fidelityTargets.length} active family slice(s)`);
 console.log(
-  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} published families`
+  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} standalone brownfield synthesis families`
 );
 console.log(`Conformance adjudications: ${adjudicationCount}`);
+console.log(`Abstraction-fidelity ledger entries: ${alignmentLedgerEntries}`);
 
 if (errors.length) {
   console.log(`\nErrors (${errors.length}):`);

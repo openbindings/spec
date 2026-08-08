@@ -8,6 +8,16 @@ This document is the project's development process and, once public, its governa
 
 Maximize the fraction of real-world, conventional artifacts — per binding family — whose operations synthesize, inspect, and invoke faithfully. Subject to one hard constraint: **coverage is gained only by faithful means.** Every widening goes through the deference order (incorporate → preserve → configure → refuse → default). A widening that buys coverage by inventing semantics, guessing intent, or defaulting a genuine choice is a regression, even when the measured percentage goes up.
 
+Here, _faithfully_ means fidelity to the protocol-independent operation
+boundary defined by the informative
+[`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md), not observational
+equivalence with a native client. The concrete binding must perform the real
+interaction correctly, but the ordinary caller must not need the selected
+protocol's statuses, headers, trailers, frames, or wire bytes. Native facts
+may be consumed internally or retained on an explicit diagnostic surface;
+they do not become operation fields merely so that no native observation is
+lost.
+
 Corollary: **refusal is per-unit and evidenced, never silent and never wider than the unit that earned it.** A source-level defect refuses the source; an operation-level limit excludes the operation with a durable, rule-identified coverage entry. One unrepresentable operation never vetoes its representable siblings. (This was the loop's first fix: rev 0 below.)
 
 ## The flywheel
@@ -49,23 +59,45 @@ Before any widening ships, it passes the **faithfulness gate** — an adversaria
 1. **What does the upstream's own specification say?** The widening must incorporate upstream semantics, not approximate them.
 2. **Is a genuine choice being decided?** If the artifact declares alternatives and the caller must pick, the widening adds a *configuration point*, never a default.
 3. **Would the widening ever emit something the artifact doesn't mean?** If yes, refuse — at the smallest honest unit.
-4. **Does the coverage vocabulary account for whatever remains excluded?** Partiality is fine; unaccounted partiality is not.
+4. **Is the proposed observation part of the abstract operation contract?**
+   Application values and behavior cross the operation boundary; raw protocol
+   evidence does not become an operation field or required caller input.
+5. **Can a caller use the result without knowing the selected binding?** A
+   widening that recompiles protocol concepts into a nominally abstract schema
+   fails this gate.
+6. **Can diagnostics be removed from the ordinary surface without breaking
+   correct use?** If not, the abstraction or binding interpretation remains
+   incomplete.
+7. **Does the coverage vocabulary account for whatever remains excluded?** Partiality is fine; unaccounted partiality is not.
 
 The gate's output is an adjudication record: scenarios affected, governing rules, what changed, what supersedes what. Superseded adjudications stay in the log — the paper trail is the point. (Example: BS-A-20260728-01 re-adjudicated OAPI-SS-03 from whole-source refusal to sound-partial synthesis, superseding BS-A-20260723-01 for that scenario, on the authority of the binding spec's own "narrows coverage" resolution.)
 
 ### 4. Widen
 
-A widening lands as one changeset with four mandatory parts:
+A widening lands as one changeset with four mandatory forms of evidence:
 
-- **Spec text** (binding spec and/or core), pre-launch amendable in place;
+- **An ownership decision** identifying whether the gap is doctrine,
+  binding-specification, synthesis, invoker, or SDK debt. Normative text
+  changes only when the owning contract is actually incomplete or wrong; a
+  code defect does not earn a specification feature. Any proposed core
+  document-model change is reviewed explicitly before implementation;
 - **Both SDKs** — TS and Go move together. Parity is an invariant, enforced by the shared portable scenario corpus, and any intentional divergence is itself a tracked gap;
-- **Portable scenarios** — at least one new synthesis/invocation scenario in the shared conformance corpus exercising the widening, so every future implementation inherits the proof;
+- **Portable scenarios** — at least one new synthesis/invocation scenario in the shared conformance corpus exercising the widening, so every future implementation inherits the abstract-operation proof;
 - **SDK-local tests** for surface behavior the portable format can't express (e.g., strict-surface refusal).
+
+Only the layers that own the gap change. Raw native comparators may accompany
+the changeset to prove concrete request construction and response
+interpretation, but they are implementation or diagnostic evidence rather
+than new operation-surface requirements.
 
 ### 5. Verify
 
 - Re-run the corpus. The widening's reason code should shrink or vanish; nothing else should grow. A regression elsewhere fails the revolution.
 - Full test suites in both SDKs, including the portable scenario runners.
+- Run protocol-blind operation differentials: the comparison observes only
+  application values and lifecycle behavior available without binding
+  knowledge. Run native differentials separately where the implementation
+  needs a lower-layer oracle.
 - The re-measured histogram becomes the input to the next revolution's Rank.
 
 ## Surface doctrine (what tolerance never touches)
@@ -95,6 +127,16 @@ OpenAPI runs first — it has the corpus, the confirmed findings, and (hypothesi
 
 A family whose corpus contradicts a spec exclusion gets a Rank entry like any other gap; the gate then decides whether the widening is faithful or the exclusion stands.
 
+`openbindings.operation-graph@1` is deliberately outside this standalone
+artifact-synthesis table. A graph composes operations already declared by its
+containing OBI and does not carry independent application contracts from which
+a new interface could be synthesized. Its development loop is the portable
+identity-law and execution corpus: direct and graph-wrapped invocation must
+remain observationally identical at the abstract operation boundary. If a
+future graph edition carries an independently authored operation contract,
+that new source capability would reopen the synthesis decision; current tools
+must not invent it.
+
 ## Revolution log
 
 | Rev | Date | Station output |
@@ -117,7 +159,7 @@ A family reaches **measured-complete** when all five hold:
   A reason code in the histogram with no adjudication is an open work item, by definition, regardless of its count.
 - **MC2 — Implementation losses at zero.** `implementation-unsupported` entries, resource caps at reasonable bounds, and load failures on upstream-valid artifacts are never acceptable residual: they are not principled refusals, and no adjudication can launder them. The only artifacts allowed to fail loading are upstream-invalid ones.
 - **MC3 — Marginal yield below floor.** The top-ranked unadjudicated gap would unblock less than **δ = 0.5%** of corpus artifacts, for **K = 2** consecutive revolutions (loop-until-dry, not count-until-N). Pre-launch these constants are ours to tune; they are recorded here so changing them is a visible act.
-- **MC4 — Faithfulness verified, not assumed.** Every widening since baseline carries invocation-level conformance evidence (portable scenarios plus an invocation check against a reference server), and the strict and tolerant surfaces agree exactly on the represented/excluded partition. Synthesis success alone never counts as coverage.
+- **MC4 — Faithfulness verified, not assumed.** Every widening since baseline carries invocation-level conformance evidence: portable scenarios plus a protocol-blind operation comparison against a reference server, with native-client comparison used as a lower-layer oracle where needed. The strict and tolerant surfaces agree exactly on the represented/excluded partition. Synthesis success or raw-protocol equality alone never counts as operation fidelity.
 - **MC5 — Stable across two corpus vintages.** Two consecutive corpus refreshes produce no new reason codes and no regrowth of an adjudicated category beyond sampling noise.
 
 Measured-complete is a **steady state, not an ending**. The family enters maintenance, and exactly four events reopen its loop: (1) a corpus refresh surfaces a new reason code; (2) the upstream specification revises; (3) an economically-deferred item crosses its recorded revisit trigger; (4) a field report contradicts the coverage evidence. Between those events, running the loop harder buys nothing — that is what termination means.
@@ -128,5 +170,12 @@ Status against these criteria is computed, not asserted: the harness's `status` 
 
 - **No coverage theater.** Percentages without a corpus, prevalence claims without a measurement, and caps without a counter are all the same defect: unearned confidence.
 - **No doctrine erosion under coverage pressure.** The gate exists because "one more small default" is how universal API layers have historically rotted.
+- **No protocol recompilation.** A native status, header, trailer, frame, or
+  wire representation does not become an output-schema variant just to keep
+  it visible.
+- **No diagnostics as contract.** Raw binding evidence may support debugging
+  and conformance, but ordinary application behavior never depends on it.
+- **No specification growth for implementation convenience.** Add only the
+  minimum semantics needed to act faithfully; fix code in code.
 - **No fifth surface.** Tolerance lives in the evidenced surfaces; strictness lives in the strict one. New use cases pick one; they don't get a new posture.
 - **No lockstep stall.** OpenAPI running ahead is fine; a family is never blocked on another family's revolution — only on its own corpus.

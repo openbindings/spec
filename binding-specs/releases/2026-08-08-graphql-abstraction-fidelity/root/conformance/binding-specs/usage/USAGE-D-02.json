@@ -1,0 +1,155 @@
+{
+  "rule": "USAGE-D-02",
+  "bindingSpec": "openbindings.usage@1",
+  "section": "4",
+  "description": "`location`, when present, is a document address (absolute URI) or an exec address (`exec:` + space-separated argv vector). A bare filesystem path is a relative reference in form and is not a conformant location; exec-address tokens are separated by single spaces and carry no quoting mechanism.",
+  "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness and narrows the accepted forms, so the fixtures list both.",
+  "tests": [
+    {
+      "description": "https document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "https://example.com/tool/usage.kdl"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "file document address (absolute URI spelling for a local descriptor)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "file:///opt/tool/usage.kdl"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "exec address with one command token and one argument token",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "exec:mytool usage"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "exec address with a single command token and no arguments",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "location": "exec:mytool" }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bare relative filesystem path is a relative reference in form, not a document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "location": "./usage.kdl" }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "bare absolute filesystem path carries no scheme and is relative in form; local descriptors ride file:// URIs or embedded content",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "/opt/tool/usage.kdl"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "bare file name carries no scheme and is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "location": "usage.kdl" }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "exec address with a double space produces an empty token: tokens are separated by single spaces",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "location": "exec:mytool  usage"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-02"]
+    },
+    {
+      "description": "exec address with no command token at all",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "location": "exec:" }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-02"]
+    }
+  ]
+}

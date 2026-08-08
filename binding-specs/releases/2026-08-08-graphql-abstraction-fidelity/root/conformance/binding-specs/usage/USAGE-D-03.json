@@ -1,0 +1,179 @@
+{
+  "rule": "USAGE-D-03",
+  "bindingSpec": "openbindings.usage@1",
+  "section": "7",
+  "description": "`ref`, when present, is a non-empty space-separated command path resolving in the artifact's command tree; each segment matches exactly one sibling command by its declared name or any of its declared aliases, exactly and case-sensitively. Zero or multiple matches are unresolvable. The root command is addressed by omitting `ref`; an empty-string `ref` is not conformant.",
+  "notes": "Resolution-dependent tests always embed the descriptor as content, so the verdict is offline-decidable; verifying them requires a usage (KDL) descriptor parser, and a validator without one reports those tests unverified rather than passing or failing them (core partial-verification posture). Grammar tests (empty ref, empty segment) are decidable without the artifact.",
+  "tests": [
+    {
+      "description": "single-segment command path resolving to a declared command",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\ncmd \"db\" help=\"Database commands\" {\n    cmd \"migrate\" help=\"Migration commands\" {\n        alias \"m\"\n        cmd \"run\" help=\"Run pending migrations\"\n    }\n}\n"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "multi-segment command path walking the tree from the root command",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "runMigrations": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\ncmd \"db\" help=\"Database commands\" {\n    cmd \"migrate\" help=\"Migration commands\" {\n        alias \"m\"\n        cmd \"run\" help=\"Run pending migrations\"\n    }\n}\n"
+          }
+        },
+        "bindings": {
+          "runMigrations.cli": {
+            "operation": "runMigrations",
+            "source": "cli",
+            "ref": "db migrate run"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "segment matching a command's declared alias (m for migrate), exactly",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "runMigrations": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\ncmd \"db\" help=\"Database commands\" {\n    cmd \"migrate\" help=\"Migration commands\" {\n        alias \"m\"\n        cmd \"run\" help=\"Run pending migrations\"\n    }\n}\n"
+          }
+        },
+        "bindings": {
+          "runMigrations.cli": {
+            "operation": "runMigrations",
+            "source": "cli",
+            "ref": "db m run"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "omitted ref addresses the root command",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "runTool": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\n"
+          }
+        },
+        "bindings": {
+          "runTool.cli": { "operation": "runTool", "source": "cli" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "empty-string ref is not conformant: this specification gives each meaning one spelling (the root command is addressed by omitting ref)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "runTool": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\n"
+          }
+        },
+        "bindings": {
+          "runTool.cli": { "operation": "runTool", "source": "cli", "ref": "" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-03"]
+    },
+    {
+      "description": "double space in the command path produces an empty segment: segments are separated by single spaces",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "runMigrations": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"db\" help=\"Database commands\" {\n    cmd \"migrate\" help=\"Migration commands\"\n}\n"
+          }
+        },
+        "bindings": {
+          "runMigrations.cli": {
+            "operation": "runMigrations",
+            "source": "cli",
+            "ref": "db  migrate"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-03"]
+    },
+    {
+      "description": "command path resolving to no command in the embedded descriptor makes the binding unresolvable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "deploy": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\n"
+          }
+        },
+        "bindings": {
+          "deploy.cli": { "operation": "deploy", "source": "cli", "ref": "deploy" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-03"]
+    },
+    {
+      "description": "segment matching is case-sensitive: Status does not match the declared command status",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\n"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "Status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-03"]
+    },
+    {
+      "description": "a spelling shared by two sibling commands is ambiguous; declaration order does not select a target",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "run": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"x\"\ncmd \"beta\" {\n    alias \"x\"\n}\n"
+          }
+        },
+        "bindings": {
+          "run.cli": { "operation": "run", "source": "cli", "ref": "x" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-03"]
+    }
+  ]
+}

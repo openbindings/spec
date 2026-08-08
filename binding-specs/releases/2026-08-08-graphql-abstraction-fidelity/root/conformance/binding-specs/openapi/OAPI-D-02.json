@@ -1,0 +1,117 @@
+{
+  "rule": "OAPI-D-02",
+  "bindingSpec": "openbindings.openapi@1",
+  "section": "4",
+  "description": "`location`, when present, is an absolute URI addressing the OpenAPI document itself. A bare filesystem path is a relative reference in form and is not a conformant location.",
+  "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness for this family's document address, so the fixtures list both.",
+  "tests": [
+    {
+      "description": "https document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "https://example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "file document address (absolute URI spelling for a local artifact)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "file:///srv/api/openapi.yaml"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bare relative filesystem path is a relative reference in form, not a document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "./openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "bare absolute filesystem path carries no scheme and is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "/srv/api/openapi.yaml"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "authority-looking string without a scheme is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "createTask": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi@1",
+            "location": "example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "ref": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OAPI-D-02", "OBI-D-05"]
+    }
+  ]
+}

@@ -1,56 +1,116 @@
 # Invocation-fidelity loop status
 
 This is a working engineering tracker, not normative binding-specification
-text. Its pass condition is the brownfield goal: for every supported source
-artifact and interaction in the declared coverage range, a synthesized OBI can
-drive an invocation without erasing a source-native semantic distinction that
-a bespoke client using that same artifact could observe.
+text. Its pass condition is the protocol-blind brownfield goal described in
+[`ABSTRACTION-FIDELITY.md`](../../ABSTRACTION-FIDELITY.md): within declared
+coverage, a synthesized OBI must be as useful for invoking and consuming the
+abstract operation as bespoke binding code, without requiring the caller to
+know or inspect the selected protocol.
+
+This is not native-client observational equivalence. Some concrete protocol
+information is intentionally absent from the ordinary operation surface.
+Native differential checks remain valuable for proving the binding
+implementation underneath that surface.
 
 Lifecycle shape remains binding-emergent. This loop never adds cardinality,
 half-close, cancellation, ordering, or completion fields to the core OBI
-model. It observes those facts through the selected binding's invocation.
+model. It observes their caller-facing effects through the selected binding.
 
 ## Gates
 
-1. **Binding preservation** — the family invoker preserves native success
-   values, failure evidence, partial outputs, metadata, and completion facts.
-2. **Synthesis preservation** — synthesis retains the source carriage, target
+1. **Concrete binding correctness** — the family implementation constructs
+   and performs the governed native interaction correctly, using native facts
+   internally where necessary. Native-client and scripted-peer differentials
+   are the principal oracle for this gate.
+2. **Synthesis abstraction** — synthesis retains source carriage, target
    identity, exact ref, required interpretation points, and every supported
-   operation; an unrepresentable operation is excluded loudly with a reason.
-3. **Operation relay** — the operation invoker changes none of the binding
-   outputs, terminal classification, effects, details, or metadata.
-4. **Frame relay** — a transport-neutral invoker-frame round trip changes none
-   of those observations.
-5. **Differential round trip** — source artifact → synthesized OBI → operation
-   invocation is compared with a native client against the same scripted peer.
-   Every observable semantic distinction must match or be an explicitly named,
-   intentional presentation difference with lossless native evidence.
+   operation, while deriving schemas only from application-level declarations.
+   It never recompiles protocol observations into operation fields. An
+   unrepresentable operation is excluded loudly with a reason.
+3. **Operation value and interaction fidelity** — the ordinary caller receives
+   the correct application values, ordering, partial outputs, closure,
+   cancellation, and normal or unsuccessful completion.
+4. **Protocol blindness** — the same operation can be used correctly without
+   knowing the selected binding. Removing access to raw status, metadata,
+   frames, and bytes cannot break correct ordinary use.
+5. **Diagnostic separation** — any retained native evidence is explicitly
+   diagnostic, stays out of operation values, and is not treated as proof by
+   itself that the abstract-operation gates pass.
 
 No family is complete until all five gates pass adversarial scenarios in both
 reference SDKs.
 
+## Alignment decisions
+
+The doctrine itself adds no OBI document fields. The initial contract review is
+complete:
+
+1. **Core OBI-B-02 item 7** now requires correct classification, unsuccessful
+   completion, and treatment of prior outputs; raw native evidence may be
+   binding-internal or diagnostic. No document-model field changed.
+2. **Binding-invoker 0.1** now uses structural unsuccessful completion, open
+   codes, narrowly defined portable/application details, and an explicit
+   diagnostics lane. The closed category, retry-effect, and status-mapping
+   system was removed.
+3. **Published family revisions** were audited without rewriting immutable
+   releases. Usage revision 1 was restored to its publication; MCP revision 2
+   and GraphQL revision 2 were published where the operation-value boundary
+   required an incompatible correction.
+4. **Authorial failure data** is distinguished from native evidence: governing
+   binding rules may preserve an opaque application-authored JSON failure
+   value, while protocol containers remain diagnostic. This introduces no
+   universal failure vocabulary or OBI schema field.
+5. **Consumer projections** were audited through the `ob` CLI and browser
+   workbench. Both preserve prior outputs and structural unsuccessful
+   completion without requiring binding identity, native metadata, or the
+   removed closed category/effects model; diagnostics remain opt-in.
+6. **Human-readable failure prose** follows the same abstraction boundary as
+   structured data. Application-authored messages survive without their
+   protocol wrapper; raw status lines, process facts, library wrappers, and
+   hook provenance do not cross the ordinary message field.
+
+No item in this queue is permission to add an error, metadata, lifecycle, or
+protocol-evidence field to an OBI operation. Any future core document-model
+proposal is a separate, advance design decision.
+
 ## Family matrix
 
-| Family | Gate 1 | Gates 2–4 | Gate 5 | Highest-priority remaining fidelity debt |
+| Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
-| OpenAPI | Passing: 4 scenarios | Joined source → synthesis → operation invocation passes in Go and TypeScript, including generic relay | Joined round trip passes; independent native-client comparator pending | Non-2xx SSE bodies are currently not captured; bounded oversized failure responses and Fetch header coalescing need explicit evidence semantics. |
-| gRPC | Passing: 3 scenarios | Separate synthesis corpus and relay tests pass; joined proof pending | Pending | Prove rich-status and binary metadata parity against real grpc-go/grpc-js peers; Go does not expose the original serialized `grpc-status-details-bin` as a whole, though every Any payload is preserved. |
-| Connect | Passing: 3 scenarios | Separate synthesis corpus exists; joined relay proof pending | Pending | Fetch may coalesce some repeated HTTP fields; adversarial malformed-envelope evidence and full-duplex native-peer parity remain. |
-| GraphQL | Passing: 3 scenarios | Separate synthesis/processor tests pass; joined proof pending | Pending | Add adversarial close-frame and connection-ack payload cases, and prove browser/runtime header parity. In-band GraphQL `errors`, legacy HTTP evidence, and protocol `error` payloads are preserved. |
-| MCP | Passing: 4 scenarios | Separate synthesis/processor tests and generic relay tests pass; joined proof pending | Pending | Add adversarial SSE failure and session-termination cases; response size remains a named SDK-bound exclusion. Complete `isError`, JSON-RPC, and exact HTTP evidence now share a typed preservation lane. |
-| Usage | Passing: 4 scenarios | Separate synthesis/processor tests and generic relay tests pass; joined proof pending | Pending | TypeScript's default executor still needs explicit bounded capture, and real cross-platform signal-name parity needs adversarial tests. Exit/signal, exact bytes, decode failure, and truncation facts now share a typed preservation lane. |
-| AsyncAPI | Pending | Separate synthesis/processor tests only | Pending | Audit each supported protocol cell independently: HTTP failure bytes, WebSocket close facts, broker reason codes/properties, acknowledgements, and subscription termination evidence. Synthesis exclusions must remain loud until cells are implemented. |
+| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture. | Joined in both SDKs. | Passes: application values and completion do not require HTTP evidence. | Artifact-coverage loop only; no known abstraction-boundary debt. |
+| AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Joined in both SDKs. | Passes for supported HTTP publish and WebSocket subscription cells. | Unsupported protocol/action cells remain explicit binding coverage exclusions. |
+| gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
+| Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
+| GraphQL | Revision-2 HTTP peers for aliases, transport failure, and partial data plus errors. | Joined in both SDKs. | Passes for query/mutation; native envelopes remain diagnostic. | Subscriptions remain an explicit revision-2 lifecycle exclusion. |
+| MCP | Scripted Streamable HTTP/JSON-RPC peers. | Joined in both SDKs. | Passes for structured application result and all unsuccessful-completion classes. | Targets without an application output contract remain explicit revision-2 exclusions. |
+| Usage | Controlled process runtimes plus native process integration suites. | Joined in both SDKs. | Passes for output values, exit/signal failure, and decode failure. | Artifact-coverage loop only; process evidence remains diagnostic. |
+| Operation Graph | Portable identity-law and execution corpus against nested operation invocations. | Not applicable: the graph composes operations already declared by its containing OBI and carries no standalone operation contract to synthesize. | Passes through direct-versus-wrapped identity cases in both SDKs. | Deliberately invocation-only; advertising standalone synthesis would require invented schemas. |
+
+There are 25 joined fidelity scenarios across the seven active brownfield
+synthesis families, plus the separate Operation Graph identity-law corpus for
+the eighth published binding family. This closes the project-wide
+abstraction-boundary proof for the currently declared coverage. It does
+**not** claim that every artifact in the wild is covered; coverage exclusions
+and implementation losses continue through the measured family development
+loop.
 
 ## Loop
 
-For the next pending family:
+For the next pending family or counterexample:
 
-1. inventory every native observation at the accepted protocol boundary;
-2. add adversarial corpus cases before changing implementation;
-3. run both SDK adapters and classify each failure as core-concept,
-   binding-specification, or implementation debt;
-4. change the narrowest layer that owns the loss;
-5. expose typed evidence, then prove in-process and frame relay;
-6. add the joined synthesis/differential gate;
-7. repeat until no counterexample remains, recording any deliberate coverage
-   exclusion rather than approximating it.
+1. state the protocol-independent application value and interaction behavior
+   the operation is meant to provide;
+2. inventory the native facts the binding must consume internally to provide
+   it;
+3. classify every observation as application contract, emergent interaction
+   behavior, or diagnostic evidence;
+4. add adversarial abstract-operation and concrete-binding cases before
+   changing implementation;
+5. run both SDK adapters and classify each failure as core concept,
+   binding-specification, synthesis, invoker, or SDK debt;
+6. change only the narrowest owning layer, using the minimum new semantics and
+   refusing instead of inventing;
+7. prove the joined protocol-blind round trip, then use native differentials
+   to diagnose any lower-layer mismatch;
+8. repeat until no counterexample remains, recording deliberate coverage
+   exclusions rather than approximating them.

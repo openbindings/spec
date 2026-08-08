@@ -2,13 +2,13 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
-  "description": "End-to-end gRPC invocation-fidelity scenarios. Response messages remain outputs, non-OK final statuses remain failure completions, and native status, rich details, and trailing metadata survive the abstraction.",
+  "description": "gRPC fidelity scenarios with separate abstract and diagnostic assertions. Response messages, partial outputs, and completion behavior form the operation proof; native status, rich details, and trailing metadata are lower-layer binding evidence.",
   "scenarios": [
     {
       "id": "GRPC-FI-01",
       "rules": ["OBI-B-02", "GRPC-P-06", "GRPC-P-07"],
       "section": "9.4",
-      "description": "A server-streaming RPC can emit values and then fail with a losslessly represented INTERNAL status, rich status detail, and multivalued trailing metadata.",
+      "description": "A server-streaming RPC emits an application value before unsuccessful completion; diagnostic assertions separately retain the INTERNAL status, rich detail, and multivalued trailing metadata.",
       "given": {
         "source": {
           "location": "grpcs://api.example:443",
@@ -39,11 +39,12 @@
           "assertions": [
             { "path": "/outputs", "equals": [{ "value": "first" }] },
             { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/category", "equals": "service" },
-            { "path": "/error/details/grpcStatus/code", "equals": 13 },
-            { "path": "/error/details/grpcStatus/message", "equals": "ledger corrupt" },
-            { "path": "/error/details/grpcStatus/details/0/typeUrl", "equals": "type.googleapis.com/demo.Failure" },
-            { "path": "/error/details/grpcStatus/details/0/valueBase64", "equals": "AP+AQQ==" },
+            { "path": "/error/message", "equals": "ledger corrupt" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/grpcStatus/code", "equals": 13 },
+            { "path": "/error/diagnostics/grpcStatus/message", "equals": "ledger corrupt" },
+            { "path": "/error/diagnostics/grpcStatus/details/0/typeUrl", "equals": "type.googleapis.com/demo.Failure" },
+            { "path": "/error/diagnostics/grpcStatus/details/0/valueBase64", "equals": "AP+AQQ==" },
             { "path": "/trailer/trace-bin", "equals": ["AP+AQQ=="] },
             { "path": "/trailer/x-attempt", "equals": ["2", "3"] }
           ]
@@ -54,7 +55,7 @@
       "id": "GRPC-FI-02",
       "rules": ["OBI-B-02", "GRPC-P-06"],
       "section": "9.4",
-      "description": "RESOURCE_EXHAUSTED retains its native code while the portable error classification marks the refusal retryable and side-effect free.",
+      "description": "RESOURCE_EXHAUSTED causes unsuccessful completion while optional diagnostics retain the native status without imposing portable retry or side-effect semantics.",
       "given": {
         "source": {
           "location": "grpcs://api.example:443",
@@ -73,11 +74,11 @@
           "phase": "completion",
           "assertions": [
             { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_UNAVAILABLE" },
-            { "path": "/error/category", "equals": "transient" },
-            { "path": "/error/effects", "equals": "none" },
-            { "path": "/error/details/grpcStatus/code", "equals": 8 },
-            { "path": "/error/details/grpcStatus/message", "equals": "quota exceeded" }
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/message", "equals": "quota exceeded" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/grpcStatus/code", "equals": 8 },
+            { "path": "/error/diagnostics/grpcStatus/message", "equals": "quota exceeded" }
           ]
         }
       ]
@@ -108,7 +109,6 @@
           "assertions": [
             { "path": "/outputs", "equals": [{ "ack": "valid" }] },
             { "path": "/error/code", "equals": "ERR_VALIDATION_FAILED" },
-            { "path": "/error/details", "absent": true },
             { "path": "/dispatch/cancelled", "equals": true }
           ]
         }

@@ -79,6 +79,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
 | [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
+| [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
 | [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
 | [`binding-specs/`](binding-specs/) | Binding specifications published by the project (e.g., `openbindings.openapi@1`) |
 | [`examples/`](examples/) | Worked example OBI documents |

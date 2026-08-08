@@ -2,15 +2,18 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.connect@1",
   "family": "connect",
-  "description": "End-to-end Connect invocation-fidelity scenarios. Successful message values stay outputs, while HTTP and END_STREAM failures retain their native error object, exact bytes, and metadata without retracting partial outputs.",
+  "description": "Connect fidelity scenarios with separate abstract and diagnostic assertions. Successful message values and partial-output/completion behavior form the operation proof; HTTP and END_STREAM objects, bytes, and metadata are lower-layer binding evidence.",
   "scenarios": [
     {
       "id": "CONN-FI-01",
-      "rules": ["OBI-B-02", "CONN-P-03", "CONN-P-06"],
+      "rules": ["OBI-B-02", "CONN-P-02", "CONN-P-05", "CONN-P-06"],
       "section": "9.3",
-      "description": "An error-shaped JSON value returned by a successful descriptorless unary RPC remains an ordinary output.",
+      "description": "An error-shaped protobuf application value returned by a successful unary RPC remains an ordinary output through synthesis and operation invocation.",
       "given": {
-        "source": { "location": "https://api.example" },
+        "source": {
+          "location": "https://api.example",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Error { string code = 1; } message Reply { Error error = 1; }"
+        },
         "binding": { "ref": "demo.Service/Get" },
         "invocation": { "inputPresent": true, "input": {} },
         "peer": {
@@ -36,7 +39,10 @@
       "section": "9.5",
       "description": "A unary Connect error preserves its parsed error object and exact HTTP response bytes instead of reducing the response to a portable code.",
       "given": {
-        "source": { "location": "https://api.example" },
+        "source": {
+          "location": "https://api.example",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Error { string code = 1; } message Reply { Error error = 1; }"
+        },
         "binding": { "ref": "demo.Service/Get" },
         "invocation": { "inputPresent": true, "input": {} },
         "peer": {
@@ -52,15 +58,16 @@
           "phase": "response",
           "assertions": [
             { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_AUTH_REQUIRED" },
-            { "path": "/error/category", "equals": "auth" },
-            { "path": "/error/details/httpResponse/status", "equals": 401 },
-            { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-401"] },
-            { "path": "/error/details/httpResponse/body/base64", "equals": "eyJjb2RlIjoidW5hdXRoZW50aWNhdGVkIiwibWVzc2FnZSI6InRva2VuIGV4cGlyZWQiLCJkZXRhaWxzIjpbeyJ0eXBlIjoiZGVtby5BdXRoIiwidmFsdWUiOiJBUCtBUVE9PSJ9XX0=" },
-            { "path": "/error/details/httpResponse/body/byteLength", "equals": 104 },
-            { "path": "/error/details/connect/error/code", "equals": "unauthenticated" },
-            { "path": "/error/details/connect/error/message", "equals": "token expired" },
-            { "path": "/error/details/connect/error/details/0/value", "equals": "AP+AQQ==" }
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/message", "equals": "token expired" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/httpResponse/status", "equals": 401 },
+            { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-401"] },
+            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "eyJjb2RlIjoidW5hdXRoZW50aWNhdGVkIiwibWVzc2FnZSI6InRva2VuIGV4cGlyZWQiLCJkZXRhaWxzIjpbeyJ0eXBlIjoiZGVtby5BdXRoIiwidmFsdWUiOiJBUCtBUVE9PSJ9XX0=" },
+            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 104 },
+            { "path": "/error/diagnostics/connect/error/code", "equals": "unauthenticated" },
+            { "path": "/error/diagnostics/connect/error/message", "equals": "token expired" },
+            { "path": "/error/diagnostics/connect/error/details/0/value", "equals": "AP+AQQ==" }
           ]
         }
       ]
@@ -91,13 +98,13 @@
           "phase": "completion",
           "assertions": [
             { "path": "/outputs", "equals": [{ "value": "first" }] },
-            { "path": "/error/code", "equals": "ERR_UNAVAILABLE" },
-            { "path": "/error/category", "equals": "transient" },
-            { "path": "/error/effects", "equals": "none" },
-            { "path": "/error/details/connect/endStream/error/code", "equals": "resource_exhausted" },
-            { "path": "/error/details/connect/endStream/error/details/0/type", "equals": "demo.Quota" },
-            { "path": "/error/details/connect/endStream/payload/base64", "equals": "eyJlcnJvciI6eyJjb2RlIjoicmVzb3VyY2VfZXhoYXVzdGVkIiwibWVzc2FnZSI6InF1b3RhIGV4Y2VlZGVkIiwiZGV0YWlscyI6W3sidHlwZSI6ImRlbW8uUXVvdGEiLCJ2YWx1ZSI6IkFRSUQifV19LCJtZXRhZGF0YSI6eyJ0cmFjZS1iaW4iOlsiQVArQVFRPT0iXSwieC1hdHRlbXB0IjpbIjIiLCIzIl19fQ==" },
-            { "path": "/error/details/connect/endStream/payload/byteLength", "equals": 175 },
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/message", "equals": "quota exceeded" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/connect/endStream/error/code", "equals": "resource_exhausted" },
+            { "path": "/error/diagnostics/connect/endStream/error/details/0/type", "equals": "demo.Quota" },
+            { "path": "/error/diagnostics/connect/endStream/payload/base64", "equals": "eyJlcnJvciI6eyJjb2RlIjoicmVzb3VyY2VfZXhoYXVzdGVkIiwibWVzc2FnZSI6InF1b3RhIGV4Y2VlZGVkIiwiZGV0YWlscyI6W3sidHlwZSI6ImRlbW8uUXVvdGEiLCJ2YWx1ZSI6IkFRSUQifV19LCJtZXRhZGF0YSI6eyJ0cmFjZS1iaW4iOlsiQVArQVFRPT0iXSwieC1hdHRlbXB0IjpbIjIiLCIzIl19fQ==" },
+            { "path": "/error/diagnostics/connect/endStream/payload/byteLength", "equals": 175 },
             { "path": "/trailer/trace-bin", "equals": ["AP+AQQ=="] },
             { "path": "/trailer/x-attempt", "equals": ["2", "3"] }
           ]

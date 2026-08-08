@@ -2,13 +2,13 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.usage@1",
   "family": "usage",
-  "description": "End-to-end Usage invocation-fidelity scenarios. Output-like error text remains a successful value when exit classification succeeds, while exit, signal, byte, decode, and truncation evidence survives unsuccessful completion.",
+  "description": "Usage fidelity scenarios with separate abstract and diagnostic assertions. Successful stdout values and completion behavior form the operation proof; exit, signal, byte, decode, and truncation evidence is a lower-layer process oracle.",
   "scenarios": [
     {
       "id": "USAGE-FI-01",
       "rules": ["OBI-B-02", "USAGE-P-05"],
       "section": "9.3",
-      "description": "Error-shaped stdout from an exit-zero process remains an output and binary stderr remains exact metadata.",
+      "description": "Error-shaped stdout from an exit-zero process remains an output; a diagnostic assertion separately proves exact binary stderr capture.",
       "given": {
         "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
         "binding": {},
@@ -44,11 +44,13 @@
         "assertions": [
           { "path": "/outputs", "equals": [] },
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/details/usage/process/exitCode", "equals": 7 },
-          { "path": "/error/details/usage/process/stdout/base64", "equals": "cGFydGlhbA==" },
-          { "path": "/error/details/usage/process/stdout/byteLength", "equals": 7 },
-          { "path": "/error/details/usage/process/stderr/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/details/usage/process/stderr/byteLength", "equals": 4 }
+          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/usage/process/exitCode", "equals": 7 },
+          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "cGFydGlhbA==" },
+          { "path": "/error/diagnostics/usage/process/stdout/byteLength", "equals": 7 },
+          { "path": "/error/diagnostics/usage/process/stderr/base64", "equals": "AP+AQQ==" },
+          { "path": "/error/diagnostics/usage/process/stderr/byteLength", "equals": 4 }
         ]
       }]
     },
@@ -68,10 +70,12 @@
         "phase": "completion",
         "assertions": [
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/details/usage/process/exitCode", "equals": -1 },
-          { "path": "/error/details/usage/process/signal", "equals": "SIGTERM" },
-          { "path": "/error/details/usage/process/stdout/base64", "equals": "c2lnbmFsLXBhcnRpYWw=" },
-          { "path": "/error/details/usage/process/stdout/truncated", "equals": true }
+          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/usage/process/exitCode", "equals": -1 },
+          { "path": "/error/diagnostics/usage/process/signal", "equals": "SIGTERM" },
+          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "c2lnbmFsLXBhcnRpYWw=" },
+          { "path": "/error/diagnostics/usage/process/stdout/truncated", "equals": true }
         ]
       }]
     },
@@ -92,9 +96,11 @@
         "assertions": [
           { "path": "/outputs", "equals": [] },
           { "path": "/error/code", "equals": "ERR_RESPONSE_ERROR" },
-          { "path": "/error/details/usage/process/exitCode", "equals": 0 },
-          { "path": "/error/details/usage/process/stdout/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/details/usage/process/stdout/byteLength", "equals": 4 }
+          { "path": "/error/message", "equals": "Invocation result could not be decoded" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/usage/process/exitCode", "equals": 0 },
+          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "AP+AQQ==" },
+          { "path": "/error/diagnostics/usage/process/stdout/byteLength", "equals": 4 }
         ]
       }]
     }

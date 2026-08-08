@@ -3,9 +3,9 @@
   "latest": {
     "asyncapi": "openbindings.asyncapi@1",
     "connect": "openbindings.connect@1",
-    "graphql": "openbindings.graphql@1",
+    "graphql": "openbindings.graphql@2",
     "grpc": "openbindings.grpc@1",
-    "mcp": "openbindings.mcp@1",
+    "mcp": "openbindings.mcp@2",
     "openapi": "openbindings.openapi@1",
     "operation-graph": "openbindings.operation-graph@1",
     "usage": "openbindings.usage@1"
@@ -51,6 +51,19 @@
       "rawUrl": "https://openbindings.com/raw/binding-specs/graphql/1.md"
     },
     {
+      "identifier": "openbindings.graphql@2",
+      "family": "graphql",
+      "revision": 2,
+      "publishedAt": "2026-08-08",
+      "coreRelease": "0.2.0",
+      "publication": "2026-08-08-graphql-abstraction-fidelity",
+      "publicationRecord": "binding-specs/releases/2026-08-08-graphql-abstraction-fidelity/publication.json",
+      "publicationRecordSha256": "01499b1b4900c66a72e958a5623cab4f233b0da12ea819da97abcc4d2aa4afc6",
+      "document": "binding-specs/releases/2026-08-08-graphql-abstraction-fidelity/root/binding-specs/graphql/openbindings.graphql.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/graphql/2",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/graphql/2.md"
+    },
+    {
       "identifier": "openbindings.grpc@1",
       "family": "grpc",
       "revision": 1,
@@ -75,6 +88,19 @@
       "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/mcp/openbindings.mcp.md",
       "canonicalUrl": "https://openbindings.com/binding-specs/mcp/1",
       "rawUrl": "https://openbindings.com/raw/binding-specs/mcp/1.md"
+    },
+    {
+      "identifier": "openbindings.mcp@2",
+      "family": "mcp",
+      "revision": 2,
+      "publishedAt": "2026-08-08",
+      "coreRelease": "0.2.0",
+      "publication": "2026-08-08-mcp-abstraction-fidelity",
+      "publicationRecord": "binding-specs/releases/2026-08-08-mcp-abstraction-fidelity/publication.json",
+      "publicationRecordSha256": "7d08452945bb68635cbaa2c583b05e71cec9619cc7853ad5dd964b92ddbc7f05",
+      "document": "binding-specs/releases/2026-08-08-mcp-abstraction-fidelity/root/binding-specs/mcp/openbindings.mcp.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/mcp/2",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/mcp/2.md"
     },
     {
       "identifier": "openbindings.openapi@1",

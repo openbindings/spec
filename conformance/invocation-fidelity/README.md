@@ -1,27 +1,60 @@
 # Invocation-fidelity corpus
 
-This corpus tests the project goal that a synthesized OBI remains as useful for
-invocation as the supported brownfield artifact from which it was produced.
-It is deliberately separate from the binding-specification P-rule corpus:
-published family prose remains the conformance authority, while these
-scenarios test the stronger end-to-end preservation floor described by the
-binding-specification authoring guidance and core OBI-B-02.
+This corpus tests the project goal that a synthesized OBI remains as useful
+for invoking and consuming an abstract operation as bespoke binding code for
+the supported brownfield source. The governing boundary is the informative
+[`ABSTRACTION-FIDELITY.md`](../../ABSTRACTION-FIDELITY.md): correct ordinary
+use must not require knowing which binding or protocol was selected.
 
-Each scenario runs the real family invoker against a scripted native peer and
-observes both ordinary outputs and unsuccessful completion. The normalized
-`error` record is the project binding-invoker presentation used by the
-reference SDKs; it is not a core error value and never enters an operation's
-`output`. Assertions under `error.details` prove that source-native evidence
-survives the implementation boundary. Separate frame tests prove that the same
-evidence survives the transport-neutral invoker frame representation. The
-All active-slice SDKs expose those records through typed failure-evidence
-accessors, so the test is about caller-usable evidence rather than an
-unreachable internal capture.
+It is deliberately separate from the binding-specification P-rule corpus.
+Published family prose remains the conformance authority; these scenarios
+exercise the joined source → synthesis → binding invocation → operation
+surface.
 
-The active vertical slices cover OpenAPI, gRPC, Connect, GraphQL, MCP, and Usage.
-Further slices add the native success, failure, partial-output, metadata,
-cancellation, and completion distinctions of every supported family. A family does not exit the
-loop merely because this binding-level gate passes: the project goal also
-requires a synthesis-to-operation-invocation round trip and differential
-comparison with a native client. The current state and remaining gates are
-tracked in [STATUS.md](./STATUS.md).
+## Two evidence layers
+
+The corpus keeps two kinds of evidence separate.
+
+1. **Abstract-operation evidence** observes caller-facing application values,
+   ordering, partial outputs, input closure, cancellation, and normal or
+   unsuccessful completion. It excludes protocol-shaped status, header,
+   trailer, framing, and byte assertions. This layer decides whether the
+   OpenBindings fidelity goal is met.
+2. **Concrete-binding evidence** compares the implementation with a native
+   client or scripted peer. It may assert exact statuses, metadata, frames, or
+   bytes to prove request construction, decoding, classification, and other
+   internal binding behavior. This is an implementation and diagnostic oracle;
+   equality here does not require those facts to cross the ordinary operation
+   boundary.
+
+An implementation may retain native evidence on an explicit diagnostic
+surface. Assertions under `error.diagnostics` and invocation diagnostics prove
+that lower-layer evidence remains available without making it ordinary
+operation data. `error.details` is different: it is reserved for
+interface-owned portable data or an opaque application-authored failure value
+identified by governing binding rules; it is never a native-evidence catchall.
+Frame-relay tests likewise validate an optional invoker interface rather than
+enlarge the OBI document model.
+
+The active slices cover the seven published families that accept a standalone
+brownfield source from which an application operation contract can be derived:
+OpenAPI, AsyncAPI, gRPC, Connect, GraphQL, MCP, and Usage. Every slice executes
+the joined source → synthesis → operation-invocation path in both reference
+SDKs. OpenAPI also runs an independent native-client differential; the other
+families use controlled protocol peers or process runtimes, with native
+integration suites supplying additional lower-layer evidence. Exact statuses,
+metadata, envelopes, frames, bytes, and process results are asserted only on
+those lower or diagnostic surfaces. The abstract assertions are application
+values, ordering, partial outputs, and completion behavior.
+
+The project also publishes `openbindings.operation-graph@1`. It is an
+invocation-only composition binding, not an eighth standalone synthesis
+source: a graph names operations in its containing OBI and deliberately does
+not redeclare their application input/output contracts. Inventing those
+contracts from the graph would violate the synthesis boundary. Its invocation
+fidelity is covered by the separate portable Operation Graph identity-law and
+execution corpus in both SDKs; it is not counted as a joined brownfield
+synthesis slice.
+
+The current state and remaining gates are tracked in
+[`STATUS.md`](STATUS.md).

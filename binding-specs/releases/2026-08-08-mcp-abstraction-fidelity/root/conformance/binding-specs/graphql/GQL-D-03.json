@@ -1,0 +1,185 @@
+{
+  "rule": "GQL-D-03",
+  "bindingSpec": "openbindings.graphql@1",
+  "section": "7",
+  "description": "`ref` is required, has a `query/`, `mutation/`, or `subscription/` prefix plus one exact GraphQL field name, and resolves through the schema's declared root type.",
+  "tests": [
+    {
+      "description": "query ref resolves through a non-canonical root type name",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "data": {
+                "__schema": {
+                  "queryType": { "name": "RootQuery" },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "RootQuery",
+                      "fields": [
+                        {
+                          "name": "viewer",
+                          "args": [],
+                          "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                          "isDeprecated": false
+                        }
+                      ]
+                    },
+                    { "kind": "SCALAR", "name": "String" }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "location-only source admits a grammar-valid subscription ref pending live resolution",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "updates": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "updates.api": {
+            "operation": "updates",
+            "source": "api",
+            "ref": "subscription/updates"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "ref is required because this family defines no whole-schema invocation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-03"]
+    },
+    {
+      "description": "operation-kind prefixes are exact lowercase tokens",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "Query/viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-03"]
+    },
+    {
+      "description": "field portion must be exactly one GraphQL Name",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql"
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/viewer/details"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-03"]
+    },
+    {
+      "description": "schema-backed resolution is case-sensitive",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "viewer": {} },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "data": {
+                "__schema": {
+                  "queryType": { "name": "RootQuery" },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "RootQuery",
+                      "fields": [
+                        {
+                          "name": "viewer",
+                          "args": [],
+                          "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                          "isDeprecated": false
+                        }
+                      ]
+                    },
+                    { "kind": "SCALAR", "name": "String" }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "viewer.api": {
+            "operation": "viewer",
+            "source": "api",
+            "ref": "query/Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GQL-D-03"]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "The lineage merge rule (element-wise MAX) is what keeps maxIterations sound across a merge node on a cycle. An each node cycles back into itself through a buffer (a merge node); the operation is a wildcard (always-more) mock, so only the per-lineage cap can stop the loop. The buffer must carry the each node's per-lineage iteration count across its flush without lowering it (the spec: a merge never lowers a count). If the merge instead took the element-wise MINIMUM (or otherwise dropped the count toward zero), the flushed event would re-enter the each node with a reset count, the cap would never be reached, and the loop would escape its bound and amplify without limit. The correct output is exactly three events; under the min-merge lineage-escape defect the output count blows up (running to the amplification backstop), so this fixture goes red against that defect. OG-EX-08 exercises the same rule but with a finite-response mock that stops the loop itself, so it cannot observe an unbounded escape; this wildcard variant can.",
+  "fixtures": [
+    {
+      "id": "OG-EX-38",
+      "name": "Merge node on a cycle must not lower the iteration count (wildcard mock)",
+      "section": "maxIterations and event lineage",
+      "description": "items.next is a wildcard mock: every invocation emits {tick:true}. step (each, maxIterations 3) emits to output and also through gate (a buffer with limit 1, a merge node) and unwrap back into itself. The buffer flushes each single event, carrying step's per-lineage count forward unchanged (element-wise max over a one-element batch). step therefore opens exactly three invocations (counts 1, 2, 3) before the fourth arrival is dropped by the cap, so the output is three {tick:true} events. If the merge lowered the count instead of preserving it, step's count would reset on every pass and the cap would never bite, so the loop would amplify without bound.",
+      "operations": {
+        "items.next": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "emit": [
+                {
+                  "tick": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "description": "A cycle that routes an each node's output through a buffer (a merge node) and back into it, bounded only by maxIterations.",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "step": {
+            "type": "each",
+            "operation": "items.next",
+            "maxIterations": 3
+          },
+          "gate": {
+            "type": "buffer",
+            "limit": 1
+          },
+          "unwrap": {
+            "type": "transform",
+            "transform": "$[0]"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "step"
+          },
+          {
+            "from": "step",
+            "to": "out"
+          },
+          {
+            "from": "step",
+            "to": "gate"
+          },
+          {
+            "from": "gate",
+            "to": "unwrap"
+          },
+          {
+            "from": "unwrap",
+            "to": "step"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "start": true
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "tick": true
+          },
+          {
+            "tick": true
+          },
+          {
+            "tick": true
+          }
+        ],
+        "ordering": "set"
+      }
+    }
+  ]
+}

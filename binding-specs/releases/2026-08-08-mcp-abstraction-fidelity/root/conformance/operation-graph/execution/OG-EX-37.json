@@ -1,0 +1,105 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "maxIterations as the SOLE loop terminator, over a wildcard (always-more) mock. A pagination loop whose operation always emits another page with a nextCursor, so nothing in the data ever stops the cycle: the each node's maxIterations is the only bound. This makes the exact iteration count observable, so an off-by-one in the cap check (>= relaxed to >) changes the count instead of silently passing. fetch is an each node with maxIterations 3; it feeds a collector buffer and, via a nextCursor filter, cycles back into itself. The buffer flushes at completion and a count transform reports how many pages were fetched: exactly 3. Under a >-instead-of->= bound the loop runs one extra iteration and the count becomes 4, so this fixture goes red against that defect (which the older finite-response corpus fixtures, whose mocks stopped the loop themselves, could not catch).",
+  "fixtures": [
+    {
+      "id": "OG-EX-37",
+      "name": "maxIterations is the sole loop terminator (wildcard mock)",
+      "section": "maxIterations and event lineage",
+      "description": "fetchPage is a wildcard mock: every invocation emits {page:'P', nextCursor:'c'}, so the nextCursor filter always passes and the cycle never terminates on its own. fetch (each, maxIterations 3) opens invocations for lineage counts 1, 2, 3; the fourth arrival exceeds the cap and is dropped. Each page is accumulated in the collect buffer, which flushes at completion; count reports $count over the batch. The output is exactly [{n:3}]. Because only the cap stops the loop, an off-by-one in the maxIterations check (>= weakened to >) produces {n:4} and fails this fixture.",
+      "operations": {
+        "fetchPage": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "emit": [
+                {
+                  "page": "P",
+                  "nextCursor": "c"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "description": "A bounded pagination cycle: an each node feeds a collector buffer and, through a nextCursor filter, cycles back into itself. maxIterations is the only thing that stops it.",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "fetch": {
+            "type": "each",
+            "operation": "fetchPage",
+            "maxIterations": 3
+          },
+          "more": {
+            "type": "filter",
+            "schema": {
+              "required": ["nextCursor"]
+            }
+          },
+          "prep": {
+            "type": "transform",
+            "transform": "$"
+          },
+          "collect": {
+            "type": "buffer"
+          },
+          "count": {
+            "type": "transform",
+            "transform": "{ \"n\": $count($) }"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "fetch"
+          },
+          {
+            "from": "fetch",
+            "to": "collect"
+          },
+          {
+            "from": "fetch",
+            "to": "more"
+          },
+          {
+            "from": "more",
+            "to": "prep"
+          },
+          {
+            "from": "prep",
+            "to": "fetch"
+          },
+          {
+            "from": "collect",
+            "to": "count"
+          },
+          {
+            "from": "count",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "start": true
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "n": 3
+          }
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

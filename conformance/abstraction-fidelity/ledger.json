@@ -1,0 +1,280 @@
+{
+  "format": "openbindings.abstraction-alignment-ledger@1",
+  "entries": [
+    {
+      "id": "AF-CORE-001",
+      "layer": "core",
+      "scope": "OBI-B-02 item 7 and failure-vocabulary scope",
+      "issue": "The completeness floor required every source-native unsuccessful observation to remain distinguishable, exceeding the protocol-blind operation boundary.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "core prose",
+      "action": "narrow",
+      "normativeImpact": "core-prose",
+      "status": "resolved",
+      "evidence": [
+        "../../openbindings.md",
+        "../../ABSTRACTION-FIDELITY.md"
+      ],
+      "notes": "The core now requires success classification, unsuccessful completion, and treatment of prior outputs; native evidence is binding-internal or diagnostic. It permits optional invocation interfaces to preserve opaque application-authored failure values without defining their shape. No document-model field changed."
+    },
+    {
+      "id": "AF-IFACE-001",
+      "layer": "interface",
+      "scope": "binding-invoker InvocationError",
+      "issue": "The interface requires a closed category taxonomy, retry effects, status mappings, and binding-native details as ordinary interoperable control data.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "binding-invoker interface",
+      "action": "narrow",
+      "normativeImpact": "interface-contract",
+      "status": "resolved",
+      "evidence": [
+        "../../../interfaces/binding-invoker/README.md",
+        "../../../interfaces/binding-invoker/0.1.json",
+        "../../../interfaces/operation-invoker/README.md",
+        "../../../interfaces/operation-invoker/0.1.json"
+      ],
+      "notes": "The interoperable error frame is now structural: code and message, portable interface-owned details where defined, opaque application-authored failure values where binding rules identify them, and an optional explicitly nonportable diagnostics lane. Closed categories, retry effects, and native status mappings were removed."
+    },
+    {
+      "id": "AF-BINDING-001",
+      "layer": "binding-specification",
+      "scope": "published family revision 1 specifications",
+      "issue": "Family specifications must be audited for raw failure-evidence requirements, protocol-shaped outputs, excessive synthesis policy, and missing minimum projection semantics.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "family binding specifications",
+      "action": "audit",
+      "normativeImpact": "binding-revision",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/graphql/openbindings.graphql.md",
+        "../../binding-specs/mcp/openbindings.mcp.md",
+        "../../binding-specs/usage/openbindings.usage.md"
+      ],
+      "notes": "OpenAPI, gRPC, Connect, AsyncAPI, immutable Usage revision 1, MCP revision 2, and GraphQL revision 2 use native facts internally without requiring protocol-shaped ordinary outputs. Immutable MCP and GraphQL revision 1 contracts remain implemented only as explicit compatibility revisions."
+    },
+    {
+      "id": "AF-SDK-001",
+      "layer": "sdk",
+      "scope": "Go and TypeScript ordinary invocation surfaces",
+      "issue": "Ordinary SDK failure and completion surfaces must remain usable without binding identity or native diagnostic structures.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "reference SDK invocation APIs",
+      "action": "audit",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../../../openbindings-go/invocation.go",
+        "../../../openbindings-go/http.go",
+        "../../../openbindings-ts/packages/sdk/src/invocation.ts",
+        "../../../openbindings-ts/packages/sdk/src/errcodes.ts"
+      ],
+      "notes": "The Go and TypeScript operation and binding invocation surfaces use structural unsuccessful completion, preserve prior outputs, and place binding-native evidence only on explicit diagnostics. Full Go and TypeScript suites and cross-language correspondence pass after the family revisions."
+    },
+    {
+      "id": "AF-CONFORMANCE-001",
+      "layer": "diagnostics",
+      "scope": "cross-family protocol-blind operation corpus",
+      "issue": "Native diagnostic scenarios exist, but each family still needs an explicit protocol-blind operation proof and equivalent cross-binding fixtures where meaningful.",
+      "classification": "governance",
+      "ordinaryCallerDependency": false,
+      "owner": "abstraction-fidelity conformance corpus",
+      "action": "implement",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../invocation-fidelity/README.md",
+        "../invocation-fidelity/STATUS.md",
+        "../invocation-fidelity/openapi.json",
+        "../invocation-fidelity/grpc.json",
+        "../invocation-fidelity/connect.json",
+        "../invocation-fidelity/graphql.json",
+        "../invocation-fidelity/mcp.json",
+        "../invocation-fidelity/usage.json",
+        "../invocation-fidelity/asyncapi.json"
+      ],
+      "notes": "All seven standalone brownfield synthesis families now run portable source-to-synthesis-to-operation-invocation fidelity scenarios in both reference SDKs. The eighth published binding family, Operation Graph, is invocation-only and is covered by its portable identity-law and execution corpus. The abstract assertions cover application values, partial outputs, and completion without native facts; controlled peers and native differential/integration suites retain the lower-layer oracle separately. Remaining family work is measured artifact coverage, not a known abstraction-boundary gap."
+    },
+    {
+      "id": "AF-BINDING-002",
+      "layer": "binding-specification",
+      "scope": "GraphQL application-value projection and nonterminal per-event errors",
+      "issue": "Revision 1 returns the complete GraphQL response envelope. Projecting the selected root-field value removes that protocol shape, but a subscription next payload may contain partial data plus GraphQL errors and the native stream may continue; the current value-stream plus single terminal-failure model cannot preserve all three facts simultaneously.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "GraphQL binding revision and invocation interface",
+      "action": "revise",
+      "normativeImpact": "binding-revision",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/graphql/openbindings.graphql.md",
+        "../../binding-specs/releases/2026-08-08-graphql-abstraction-fidelity/publication.json",
+        "../binding-specs/processor/graphql.json",
+        "../binding-specs/synthesis/graphql.json",
+        "../invocation-fidelity/graphql.json",
+        "../../../interfaces/binding-invoker/0.1.json"
+      ],
+      "notes": "Published revision 2 projects data[rootResponseKey], emits a selected partial application value before unsuccessful completion, retains GraphQL response evidence only diagnostically, and excludes subscriptions with stable coverage evidence rather than approximating their continuing item-error lifecycle. Revision 1 remains immutable and implemented only as compatibility. Go and TypeScript source, processor, synthesis, and invocation-fidelity suites cover the successor behavior. No core document-model or invocation-frame change was required."
+    },
+    {
+      "id": "AF-BINDING-003",
+      "layer": "binding-specification",
+      "scope": "MCP tool result correspondence",
+      "issue": "Revision 1 returns the complete MCP method-result object, including protocol result lanes, instead of projecting a tool's artifact-declared application result.",
+      "classification": "application-contract",
+      "ordinaryCallerDependency": true,
+      "owner": "MCP binding revision and synthesizers",
+      "action": "revise",
+      "normativeImpact": "binding-revision",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/mcp/openbindings.mcp.md",
+        "../../binding-specs/releases/2026-08-08-mcp-abstraction-fidelity/publication.json",
+        "../binding-specs/processor/mcp.json",
+        "../binding-specs/synthesis/mcp.json",
+        "../invocation-fidelity/mcp.json"
+      ],
+      "notes": "Published revision 2 projects conforming structuredContent against the listed outputSchema, excludes targets lacking an application output contract, never solicits progress, and keeps MCP result and transport facts diagnostic. Revision 1 remains immutable and implemented only as an explicit compatibility revision. Go and TypeScript portable processor, synthesis, and invocation-fidelity suites cover the successor behavior. No core or OBI document-model change was required."
+    },
+    {
+      "id": "AF-BINDING-004",
+      "layer": "binding-specification",
+      "scope": "Usage unsuccessful-completion evidence",
+      "issue": "The mutable Usage revision-1 mirror had drifted into requiring exit, signal, stdout, and stderr evidence even though the immutable published text leaves failure presentation to the consumer.",
+      "classification": "diagnostic",
+      "ordinaryCallerDependency": false,
+      "owner": "Usage binding revision",
+      "action": "remove",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/usage/openbindings.usage.md"
+      ],
+      "notes": "The mutable mirror is restored to the immutable publication exactly. Implementations retain process evidence only in optional diagnostics. No new binding revision is necessary."
+    },
+    {
+      "id": "AF-SDK-002",
+      "layer": "sdk",
+      "scope": "leading/trailing/per-output native metadata on ordinary invocation handles",
+      "issue": "The in-process SDK handles expose header and trailer maps directly even though the wire interfaces omit them and ordinary protocol-blind callers must not depend on native metadata.",
+      "classification": "diagnostic",
+      "ordinaryCallerDependency": true,
+      "owner": "reference SDK invocation APIs",
+      "action": "relocate",
+      "normativeImpact": "interface-contract",
+      "status": "resolved",
+      "evidence": [
+        "../../../openbindings-go/invocation.go",
+        "../../../openbindings-ts/packages/sdk/src/invocation.ts",
+        "../../../interfaces/binding-invoker/0.1.json"
+      ],
+      "notes": "Both SDKs now remove native metadata from the ordinary Invocation contract and expose it only through an explicitly named diagnostics view. Binding-facing setters remain internal implementation surface. No OBI document-model or invoker-frame field was added."
+    },
+    {
+      "id": "AF-IFACE-002",
+      "layer": "interface",
+      "scope": "application-authored values on unsuccessful completion",
+      "issue": "Restricting InvocationError.details to interface-owned codes would erase a failure value deliberately authored by an application-level binding source, including an Operation Graph event sent to an error exit.",
+      "classification": "application-contract",
+      "ordinaryCallerDependency": true,
+      "owner": "binding- and operation-invoker interfaces",
+      "action": "retain",
+      "normativeImpact": "interface-contract",
+      "status": "resolved",
+      "evidence": [
+        "../../../interfaces/binding-invoker/README.md",
+        "../../../interfaces/binding-invoker/0.1.json",
+        "../../../interfaces/operation-invoker/0.1.json",
+        "../../binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "notes": "InvocationError.details may carry an opaque JSON application failure value only when the governing binding rules identify it as application-authored. This preserves the value without a universal failure vocabulary or OBI schema member. Raw protocol and implementation evidence remains diagnostics. No OBI document-model field changed."
+    },
+    {
+      "id": "AF-SDK-003",
+      "layer": "sdk",
+      "scope": "ob operation-invocation projection and Usage JSON decoding",
+      "issue": "The default CLI JSON result exposed the selected binding and native trailers, erased outputs emitted before a later failure, and placed native output evidence in ordinary error details during validation and Usage JSON decoding.",
+      "classification": "mixed",
+      "ordinaryCallerDependency": true,
+      "owner": "ob invocation projection and Go Usage hooks",
+      "action": "relocate",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../../../ob/internal/cmd/operation.go",
+        "../../../ob/internal/app/invoke.go",
+        "../../../openbindings-go/formats/usage/hooktable.go",
+        "../../../openbindings-go/operation_invoker.go"
+      ],
+      "notes": "Default projections now preserve all prior outputs and abstract unsuccessful completion without binding identity or native metadata. Explicit --diagnostics exposes the opt-in evidence. Validation and decoder evidence is diagnostic rather than portable details."
+    },
+    {
+      "id": "AF-SYNTH-001",
+      "layer": "synthesis",
+      "scope": "Operation Graph standalone source synthesis",
+      "issue": "The project publishes eight binding families but only seven are standalone brownfield synthesis sources. An Operation Graph names operations in its containing OBI and does not redeclare their application contracts, so treating the graph alone as synthesizable would require invented input and output schemas.",
+      "classification": "unsupported-intent",
+      "ordinaryCallerDependency": false,
+      "owner": "synthesizer capability inventory and conformance reporting",
+      "action": "refuse",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/operation-graph/openbindings.operation-graph.md",
+        "../../../openbindings-go/formats/operationgraph/README.md",
+        "../../../openbindings-ts/packages/operationgraph/README.md",
+        "../operation-graph"
+      ],
+      "notes": "Operation Graph remains fully invokable when an OBI supplies the composed operation contract and binding. Neither reference synthesizer advertises the family. Both SDKs run the portable identity-law and execution corpus, which is the correct operation-level fidelity proof for this invocation-only meta-binding."
+    },
+    {
+      "id": "AF-SDK-004",
+      "layer": "sdk",
+      "scope": "operation workbench unsuccessful-completion presentation",
+      "issue": "The browser workbench retained the removed closed category/effects model, branched ordinary copy on that classification, and preferred an HTTP body taken from error details over the portable unsuccessful-completion message.",
+      "classification": "sdk-policy",
+      "ordinaryCallerDependency": true,
+      "owner": "OpenBindings Elements operation workbench and embedded ob start bundle",
+      "action": "remove",
+      "normativeImpact": "none",
+      "status": "resolved",
+      "evidence": [
+        "../../../elements/packages/operation-workbench/src/frames.ts",
+        "../../../elements/packages/operation-workbench/src/index.ts",
+        "../../../elements/apps/ob-start-workbench/src/main.ts",
+        "../../../ob/internal/server/workbench/dist/assets/workbench.js"
+      ],
+      "notes": "The workbench now consumes the structural code/message/details/diagnostics record, uses a small non-normative map only for codes it understands, presents unknown codes generically with their supplied message, and never depends on raw protocol evidence. The canonical operation-invoker requirement was resynchronized and the embedded ob start bundle rebuilt."
+    },
+    {
+      "id": "AF-SDK-005",
+      "layer": "sdk",
+      "scope": "ordinary InvocationError message boundary",
+      "issue": "Several raw HTTP and process failures correctly stored native evidence in diagnostics but repeated status lines, protocol wrappers, stderr, or hook provenance in the ordinary human-readable message, revealing the selected binding through a nominally abstract field.",
+      "classification": "binding-internal",
+      "ordinaryCallerDependency": true,
+      "owner": "reference binding invokers and invocation hook relay",
+      "action": "relocate",
+      "normativeImpact": "interface-contract",
+      "status": "resolved",
+      "evidence": [
+        "../../../interfaces/binding-invoker/README.md",
+        "../../../openbindings-go/http.go",
+        "../../../openbindings-go/hooks.go",
+        "../../../openbindings-go/formats/grpc/invoke.go",
+        "../../../openbindings-go/formats/usage/invoke_binding.go",
+        "../../../openbindings-ts/packages/openapi/src/invoke.ts",
+        "../../../openbindings-ts/packages/asyncapi/src/invoke.ts",
+        "../../../openbindings-ts/packages/connect/src/index.ts",
+        "../../../openbindings-ts/packages/graphql/src/invoke.ts",
+        "../../../openbindings-ts/packages/mcp/src/invoke.ts",
+        "../../../openbindings-ts/packages/usage/src/index.ts",
+        "../invocation-fidelity"
+      ],
+      "notes": "Protocol-only outcomes now use protocol-independent ordinary messages while native facts remain diagnostic. Messages deliberately authored by the application layer, including GraphQL execution errors, gRPC status descriptions, Connect error messages, and MCP tool or JSON-RPC messages, remain visible without their protocol wrapper. Portable fidelity scenarios assert both sides of the boundary."
+    }
+  ]
+}

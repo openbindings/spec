@@ -1,0 +1,908 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@1",
+  "bindingSpec": "openbindings.openapi@1",
+  "family": "openapi",
+  "description": "Portable processor scenarios for OpenAPI decisions sharpened during the 0.2.0 review. Configuration is named semantically; adapters normalize HTTP observations.",
+  "scenarios": [
+    {
+      "id": "OAPI-PS-01",
+      "rules": ["OAPI-P-01"],
+      "section": "3",
+      "description": "A later patch-looking OpenAPI edition is refused at load instead of accepted by version-line inference.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.3",
+            "info": { "title": "Future", "version": "1" },
+            "paths": {}
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-02",
+      "rules": ["OAPI-P-02"],
+      "section": "9.1",
+      "description": "A scalar query parameter uses the OpenAPI-declared query location and serialization rather than becoming a body field.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Search", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/search": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "limit",
+                      "in": "query",
+                      "schema": { "type": "integer" }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": { "application/json": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1search/get" },
+        "invocation": { "inputPresent": true, "input": { "limit": 2 } },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "application/json" },
+          "body": "[]"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/method", "equals": "GET" },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/search?limit=2"
+            },
+            { "path": "/dispatch/body", "absent": true },
+            { "path": "/dispatch/headers/Content-Type", "absent": true },
+            { "path": "/outputs", "equals": [[]] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-03",
+      "rules": ["OAPI-P-03"],
+      "section": "9.1",
+      "description": "Same-named path and query parameters remain distinct upstream values; the flattened boundary refuses rather than duplicating one field.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Collision", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items/{id}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "path",
+                      "required": true,
+                      "schema": { "type": "string" }
+                    },
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "schema": { "type": "string" }
+                    }
+                  ],
+                  "responses": { "200": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items~1{id}/get" },
+        "invocation": { "inputPresent": true, "input": { "id": "x" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-04",
+      "rules": ["OAPI-P-04"],
+      "section": "9.2",
+      "description": "Two declared JSON-family request media are preserved as alternatives; the corpus lists both without preference.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Media", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": { "schema": { "type": "object" } },
+                      "application/vnd.example+json": {
+                        "schema": { "type": "object" }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": { "inputPresent": true, "input": { "name": "A" } },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "application/json selected",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            { "path": "/outputs", "equals": [] }
+          ]
+        },
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "vendor +json selected",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.example+json"
+            },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-05",
+      "rules": ["OAPI-P-04"],
+      "section": "9.2",
+      "description": "An operation with no concrete success-response media omits Accept instead of inventing application/json.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "No media", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/ping": {
+                "get": { "responses": { "204": { "description": "empty" } } }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1ping/get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/headers/Accept", "absent": true },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-06",
+      "rules": ["OAPI-P-06", "OAPI-P-07", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "A 201 response uses the default declaration for response media/decode but remains successful because classification is independently 2xx.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Default response", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "responses": {
+                    "default": {
+                      "description": "any",
+                      "content": { "text/plain": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 201,
+          "headers": { "Content-Type": "text/plain; charset=utf-8" },
+          "body": "made"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/headers/Accept", "equals": "text/plain" },
+            { "path": "/outputs", "equals": ["made"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-07",
+      "rules": ["OAPI-P-06", "OAPI-P-08"],
+      "section": "9.5",
+      "description": "The same default declaration may describe a 404 body but never upgrades that non-2xx status into success.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Default failure", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "default": {
+                      "description": "any",
+                      "content": { "application/json": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 404,
+          "headers": { "Content-Type": "application/json" },
+          "body": "{\"error\":\"missing\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [{ "path": "/outputs", "equals": [] }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-08",
+      "rules": ["OAPI-P-05"],
+      "section": "9.3",
+      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Servers", "version": "1" },
+            "servers": [
+              { "url": "https://a.example" },
+              { "url": "https://b.example" }
+            ],
+            "paths": {
+              "/ping": {
+                "get": { "responses": { "204": { "description": "ok" } } }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1ping/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-09",
+      "rules": ["OAPI-P-09", "OAPI-P-10"],
+      "section": "9.6",
+      "description": "A header credential colliding with an effective header parameter is refused even when caller input omits the parameter; one artifact declaration never silently supplies the other.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Security", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [{ "key": [] }],
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "schema": { "type": "string" }
+                    }
+                  ],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "key": { "type": "apiKey", "in": "header", "name": "X-Key" }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "key": "credential" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-12",
+      "rules": ["OAPI-P-09", "OAPI-P-10"],
+      "section": "9.6",
+      "description": "An API-key credential targeting processor-owned Accept cannot replace response-media negotiation and is refused before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Security framing", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [{ "key": [] }],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": { "application/json": {} }
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "key": { "type": "apiKey", "in": "header", "name": "Accept" }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "key": "credential" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-10",
+      "rules": ["OAPI-P-03", "OAPI-P-04"],
+      "section": "9.1",
+      "description": "A request-body schema reached through $ref and allOf is resolved before flattening; its declared property becomes a body field rather than a synthetic body wrapper.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Resolved body", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/pets": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": { "$ref": "#/components/schemas/Pet" }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            },
+            "components": {
+              "schemas": {
+                "Named": {
+                  "type": "object",
+                  "properties": { "name": { "type": "string" } }
+                },
+                "Pet": { "allOf": [{ "$ref": "#/components/schemas/Named" }] }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1pets/post" },
+        "invocation": { "inputPresent": true, "input": { "name": "A" } },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            { "path": "/dispatch/body", "equals": { "name": "A" } },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-11",
+      "rules": ["OAPI-P-06", "OAPI-P-07"],
+      "section": "9.4",
+      "description": "A media type declared for a different success status cannot govern the actual response.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Status media", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/events": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "snapshot",
+                      "content": { "application/json": {} }
+                    },
+                    "201": {
+                      "description": "stream",
+                      "content": { "text/event-stream": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1events/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "text/event-stream" },
+          "body": "data: wrong-status-media\n\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [{ "path": "/outputs", "equals": [] }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-13",
+      "rules": ["OAPI-P-03", "OAPI-P-04"],
+      "section": "9.1",
+      "description": "Request-body flattening uses each Media Type Object's own schema: a parameter-colliding candidate is excluded without poisoning a distinct non-colliding artifact alternative.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Per-media schemas", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "token",
+                      "in": "header",
+                      "schema": { "type": "string" }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": { "token": { "type": "string" } }
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": { "payload": { "type": "string" } }
+                        }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "token": "credential", "payload": "value" }
+        },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.safe+json"
+            },
+            { "path": "/dispatch/headers/token", "equals": "credential" },
+            { "path": "/dispatch/body", "equals": { "payload": "value" } },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-14",
+      "rules": ["OAPI-P-03"],
+      "section": "9.1",
+      "description": "An OAS header parameter named Authorization is ignored by the artifact's own rule: it creates neither a required input nor a wire header.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Ignored header parameter", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/ping": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Authorization",
+                      "in": "header",
+                      "required": true,
+                      "schema": { "type": "string" }
+                    }
+                  ],
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1ping/get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/headers/Authorization", "absent": true },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-15",
+      "rules": ["OAPI-P-03"],
+      "section": "9.1",
+      "description": "Two OAS-distinct header parameters that differ only by case collide on HTTP's case-insensitive field channel and make the flattened binding unresolvable.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Header case collision", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "schema": { "type": "string" }
+                    },
+                    {
+                      "name": "x-key",
+                      "in": "header",
+                      "schema": { "type": "string" }
+                    }
+                  ],
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/get" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "X-Key": "one", "x-key": "two" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-16",
+      "rules": ["OAPI-P-04", "OAPI-P-07"],
+      "section": "9.2",
+      "description": "Two content-map keys that differ textually but denote the same parsed media type are a normalized collision, never first-key selection.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Normalized media collision", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": { "type": "object" }
+                      },
+                      "Application/JSON;charset=\"utf-8\"": {
+                        "schema": { "type": "object" }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "done" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": { "inputPresent": true, "input": { "name": "A" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-17",
+      "rules": ["OAPI-P-06", "OAPI-P-07"],
+      "section": "9.2",
+      "description": "A response media declaration with matching parameters outranks its unparameterized sibling while additional actual parameters remain admissible.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Most-specific media", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "application/json": {},
+                        "application/json; profile=full": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "Application/JSON; charset=utf-8; profile=full"
+          },
+          "body": "{\"id\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/response/governingMedia",
+              "equals": "application/json; profile=full"
+            },
+            { "path": "/outputs", "equals": [{ "id": 1 }] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-18",
+      "rules": ["OAPI-P-06", "OAPI-P-07"],
+      "section": "9.2",
+      "description": "Two distinct response declarations tying at the greatest matching parameter specificity are a protocol error rather than content-map order precedence.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Ambiguous media", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "application/json; profile=full": {},
+                        "application/json; charset=utf-8": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json; profile=full; charset=utf-8"
+          },
+          "body": "{\"id\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [{ "path": "/outputs", "equals": [] }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-19",
+      "rules": ["OAPI-P-08"],
+      "section": "9.4",
+      "description": "A 303 response is not followed by rewriting the artifact-bound POST to GET; it remains the final non-2xx failure response.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Redirect semantics", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/tasks": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": { "id": { "type": "integer" } },
+                          "required": ["id"]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": { "description": "accepted" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1tasks/post" },
+        "invocation": { "inputPresent": true, "input": { "id": 1 } },
+        "peer": {
+          "status": 303,
+          "headers": { "Location": "https://other.example/tasks" },
+          "body": ""
+        },
+        "runtime": { "redirectPolicy": "ordinary-user-agent" }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/dispatches/0/method", "equals": "POST" },
+            { "path": "/dispatches/1", "absent": true },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-20",
+      "rules": ["OAPI-P-01"],
+      "section": "3",
+      "description": "The first patch-looking edition beyond the accepted OpenAPI 3.0 set is refused rather than inferred compatible.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.5",
+            "info": { "title": "Future patch", "version": "1" },
+            "paths": {}
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    }
+  ]
+}

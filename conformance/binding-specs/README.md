@@ -1,18 +1,18 @@
 # Binding-specification conformance subcorpus
 
 Source fixtures (D-rules) and portable processor scenarios (P-rules) for the
-seven published artifact/protocol binding specifications, keyed to each family's specification under
+seven standalone brownfield synthesis binding specifications, keyed to each family's specification under
 [`binding-specs/`](../../binding-specs/):
 
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
 | openapi  | `openbindings.openapi@1`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
-| mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..08      |
+| mcp      | `openbindings.mcp@2`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
 | asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
-| graphql  | `openbindings.graphql@1`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
+| graphql  | `openbindings.graphql@2`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
 
 This is a per-family subcorpus, governed by the family binding
 specifications, not by the core OBI-D / OBI-T rules. It lives alongside the
@@ -77,7 +77,7 @@ Two boundaries keep the verdicts honest:
 D-rules bind documents; each family's P-rules bind processors (wire
 behavior, configuration points, classification). The rule-keyed D fixture
 format remains document-only. A separate portable processor-scenario format
-under `processor/` covers all seven published artifact/protocol families. Where a
+under `processor/` covers all seven standalone brownfield synthesis families. Where a
 family attributes a constraint to a P-rule (the YAML
 grammar pin and exact `openapi`/`asyncapi` edition discrimination under
 OAPI-P-01/ASYNC-P-01, gRPC's bound-closure schema range under GRPC-P-03),
@@ -163,7 +163,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
 (`invalid` source units do not count as upstream-valid). The twenty-three
-scenarios exercise all seven published artifact/protocol families and mix
+scenarios exercise all seven standalone brownfield synthesis families and mix
 faithful targets with artifact alternatives, binding-spec exclusions, invalid
 source units, and required whole-source refusals. This corpus is designed to
 grow with newly discovered upstream edge cases; it is neither a crawler corpus
@@ -286,5 +286,10 @@ newly published rule) following the format above, then run
 `node scripts/verify-binding-specs.mjs`. Keep embedded artifacts minimal
 and legible; embed content whenever a test's verdict depends on resolution.
 
-The corpus is currently aligned with the revision-1 texts of all seven
-identifiers, published with core 0.2.0.
+The corpus is currently aligned with each family's latest published text:
+revision 1 for Usage, OpenAPI, gRPC, Connect, and AsyncAPI, and revision 2 for
+GraphQL and MCP, under core 0.2.0 semantics. Operation Graph is the eighth
+published binding family; its invocation-only composition semantics use the
+separate [`operation-graph/`](../operation-graph/) corpus because the graph's
+operation contracts live in the containing OBI rather than a standalone
+synthesizable source.

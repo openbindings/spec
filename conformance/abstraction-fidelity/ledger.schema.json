@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/abstraction-fidelity/ledger.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "entries"],
+  "properties": {
+    "format": { "const": "openbindings.abstraction-alignment-ledger@1" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "layer",
+          "scope",
+          "issue",
+          "classification",
+          "ordinaryCallerDependency",
+          "owner",
+          "action",
+          "normativeImpact",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^AF-[A-Z]+-[0-9]{3}$" },
+          "layer": {
+            "enum": [
+              "core",
+              "interface",
+              "binding-specification",
+              "synthesis",
+              "sdk",
+              "diagnostics",
+              "documentation"
+            ]
+          },
+          "scope": { "type": "string", "minLength": 1 },
+          "issue": { "type": "string", "minLength": 1 },
+          "classification": {
+            "enum": [
+              "application-contract",
+              "abstract-interaction",
+              "binding-internal",
+              "diagnostic",
+              "sdk-policy",
+              "unsupported-intent",
+              "mixed",
+              "governance"
+            ]
+          },
+          "ordinaryCallerDependency": { "type": "boolean" },
+          "owner": { "type": "string", "minLength": 1 },
+          "action": {
+            "enum": [
+              "retain",
+              "narrow",
+              "relocate",
+              "remove",
+              "implement",
+              "refuse",
+              "revise",
+              "audit"
+            ]
+          },
+          "normativeImpact": {
+            "enum": [
+              "none",
+              "core-prose",
+              "core-model",
+              "interface-contract",
+              "binding-revision"
+            ]
+          },
+          "status": {
+            "enum": [
+              "open",
+              "in-progress",
+              "resolved",
+              "accepted-diagnostic",
+              "excluded"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "notes": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

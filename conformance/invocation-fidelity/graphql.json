@@ -1,14 +1,14 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.graphql@1",
+  "bindingSpec": "openbindings.graphql@2",
   "family": "graphql",
-  "description": "End-to-end GraphQL fidelity scenarios. GraphQL execution-result errors remain in-band outputs, while legacy HTTP and graphql-transport-ws failures retain their native evidence.",
+  "description": "GraphQL revision-2 fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and diagnostic-only native evidence.",
   "scenarios": [
     {
       "id": "GQL-FI-01",
       "rules": ["OBI-B-02", "GQL-P-03"],
-      "section": "9.3",
-      "description": "A well-formed application/graphql-response+json error result remains an output even at HTTP 400.",
+      "section": "8.3",
+      "description": "A successful aliased query emits the selected root application value alone, without a GraphQL response envelope.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -21,19 +21,19 @@
           } } }
         },
         "binding": { "ref": "query/viewer" },
-        "configuration": { "document": { "source": "query { viewer }" } },
+        "configuration": { "document": { "source": "query { person: viewer }" } },
         "invocation": { "inputPresent": false },
         "peer": {
-          "status": 400,
+          "status": 200,
           "contentType": "application/graphql-response+json",
-          "body": { "errors": [{ "message": "request rejected", "extensions": { "code": "BAD_REQUEST" } }] }
+          "body": { "data": { "person": "Ada" }, "extensions": { "trace": "success-native-only" } }
         }
       },
       "expected": [{
         "disposition": "complete",
         "phase": "completion",
         "assertions": [
-          { "path": "/outputs", "equals": [{ "errors": [{ "message": "request rejected", "extensions": { "code": "BAD_REQUEST" } }] }] },
+          { "path": "/outputs", "equals": ["Ada"] },
           { "path": "/error", "absent": true }
         ]
       }]
@@ -41,8 +41,8 @@
     {
       "id": "GQL-FI-02",
       "rules": ["OBI-B-02", "GQL-P-03"],
-      "section": "9.3",
-      "description": "An untrusted legacy application/json 500 remains a failure and preserves exact non-UTF-8 response bytes and headers.",
+      "section": "8.4",
+      "description": "An untrusted legacy application/json 500 remains structural failure and preserves exact non-UTF-8 transport evidence only diagnostically.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -70,52 +70,55 @@
         "assertions": [
           { "path": "/outputs", "equals": [] },
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/category", "equals": "service" },
-          { "path": "/error/details/httpResponse/status", "equals": 500 },
-          { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-500"] },
-          { "path": "/error/details/httpResponse/body/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/details/httpResponse/body/byteLength", "equals": 4 },
-          { "path": "/error/details/graphql/mediaType", "equals": "application/json" }
+          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/httpResponse/status", "equals": 500 },
+          { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-500"] },
+          { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" },
+          { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 4 },
+          { "path": "/error/diagnostics/graphql/mediaType", "equals": "application/json" }
         ]
       }]
     },
     {
       "id": "GQL-FI-03",
-      "rules": ["OBI-B-02", "GQL-P-03", "GQL-P-04"],
-      "section": "9.3",
-      "description": "A subscription next payload containing GraphQL errors remains an output; a later protocol error payload terminates the stream without losing either object.",
+      "rules": ["OBI-B-02", "GQL-P-03"],
+      "section": "8.4",
+      "description": "A trusted GraphQL response with partial root data emits that application value before unsuccessful completion; errors and extensions remain diagnostic.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
           "content": { "data": { "__schema": {
-            "queryType": null, "mutationType": null, "subscriptionType": { "name": "RootSubscription" },
+            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
             "types": [
-              { "kind": "OBJECT", "name": "RootSubscription", "fields": [{ "name": "updates", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
+              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
               { "kind": "SCALAR", "name": "String" }
             ]
           } } }
         },
-        "binding": { "ref": "subscription/updates" },
-        "configuration": {
-          "document": { "source": "subscription { updates }" },
-          "subscriptionTarget": "wss://api.example.test/graphql"
-        },
+        "binding": { "ref": "query/viewer" },
+        "configuration": { "document": { "source": "query { person: viewer }" } },
         "invocation": { "inputPresent": false },
-        "peer": { "messages": [
-          { "type": "connection_ack" },
-          { "type": "next", "payload": { "errors": [{ "message": "field warning", "extensions": { "severity": "warning" } }] } },
-          { "type": "error", "payload": [{ "message": "subscription rejected", "extensions": { "code": "FORBIDDEN" } }] }
-        ] }
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": { "person": "Ada" },
+            "errors": [{ "message": "nested field unavailable", "extensions": { "code": "PARTIAL" } }],
+            "extensions": { "trace": "gql-fi-03" }
+          }
+        }
       },
       "expected": [{
         "disposition": "error",
         "phase": "completion",
         "assertions": [
-          { "path": "/outputs", "equals": [{ "errors": [{ "message": "field warning", "extensions": { "severity": "warning" } }] }] },
+          { "path": "/outputs", "equals": ["Ada"] },
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/details/graphqlTransportWs/type", "equals": "error" },
-          { "path": "/error/details/graphqlTransportWs/payload/0/message", "equals": "subscription rejected" },
-          { "path": "/error/details/graphqlTransportWs/payload/0/extensions/code", "equals": "FORBIDDEN" }
+          { "path": "/error/message", "equals": "nested field unavailable" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/graphql/response/errors/0/extensions/code", "equals": "PARTIAL" },
+          { "path": "/error/diagnostics/graphql/response/extensions/trace", "equals": "gql-fi-03" }
         ]
       }]
     }

@@ -1,18 +1,18 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.mcp@1",
+  "bindingSpec": "openbindings.mcp@2",
   "family": "mcp",
-  "description": "End-to-end MCP invocation-fidelity scenarios. Successful error-shaped result values remain outputs, while isError results, JSON-RPC errors, and Streamable HTTP failures retain their complete source-native evidence.",
+  "description": "MCP revision-2 fidelity scenarios separate application structuredContent from optional native diagnostics.",
   "scenarios": [
     {
       "id": "MCP-FI-01",
-      "rules": ["OBI-B-02", "MCP-P-05", "MCP-P-06"],
-      "section": "9.4",
-      "description": "A successful tool result with an error-shaped structuredContent value and explicit isError false remains an ordinary output.",
+      "rules": ["OBI-B-02", "MCP-P-04", "MCP-P-06"],
+      "section": "9.2",
+      "description": "A successful error-shaped application object remains an ordinary output without its MCP result wrapper.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "lookup", "inputSchema": { "type": "object" } }] }
+          "content": { "tools": [{ "name": "lookup", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object", "properties": { "error": { "type": "object" } }, "required": ["error"] } }] }
         },
         "binding": { "ref": "tools/lookup" },
         "invocation": { "inputPresent": true, "input": {} },
@@ -29,10 +29,11 @@
         "disposition": "complete",
         "phase": "completion",
         "assertions": [
-          { "path": "/outputs/0/structuredContent/error/code", "equals": "NOT_FOUND" },
-          { "path": "/outputs/0/structuredContent/error/retryable", "equals": false },
-          { "path": "/outputs/0/isError", "equals": false },
-          { "path": "/outputs/0/_meta/trace", "equals": "trace-success" },
+          { "path": "/outputs/0/error/code", "equals": "NOT_FOUND" },
+          { "path": "/outputs/0/error/retryable", "equals": false },
+          { "path": "/outputs/0/content", "absent": true },
+          { "path": "/outputs/0/isError", "absent": true },
+          { "path": "/outputs/0/_meta", "absent": true },
           { "path": "/error", "absent": true }
         ]
       }]
@@ -40,12 +41,12 @@
     {
       "id": "MCP-FI-02",
       "rules": ["OBI-B-02", "MCP-P-06"],
-      "section": "9.4",
-      "description": "A tools/call isError result is terminal while preserving every native result lane rather than reducing it to an error string.",
+      "section": "9.3",
+      "description": "A tools/call isError result is terminal; complete native result lanes remain optional diagnostic evidence.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "mutate", "inputSchema": { "type": "object" } }] }
+          "content": { "tools": [{ "name": "mutate", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
         },
         "binding": { "ref": "tools/mutate" },
         "invocation": { "inputPresent": true, "input": { "id": "7" } },
@@ -64,24 +65,23 @@
         "assertions": [
           { "path": "/outputs", "equals": [] },
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/category", "equals": "service" },
-          { "path": "/error/details/mcp/result/content/0/text", "equals": "mutation refused" },
-          { "path": "/error/details/mcp/result/structuredContent/reason/code", "equals": "POLICY" },
-          { "path": "/error/details/mcp/result/structuredContent/reason/rule", "equals": "immutable" },
-          { "path": "/error/details/mcp/result/isError", "equals": true },
-          { "path": "/error/details/mcp/result/_meta/trace", "equals": "trace-failure" }
+          { "path": "/error/message", "equals": "mutation refused" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/mcp/result/content/0/text", "equals": "mutation refused" },
+          { "path": "/error/diagnostics/mcp/result/structuredContent/reason/code", "equals": "POLICY" },
+          { "path": "/error/diagnostics/mcp/result/isError", "equals": true }
         ]
       }]
     },
     {
       "id": "MCP-FI-03",
       "rules": ["OBI-B-02", "MCP-P-06"],
-      "section": "9.4",
-      "description": "A JSON-RPC error remains terminal and preserves the native code, message, and arbitrary data object.",
+      "section": "9.3",
+      "description": "A JSON-RPC error remains terminal while native code and data are confined to diagnostics.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "quota", "inputSchema": { "type": "object" } }] }
+          "content": { "tools": [{ "name": "quota", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
         },
         "binding": { "ref": "tools/quota" },
         "invocation": { "inputPresent": true, "input": {} },
@@ -99,22 +99,22 @@
         "assertions": [
           { "path": "/outputs", "equals": [] },
           { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/details/mcp/jsonrpcError/code", "equals": -32042 },
-          { "path": "/error/details/mcp/jsonrpcError/message", "equals": "quota exhausted" },
-          { "path": "/error/details/mcp/jsonrpcError/data/limit", "equals": 10 },
-          { "path": "/error/details/mcp/jsonrpcError/data/reset", "equals": "2026-08-09T00:00:00Z" }
+          { "path": "/error/message", "equals": "quota exhausted" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/mcp/jsonrpcError/code", "equals": -32042 },
+          { "path": "/error/diagnostics/mcp/jsonrpcError/data/limit", "equals": 10 }
         ]
       }]
     },
     {
       "id": "MCP-FI-04",
       "rules": ["OBI-B-02", "MCP-P-06"],
-      "section": "9.4",
-      "description": "A Streamable HTTP failure preserves exact non-UTF-8 response bytes and response headers.",
+      "section": "9.3",
+      "description": "A Streamable HTTP failure remains terminal while raw HTTP evidence is diagnostic only.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "unstable", "inputSchema": { "type": "object" } }] }
+          "content": { "tools": [{ "name": "unstable", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
         },
         "binding": { "ref": "tools/unstable" },
         "invocation": { "inputPresent": true, "input": {} },
@@ -129,12 +129,11 @@
         "phase": "response",
         "assertions": [
           { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_UNAVAILABLE" },
-          { "path": "/error/category", "equals": "transient" },
-          { "path": "/error/details/httpResponse/status", "equals": 503 },
-          { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-503"] },
-          { "path": "/error/details/httpResponse/body/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/details/httpResponse/body/byteLength", "equals": 4 }
+          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+          { "path": "/error/details", "absent": true },
+          { "path": "/error/diagnostics/httpResponse/status", "equals": 503 },
+          { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" }
         ]
       }]
     }

@@ -2,7 +2,7 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
-  "description": "End-to-end OpenAPI invocation-fidelity scenarios. Failure completions preserve the native HTTP response and its OpenAPI declaration match without turning either into an operation output.",
+  "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
     {
       "id": "OAPI-FI-01",
@@ -54,7 +54,7 @@
       "id": "OAPI-FI-02",
       "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-08"],
       "section": "9.5",
-      "description": "A declared JSON 404 is a failure completion whose exact response bytes, headers, status, and default Response Object match remain available.",
+      "description": "A declared JSON 404 completes unsuccessfully without becoming an operation output; optional diagnostics retain the native observation.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
@@ -95,16 +95,17 @@
           "assertions": [
             { "path": "/outputs", "equals": [] },
             { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/category", "equals": "service" },
-            { "path": "/error/details/status", "equals": 404 },
-            { "path": "/error/details/httpResponse/status", "equals": 404 },
-            { "path": "/error/details/httpResponse/headers/content-type", "equals": ["application/json"] },
-            { "path": "/error/details/httpResponse/headers/x-request-id", "equals": ["req-404"] },
-            { "path": "/error/details/httpResponse/body/base64", "equals": "eyJlcnJvciI6Im1pc3NpbmcifQ==" },
-            { "path": "/error/details/httpResponse/body/byteLength", "equals": 19 },
-            { "path": "/error/details/openapi/declared", "equals": true },
-            { "path": "/error/details/openapi/responseKey", "equals": "default" },
-            { "path": "/error/details/openapi/governingMedia", "equals": "application/json" }
+            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/status", "equals": 404 },
+            { "path": "/error/diagnostics/httpResponse/status", "equals": 404 },
+            { "path": "/error/diagnostics/httpResponse/headers/content-type", "equals": ["application/json"] },
+            { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-404"] },
+            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "eyJlcnJvciI6Im1pc3NpbmcifQ==" },
+            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 19 },
+            { "path": "/error/diagnostics/openapi/declared", "equals": true },
+            { "path": "/error/diagnostics/openapi/responseKey", "equals": "default" },
+            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "application/json" }
           ]
         }
       ]
@@ -113,7 +114,7 @@
       "id": "OAPI-FI-03",
       "rules": ["OBI-B-02", "OAPI-P-08"],
       "section": "9.5",
-      "description": "An undeclared binary 500 remains a failure completion and its body survives losslessly instead of being limited to a lossy text rendering.",
+      "description": "An undeclared binary 500 completes unsuccessfully; a diagnostic assertion separately proves exact bounded body capture instead of a lossy text rendering.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
@@ -146,10 +147,12 @@
           "assertions": [
             { "path": "/outputs", "equals": [] },
             { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/details/httpResponse/body/base64", "equals": "AP+AQQ==" },
-            { "path": "/error/details/httpResponse/body/byteLength", "equals": 4 },
-            { "path": "/error/details/openapi/declared", "equals": false },
-            { "path": "/error/details/openapi/responseKey", "absent": true }
+            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" },
+            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 4 },
+            { "path": "/error/diagnostics/openapi/declared", "equals": false },
+            { "path": "/error/diagnostics/openapi/responseKey", "absent": true }
           ]
         }
       ]
@@ -158,7 +161,7 @@
       "id": "OAPI-FI-04",
       "rules": ["OBI-B-02", "OAPI-P-08"],
       "section": "9.5",
-      "description": "A 504 stays a native HTTP failure with retry classification and complete response evidence; it is not converted into an output object.",
+      "description": "A 504 completes unsuccessfully and is not converted into an output object; optional diagnostics retain the native response without defining retry semantics.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
@@ -195,12 +198,75 @@
           "phase": "response",
           "assertions": [
             { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_TIMEOUT" },
-            { "path": "/error/category", "equals": "transient" },
-            { "path": "/error/effects", "equals": "possible" },
-            { "path": "/error/details/httpResponse/body/base64", "equals": "Z2F0ZXdheSB0aW1lb3V0" },
-            { "path": "/error/details/openapi/responseKey", "equals": "504" },
-            { "path": "/error/details/openapi/governingMedia", "equals": "text/plain" }
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "Z2F0ZXdheSB0aW1lb3V0" },
+            { "path": "/error/diagnostics/openapi/responseKey", "equals": "504" },
+            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "text/plain" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-05",
+      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-08"],
+      "section": "8",
+      "description": "A non-2xx event-stream response completes unsuccessfully; a diagnostic assertion proves its bounded body is not discarded when streaming framing is detected.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Event-stream failure", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/events": {
+                "get": {
+                  "operationId": "fidelitySSEFailure",
+                  "responses": {
+                    "200": {
+                      "description": "events",
+                      "content": { "text/event-stream": {} }
+                    },
+                    "503": {
+                      "description": "unavailable",
+                      "content": { "text/event-stream": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1events/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 503,
+          "headers": {
+            "Content-Type": "text/event-stream",
+            "X-Request-Id": "req-sse-503"
+          },
+          "body": "event: error\ndata: {\"error\":\"unavailable\"}\n\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
+            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
+            { "path": "/error/details", "absent": true },
+            { "path": "/error/diagnostics/httpResponse/status", "equals": 503 },
+            { "path": "/error/diagnostics/httpResponse/headers/content-type", "equals": ["text/event-stream"] },
+            { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-sse-503"] },
+            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "ZXZlbnQ6IGVycm9yCmRhdGE6IHsiZXJyb3IiOiJ1bmF2YWlsYWJsZSJ9Cgo=" },
+            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 44 },
+            { "path": "/error/diagnostics/openapi/declared", "equals": true },
+            { "path": "/error/diagnostics/openapi/responseKey", "equals": "503" },
+            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "text/event-stream" }
           ]
         }
       ]
