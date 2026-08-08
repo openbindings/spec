@@ -8,7 +8,7 @@
 <h1 align="center">OpenBindings</h1>
 
 <p align="center">
-  One interface · limitless bindings. An open standard for describing what a service does separately from how you access it.
+  One interface. Any binding. Describe what a service does separately from how you access it.
 </p>
 
 <p align="center">
