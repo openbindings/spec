@@ -38,10 +38,18 @@ const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
 for (const fragment of [
   'srcset="icon-dark.svg"',
   '<img alt="OpenBindings" src="icon.svg" width="80">',
+  'One interface. Any binding.',
+  'Describe what a service does separately from how you access it.',
 ]) {
   if (!readme.includes(fragment)) {
     throw new Error(`README identity presentation is missing: ${fragment}`);
   }
 }
 
-console.log('design assets: identity revision 1 current');
+for (const legacyTagline of ['one interface · limitless bindings', 'one interface, limitless bindings']) {
+  if (readme.toLowerCase().includes(legacyTagline)) {
+    throw new Error(`README retains a legacy OpenBindings tagline: ${legacyTagline}`);
+  }
+}
+
+console.log('design assets: identity and verbal identity revision 1 current');
