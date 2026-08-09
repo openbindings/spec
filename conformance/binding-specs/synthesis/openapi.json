@@ -411,6 +411,107 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-06",
+      "description": "A document-level custom schema dialect excludes only operations whose projected contracts inherit it; schema-free operations and supported per-schema overrides remain faithfully synthesizable.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@2",
+        "content": {
+          "openapi": "3.1.0",
+          "jsonSchemaDialect": "https://schemas.example.test/custom",
+          "info": { "title": "Per-operation schema dialect", "version": "1" },
+          "servers": [{ "url": "https://api.example.test" }],
+          "paths": {
+            "/health": {
+              "get": {
+                "operationId": "health",
+                "responses": { "204": { "description": "healthy" } }
+              }
+            },
+            "/supported": {
+              "get": {
+                "operationId": "supported",
+                "responses": {
+                  "200": {
+                    "description": "supported schema override",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$schema": "https://json-schema.org/draft/2020-12/schema",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/unsupported": {
+              "get": {
+                "operationId": "unsupported",
+                "responses": {
+                  "200": {
+                    "description": "inherits the custom dialect",
+                    "content": {
+                      "application/json": {
+                        "schema": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["health", "supported"],
+        "bindings": [
+          {
+            "operationKey": "health",
+            "bindingRef": "#/paths/~1health/get"
+          },
+          {
+            "operationKey": "supported",
+            "bindingRef": "#/paths/~1supported/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1health/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "health",
+              "bindingRef": "#/paths/~1health/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1supported/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "supported",
+              "bindingRef": "#/paths/~1supported/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsupported/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unsupported_schema_dialect",
+              "rule": "OBI-D-06",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

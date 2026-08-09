@@ -59,8 +59,11 @@ below may continue to change until the 0.2 release is cut.
   cookie assembly cannot be silently replaced by declared parameters. A new
   synthesis case also requires statically unsupported parameter-content media
   to be excluded with exhaustive coverage instead of producing an operation
-  guaranteed to refuse at invocation time. These are binding-family rules;
-  the protocol-blind core document model is unchanged.
+  guaranteed to refuse at invocation time. Another synthesis case proves that
+  an unsupported custom schema dialect excludes only operations whose
+  projected contracts inherit it, preserving schema-free operations and
+  supported per-schema overrides. These are binding-family rules; the
+  protocol-blind core document model is unchanged.
 
 - Operation `input` and `output` now constrain each caller-facing value. They
   do not declare unary or streaming cardinality; the governing binding
