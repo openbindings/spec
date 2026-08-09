@@ -287,8 +287,8 @@ newly published rule) following the format above, then run
 and legible; embed content whenever a test's verdict depends on resolution.
 
 The corpus is currently aligned with each family's latest published text:
-revision 1 for Usage, OpenAPI, gRPC, Connect, and AsyncAPI, and revision 2 for
-GraphQL and MCP, under core 0.2.0 semantics. Operation Graph is the eighth
+revision 2 for OpenAPI, GraphQL, and MCP, and revision 1 for Usage, gRPC,
+Connect, and AsyncAPI, under core 0.2.0 semantics. Operation Graph is the eighth
 published binding family; its invocation-only composition semantics use the
 separate [`operation-graph/`](../operation-graph/) corpus because the graph's
 operation contracts live in the containing OBI rather than a standalone

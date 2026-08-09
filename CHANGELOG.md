@@ -52,6 +52,16 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- OpenAPI revision 2 security processing now has portable adversarial proof
+  that Security Requirement Objects remain alternatives rather than being
+  unioned, that ambient credentials are never volunteered for an anonymous
+  operation, and that processor-owned `Host`, `Content-Length`, and structured
+  cookie assembly cannot be silently replaced by declared parameters. A new
+  synthesis case also requires statically unsupported parameter-content media
+  to be excluded with exhaustive coverage instead of producing an operation
+  guaranteed to refuse at invocation time. These are binding-family rules;
+  the protocol-blind core document model is unchanged.
+
 - Operation `input` and `output` now constrain each caller-facing value. They
   do not declare unary or streaming cardinality; the governing binding
   specification and concrete interaction retain that authority.

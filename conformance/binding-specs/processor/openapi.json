@@ -1086,6 +1086,200 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-23",
+      "rules": ["OAPI-P-09", "OAPI-P-10"],
+      "section": "9.6",
+      "description": "Security Requirement Objects are alternatives: when two complete alternatives are available, invocation selects exactly one and never unions their credentials onto the wire.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Security alternatives", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [{ "headerKey": [] }, { "queryKey": [] }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "headerKey": { "type": "apiKey", "in": "header", "name": "X-Key" },
+                "queryKey": { "type": "apiKey", "in": "query", "name": "api_key" }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "status": 204, "body": "" },
+        "runtime": { "credentials": { "headerKey": "header-secret", "queryKey": "query-secret" } }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "header alternative selected",
+          "assertions": [
+            { "path": "/dispatch/headers/X-Key", "equals": "header-secret" },
+            { "path": "/dispatch/url", "equals": "https://api.example/x" },
+            { "path": "/outputs", "equals": [] }
+          ]
+        },
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "query alternative selected",
+          "assertions": [
+            { "path": "/dispatch/headers/X-Key", "absent": true },
+            { "path": "/dispatch/url", "equals": "https://api.example/x?api_key=query-secret" },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-24",
+      "rules": ["OAPI-P-09"],
+      "section": "9.6",
+      "description": "Credentials are never volunteered when the effective operation declares no security requirement.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Anonymous operation", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": { "responses": { "204": { "description": "ok" } } }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "leak": { "type": "apiKey", "in": "header", "name": "X-Leak" }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "status": 204, "body": "" },
+        "runtime": { "credentials": { "leak": "must-not-be-sent" } }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/headers/X-Leak", "absent": true },
+            { "path": "/dispatch/url", "equals": "https://api.example/x" },
+            { "path": "/outputs", "equals": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-25",
+      "rules": ["OAPI-P-10"],
+      "section": "9.6",
+      "description": "A raw Cookie header parameter cannot coexist with a structured cookie parameter, even when the caller omits both; cookie assembly never silently overwrites an artifact declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Cookie ownership", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    { "name": "Cookie", "in": "header", "schema": { "type": "string" } },
+                    { "name": "session", "in": "cookie", "schema": { "type": "string" } }
+                  ],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-26",
+      "rules": ["OAPI-P-10"],
+      "section": "9.6",
+      "description": "An effective Host header parameter cannot replace processor-owned target resolution and is refused before dispatch even when omitted by the caller.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Host ownership", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{ "name": "Host", "in": "header", "schema": { "type": "string" } }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-27",
+      "rules": ["OAPI-P-10"],
+      "section": "9.6",
+      "description": "An effective Content-Length header parameter cannot replace processor-owned body framing and is refused before dispatch even when omitted by the caller.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": { "title": "Length ownership", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{ "name": "Content-Length", "in": "header", "schema": { "type": "integer" } }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
     }
   ]
 }

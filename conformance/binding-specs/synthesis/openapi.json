@@ -360,6 +360,57 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-05",
+      "description": "A content-form parameter outside revision 2's JSON and text carriage is excluded at synthesis instead of producing an operation that can never faithfully send the declared value.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@2",
+        "content": {
+          "openapi": "3.1.0",
+          "info": { "title": "Parameter content soundness", "version": "1" },
+          "servers": [{ "url": "https://api.example.test" }],
+          "paths": {
+            "/search": {
+              "get": {
+                "operationId": "search",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "content": {
+                      "application/xml": {
+                        "schema": { "type": "string" }
+                      }
+                    }
+                  }
+                ],
+                "responses": { "204": { "description": "done" } }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [],
+        "bindings": [],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1search/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.parameter_content_excluded",
+              "rule": "OAPI-P-02",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
