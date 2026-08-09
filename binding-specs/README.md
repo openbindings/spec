@@ -4,7 +4,7 @@
 
 The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no conformance weight here, but state the conventions a binding specification's own text adopts when it follows this guidance.
 
-These are the **openbindings project's** binding specifications _for_ the named source families: `openbindings.openapi@1` is this project's specification for binding OpenAPI documents, published under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
+These are the **openbindings project's** binding specifications _for_ the named source families: `openbindings.openapi@2` is this project's latest specification for binding OpenAPI documents, published under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
 
 ## Meaning first, action complete
 
@@ -142,11 +142,60 @@ Migration note: `openbindings.operation-graph` originally published under the to
 
 A binding specification governs a family of sources and bindings; it is not required to begin with an externally defined artifact family. Artifact **authority** and artifact **presence** are separate choices:
 
-1. A specification may incorporate an existing artifact format and protocol. `openbindings.openapi@1` incorporates OpenAPI and HTTP.
+1. A specification may incorporate an existing artifact format and protocol. `openbindings.openapi@2` incorporates OpenAPI and HTTP.
 2. A specification may define the artifact format and interaction model itself. `openbindings.operation-graph@1` defines the graph artifact, its nodes, and its execution semantics; there is no external artifact authority for it to incorporate.
 3. A specification may accept an artifactless source mode. `openbindings.connect@1`'s descriptorless mode uses a service `location` and binding `ref` without schema `content`; the Connect protocol and the binding specification completely define the narrower interaction. A specification may also define absent `ref` to target `location` itself, leaving `bindingSpec` plus `location` as the complete concrete address.
 
 The **source** remains required in every case. An artifactless source is location-only: the binding specification defines what the location addresses, what `ref` means or whether it is absent, and every interaction and operation-boundary rule an artifact would otherwise have supplied. Calling the mode artifactless does not relax [OBI-B-02](../openbindings.md#104-binding-specification-rules); it makes more of that semantic burden the binding specification's own.
+
+## Implementation layering
+
+The semantic boundaries above suggest an implementation architecture; they do
+not add a conformance requirement or prescribe one internal API. In a processor
+that follows the project's invocation pattern, responsibilities should normally
+separate into three layers:
+
+1. The general OpenBindings processor or SDK handles the core document model,
+   operation lookup, binding selection policy, transforms, context negotiation,
+   and the protocol-independent invocation surface.
+2. A binding-specification implementation forms the smallest semantic adapter
+   needed to translate between that surface and the domain governed by its exact
+   `bindingSpec` identifier.
+3. Binding-native machinery interprets, resolves, or invokes that domain in its
+   own concepts.
+
+That governed domain is not necessarily an upstream artifact. It may be an
+externally defined artifact and protocol, an artifact and interaction model
+defined by the binding specification itself, or an artifactless live surface.
+The layers are boundaries of responsibility, not a requirement that every
+implementation contain three separately packaged components.
+
+Where an independently meaningful upstream ecosystem exists, binding-native
+machinery should remain as ordinary to that ecosystem as practical. Prefer its
+well-tested parsers, resolvers, runtimes, and execution behavior when they
+preserve the binding specification's required meaning. Code concerned only with
+that domain should avoid OpenBindings types where practical, remain separately
+testable, and be reusable outside OpenBindings when that reflects a genuine
+independent use. The binding adapter then contains the OpenBindings-specific
+translation rather than reimplementing the entire upstream stack.
+
+Where the binding specification defines the domain itself, those responsibilities
+may necessarily meet. `openbindings.operation-graph@1`, for example, defines its
+own graph artifact and execution model and intentionally invokes operations from
+the containing OBI; independence from OpenBindings would be a false goal. Its
+implementation should still keep generic SDK behavior separate from graph-owned
+behavior, but the graph executor is not expected to masquerade as a standalone
+upstream engine. The same qualification applies when an artifactless live
+surface has no independently reusable artifact processor beneath the adapter.
+
+In this guidance, **thin** means narrow in semantic authority, not necessarily
+small in code size. A faithful adapter may require substantial parsing,
+negotiation, scheduling, or lifecycle machinery. Conversely, delegating to a
+large library does not make an adapter faithful merely because little local code
+was written. A chosen library and an implementation's package boundaries remain
+non-normative: the binding specification and every authority it incorporates
+govern observable behavior. An implementation supplements, constrains, or
+replaces a library that hides required facts or imposes conflicting policy.
 
 ## Index
 
@@ -154,7 +203,7 @@ The **source** remains required in every case. An artifactless source is locatio
 | --------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.operation-graph@1` | JSON Pointer to a graph definition                                                                                                                                 |
 | usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.usage@1`           | space-separated command path (absent ref = root)                                                                                                                   |
-| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.openapi@1`         | JSON Pointer to the operation object                                                                                                                               |
+| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **published** (v2 latest; v1 immutable; implemented by both reference SDKs and `ob`) | `openbindings.openapi@2`         | JSON Pointer to the operation object                                                                                                                               |
 | mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **published** (v2 latest; v1 immutable; implemented by both reference SDKs and `ob`) | `openbindings.mcp@2`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
 | grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>`                                                                                                                               |
 | connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.connect@1`         | `<fully-qualified-service>/<method>`                                                                                                                               |
@@ -309,9 +358,9 @@ portable meaning.
 The operation value domain is JSON (core [§5](../openbindings.md#5-document-model)), so a value that is neither a JSON value nor a string — arbitrary bytes — needs a **boundary encoding** to cross the seam. This is one instance of the decode/routing answers above, not a separate mechanism, and it is governed by two principles in order:
 
 1. **Follow the artifact where it declares an encoding.** OpenAPI's `contentEncoding` (`base64`/`base64url`), gRPC/Connect's ProtoJSON `bytes`, and MCP's resource `blob` all define how bytes ride; a binding specification incorporates its family's answer and does not override it. The artifact keeps authority over its own bytes.
-2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI's `format: binary`, a 3.1 raw-binary shape). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi@1` §9.2 is the pattern: "this specification's boundary encoding for bytes"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
+2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI's `format: binary`, a 3.1 raw-binary shape). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi@2` §9.2 is the pattern: "this specification's boundary encoding for bytes"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
 
-A family whose revision does not define bytes carriage on some axis **declares the gap** rather than leaving it silent (`openbindings.openapi@1`'s raw-binary request-body refusal and "no base64 response lane"; `openbindings.asyncapi@1`'s value-domain note on non-string, non-JSON payloads; `openbindings.usage@1`'s text-only stdout default). Closing such a gap is a later revision's work, following the two principles above.
+A family whose revision does not define bytes carriage on some axis **declares the gap** rather than leaving it silent (`openbindings.openapi@2`'s raw-binary request-body refusal and "no base64 response lane"; `openbindings.asyncapi@1`'s value-domain note on non-string, non-JSON payloads; `openbindings.usage@1`'s text-only stdout default). Closing such a gap is a later revision's work, following the two principles above.
 
 ## Authentication and credentials
 
@@ -321,7 +370,7 @@ Credentials and other runtime prerequisites are **not** part of an OBI document 
 
 Many source families present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a source can be represented with unique field names across its effective input/output surface.
 
-When declarations are distinct in the artifact but collapse to one property name in a flattened representation, the flatten MUST NOT invent equality between them. The `openbindings.openapi@1` rule is conservative: a same-named pair across parameter locations, or across a parameter and an object-body property, makes the operation unflattenable and is refused at binding resolution. A future revision may define a disambiguated envelope; revision 1 narrows coverage rather than duplicating one value into independent wire locations. A synthesizer should diagnose the loss at projection time as well, but a diagnostic never turns a lossy merge into faithful invocation.
+When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. Immutable `openbindings.openapi@1` narrowed coverage at those collisions. `openbindings.openapi@2` closes that gap with a binding-private routed source value: synthesis can retain protocol-neutral application fields and carry the concrete name-plus-location correspondence in a core `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
 
 ## Authoring a new binding specification
 

@@ -1,0 +1,276 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@1",
+  "bindingSpec": "openbindings.mcp@2",
+  "family": "mcp",
+  "description": "Portable MCP revision-2 scenarios for negotiation, listing resolution, application-contract eligibility, whole-value input, structured output projection, failure classification, and credentials.",
+  "scenarios": [
+    {
+      "id": "MCP-PS-01",
+      "rules": ["MCP-P-01"],
+      "section": "3",
+      "description": "A negotiated MCP revision outside the singleton envelope is refused before listing or invocation.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc" },
+        "binding": { "ref": "tools/weather" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": { "negotiatedProtocolVersion": "2026-01-01" }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "load", "assertions": [
+        { "path": "/listingRequests", "absent": true },
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-02",
+      "rules": ["MCP-P-02", "MCP-P-04"],
+      "section": "3",
+      "description": "A live tool listing is pagination-exhausted before an eligible ref is resolved and dispatched.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc" },
+        "binding": { "ref": "tools/weather" },
+        "invocation": { "inputPresent": true, "input": { "city": "Oslo" } },
+        "peer": {
+          "negotiatedProtocolVersion": "2025-11-25",
+          "capabilities": { "tools": {} },
+          "toolPages": [
+            { "tools": [{ "name": "clock", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }], "nextCursor": "p2" },
+            { "tools": [{ "name": "weather", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object", "properties": { "condition": { "type": "string" } }, "required": ["condition"] } }] }
+          ],
+          "toolResult": { "content": [{ "type": "text", "text": "clear" }], "structuredContent": { "condition": "clear" } }
+        }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [
+        { "path": "/listingRequests/tools", "equals": [null, "p2"] },
+        { "path": "/dispatch/method", "equals": "tools/call" },
+        { "path": "/outputs/0", "equals": { "condition": "clear" } }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-03",
+      "rules": ["MCP-P-03"],
+      "section": "9.1",
+      "description": "A supplied non-object tool input is refused before tools/call.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "weather", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/weather" },
+        "invocation": { "inputPresent": true, "input": null }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-04",
+      "rules": ["MCP-P-04"],
+      "section": "8",
+      "description": "Revision 2 does not solicit or emit MCP progress even when a legacy solicit option is present.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "build", "outputSchema": { "type": "object", "properties": { "done": { "type": "boolean" } }, "required": ["done"] } }] } },
+        "binding": { "ref": "tools/build" },
+        "configuration": { "solicit": true },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": {
+          "progress": [{ "progressToken": "t1", "progress": 0, "total": 0 }],
+          "toolResult": { "content": [{ "type": "text", "text": "done" }], "structuredContent": { "done": true } }
+        }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [
+        { "path": "/outputs", "equals": [{ "done": true }] },
+        { "path": "/dispatch/params/_meta/progressToken", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-05",
+      "rules": ["MCP-P-04"],
+      "section": "9.2",
+      "description": "A successful tool emits structuredContent alone and drops the MCP result wrapper from the ordinary value.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "inspect", "outputSchema": { "type": "object", "properties": { "value": { "type": "integer" } }, "required": ["value"] } }] } },
+        "binding": { "ref": "tools/inspect" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "toolResult": {
+            "content": [{ "type": "text", "text": "human" }],
+            "structuredContent": { "value": 7 },
+            "isError": false,
+            "_meta": { "trace": "abc" }
+          }
+        }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [
+        { "path": "/outputs/0", "equals": { "value": 7 } },
+        { "path": "/outputs/0/content", "absent": true },
+        { "path": "/outputs/0/_meta", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-06",
+      "rules": ["MCP-P-06"],
+      "section": "9.3",
+      "description": "A tools/call isError result is unsuccessful and is not emitted as an operation value.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "fail", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/fail" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": { "toolResult": { "content": [{ "type": "text", "text": "bad input" }], "isError": true } }
+      },
+      "expected": [{ "disposition": "error", "phase": "response", "assertions": [
+        { "path": "/outputs", "equals": [] }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-07",
+      "rules": ["MCP-P-07"],
+      "section": "9.4",
+      "description": "A generic credential with no named HTTP-header carriage is surfaced rather than mapped privately.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "hello", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/hello" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "generic": "secret" } }
+      },
+      "expected": [{ "disposition": "context-required", "phase": "pre-dispatch", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-08",
+      "rules": ["MCP-P-08"],
+      "section": "7",
+      "description": "A required-task tool is unresolvable before ordinary tools/call dispatch.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "long", "outputSchema": { "type": "object" }, "execution": { "taskSupport": "required" } }] } },
+        "binding": { "ref": "tools/long" },
+        "invocation": { "inputPresent": true, "input": {} }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "resolution", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-09",
+      "rules": ["MCP-P-04"],
+      "section": "7",
+      "description": "A resource ref is refused because the listing supplies no application output contract.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "resources": [{ "uri": "data://record", "name": "record" }] } },
+        "binding": { "ref": "resources/data://record" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "resolution", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-10",
+      "rules": ["MCP-P-04"],
+      "section": "9.2",
+      "description": "A declared-output tool that omits structuredContent completes unsuccessfully.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "missing", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/missing" },
+        "invocation": { "inputPresent": false },
+        "peer": { "toolResult": { "content": [{ "type": "text", "text": "only native content" }] } }
+      },
+      "expected": [{ "disposition": "error", "phase": "response", "assertions": [
+        { "path": "/outputs", "equals": [] }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-11",
+      "rules": ["MCP-P-02"],
+      "section": "6",
+      "description": "Pinned content displaces list requests while invocation still uses the addressed server.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "hello", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/hello" },
+        "invocation": { "inputPresent": false },
+        "peer": { "toolResult": { "content": [], "structuredContent": {} } }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [
+        { "path": "/listingRequests", "equals": [] },
+        { "path": "/dispatch/method", "equals": "tools/call" }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-12",
+      "rules": ["MCP-P-02"],
+      "section": "7",
+      "description": "Duplicate byte-exact tool names make the ref ambiguous rather than first-match.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [
+          { "name": "same", "outputSchema": { "type": "object" } },
+          { "name": "same", "outputSchema": { "type": "object", "properties": { "x": { "type": "string" } } } }
+        ] } },
+        "binding": { "ref": "tools/same" },
+        "invocation": { "inputPresent": true, "input": {} }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "resolution", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-13",
+      "rules": ["MCP-P-04"],
+      "section": "7",
+      "description": "A tool without outputSchema is unresolvable rather than synthesized or invoked with MCP-shaped output.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "untyped" }] } },
+        "binding": { "ref": "tools/untyped" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "resolution", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-14",
+      "rules": ["MCP-P-06"],
+      "section": "9.3",
+      "description": "A 303 response is not followed by rewriting an MCP POST into GET.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "echo", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/echo" },
+        "invocation": { "inputPresent": true, "input": {} },
+        "peer": { "status": 303, "headers": { "Location": "https://other.example/rpc" }, "body": "" },
+        "runtime": { "redirectPolicy": "ordinary-user-agent" }
+      },
+      "expected": [{ "disposition": "error", "phase": "response", "assertions": [
+        { "path": "/dispatch/method", "equals": "tools/call" },
+        { "path": "/dispatch/httpMethod", "equals": "POST" },
+        { "path": "/redirectDispatch", "absent": true },
+        { "path": "/outputs", "equals": [] }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-15",
+      "rules": ["MCP-P-07"],
+      "section": "9.4",
+      "description": "A named credential cannot replace an MCP session-routing field.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "hello", "outputSchema": { "type": "object" } }] } },
+        "binding": { "ref": "tools/hello" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "headers": { "MCP-SESSION-ID": "credential-value" } } }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [
+        { "path": "/dispatch", "absent": true }
+      ] }]
+    },
+    {
+      "id": "MCP-PS-16",
+      "rules": ["MCP-P-04"],
+      "section": "9.2",
+      "description": "A structuredContent value that violates outputSchema completes unsuccessfully.",
+      "given": {
+        "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "badshape", "outputSchema": { "type": "object", "properties": { "count": { "type": "integer" } }, "required": ["count"] } }] } },
+        "binding": { "ref": "tools/badshape" },
+        "invocation": { "inputPresent": false },
+        "peer": { "toolResult": { "content": [], "structuredContent": { "count": "many" } } }
+      },
+      "expected": [{ "disposition": "error", "phase": "response", "assertions": [
+        { "path": "/outputs", "equals": [] }
+      ] }]
+    }
+  ]
+}

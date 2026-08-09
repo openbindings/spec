@@ -13,6 +13,12 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@2`, preserving independently declared same-named
+  parameters and request-body properties through a binding-private routed
+  source value and ordinary core `inputTransform`. Synthesized operation
+  schemas remain protocol-independent; immutable revision 1 remains a
+  compatibility revision. No core document-model field changed.
+
 - A small, explicit set of core invariants: per-value contracts,
   enabling-not-invoking, split authority, context-free documents,
   offline-decidable core conformance, and decentralized extension.

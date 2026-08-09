@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.openapi@1",
+  "bindingSpec": "openbindings.openapi@2",
   "family": "openapi",
   "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [

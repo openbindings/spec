@@ -275,6 +275,27 @@
         "../invocation-fidelity"
       ],
       "notes": "Protocol-only outcomes now use protocol-independent ordinary messages while native facts remain diagnostic. Messages deliberately authored by the application layer, including GraphQL execution errors, gRPC status descriptions, Connect error messages, and MCP tool or JSON-RPC messages, remain visible without their protocol wrapper. Portable fidelity scenarios assert both sides of the boundary."
+    },
+    {
+      "id": "AF-SYNTH-002",
+      "layer": "synthesis",
+      "scope": "OpenAPI same-named input declarations",
+      "issue": "Revision 1 flattened parameters and body properties into one source object, forcing synthesis to exclude independently declared same-named values even though the artifact retained enough authority to invoke them faithfully.",
+      "classification": "binding-internal",
+      "ordinaryCallerDependency": true,
+      "owner": "OpenAPI binding revision and reference synthesizers",
+      "action": "revise",
+      "normativeImpact": "binding-revision",
+      "status": "resolved",
+      "evidence": [
+        "../../binding-specs/openapi/openbindings.openapi.md",
+        "../binding-specs/processor/openapi.json",
+        "../binding-specs/synthesis/openapi.json",
+        "../../../openbindings-go/formats/openapi/native_differential_test.go",
+        "../../../openbindings-ts/packages/openapi/src/native-differential.test.ts",
+        "../../../ob/internal/app/openapi_v2_fidelity_test.go"
+      ],
+      "notes": "Revision 2 uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by a core inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No core or OBI document-model change was required."
     }
   ]
 }
