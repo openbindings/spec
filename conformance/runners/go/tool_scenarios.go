@@ -119,7 +119,7 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
-	_, op, found := openbindings.ResolveOperation(iface, scenario.Given.Operation)
+	opKey, op, found := openbindings.ResolveOperation(iface, scenario.Given.Operation)
 	if !found {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("operation %q not found", scenario.Given.Operation))
 	}
@@ -132,7 +132,12 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 	}
 	actual := make([]string, 0, len(scenario.Given.Values))
 	for _, value := range scenario.Given.Values {
-		err := openbindings.ValidateAgainstSchema(value, schema, iface.Schemas)
+		var err error
+		if scenario.Given.Side == "output" {
+			err = openbindings.ValidateOperationOutput(value, iface, opKey)
+		} else {
+			err = openbindings.ValidateOperationInput(value, iface, opKey)
+		}
 		if err == nil {
 			actual = append(actual, "valid")
 			continue
@@ -218,7 +223,7 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
-	_, op, found := openbindings.ResolveOperation(iface, scenario.Given.Operation)
+	opKey, op, found := openbindings.ResolveOperation(iface, scenario.Given.Operation)
 	if !found {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("operation %q not found", scenario.Given.Operation))
 	}
@@ -230,7 +235,13 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("operation side has no schema"))
 	}
 	outcome := "valid"
-	if err := openbindings.ValidateAgainstSchema(scenario.Given.Value, schema, iface.Schemas); err != nil {
+	var validationErr error
+	if scenario.Given.Side == "output" {
+		validationErr = openbindings.ValidateOperationOutput(scenario.Given.Value, iface, opKey)
+	} else {
+		validationErr = openbindings.ValidateOperationInput(scenario.Given.Value, iface, opKey)
+	}
+	if validationErr != nil {
 		if contains(scenario.Expected.AllowedOutcomes, "instance-mismatch") && !contains(scenario.Expected.AllowedOutcomes, "resolver-error") {
 			outcome = "instance-mismatch"
 		} else if contains(scenario.Expected.AllowedOutcomes, "resolver-error") {

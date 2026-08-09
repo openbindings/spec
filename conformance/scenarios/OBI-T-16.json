@@ -146,6 +146,58 @@
         "values": [{ "name": "Ada" }, { "name": 7 }]
       },
       "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T16-S-08",
+      "description": "Same-document references resolve from the OBI document root when an operation schema is evaluated",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "tree": {
+              "output": {
+                "$ref": "#/operations/tree/output/$defs/Node",
+                "$defs": {
+                  "Node": {
+                    "type": "object",
+                    "required": ["value"],
+                    "properties": {
+                      "value": { "type": "string" },
+                      "next": { "$ref": "#/operations/tree/output/$defs/Node" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "tree",
+        "side": "output",
+        "values": [
+          { "value": "root", "next": { "value": "leaf" } },
+          { "value": "root", "next": { "value": 7 } }
+        ]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T16-S-09",
+      "description": "Schema-shaped unknown fields on the OBI root do not participate in an operation schema verdict",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "type": "integer",
+          "operations": {
+            "echo": { "output": { "type": "string" } }
+          }
+        },
+        "operation": "echo",
+        "side": "output",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
     }
   ]
 }
