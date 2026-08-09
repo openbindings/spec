@@ -74,6 +74,21 @@
               "runtime": {
                 "type": "object",
                 "description": "Named runtime facts such as an implemented usage version or supplied credentials."
+              },
+              "resources": {
+                "type": "object",
+                "description": "A closed, immutable artifact dependency set keyed by absolute retrieval URI. Family adapters expose these resources through their ordinary artifact resolver; this is harness input, not an OBI document field.",
+                "propertyNames": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+                  "description": "Absolute URI spelling; adapters do not infer a base for corpus resources."
+                },
+                "additionalProperties": {
+                  "description": "The parsed object or source text returned for this artifact URI.",
+                  "oneOf": [
+                    { "type": "object" },
+                    { "type": "string" }
+                  ]
+                }
               }
             }
           },

@@ -995,6 +995,97 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-22",
+      "rules": ["OAPI-P-02", "OAPI-P-03", "OAPI-P-06", "OAPI-P-09"],
+      "section": "6",
+      "description": "A location-backed multi-document description resolves an external Path Item and Security Scheme, and fragment-only Parameter, Request Body, and Response references inside the external document stay scoped to that document.",
+      "given": {
+        "source": {
+          "location": "https://description.example/openapi.yaml",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Reference closure", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": { "$ref": "./path-item.yaml" }
+            },
+            "components": {
+              "securitySchemes": {
+                "ApiKey": { "$ref": "./security.yaml#/ApiKey" }
+              }
+            }
+          }
+        },
+        "resources": {
+          "https://description.example/path-item.yaml": {
+            "post": {
+              "operationId": "createItem",
+              "security": [{ "ApiKey": [] }],
+              "parameters": [{ "$ref": "#/Trace" }],
+              "requestBody": { "$ref": "#/Create" },
+              "responses": { "200": { "$ref": "#/Created" } }
+            },
+            "Trace": {
+              "name": "trace",
+              "in": "query",
+              "schema": { "type": "string" }
+            },
+            "Create": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["name"],
+                    "properties": { "name": { "type": "string" } }
+                  }
+                }
+              }
+            },
+            "Created": {
+              "description": "created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": { "id": { "type": "integer" } }
+                  }
+                }
+              }
+            }
+          },
+          "https://description.example/security.yaml": {
+            "ApiKey": { "type": "apiKey", "in": "header", "name": "X-API-Key" }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "trace": "t-1", "name": "Ada" }
+        },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "application/json" },
+          "body": "{\"id\":7}"
+        },
+        "runtime": { "credentials": { "ApiKey": "secret" } }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/method", "equals": "POST" },
+            { "path": "/dispatch/url", "equals": "https://api.example/items?trace=t-1" },
+            { "path": "/dispatch/headers/X-Api-Key", "equals": "secret" },
+            { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
+            { "path": "/dispatch/body", "equals": { "name": "Ada" } },
+            { "path": "/outputs", "equals": [{ "id": 7 }] }
+          ]
+        }
+      ]
     }
   ]
 }

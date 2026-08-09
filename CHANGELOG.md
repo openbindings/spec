@@ -43,6 +43,10 @@ below may continue to change until the 0.2 release is cut.
   never inferred from a returned OBI alone.
 - Cross-runtime conformance corpora for the core, schema comparison, binding
   processing, synthesis coverage, invocation frames, and operation graphs.
+- Portable binding-processor scenarios can supply an absolute-URI resource
+  map as harness input, allowing multi-document artifact closure, reference
+  scoping, and wire behavior to be proved without adding resolver state or
+  protocol concepts to the OBI document model.
 - Informative binding-spec authoring doctrine, an AI-agent primer, and a
   practical 0.1-to-0.2 migration guide.
 
