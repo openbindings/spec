@@ -13,6 +13,13 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@6`, preserving declaration-complex exact JSON request
+  schemas and values through one protocol-neutral application property and a
+  binding-private whole-value route. `oneOf`, `anyOf`, conditionals,
+  `dependentSchemas`, and explicit `unevaluatedProperties` no longer require a
+  value-dependent flattened router. Non-JSON codecs remain explicit
+  exclusions. No Core OBI document-model field changed.
+
 - `openbindings.openapi@5`, preserving explicitly declared dynamic object-body
   members through one protocol-neutral application object and a binding-private
   whole-body route. Exact, pattern, additional-property, and `allOf` schemas

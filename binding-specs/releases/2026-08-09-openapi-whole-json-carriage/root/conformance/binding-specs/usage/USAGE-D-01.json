@@ -1,0 +1,73 @@
+{
+  "rule": "USAGE-D-01",
+  "bindingSpec": "openbindings.usage@1",
+  "section": "5",
+  "description": "`content`, when present, is a JSON string carrying UTF-8 usage descriptor source text. No other JSON type is an accepted `content` value under this specification.",
+  "tests": [
+    {
+      "description": "string content carrying usage descriptor source text",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"status\" help=\"Show status\"\n"
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content carrying a JSON number is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "content": 42 }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-01"]
+    },
+    {
+      "description": "content carrying a JSON object is not an accepted content value (usage has no parsed-object representation)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": {
+            "bindingSpec": "openbindings.usage@1",
+            "content": { "name": "mytool", "cmd": "status" }
+          }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-01"]
+    },
+    {
+      "description": "content carrying JSON null is a present member (core presence rule) and is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "status": {} },
+        "sources": {
+          "cli": { "bindingSpec": "openbindings.usage@1", "content": null }
+        },
+        "bindings": {
+          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+        }
+      },
+      "valid": false,
+      "violates": ["USAGE-D-01"]
+    }
+  ]
+}

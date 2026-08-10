@@ -1,0 +1,35 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Unhandled per-event failures terminate the graph with the complete portable error event; omission of onError never silently loses a failed event.",
+  "fixtures": [
+    {
+      "id": "OG-EX-47",
+      "name": "Unhandled per-event failure is fatal",
+      "section": "Errors / Per-event failures",
+      "description": "The transform produces no result and has no onError route. The graph terminates with the TRANSFORM_UNDEFINED error event, including the event that failed, instead of completing successfully with an empty output stream.",
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "reshape": { "type": "transform", "transform": "missing" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "reshape" },
+          { "from": "reshape", "to": "out" }
+        ]
+      },
+      "writes": [{ "id": "x" }],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": {
+          "error": "TRANSFORM_UNDEFINED",
+          "event": { "id": "x" }
+        },
+        "ordering": "exact"
+      }
+    }
+  ]
+}

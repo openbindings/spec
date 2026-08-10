@@ -74,7 +74,7 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "usage", "openbindings.usage.md"),
   },
   openapi: {
-    bindingSpec: "openbindings.openapi@5",
+    bindingSpec: "openbindings.openapi@6",
     prefix: "OAPI",
     spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
   },

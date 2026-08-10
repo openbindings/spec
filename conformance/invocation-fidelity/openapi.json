@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.openapi@5",
+  "bindingSpec": "openbindings.openapi@6",
   "family": "openapi",
   "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
@@ -528,6 +528,73 @@
             { "path": "/dispatch/url", "equals": "https://api.example/items?id=query-value" },
             { "path": "/dispatch/headers/Content-Type", "equals": "application/x-www-form-urlencoded" },
             { "path": "/dispatch/body", "equals": "extra=a+b&fixed=yes&id=body-value" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-11",
+      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04"],
+      "section": "9.1",
+      "description": "Joined synthesis preserves a declaration-complex JSON schema and value as one protocol-neutral property while the private route keeps a same-named query value independent.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Whole JSON abstraction", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "operationId": "fidelityWholeJSON",
+                  "parameters": [
+                    { "name": "kind", "in": "query", "required": true, "schema": { "type": "string" } }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": { "kind": { "const": "named" }, "name": { "type": "string" } },
+                              "required": ["kind", "name"],
+                              "additionalProperties": false
+                            },
+                            { "type": "array", "items": { "type": "string" } }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "stored" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "kind": "query-value",
+            "payload": { "kind": "named", "name": "Ada" }
+          }
+        },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error", "absent": true },
+            { "path": "/dispatch/url", "equals": "https://api.example/items?kind=query-value" },
+            { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
+            { "path": "/dispatch/body", "equals": { "kind": "named", "name": "Ada" } }
           ]
         }
       ]
