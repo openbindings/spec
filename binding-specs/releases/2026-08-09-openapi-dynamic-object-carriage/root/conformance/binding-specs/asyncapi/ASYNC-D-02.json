@@ -1,0 +1,117 @@
+{
+  "rule": "ASYNC-D-02",
+  "bindingSpec": "openbindings.asyncapi@1",
+  "section": "4",
+  "description": "`location`, when present, is an absolute URI addressing the AsyncAPI document itself. A bare filesystem path is a relative reference in form and is not a conformant location. This family is artifact-located: connection targets come from the artifact's servers, not from location.",
+  "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness for this family's document address, so the fixtures list both.",
+  "tests": [
+    {
+      "description": "https document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "https://example.com/asyncapi.json"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "file document address (absolute URI spelling for a local artifact)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "file:///srv/api/asyncapi.yaml"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bare relative filesystem path is a relative reference in form, not a document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "./asyncapi.yaml"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "bare absolute filesystem path carries no scheme and is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "/srv/api/asyncapi.yaml"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-02", "OBI-D-05"]
+    },
+    {
+      "description": "bare file name carries no scheme and is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "publishTask": {} },
+        "sources": {
+          "events": {
+            "bindingSpec": "openbindings.asyncapi@1",
+            "location": "asyncapi.json"
+          }
+        },
+        "bindings": {
+          "publishTask.events": {
+            "operation": "publishTask",
+            "source": "events",
+            "ref": "#/operations/publishTask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC-D-02", "OBI-D-05"]
+    }
+  ]
+}

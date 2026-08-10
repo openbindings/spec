@@ -7,7 +7,7 @@ seven standalone brownfield synthesis binding specifications, keyed to each fami
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
-| openapi  | `openbindings.openapi@4`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
+| openapi  | `openbindings.openapi@5`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
 | mcp      | `openbindings.mcp@2`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
@@ -109,7 +109,7 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
-The current corpus contains 136 scenarios covering every P-rule of usage,
+The current corpus contains 138 scenarios covering every P-rule of usage,
 OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (52 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
@@ -162,7 +162,7 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The twenty-five
+(`invalid` source units do not count as upstream-valid). The thirty
 scenarios exercise all seven standalone brownfield synthesis families and mix
 faithful targets with artifact alternatives, binding-spec exclusions, invalid
 source units, and required whole-source refusals. This corpus is designed to
@@ -287,8 +287,8 @@ newly published rule) following the format above, then run
 and legible; embed content whenever a test's verdict depends on resolution.
 
 The corpus is currently aligned with each family's latest published text:
-revision 2 for OpenAPI, GraphQL, and MCP, and revision 1 for Usage, gRPC,
-Connect, and AsyncAPI, under core 0.2.0 semantics. Operation Graph is the eighth
+revision 5 for OpenAPI, revision 2 for GraphQL and MCP, and revision 1 for
+Usage, gRPC, Connect, and AsyncAPI, under core 0.2.0 semantics. Operation Graph is the eighth
 published binding family; its invocation-only composition semantics use the
 separate [`operation-graph/`](../operation-graph/) corpus because the graph's
 operation contracts live in the containing OBI rather than a standalone

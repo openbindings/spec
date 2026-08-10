@@ -77,7 +77,7 @@ proposal is a separate, advance design decision.
 
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
-| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture and revision-4 response-range/raw-byte fixtures. | Revision 4 is joined in both SDKs; immutable revisions 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, artifact-encoded strings, request and response media ranges, pre-input context, SSE selected through ranges, and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; dynamic form-property carriage is the next authority-backed audit. |
+| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, and dynamic object-body carriage. | Revision 5 is joined in both SDKs; immutable revisions 4, 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, artifact-encoded strings, request and response media ranges, pre-input context, SSE selected through ranges, explicit dynamic JSON/form/multipart objects, and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
 | AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Joined in both SDKs. | Passes for supported HTTP publish and WebSocket subscription cells. | Unsupported protocol/action cells remain explicit binding coverage exclusions. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
@@ -86,7 +86,7 @@ proposal is a separate, advance design decision.
 | Usage | Controlled process runtimes plus native process integration suites. | Joined in both SDKs. | Passes for output values, exit/signal failure, and decode failure. | Artifact-coverage loop only; process evidence remains diagnostic. |
 | Operation Graph | Portable identity-law and execution corpus against nested operation invocations. | Not applicable: the graph composes operations already declared by its containing OBI and carries no standalone operation contract to synthesize. | Passes through direct-versus-wrapped identity cases in both SDKs. | Deliberately invocation-only; advertising standalone synthesis would require invented schemas. |
 
-There are 29 fidelity scenarios across the seven active brownfield synthesis
+There are 30 fidelity scenarios across the seven active brownfield synthesis
 families, all joined by both reference SDKs. The separate Operation Graph
 identity-law corpus covers the eighth published binding family. The joined
 slice closes the abstraction-boundary proof for its currently declared
@@ -122,6 +122,26 @@ processor and fidelity fixtures for OAS 3.0 binary schemas, OAS 3.1
 schema-omitted raw bytes, concrete response selection through media ranges,
 range-selected JSON, and range-selected SSE. No revision-4 result demonstrated
 a Core-model or binding-specification-concept limitation.
+
+The revision-5 closure repeated those gates against
+`openbindings.openapi@5` and added authority-derived `patternProperties`,
+explicit `additionalProperties`, and `allOf` dynamic-object cases. Explicitly
+dynamic object bodies now remain one protocol-neutral application object while
+the binding-private transform carries that object to the selected native body;
+finite named object bodies retain the prior flat operation surface. Across the
+same 152-artifact supported envelope, 151 artifacts again produced exact Go
+and TypeScript synthesis (99.34%). The sole residual is the same
+validation-equivalent Radarr `$ref` versus inline representation and affects
+no invocation behavior. Twelve authority-authored wire cases, the sealed
+25-repository holdout, and the 40-repository development differential produced
+no OpenBindings wire or application mismatch. A cross-SDK transform mismatch
+found by the exact-parity gate exposed and corrected a Go empty-route
+`null`-versus-array defect; it required no Core or binding-concept change. No
+revision-5 result demonstrated a Core-model or binding-specification-concept
+limitation. The `ob` cross-surface dogfood gate separately found that local
+source-key remapping discarded synthesized binding transforms; preserving the
+complete binding entry and composing its private route with the public contract
+adaptation closed that application-layer loss without changing either model.
 
 ## Loop
 

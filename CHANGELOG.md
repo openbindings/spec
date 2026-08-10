@@ -13,6 +13,13 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@5`, preserving explicitly declared dynamic object-body
+  members through one protocol-neutral application object and a binding-private
+  whole-body route. Exact, pattern, additional-property, and `allOf` schemas
+  govern form and multipart member carriage without introducing HTTP fields or
+  changing the Core OBI document model. Immutable revisions 4, 3, 2, and 1
+  remain compatibility revisions.
+
 - `openbindings.openapi@4`, adding declaration-led response media-range
   selection and exact raw-response byte carriage through a canonical Base64
   application-value boundary. JSON, text, and SSE remain application lanes;

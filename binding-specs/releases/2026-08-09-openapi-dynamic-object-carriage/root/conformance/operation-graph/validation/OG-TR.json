@@ -1,0 +1,244 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "validation",
+  "description": "Tool-rule fixtures for the validation- and version-shaped OG-T rules. OG-T-01 (validate before acting; fail the binding rather than act on a violating graph) has representative cases here; its full obligation is the entire OG-V negative set in OG-VR.json, of which these cases are a sample. OG-T-02 pins the exact graph-unit edition incorporated by this binding-specification revision.",
+  "notes": "valid:false under OG-T-01 means a conformant tool refuses to act on the graph; valid:false under OG-T-02 means a conformant tool refuses the graph's declared version, reported distinctly from graph non-conformance. This revision incorporates exactly 0.2.0: SemVer precedence, build metadata equivalence, and inferred patch compatibility do not widen that set. Both blocks declare schemaEnforced: false — the negative graphs here are schema-valid (a cross-reference violation, a refused but syntactically valid version); the schema-rejection assertion belongs to OG-VR.json's schema-enforced rule blocks.",
+  "rules": [
+    {
+      "rule": "OG-T-01",
+      "title": "A tool acting on an operation-graph binding MUST validate the target graph against OG-V-01..18 and MUST fail the binding rather than act on a violating graph.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "a graph satisfying the validation rules may be acted on",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "an edge referencing an undefined node key (OG-V-07, beyond schema) must fail the binding before any action",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              },
+              {
+                "from": "in",
+                "to": "ghost"
+              }
+            ]
+          }
+        },
+        {
+          "description": "an orphan node unreachable from input (OG-V-06, beyond schema) must fail the binding before any action",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              },
+              "stranded": {
+                "type": "transform",
+                "transform": "$"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              },
+              {
+                "from": "stranded",
+                "to": "out"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "rule": "OG-T-02",
+      "title": "Tools MUST accept exactly graph-unit version 0.2.0 under this binding-specification revision and refuse every other declared version distinctly from graph non-conformance.",
+      "schemaEnforced": false,
+      "tests": [
+        {
+          "description": "graph declares the exact incorporated graph-unit edition",
+          "valid": true,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "build metadata produces a different declaration and does not widen the exact incorporated set",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0+build.1",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "an unseen higher patch is refused until a binding-specification revision incorporates it",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.99",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "a prerelease is not a member of the accepted line and is refused",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.2.0-rc.1",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "graph declares a major version outside the accepted line",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "999.0.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "graph declares a minor version above the accepted line",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.999.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        },
+        {
+          "description": "graph declares a minor version below the accepted line (refused in the downward direction too)",
+          "valid": false,
+          "graph": {
+            "openbindings.operation-graph": "0.1.0",
+            "nodes": {
+              "in": {
+                "type": "input"
+              },
+              "out": {
+                "type": "output"
+              }
+            },
+            "edges": [
+              {
+                "from": "in",
+                "to": "out"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
