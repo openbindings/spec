@@ -1,7 +1,7 @@
 {
   "format": "openbindings.binding-spec-publications@1",
   "latest": {
-    "asyncapi": "openbindings.asyncapi@1",
+    "asyncapi": "openbindings.asyncapi@2",
     "connect": "openbindings.connect@1",
     "graphql": "openbindings.graphql@2",
     "grpc": "openbindings.grpc@1",
@@ -23,6 +23,19 @@
       "document": "binding-specs/releases/2026-07-23-initial/root/binding-specs/asyncapi/openbindings.asyncapi.md",
       "canonicalUrl": "https://openbindings.com/binding-specs/asyncapi/1",
       "rawUrl": "https://openbindings.com/raw/binding-specs/asyncapi/1.md"
+    },
+    {
+      "identifier": "openbindings.asyncapi@2",
+      "family": "asyncapi",
+      "revision": 2,
+      "publishedAt": "2026-08-10",
+      "coreRelease": "0.2.0",
+      "publication": "2026-08-10-asyncapi-reply-fidelity",
+      "publicationRecord": "binding-specs/releases/2026-08-10-asyncapi-reply-fidelity/publication.json",
+      "publicationRecordSha256": "053949f8a3665b5413b1f752c4b8573ac9ec26710bccbaeca352c600113abcc0",
+      "document": "binding-specs/releases/2026-08-10-asyncapi-reply-fidelity/root/binding-specs/asyncapi/openbindings.asyncapi.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/asyncapi/2",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/asyncapi/2.md"
     },
     {
       "identifier": "openbindings.connect@1",

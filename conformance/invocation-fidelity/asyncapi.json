@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.asyncapi@1",
+  "bindingSpec": "openbindings.asyncapi@2",
   "family": "asyncapi",
   "description": "AsyncAPI fidelity scenarios exercise joined source synthesis and operation invocation. Message payloads and emergent completion are the abstract surface; HTTP status, response bytes, WebSocket frames, and metadata are diagnostic or binding-internal evidence.",
   "scenarios": [

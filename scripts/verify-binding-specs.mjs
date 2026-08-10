@@ -94,7 +94,7 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "connect", "openbindings.connect.md"),
   },
   asyncapi: {
-    bindingSpec: "openbindings.asyncapi@1",
+    bindingSpec: "openbindings.asyncapi@2",
     prefix: "ASYNC",
     spec: join(SPEC_ROOT, "binding-specs", "asyncapi", "openbindings.asyncapi.md"),
   },

@@ -178,6 +178,12 @@ jobs:
           repository: openbindings/openbindings-go
           ref: release/0.2
           path: openbindings-go
+      - uses: actions/checkout@v7
+        if: matrix.family == 'OpenAPI'
+        with:
+          repository: openbindings/openapi-client
+          ref: main
+          path: openapi-client
       - uses: actions/setup-go@v7
         with:
           go-version-file: openbindings-go/${{ matrix.module }}/go.mod
@@ -185,9 +191,16 @@ jobs:
       - name: Resolve the reference SDK core from its checkout
         working-directory: openbindings-go
         run: |
-          go work init . ${{ matrix.module }}
+          if [ "${{ matrix.family }}" = "OpenAPI" ]; then
+            go work init . ${{ matrix.module }} ../openapi-client/go
+          else
+            go work init . ${{ matrix.module }}
+          fi
           ver=$(awk '/github.com\/openbindings\/openbindings-go v/ {print $NF}' ${{ matrix.module }}/go.mod)
           go work edit -replace "github.com/openbindings/openbindings-go@${ver}=."
+          if [ "${{ matrix.family }}" = "OpenAPI" ]; then
+            go work edit -replace "github.com/openbindings/openapi-client/go@v0.1.0=../openapi-client/go"
+          fi
       - name: Execute shared processor and synthesis scenarios
         working-directory: openbindings-go/${{ matrix.module }}
         run: go test -run 'TestProcessorScenarios|TestSynthesisScenarios' ./...
@@ -205,6 +218,11 @@ jobs:
           repository: openbindings/openbindings-ts
           ref: release/0.2
           path: openbindings-ts
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/openapi-client
+          ref: main
+          path: openapi-client
       - uses: pnpm/action-setup@v6
         with:
           version: 10.15.0

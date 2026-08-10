@@ -1,0 +1,9 @@
+{
+  "format": "openbindings.binding-spec-publication-context@1",
+  "publication": "2026-08-10-asyncapi-reply-fidelity",
+  "publishedAt": "2026-08-10",
+  "coreRelease": "0.2.0",
+  "identifiers": [
+    "openbindings.asyncapi@2"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
+  "bindingSpec": "openbindings.mcp@2",
+  "family": "mcp",
+  "description": "MCP revision-2 sound synthesis: only tools with declared application output schemas are represented; every other listed target is evidenced.",
+  "scenarios": [
+    {
+      "id": "MCP-SS-01",
+      "description": "Every pinned-listing entry is represented, excluded for a declared coverage boundary, or identified as invalid without dialing the server.",
+      "source": {
+        "bindingSpec": "openbindings.mcp@2",
+        "location": "https://mcp.example.test",
+        "content": {
+          "tools": [
+            { "name": "ok", "outputSchema": { "type": "object", "properties": { "value": { "type": "integer" } }, "required": ["value"] } },
+            { "name": "untyped" },
+            { "name": "duplicate", "outputSchema": { "type": "object" } },
+            { "name": "duplicate", "outputSchema": { "type": "object" } },
+            { "name": "" }
+          ],
+          "resources": [
+            { "name": "record", "uri": "data://record" }
+          ],
+          "resourceTemplates": [
+            { "name": "bad", "uriTemplate": "{" }
+          ],
+          "prompts": [
+            { "name": "review" }
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["ok"],
+        "bindings": [
+          { "operationKey": "ok", "bindingRef": "tools/ok" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "tools/ok", "scope": "target", "status": "represented", "operationKey": "ok", "bindingRef": "tools/ok", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/untyped", "scope": "target", "status": "excluded", "reasonCode": "mcp.missing_application_output_schema", "rule": "MCP-P-04", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=2", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=3", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/#listing-index=4", "scope": "target", "status": "invalid", "reasonCode": "mcp.invalid_entity", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "resources/data://record", "scope": "target", "status": "excluded", "reasonCode": "mcp.no_application_output_contract", "rule": "MCP-P-04", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "resourceTemplates/{", "scope": "target", "status": "invalid", "reasonCode": "mcp.invalid_entity", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "prompts/review", "scope": "target", "status": "excluded", "reasonCode": "mcp.no_application_output_contract", "rule": "MCP-P-04", "requirements": [] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "MCP-SS-02",
+      "description": "Malformed pinned-listing entity collections are refused instead of interpreted as an empty capability surface.",
+      "source": {
+        "bindingSpec": "openbindings.mcp@2",
+        "location": "https://mcp.example.test",
+        "content": {
+          "tools": "not-a-list"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": ["MCP-D-01"]
+      }
+    }
+  ]
+}

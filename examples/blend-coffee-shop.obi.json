@@ -224,7 +224,7 @@
       "description": "REST API for the ordering app"
     },
     "events": {
-      "bindingSpec": "openbindings.asyncapi@1",
+      "bindingSpec": "openbindings.asyncapi@2",
       "location": "https://blend.openbindings.com/asyncapi.json",
       "description": "SSE event stream for the barista dashboard"
     },

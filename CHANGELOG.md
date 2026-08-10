@@ -13,6 +13,13 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.asyncapi@2`, preserving AsyncAPI operation replies by
+  refusing reply-bearing WebSocket `send` operations before establishment
+  instead of synthesizing a subscription that discards the reply contract.
+  The protocol-neutral operation surface, generic context resolution, and
+  Core OBI document model are unchanged; immutable revision 1 remains an
+  exact compatibility revision.
+
 - `openbindings.openapi@7`, carrying exact schema-omitted OpenAPI 3.0
   non-JSON request and response representations as opaque bytes through the
   canonical protocol-independent Base64 boundary. Media ranges, forms, text,

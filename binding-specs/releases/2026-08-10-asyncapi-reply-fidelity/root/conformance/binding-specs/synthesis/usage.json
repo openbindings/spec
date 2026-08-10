@@ -1,0 +1,123 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
+  "bindingSpec": "openbindings.usage@1",
+  "family": "usage",
+  "description": "Usage artifact interaction inventory, root operation, and exact alias-path preservation.",
+  "scenarios": [
+    {
+      "id": "USAGE-SS-01",
+      "description": "The binary root and every primary or alias command path are represented; a subcommand-required group is navigation, not an interaction.",
+      "source": {
+        "bindingSpec": "openbindings.usage@1",
+        "content": "bin \"tool\"\nflag \"--profile <name>\" global=#true\ncmd \"database\" {\n  alias \"db\"\n  cmd \"run\" {\n    alias \"r\"\n    flag \"--force\"\n  }\n}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["database", "database.run", "tool"],
+        "bindings": [
+          { "operationKey": "tool", "bindingRef": "" },
+          { "operationKey": "database", "bindingRef": "database" },
+          { "operationKey": "database", "bindingRef": "db" },
+          { "operationKey": "database.run", "bindingRef": "database run" },
+          { "operationKey": "database.run", "bindingRef": "database r" },
+          { "operationKey": "database.run", "bindingRef": "db run" },
+          { "operationKey": "database.run", "bindingRef": "db r" }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            { "sourceIndex": 0, "sourceRef": "<root>", "scope": "target", "status": "represented", "operationKey": "tool", "bindingRef": "", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database", "scope": "target", "status": "represented", "operationKey": "database", "bindingRef": "database", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db", "scope": "target", "status": "represented", "operationKey": "database", "bindingRef": "db", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "database run", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "database r", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "db run", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "db r", "requirements": [] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "USAGE-SS-02",
+      "description": "Sibling spelling collisions are explicitly excluded, unique spellings remain represented, and a command with no unique ref is not advertised.",
+      "source": {
+        "bindingSpec": "openbindings.usage@1",
+        "content": "bin \"tool\"\ncmd \"x\"\ncmd \"beta\" {\n  alias \"x\"\n}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "beta",
+          "tool"
+        ],
+        "bindings": [
+          {
+            "operationKey": "tool",
+            "bindingRef": ""
+          },
+          {
+            "operationKey": "beta",
+            "bindingRef": "beta"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "<root>",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "tool",
+              "bindingRef": "",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "ambiguous-ref:x",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "usage.ambiguous_command_spelling",
+              "rule": "USAGE-D-03",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "command:x",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "usage.no_unique_command_ref",
+              "rule": "USAGE-D-03",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "beta",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "beta",
+              "bindingRef": "beta",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "USAGE-SS-03",
+      "description": "A non-string usage descriptor carriage is refused rather than treated as an empty command tree.",
+      "source": {
+        "bindingSpec": "openbindings.usage@1",
+        "content": {}
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "USAGE-D-01"
+        ]
+      }
+    }
+  ]
+}

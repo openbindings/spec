@@ -78,7 +78,7 @@ proposal is a separate, advance design decision.
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
 | OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | Revision 7 is joined in both SDKs; immutable revisions 6, 5, 4, 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; request and response media ranges; pre-input context; SSE selected through ranges; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
-| AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Joined in both SDKs. | Passes for supported HTTP publish and WebSocket subscription cells. | Unsupported protocol/action cells remain explicit binding coverage exclusions. |
+| AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Revision 2 is joined in both SDKs; immutable revision 1 remains an exact compatibility path. | Passes for supported HTTP publish and WebSocket stream cells; every reply-bearing WebSocket operation now refuses before establishment instead of losing its reply contract. | Request/reply sessions, message headers, binary codecs, AsyncAPI editions beyond exact 3.0.0, and unsupported protocols/actions remain explicit coverage exclusions. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | GraphQL | Revision-2 HTTP peers for aliases, transport failure, and partial data plus errors. | Joined in both SDKs. | Passes for query/mutation; native envelopes remain diagnostic. | Subscriptions remain an explicit revision-2 lifecycle exclusion. |
@@ -182,6 +182,25 @@ OpenBindings wire or application mismatches in both SDKs. The sealed
 produced zero OpenBindings mismatch. No revision-7 result demonstrated a Core
 model or binding-specification-concept limitation, and no Core document-model
 field changed.
+
+The 2026-08-10 AsyncAPI revision-2 closure evaluated 250 immutable artifacts
+from 250 independent GitHub repositories and 206 owners, split into a
+187-repository development cohort and a 63-repository holdout sealed before
+implementation tuning. All 51 authority-derived semantic cells occurred in
+development. Revision 1 had silently treated reply-bearing WebSocket `send`
+operations as ordinary subscriptions; 22 such operations occurred across five
+repositories. Revision 2 refuses that unsupported request/reply session before
+establishment and leaves revision 1 available by exact identifier. After the
+correction, Go and TypeScript produced exactly equal OBIs and exhaustive
+coverage ledgers for all 247 independently adjudicated valid artifacts
+(100%). Moving exact-edition discrimination ahead of external-reference
+resolution also made two invalid inputs converge on deterministic loud
+refusal without network access. The sole raw residual is an invalid external
+YAML closure tolerated by one parser and remains recorded outside the
+supported-artifact denominator. The correction changed no Core prose, OBI document field,
+invocation frame, protocol-blind output shape, or context-resolution rule. The
+remaining AsyncAPI debt is explicit binding coverage, not a demonstrated Core
+or binding-specification-concept limit.
 
 ## Loop
 
