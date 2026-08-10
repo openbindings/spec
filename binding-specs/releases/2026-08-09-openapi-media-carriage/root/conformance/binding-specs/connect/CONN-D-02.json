@@ -1,0 +1,247 @@
+{
+  "rule": "CONN-D-02",
+  "bindingSpec": "openbindings.connect@1",
+  "section": "4",
+  "description": "`location` is present and is an absolute `http`/`https` base URL: scheme, host, optional port, and an optional path prefix without a trailing `/`; query, fragment, and userinfo components are not part of a base URL. A `content`-only source is not conformant.",
+  "tests": [
+    {
+      "description": "https base URL with no path prefix",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "base URL with a path prefix, no trailing slash",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://example.com/api"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "http base URL with an explicit port (ordinary HTTP defaults; ports are optional in this family)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "http://localhost:8080"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content-only source is not conformant: this family is service-addressed",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "content": "syntax = \"proto3\";\npackage blend;\nservice CoffeeShop {\n  rpc GetMenu(MenuRequest) returns (Menu);\n}\nmessage MenuRequest {}\nmessage Menu {\n  repeated string items = 1;\n}\n"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "trailing slash on the path prefix is not part of a base URL",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://example.com/api/"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "bare root slash is a trailing slash: the no-prefix spelling is scheme://host",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com/"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "query component is not part of a base URL",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://example.com/api?v=1"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "fragment component is not part of a base URL",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://example.com/api#prod"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "userinfo component is not part of a base URL",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://admin:secret@example.com"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "non-http scheme is not a base URL for this family",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "grpcs://example.com:8443"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02"]
+    },
+    {
+      "description": "authority-looking string without a scheme is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "example.com/api"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-02", "OBI-D-05"]
+    }
+  ]
+}

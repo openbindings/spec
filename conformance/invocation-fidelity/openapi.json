@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.openapi@2",
+  "bindingSpec": "openbindings.openapi@3",
   "family": "openapi",
   "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
@@ -267,6 +267,163 @@
             { "path": "/error/diagnostics/openapi/declared", "equals": true },
             { "path": "/error/diagnostics/openapi/responseKey", "equals": "503" },
             { "path": "/error/diagnostics/openapi/governingMedia", "equals": "text/event-stream" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-06",
+      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04"],
+      "section": "9.2",
+      "description": "A synthesized generic binary operation accepts a protocol-independent Base64 string field while concrete binding evidence proves byte-exact image upload.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Binary abstraction", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/image": {
+                "put": {
+                  "operationId": "fidelityUploadImage",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {
+                        "schema": { "type": "string", "format": "binary" }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "stored" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1image/put" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "body": "AAH+/w==" }
+        },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error", "absent": true },
+            { "path": "/dispatch/headers/Content-Type", "equals": "image/png" },
+            { "path": "/dispatch/bodyBase64", "equals": "AAH+/w==" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-07",
+      "rules": ["OBI-B-02", "OAPI-P-04"],
+      "section": "9.2",
+      "description": "Configured wildcard carriage leaves the operation input as a pure application object while binding evidence proves the concrete JSON realization.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Wildcard abstraction", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "operationId": "fidelityCreateItem",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "type": "object",
+                          "properties": { "name": { "type": "string" } },
+                          "required": ["name"]
+                        }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "stored" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "configuration": { "requestMedia": "application/json" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "name": "Ada" }
+        },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/error", "absent": true },
+            { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
+            { "path": "/dispatch/body", "equals": { "name": "Ada" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-08",
+      "rules": ["OBI-B-02", "OAPI-P-04"],
+      "section": "9.2",
+      "description": "A wildcard-only operation with no concrete media choice requests retryable configuration without dispatching or changing the application input contract.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Wildcard context", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/items": {
+                "post": {
+                  "operationId": "fidelityCreateItemWithContext",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "*/*": {
+                        "schema": {
+                          "type": "object",
+                          "properties": { "name": { "type": "string" } }
+                        }
+                      }
+                    }
+                  },
+                  "responses": { "204": { "description": "stored" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1items/post" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "name": "Ada" }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            { "path": "/outputs", "equals": [] },
+            { "path": "/dispatch", "absent": true },
+            { "path": "/context/alternatives/0/requirements/0/type", "equals": "config.value" },
+            { "path": "/context/alternatives/0/requirements/0/point", "equals": "requestMedia" }
           ]
         }
       ]

@@ -1,0 +1,222 @@
+{
+  "rule": "CONN-D-01",
+  "bindingSpec": "openbindings.connect@1",
+  "section": "5",
+  "description": "`content`, when present, is one of `openbindings.grpc@1`'s two embedded schema carriages under its parse pins and accepted range (incorporated by exact-identifier citation): single-file proto source text (string, `google/protobuf/*` imports only) or a `FileDescriptorSet` in canonical JSON (object, unknown members and extension members refused). No other JSON type or shape is accepted.",
+  "notes": "Absent content is not a CONN-D-01 case at all: it selects descriptorless mode (CONN-P-01) and is fixtured as a positive to pin the 'when present' scoping. The carriage pins mirror GRPC-D-01's; the incorporation is by exact-identifier citation, so these fixtures stand on openbindings.grpc@1's revision-1 text. The shared-type positive (a message reused in two sibling fields) pins that ordinary DAG reuse in the SOURCE gives a conformant processor nothing to refuse at bind time; synthesis fidelity for that shape — the full schema surviving in every sibling position rather than truncating to a bare object — is a §10 synthesis-convention concern, verified in the SDK module tests, not decidable from the document here.",
+  "tests": [
+    {
+      "description": "string content: single-file proto3 source text (schema mode)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": "syntax = \"proto3\";\npackage blend;\nservice CoffeeShop {\n  rpc GetMenu(MenuRequest) returns (Menu);\n}\nmessage MenuRequest {}\nmessage Menu {\n  repeated string items = 1;\n}\n"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "object content: a FileDescriptorSet in canonical protobuf JSON (schema mode)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": {
+              "file": [
+                {
+                  "name": "coffee.proto",
+                  "package": "blend",
+                  "syntax": "proto3",
+                  "messageType": [
+                    { "name": "MenuRequest" },
+                    {
+                      "name": "Menu",
+                      "field": [
+                        {
+                          "name": "items",
+                          "number": 1,
+                          "label": "LABEL_REPEATED",
+                          "type": "TYPE_STRING",
+                          "jsonName": "items"
+                        }
+                      ]
+                    }
+                  ],
+                  "service": [
+                    {
+                      "name": "CoffeeShop",
+                      "method": [
+                        {
+                          "name": "GetMenu",
+                          "inputType": ".blend.MenuRequest",
+                          "outputType": ".blend.Menu"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content: a user message type reused in two sibling fields (Pair.a and Pair.b are both Point) compiles and is accepted (schema mode) — DAG reuse in the source is not a bind-time defect",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getPair": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": "syntax = \"proto3\";\npackage blend;\nservice CoffeeShop {\n  rpc GetPair(PairRequest) returns (Pair);\n}\nmessage PairRequest {}\nmessage Point {\n  string label = 1;\n}\nmessage Pair {\n  Point a = 1;\n  Point b = 2;\n}\n"
+          }
+        },
+        "bindings": {
+          "getPair.shop": {
+            "operation": "getPair",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetPair"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "absent content selects descriptorless mode: nothing for this rule to refuse",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "echo": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com"
+          }
+        },
+        "bindings": {
+          "echo.svc": {
+            "operation": "echo",
+            "source": "svc",
+            "ref": "demo.EchoService/Echo"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content importing outside google/protobuf/* is refused loudly at load",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": "syntax = \"proto3\";\npackage blend;\nimport \"acme/common.proto\";\nservice CoffeeShop {\n  rpc GetMenu(acme.Empty) returns (acme.Menu);\n}\n"
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-01"]
+    },
+    {
+      "description": "content carrying a JSON number is neither carriage",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": 42
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-01"]
+    },
+    {
+      "description": "unknown member in the descriptor-set object is refused loudly",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "getMenu": {} },
+        "sources": {
+          "shop": {
+            "bindingSpec": "openbindings.connect@1",
+            "location": "https://api.example.com",
+            "content": {
+              "file": [
+                {
+                  "name": "coffee.proto",
+                  "package": "blend",
+                  "syntax": "proto3",
+                  "messageType": [{ "name": "MenuRequest" }, { "name": "Menu" }],
+                  "service": [
+                    {
+                      "name": "CoffeeShop",
+                      "method": [
+                        {
+                          "name": "GetMenu",
+                          "inputType": ".blend.MenuRequest",
+                          "outputType": ".blend.Menu"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "registry": "internal"
+            }
+          }
+        },
+        "bindings": {
+          "getMenu.shop": {
+            "operation": "getMenu",
+            "source": "shop",
+            "ref": "blend.CoffeeShop/GetMenu"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["CONN-D-01"]
+    }
+  ]
+}

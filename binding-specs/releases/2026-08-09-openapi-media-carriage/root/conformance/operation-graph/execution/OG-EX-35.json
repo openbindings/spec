@@ -1,0 +1,51 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "format is an annotation at embedded-schema evaluation: a filter never gates on format (Embedded schemas; aligned with core 6.2).",
+  "fixtures": [
+    {
+      "id": "OG-EX-35",
+      "name": "filter ignores format keyword",
+      "section": "Embedded schemas",
+      "description": "A filter whose schema carries type:string plus format:email passes any string through: format never asserts, so 'not-an-email' reaches output.",
+      "operations": {},
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "f": {
+            "type": "filter",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "f"
+          },
+          {
+            "from": "f",
+            "to": "out"
+          }
+        ]
+      },
+      "expected": {
+        "output": [
+          "not-an-email"
+        ],
+        "ordering": "exact"
+      },
+      "writes": [
+        "not-an-email"
+      ]
+    }
+  ]
+}

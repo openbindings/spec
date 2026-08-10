@@ -13,6 +13,15 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@3`, adding artifact-authorized raw request-byte
+  carriage through a canonical Base64 JSON boundary, preserving OpenAPI 3.1
+  artifact-encoded strings as text, and allowing an explicit concrete
+  `requestMedia` choice to instantiate OpenAPI media-range declarations.
+  Synthesis remains protocol-blind and records any required media choice as
+  coverage/context rather than adding HTTP fields to operation schemas.
+  Immutable revisions 2 and 1 remain compatibility revisions. No Core OBI
+  document-model field changed.
+
 - `openbindings.openapi@2`, preserving independently declared same-named
   parameters and request-body properties through a binding-private routed
   source value and ordinary core `inputTransform`. Synthesized operation

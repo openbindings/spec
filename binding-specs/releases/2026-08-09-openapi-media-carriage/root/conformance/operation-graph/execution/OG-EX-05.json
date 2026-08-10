@@ -1,0 +1,133 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Map and collect: list user IDs, unpack them into separate events, fetch each user, and collect the results into one array. Mirrors the format spec's Example 4 and its execution trace.",
+  "fixtures": [
+    {
+      "id": "OG-EX-05",
+      "name": "Map and collect",
+      "section": "Normative examples / Example 4",
+      "description": "users.list returns three ids; map unpacks them in array order into three events; getDetails (an each node) opens one users.get invocation per id \u2014 the canonical map \u2192 each pairing; the buffer collects all three and flushes one array. each's invocations may run concurrently, so the collected array's element order is implementation-defined (Determinism and portability); the output is a single array event, so stream ordering stays exact while arrayOrdering is set to compare that array as a multiset.",
+      "operations": {
+        "users.list": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "emit": [
+                {
+                  "ids": [
+                    "u1",
+                    "u2",
+                    "u3"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "users.get": {
+          "responses": [
+            {
+              "whenInput": "u1",
+              "emit": [
+                {
+                  "id": "u1",
+                  "name": "Alice"
+                }
+              ]
+            },
+            {
+              "whenInput": "u2",
+              "emit": [
+                {
+                  "id": "u2",
+                  "name": "Bob"
+                }
+              ]
+            },
+            {
+              "whenInput": "u3",
+              "emit": [
+                {
+                  "id": "u3",
+                  "name": "Carol"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "listUsers": {
+            "type": "operation",
+            "operation": "users.list"
+          },
+          "unpack": {
+            "type": "map",
+            "transform": "ids"
+          },
+          "getDetails": {
+            "type": "each",
+            "operation": "users.get"
+          },
+          "collect": {
+            "type": "buffer"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "listUsers"
+          },
+          {
+            "from": "listUsers",
+            "to": "unpack"
+          },
+          {
+            "from": "unpack",
+            "to": "getDetails"
+          },
+          {
+            "from": "getDetails",
+            "to": "collect"
+          },
+          {
+            "from": "collect",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {}
+      ],
+      "expected": {
+        "output": [
+          [
+            {
+              "id": "u1",
+              "name": "Alice"
+            },
+            {
+              "id": "u2",
+              "name": "Bob"
+            },
+            {
+              "id": "u3",
+              "name": "Carol"
+            }
+          ]
+        ],
+        "ordering": "exact",
+        "arrayOrdering": "set"
+      }
+    }
+  ]
+}
