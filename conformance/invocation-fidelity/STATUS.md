@@ -77,7 +77,7 @@ proposal is a separate, advance design decision.
 
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
-| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, and declaration-complex JSON bodies. | Revision 6 is joined in both SDKs; immutable revisions 5, 4, 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, artifact-encoded strings, request and response media ranges, pre-input context, SSE selected through ranges, explicit dynamic JSON/form/multipart objects, declaration-complex exact JSON values, and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
+| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | Revision 7 is joined in both SDKs; immutable revisions 6, 5, 4, 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; request and response media ranges; pre-input context; SSE selected through ranges; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
 | AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Joined in both SDKs. | Passes for supported HTTP publish and WebSocket subscription cells. | Unsupported protocol/action cells remain explicit binding coverage exclusions. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
@@ -86,7 +86,7 @@ proposal is a separate, advance design decision.
 | Usage | Controlled process runtimes plus native process integration suites. | Joined in both SDKs. | Passes for output values, exit/signal failure, and decode failure. | Artifact-coverage loop only; process evidence remains diagnostic. |
 | Operation Graph | Portable identity-law and execution corpus against nested operation invocations. | Not applicable: the graph composes operations already declared by its containing OBI and carries no standalone operation contract to synthesize. | Passes through direct-versus-wrapped identity cases in both SDKs. | Deliberately invocation-only; advertising standalone synthesis would require invented schemas. |
 
-There are 31 fidelity scenarios across the seven active brownfield synthesis
+There are 32 fidelity scenarios across the seven active brownfield synthesis
 families, all joined by both reference SDKs. The separate Operation Graph
 identity-law corpus covers the eighth published binding family. The joined
 slice closes the abstraction-boundary proof for its currently declared
@@ -164,6 +164,24 @@ Non-JSON codecs and media-range declaration-complex carriage remain explicit
 limits rather than being guessed from corpus frequency. No revision-6 result
 demonstrated a Core-model or binding-specification-concept limitation, and no
 Core document-model field changed.
+
+The revision-7 closure admitted the OAS 3.0 Media Type Object's schema-omitted
+exact non-JSON form as artifact-authorized opaque bytes, symmetrically for
+requests and responses, while retaining revision 6's refusal and refusing to
+infer a byte lane for media ranges. Across the same 170-artifact corpus,
+synthesized operations rose from 6,655 to 6,658 in TypeScript and from 6,403
+to 6,406 in Go; fully represented specimens rose from 133 to 135 and from 132
+to 134 respectively. The recovered targets were exactly the three operations
+whose exact declarations supplied this authority; rejection counts did not
+regress. The 152-artifact supported envelope again produced 151 exact
+cross-SDK results (99.34%); the sole residual remained the
+validation-equivalent Radarr `$ref` versus inline representation and affected
+no invocation semantics. Thirteen authority-authored wire cases produced zero
+OpenBindings wire or application mismatches in both SDKs. The sealed
+25-repository holdout and 40-repository development differential likewise
+produced zero OpenBindings mismatch. No revision-7 result demonstrated a Core
+model or binding-specification-concept limitation, and no Core document-model
+field changed.
 
 ## Loop
 

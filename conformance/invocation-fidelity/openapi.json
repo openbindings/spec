@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.openapi@6",
+  "bindingSpec": "openbindings.openapi@7",
   "family": "openapi",
   "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
@@ -595,6 +595,61 @@
             { "path": "/dispatch/url", "equals": "https://api.example/items?kind=query-value" },
             { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
             { "path": "/dispatch/body", "equals": { "kind": "named", "name": "Ada" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-12",
+      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04", "OAPI-P-07"],
+      "section": "9.2",
+      "description": "Joined synthesis exposes one protocol-independent Base64 value while an exact schema-omitted OAS 3.0 declaration preserves request and response bytes.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Schema-omitted byte fidelity", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/archive": {
+                "post": {
+                  "operationId": "fidelityStoreArchive",
+                  "requestBody": {
+                    "required": true,
+                    "content": { "application/octet-stream": {} }
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "archive",
+                      "content": { "application/octet-stream": {} }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1archive/post" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "body": "AAH+/w==" }
+        },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "application/octet-stream" },
+          "bodyBase64": "3q2+7w=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/error", "absent": true },
+            { "path": "/dispatch/headers/Content-Type", "equals": "application/octet-stream" },
+            { "path": "/dispatch/bodyBase64", "equals": "AAH+/w==" },
+            { "path": "/outputs", "equals": ["3q2+7w=="] }
           ]
         }
       ]

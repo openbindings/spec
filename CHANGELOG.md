@@ -13,6 +13,12 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@7`, carrying exact schema-omitted OpenAPI 3.0
+  non-JSON request and response representations as opaque bytes through the
+  canonical protocol-independent Base64 boundary. Media ranges, forms, text,
+  and artifact-defined codecs do not gain this lane. Immutable revision 6
+  remains available, and no Core OBI document-model field changed.
+
 - `openbindings.openapi@6`, preserving declaration-complex exact JSON request
   schemas and values through one protocol-neutral application property and a
   binding-private whole-value route. `oneOf`, `anyOf`, conditionals,
