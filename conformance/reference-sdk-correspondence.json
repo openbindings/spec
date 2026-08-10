@@ -25,7 +25,7 @@
     }
   },
   "families": [
-    { "bindingSpec": "openbindings.openapi@3", "go": { "invoker": "openapi.Invoker", "synthesizer": "openapi.Synthesizer" }, "typescript": { "invoker": "OpenAPIInvoker", "synthesizer": "OpenAPISynthesizer" }, "roles": ["bindingInvoker", "bindingPreparer", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
+    { "bindingSpec": "openbindings.openapi@4", "go": { "invoker": "openapi.Invoker", "synthesizer": "openapi.Synthesizer" }, "typescript": { "invoker": "OpenAPIInvoker", "synthesizer": "OpenAPISynthesizer" }, "roles": ["bindingInvoker", "bindingPreparer", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
     { "bindingSpec": "openbindings.asyncapi@1", "go": { "invoker": "asyncapi.Invoker", "synthesizer": "asyncapi.Synthesizer" }, "typescript": { "invoker": "AsyncAPIInvoker", "synthesizer": "AsyncAPISynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
     { "bindingSpec": "openbindings.mcp@2", "go": { "invoker": "mcp.Invoker", "synthesizer": "mcp.Synthesizer" }, "typescript": { "invoker": "MCPInvoker", "synthesizer": "MCPSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },
     { "bindingSpec": "openbindings.grpc@1", "go": { "invoker": "grpc.Invoker", "synthesizer": "grpc.Synthesizer" }, "typescript": { "invoker": "GrpcInvoker", "synthesizer": "GrpcSynthesizer" }, "roles": ["bindingInvoker", "interfaceSynthesizer", "coverageSynthesizer", "sourceInspector"] },

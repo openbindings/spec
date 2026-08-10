@@ -1,6 +1,6 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.openapi@3",
+  "bindingSpec": "openbindings.openapi@4",
   "family": "openapi",
   "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
@@ -424,6 +424,49 @@
             { "path": "/dispatch", "absent": true },
             { "path": "/context/alternatives/0/requirements/0/type", "equals": "config.value" },
             { "path": "/context/alternatives/0/requirements/0/point", "equals": "requestMedia" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-09",
+      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-07"],
+      "section": "9.5",
+      "description": "A schema-omitted ranged binary response becomes one protocol-independent Base64 application value without exposing status, media, or headers in that value.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": { "title": "Binary abstraction", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/image": {
+                "get": {
+                  "operationId": "fidelityImage",
+                  "responses": {
+                    "200": { "description": "image", "content": { "image/*": {} } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/paths/~1image/get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "status": 200,
+          "headers": { "Content-Type": "image/png", "X-Trace": "native-only" },
+          "bodyBase64": "AAH+/w=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": ["AAH+/w=="] },
+            { "path": "/error", "absent": true }
           ]
         }
       ]

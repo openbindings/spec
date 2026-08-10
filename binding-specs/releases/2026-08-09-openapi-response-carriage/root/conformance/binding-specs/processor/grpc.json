@@ -1,0 +1,295 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@1",
+  "bindingSpec": "openbindings.grpc@1",
+  "family": "grpc",
+  "description": "Portable processor scenarios for gRPC reflection, transport selection, ProtoJSON correspondence, all method kinds, final-status classification, and metadata restraint.",
+  "scenarios": [
+    {
+      "id": "GRPC-PS-01",
+      "rules": ["GRPC-P-01"],
+      "section": "3",
+      "description": "A v1 reflection failure other than UNIMPLEMENTED is not treated as permission to retry v1alpha.",
+      "given": {
+        "source": { "location": "grpcs://api.example:443" },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "reflectionV1Status": "PERMISSION_DENIED",
+          "reflectionV1alphaSchema": "available-if-called"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/reflectionRequests",
+              "equals": ["grpc.reflection.v1.ServerReflection"]
+            },
+            { "path": "/dispatch", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-02",
+      "rules": ["GRPC-P-02"],
+      "section": "4",
+      "description": "A bare host:port target supplies no security choice and refuses before dialing when transport configuration is absent.",
+      "given": {
+        "source": {
+          "location": "api.example:50051",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-03",
+      "rules": ["GRPC-P-03"],
+      "section": "9.1",
+      "description": "An unknown request member is refused under default ProtoJSON parsing before a unary RPC is opened.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request { string known = 1; } message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": {
+          "inputPresent": true,
+          "input": { "known": "x", "unknown": 1 }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-04",
+      "rules": ["GRPC-P-04"],
+      "section": "8",
+      "description": "A bidirectional RPC can surface a server message while caller input remains open.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Note) returns (stream Note); } message Note { string text = 1; }"
+        },
+        "binding": { "ref": "demo.Service/Chat" },
+        "invocation": {
+          "inputPresent": false,
+          "writes": [{ "text": "one" }, { "text": "two" }]
+        },
+        "peer": {
+          "afterWrite": { "index": 0, "responses": [{ "text": "ack one" }] },
+          "finalStatus": "OK"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs/0", "equals": { "text": "ack one" } },
+            { "path": "/trace/outputs/0/inputOpen", "equals": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-05",
+      "rules": ["GRPC-P-05"],
+      "section": "9.2",
+      "description": "Response values use canonical ProtoJSON defaults and do not gain leading or trailing metadata fields.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply { int64 count = 1; string omitted = 2; }"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "responseMessage": { "count": "9007199254740993" },
+          "leadingMetadata": { "x-id": "1" },
+          "trailingMetadata": { "x-cost": "2" },
+          "finalStatus": "OK"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "count": "9007199254740993" }] },
+            { "path": "/outputs/0/x-id", "absent": true },
+            { "path": "/outputs/0/x-cost", "absent": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-06",
+      "rules": ["GRPC-P-06"],
+      "section": "9.4",
+      "description": "A non-OK final status fails a stream without retracting response values already emitted.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
+        },
+        "binding": { "ref": "demo.Service/List" },
+        "invocation": { "inputPresent": false },
+        "peer": {
+          "responseMessages": [{ "value": "first" }],
+          "finalStatus": "INTERNAL"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "value": "first" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-07",
+      "rules": ["GRPC-P-07"],
+      "section": "9.5",
+      "description": "A generic credential without an explicitly named metadata key is surfaced rather than mapped to authorization.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "credentials": { "generic": "secret" } }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-08",
+      "rules": ["GRPC-P-01"],
+      "section": "6",
+      "description": "Embedded protobuf content displaces server reflection completely while location remains the dial target.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply { string ok = 1; }"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "responseMessage": { "ok": "yes" }, "finalStatus": "OK" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/reflectionRequests", "equals": [] },
+            { "path": "/dispatch/target", "equals": "api.example:443" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-09",
+      "rules": ["GRPC-P-02"],
+      "section": "9.3",
+      "description": "An explicit plaintext transport override replaces a grpcs scheme instead of being merged with it.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "configuration": { "transport": "plaintext" },
+        "invocation": { "inputPresent": false },
+        "peer": { "responseMessage": {}, "finalStatus": "OK" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/transport", "equals": "plaintext" },
+            { "path": "/dispatch/target", "equals": "api.example:443" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-10",
+      "rules": ["GRPC-P-03"],
+      "section": "9.1",
+      "description": "A later invalid client-streaming value cancels the already-open RPC and preserves outputs emitted before the local failure.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Request) returns (stream Reply); } message Request { string value = 1; } message Reply { string ack = 1; }"
+        },
+        "binding": { "ref": "demo.Service/Chat" },
+        "invocation": {
+          "inputPresent": false,
+          "writes": [{ "value": "valid" }, { "unknown": true }]
+        },
+        "peer": {
+          "afterWrite": { "index": 0, "responses": [{ "ack": "valid" }] }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "dispatch",
+          "assertions": [
+            { "path": "/outputs", "equals": [{ "ack": "valid" }] },
+            { "path": "/dispatch/cancelled", "equals": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GRPC-PS-11",
+      "rules": ["GRPC-P-07"],
+      "section": "9.5",
+      "description": "Consumer metadata using the protocol-reserved grpc- prefix is refused before dispatch.",
+      "given": {
+        "source": {
+          "location": "grpcs://api.example:443",
+          "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
+        },
+        "binding": { "ref": "demo.Service/Get" },
+        "invocation": { "inputPresent": false },
+        "runtime": { "outgoingMetadata": { "grpc-timeout": "1S" } }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    }
+  ]
+}

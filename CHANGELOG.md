@@ -13,6 +13,13 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@4`, adding declaration-led response media-range
+  selection and exact raw-response byte carriage through a canonical Base64
+  application-value boundary. JSON, text, and SSE remain application lanes;
+  status, headers, media identity, and other HTTP evidence do not enter the
+  operation value. Immutable revisions 3, 2, and 1 remain compatibility
+  revisions. No Core OBI document-model field changed.
+
 - `openbindings.openapi@3`, adding artifact-authorized raw request-byte
   carriage through a canonical Base64 JSON boundary, preserving OpenAPI 3.1
   artifact-encoded strings as text, and allowing an explicit concrete

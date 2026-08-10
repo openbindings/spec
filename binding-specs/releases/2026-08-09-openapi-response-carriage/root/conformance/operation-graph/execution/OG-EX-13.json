@@ -1,0 +1,418 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "The identity law: input -> operation(y) -> output is observationally indistinguishable from a direct invocation of y. These fixtures exercise the conformance anchor (the trivial wrapper, spec Example 1) across all five selected-binding cardinalities named in the law's acceptance criterion (spec 'Transparency', the testable-law paragraph) -- no-input, unary, server-streaming, client-streaming, and bidirectional -- plus the terminal-error consequence. Together they pin consequences 1, 2, and 4 of the law and its cross-cardinality acceptance criterion.",
+  "fixtures": [
+    {
+      "id": "OG-EX-13",
+      "name": "Identity wrapper, unary",
+      "section": "Transparency (the identity law) / Example 1",
+      "description": "The caller writes one value. The conduit pipes it into the held users.get invocation; the unary mock reads it, closes its input (closesAfter 1), and emits one result, which flows to output. One write in, one event out, exactly as direct invocation.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "id": "u1"
+              },
+              "emit": [
+                {
+                  "id": "u1",
+                  "name": "Alice"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "get": {
+            "type": "operation",
+            "operation": "users.get"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "get"
+          },
+          {
+            "from": "get",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "id": "u1"
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "id": "u1",
+            "name": "Alice"
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-14",
+      "name": "Identity wrapper, no-input invocation",
+      "section": "Transparency (the identity law) / consequence 2",
+      "description": "The caller writes nothing and closes. An empty input stream is piped as an empty input stream: the conduit performs one no-input invocation of time.now (driven by incoming completion, matched by whenInputs []), and its single output flows to output. No value is synthesized.",
+      "operations": {
+        "time.now": {
+          "responses": [
+            {
+              "whenInputs": [],
+              "emit": [
+                {
+                  "now": "2026-06-11T00:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "now": {
+            "type": "operation",
+            "operation": "time.now"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "now"
+          },
+          {
+            "from": "now",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [],
+      "expected": {
+        "output": [
+          {
+            "now": "2026-06-11T00:00:00Z"
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-15",
+      "name": "Identity wrapper, client-streaming",
+      "section": "Transparency (the identity law) / Example 1 (other cardinalities)",
+      "description": "The caller writes three values and closes. The conduit pipes all three, in order, into the one held stats.sum invocation (stream-consuming mock: no closesAfter, input stays open until the caller's close propagates); the invocation then emits its single aggregate result. Three writes, one session \u2014 the case the old per-event operation node could not express.",
+      "operations": {
+        "stats.sum": {
+          "responses": [
+            {
+              "whenInputs": [
+                {
+                  "n": 1
+                },
+                {
+                  "n": 2
+                },
+                {
+                  "n": 3
+                }
+              ],
+              "emit": [
+                {
+                  "total": 6
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "sum": {
+            "type": "operation",
+            "operation": "stats.sum"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "sum"
+          },
+          {
+            "from": "sum",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "n": 1
+        },
+        {
+          "n": 2
+        },
+        {
+          "n": 3
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "total": 6
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-16",
+      "name": "Identity wrapper, terminal error",
+      "section": "Transparency (the identity law) / consequence 4",
+      "description": "The inner invocation terminates with an error and the conduit has no onError, so the graph invocation terminates with that error: terminal status is preserved, not converted into a successful empty stream. The error detail is the inner terminal error value itself (the value direct invocation would surface), not an error-event wrapper around it.",
+      "operations": {
+        "users.get": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "id": "u1"
+              },
+              "fail": "backend_unavailable"
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "get": {
+            "type": "operation",
+            "operation": "users.get"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "get"
+          },
+          {
+            "from": "get",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "id": "u1"
+        }
+      ],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": "backend_unavailable",
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-26",
+      "name": "Identity wrapper, server-streaming",
+      "section": "Transparency (the identity law) / Example 1 (other cardinalities)",
+      "description": "One write in, many events out. The caller writes one value; the conduit drives the held feed.subscribe invocation, whose server-streaming binding reads the one input, closes its input from below (closesAfter 1), and emits a stream of three events. All three flow through the bare wrapper to output, in emission order, exactly as a direct server-streaming invocation would surface them. Conduit fidelity: a lossless, in-order, multi-output conduit.",
+      "operations": {
+        "feed.subscribe": {
+          "closesAfter": 1,
+          "responses": [
+            {
+              "whenInput": {
+                "topic": "weather"
+              },
+              "emit": [
+                {
+                  "seq": 1,
+                  "value": "sunny"
+                },
+                {
+                  "seq": 2,
+                  "value": "cloudy"
+                },
+                {
+                  "seq": 3,
+                  "value": "rain"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "sub": {
+            "type": "operation",
+            "operation": "feed.subscribe"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "sub"
+          },
+          {
+            "from": "sub",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "topic": "weather"
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "seq": 1,
+            "value": "sunny"
+          },
+          {
+            "seq": 2,
+            "value": "cloudy"
+          },
+          {
+            "seq": 3,
+            "value": "rain"
+          }
+        ],
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-27",
+      "name": "Identity wrapper, bidirectional",
+      "section": "Transparency (the identity law) / Example 1 (other cardinalities)",
+      "description": "Many writes in, many events out, through the bare wrapper. The caller writes three values and closes; the conduit pipes all three, in order, into the one held chat.exchange invocation (stream-consuming bidirectional mock: no closesAfter, input stays open until the caller's close propagates), which emits three responses in order. Conduit fidelity across a multi-in/multi-out session: writes preserved in arrival order, outputs preserved in emission order, the highest-cardinality case the identity law's acceptance criterion names.",
+      "operations": {
+        "chat.exchange": {
+          "responses": [
+            {
+              "whenInputs": [
+                {
+                  "say": "hi"
+                },
+                {
+                  "say": "how are you"
+                },
+                {
+                  "say": "bye"
+                }
+              ],
+              "emit": [
+                {
+                  "reply": "hello"
+                },
+                {
+                  "reply": "well, thanks"
+                },
+                {
+                  "reply": "goodbye"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": {
+            "type": "input"
+          },
+          "chat": {
+            "type": "operation",
+            "operation": "chat.exchange"
+          },
+          "out": {
+            "type": "output"
+          }
+        },
+        "edges": [
+          {
+            "from": "in",
+            "to": "chat"
+          },
+          {
+            "from": "chat",
+            "to": "out"
+          }
+        ]
+      },
+      "writes": [
+        {
+          "say": "hi"
+        },
+        {
+          "say": "how are you"
+        },
+        {
+          "say": "bye"
+        }
+      ],
+      "expected": {
+        "output": [
+          {
+            "reply": "hello"
+          },
+          {
+            "reply": "well, thanks"
+          },
+          {
+            "reply": "goodbye"
+          }
+        ],
+        "ordering": "exact"
+      }
+    }
+  ]
+}

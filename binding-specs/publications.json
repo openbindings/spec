@@ -6,7 +6,7 @@
     "graphql": "openbindings.graphql@2",
     "grpc": "openbindings.grpc@1",
     "mcp": "openbindings.mcp@2",
-    "openapi": "openbindings.openapi@3",
+    "openapi": "openbindings.openapi@4",
     "operation-graph": "openbindings.operation-graph@1",
     "usage": "openbindings.usage@1"
   },
@@ -140,6 +140,19 @@
       "document": "binding-specs/releases/2026-08-09-openapi-media-carriage/root/binding-specs/openapi/openbindings.openapi.md",
       "canonicalUrl": "https://openbindings.com/binding-specs/openapi/3",
       "rawUrl": "https://openbindings.com/raw/binding-specs/openapi/3.md"
+    },
+    {
+      "identifier": "openbindings.openapi@4",
+      "family": "openapi",
+      "revision": 4,
+      "publishedAt": "2026-08-09",
+      "coreRelease": "0.2.0",
+      "publication": "2026-08-09-openapi-response-carriage",
+      "publicationRecord": "binding-specs/releases/2026-08-09-openapi-response-carriage/publication.json",
+      "publicationRecordSha256": "bfeef54034b419701ce7cc69287319bdd249d34c2f1cdc5800ccb9351ecdea4f",
+      "document": "binding-specs/releases/2026-08-09-openapi-response-carriage/root/binding-specs/openapi/openbindings.openapi.md",
+      "canonicalUrl": "https://openbindings.com/binding-specs/openapi/4",
+      "rawUrl": "https://openbindings.com/raw/binding-specs/openapi/4.md"
     },
     {
       "identifier": "openbindings.operation-graph@1",
