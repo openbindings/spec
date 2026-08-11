@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and
 
 ## 2. Scope and incorporated authorities
 
-This is the **openbindings project's** candidate binding specification for services speaking the **Connect protocol** with the **JSON codec**. It is authored under this project's authority, not by or for the Connect project: the Connect protocol is incorporated by reference and remains authoritative over routing, framing (unary bodies and enveloped streams), error shapes, compression negotiation, and transport requirements; the protobuf language, descriptor model, and canonical JSON mapping are incorporated exactly as in [`openbindings.grpc@1`](../grpc/openbindings.grpc.md).
+This is the **openbindings project's** candidate binding specification for services speaking the **Connect protocol** with the **JSON codec**. It is authored under this project's authority, not by or for the Connect project. Under that authority, this candidate deliberately incorporates the Connect protocol to govern routing, framing (unary bodies and enveloped streams), error shapes, compression negotiation, and transport requirements; it incorporates the protobuf language, descriptor model, and canonical JSON mapping exactly as in [`openbindings.grpc@1`](../grpc/openbindings.grpc.md). It chooses close upstream deference rather than treating those authorities as automatically applicable.
 
 Like the core specification, this document defines portable meaning rather than an invocation API. Request, framing, stream, and refusal language specifies the Connect interaction denoted by a binding; HTTP-client APIs, configuration scopes, retries, deadlines, and pooling remain runtime or SDK surface.
 

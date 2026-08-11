@@ -7,10 +7,12 @@ a core failure vocabulary, or change the normative force of
 
 ## The goal
 
-OpenBindings is a protocol-independent operation overlay. A source retains its
-real binding artifact or live surface so a binding implementation can perform
-the concrete interaction correctly; that reference is execution authority,
-not a promise that the operation caller can observe the underlying protocol.
+OpenBindings is a protocol-independent operation overlay. The named binding
+specification is the governing semantic authority. A source retains its real
+artifact or live surface so a binding implementation can perform the concrete
+interaction correctly; an upstream artifact or protocol has authority only on
+the terms the binding specification incorporates. None of that is a promise
+that the operation caller can observe the underlying protocol.
 
 The fidelity target is therefore:
 
@@ -40,19 +42,23 @@ or surface, ask:
 Applied by layer:
 
 - **Core and OBI document:** contain only the portable author-declared
-  operation contract, source authority, and binding relationships needed to
-  select and act through a concrete realization. A cross-protocol convenience
-  or diagnostic need does not justify a core field.
-- **Binding specification:** supplies only the family semantics required to
-  turn that source and binding into a correct abstract interaction without
-  guessing.
+  operation contract, the identifier of the governing binding specification,
+  and binding relationships needed to select and act through a concrete
+  realization. A cross-protocol convenience or diagnostic need does not
+  justify a core field.
+- **Binding specification:** is sovereign over its governed sources. It may
+  define semantics itself or incorporate, subset, extend, or override another
+  authority. The OpenBindings project's brownfield specifications choose the
+  minimum upstream-deferential semantics needed for a correct abstract
+  interaction because that maximizes fidelity and reuse.
 - **Synthesis:** derives only application contracts supported by the source;
   it neither invents missing intent nor recompiles protocol observations.
 - **Invocation interfaces:** relay values and emergent interaction behavior.
   They need a structural distinction between normal and unsuccessful
   completion, not a presumed-complete ontology of every protocol's failures.
-- **SDKs:** may add idiomatic, non-normative conveniences, but those
-  conveniences do not become portable semantics by repetition.
+- **SDKs:** may add idiomatic conveniences or complete a binding
+  specification's gaps locally, but those behaviors remain
+  implementation-defined and do not become portable semantics by repetition.
 - **Diagnostics and conformance:** may retain concrete evidence needed to
   explain or prove an implementation. That evidence stays optional for
   ordinary operation use.
@@ -88,10 +94,12 @@ Information explicitly modeled by the operation contract is never covered by
 that permission. An implementation may not call dropping or changing an
 operation value "abstraction."
 
-## Minimum binding-specification responsibility
+## Project binding-specification responsibility
 
-A binding specification does the minimum necessary to make a governed binding
-actionable without guessing. It defines:
+To meet this project's abstraction-fidelity goal and OBI-B-02 publication
+floor, an `openbindings.*` binding specification does the minimum necessary to
+make a governed binding portable and actionable without private implementation
+policy. It defines:
 
 1. the accepted source forms, address, reference, and target;
 2. how caller-facing application values correspond to the concrete
@@ -102,8 +110,8 @@ actionable without guessing. It defines:
    container;
 4. interaction behavior that affects the abstract invocation, including value
    ordering and completion; and
-5. genuine choices, exclusions, and refusal conditions needed to avoid
-   invention.
+5. genuine choices, explicit conventions, exclusions, and refusal conditions
+   needed to close the portable boundary.
 
 It does not define an SDK API, invoker frame protocol, universal failure
 taxonomy, retry policy, diagnostic envelope, synthesis naming convention, or a
@@ -178,9 +186,12 @@ Work claiming abstraction fidelity answers all of these questions:
    declarations to the OBI operation?
 4. **No protocol recompilation:** Did synthesis avoid turning native protocol
    observations into operation-schema members?
-5. **No invention:** Where the artifact leaves a genuine application-level
-   choice or correspondence unanswered, did the implementation configure or
-   refuse rather than guess?
+5. **No private semantics:** Where the governing binding specification leaves
+   a genuine application-level choice or correspondence unanswered, did the
+   implementation identify its completion as implementation-defined rather
+   than attributing it to the identifier? For project specifications, did the
+   specification incorporate, preserve, configure, explicitly define, or
+   refuse the case rather than leaving it to private policy?
 6. **Diagnostic separation:** Could every raw native assertion be removed from
    the ordinary caller surface without making correct operation use
    impossible?

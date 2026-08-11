@@ -14,7 +14,8 @@ below may continue to change until the 0.2 release is cut.
 ### Added
 
 - The unreleased first `openbindings.asyncapi@1` candidate. It treats AsyncAPI
-  Core and each artifact-declared protocol binding as upstream authority,
+  Core and each artifact-declared protocol binding as authority incorporated
+  by this candidate's deliberate upstream-deferential policy,
   normalizes AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0 operations, and leaves
   concrete execution to protocol drivers. Synthesis is independent of which
   drivers happen to be installed; unsupported execution fails locally before
@@ -61,6 +62,15 @@ below may continue to change until the 0.2 release is cut.
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- Binding-specification authority is now explicit: the named binding
+  specification is sovereign and may define, incorporate, subset, extend, or
+  override other authorities. OBI-B-02 remains the completeness floor for
+  portable claims and `openbindings.*` publication, not a gate on a
+  specification's existence or implementation. Implementations may complete
+  underdefined specifications locally, but those choices remain
+  implementation-defined and cannot be attributed to the identifier's
+  portable meaning. This clarification changes no OBI document-model field.
 
 - The OpenAPI first-revision candidate's security processing now has portable adversarial proof
   that Security Requirement Objects remain alternatives rather than being

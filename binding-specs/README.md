@@ -4,7 +4,7 @@
 
 The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no conformance weight here, but state the conventions a binding specification's own text adopts when it follows this guidance.
 
-These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI candidate proposes `openbindings.openapi@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
+These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI candidate proposes `openbindings.openapi@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them. The binding specification is sovereign over the sources that name it; these project candidates choose to incorporate capable existing artifact and protocol authorities because doing so produces the most faithful and reusable brownfield bindings. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core and a different relationship to those upstream rules.
 
 ## Meaning first, action complete
 
@@ -15,8 +15,8 @@ operation-invoker interfaces define software requests, frames, context
 negotiation, and lifecycle APIs; SDKs define language-specific configuration
 and cancellation surfaces.
 
-Binding meaning nevertheless has to be **action complete**. A concrete binding
-denotes a target and interaction, so its portable meaning includes
+Portable meaning that satisfies OBI-B-02 has to be **action complete**. A
+concrete binding denotes a target and interaction, so its portable meaning includes
 cardinality, value-to-protocol correspondence, successful outcomes, and any
 artifact-authorized choices or explicit exclusions needed to act on it without
 guessing. Those facts are more operational than the core document model, but
@@ -32,6 +32,38 @@ connection pool, or cancellation API. Imperative words such as “dispatch” an
 “processor” in a conformance rule describe what an implementation must
 preserve when it acts on the binding; they do not move the specification into
 the invocation-interface layer.
+
+## Sovereignty, completeness, and implementation-defined behavior
+
+A binding specification is the governing authority for every source and
+binding that names its identifier. An external artifact or protocol has no
+automatic OpenBindings authority. The binding specification may incorporate
+it on stated terms, accept only a subset, add extensions, override parts of it,
+use it only as a representation syntax, define the artifact and interaction
+itself, or govern a live surface with no artifact. Those choices may be more or
+less interoperable, reusable, or surprising, but Core permits all of them.
+
+Three states must not be collapsed:
+
+1. A binding specification **exists** when an authority gives an identifier
+   governing rules. A conformant OBI may name it regardless of its formality or
+   completeness.
+2. A binding specification satisfies the **OBI-B-02 portability floor** only
+   when it answers the complete source, target, interaction, value, and outcome
+   boundary. The OpenBindings project additionally requires that floor before
+   publishing an `openbindings.*` identifier.
+3. An **implementation** may supply local behavior where a specification is
+   silent. That completion can make an otherwise underdefined binding useful,
+   but it remains implementation-defined. It does not become portable meaning
+   under the identifier merely because one or many implementations choose it.
+
+Implementations document such completions as their own behavior and do not
+attribute them to the binding specification in support or conformance claims.
+If implementations diverge materially, that is ordinary ecosystem feedback:
+the specification community can publish a more complete revision, preserve an
+explicit permitted set, or introduce a named interpretation choice. A released
+revision that narrows or changes observable behavior uses a new identifier
+under OBI-B-03.
 
 ## The minimal abstraction-fidelity floor
 
@@ -93,7 +125,7 @@ When published, project binding specifications are identified as `openbindings.<
 - Identifiers are exact, opaque strings ([OBI-B-01](../openbindings.md#104-binding-specification-rules)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
 - An incompatible change publishes the next revision — a different identifier ([OBI-B-03](../openbindings.md#104-binding-specification-rules)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
 - **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. An unqualified support claim covers that complete domain; an implementation with narrower coverage reports partial support rather than presenting the identifier as fully supported.
-- **An identifier exists only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no identifier, and tooling adopts an identifier only at publication.
+- **The OpenBindings project publishes an `openbindings.*` identifier only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on the existence or local use of identifiers governed by other authorities.
 - **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
 
 ### Publication lifecycle
@@ -202,7 +234,7 @@ A candidate page remains informational until promotion. It uses the full authori
 
 ## The deference order
 
-A binding specification is a semantic authority, often operating under divided authority. Where an existing artifact or protocol speaks, it is not an opportunity to normalize the source family into one preferred wire behavior; apply the following deference order. Where the binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
+A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
 
 1. **Incorporate** what the artifact or protocol defines. Restate only the OpenBindings consequence; do not replace an upstream rule with a locally convenient equivalent.
 2. **Preserve alternatives** when the artifact permits several valid choices. Conformance may be a permitted set rather than one byte-identical request; a binding specification does not invent preference merely to make implementations choose alike.
@@ -222,9 +254,9 @@ The adversarial review resolved the former lower-confidence questions below. The
 
 These decisions are intentionally specific. “Let each implementation choose” is not an acceptable substitute; a future review keeps the rule, replaces it with a better incorporated/configured rule, or narrows the supported set explicitly.
 
-The shorthand is **incorporate → preserve → configure → refuse → default**. “Refuse rather than invent” is the governing correction: completeness requires a definite answer, but an explicit exclusion is a definite answer, while an invented approximation changes the source's meaning.
+The shorthand is **incorporate → preserve → configure → refuse → default**. It is project quality doctrine, not a restriction on what a binding specification is allowed to mean. Its governing correction is **defer before defining; never guess privately**: completeness requires a definite answer, an explicit binding-specification convention is a definite answer, and an explicit exclusion is also a definite answer. An implementation-only approximation may be useful locally but does not close the portable specification.
 
-This order does not require identical requests where the upstream authority permits alternatives. It requires every observable choice to remain inside the upstream-permitted set, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
+This order does not require identical requests where an incorporated authority permits alternatives. For a project specification claiming faithful upstream deference, it requires every observable choice to remain inside the incorporated authority's permitted set unless the specification labels a deliberate divergence, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
 
 ## Release-quality review loop
 
@@ -267,7 +299,7 @@ complete, upstream-deferential contract with adversarial evidence.
 The release exit gates for a **published** binding specification are:
 
 - every OBI-B-02 item has one definite, internally consistent answer;
-- every normative upstream authority is immutable or versioned, with conflict
+- every incorporated authority is immutable or versioned, with conflict
   precedence stated when several authorities overlap;
 - every application-facing choice follows the deference order, with no silent
   loss of operation values or behavior and no unlabeled OpenBindings default;
@@ -290,8 +322,9 @@ grade with published specifications.
 
 ## Portable actionability
 
-The governing relationship is **artifact + effective choices = complete
-binding interpretation**.
+For the project's artifact-backed specifications, the usual governing
+relationship is **binding specification + incorporated artifact + effective
+choices = complete binding interpretation**.
 
 A binding specification answers three recurring **interaction questions** per operation — from its accepted artifacts, by its own definition, or through a declared interpretation point:
 
@@ -301,7 +334,7 @@ A binding specification answers three recurring **interaction questions** per op
 
 Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The binding specification exposes the gap as a named interpretation point, never by authoring missing coverage into the artifact and never by making the OBI absorb format conventions.** An effective consumer choice completes that point when one is required. The OBI stays abstract; the artifact stays pristine.
 
-Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would invent source semantics; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. What an item may not be is silent: an undefined choice is a defect of the binding specification ([OBI-B-02](../openbindings.md#104-binding-specification-rules)), while a required choice or an explicitly unsupported aspect is a definition, not a gap.
+Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would misstate source intent; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. An undefined choice does not prevent the specification from existing or an implementation from completing it locally, but it means the specification has not satisfied OBI-B-02 for that boundary. A required choice or an explicitly unsupported aspect is a portable definition, not a gap.
 
 A specification defines only the **effective choice**, not a hierarchy of
 configuration scopes. Per-call versus standing configuration, callback decline
@@ -360,7 +393,7 @@ When declarations are distinct in the artifact but collapse to one property name
 
 ## Authoring a new binding specification
 
-A binding specification makes a family of sources and bindings mean the same thing to every independent implementation. The core states the completeness floor normatively ([OBI-B-02](../openbindings.md#104-binding-specification-rules)); the template below is the section-by-section shape project specifications use to meet it. Third parties publish under their own collision-resistant namespace (`com.example.<name>@<rev>` fits the same shape) with no project registration; the same template serves.
+A complete binding specification makes a family of sources and bindings mean the same thing to every independent implementation wherever it requires one behavior, and identifies any permitted alternatives explicitly. The core states that portability floor normatively ([OBI-B-02](../openbindings.md#104-binding-specification-rules)); the template below is the section-by-section shape project specifications use to meet it. Third parties publish under their own collision-resistant namespace (`com.example.<name>@<rev>` fits the same shape) with no project registration. They may use this template, publish a less complete experimental specification, or deliberately make different authority choices; the resulting identifier carries only the portable meaning its governing rules actually define.
 
 Apply the [deference order](#the-deference-order) to every answer in the template. In particular, “complete” does not mean “choose one OpenBindings behavior whenever the artifact permits several”: preserve the permitted set, expose a choice when action needs one, or narrow coverage explicitly.
 

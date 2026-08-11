@@ -8,12 +8,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "RECOMMEND
 
 ## 2. Purpose, scope, and authority
 
-This is the **OpenBindings project's** candidate overlay for [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) documents. It is not an alternative protocol description language and it does not re-specify the protocols AsyncAPI can describe.
+This is the **OpenBindings project's** candidate overlay for [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) documents. As the governing authority for `openbindings.asyncapi@1`, this specification deliberately incorporates AsyncAPI Core and the applicable AsyncAPI protocol-binding specifications on the terms below. It could define a different relationship under a different identifier; this candidate chooses close deference because duplicating or contradicting those capable authorities would reduce brownfield fidelity and reuse. It is not an alternative protocol description language and it does not re-specify the protocols AsyncAPI can describe.
 
 The layering is intentionally thin:
 
-1. AsyncAPI Core is authoritative over the artifact, its application perspective, channels, operations, messages, schemas, servers, security declarations, references, and traits.
-2. The selected AsyncAPI protocol-binding objects are authoritative over concrete protocol semantics wherever they speak.
+1. This specification incorporates AsyncAPI Core as authoritative over the artifact, its application perspective, channels, operations, messages, schemas, servers, security declarations, references, and traits.
+2. It incorporates the selected AsyncAPI protocol-binding specifications as authoritative over concrete protocol semantics wherever they speak.
 3. A protocol driver or codec interprets those concrete declarations and performs the exchange, preferably through mature protocol-native libraries.
 4. This specification defines only the OpenBindings correspondence: source carriage, operation addressing, complementary caller perspective, application-value mapping, and the boundary between successful outputs, unsuccessful completion, and diagnostics.
 
@@ -78,7 +78,9 @@ No interaction is invented for an artifact that does not declare one. A processo
 
 ### 9.1. Protocol and driver delegation
 
-After source and operation resolution, the artifact's effective server selection determines the concrete protocol. AsyncAPI's corresponding server, channel, operation, message, and protocol-binding objects then govern execution (**ASYNC-P-02**). The driver MUST honor the binding version and all applicable binding locations defined by the AsyncAPI binding authority; it MUST refuse a declaration it cannot interpret rather than falling back to a superficially similar protocol behavior.
+After source and operation resolution, the artifact's effective server selection determines the concrete protocol. AsyncAPI's corresponding server, channel, operation, message, and protocol-binding objects then govern execution under this specification's incorporation (**ASYNC-P-02**). The driver MUST honor the binding version and all applicable binding locations defined by the AsyncAPI binding authority; it MUST refuse a declaration it cannot interpret rather than falling back to a superficially similar protocol behavior.
+
+Source validity, portable binding meaning, and installed runtime capability are distinct. If the incorporated AsyncAPI and protocol-binding authorities leave behavior necessary to invocation undefined, an implementation may complete that gap locally, but the completion is implementation-defined and does not become portable meaning of `openbindings.asyncapi@1`. Before publication, this candidate instead closes every such case it claims through an explicit rule, named interpretation point, permitted set, or exclusion. A missing implementation driver is different again: the governing meaning may be complete even when one runtime cannot perform it.
 
 This specification defines **no protocol allowlist**. MQTT, AMQP, Kafka, WebSocket, HTTP, and a future community-defined AsyncAPI binding all occupy the same outer OpenBindings family. Supporting one at runtime requires a conforming driver and any codecs its artifact needs. The absence of such a driver is a local, pre-dispatch capability failure. It does not make the AsyncAPI operation invalid, change synthesis, or authorize another protocol to be selected silently.
 

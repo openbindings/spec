@@ -6,7 +6,7 @@ This document is the project's development process and, once public, its governa
 
 ## The objective, with its constraint
 
-Maximize the fraction of real-world, conventional artifacts — per binding family — whose operations synthesize, inspect, and invoke faithfully. Subject to one hard constraint: **coverage is gained only by faithful means.** Every widening goes through the deference order (incorporate → preserve → configure → refuse → default). A widening that buys coverage by inventing semantics, guessing intent, or defaulting a genuine choice is a regression, even when the measured percentage goes up.
+Maximize the fraction of real-world, conventional artifacts — per binding family — whose operations synthesize, inspect, and invoke faithfully. Subject to one hard constraint: **coverage is gained only by faithful means.** Every widening of an OpenBindings project binding specification goes through the project's chosen deference order (incorporate → preserve → configure → refuse → default). A widening that buys coverage through an unlabeled convention, a private implementation guess presented as portable meaning, or a default that erases a genuine upstream choice is a regression, even when the measured percentage goes up. Core permits other publishers to define different authority relationships; this loop states the quality policy for `openbindings.*` specifications.
 
 Here, _faithfully_ means fidelity to the protocol-independent operation
 boundary defined by the informative
@@ -135,7 +135,8 @@ identity-law and execution corpus: direct and graph-wrapped invocation must
 remain observationally identical at the abstract operation boundary. If a
 future graph edition carries an independently authored operation contract,
 that new source capability would reopen the synthesis decision; current tools
-must not invent it.
+must not present a locally invented contract as portable synthesis under the
+current identifier.
 
 ## Revolution log
 
@@ -148,12 +149,12 @@ must not invent it.
 
 ## Termination: the measured-complete state
 
-The loop does not run forever, and it does not run to 100%. Perfection on this axiom is not "no refusals" — some refusals *are* the axiom (a doctrine that never invents must refuse what only invention could cover). Perfection is **no unchosen refusals**: the distance between measured coverage and 100% consists entirely of decisions with paper trails, each of which we would defend in public, each with a condition that would reopen it.
+The loop does not run forever, and it does not run to 100%. Perfection on this axiom is not "no refusals" — some refusals *are* the axiom when no responsible, explicit, reusable binding-specification convention can close the gap. Perfection is **no unchosen refusals**: the distance between measured coverage and 100% consists entirely of decisions with paper trails, each of which we would defend in public, each with a condition that would reopen it.
 
 A family reaches **measured-complete** when all five hold:
 
 - **MC1 — Zero unadjudicated exclusions.** Every reason code appearing in the family's residual maps to a logged adjudication classifying it as exactly one of:
-  - *doctrine-refused* — representing it would require invention; permanent by design (e.g., `openapi.reverse_direction`);
+  - *doctrine-refused* — representing it would require an unwarranted or fidelity-damaging project convention; permanent by design until that judgment changes (e.g., `openapi.reverse_direction`);
   - *upstream-defective* — the artifact violates its own upstream specification; not this project's gap;
   - *economically deferred* — a faithful widening exists, but measured prevalence is below the floor; the adjudication records the measured number and the **revisit trigger** that reopens it.
   A reason code in the histogram with no adjudication is an open work item, by definition, regardless of its count.

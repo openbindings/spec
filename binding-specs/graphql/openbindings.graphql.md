@@ -8,7 +8,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and
 
 ## 2. Scope and incorporated authorities
 
-This is the OpenBindings project's binding specification for GraphQL services. The [GraphQL Specification, September 2025](https://spec.graphql.org/September2025/) governs schemas, executable documents, validation, variables, execution, introspection, and response shape. Query and mutation transport incorporates the [GraphQL-over-HTTP draft at commit `4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3`](https://github.com/graphql/graphql-over-http/blob/4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3/spec/GraphQLOverHTTP.md). This specification defines only the OpenBindings overlay.
+This is the OpenBindings project's binding specification for GraphQL services. Under this candidate's authority, it incorporates the [GraphQL Specification, September 2025](https://spec.graphql.org/September2025/) to govern schemas, executable documents, validation, variables, execution, introspection, and response shape. Query and mutation transport incorporates the [GraphQL-over-HTTP draft at commit `4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3`](https://github.com/graphql/graphql-over-http/blob/4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3/spec/GraphQLOverHTTP.md). This specification deliberately defines only the OpenBindings overlay; that upstream deference is its chosen meaning, not a Core requirement on all GraphQL-shaped binding specifications.
 
 This candidate binds query and mutation root fields. It excludes subscriptions, batching, multipart incremental delivery, uploads, live queries, GET, persisted-query extensions, and documents that collect more than one root response-key group. Those are explicit coverage boundaries, not approximations.
 

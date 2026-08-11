@@ -27,9 +27,11 @@ OpenBindings defines a standard way to describe **what a service does** — its 
 A single OpenBindings Interface (OBI) can point at bindings governed by
 OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification,
 without redefining the contract for each one. OBI sits one layer above those
-artifacts and protocols: each upstream authority remains authoritative over
-its own interaction, and OBI adds the operation-level overlay that survives
-across them.
+artifacts and protocols. The named binding specification is sovereign over its
+sources: it may define a family itself or incorporate, subset, extend, or
+override other authorities. The OpenBindings project's brownfield
+specifications deliberately defer to capable upstream standards so the
+operation-level overlay remains faithful and reusable across them.
 
 ```
 ┌────────────────────────────────────────────┐
