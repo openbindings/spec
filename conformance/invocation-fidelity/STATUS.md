@@ -79,7 +79,7 @@ proposal is a separate, advance design decision.
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
 | OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | The complete first `openbindings.openapi@1` candidate is joined in both SDKs over the standalone runtime. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; request and response media ranges; pre-input context; SSE selected through ranges; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
-| AsyncAPI | Standalone artifact runtimes, built-in HTTP/WebSocket drivers, injectable arbitrary-protocol driver suites, and native integration peers. | The complete first `openbindings.asyncapi@1` candidate is joined in both SDKs over the standalone runtime for AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0. | The supported 250-artifact corpus envelope is exactly equal across SDKs for 247/247 valid artifacts; invocation preserves payload values and binding-emergent lifecycle while protocol evidence remains below the abstraction. | Message headers and non-JSON/non-UTF-8 payloads remain explicit value-boundary exclusions. Concrete coverage for protocols beyond the built-in HTTP/WebSocket drivers depends on installing a driver; synthesis does not pretend otherwise or vary with driver installation. |
+| AsyncAPI | Standalone artifact runtimes, built-in HTTP/WebSocket drivers, injectable arbitrary-protocol drivers, separately packaged MQTT 3.1.1 and Kafka profiles, and native integration peers. | The complete first `openbindings.asyncapi@1` candidate is joined in both SDKs over the standalone runtime for AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0. | The supported 250-artifact corpus envelope is exactly equal across SDKs for 247/247 valid artifacts. MQTT and Kafka both have live TypeScript/Go and real OpenBindings-bridge evidence. Kafka additionally proves topic/key/group/client interpretation, transient broker-loss recovery without losing prior output, and SCRAM-SHA-256 supplied through abstract username/password context without protocol fields crossing the operation boundary. | Message headers and unavailable codecs remain explicit value-boundary exclusions. Protocols without a qualified installed driver remain execution gaps. MQTT TLS/X509, persistent sessions, and Last Will retain their recorded boundaries. Kafka TLS/X509, SASL/PLAIN, SCRAM-SHA-512, Schema Registry framing, tombstones, dynamic per-record keys, and replies retain explicit excluded or unqualified cells in its authority matrix. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | GraphQL | HTTP peers for aliases, transport failure, and partial data plus errors. | The first `openbindings.graphql@1` candidate is joined in both SDKs. | Passes for query/mutation; native envelopes remain diagnostic. | Subscriptions remain an explicit first-candidate lifecycle exclusion. |
@@ -114,12 +114,17 @@ development cohort and a 63-repository holdout sealed before implementation
 tuning. All 51 authority-derived semantic cells occurred in development. The
 current first-revision candidate refuses unsupported request/reply sessions
 before establishment and delegates arbitrary concrete protocols through an
-explicit driver boundary. Go and TypeScript produced exactly equal OBIs and
+explicit driver boundary. Its first Kafka profile delegates to Confluent's
+librdkafka-backed JavaScript client and franz-go under a 31-cell authority
+matrix. Go and TypeScript produced exactly equal OBIs and
 exhaustive coverage ledgers for all 247 independently adjudicated valid
 artifacts (100%). The sole raw residual is an invalid external YAML closure
 tolerated by one parser and remains recorded outside the supported-artifact
-denominator. No Core prose, OBI document field, invocation frame,
-protocol-blind output shape, or context-resolution rule changed.
+denominator. No Core prose, OBI document field, invocation frame, or
+protocol-blind output shape changed. The AsyncAPI layer now classifies
+`scramSha256` and `scramSha512` as the existing abstract username/password
+credential family while preserving the raw declaration for the driver; this
+is a binding-layer context interpretation, not a Core vocabulary addition.
 
 ## Loop
 

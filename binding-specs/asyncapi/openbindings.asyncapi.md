@@ -102,6 +102,15 @@ Artifact declarations remain authoritative for server alternatives, variables, c
 
 Context names what is needed without turning protocol fields into operation input. At minimum, implementations distinguish the `server`, `message`, and artifact-declared credential requirements they can identify. A selected complete security alternative is satisfied as the governing AsyncAPI edition defines; requirements from different alternatives MUST NOT be combined into an undeclared hybrid. The driver applies resolved credentials through the selected protocol binding. Credentials and concrete protocol fields are never synthesized into the operation schema (**ASYNC-P-07**).
 
+Credential requirements are classified by the application material needed,
+not by copying a protocol mechanism into Core. AsyncAPI `userPassword`,
+`scramSha256`, and `scramSha512` declarations all request the existing abstract
+username/password credential family. The exact selected declaration remains
+available to the driver, which applies PLAIN, SCRAM-SHA-256, SCRAM-SHA-512, or
+another binding-governed mechanism as appropriate. This classification does
+not make the mechanisms equivalent and does not authorize a driver to replace
+one with another.
+
 A driver MAY define additional protocol-native configuration inside its standalone API. When used through OpenBindings, its adapter MUST keep that configuration in context or runtime setup, not in ordinary operation values, and MUST surface a missing required choice before dispatch whenever it is knowable then.
 
 ### 9.4. Lifecycle, outputs, and unsuccessful completion
