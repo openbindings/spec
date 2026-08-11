@@ -1,6 +1,6 @@
 {
   "rule": "OAPI-D-02",
-  "bindingSpec": "openbindings.openapi@7",
+  "bindingSpec": "openbindings.openapi@1",
   "section": "4",
   "description": "`location`, when present, is an absolute URI addressing the OpenAPI document itself. A bare filesystem path is a relative reference in form and is not a conformant location.",
   "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness for this family's document address, so the fixtures list both.",
@@ -12,7 +12,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "https://example.com/openapi.json"
           }
         },
@@ -33,7 +33,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "file:///srv/api/openapi.yaml"
           }
         },
@@ -54,7 +54,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "./openapi.json"
           }
         },
@@ -76,7 +76,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "/srv/api/openapi.yaml"
           }
         },
@@ -98,7 +98,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "location": "example.com/openapi.json"
           }
         },

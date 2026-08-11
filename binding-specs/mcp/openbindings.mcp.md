@@ -2,7 +2,7 @@
 
 ## 1. Status and identifier
 
-This document is the normative text for **`openbindings.mcp@2`**, published by the openbindings project as its defining authority. The identifier is exact and opaque per core [OBI-B-01](../../openbindings.md#104-binding-specification-rules). Published revisions are immutable; an incompatible change publishes the next revision ([OBI-B-03](../../openbindings.md#104-binding-specification-rules)). Revision 2 succeeds the immutable `openbindings.mcp@1` by narrowing the bindable surface to MCP targets whose listing declares a protocol-independent application output contract.
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.mcp@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" are interpreted as described in BCP 14 when, and only when, they appear in all capitals.
 
@@ -21,7 +21,7 @@ The artifact is the aggregate of every page of each capability-advertised `tools
 - With no `content`, the processor initializes the addressed server, checks the negotiated revision, and obtains every advertised collection to pagination exhaustion. The `resources` capability gates both resource collections (**MCP-P-02**).
 - Present `content` is a pinned listing: a JSON object whose only permitted members are `tools`, `resources`, `resourceTemplates`, and `prompts`, each an optional array of the corresponding MCP 2025-11-25 entity objects (**MCP-D-01**). Each array is already the pagination-exhausted aggregate. Pagination members such as `nextCursor` and `_meta`, and every other top-level member, make the pin invalid.
 
-There is no other source representation. The complete listing remains the discovery inventory even though revision 2 deliberately binds only an eligible subset of its entries.
+There is no other source representation. The complete listing remains the discovery inventory even though this candidate deliberately binds only an eligible subset of its entries.
 
 ## 4. `location`
 
@@ -41,19 +41,19 @@ The pin may be stale. Dispatch still proceeds against the addressed server; a se
 
 ## 7. `ref` and eligible targets
 
-A revision-2 binding `ref` is REQUIRED and MUST be `tools/<name>`, where `<name>` is the non-empty remainder after the first `/` and is matched byte-exactly to a listed tool name (**MCP-D-03**). Exactly one tool must match. Zero matches and duplicate matches are unresolvable; declaration order never resolves ambiguity.
+A candidate binding `ref` is REQUIRED and MUST be `tools/<name>`, where `<name>` is the non-empty remainder after the first `/` and is matched byte-exactly to a listed tool name (**MCP-D-03**). Exactly one tool must match. Zero matches and duplicate matches are unresolvable; declaration order never resolves ambiguity.
 
-The matched tool MUST declare an `outputSchema` (**MCP-P-04**). MCP defines that member as the schema for the application object returned in `CallToolResult.structuredContent`; it is therefore the source's application-level output contract. A tool without `outputSchema` is not bindable in revision 2 because its remaining result lanes are MCP-native representations, not a protocol-independent application contract.
+The matched tool MUST declare an `outputSchema` (**MCP-P-04**). MCP defines that member as the schema for the application object returned in `CallToolResult.structuredContent`; it is therefore the source's application-level output contract. A tool without `outputSchema` is not bindable in this candidate because its remaining result lanes are MCP-native representations, not a protocol-independent application contract.
 
 A tool declaring `execution.taskSupport: required` is also unresolvable (**MCP-P-08**). Task creation and retrieval are not ordinary tool-result invocation. Absent, `forbidden`, and `optional` task support use an ordinary `tools/call`; choosing ordinary invocation for `optional` is one of the alternatives the artifact expressly permits.
 
-Resources, resource templates, and prompts remain part of the listing inventory but are not binding targets in revision 2. Their listing entries do not declare application output schemas. Recompiling their MCP result and content-block shapes into OBI output schemas would expose the protocol rather than abstract it. Coverage-aware synthesis and inspection report these entries as excluded rather than silently omitting them.
+Resources, resource templates, and prompts remain part of the listing inventory but are not binding targets in this candidate. Their listing entries do not declare application output schemas. Recompiling their MCP result and content-block shapes into OBI output schemas would expose the protocol rather than abstract it. Coverage-aware synthesis and inspection report these entries as excluded rather than silently omitting them.
 
 ## 8. Target and interaction
 
 The target is the listed tool selected by `ref`, invoked with one `tools/call`. The abstract interaction is unary: zero or one input application value and exactly one successful output application value.
 
-Revision 2 does not solicit MCP progress. Progress notifications are protocol-native observability and do not cross as operation values. Task augmentation, resources, prompts, subscriptions, sampling, elicitation, roots, and log streams are excluded. These are coverage boundaries, not invitations for processors to approximate them.
+This candidate does not solicit MCP progress. Progress notifications are protocol-native observability and do not cross as operation values. Task augmentation, resources, prompts, subscriptions, sampling, elicitation, roots, and log streams are excluded. These are coverage boundaries, not invitations for processors to approximate them.
 
 ## 9. Operation-boundary correspondence
 
@@ -96,7 +96,7 @@ This specification defines no context bindings at transform positions. Transform
 - **MCP-P-07**: Listings yield no security metadata; credentials use explicit HTTP-header carriage and collisions refuse.
 - **MCP-P-08**: Required-task tools are unresolvable; optional task support uses ordinary invocation.
 
-Conformance fixtures keyed to these identifiers are published with the project corpus. Operation-key naming is tooling policy, not part of this binding specification.
+Conformance fixtures keyed to these identifiers are maintained in the project corpus. Operation-key naming is tooling policy, not part of this binding specification.
 
 ## 11. References
 

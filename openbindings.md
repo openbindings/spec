@@ -843,7 +843,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - `openbindings.schema.json` — derived JSON Schema for structural document validity.
 - `http-discovery.md` — the OpenBindings HTTP Discovery companion specification.
 - The openbindings project's shared-contract interfaces — published at [openbindings.com/interfaces](https://openbindings.com/interfaces) (informational).
-- `binding-specs/` — binding specifications published by this project, and authoring guidance for new ones.
+- `binding-specs/` — this project's binding-specification candidates and authoring guidance for new ones; no project binding specification has yet been published.
 - `conformance/` — conformance test corpus keyed to OBI-D-##/OBI-T-##/OBI-B-## rule identifiers.
 - `CHANGELOG.md` — version history and diffs between specification versions.
 - `EDITORS.md` — current editor roster.

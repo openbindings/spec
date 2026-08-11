@@ -1,6 +1,6 @@
 {
   "rule": "ASYNC-D-03",
-  "bindingSpec": "openbindings.asyncapi@2",
+  "bindingSpec": "openbindings.asyncapi@1",
   "section": "7",
   "description": "`ref` is present and is a JSON Pointer `#/operations/<operation-key>` addressing an operations-map entry — the only conformant spelling; a bare operation key without the pointer prefix is not conformant, keys containing `/` or `~` carry RFC 6901 escaping, the spelling is verbatim (matched byte-for-byte, never percent-decoded), and an entry that is a Reference Object resolves through it before the operation-object test.",
   "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an AsyncAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the ref alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
@@ -12,7 +12,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -46,7 +46,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -80,7 +80,7 @@
         "operations": { "nightAudit": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Audit", "version": "1.0.0" },
@@ -114,7 +114,7 @@
         "operations": { "tildeOp": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Edge", "version": "1.0.0" },
@@ -148,7 +148,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -187,7 +187,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "https://example.com/asyncapi.json"
           }
         },
@@ -205,7 +205,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -240,7 +240,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -275,7 +275,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -310,7 +310,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -345,7 +345,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -380,7 +380,7 @@
         "operations": { "deleteTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },

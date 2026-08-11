@@ -74,12 +74,12 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "usage", "openbindings.usage.md"),
   },
   openapi: {
-    bindingSpec: "openbindings.openapi@7",
+    bindingSpec: "openbindings.openapi@1",
     prefix: "OAPI",
     spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
   },
   mcp: {
-    bindingSpec: "openbindings.mcp@2",
+    bindingSpec: "openbindings.mcp@1",
     prefix: "MCP",
     spec: join(SPEC_ROOT, "binding-specs", "mcp", "openbindings.mcp.md"),
   },
@@ -94,12 +94,12 @@ const FAMILIES = {
     spec: join(SPEC_ROOT, "binding-specs", "connect", "openbindings.connect.md"),
   },
   asyncapi: {
-    bindingSpec: "openbindings.asyncapi@2",
+    bindingSpec: "openbindings.asyncapi@1",
     prefix: "ASYNC",
     spec: join(SPEC_ROOT, "binding-specs", "asyncapi", "openbindings.asyncapi.md"),
   },
   graphql: {
-    bindingSpec: "openbindings.graphql@2",
+    bindingSpec: "openbindings.graphql@1",
     prefix: "GQL",
     spec: join(SPEC_ROOT, "binding-specs", "graphql", "openbindings.graphql.md"),
   },

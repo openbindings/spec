@@ -1,8 +1,8 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.graphql@2",
+  "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "GraphQL revision-2 fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and diagnostic-only native evidence.",
+  "description": "GraphQL first-revision-candidate fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and diagnostic-only native evidence.",
   "scenarios": [
     {
       "id": "GQL-FI-01",

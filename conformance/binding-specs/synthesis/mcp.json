@@ -1,14 +1,14 @@
 {
   "format": "openbindings.binding-spec-synthesis-scenarios@2",
-  "bindingSpec": "openbindings.mcp@2",
+  "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
-  "description": "MCP revision-2 sound synthesis: only tools with declared application output schemas are represented; every other listed target is evidenced.",
+  "description": "MCP first-revision-candidate sound synthesis: only tools with declared application output schemas are represented; every other listed target is evidenced.",
   "scenarios": [
     {
       "id": "MCP-SS-01",
       "description": "Every pinned-listing entry is represented, excluded for a declared coverage boundary, or identified as invalid without dialing the server.",
       "source": {
-        "bindingSpec": "openbindings.mcp@2",
+        "bindingSpec": "openbindings.mcp@1",
         "location": "https://mcp.example.test",
         "content": {
           "tools": [
@@ -55,7 +55,7 @@
       "id": "MCP-SS-02",
       "description": "Malformed pinned-listing entity collections are refused instead of interpreted as an empty capability surface.",
       "source": {
-        "bindingSpec": "openbindings.mcp@2",
+        "bindingSpec": "openbindings.mcp@1",
         "location": "https://mcp.example.test",
         "content": {
           "tools": "not-a-list"

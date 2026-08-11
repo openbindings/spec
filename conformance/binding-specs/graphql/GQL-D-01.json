@@ -1,6 +1,6 @@
 {
   "rule": "GQL-D-01",
-  "bindingSpec": "openbindings.graphql@2",
+  "bindingSpec": "openbindings.graphql@1",
   "section": "4",
   "description": "`location` is required and is an absolute `http` or `https` GraphQL service endpoint.",
   "tests": [
@@ -11,7 +11,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql"
           }
         },
@@ -32,7 +32,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "http://localhost:8080/graphql?tenant=demo"
           }
         },
@@ -53,7 +53,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "content": {
               "data": {
                 "__schema": {
@@ -98,7 +98,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "wss://api.example.test/graphql"
           }
         },
@@ -120,7 +120,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "/graphql"
           }
         },

@@ -7,12 +7,12 @@ seven standalone brownfield synthesis binding specifications, keyed to each fami
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
-| openapi  | `openbindings.openapi@7`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
-| mcp      | `openbindings.mcp@2`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
+| openapi  | `openbindings.openapi@1`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
+| mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
-| asyncapi | `openbindings.asyncapi@2` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
-| graphql  | `openbindings.graphql@2`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
+| asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
+| graphql  | `openbindings.graphql@1`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
 
 This is a per-family subcorpus, governed by the family binding
 specifications, not by the core OBI-D / OBI-T rules. It lives alongside the
@@ -286,10 +286,9 @@ newly published rule) following the format above, then run
 `node scripts/verify-binding-specs.mjs`. Keep embedded artifacts minimal
 and legible; embed content whenever a test's verdict depends on resolution.
 
-The corpus is currently aligned with each family's latest published text:
-revision 7 for OpenAPI, revision 2 for GraphQL, MCP, and AsyncAPI, and revision 1 for
-Usage, gRPC, and Connect, under core 0.2.0 semantics. Operation Graph is the eighth
-published binding family; its invocation-only composition semantics use the
+The corpus is currently aligned with each family's unreleased first `@1`
+candidate under Core 0.2.0 semantics. No binding family has been published.
+Operation Graph is the eighth candidate family; its invocation-only composition semantics use the
 separate [`operation-graph/`](../operation-graph/) corpus because the graph's
 operation contracts live in the containing OBI rather than a standalone
 synthesizable source.

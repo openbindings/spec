@@ -1,6 +1,6 @@
 {
   "rule": "MCP-D-03",
-  "bindingSpec": "openbindings.mcp@2",
+  "bindingSpec": "openbindings.mcp@1",
   "section": "7",
   "description": "`ref` is present and is `tools/<name>`; the non-empty remainder after the first slash is matched byte-exactly and unambiguously against the tool listing.",
   "notes": "Resolution-dependent tests carry a pinned listing so the verdict is offline-decidable. Eligibility under outputSchema and task support is processor rule MCP-P-04/MCP-P-08, not document grammar.",
@@ -11,7 +11,7 @@
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
         "sources": { "server": {
-          "bindingSpec": "openbindings.mcp@2",
+          "bindingSpec": "openbindings.mcp@1",
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "get_weather", "outputSchema": { "type": "object" } }] }
         } },
@@ -25,7 +25,7 @@
         "openbindings": "0.2.0",
         "operations": { "run": {} },
         "sources": { "server": {
-          "bindingSpec": "openbindings.mcp@2",
+          "bindingSpec": "openbindings.mcp@1",
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "group/run", "outputSchema": { "type": "object" } }] }
         } },
@@ -38,7 +38,7 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
-        "sources": { "server": { "bindingSpec": "openbindings.mcp@2", "location": "https://mcp.example.com/mcp" } },
+        "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
         "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "ref": "tools/get_weather" } }
       },
       "valid": true
@@ -48,7 +48,7 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
-        "sources": { "server": { "bindingSpec": "openbindings.mcp@2", "location": "https://mcp.example.com/mcp" } },
+        "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
         "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server" } }
       },
       "valid": false,
@@ -59,18 +59,18 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
-        "sources": { "server": { "bindingSpec": "openbindings.mcp@2", "location": "https://mcp.example.com/mcp" } },
+        "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
         "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "ref": "tools" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
     },
     {
-      "description": "a non-tool entity token is outside revision-2 ref grammar",
+      "description": "a non-tool entity token is outside the first-revision candidate's ref grammar",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "read": {} },
-        "sources": { "server": { "bindingSpec": "openbindings.mcp@2", "location": "https://mcp.example.com/mcp" } },
+        "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
         "bindings": { "read.server": { "operation": "read", "source": "server", "ref": "resources/file:///x" } }
       },
       "valid": false,
@@ -82,7 +82,7 @@
         "openbindings": "0.2.0",
         "operations": { "forecast": {} },
         "sources": { "server": {
-          "bindingSpec": "openbindings.mcp@2",
+          "bindingSpec": "openbindings.mcp@1",
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "weather", "outputSchema": { "type": "object" } }] }
         } },
@@ -97,7 +97,7 @@
         "openbindings": "0.2.0",
         "operations": { "weather": {} },
         "sources": { "server": {
-          "bindingSpec": "openbindings.mcp@2",
+          "bindingSpec": "openbindings.mcp@1",
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "weather", "outputSchema": { "type": "object" } }] }
         } },
@@ -112,7 +112,7 @@
         "openbindings": "0.2.0",
         "operations": { "weather": {} },
         "sources": { "server": {
-          "bindingSpec": "openbindings.mcp@2",
+          "bindingSpec": "openbindings.mcp@1",
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [
             { "name": "weather", "outputSchema": { "type": "object" } },
@@ -129,7 +129,7 @@
       "document": {
         "openbindings": "0.2.0",
         "operations": { "weather": {} },
-        "sources": { "server": { "bindingSpec": "openbindings.mcp@2", "location": "https://mcp.example.com/mcp" } },
+        "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
         "bindings": { "weather.server": { "operation": "weather", "source": "server", "ref": "tools/" } }
       },
       "valid": false,

@@ -1,6 +1,6 @@
 {
   "rule": "ASYNC-D-02",
-  "bindingSpec": "openbindings.asyncapi@2",
+  "bindingSpec": "openbindings.asyncapi@1",
   "section": "4",
   "description": "`location`, when present, is an absolute URI addressing the AsyncAPI document itself. A bare filesystem path is a relative reference in form and is not a conformant location. This family is artifact-located: connection targets come from the artifact's servers, not from location.",
   "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness for this family's document address, so the fixtures list both.",
@@ -12,7 +12,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "https://example.com/asyncapi.json"
           }
         },
@@ -33,7 +33,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "file:///srv/api/asyncapi.yaml"
           }
         },
@@ -54,7 +54,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "./asyncapi.yaml"
           }
         },
@@ -76,7 +76,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "/srv/api/asyncapi.yaml"
           }
         },
@@ -98,7 +98,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "location": "asyncapi.json"
           }
         },

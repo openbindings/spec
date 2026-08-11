@@ -1,8 +1,8 @@
 {
   "format": "openbindings.invocation-fidelity-scenarios@1",
-  "bindingSpec": "openbindings.mcp@2",
+  "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
-  "description": "MCP revision-2 fidelity scenarios separate application structuredContent from optional native diagnostics.",
+  "description": "MCP first-revision-candidate fidelity scenarios separate application structuredContent from optional native diagnostics.",
   "scenarios": [
     {
       "id": "MCP-FI-01",

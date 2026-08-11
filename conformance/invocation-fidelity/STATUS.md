@@ -52,10 +52,11 @@ complete:
    codes, narrowly defined portable/application details, and an explicit
    diagnostics lane. The closed category, retry-effect, and status-mapping
    system was removed.
-3. **Published family revisions** were audited without rewriting immutable
-   releases. Usage revision 1 was restored to its publication; MCP revision 2
-   and GraphQL revision 2 were published where the operation-value boundary
-   required an incompatible correction.
+3. **Binding-family candidates** were audited before first publication. Every
+   active family remains an unreleased `@1` candidate. The corrected GraphQL,
+   MCP, OpenAPI, and AsyncAPI operation boundaries are therefore part of their
+   first proposed revision; there are no older published meanings or
+   compatibility revisions to retain.
 4. **Authorial failure data** is distinguished from native evidence: governing
    binding rules may preserve an opaque application-authored JSON failure
    value, while protocol containers remain diagnostic. This introduces no
@@ -77,130 +78,48 @@ proposal is a separate, advance design decision.
 
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
-| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | Revision 7 is joined in both SDKs; immutable revisions 6, 5, 4, 3, 2, and 1 remain exact compatibility paths. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; request and response media ranges; pre-input context; SSE selected through ranges; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
-| AsyncAPI | HTTP and WebSocket protocol peers plus native integration suites. | Revision 2 is joined in both SDKs; immutable revision 1 remains an exact compatibility path. | Passes for supported HTTP publish and WebSocket stream cells; every reply-bearing WebSocket operation now refuses before establishment instead of losing its reply contract. | Request/reply sessions, message headers, binary codecs, AsyncAPI editions beyond exact 3.0.0, and unsupported protocols/actions remain explicit coverage exclusions. |
+| OpenAPI | Independent native-client and loopback HTTP scenarios, including bounded non-2xx/SSE capture, response-range/raw-byte fixtures, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | The complete first `openbindings.openapi@1` candidate is joined in both SDKs over the standalone runtime. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; request and response media ranges; pre-input context; SSE selected through ranges; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
+| AsyncAPI | Standalone artifact runtimes, built-in HTTP/WebSocket drivers, injectable arbitrary-protocol driver suites, and native integration peers. | The complete first `openbindings.asyncapi@1` candidate is joined in both SDKs over the standalone runtime for AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0. | The supported 250-artifact corpus envelope is exactly equal across SDKs for 247/247 valid artifacts; invocation preserves payload values and binding-emergent lifecycle while protocol evidence remains below the abstraction. | Message headers and non-JSON/non-UTF-8 payloads remain explicit value-boundary exclusions. Concrete coverage for protocols beyond the built-in HTTP/WebSocket drivers depends on installing a driver; synthesis does not pretend otherwise or vary with driver installation. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, rich status diagnostics, and later-input cancellation. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values, partial failure, and END_STREAM diagnostics. | Artifact-coverage loop only; no known abstraction-boundary debt. |
-| GraphQL | Revision-2 HTTP peers for aliases, transport failure, and partial data plus errors. | Joined in both SDKs. | Passes for query/mutation; native envelopes remain diagnostic. | Subscriptions remain an explicit revision-2 lifecycle exclusion. |
-| MCP | Scripted Streamable HTTP/JSON-RPC peers. | Joined in both SDKs. | Passes for structured application result and all unsuccessful-completion classes. | Targets without an application output contract remain explicit revision-2 exclusions. |
+| GraphQL | HTTP peers for aliases, transport failure, and partial data plus errors. | The first `openbindings.graphql@1` candidate is joined in both SDKs. | Passes for query/mutation; native envelopes remain diagnostic. | Subscriptions remain an explicit first-candidate lifecycle exclusion. |
+| MCP | Scripted Streamable HTTP/JSON-RPC peers. | The first `openbindings.mcp@1` candidate is joined in both SDKs. | Passes for structured application result and all unsuccessful-completion classes. | Targets without an application output contract remain explicit first-candidate exclusions. |
 | Usage | Controlled process runtimes plus native process integration suites. | Joined in both SDKs. | Passes for output values, exit/signal failure, and decode failure. | Artifact-coverage loop only; process evidence remains diagnostic. |
 | Operation Graph | Portable identity-law and execution corpus against nested operation invocations. | Not applicable: the graph composes operations already declared by its containing OBI and carries no standalone operation contract to synthesize. | Passes through direct-versus-wrapped identity cases in both SDKs. | Deliberately invocation-only; advertising standalone synthesis would require invented schemas. |
 
 There are 32 fidelity scenarios across the seven active brownfield synthesis
 families, all joined by both reference SDKs. The separate Operation Graph
-identity-law corpus covers the eighth published binding family. The joined
-slice closes the abstraction-boundary proof for its currently declared
-coverage. It does
-**not** claim that every artifact in the wild is covered; coverage exclusions
-and implementation losses continue through the measured family development
-loop.
+identity-law corpus covers the eighth candidate family. The joined slice
+closes the abstraction-boundary proof for its currently declared coverage. It
+does **not** claim that every artifact in the wild is covered; coverage
+exclusions and implementation losses continue through the measured family
+development loop.
 
-The 2026-08-09 OpenAPI revision-3 closure pass evaluated 170 independently
-sourced GitHub artifacts spanning 1,301 semantic signatures. Eighteen were
-adjudicated invalid under their declared OAS edition. Of the 152-artifact
-supported envelope, 151 produced structurally identical Go and TypeScript
-OBIs and exhaustive coverage ledgers (99.34%); the sole residual was an
-equivalent JSON Schema `$ref` versus inline representation, not an invocation
-or validation difference. Twelve authority-authored wire cases produced zero
-OpenBindings wire or application mismatches in both SDKs, and the 25-repository
-sealed holdout produced no OpenBindings mismatch. No corpus observation
-demonstrated a Core-model or binding-concept limitation. These measurements do
-not promote corpus frequency to authority: eight absent semantic-matrix cells
-remain adversarial-fixture obligations. Revision 4 closes the response-range
-and artifact-authorized raw-response exclusions without changing the Core
-document model; the remaining exclusions continue through the next loop.
+The OpenAPI qualification evaluated 170 independently sourced GitHub artifacts
+spanning 1,301 semantic signatures. Of the 152-artifact supported envelope,
+151 produced structurally identical Go and TypeScript OBIs and exhaustive
+coverage ledgers (99.34%); the sole residual was a validation-equivalent JSON
+Schema `$ref` versus inline representation, not an invocation difference.
+Successive development passes closed routed-input collisions, response ranges,
+raw request and response bytes, dynamic objects, and declaration-complex JSON
+without minting any binding-specification identifier. Thirteen
+authority-authored wire cases, the sealed 25-repository holdout, and the
+40-repository development differential produced no OpenBindings wire or
+application mismatch. No result demonstrated a Core-model or
+binding-specification-concept limitation.
 
-The revision-4 closure reran the complete corpus and anti-overfitting gates
-against `openbindings.openapi@4`. The same 152-artifact supported envelope
-again produced 151 exact cross-SDK results (99.34%); the only residual remained
-the validation-equivalent Radarr `$ref` versus inline representation, affecting
-eight operations and no accepted instance set. The 12 authority-authored wire
-cases again produced zero OpenBindings wire or application mismatches in both
-SDKs, and the 25-repository sealed holdout again produced zero OpenBindings
-mismatches. Revision-4 response carriage is additionally covered by joined
-processor and fidelity fixtures for OAS 3.0 binary schemas, OAS 3.1
-schema-omitted raw bytes, concrete response selection through media ranges,
-range-selected JSON, and range-selected SSE. No revision-4 result demonstrated
-a Core-model or binding-specification-concept limitation.
-
-The revision-5 closure repeated those gates against
-`openbindings.openapi@5` and added authority-derived `patternProperties`,
-explicit `additionalProperties`, and `allOf` dynamic-object cases. Explicitly
-dynamic object bodies now remain one protocol-neutral application object while
-the binding-private transform carries that object to the selected native body;
-finite named object bodies retain the prior flat operation surface. Across the
-same 152-artifact supported envelope, 151 artifacts again produced exact Go
-and TypeScript synthesis (99.34%). The sole residual is the same
-validation-equivalent Radarr `$ref` versus inline representation and affects
-no invocation behavior. Twelve authority-authored wire cases, the sealed
-25-repository holdout, and the 40-repository development differential produced
-no OpenBindings wire or application mismatch. A cross-SDK transform mismatch
-found by the exact-parity gate exposed and corrected a Go empty-route
-`null`-versus-array defect; it required no Core or binding-concept change. No
-revision-5 result demonstrated a Core-model or binding-specification-concept
-limitation. The `ob` cross-surface dogfood gate separately found that local
-source-key remapping discarded synthesized binding transforms; preserving the
-complete binding entry and composing its private route with the public contract
-adaptation closed that application-layer loss without changing either model.
-
-The revision-6 closure repeated the complete gates against
-`openbindings.openapi@6` and added authority-derived `oneOf`, `anyOf`,
-conditional, `dependentSchemas`, and explicit `unevaluatedProperties` cases.
-Declaration-complex exact JSON bodies now remain one protocol-neutral
-application value; the binding-private transform routes that value whole and
-does not select a schema branch. Across the same 170-artifact corpus, fully
-represented specimens rose from 118 to 133 in TypeScript and from 118 to 132
-in Go, while synthesized operations rose by 21 and 18 respectively. The
-152-artifact supported envelope again produced 151 exact cross-SDK results
-(99.34%); the sole residual remained the validation-equivalent Radarr `$ref`
-versus inline representation, with zero invocation-semantic mismatches.
-Twelve authority-authored wire cases, the sealed 25-repository holdout, and
-the 40-repository development differential produced no OpenBindings wire or
-application mismatch. The differentials also exposed and repaired evaluator
-blind spots around recursive operation-input references, serialized multipart
-bodies, request media ranges, and invalid deterministic samples; none required
-a product or model concession. Exact revision 5 retains its prior refusal.
-Non-JSON codecs and media-range declaration-complex carriage remain explicit
-limits rather than being guessed from corpus frequency. No revision-6 result
-demonstrated a Core-model or binding-specification-concept limitation, and no
-Core document-model field changed.
-
-The revision-7 closure admitted the OAS 3.0 Media Type Object's schema-omitted
-exact non-JSON form as artifact-authorized opaque bytes, symmetrically for
-requests and responses, while retaining revision 6's refusal and refusing to
-infer a byte lane for media ranges. Across the same 170-artifact corpus,
-synthesized operations rose from 6,655 to 6,658 in TypeScript and from 6,403
-to 6,406 in Go; fully represented specimens rose from 133 to 135 and from 132
-to 134 respectively. The recovered targets were exactly the three operations
-whose exact declarations supplied this authority; rejection counts did not
-regress. The 152-artifact supported envelope again produced 151 exact
-cross-SDK results (99.34%); the sole residual remained the
-validation-equivalent Radarr `$ref` versus inline representation and affected
-no invocation semantics. Thirteen authority-authored wire cases produced zero
-OpenBindings wire or application mismatches in both SDKs. The sealed
-25-repository holdout and 40-repository development differential likewise
-produced zero OpenBindings mismatch. No revision-7 result demonstrated a Core
-model or binding-specification-concept limitation, and no Core document-model
-field changed.
-
-The 2026-08-10 AsyncAPI revision-2 closure evaluated 250 immutable artifacts
-from 250 independent GitHub repositories and 206 owners, split into a
-187-repository development cohort and a 63-repository holdout sealed before
-implementation tuning. All 51 authority-derived semantic cells occurred in
-development. Revision 1 had silently treated reply-bearing WebSocket `send`
-operations as ordinary subscriptions; 22 such operations occurred across five
-repositories. Revision 2 refuses that unsupported request/reply session before
-establishment and leaves revision 1 available by exact identifier. After the
-correction, Go and TypeScript produced exactly equal OBIs and exhaustive
-coverage ledgers for all 247 independently adjudicated valid artifacts
-(100%). Moving exact-edition discrimination ahead of external-reference
-resolution also made two invalid inputs converge on deterministic loud
-refusal without network access. The sole raw residual is an invalid external
-YAML closure tolerated by one parser and remains recorded outside the
-supported-artifact denominator. The correction changed no Core prose, OBI document field,
-invocation frame, protocol-blind output shape, or context-resolution rule. The
-remaining AsyncAPI debt is explicit binding coverage, not a demonstrated Core
-or binding-specification-concept limit.
+The AsyncAPI qualification evaluated 250 immutable corpus artifacts from 250
+independent GitHub repositories and 206 owners, split into a 187-repository
+development cohort and a 63-repository holdout sealed before implementation
+tuning. All 51 authority-derived semantic cells occurred in development. The
+current first-revision candidate refuses unsupported request/reply sessions
+before establishment and delegates arbitrary concrete protocols through an
+explicit driver boundary. Go and TypeScript produced exactly equal OBIs and
+exhaustive coverage ledgers for all 247 independently adjudicated valid
+artifacts (100%). The sole raw residual is an invalid external YAML closure
+tolerated by one parser and remains recorded outside the supported-artifact
+denominator. No Core prose, OBI document field, invocation frame,
+protocol-blind output shape, or context-resolution rule changed.
 
 ## Loop
 

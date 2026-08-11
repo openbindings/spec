@@ -71,7 +71,7 @@
               "core-prose",
               "core-model",
               "interface-contract",
-              "binding-revision"
+              "binding-candidate"
             ]
           },
           "status": {

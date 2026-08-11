@@ -1,6 +1,6 @@
 {
   "rule": "OAPI-D-01",
-  "bindingSpec": "openbindings.openapi@7",
+  "bindingSpec": "openbindings.openapi@1",
   "section": "5",
   "description": "`content`, when present, is the parsed OpenAPI document object or its source text as a string. No other JSON type is an accepted `content` value under this specification.",
   "notes": "OAPI-D-01 is the type-level discrimination between the two accepted representations. Whether a string parses under the YAML 1.2 grammar pin, and whether the artifact's openapi field names an accepted line, are load-time processor obligations (OAPI-P-01) and are not fixtured here.",
@@ -12,7 +12,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "content": {
               "openapi": "3.1.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -41,7 +41,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "content": "{\"openapi\":\"3.1.0\",\"info\":{\"title\":\"Tasks\",\"version\":\"1.0.0\"},\"paths\":{\"/tasks\":{\"post\":{\"responses\":{\"200\":{\"description\":\"Created\"}}}}}}"
           }
         },
@@ -61,7 +61,7 @@
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
         "sources": {
-          "api": { "bindingSpec": "openbindings.openapi@7", "content": 42 }
+          "api": { "bindingSpec": "openbindings.openapi@1", "content": 42 }
         },
         "bindings": {
           "createTask.api": {
@@ -81,7 +81,7 @@
         "operations": { "createTask": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.openapi@7",
+            "bindingSpec": "openbindings.openapi@1",
             "content": [{ "openapi": "3.1.0" }]
           }
         },
@@ -102,7 +102,7 @@
         "openbindings": "0.2.0",
         "operations": { "createTask": {} },
         "sources": {
-          "api": { "bindingSpec": "openbindings.openapi@7", "content": null }
+          "api": { "bindingSpec": "openbindings.openapi@1", "content": null }
         },
         "bindings": {
           "createTask.api": {

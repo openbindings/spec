@@ -1,6 +1,6 @@
 {
   "rule": "ASYNC-D-01",
-  "bindingSpec": "openbindings.asyncapi@2",
+  "bindingSpec": "openbindings.asyncapi@1",
   "section": "5",
   "description": "`content`, when present, is the parsed AsyncAPI document object or its source text as a string under §3's grammar pin. No other JSON type is an accepted `content` value under this specification.",
   "notes": "ASYNC-D-01 is the type-level discrimination between the two accepted representations. Whether a string parses under the YAML 1.2 grammar pin, and whether the artifact's asyncapi field names an accepted line, are load-time processor obligations (ASYNC-P-01) and are not fixtured here.",
@@ -12,7 +12,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": {
               "asyncapi": "3.0.0",
               "info": { "title": "Tasks", "version": "1.0.0" },
@@ -46,7 +46,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": "{\"asyncapi\":\"3.0.0\",\"info\":{\"title\":\"Tasks\",\"version\":\"1.0.0\"},\"servers\":{\"prod\":{\"host\":\"events.example.com\",\"protocol\":\"https\"}},\"channels\":{\"tasks\":{\"address\":\"/tasks\"}},\"operations\":{\"publishTask\":{\"action\":\"receive\",\"channel\":{\"$ref\":\"#/channels/tasks\"}}}}"
           }
         },
@@ -66,7 +66,7 @@
         "openbindings": "0.2.0",
         "operations": { "publishTask": {} },
         "sources": {
-          "events": { "bindingSpec": "openbindings.asyncapi@2", "content": 42 }
+          "events": { "bindingSpec": "openbindings.asyncapi@1", "content": 42 }
         },
         "bindings": {
           "publishTask.events": {
@@ -86,7 +86,7 @@
         "operations": { "publishTask": {} },
         "sources": {
           "events": {
-            "bindingSpec": "openbindings.asyncapi@2",
+            "bindingSpec": "openbindings.asyncapi@1",
             "content": [{ "asyncapi": "3.0.0" }]
           }
         },
@@ -107,7 +107,7 @@
         "openbindings": "0.2.0",
         "operations": { "publishTask": {} },
         "sources": {
-          "events": { "bindingSpec": "openbindings.asyncapi@2", "content": null }
+          "events": { "bindingSpec": "openbindings.asyncapi@1", "content": null }
         },
         "bindings": {
           "publishTask.events": {

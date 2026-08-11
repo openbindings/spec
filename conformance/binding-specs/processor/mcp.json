@@ -1,8 +1,8 @@
 {
   "format": "openbindings.binding-spec-processor-scenarios@1",
-  "bindingSpec": "openbindings.mcp@2",
+  "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
-  "description": "Portable MCP revision-2 scenarios for negotiation, listing resolution, application-contract eligibility, whole-value input, structured output projection, failure classification, and credentials.",
+  "description": "Portable MCP first-revision-candidate scenarios for negotiation, listing resolution, application-contract eligibility, whole-value input, structured output projection, failure classification, and credentials.",
   "scenarios": [
     {
       "id": "MCP-PS-01",
@@ -63,7 +63,7 @@
       "id": "MCP-PS-04",
       "rules": ["MCP-P-04"],
       "section": "8",
-      "description": "Revision 2 does not solicit or emit MCP progress even when a legacy solicit option is present.",
+      "description": "The first-revision candidate does not solicit or emit MCP progress even when an unused solicit option is present.",
       "given": {
         "source": { "location": "https://mcp.example/rpc", "content": { "tools": [{ "name": "build", "outputSchema": { "type": "object", "properties": { "done": { "type": "boolean" } }, "required": ["done"] } }] } },
         "binding": { "ref": "tools/build" },

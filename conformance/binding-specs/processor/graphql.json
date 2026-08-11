@@ -1,6 +1,6 @@
 {
   "format": "openbindings.binding-spec-processor-scenarios@1",
-  "bindingSpec": "openbindings.graphql@2",
+  "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
   "description": "Portable GraphQL processor scenarios for whole-variable input, required interpretation points, root-field integrity, explicit protocol fields, root-value projection, partial-value failure, media-aware HTTP classification, pinned introspection, and honest subscription exclusion.",
   "scenarios": [

@@ -40,20 +40,20 @@
     {
       "id": "AF-BINDING-001",
       "layer": "binding-specification",
-      "scope": "published family revision 1 specifications",
+      "scope": "unreleased first-revision family candidates",
       "issue": "Family specifications must be audited for raw failure-evidence requirements, protocol-shaped outputs, excessive synthesis policy, and missing minimum projection semantics.",
       "classification": "mixed",
       "ordinaryCallerDependency": true,
       "owner": "family binding specifications",
       "action": "audit",
-      "normativeImpact": "binding-revision",
+      "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/graphql/openbindings.graphql.md",
         "../../binding-specs/mcp/openbindings.mcp.md",
         "../../binding-specs/usage/openbindings.usage.md"
       ],
-      "notes": "OpenAPI, gRPC, Connect, AsyncAPI, immutable Usage revision 1, MCP revision 2, and GraphQL revision 2 use native facts internally without requiring protocol-shaped ordinary outputs. Immutable MCP and GraphQL revision 1 contracts remain implemented only as explicit compatibility revisions."
+      "notes": "Every family remains an unreleased first @1 candidate. OpenAPI, gRPC, Connect, AsyncAPI, Usage, MCP, and GraphQL use native facts internally without requiring protocol-shaped ordinary outputs. No earlier binding-specification meanings or compatibility revisions exist."
     },
     {
       "id": "AF-SDK-001",
@@ -96,64 +96,62 @@
         "../invocation-fidelity/usage.json",
         "../invocation-fidelity/asyncapi.json"
       ],
-      "notes": "All seven standalone brownfield synthesis families now run portable source-to-synthesis-to-operation-invocation fidelity scenarios in both reference SDKs. The eighth published binding family, Operation Graph, is invocation-only and is covered by its portable identity-law and execution corpus. The abstract assertions cover application values, partial outputs, and completion without native facts; controlled peers and native differential/integration suites retain the lower-layer oracle separately. Remaining family work is measured artifact coverage, not a known abstraction-boundary gap."
+      "notes": "All seven standalone brownfield synthesis candidate families now run portable source-to-synthesis-to-operation-invocation fidelity scenarios in both reference SDKs. The eighth candidate family, Operation Graph, is invocation-only and is covered by its portable identity-law and execution corpus. The abstract assertions cover application values, partial outputs, and completion without native facts; controlled peers and native differential/integration suites retain the lower-layer oracle separately. Remaining family work is measured artifact coverage, not a known abstraction-boundary gap."
     },
     {
       "id": "AF-BINDING-002",
       "layer": "binding-specification",
       "scope": "GraphQL application-value projection and nonterminal per-event errors",
-      "issue": "Revision 1 returns the complete GraphQL response envelope. Projecting the selected root-field value removes that protocol shape, but a subscription next payload may contain partial data plus GraphQL errors and the native stream may continue; the current value-stream plus single terminal-failure model cannot preserve all three facts simultaneously.",
+      "issue": "An earlier draft returned the complete GraphQL response envelope. Projecting the selected root-field value removes that protocol shape, but a subscription next payload may contain partial data plus GraphQL errors and the native stream may continue; the current value-stream plus single unsuccessful-completion model cannot preserve all three facts simultaneously.",
       "classification": "mixed",
       "ordinaryCallerDependency": true,
-      "owner": "GraphQL binding revision and invocation interface",
+      "owner": "GraphQL binding candidate and invocation interface",
       "action": "revise",
-      "normativeImpact": "binding-revision",
+      "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/graphql/openbindings.graphql.md",
-        "../../binding-specs/releases/2026-08-08-graphql-abstraction-fidelity/publication.json",
         "../binding-specs/processor/graphql.json",
         "../binding-specs/synthesis/graphql.json",
         "../invocation-fidelity/graphql.json",
         "../../../interfaces/binding-invoker/0.1.json"
       ],
-      "notes": "Published revision 2 projects data[rootResponseKey], emits a selected partial application value before unsuccessful completion, retains GraphQL response evidence only diagnostically, and excludes subscriptions with stable coverage evidence rather than approximating their continuing item-error lifecycle. Revision 1 remains immutable and implemented only as compatibility. Go and TypeScript source, processor, synthesis, and invocation-fidelity suites cover the successor behavior. No core document-model or invocation-frame change was required."
+      "notes": "The unreleased first @1 candidate projects data[rootResponseKey], emits a selected partial application value before unsuccessful completion, retains GraphQL response evidence only diagnostically, and excludes subscriptions with stable coverage evidence rather than approximating their continuing item-error lifecycle. Go and TypeScript source, processor, synthesis, and invocation-fidelity suites cover that behavior. No Core document-model or invocation-frame change was required."
     },
     {
       "id": "AF-BINDING-003",
       "layer": "binding-specification",
       "scope": "MCP tool result correspondence",
-      "issue": "Revision 1 returns the complete MCP method-result object, including protocol result lanes, instead of projecting a tool's artifact-declared application result.",
+      "issue": "An earlier draft returned the complete MCP method-result object, including protocol result lanes, instead of projecting a tool's artifact-declared application result.",
       "classification": "application-contract",
       "ordinaryCallerDependency": true,
-      "owner": "MCP binding revision and synthesizers",
+      "owner": "MCP binding candidate and synthesizers",
       "action": "revise",
-      "normativeImpact": "binding-revision",
+      "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/mcp/openbindings.mcp.md",
-        "../../binding-specs/releases/2026-08-08-mcp-abstraction-fidelity/publication.json",
         "../binding-specs/processor/mcp.json",
         "../binding-specs/synthesis/mcp.json",
         "../invocation-fidelity/mcp.json"
       ],
-      "notes": "Published revision 2 projects conforming structuredContent against the listed outputSchema, excludes targets lacking an application output contract, never solicits progress, and keeps MCP result and transport facts diagnostic. Revision 1 remains immutable and implemented only as an explicit compatibility revision. Go and TypeScript portable processor, synthesis, and invocation-fidelity suites cover the successor behavior. No core or OBI document-model change was required."
+      "notes": "The unreleased first @1 candidate projects conforming structuredContent against the listed outputSchema, excludes targets lacking an application output contract, never solicits progress, and keeps MCP result and transport facts diagnostic. Go and TypeScript portable processor, synthesis, and invocation-fidelity suites cover that behavior. No Core or OBI document-model change was required."
     },
     {
       "id": "AF-BINDING-004",
       "layer": "binding-specification",
       "scope": "Usage unsuccessful-completion evidence",
-      "issue": "The mutable Usage revision-1 mirror had drifted into requiring exit, signal, stdout, and stderr evidence even though the immutable published text leaves failure presentation to the consumer.",
+      "issue": "An earlier Usage candidate draft had drifted into requiring exit, signal, stdout, and stderr evidence even though the intended protocol-blind boundary leaves failure presentation to the consumer.",
       "classification": "diagnostic",
       "ordinaryCallerDependency": false,
-      "owner": "Usage binding revision",
+      "owner": "Usage binding candidate",
       "action": "remove",
       "normativeImpact": "none",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/usage/openbindings.usage.md"
       ],
-      "notes": "The mutable mirror is restored to the immutable publication exactly. Implementations retain process evidence only in optional diagnostics. No new binding revision is necessary."
+      "notes": "The first @1 candidate now retains process evidence only in optional diagnostics. No published binding revision exists."
     },
     {
       "id": "AF-SDK-002",
@@ -215,7 +213,7 @@
       "id": "AF-SYNTH-001",
       "layer": "synthesis",
       "scope": "Operation Graph standalone source synthesis",
-      "issue": "The project publishes eight binding families but only seven are standalone brownfield synthesis sources. An Operation Graph names operations in its containing OBI and does not redeclare their application contracts, so treating the graph alone as synthesizable would require invented input and output schemas.",
+      "issue": "The project has eight binding-family candidates but only seven are standalone brownfield synthesis sources. An Operation Graph names operations in its containing OBI and does not redeclare their application contracts, so treating the graph alone as synthesizable would require invented input and output schemas.",
       "classification": "unsupported-intent",
       "ordinaryCallerDependency": false,
       "owner": "synthesizer capability inventory and conformance reporting",
@@ -280,12 +278,12 @@
       "id": "AF-SYNTH-002",
       "layer": "synthesis",
       "scope": "OpenAPI same-named input declarations",
-      "issue": "Revision 1 flattened parameters and body properties into one source object, forcing synthesis to exclude independently declared same-named values even though the artifact retained enough authority to invoke them faithfully.",
+      "issue": "An earlier OpenAPI candidate draft flattened parameters and body properties into one source object, forcing synthesis to exclude independently declared same-named values even though the artifact retained enough authority to invoke them faithfully.",
       "classification": "binding-internal",
       "ordinaryCallerDependency": true,
-      "owner": "OpenAPI binding revision and reference synthesizers",
+      "owner": "OpenAPI binding candidate and reference synthesizers",
       "action": "revise",
-      "normativeImpact": "binding-revision",
+      "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/openapi/openbindings.openapi.md",
@@ -295,29 +293,28 @@
         "../../../openbindings-ts/packages/openapi/src/native-differential.test.ts",
         "../../../ob/internal/app/openapi_v2_fidelity_test.go"
       ],
-      "notes": "Revision 2 uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by a core inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No core or OBI document-model change was required."
+      "notes": "The first @1 candidate uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by a Core inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No Core or OBI document-model change was required."
     },
     {
       "id": "AF-BINDING-005",
       "layer": "binding-specification",
       "scope": "AsyncAPI WebSocket Operation Reply correspondence",
-      "issue": "Revision 1 synthesized a reply-bearing WebSocket send operation as a server-streaming subscription and silently discarded the artifact's reply contract.",
+      "issue": "An earlier AsyncAPI candidate draft synthesized a reply-bearing WebSocket send operation as a server-streaming subscription and silently discarded the artifact's reply contract.",
       "classification": "unsupported-intent",
       "ordinaryCallerDependency": true,
-      "owner": "AsyncAPI binding revision and reference synthesizers",
+      "owner": "AsyncAPI binding candidate and reference synthesizers",
       "action": "revise",
-      "normativeImpact": "binding-revision",
+      "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
         "../../binding-specs/asyncapi/openbindings.asyncapi.md",
-        "../../binding-specs/releases/2026-08-10-asyncapi-reply-fidelity/publication.json",
         "../binding-specs/processor/asyncapi.json",
         "../binding-specs/synthesis/asyncapi.json",
         "../../../openbindings-go/formats/asyncapi/synthesize_test.go",
         "../../../openbindings-ts/packages/asyncapi/src/synthesize.test.ts",
         "../../../corpus-lab/ASYNCAPI-FIDELITY.md"
       ],
-      "notes": "Revision 2 refuses every reply-bearing WebSocket operation before establishment until a faithful request/reply session model exists. Immutable revision 1 remains supported only by its exact compatibility identifier. A 250-repository authority-matrix corpus found the defect in 22 operations across five repositories; after correction both SDKs produced exact OBI and coverage parity for all 247 independently adjudicated valid artifacts. Exact-edition discrimination now precedes external-reference resolution, making unsupported-edition refusal deterministic and network-free. No Core prose, OBI document-model field, invocation frame, protocol-shaped output, or context-resolution rule changed."
+      "notes": "The first @1 candidate delegates concrete protocols through explicit drivers and refuses unsupported interactions before dispatch. A 250-repository authority-matrix corpus found the earlier request/reply defect in 22 operations across five repositories; after correction both SDKs produced exact OBI and coverage parity for all 247 independently adjudicated valid artifacts. Exact-edition discrimination precedes external-reference resolution, making unsupported-edition refusal deterministic and network-free. No Core prose, OBI document-model field, invocation frame, protocol-shaped output, or context-resolution rule changed."
     }
   ]
 }

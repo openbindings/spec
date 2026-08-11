@@ -1,10 +1,10 @@
 # Binding specifications
 
-**Status: index and authoring guidance for the binding specifications published by the openbindings project.** A **published** binding specification in this directory is normative for the identifier(s) it defines: it is the defining-authority text the core specification describes in [§6. Binding specifications](../openbindings.md#6-binding-specifications) and binds through the OBI-B rules of [§10.4](../openbindings.md#104-binding-specification-rules). This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template. The template is not a conformance target; the completeness floor it derives from ([OBI-B-02](../openbindings.md#104-binding-specification-rules)) is.
+**Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every family document in this directory is a mutable candidate for its first `@1` identifier. The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
 The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no conformance weight here, but state the conventions a binding specification's own text adopts when it follows this guidance.
 
-These are the **openbindings project's** binding specifications _for_ the named source families: `openbindings.openapi@7` is this project's latest specification for binding OpenAPI documents, published under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
+These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI candidate proposes `openbindings.openapi@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them — where an existing artifact or protocol authority exists, its rules are incorporated by reference. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core.
 
 ## Meaning first, action complete
 
@@ -88,7 +88,7 @@ schema is not a faithful substitute for a missing application contract.
 
 ## Identifiers
 
-Project-published binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Artifact and dialect versions never appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section states which artifact versions it accepts (core [§6](../openbindings.md#6-binding-specifications)).
+When published, project binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Every current family candidate proposes revision `1`. Artifact and dialect versions never appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section states which artifact versions it accepts (core [§6](../openbindings.md#6-binding-specifications)).
 
 - Identifiers are exact, opaque strings ([OBI-B-01](../openbindings.md#104-binding-specification-rules)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
 - An incompatible change publishes the next revision — a different identifier ([OBI-B-03](../openbindings.md#104-binding-specification-rules)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
@@ -98,8 +98,9 @@ Project-published binding specifications are identified as `openbindings.<name>@
 
 ### Publication lifecycle
 
-The mutable family path used while authoring becomes a convenience mirror of
-the latest published revision. Publication is one explicit operation:
+The mutable family path is the candidate. After first publication it becomes a
+convenience mirror of the latest published revision. Publication is one
+explicit operation:
 
 1. finish and review the candidate document and its conformance evidence;
 2. run `scripts/publish-binding-specifications.mjs`, naming the exact family
@@ -116,33 +117,20 @@ chain and rejects edits, removals, or renames beneath `binding-specs/releases/`.
 It also requires each mutable family path to remain byte-identical to the
 revision named by the manifest's `latest` map. A future revision is authored
 as a candidate, published into a new bundle, and only then becomes the latest
-mirror; it never edits its predecessor.
-
-The manifest's historical `coreRelease` field records the core version label
-of the companion snapshot archived in that bundle. It does not, by itself,
-assert that a core release tag already existed: the initial revision-1 cohorts
-were published against archived 0.2.0 working-draft semantics before the final
-0.2 core release. Permanent rendered binding-specification pages resolve core
-citations to that immutable publication-time snapshot, not to the moving 0.2
-working copy.
-
-Published prose is not rewritten for corrections. A non-semantic
-clarification is an append-only erratum under
-[`binding-specs/errata/`](errata/README.md), recorded in
-[`errata.json`](errata.json); a change to accepted sources or required,
-permitted, or refused behavior publishes the next revision. Thus the original
-bytes, later clarifications, and the current latest alias are three distinct
-things rather than one mutable page.
+mirror; it never edits its predecessor. Before the first publication, the
+manifest is intentionally empty and there are no release bundles or errata.
+After publication, clarifications use the append-only errata process and
+semantic changes use a new identifier.
 
 Several upstream editions belong in one revision when the artifact identifies its own edition and target identity, interaction model, and operation-boundary correspondence remain one concept with finite deterministic edition branches. A fundamentally different correspondence may justify a more specific family; merely avoiding edition branches does not. A later revision may continue accepting older editions alongside a newly incorporated one, but no compatibility or range relation between the two binding-specification identifiers is inferred.
 
-Migration note: `openbindings.operation-graph` originally published under the token `openbindings.operation-graph@0.2.0`; it now publishes as `openbindings.operation-graph@1`, with the exact graph-unit format version (`0.2.0` in this revision) carried by each graph's version field — the identifier/artifact-version split working as designed. Tooling replaces the old token in the coordinated 0.2.0 change.
+The Operation Graph candidate uses proposed binding identifier `openbindings.operation-graph@1`; each graph independently carries its graph-unit format version. Earlier development tokens remain only in version-control history.
 
 ## Artifact authority and presence
 
 A binding specification governs a family of sources and bindings; it is not required to begin with an externally defined artifact family. Artifact **authority** and artifact **presence** are separate choices:
 
-1. A specification may incorporate an existing artifact format and protocol. `openbindings.openapi@7` incorporates OpenAPI and HTTP.
+1. A specification may incorporate an existing artifact format and protocol. `openbindings.openapi@1` incorporates OpenAPI and HTTP.
 2. A specification may define the artifact format and interaction model itself. `openbindings.operation-graph@1` defines the graph artifact, its nodes, and its execution semantics; there is no external artifact authority for it to incorporate.
 3. A specification may accept an artifactless source mode. `openbindings.connect@1`'s descriptorless mode uses a service `location` and binding `ref` without schema `content`; the Connect protocol and the binding specification completely define the narrower interaction. A specification may also define absent `ref` to target `location` itself, leaving `bindingSpec` plus `location` as the complete concrete address.
 
@@ -201,14 +189,14 @@ replaces a library that hides required facts or imposes conflicting policy.
 
 | Specification   | Document                                                                           | Status                                                                                             | Identifier(s)                    | `ref` shape (summary)                                                                                                                                              |
 | --------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.operation-graph@1` | JSON Pointer to a graph definition                                                                                                                                 |
-| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.usage@1`           | space-separated command path (absent ref = root)                                                                                                                   |
-| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **published** (v7 latest; v1–v6 immutable; implemented by both reference SDKs and `ob`) | `openbindings.openapi@7`         | JSON Pointer to the operation object                                                                                                                               |
-| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **published** (v2 latest; v1 immutable; implemented by both reference SDKs and `ob`) | `openbindings.mcp@2`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
-| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>`                                                                                                                               |
-| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **published** (v1; immutable publication recorded; implemented by both reference SDKs and `ob`) | `openbindings.connect@1`         | `<fully-qualified-service>/<method>`                                                                                                                               |
-| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **published** (v2 latest; v1 immutable compatibility revision; implemented by both reference SDKs and `ob`) | `openbindings.asyncapi@2`        | JSON Pointer `#/operations/<operation-key>`                                                                                                                        |
-| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **published** (v2 latest; v1 immutable compatibility revision; implemented by both reference SDKs and `ob`) | `openbindings.graphql@2`         | `query/<field>` or `mutation/<field>`                                                                                                     |
+| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **unreleased @1 candidate** | `openbindings.operation-graph@1` | JSON Pointer to a graph definition |
+| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **unreleased @1 candidate** | `openbindings.usage@1`           | space-separated command path (absent ref = root) |
+| openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **unreleased @1 candidate** | `openbindings.openapi@1`         | JSON Pointer to the operation object |
+| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **unreleased @1 candidate** | `openbindings.mcp@1`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
+| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **unreleased @1 candidate** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
+| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **unreleased @1 candidate** | `openbindings.connect@1`         | `<fully-qualified-service>/<method>` |
+| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **unreleased @1 candidate** | `openbindings.asyncapi@1`        | edition-dependent operation reference |
+| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **unreleased @1 candidate** | `openbindings.graphql@1`         | `query/<field>` or `mutation/<field>` |
 
 A candidate page remains informational until promotion. It uses the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier; its status banner states the remaining publication gates.
 
@@ -222,17 +210,15 @@ A binding specification is a semantic authority, often operating under divided a
 4. **Refuse or exclude** behavior OpenBindings cannot represent faithfully. A loud, pre-dispatch refusal is more conformant than silently identifying distinct artifact values, discarding required information, or approximating an interaction the artifact did not declare.
 5. **Define a default only as a last resort**, where the artifact is silent, actionable meaning still needs an answer, and neither an exposed choice nor a narrower supported subset is adequate. The text labels that answer as this binding specification's convention and gives it a named configuration point where consumer choice is meaningful.
 
-### Targeted 0.2.0 design decisions
+### Current candidate design decisions
 
 The adversarial review resolved the former lower-confidence questions below. These are recorded so a later implementation does not reopen them privately; changing one requires another specification-level compatibility review against the incorporated artifact.
 
 - **Usage field identity and multiplicity:** first-long-else-first-short remains the canonical JSON field identity. Identity collisions, combined repeatable-plus-variadic declarations, and order-dependent `overrides` inputs refuse; count, repeatable, and variadic forms otherwise keep distinct argv shapes.
 - **Usage optional `--`:** both artifact-permitted spellings remain an unordered permitted set through the `delimiter` point. The processor corpus accepts both and gives neither preference.
-- **AsyncAPI protocol fields:** the current revision admits only string-valued query/header fields and labels URI-component encoding as its OpenBindings convention. Non-string schemas refuse until an upstream serialization profile or later binding-specification revision supplies a faithful encoding.
-- **AsyncAPI WebSocket replies:** reply-bearing WebSocket operations remain excluded until a request/reply session model is specified; revision 2 neither drops replies nor turns every WebSocket interaction bidirectional. Immutable revision 1 remains available only as an exact compatibility contract.
+- **AsyncAPI:** the first-revision candidate is being realigned around AsyncAPI's own protocol-binding system. The outer OpenBindings specification delegates concrete protocol semantics to the selected AsyncAPI binding and runtime driver rather than maintaining an HTTP/WebSocket allowlist here.
 - **Operation Graph startup:** every held `operation` invocation opens at graph start. This preserves the identity law and output-before-input causality; the eager timing consequence is explicit and covered by OG-EX-39..46.
-- **GraphQL revision 1:** GraphQL keeps its single-root-field check, both HTTP media lanes, pinned subscription protocol, standard-introspection acquisition, required exact-document interpretation point, and complete response envelopes. These are published semantics, not implementation defaults.
-- **GraphQL revision 2:** Query and mutation outputs are the selected root-field application value. Trusted GraphQL errors cause unsuccessful completion after any selected partial value; native envelopes remain diagnostic. Subscription targets are coverage-accounted exclusions because their per-event partial-data-plus-error lifecycle can continue, and revision 2 refuses rather than approximates it.
+- **GraphQL:** Query and mutation outputs are the selected root-field application value. Trusted GraphQL errors cause unsuccessful completion after any selected partial value; native envelopes remain diagnostic. Subscription targets are coverage-accounted exclusions because their per-event partial-data-plus-error lifecycle can continue, and the candidate refuses rather than approximates it.
 
 These decisions are intentionally specific. “Let each implementation choose” is not an acceptable substitute; a future review keeps the rule, replaces it with a better incorporated/configured rule, or narrows the supported set explicitly.
 
@@ -358,9 +344,9 @@ portable meaning.
 The operation value domain is JSON (core [§5](../openbindings.md#5-document-model)), so a value that is neither a JSON value nor a string — arbitrary bytes — needs a **boundary encoding** to cross the seam. This is one instance of the decode/routing answers above, not a separate mechanism, and it is governed by two principles in order:
 
 1. **Follow the artifact where it declares an encoding.** OpenAPI's `contentEncoding` (`base64`/`base64url`), gRPC/Connect's ProtoJSON `bytes`, and MCP's resource `blob` all define how bytes ride; a binding specification incorporates its family's answer and does not override it. The artifact keeps authority over its own bytes.
-2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI 3.0's `format: binary` or exact schema-omitted non-JSON declaration, or a 3.1 raw body whose Media Type Object omits `schema`). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi@7` §9.2 is the pattern: "this specification's Base64 boundary representation"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
+2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI 3.0's `format: binary` or exact schema-omitted non-JSON declaration, or a 3.1 raw body whose Media Type Object omits `schema`). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi@1` §9.2 is the pattern: "this specification's Base64 boundary representation"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
 
-A family whose revision does not define bytes carriage on some axis **declares the gap** rather than leaving it silent (immutable `openbindings.openapi@2` refused raw-binary request bodies; immutable `openbindings.openapi@3` closed that request gap while retaining an explicit response gap; `openbindings.openapi@4` closes the artifact-authorized raw-response gap; `openbindings.asyncapi@2` records its non-string, non-JSON payload boundary; `openbindings.usage@1` keeps a text-only stdout default). Closing such a gap is a later revision's work, following the two principles above.
+A family candidate that does not define bytes carriage on some axis **declares the gap** rather than leaving it silent. The current OpenAPI `@1` candidate defines artifact-authorized raw request and response carriage; the AsyncAPI `@1` candidate records its non-string, non-JSON payload boundary; and the Usage `@1` candidate keeps a text-only stdout default. A gap left in a published specification could only be closed by a later revision, following the two principles above.
 
 ## Authentication and credentials
 
@@ -370,7 +356,7 @@ Credentials and other runtime prerequisites are **not** part of an OBI document 
 
 Many source families present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a source can be represented with unique field names across its effective input/output surface.
 
-When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. Immutable `openbindings.openapi@1` narrowed coverage at those collisions. `openbindings.openapi@2` closed that gap with a binding-private routed source value, which `openbindings.openapi@7` retains: synthesis can preserve protocol-neutral application fields and carry the concrete name-plus-location correspondence in a core `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
+When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. The current OpenAPI `@1` candidate uses a binding-private routed source value: synthesis preserves protocol-neutral application fields and carries the concrete name-plus-location correspondence in a core `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
 
 ## Authoring a new binding specification
 
@@ -381,7 +367,7 @@ Apply the [deference order](#the-deference-order) to every answer in the templat
 ### The template
 
 1. **Status and identifier** — the exact identifier this document defines, its defining authority, and the revision discipline (OBI-B-01, OBI-B-03). The document may carry its own edition label; that label is not the identifier.
-2. **Scope and authorities** — every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision) and the boundary between its authority and this specification's overlay; or, where no external artifact authority exists, an explicit statement of the artifact and interaction semantics this specification defines itself. A specification MAY also incorporate a **sibling published binding specification** by exact identifier, scoped to named sections and rule identifiers (`openbindings.connect@1`'s schema layer, cited from `openbindings.grpc@1`, is the pattern) — the "citations denote revisions" discipline above governs.
+2. **Scope and authorities** — every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision) and the boundary between its authority and this specification's overlay; or, where no external artifact authority exists, an explicit statement of the artifact and interaction semantics this specification defines itself. A candidate MAY also incorporate a **sibling candidate** by its proposed exact identifier, scoped to named sections and rule identifiers (`openbindings.connect@1`'s schema layer, cited from the `openbindings.grpc@1` candidate, is the pattern). Both candidates must be reviewed together before either is published. After publication, the "citations denote revisions" discipline above governs.
 3. **Accepted source representations** (OBI-B-02 item 1) — whether each source mode accepts an artifact; the exact upstream edition envelope and every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly. Every accepted edition receives conformance coverage for its edition-specific branches.
 4. **`location`** (item 2) — the accepted absolute-address syntax and what it addresses. **Acquisition-failure semantics follow the address scheme:** where `location` is a URI, whether a dereference succeeded is the scheme's own affair (an HTTP status, a `file://` open error, a TLS failure), and a specification need say nothing — the terseness is deference, not an omission. A specification that mints an address form with no incorporating scheme (an executable address, say) owes the success condition itself, because none is inherited (`openbindings.usage@1`'s `exec:` requires exit 0, its stdout otherwise not an artifact, is the pattern).
 5. **`content`** (item 3) — the accepted JSON values and their meaning, including any mode in which `content` is forbidden.

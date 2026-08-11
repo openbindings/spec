@@ -1,6 +1,6 @@
 {
   "format": "openbindings.binding-spec-processor-scenarios@1",
-  "bindingSpec": "openbindings.asyncapi@2",
+  "bindingSpec": "openbindings.asyncapi@1",
   "family": "asyncapi",
   "description": "Portable processor scenarios for AsyncAPI perspective, protocol-binding, complete-message framing, message selection, address derivation, encoding, reply, and credential boundaries.",
   "scenarios": [
@@ -8,12 +8,12 @@
       "id": "ASYNC-PS-01",
       "rules": ["ASYNC-P-01"],
       "section": "3",
-      "description": "AsyncAPI 2.x is refused loudly rather than interpreted through the 3.0 operation model.",
+      "description": "An unadopted AsyncAPI edition is refused before reference resolution or dispatch.",
       "given": {
         "source": {
           "content": {
-            "asyncapi": "2.6.0",
-            "info": { "title": "Old", "version": "1" },
+            "asyncapi": "3.2.0",
+            "info": { "title": "Future", "version": "1" },
             "channels": {}
           }
         },
@@ -940,6 +940,47 @@
           "disposition": "refusal",
           "phase": "resolution",
           "assertions": [{ "path": "/dispatch", "absent": true }]
+        }
+      ]
+    },
+    {
+      "id": "ASYNC-PS-20",
+      "rules": ["ASYNC-P-01", "ASYNC-P-02", "ASYNC-P-03"],
+      "section": "8",
+      "description": "An AsyncAPI 2.6 publish target keeps its native ref and maps to caller input under the edition's application perspective.",
+      "given": {
+        "source": {
+          "content": {
+            "asyncapi": "2.6.0",
+            "info": { "title": "Legacy HTTP", "version": "1" },
+            "defaultContentType": "application/json",
+            "servers": {
+              "api": { "url": "https://api.example", "protocol": "https" }
+            },
+            "channels": {
+              "/tasks": {
+                "publish": {
+                  "message": { "payload": { "type": "object" } },
+                  "bindings": { "http": { "method": "POST" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "ref": "#/channels/~1tasks/publish" },
+        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            { "path": "/dispatch/method", "equals": "POST" },
+            { "path": "/dispatch/url", "equals": "https://api.example/tasks" },
+            { "path": "/dispatch/body/id", "equals": "1" },
+            { "path": "/outputs", "equals": [] }
+          ]
         }
       ]
     }

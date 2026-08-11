@@ -81,7 +81,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
 | [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
 | [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
-| [`binding-specs/`](binding-specs/) | Binding specifications published by the project (e.g., `openbindings.openapi@1`) |
+| [`binding-specs/`](binding-specs/) | Unreleased first-`@1` binding-specification candidates and authoring guidance |
 | [`examples/`](examples/) | Worked example OBI documents |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |
 | [`versions/`](versions/) | Immutable released snapshots |

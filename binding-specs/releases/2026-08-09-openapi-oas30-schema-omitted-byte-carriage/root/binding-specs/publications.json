@@ -1,9 +1,0 @@
-{
-  "format": "openbindings.binding-spec-publication-context@1",
-  "publication": "2026-08-09-openapi-oas30-schema-omitted-byte-carriage",
-  "publishedAt": "2026-08-09",
-  "coreRelease": "0.2.0",
-  "identifiers": [
-    "openbindings.openapi@7"
-  ]
-}

@@ -1,6 +1,6 @@
 {
   "rule": "MCP-D-01",
-  "bindingSpec": "openbindings.mcp@2",
+  "bindingSpec": "openbindings.mcp@1",
   "section": "5",
   "description": "`content`, when present, is a pinned listing: pagination-exhausted entity arrays under `tools`/`resources`/`resourceTemplates`/`prompts` members in the 2025-11-25 result shapes, each optional, no other members. Pagination members (`nextCursor`, `_meta`) and any other member are not part of the representation, and their presence makes the content invalid.",
   "tests": [
@@ -11,7 +11,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
@@ -47,7 +47,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
@@ -73,7 +73,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
@@ -101,7 +101,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
@@ -129,7 +129,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [
@@ -157,7 +157,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": {
@@ -184,7 +184,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": {
               "tools": [{ "inputSchema": { "type": "object" } }]
@@ -209,7 +209,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": "tools: get_weather"
           }
@@ -232,7 +232,7 @@
         "operations": { "getWeather": {} },
         "sources": {
           "server": {
-            "bindingSpec": "openbindings.mcp@2",
+            "bindingSpec": "openbindings.mcp@1",
             "location": "https://mcp.example.com/mcp",
             "content": null
           }

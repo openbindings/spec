@@ -2,7 +2,7 @@
 
 ## 1. Status and identifier
 
-This document is the normative text for **`openbindings.graphql@2`**, published by the OpenBindings project. The identifier is exact and opaque under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules). Published revisions are immutable; an incompatible change publishes the next revision under [OBI-B-03](../../openbindings.md#104-binding-specification-rules). Revision 2 succeeds immutable `openbindings.graphql@1` by projecting the selected root-field application value instead of exposing the GraphQL response envelope, and by excluding subscriptions whose continuing per-event failure semantics do not fit this revision's operation boundary.
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.graphql@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" are interpreted as described in BCP 14 when, and only when, they appear in all capitals.
 
@@ -10,7 +10,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and
 
 This is the OpenBindings project's binding specification for GraphQL services. The [GraphQL Specification, September 2025](https://spec.graphql.org/September2025/) governs schemas, executable documents, validation, variables, execution, introspection, and response shape. Query and mutation transport incorporates the [GraphQL-over-HTTP draft at commit `4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3`](https://github.com/graphql/graphql-over-http/blob/4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3/spec/GraphQLOverHTTP.md). This specification defines only the OpenBindings overlay.
 
-Revision 2 binds query and mutation root fields. It excludes subscriptions, batching, multipart incremental delivery, uploads, live queries, GET, persisted-query extensions, and documents that collect more than one root response-key group. Those are explicit coverage boundaries, not approximations.
+This candidate binds query and mutation root fields. It excludes subscriptions, batching, multipart incremental delivery, uploads, live queries, GET, persisted-query extensions, and documents that collect more than one root response-key group. Those are explicit coverage boundaries, not approximations.
 
 The concrete GraphQL service and response envelope remain available to the binding implementation so it can interact and classify correctly. Their native representations do not thereby become ordinary OpenBindings values.
 
@@ -33,14 +33,14 @@ Present `content` MUST be the pinned introspection response of §3 (**GQL-D-02**
 
 ## 6. `ref` and eligible targets
 
-A revision-2 `ref` is REQUIRED and has exactly one of these forms (**GQL-D-03**):
+A candidate `ref` is REQUIRED and has exactly one of these forms (**GQL-D-03**):
 
 ```text
 query/<field-name>
 mutation/<field-name>
 ```
 
-The non-empty field portion is one exact GraphQL Name. Resolution follows the schema's actual query or mutation root-type mapping and matches the field exactly. A missing root type or field is unresolvable. Subscription root fields remain part of schema inventory but are not revision-2 binding targets.
+The non-empty field portion is one exact GraphQL Name. Resolution follows the schema's actual query or mutation root-type mapping and matches the field exactly. A missing root type or field is unresolvable. Subscription root fields remain part of schema inventory but are not candidate binding targets.
 
 ## 7. Target and interaction
 
@@ -66,7 +66,7 @@ The body contains `query`, optional `operationName`, and optional `variables` ex
 
 ### 8.2. Interpretation points
 
-Revision 2 defines two interpretation points (**GQL-P-02**):
+This candidate defines two interpretation points (**GQL-P-02**):
 
 | Point | Artifact answer or fallback | Meaning |
 |---|---|---|
@@ -110,7 +110,7 @@ Every non-introspection query and mutation root field is eligible for representa
 - **GQL-P-04**: Subscription targets are excluded with coverage evidence rather than approximated.
 - **GQL-P-05**: Live schema acquisition uses GraphQL introspection until required facts are known; pinned content displaces live introspection and incomplete facts make the affected target unresolvable.
 
-Conformance fixtures keyed to these identifiers are published with the project corpus.
+Conformance fixtures keyed to these identifiers are maintained in the project corpus.
 
 ## 11. References
 

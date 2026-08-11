@@ -1,6 +1,6 @@
 {
   "format": "openbindings.binding-spec-synthesis-scenarios@2",
-  "bindingSpec": "openbindings.graphql@2",
+  "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
   "description": "GraphQL query/mutation application contracts with explicit subscription coverage exclusion.",
   "scenarios": [
@@ -8,7 +8,7 @@
       "id": "GQL-SS-01",
       "description": "Query and mutation fields become application operations; subscription fields are accounted for as excluded rather than projected through a GraphQL-shaped contract.",
       "source": {
-        "bindingSpec": "openbindings.graphql@2",
+        "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
           "data": {
@@ -121,7 +121,7 @@
       "id": "GQL-SS-02",
       "description": "Synthesis preserves descriptions and deprecation while excluding introspection-prefixed root fields from the callable inventory.",
       "source": {
-        "bindingSpec": "openbindings.graphql@2",
+        "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
           "data": {
@@ -231,7 +231,7 @@
       "id": "GQL-SS-03",
       "description": "An errored GraphQL introspection execution result is not a schema artifact and is refused before synthesis.",
       "source": {
-        "bindingSpec": "openbindings.graphql@2",
+        "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
           "errors": [
@@ -252,7 +252,7 @@
       "id": "GQL-SS-04",
       "description": "Embedded introspection does not replace the required absolute HTTP endpoint identity.",
       "source": {
-        "bindingSpec": "openbindings.graphql@2",
+        "bindingSpec": "openbindings.graphql@1",
         "content": {
           "data": {
             "__schema": {

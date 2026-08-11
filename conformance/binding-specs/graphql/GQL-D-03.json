@@ -1,6 +1,6 @@
 {
   "rule": "GQL-D-03",
-  "bindingSpec": "openbindings.graphql@2",
+  "bindingSpec": "openbindings.graphql@1",
   "section": "7",
   "description": "`ref` is required, has a `query/` or `mutation/` prefix plus one exact GraphQL field name, and resolves through the schema's declared root type.",
   "tests": [
@@ -11,7 +11,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
               "data": {
@@ -50,13 +50,13 @@
       "valid": true
     },
     {
-      "description": "subscription refs are outside revision 2 rather than admitted pending live resolution",
+      "description": "subscription refs are outside the first-revision candidate rather than admitted pending live resolution",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "updates": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql"
           }
         },
@@ -78,7 +78,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql"
           }
         },
@@ -99,7 +99,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql"
           }
         },
@@ -121,7 +121,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql"
           }
         },
@@ -143,7 +143,7 @@
         "operations": { "viewer": {} },
         "sources": {
           "api": {
-            "bindingSpec": "openbindings.graphql@2",
+            "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
               "data": {

@@ -54,16 +54,15 @@ reference implementations:
 
 - OpenAPI synthesizes a response-body schema and emits the decoded response
   body.
-- GraphQL revision 2 synthesizes a root-field application schema and emits the
-  selected root value; envelopes remain diagnostic and subscriptions are
-  explicit coverage exclusions. Revision 1 retains its published envelope
-  contract only as compatibility.
+- The GraphQL first `@1` candidate synthesizes a root-field application schema
+  and emits the selected root value; envelopes remain diagnostic and
+  subscriptions are explicit coverage exclusions.
 - gRPC and Connect synthesize message schemas and emit message values.
 - AsyncAPI synthesizes payload schemas and emits payload values.
 - usage synthesis declares the documented floor output while runtime
   interpretation remains governed by its configuration points.
 
-The GraphQL envelope mismatch was corrected by its revision-2 successor; no
+The GraphQL envelope mismatch was corrected before first publication; no
 equivalent mismatch was found in the other families. Future reviews should
 repeat the question against both Go and TypeScript whenever an invocation
 boundary changes.

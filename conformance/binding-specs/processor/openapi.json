@@ -1,6 +1,6 @@
 {
   "format": "openbindings.binding-spec-processor-scenarios@1",
-  "bindingSpec": "openbindings.openapi@7",
+  "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
   "description": "Portable processor scenarios for OpenAPI decisions sharpened during the 0.2.0 review. Configuration is named semantically; adapters normalize HTTP observations.",
   "scenarios": [
@@ -90,7 +90,7 @@
       "id": "OAPI-PS-03",
       "rules": ["OAPI-P-03"],
       "section": "9.1",
-      "description": "Same-named path and query parameters remain independently writable through the routed source representation retained by revision 6.",
+      "description": "Same-named path and query parameters remain independently writable through the first candidate's routed source representation.",
       "given": {
         "source": {
           "content": {
@@ -124,7 +124,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "pathId": "path-value", "queryId": "query-value" },
               "parameters": [
                 { "in": "path", "name": "id", "field": "pathId" },
@@ -965,7 +965,7 @@
         "invocation": {
           "inputPresent": true,
           "input": {
-            "$openbindings": "openbindings.openapi@7",
+            "$openbindings": "openbindings.openapi@1",
             "value": { "application": true },
             "parameters": [],
             "body": { "application": true }
@@ -985,7 +985,7 @@
             {
               "path": "/dispatch/body",
               "equals": {
-                "$openbindings": "openbindings.openapi@7",
+                "$openbindings": "openbindings.openapi@1",
                 "value": { "application": true },
                 "parameters": [],
                 "body": { "application": true }
@@ -1314,7 +1314,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "AAH+/w==" },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -1369,7 +1369,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "AAH+/w=" },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -1418,7 +1418,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "e30=" },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -1507,7 +1507,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "AAH+/w==" },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -1565,7 +1565,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "AAH+/w==" },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -1773,7 +1773,7 @@
       "id": "OAPI-PS-38",
       "rules": ["OAPI-P-04"],
       "section": "9.2",
-      "description": "A configured concrete media type covered by a range still refuses when revision 6 defines no encoder for that governing schema and media combination.",
+      "description": "A configured concrete media type covered by a range still refuses when the first candidate defines no encoder for that governing schema and media combination.",
       "given": {
         "source": {
           "content": {
@@ -2124,7 +2124,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": {
                 "id": "query-value",
                 "payload": { "id": "body-value", "extra": "a b", "fixed": "yes" }
@@ -2191,7 +2191,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": { "meta_first": { "role": "admin" } } },
               "parameters": [],
               "body": { "whole": "payload" }
@@ -2260,7 +2260,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": {
                 "kind": "query-value",
                 "payload": { "kind": "named", "name": "Ada" }
@@ -2319,7 +2319,7 @@
           "inputPresent": true,
           "input": [
             {
-              "$openbindings": "openbindings.openapi@7",
+              "$openbindings": "openbindings.openapi@1",
               "value": { "payload": "AAH+/w==" },
               "parameters": [],
               "body": { "whole": "payload" }

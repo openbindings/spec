@@ -1,6 +1,6 @@
 {
   "format": "openbindings.binding-spec-synthesis-scenarios@2",
-  "bindingSpec": "openbindings.openapi@7",
+  "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
   "description": "OpenAPI path-operation coverage, request-media alternatives, and reverse-direction exclusions.",
   "scenarios": [
@@ -8,7 +8,7 @@
       "id": "OAPI-SS-01",
       "description": "A supported path operation remains callable while every request-media declaration and webhook interaction receives its own disposition.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "info": {
@@ -121,7 +121,7 @@
       "id": "OAPI-SS-02",
       "description": "A parameter/body-property collision is preserved through a binding-private transform, so both artifact-declared media alternatives remain represented.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "info": {
@@ -223,7 +223,7 @@
       "id": "OAPI-SS-03",
       "description": "A required body property colliding with a parameter remains independently callable and coverage-complete under the current revision.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "info": {
@@ -307,7 +307,7 @@
       "id": "OAPI-SS-04",
       "description": "An absolute sole server makes an ordinary path operation directly invocable without a server-selection prerequisite.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "info": {
@@ -365,7 +365,7 @@
       "id": "OAPI-SS-05",
       "description": "A content-form parameter outside the specification's JSON and text carriage is excluded at synthesis instead of producing an operation that can never faithfully send the declared value.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "info": { "title": "Parameter content soundness", "version": "1" },
@@ -416,7 +416,7 @@
       "id": "OAPI-SS-06",
       "description": "A document-level custom schema dialect excludes only operations whose projected contracts inherit it; schema-free operations and supported per-schema overrides remain faithfully synthesizable.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
           "jsonSchemaDialect": "https://schemas.example.test/custom",
@@ -517,7 +517,7 @@
       "id": "OAPI-SS-07",
       "description": "A generic OAS 3.0 raw-binary request body is represented for its declared concrete media type without a media-selection requirement.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.0.4",
           "info": { "title": "Generic binary synthesis", "version": "1" },
@@ -579,7 +579,7 @@
       "id": "OAPI-SS-08",
       "description": "OAS 3.1 schema-omitted raw bytes and schema-declared encoded text are both represented without collapsing their distinct wire carriage.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
           "info": { "title": "OAS 3.1 binary synthesis", "version": "1" },
@@ -677,7 +677,7 @@
       "id": "OAPI-SS-09",
       "description": "A range-only request body remains a represented protocol-blind operation while coverage records the concrete request-media choice required for invocation.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
           "info": { "title": "Range coverage", "version": "1" },
@@ -743,7 +743,7 @@
       "id": "OAPI-SS-10",
       "description": "A mixed exact-plus-range request has no target-wide media requirement, while the represented range alternative records the concrete choice it needs.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
           "info": { "title": "Mixed range coverage", "version": "1" },
@@ -817,7 +817,7 @@
       "id": "OAPI-SS-11",
       "description": "An optional range-only body has no target-wide requirement because bodyless invocation is available, while its represented range alternative still requires concrete request media.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
           "info": { "title": "Optional range coverage", "version": "1" },
@@ -876,7 +876,7 @@
       "id": "OAPI-SS-12",
       "description": "A declaration-complex exact JSON request remains fully represented through whole-value carriage rather than being excluded by the flattened router.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
           "info": { "title": "Whole JSON coverage", "version": "1" },
@@ -940,7 +940,7 @@
       "id": "OAPI-SS-13",
       "description": "An exact schema-omitted OAS 3.0 raw-byte operation is fully represented without a media-selection requirement.",
       "source": {
-        "bindingSpec": "openbindings.openapi@7",
+        "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.0.4",
           "info": { "title": "Schema-omitted byte coverage", "version": "1" },

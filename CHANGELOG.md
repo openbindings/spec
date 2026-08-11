@@ -13,64 +13,31 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
-- `openbindings.asyncapi@2`, preserving AsyncAPI operation replies by
-  refusing reply-bearing WebSocket `send` operations before establishment
-  instead of synthesizing a subscription that discards the reply contract.
-  The protocol-neutral operation surface, generic context resolution, and
-  Core OBI document model are unchanged; immutable revision 1 remains an
-  exact compatibility revision.
+- The unreleased first `openbindings.asyncapi@1` candidate. It treats AsyncAPI
+  Core and each artifact-declared protocol binding as upstream authority,
+  normalizes AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0 operations, and leaves
+  concrete execution to protocol drivers. Synthesis is independent of which
+  drivers happen to be installed; unsupported execution fails locally before
+  dispatch. No Core OBI document-model field changed.
 
-- `openbindings.openapi@7`, carrying exact schema-omitted OpenAPI 3.0
-  non-JSON request and response representations as opaque bytes through the
-  canonical protocol-independent Base64 boundary. Media ranges, forms, text,
-  and artifact-defined codecs do not gain this lane. Immutable revision 6
-  remains available, and no Core OBI document-model field changed.
-
-- `openbindings.openapi@6`, preserving declaration-complex exact JSON request
-  schemas and values through one protocol-neutral application property and a
-  binding-private whole-value route. `oneOf`, `anyOf`, conditionals,
-  `dependentSchemas`, and explicit `unevaluatedProperties` no longer require a
-  value-dependent flattened router. Non-JSON codecs remain explicit
-  exclusions. No Core OBI document-model field changed.
-
-- `openbindings.openapi@5`, preserving explicitly declared dynamic object-body
-  members through one protocol-neutral application object and a binding-private
-  whole-body route. Exact, pattern, additional-property, and `allOf` schemas
-  govern form and multipart member carriage without introducing HTTP fields or
-  changing the Core OBI document model. Immutable revisions 4, 3, 2, and 1
-  remain compatibility revisions.
-
-- `openbindings.openapi@4`, adding declaration-led response media-range
-  selection and exact raw-response byte carriage through a canonical Base64
-  application-value boundary. JSON, text, and SSE remain application lanes;
-  status, headers, media identity, and other HTTP evidence do not enter the
-  operation value. Immutable revisions 3, 2, and 1 remain compatibility
-  revisions. No Core OBI document-model field changed.
-
-- `openbindings.openapi@3`, adding artifact-authorized raw request-byte
-  carriage through a canonical Base64 JSON boundary, preserving OpenAPI 3.1
-  artifact-encoded strings as text, and allowing an explicit concrete
-  `requestMedia` choice to instantiate OpenAPI media-range declarations.
-  Synthesis remains protocol-blind and records any required media choice as
-  coverage/context rather than adding HTTP fields to operation schemas.
-  Immutable revisions 2 and 1 remain compatibility revisions. No Core OBI
-  document-model field changed.
-
-- `openbindings.openapi@2`, preserving independently declared same-named
-  parameters and request-body properties through a binding-private routed
-  source value and ordinary core `inputTransform`. Synthesized operation
-  schemas remain protocol-independent; immutable revision 1 remains a
-  compatibility revision. No core document-model field changed.
+- The unreleased first `openbindings.openapi@1` candidate. Its accumulated
+  first-revision behavior preserves same-named input declarations through a
+  binding-private route, exact and declaration-complex JSON values, dynamic
+  objects, artifact-authorized raw request and response bytes through a
+  protocol-independent Base64 boundary, media-range selection, forms, text,
+  and SSE. Protocol facts remain below the ordinary operation boundary. No
+  Core OBI document-model field changed.
 
 - A small, explicit set of core invariants: per-value contracts,
   enabling-not-invoking, split authority, context-free documents,
   offline-decidable core conformance, and decentralized extension.
 - Exact `bindingSpec` identifiers and the `OBI-B-01` through `OBI-B-03`
   completeness and revision rules for binding specifications.
-- Project-published binding specifications for OpenAPI, AsyncAPI, GraphQL,
-  gRPC, Connect, MCP, usage/CLI, and operation graphs. Each published
-  revision has an immutable, content-addressed defining bundle, portable
-  conformance evidence, and append-only errata.
+- Unreleased first-revision candidates for OpenAPI, AsyncAPI, GraphQL, gRPC,
+  Connect, MCP, usage/CLI, and operation graphs, plus publication tooling for
+  creating immutable, content-addressed defining bundles with portable
+  conformance evidence and append-only errata when a candidate is actually
+  released. No binding specification has yet been published.
 - Stable document and tool rule identifiers, honest partial-verification
   conclusions, and portable action/outcome conformance scenarios.
 - Operation-name resolution over one flat key-and-alias namespace.
@@ -95,7 +62,7 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
-- OpenAPI revision 2 security processing now has portable adversarial proof
+- The OpenAPI first-revision candidate's security processing now has portable adversarial proof
   that Security Requirement Objects remain alternatives rather than being
   unioned, that ambient credentials are never volunteered for an anonymous
   operation, and that processor-owned `Host`, `Content-Length`, and structured
@@ -154,9 +121,10 @@ below may continue to change until the 0.2 release is cut.
 
 - The project's shared role interfaces moved to the independently versioned
   `openbindings/interfaces` repository.
-- Released core snapshots and binding-specification publication bundles are
-  immutable. Binding-spec clarifications that change no behavior use
-  append-only, digest-registered errata; incompatible behavior gets a new
+- Released Core snapshots are immutable. No binding-specification publication
+  bundle exists yet; when a first candidate is published, its bundle will be
+  immutable, non-behavioral clarifications will use append-only,
+  digest-registered errata, and incompatible behavior will require a new
   identifier revision.
 - Reference Go and TypeScript implementations exercise the same portable
   corpora while retaining language-idiomatic APIs.
