@@ -11,56 +11,154 @@
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
           "asyncapi": "3.0.0",
-          "info": { "title": "Events", "version": "1" },
+          "info": {
+            "title": "Events",
+            "version": "1"
+          },
           "servers": {
-            "http": { "host": "api.example", "protocol": "https" },
-            "ws": { "host": "api.example", "protocol": "wss" },
-            "broker": { "host": "api.example", "protocol": "mqtt" }
+            "http": {
+              "host": "api.example",
+              "protocol": "https"
+            },
+            "ws": {
+              "host": "api.example",
+              "protocol": "wss"
+            },
+            "broker": {
+              "host": "api.example",
+              "protocol": "mqtt"
+            }
           },
           "channels": {
             "events": {
               "address": "/events",
               "messages": {
-                "good": { "payload": { "type": "object" } },
+                "good": {
+                  "payload": {
+                    "type": "object"
+                  }
+                },
                 "headers": {
-                  "headers": { "type": "object" },
-                  "payload": { "type": "object" }
+                  "headers": {
+                    "type": "object"
+                  },
+                  "payload": {
+                    "type": "object"
+                  }
                 }
               }
             },
             "replies": {
               "messages": {
-                "reply": { "payload": { "type": "string" } }
+                "reply": {
+                  "payload": {
+                    "type": "string"
+                  }
+                }
               }
             }
           },
           "operations": {
             "publish": {
               "action": "receive",
-              "channel": { "$ref": "#/channels/events" },
-              "bindings": { "http": { "method": "POST" } },
-              "reply": { "channel": { "$ref": "#/channels/replies" } }
+              "channel": {
+                "$ref": "#/channels/events"
+              },
+              "bindings": {
+                "http": {
+                  "method": "POST"
+                }
+              },
+              "reply": {
+                "channel": {
+                  "$ref": "#/channels/replies"
+                }
+              }
             }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["publish"],
+        "operations": [
+          "publish"
+        ],
         "bindings": [
-          { "operationKey": "publish", "bindingRef": "#/operations/publish" }
+          {
+            "operationKey": "publish",
+            "bindingRef": "#/operations/publish"
+          }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish", "scope": "target", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": ["configuration.server", "configuration.message"] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#message[0]=#/channels/events/messages/good", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#message[1]=#/channels/events/messages/headers", "scope": "alternative", "status": "excluded", "reasonCode": "asyncapi.message_headers", "rule": "ASYNC-P-03", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#reply-message[0]=#/channels/replies/messages/reply", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[0]=broker", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[1]=http", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/publish#server[2]=ws", "scope": "alternative", "status": "represented", "operationKey": "publish", "bindingRef": "#/operations/publish", "requirements": [] }
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": [
+                "configuration.server",
+                "configuration.message"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#message[0]=#/channels/events/messages/good",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#message[1]=#/channels/events/messages/headers",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "asyncapi.message_headers",
+              "rule": "ASYNC-P-03",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#reply-message[0]=#/channels/replies/messages/reply",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#server[1]=http",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish#server[2]=ws",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": []
+            }
           ]
         }
       }
@@ -94,27 +192,55 @@
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
           "asyncapi": "3.0.0",
-          "info": { "title": "Reply-bearing send", "version": "1" },
+          "info": {
+            "title": "Reply-bearing send",
+            "version": "1"
+          },
           "servers": {
-            "ws": { "host": "events.example", "protocol": "wss" }
+            "ws": {
+              "host": "events.example",
+              "protocol": "wss"
+            }
           },
           "channels": {
             "events": {
               "address": "/events",
-              "messages": { "event": { "payload": { "type": "object" } } }
+              "messages": {
+                "event": {
+                  "payload": {
+                    "type": "object"
+                  }
+                }
+              }
             },
             "commands": {
               "address": "/commands",
-              "messages": { "command": { "payload": { "type": "string" } } }
+              "messages": {
+                "command": {
+                  "payload": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           },
           "operations": {
             "subscribe": {
               "action": "send",
-              "channel": { "$ref": "#/channels/events" },
-              "messages": [{ "$ref": "#/channels/events/messages/event" }],
+              "channel": {
+                "$ref": "#/channels/events"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/events/messages/event"
+                }
+              ],
               "reply": {
-                "messages": [{ "$ref": "#/channels/commands/messages/command" }]
+                "messages": [
+                  {
+                    "$ref": "#/channels/commands/messages/command"
+                  }
+                ]
               }
             }
           }
@@ -122,18 +248,178 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["subscribe"],
+        "operations": [
+          "subscribe"
+        ],
         "bindings": [
-          { "operationKey": "subscribe", "bindingRef": "#/operations/subscribe" }
+          {
+            "operationKey": "subscribe",
+            "bindingRef": "#/operations/subscribe"
+          }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": true,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "#/operations/subscribe", "scope": "target", "status": "represented", "operationKey": "subscribe", "bindingRef": "#/operations/subscribe", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/subscribe#message[0]=#/channels/events/messages/event", "scope": "alternative", "status": "represented", "operationKey": "subscribe", "bindingRef": "#/operations/subscribe", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/subscribe#reply-message[0]=#/channels/commands/messages/command", "scope": "alternative", "status": "represented", "operationKey": "subscribe", "bindingRef": "#/operations/subscribe", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "#/operations/subscribe#server[0]=ws", "scope": "alternative", "status": "represented", "operationKey": "subscribe", "bindingRef": "#/operations/subscribe", "requirements": [] }
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#message[0]=#/channels/events/messages/event",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#reply-message[0]=#/channels/commands/messages/command",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#server[0]=ws",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-04",
+      "description": "A reply declared as a Reference Object into components.replies synthesizes identically to the inline reply form, including the declared reply-message identity.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Reply declared by reference",
+            "version": "1"
+          },
+          "servers": {
+            "ws": {
+              "host": "events.example",
+              "protocol": "wss"
+            }
+          },
+          "channels": {
+            "events": {
+              "address": "/events",
+              "messages": {
+                "event": {
+                  "payload": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "commands": {
+              "address": "/commands",
+              "messages": {
+                "command": {
+                  "payload": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "subscribe": {
+              "action": "send",
+              "channel": {
+                "$ref": "#/channels/events"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/events/messages/event"
+                }
+              ],
+              "reply": {
+                "$ref": "#/components/replies/commandReply"
+              }
+            }
+          },
+          "components": {
+            "replies": {
+              "commandReply": {
+                "messages": [
+                  {
+                    "$ref": "#/channels/commands/messages/command"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "subscribe"
+        ],
+        "bindings": [
+          {
+            "operationKey": "subscribe",
+            "bindingRef": "#/operations/subscribe"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#message[0]=#/channels/events/messages/event",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#reply-message[0]=#/channels/commands/messages/command",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/subscribe#server[0]=ws",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "subscribe",
+              "bindingRef": "#/operations/subscribe",
+              "requirements": []
+            }
           ]
         }
       }
