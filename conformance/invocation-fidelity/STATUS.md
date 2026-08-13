@@ -108,9 +108,12 @@ Schema `$ref` versus inline representation, not an invocation difference.
 Successive development passes closed routed-input collisions, response ranges,
 raw request and response bytes, dynamic objects, and declaration-complex JSON
 without minting any binding-specification identifier. Thirteen
-authority-authored wire cases, the sealed 25-repository holdout, and the
-40-repository development differential produced no OpenBindings wire or
-application mismatch. No result demonstrated a Core-model or
+authority-authored wire cases, the hash-selected 25-repository semantic
+holdout, and the 40-repository development differential produced no
+OpenBindings wire or application mismatch. That semantic holdout is distinct
+from the three later acquisition-boundary cohorts sealed for release
+qualification, which together hold 66 supported artifacts with exact parity;
+their seals are recorded in [`../EVIDENCE-POLICY.md`](../EVIDENCE-POLICY.md). No result demonstrated a Core-model or
 binding-specification-concept limitation.
 
 The AsyncAPI qualification evaluated 250 immutable corpus artifacts from 250
