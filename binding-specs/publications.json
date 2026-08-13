@@ -1,5 +1,154 @@
 {
   "format": "openbindings.binding-spec-publications@1",
   "latest": {},
-  "publications": []
+  "publications": [],
+  "floor": {
+    "publications": 0,
+    "note": "Verification enforces publications.length >= floor.publications. The publish flow raises the floor with each publication, so removing a published entry requires visibly lowering the floor AND appending a tombstones entry with a dated reason; silent removal fails verification. This floor exists because the 2026-08-11 reset demonstrated that a push-base-relative check has single-push memory."
+  },
+  "tombstones": [],
+  "developmentExercises": {
+    "withdrawnAt": "2026-08-11",
+    "rulingRecordedAt": "2026-08-13",
+    "ruling": "Between 2026-07-23 and 2026-08-10 the publication lifecycle was exercised against development drafts of the family candidates. The project does not regard those artifacts as publications: none was referenced by any tagged release (v0.1.0 carries no binding-specs/), none was announced, and no consumer existed. No identifier is regarded as minted, so the current @1 candidates are those spellings' first real proposals; July-era drafts bearing the same spellings are superseded working texts, distinguishable by this record rather than by the identifier. Full narrative: history/0.2-development-log.md, 'Publication-lifecycle reset'.",
+    "preResetTree": "9424bdc",
+    "entries": [
+      {
+        "identifier": "openbindings.asyncapi@1",
+        "family": "asyncapi",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.asyncapi@2",
+        "family": "asyncapi",
+        "revision": 2,
+        "publishedAt": "2026-08-10",
+        "publication": "2026-08-10-asyncapi-reply-fidelity",
+        "publicationRecordSha256": "053949f8a3665b5413b1f752c4b8573ac9ec26710bccbaeca352c600113abcc0"
+      },
+      {
+        "identifier": "openbindings.connect@1",
+        "family": "connect",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.graphql@1",
+        "family": "graphql",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-graphql",
+        "publicationRecordSha256": "0b3f0bb7235886d63e186c0dac6d07a1407a9b451d18589b3c50fe837f8b431c"
+      },
+      {
+        "identifier": "openbindings.graphql@2",
+        "family": "graphql",
+        "revision": 2,
+        "publishedAt": "2026-08-08",
+        "publication": "2026-08-08-graphql-abstraction-fidelity",
+        "publicationRecordSha256": "01499b1b4900c66a72e958a5623cab4f233b0da12ea819da97abcc4d2aa4afc6"
+      },
+      {
+        "identifier": "openbindings.grpc@1",
+        "family": "grpc",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.mcp@1",
+        "family": "mcp",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.mcp@2",
+        "family": "mcp",
+        "revision": 2,
+        "publishedAt": "2026-08-08",
+        "publication": "2026-08-08-mcp-abstraction-fidelity",
+        "publicationRecordSha256": "7d08452945bb68635cbaa2c583b05e71cec9619cc7853ad5dd964b92ddbc7f05"
+      },
+      {
+        "identifier": "openbindings.openapi@1",
+        "family": "openapi",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.openapi@2",
+        "family": "openapi",
+        "revision": 2,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-abstraction-fidelity",
+        "publicationRecordSha256": "0aaa1efa5cd96ef1e145e28210831ad45d43a308cdb0fb88b608830b3f944e84"
+      },
+      {
+        "identifier": "openbindings.openapi@3",
+        "family": "openapi",
+        "revision": 3,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-media-carriage",
+        "publicationRecordSha256": "eeeeda049a449c97bdc389bf376c7ce0e06d3c66dbdd0ea3e60fa82e08092627"
+      },
+      {
+        "identifier": "openbindings.openapi@4",
+        "family": "openapi",
+        "revision": 4,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-response-carriage",
+        "publicationRecordSha256": "bfeef54034b419701ce7cc69287319bdd249d34c2f1cdc5800ccb9351ecdea4f"
+      },
+      {
+        "identifier": "openbindings.openapi@5",
+        "family": "openapi",
+        "revision": 5,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-dynamic-object-carriage",
+        "publicationRecordSha256": "0d17b12275aac362617a9d4a69534ebd421500e976a15bfe7b6e448adf11c2d9"
+      },
+      {
+        "identifier": "openbindings.openapi@6",
+        "family": "openapi",
+        "revision": 6,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-whole-json-carriage",
+        "publicationRecordSha256": "d50aba27249368930ac560e4686f81fa319b1e5d0b75a4c1d3b4504eea152d54"
+      },
+      {
+        "identifier": "openbindings.openapi@7",
+        "family": "openapi",
+        "revision": 7,
+        "publishedAt": "2026-08-09",
+        "publication": "2026-08-09-openapi-oas30-schema-omitted-byte-carriage",
+        "publicationRecordSha256": "e1be92e5ac026e221da2d336640ef6b5a018dce3df9566ecdebecd2e72c3e438"
+      },
+      {
+        "identifier": "openbindings.operation-graph@1",
+        "family": "operation-graph",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      },
+      {
+        "identifier": "openbindings.usage@1",
+        "family": "usage",
+        "revision": 1,
+        "publishedAt": "2026-07-23",
+        "publication": "2026-07-23-initial",
+        "publicationRecordSha256": "03369c735e659af3b51458c13f8e82e7e7e968028c690170f38bbeb0cea3cdf7"
+      }
+    ]
+  }
 }

@@ -13,7 +13,11 @@
  *     --publication 2026-07-23-initial \
  *     --published-at 2026-07-23 \
  *     --core-release 0.2.0 \
+ *     --adjudication conformance/binding-specs/adjudications.json \
  *     --families operation-graph@1,usage@1,openapi@1,mcp@1,grpc@1,connect@1,asyncapi@1
+ *
+ * --adjudication names the committed record that approved the cohort; the
+ * script refuses to mint without one.
  */
 
 import {
@@ -158,6 +162,20 @@ if (!coreRelease || !/^\d+\.\d+\.\d+$/.test(coreRelease)) {
   fail("--core-release must be X.Y.Z");
 }
 if (requested.length === 0) fail("--families must name at least one family@revision");
+
+// Publication is the irreversible act in this repository; it requires a
+// standing adjudication record, named explicitly, so a publication can never
+// again be a single keystroke ahead of its review (2026-08-11 lesson; the
+// development-exercise wave was minted with no adjudication precondition).
+const adjudication = args.adjudication;
+if (!adjudication) {
+  fail(
+    "--adjudication <path> is required: the committed adjudication or release-review record that approved this publication cohort"
+  );
+}
+if (!existsSync(join(ROOT, adjudication))) {
+  fail(`--adjudication record not found: ${adjudication}`);
+}
 
 const selected = requested.map((item) => {
   const match = item.match(/^([a-z0-9-]+)@([1-9][0-9]*)$/);
@@ -313,6 +331,10 @@ try {
   }
 
   manifest.publications.sort((a, b) => a.identifier.localeCompare(b.identifier));
+  // Raise the withdrawal-resistant floor with every publication so a later
+  // removal cannot pass verification silently (see the verifier's floor check).
+  manifest.floor = manifest.floor || { publications: 0 };
+  manifest.floor.publications = manifest.publications.length;
   manifest.latest = Object.fromEntries(
     Object.entries(manifest.latest).sort(([a], [b]) => a.localeCompare(b))
   );

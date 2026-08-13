@@ -106,8 +106,12 @@ the SHA-256 seals recorded in [`../EVIDENCE-POLICY.md`](../EVIDENCE-POLICY.md). 
 coverage ledgers (99.34%); the sole residual was a validation-equivalent JSON
 Schema `$ref` versus inline representation, not an invocation difference.
 Successive development passes closed routed-input collisions, response ranges,
-raw request and response bytes, dynamic objects, and declaration-complex JSON
-without minting any binding-specification identifier. Thirteen
+raw request and response bytes, dynamic objects, and declaration-complex JSON.
+The publication lifecycle was exercised against development drafts during
+those passes; the resulting artifacts were withdrawn on 2026-08-11 and are
+not regarded as publications, and no binding-specification identifier is
+regarded as minted (see the publication-lifecycle reset entry in
+`history/0.2-development-log.md`). Thirteen
 authority-authored wire cases, the hash-selected 25-repository semantic
 holdout, and the 40-repository development differential produced no
 OpenBindings wire or application mismatch. That semantic holdout is distinct
