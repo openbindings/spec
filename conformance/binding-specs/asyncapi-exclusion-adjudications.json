@@ -109,6 +109,17 @@
         "reportTag": "asyncapi-at1-lossy2"
       },
       "discharge": "Extend the ruled hook architecture with a codec extension path (encode seam + reachable decode seam keyed by declared content type), then re-run the corpus; entries convert to represented or, where no artifact-defined JSON correspondence exists for the media, re-adjudicate the residue per-cause."
+    },
+    {
+      "reasonCode": "asyncapi.payload_schema_invalid",
+      "classification": "upstream-defective",
+      "note": "The payload declaration is invalid under its own declared dialect (minimum: true, a non-schema properties member, Avro content referenced into a Schema Object position with no schemaFormat declared) or carries a reference the artifact leaves dangling, so it projects to an ill-formed OBI schema. Per the ASYNC-P-05 confinement sentence this is the artifact's defect, confined to exactly the affected operation: the target is invalid, siblings and the artifact synthesize. Introduced 2026-08-13 when per-operation confinement replaced whole-artifact invalid-synthesis rejection (ASYNC-SS-16 pins the cell).",
+      "status": "ADJUDICATED 2026-08-13",
+      "measured": {
+        "reportTag": "asyncapi-at1-confine",
+        "note": "fill from the confine run: expected Elhebert, panproto, specmesh operations plus any per-op residue of formerly whole-artifact rejections"
+      },
+      "revisitTrigger": "none \u2014 invalid-under-own-dialect is the upstream's defect by definition; a future binding-specification revision adopting a named repair convention would re-open per-cause"
     }
   ],
   "loadFailureClassifications": {

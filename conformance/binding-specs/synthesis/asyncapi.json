@@ -1435,6 +1435,363 @@
           ]
         }
       }
+    },
+    {
+      "id": "ASYNC-SS-15",
+      "description": "A payload referencing a self-recursive components schema synthesizes with the cycle hoisted into the operation schema's $defs and every surviving reference rewritten to point there: the recursion the artifact declared survives the projection, the emitted interface is valid (OBI-D-16), and the artifact is fully represented \u2014 never a whole-artifact refusal.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Recursive schema",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "trees": {
+              "address": "trees.v1",
+              "messages": {
+                "node": {
+                  "payload": {
+                    "$ref": "#/components/schemas/TreeNode"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishNode": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/trees"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/trees/messages/node"
+                }
+              ]
+            }
+          },
+          "components": {
+            "schemas": {
+              "TreeNode": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  },
+                  "children": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TreeNode"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishNode"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishNode",
+            "bindingRef": "#/operations/publishNode"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishNode",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishNode",
+              "bindingRef": "#/operations/publishNode",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishNode#message[0]=#/channels/trees/messages/node",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishNode",
+              "bindingRef": "#/operations/publishNode",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishNode#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishNode",
+              "bindingRef": "#/operations/publishNode",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-16",
+      "description": "A payload declaration invalid under its own declared dialect (minimum: true is ill-formed in every accepted edition's Schema Object) is the artifact's defect, confined to exactly the affected operation (ASYNC-P-05): that target is invalid with asyncapi.payload_schema_invalid, its alternatives cascade, and the sibling operation synthesizes untouched \u2014 never a whole-artifact refusal.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Confined schema defect",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "bad": {
+              "address": "bad.v1",
+              "messages": {
+                "m": {
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "minimum": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "good": {
+              "address": "good.v1",
+              "messages": {
+                "m": {
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishBad": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/bad"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/bad/messages/m"
+                }
+              ]
+            },
+            "publishGood": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/good"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/good/messages/m"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishGood"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishGood",
+            "bindingRef": "#/operations/publishGood"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishBad",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "asyncapi.payload_schema_invalid",
+              "rule": "ASYNC-P-05",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishBad#message[0]=#/channels/bad/messages/m",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-05",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishBad#server[0]=broker",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishGood",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishGood",
+              "bindingRef": "#/operations/publishGood",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishGood#message[0]=#/channels/good/messages/m",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishGood",
+              "bindingRef": "#/operations/publishGood",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishGood#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishGood",
+              "bindingRef": "#/operations/publishGood",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-17",
+      "description": "prefixItems is not vocabulary in any accepted edition's default Schema Object, so the author's dialect ignored it; an empty array carried verbatim into 2020-12 would turn that inert annotation into an ill-formed keyword. Translation drops the empty spelling (preserving the declared no-op semantics exactly) and the artifact stays fully represented.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Empty tuple annotation",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "pings": {
+              "address": "pings.v1",
+              "messages": {
+                "ping": {
+                  "payload": {
+                    "type": "array",
+                    "prefixItems": [],
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishPing": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/pings"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/pings/messages/ping"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishPing"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishPing",
+            "bindingRef": "#/operations/publishPing"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishPing",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishPing",
+              "bindingRef": "#/operations/publishPing",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishPing#message[0]=#/channels/pings/messages/ping",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishPing",
+              "bindingRef": "#/operations/publishPing",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishPing#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishPing",
+              "bindingRef": "#/operations/publishPing",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
