@@ -198,7 +198,7 @@
       "id": "OG-EX-16",
       "name": "Identity wrapper, terminal error",
       "section": "Transparency (the identity law) / consequence 4",
-      "description": "The inner invocation terminates with an error and the conduit has no onError, so the graph invocation terminates with that error: terminal status is preserved, not converted into a successful empty stream. The error detail is the inner terminal error value itself (the value direct invocation would surface), not an error-event wrapper around it.",
+      "description": "The inner invocation terminates with an error and the conduit has no onError, so the graph invocation terminates with that error: terminal status is preserved, not converted into a successful empty stream. The error detail is the inner abstract terminal record itself, not an error-event wrapper around it.",
       "operations": {
         "users.get": {
           "closesAfter": 1,
@@ -245,7 +245,7 @@
       "expected": {
         "output": [],
         "error": true,
-        "errorDetail": "backend_unavailable",
+        "errorDetail": { "code": "backend_unavailable" },
         "ordering": "exact"
       }
     },

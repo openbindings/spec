@@ -7,7 +7,7 @@
       "id": "OG-EX-07",
       "name": "Fatal error with exit",
       "section": "Normative examples / Example 8",
-      "description": "The item's each invocation of items.get fails with TIMEOUT_EXCEEDED. onError routes the error event to die, an exit node with error:true, which terminates the graph with an error. The error event is the error detail and is not emitted to the output stream, so output is empty and error is true.",
+      "description": "The item's each invocation fails with the code-only abstract record {code: TIMEOUT_EXCEEDED}. onError routes the error event to die, an exit node with error:true, which terminates the graph with that error event as data. The error event is not emitted to the output stream, so output is empty and error is true.",
       "operations": {
         "items.get": {
           "responses": [
@@ -60,7 +60,7 @@
         "output": [],
         "error": true,
         "errorDetail": {
-          "error": "TIMEOUT_EXCEEDED",
+          "error": { "code": "TIMEOUT_EXCEEDED" },
           "event": {
             "id": "item-1"
           }

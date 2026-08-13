@@ -113,6 +113,14 @@ function matchResponse(mock, opKey, writes) {
   );
 }
 
+// Materialize the portable abstract terminal record produced by a mocked
+// inner invocation. Object.hasOwn preserves absent versus explicit-null data.
+function abstractTerminal(response) {
+  return Object.hasOwn(response, "failData")
+    ? { code: response.fail, data: response.failData }
+    : { code: response.fail };
+}
+
 // --- engine ----------------------------------------------------------------
 
 // Events are { value, counts, rootId }. `counts` is the per-`each`-node
@@ -261,7 +269,7 @@ async function runGraph(graph, mockOps, writes, sched, awaitOutputsBeforeWrites)
         emitted.map((v) => ({ value: v, counts: { ...c.counts }, rootId }))
       );
     if ("fail" in resp) {
-      conduitTerminalError(nodeKey, node, resp.fail, c.counts, rootId);
+      conduitTerminalError(nodeKey, node, abstractTerminal(resp), c.counts, rootId);
       return true;
     }
     return emitted.length > 0 || outEdges[nodeKey].length === 0;
@@ -287,7 +295,7 @@ async function runGraph(graph, mockOps, writes, sched, awaitOutputsBeforeWrites)
     if (opened && "fail" in opened) {
       c.done = true;
       c.accepting = false;
-      conduitTerminalError(nodeKey, node, opened.fail, {}, NO_ROOT);
+      conduitTerminalError(nodeKey, node, abstractTerminal(opened), {}, NO_ROOT);
       return;
     }
     if (mock.closesAfter === 0) completeConduit(nodeKey);
@@ -339,7 +347,7 @@ async function runGraph(graph, mockOps, writes, sched, awaitOutputsBeforeWrites)
         }))
       );
     if (opened && "fail" in opened) {
-      routePerEventError(t.node, opened.fail, {
+      routePerEventError(t.node, abstractTerminal(opened), {
         value: t.value,
         counts: t.counts,
         rootId: t.rootId,
@@ -360,7 +368,7 @@ async function runGraph(graph, mockOps, writes, sched, awaitOutputsBeforeWrites)
         }))
       );
     if ("fail" in resp) {
-      routePerEventError(t.node, resp.fail, {
+      routePerEventError(t.node, abstractTerminal(resp), {
         value: t.value,
         counts: t.counts,
         rootId: t.rootId,

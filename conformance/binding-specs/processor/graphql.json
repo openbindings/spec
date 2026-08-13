@@ -6,7 +6,9 @@
   "scenarios": [
     {
       "id": "GQL-PS-01",
-      "rules": ["GQL-P-01"],
+      "rules": [
+        "GQL-P-01"
+      ],
       "section": "8.1",
       "description": "A supplied caller object is carried wholesale as variables; unknown-to-the-root keys are not filtered and no _query field is consumed specially.",
       "given": {
@@ -15,7 +17,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -31,23 +35,39 @@
                             "type": {
                               "kind": "NON_NULL",
                               "name": null,
-                              "ofType": { "kind": "SCALAR", "name": "ID", "ofType": null }
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                              }
                             }
                           }
                         ],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "ID" },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "ID"
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/viewer" },
+        "binding": {
+          "ref": "query/viewer"
+        },
         "configuration": {
           "document": {
             "source": "query Viewer($id: ID!) { viewer(id: $id) }",
@@ -56,12 +76,20 @@
         },
         "invocation": {
           "inputPresent": true,
-          "input": { "id": "u-1", "unused": 7, "_query": "not metadata" }
+          "input": {
+            "id": "u-1",
+            "unused": 7,
+            "_query": "not metadata"
+          }
         },
         "peer": {
           "status": 200,
           "contentType": "application/graphql-response+json",
-          "body": { "data": { "viewer": "Ada" } }
+          "body": {
+            "data": {
+              "viewer": "Ada"
+            }
+          }
         }
       },
       "expected": [
@@ -71,7 +99,11 @@
           "assertions": [
             {
               "path": "/dispatch/body/variables",
-              "equals": { "id": "u-1", "unused": 7, "_query": "not metadata" }
+              "equals": {
+                "id": "u-1",
+                "unused": 7,
+                "_query": "not metadata"
+              }
             },
             {
               "path": "/dispatch/body/query",
@@ -83,7 +115,9 @@
     },
     {
       "id": "GQL-PS-02",
-      "rules": ["GQL-P-01"],
+      "rules": [
+        "GQL-P-01"
+      ],
       "section": "8.1",
       "description": "Absent caller input omits the variables member rather than manufacturing an empty object.",
       "given": {
@@ -92,7 +126,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -103,26 +139,43 @@
                       {
                         "name": "ping",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/ping" },
-        "configuration": {
-          "document": { "source": "query { ping }" }
+        "binding": {
+          "ref": "query/ping"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "query { ping }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "contentType": "application/graphql-response+json",
-          "body": { "data": { "ping": "pong" } }
+          "body": {
+            "data": {
+              "ping": "pong"
+            }
+          }
         }
       },
       "expected": [
@@ -130,37 +183,67 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/dispatch/body/variables", "absent": true }
+            {
+              "path": "/dispatch/body/variables",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-03",
-      "rules": ["GQL-P-02"],
+      "rules": [
+        "GQL-P-02"
+      ],
       "section": "8.2",
       "description": "The schema cannot determine a selection set, so a missing document interpretation produces a resolvable context challenge before introspection or dispatch.",
       "given": {
-        "source": { "location": "https://api.example.test/graphql" },
-        "binding": { "ref": "query/viewer" },
-        "invocation": { "inputPresent": false }
+        "source": {
+          "location": "https://api.example.test/graphql"
+        },
+        "binding": {
+          "ref": "query/viewer"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/context/alternatives/0/requirements/0/type", "equals": "config.value" },
-            { "path": "/context/alternatives/0/requirements/0/point", "equals": "document" },
-            { "path": "/introspectionRequests", "equals": [] },
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "document"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            },
+            {
+              "path": "/introspectionRequests",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-04",
-      "rules": ["GQL-P-02", "GQL-P-05"],
+      "rules": [
+        "GQL-P-02",
+        "GQL-P-05"
+      ],
       "section": "8",
       "description": "A configured document selecting a different root field than the binding ref is refused before dispatch after resolving the root against the pinned schema.",
       "given": {
@@ -169,7 +252,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -180,43 +265,68 @@
                       {
                         "name": "viewer",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       },
                       {
                         "name": "health",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": {
-          "document": { "source": "query { health }" }
+        "binding": {
+          "ref": "query/viewer"
         },
-        "invocation": { "inputPresent": false }
+        "configuration": {
+          "document": {
+            "source": "query { health }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/introspectionRequests", "equals": [] },
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/introspectionRequests",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-05",
-      "rules": ["GQL-P-02"],
+      "rules": [
+        "GQL-P-02"
+      ],
       "section": "8.2",
       "description": "A configured header that collides case-insensitively with the processor-owned Content-Type field is refused rather than assigned precedence.",
       "given": {
@@ -225,7 +335,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -236,39 +348,59 @@
                       {
                         "name": "ping",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/ping" },
+        "binding": {
+          "ref": "query/ping"
+        },
         "configuration": {
-          "document": { "source": "query { ping }" },
+          "document": {
+            "source": "query { ping }"
+          },
           "protocolFields": {
-            "httpHeaders": { "content-TYPE": "text/plain" }
+            "httpHeaders": {
+              "content-TYPE": "text/plain"
+            }
           }
         },
-        "invocation": { "inputPresent": false }
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-06",
-      "rules": ["GQL-P-03"],
+      "rules": [
+        "GQL-P-03"
+      ],
       "section": "8.4",
       "description": "A trusted application/graphql-response+json request-error result completes unsuccessfully without inventing an application value, even at HTTP 400.",
       "given": {
@@ -277,7 +409,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -288,28 +422,46 @@
                       {
                         "name": "viewer",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": {
-          "document": { "source": "query { viewer }" }
+        "binding": {
+          "ref": "query/viewer"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "query { viewer }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 400,
           "contentType": "application/graphql-response+json; charset=utf-8",
           "body": {
             "errors": [
-              { "message": "request rejected", "extensions": { "code": "BAD_REQUEST" } }
+              {
+                "message": "request rejected",
+                "extensions": {
+                  "code": "BAD_REQUEST"
+                }
+              }
             ]
           }
         }
@@ -319,17 +471,27 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/graphql/response/errors/0/extensions/code", "equals": "BAD_REQUEST" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-07",
-      "rules": ["GQL-P-03"],
+      "rules": [
+        "GQL-P-03"
+      ],
       "section": "8.4",
       "description": "The legacy application/json lane does not trust a non-2xx body as a GraphQL output.",
       "given": {
@@ -338,7 +500,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -349,26 +513,45 @@
                       {
                         "name": "viewer",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": {
-          "document": { "source": "query { viewer }" }
+        "binding": {
+          "ref": "query/viewer"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "query { viewer }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 400,
           "contentType": "application/json",
-          "body": { "errors": [{ "message": "request rejected" }] }
+          "body": {
+            "errors": [
+              {
+                "message": "request rejected"
+              }
+            ]
+          }
         }
       },
       "expected": [
@@ -376,14 +559,19 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-08",
-      "rules": ["GQL-P-04"],
+      "rules": [
+        "GQL-P-04"
+      ],
       "section": "9",
       "description": "A subscription binding is refused before WebSocket dispatch rather than approximating its continuing per-event error lifecycle.",
       "given": {
@@ -392,11 +580,19 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
-                "subscriptionType": { "name": "RootSubscription" },
+                "subscriptionType": {
+                  "name": "RootSubscription"
+                },
                 "types": [
-                  { "kind": "OBJECT", "name": "RootQuery", "fields": [] },
+                  {
+                    "kind": "OBJECT",
+                    "name": "RootQuery",
+                    "fields": []
+                  },
                   {
                     "kind": "OBJECT",
                     "name": "RootSubscription",
@@ -404,36 +600,65 @@
                       {
                         "name": "updates",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "subscription/updates" },
-        "configuration": {
-          "document": { "source": "subscription Watch { updates }", "operationName": "Watch" },
-          "subscriptionTarget": "wss://stream.example.test/graphql",
-          "protocolFields": { "connectionInitPayload": { "tenant": "demo" } }
+        "binding": {
+          "ref": "subscription/updates"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "subscription Watch { updates }",
+            "operationName": "Watch"
+          },
+          "subscriptionTarget": "wss://stream.example.test/graphql",
+          "protocolFields": {
+            "connectionInitPayload": {
+              "tenant": "demo"
+            }
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "messages": [
-            { "type": "connection_ack" },
+            {
+              "type": "connection_ack"
+            },
             {
               "type": "next",
               "id": "1",
               "payload": {
-                "data": { "updates": null },
-                "errors": [{ "message": "resolver warning" }]
+                "data": {
+                  "updates": null
+                },
+                "errors": [
+                  {
+                    "message": "resolver warning"
+                  }
+                ]
               }
             },
-            { "type": "complete", "id": "1" }
+            {
+              "type": "complete",
+              "id": "1"
+            }
           ]
         }
       },
@@ -442,15 +667,23 @@
           "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-09",
-      "rules": ["GQL-P-04"],
+      "rules": [
+        "GQL-P-04"
+      ],
       "section": "9",
       "description": "Subscription exclusion is independent of the peer behavior a native client could have observed.",
       "given": {
@@ -459,11 +692,19 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
-                "subscriptionType": { "name": "RootSubscription" },
+                "subscriptionType": {
+                  "name": "RootSubscription"
+                },
                 "types": [
-                  { "kind": "OBJECT", "name": "RootQuery", "fields": [] },
+                  {
+                    "kind": "OBJECT",
+                    "name": "RootQuery",
+                    "fields": []
+                  },
                   {
                     "kind": "OBJECT",
                     "name": "RootSubscription",
@@ -471,28 +712,59 @@
                       {
                         "name": "updates",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "subscription/updates" },
+        "binding": {
+          "ref": "subscription/updates"
+        },
         "configuration": {
-          "document": { "source": "subscription { updates }" },
+          "document": {
+            "source": "subscription { updates }"
+          },
           "subscriptionTarget": "wss://stream.example.test/graphql"
         },
-        "invocation": { "inputPresent": false },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "messages": [
-            { "type": "connection_ack" },
-            { "type": "next", "id": "1", "payload": { "data": { "updates": "one" } } },
-            { "type": "error", "id": "1", "payload": [{ "message": "stopped" }] }
+            {
+              "type": "connection_ack"
+            },
+            {
+              "type": "next",
+              "id": "1",
+              "payload": {
+                "data": {
+                  "updates": "one"
+                }
+              }
+            },
+            {
+              "type": "error",
+              "id": "1",
+              "payload": [
+                {
+                  "message": "stopped"
+                }
+              ]
+            }
           ]
         }
       },
@@ -501,15 +773,23 @@
           "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-10",
-      "rules": ["GQL-P-05"],
+      "rules": [
+        "GQL-P-05"
+      ],
       "section": "3",
       "description": "Pinned content displaces live introspection completely; processors never refresh or supplement it from the service.",
       "given": {
@@ -518,7 +798,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -529,26 +811,43 @@
                       {
                         "name": "ping",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/ping" },
-        "configuration": {
-          "document": { "source": "query { ping }" }
+        "binding": {
+          "ref": "query/ping"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "query { ping }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "contentType": "application/graphql-response+json",
-          "body": { "data": { "ping": "pong" } }
+          "body": {
+            "data": {
+              "ping": "pong"
+            }
+          }
         }
       },
       "expected": [
@@ -556,15 +855,25 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/introspectionRequests", "equals": [] },
-            { "path": "/outputs", "equals": ["pong"] }
+            {
+              "path": "/introspectionRequests",
+              "equals": []
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "pong"
+              ]
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-11",
-      "rules": ["GQL-P-02"],
+      "rules": [
+        "GQL-P-02"
+      ],
       "section": "8.2",
       "description": "A generic credential whose GraphQL protocol location is unnamed is refused before dispatch rather than ignored or mapped to a preferred header.",
       "given": {
@@ -573,7 +882,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -584,24 +895,39 @@
                       {
                         "name": "ping",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/ping" },
-        "configuration": {
-          "document": { "source": "query { ping }" }
+        "binding": {
+          "ref": "query/ping"
         },
-        "invocation": { "inputPresent": false },
+        "configuration": {
+          "document": {
+            "source": "query { ping }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "runtime": {
-          "credentials": { "bearerToken": "ambiguous" }
+          "credentials": {
+            "bearerToken": "ambiguous"
+          }
         }
       },
       "expected": [
@@ -609,15 +935,23 @@
           "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/introspectionRequests", "equals": [] },
-            { "path": "/dispatch", "absent": true }
+            {
+              "path": "/introspectionRequests",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GQL-PS-12",
-      "rules": ["GQL-P-03"],
+      "rules": [
+        "GQL-P-03"
+      ],
       "section": "8.4",
       "description": "A trusted response with a selected partial root value emits that application value before unsuccessful completion; the GraphQL envelope remains diagnostic.",
       "given": {
@@ -626,7 +960,9 @@
           "content": {
             "data": {
               "__schema": {
-                "queryType": { "name": "RootQuery" },
+                "queryType": {
+                  "name": "RootQuery"
+                },
                 "mutationType": null,
                 "subscriptionType": null,
                 "types": [
@@ -637,40 +973,75 @@
                       {
                         "name": "viewer",
                         "args": [],
-                        "type": { "kind": "SCALAR", "name": "String", "ofType": null },
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
                         "isDeprecated": false
                       }
                     ]
                   },
-                  { "kind": "SCALAR", "name": "String" }
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": { "document": { "source": "query { person: viewer }" } },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "query/viewer"
+        },
+        "configuration": {
+          "document": {
+            "source": "query { person: viewer }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "contentType": "application/graphql-response+json",
           "body": {
-            "data": { "person": "Ada" },
-            "errors": [{ "message": "a nested field was unavailable" }],
-            "extensions": { "trace": "gql-12" }
+            "data": {
+              "person": "Ada"
+            },
+            "errors": [
+              {
+                "message": "a nested field was unavailable"
+              }
+            ],
+            "extensions": {
+              "trace": "gql-12"
+            }
           }
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": ["Ada"] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/graphql/response/extensions/trace", "equals": "gql-12" }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "Ada"
+              ]
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -40,9 +40,11 @@
                   "description": "Behavior that occurs as soon as an invocation opens, before any input write. `emit` models output-before-input; `fail` models an immediate terminal error. Emit precedes fail when both are present.",
                   "properties": {
                     "emit": { "type": "array" },
-                    "fail": { "type": "string" }
+                    "fail": { "type": "string" },
+                    "failData": { "description": "Optional present JSON data on the immediate abstract terminal error." }
                   },
                   "anyOf": [{ "required": ["emit"] }, { "required": ["fail"] }],
+                  "dependentRequired": { "failData": ["fail"] },
                   "additionalProperties": false
                 },
                 "closesAfter": {
@@ -69,7 +71,10 @@
                       },
                       "fail": {
                         "type": "string",
-                        "description": "If present, the invocation terminates with this error. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure and at an `operation` conduit it is a terminal error; either is fatal to the graph unless the node sets onError."
+                        "description": "If present, the invocation terminates with an abstract error whose code is this string. When `emit` is also present the invocation emits those events first and then fails (an emit-then-fatal stream); otherwise it fails without emitting. At an `each` node this is a per-event failure and at an `operation` conduit it is a terminal error; either is fatal to the graph unless the node sets onError."
+                      },
+                      "failData": {
+                        "description": "Optional JSON data on the abstract terminal error. Presence is significant: an absent member means code-only; an explicit null is present JSON null. Requires `fail`."
                       }
                     },
                     "anyOf": [
@@ -77,6 +82,7 @@
                       { "required": ["fail"] }
                     ],
                     "not": { "required": ["whenInput", "whenInputs"] },
+                    "dependentRequired": { "failData": ["fail"] },
                     "additionalProperties": false
                   }
                 }

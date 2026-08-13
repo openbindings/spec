@@ -63,6 +63,19 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- The invocation interfaces now define unsuccessful completion as exactly
+  `{code,data?}`. They have no portable message or diagnostic escape lane;
+  application-authored JSON failure values may cross only when the governing
+  binding specification admits them, while native protocol and implementation
+  evidence stays below the bridge. Context challenges retain their
+  `CONTEXT_REQUIRED` data contract, use relative JSON Pointer paths for
+  `config.value`, and make durability an explicit permission rather than a
+  persistence default. Frame and operation validation mechanics use distinct
+  owned codes, and caller-supplied invocation deadlines are cancellation at
+  this abstract boundary. Operation Graph preserves the complete minimal
+  terminal record, including absent versus explicitly null data. No Core OBI
+  document-model field changed.
+
 - Binding-specification authority is now explicit: the named binding
   specification is sovereign and may define, incorporate, subset, extend, or
   override other authorities. OBI-B-02 remains the completeness floor for

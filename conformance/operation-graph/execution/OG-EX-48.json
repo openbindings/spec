@@ -1,0 +1,73 @@
+{
+  "format": "openbindings.operation-graph@1",
+  "kind": "execution",
+  "description": "Abstract terminal-record preservation through an identity operation conduit, including explicit-null and scalar data.",
+  "fixtures": [
+    {
+      "id": "OG-EX-48",
+      "name": "Identity wrapper preserves explicit-null error data",
+      "section": "operation / Failure",
+      "description": "The held invocation fails with data explicitly present as JSON null. The graph preserves that presence rather than collapsing it to a code-only error.",
+      "operations": {
+        "items.get": {
+          "closesAfter": 1,
+          "responses": [
+            { "fail": "APP_FAILURE", "failData": null }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "get": { "type": "operation", "operation": "items.get" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "get" },
+          { "from": "get", "to": "out" }
+        ]
+      },
+      "writes": [{ "id": "item-1" }],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": { "code": "APP_FAILURE", "data": null },
+        "ordering": "exact"
+      }
+    },
+    {
+      "id": "OG-EX-49",
+      "name": "Identity wrapper preserves scalar error data",
+      "section": "operation / Failure",
+      "description": "The held invocation fails with scalar JSON data. The graph preserves the scalar without wrapping, stringifying, or dropping it.",
+      "operations": {
+        "items.get": {
+          "closesAfter": 1,
+          "responses": [
+            { "fail": "APP_FAILURE", "failData": 0 }
+          ]
+        }
+      },
+      "graph": {
+        "openbindings.operation-graph": "0.2.0",
+        "nodes": {
+          "in": { "type": "input" },
+          "get": { "type": "operation", "operation": "items.get" },
+          "out": { "type": "output" }
+        },
+        "edges": [
+          { "from": "in", "to": "get" },
+          { "from": "get", "to": "out" }
+        ]
+      },
+      "writes": [{ "id": "item-1" }],
+      "expected": {
+        "output": [],
+        "error": true,
+        "errorDetail": { "code": "APP_FAILURE", "data": 0 },
+        "ordering": "exact"
+      }
+    }
+  ]
+}

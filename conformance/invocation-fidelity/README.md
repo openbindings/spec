@@ -23,29 +23,29 @@ The corpus keeps two kinds of evidence separate.
 2. **Concrete-binding evidence** compares the implementation with a native
    client or scripted peer. It may assert exact statuses, metadata, frames, or
    bytes to prove request construction, decoding, classification, and other
-   internal binding behavior. This is an implementation and diagnostic oracle;
+   internal binding behavior. This is an implementation oracle;
    equality here does not require those facts to cross the ordinary operation
    boundary.
 
-An implementation may retain native evidence on an explicit diagnostic
-surface. Assertions under `error.diagnostics` and invocation diagnostics prove
-that lower-layer evidence remains available without making it ordinary
-operation data. `error.details` is different: it is reserved for
-interface-owned portable data or an opaque application-authored failure value
-identified by governing binding rules; it is never a native-evidence catchall.
-Frame-relay tests likewise validate an optional invoker interface rather than
-enlarge the OBI document model.
+Artifact runtimes, native-client differentials, logs, and traces may retain
+native evidence below the abstract invocation boundary. The abstract
+`InvocationError` has exactly `code` and optional `data`; `data` is reserved
+for interface- or binding-owned portable data, including an opaque
+application-authored failure value identified by governing binding rules. It
+is never a native-evidence catchall. Frame-relay tests likewise validate an
+optional invoker interface rather than enlarge the OBI document model.
 
-The active slices cover the seven published families that accept a standalone
+The active slices cover the seven candidate families that accept a standalone
 brownfield source from which an application operation contract can be derived:
 OpenAPI, AsyncAPI, gRPC, Connect, GraphQL, MCP, and Usage. Every slice executes
 the joined source → synthesis → operation-invocation path in both reference
 SDKs. OpenAPI also runs an independent native-client differential; the other
 families use controlled protocol peers or process runtimes, with native
 integration suites supplying additional lower-layer evidence. Exact statuses,
-metadata, envelopes, frames, bytes, and process results are asserted only on
-those lower or diagnostic surfaces. The abstract assertions are application
-values, ordering, partial outputs, and completion behavior.
+metadata, envelopes, frames, bytes, and process results are asserted only in
+lower artifact runtimes, protocol harnesses, or out-of-band tooling. The
+abstract assertions are application values, ordering, partial outputs, and
+completion behavior.
 
 The project also publishes `openbindings.operation-graph@1`. It is an
 invocation-only composition binding, not an eighth standalone synthesis

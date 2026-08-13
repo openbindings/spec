@@ -6,17 +6,30 @@
   "scenarios": [
     {
       "id": "CONN-PS-01",
-      "rules": ["CONN-P-01"],
+      "rules": [
+        "CONN-P-01"
+      ],
       "section": "3",
       "description": "Absence of content selects the defined descriptorless unary mode rather than triggering reflection or schema guessing.",
       "given": {
-        "source": { "location": "https://api.example/connect" },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "source": {
+          "location": "https://api.example/connect"
+        },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 200,
           "contentType": "application/json",
-          "body": { "name": "Ada" }
+          "body": {
+            "name": "Ada"
+          }
         }
       },
       "expected": [
@@ -24,16 +37,27 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/schemaMode", "equals": false },
-            { "path": "/reflectionRequests", "equals": [] },
-            { "path": "/dispatch/method", "equals": "POST" }
+            {
+              "path": "/schemaMode",
+              "equals": false
+            },
+            {
+              "path": "/reflectionRequests",
+              "equals": []
+            },
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            }
           ]
         }
       ]
     },
     {
       "id": "CONN-PS-02",
-      "rules": ["CONN-P-02"],
+      "rules": [
+        "CONN-P-02"
+      ],
       "section": "9.2",
       "description": "Schema-mode response decoding refuses an unknown ProtoJSON member instead of borrowing binary protobuf's unknown-field behavior.",
       "given": {
@@ -41,35 +65,64 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply { string known = 1; }"
         },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "contentType": "application/json",
-          "body": { "known": "yes", "future": 7 }
+          "body": {
+            "known": "yes",
+            "future": 7
+          }
         }
       },
       "expected": [
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [{ "path": "/outputs", "equals": [] }]
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-03",
-      "rules": ["CONN-P-03"],
+      "rules": [
+        "CONN-P-03"
+      ],
       "section": "9.3",
       "description": "Descriptorless mode sends and returns arbitrary JSON values verbatim without object coercion.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/Echo" },
-        "invocation": { "inputPresent": true, "input": [1, null, "x"] },
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/Echo"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            1,
+            null,
+            "x"
+          ]
+        },
         "peer": {
           "status": 200,
           "contentType": "application/json; charset=utf-8",
-          "body": [1, null, "x"]
+          "body": [
+            1,
+            null,
+            "x"
+          ]
         }
       },
       "expected": [
@@ -77,15 +130,33 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/dispatch/body", "equals": [1, null, "x"] },
-            { "path": "/outputs", "equals": [[1, null, "x"]] }
+            {
+              "path": "/dispatch/body",
+              "equals": [
+                1,
+                null,
+                "x"
+              ]
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                [
+                  1,
+                  null,
+                  "x"
+                ]
+              ]
+            }
           ]
         }
       ]
     },
     {
       "id": "CONN-PS-04",
-      "rules": ["CONN-P-04"],
+      "rules": [
+        "CONN-P-04"
+      ],
       "section": "8",
       "description": "A schema-declared bidirectional method is refused before dispatch when the selected transport cannot provide HTTP/2 full duplex.",
       "given": {
@@ -93,28 +164,61 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Note) returns (stream Note); } message Note { string text = 1; }"
         },
-        "binding": { "ref": "demo.Service/Chat" },
-        "invocation": { "inputPresent": false, "writes": [{ "text": "hi" }] },
-        "runtime": { "availableHttpVersions": ["1.1"] }
+        "binding": {
+          "ref": "demo.Service/Chat"
+        },
+        "invocation": {
+          "inputPresent": false,
+          "writes": [
+            {
+              "text": "hi"
+            }
+          ]
+        },
+        "runtime": {
+          "availableHttpVersions": [
+            "1.1"
+          ]
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-05",
-      "rules": ["CONN-P-05"],
+      "rules": [
+        "CONN-P-05"
+      ],
       "section": "8",
       "description": "Unary JSON framing is fixed while the protocol-permitted presence or absence of Connect-Protocol-Version remains unordered.",
       "given": {
-        "source": { "location": "https://api.example/base" },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
-        "peer": { "status": 200, "contentType": "application/json", "body": {} }
+        "source": {
+          "location": "https://api.example/base"
+        },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/json",
+          "body": {}
+        }
       },
       "expected": [
         {
@@ -159,7 +263,9 @@
     },
     {
       "id": "CONN-PS-06",
-      "rules": ["CONN-P-06"],
+      "rules": [
+        "CONN-P-06"
+      ],
       "section": "9.5",
       "description": "A streaming END_STREAM error fails the invocation without retracting data messages already emitted under HTTP 200.",
       "given": {
@@ -167,15 +273,26 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
         },
-        "binding": { "ref": "demo.Service/List" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "demo.Service/List"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "envelopes": [
-            { "message": { "value": "first" } },
+            {
+              "message": {
+                "value": "first"
+              }
+            },
             {
               "endStream": {
-                "error": { "code": "internal", "message": "failed" }
+                "error": {
+                  "code": "internal",
+                  "message": "failed"
+                }
               }
             }
           ]
@@ -186,58 +303,109 @@
           "disposition": "error",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [{ "value": "first" }] }
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "value": "first"
+                }
+              ]
+            }
           ]
         }
       ]
     },
     {
       "id": "CONN-PS-07",
-      "rules": ["CONN-P-07"],
+      "rules": [
+        "CONN-P-07"
+      ],
       "section": "9.6",
       "description": "A configured leading-metadata field with the Connect-reserved prefix is refused case-insensitively before dispatch.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": false },
-        "runtime": { "requestMetadata": { "Connect-Timeout-Ms": "5000" } }
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "requestMetadata": {
+            "Connect-Timeout-Ms": "5000"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-08",
-      "rules": ["CONN-P-07"],
+      "rules": [
+        "CONN-P-07"
+      ],
       "section": "9.6",
       "description": "A generic credential with no explicitly named metadata field is surfaced rather than mapped to authorization.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": false },
-        "runtime": { "credentials": { "generic": "secret" } }
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "generic": "secret"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "context-required",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-09",
-      "rules": ["CONN-P-01", "CONN-P-04"],
+      "rules": [
+        "CONN-P-01",
+        "CONN-P-04"
+      ],
       "section": "8",
       "description": "Descriptorless mode always dispatches unary framing; a server's rejection because the real method streams is a failure outcome, not a guessed shape change.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/ActuallyStreams" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/ActuallyStreams"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "peer": {
           "status": 400,
           "contentType": "application/json",
@@ -256,14 +424,19 @@
               "path": "/dispatch/headers/content-type",
               "equals": "application/json"
             },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]
     },
     {
       "id": "CONN-PS-10",
-      "rules": ["CONN-P-02"],
+      "rules": [
+        "CONN-P-02"
+      ],
       "section": "9.2",
       "description": "Schema-mode unknown request members are refused before unary dispatch rather than silently discarded.",
       "given": {
@@ -271,20 +444,34 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request { string known = 1; } message Reply {}"
         },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": true, "input": { "future": 1 } }
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "future": 1
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-11",
-      "rules": ["CONN-P-05"],
+      "rules": [
+        "CONN-P-05"
+      ],
       "section": "8",
       "description": "Streaming JSON uses application/connect+json envelopes and closes with exactly one final END_STREAM envelope.",
       "given": {
@@ -292,14 +479,32 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Upload (stream Request) returns (Reply); } message Request { string part = 1; } message Reply { int32 count = 1; }"
         },
-        "binding": { "ref": "demo.Service/Upload" },
+        "binding": {
+          "ref": "demo.Service/Upload"
+        },
         "invocation": {
           "inputPresent": false,
-          "writes": [{ "part": "a" }, { "part": "b" }]
+          "writes": [
+            {
+              "part": "a"
+            },
+            {
+              "part": "b"
+            }
+          ]
         },
         "peer": {
           "status": 200,
-          "envelopes": [{ "message": { "count": 2 } }, { "endStream": {} }]
+          "envelopes": [
+            {
+              "message": {
+                "count": 2
+              }
+            },
+            {
+              "endStream": {}
+            }
+          ]
         }
       },
       "expected": [
@@ -314,42 +519,75 @@
             {
               "path": "/dispatch/requestEnvelopes",
               "equals": [
-                { "message": { "part": "a" } },
-                { "message": { "part": "b" } }
+                {
+                  "message": {
+                    "part": "a"
+                  }
+                },
+                {
+                  "message": {
+                    "part": "b"
+                  }
+                }
               ]
             },
-            { "path": "/peer/endStreamCount", "equals": 1 }
+            {
+              "path": "/peer/endStreamCount",
+              "equals": 1
+            }
           ]
         }
       ]
     },
     {
       "id": "CONN-PS-12",
-      "rules": ["CONN-P-03"],
+      "rules": [
+        "CONN-P-03"
+      ],
       "section": "9.3",
       "description": "Descriptorless mode refuses absent input rather than inventing an object-shaped empty request for a method whose protobuf request shape is unknown.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/UnknownShape" },
-        "invocation": { "inputPresent": false }
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/UnknownShape"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-13",
-      "rules": ["CONN-P-03"],
+      "rules": [
+        "CONN-P-03"
+      ],
       "section": "9.3",
       "description": "An empty successful descriptorless JSON response is a protocol error rather than an invented null output.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/UnknownShape" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/UnknownShape"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "peer": {
           "status": 200,
           "contentType": "application/json",
@@ -360,34 +598,57 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [{ "path": "/outputs", "equals": [] }]
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-14",
-      "rules": ["CONN-P-07"],
+      "rules": [
+        "CONN-P-07"
+      ],
       "section": "9.6",
       "description": "Configured leading metadata cannot replace the Connect exchange's processor-owned Content-Type framing field.",
       "given": {
-        "source": { "location": "https://api.example" },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "source": {
+          "location": "https://api.example"
+        },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "runtime": {
-          "requestMetadata": { "Content-Type": "text/plain" }
+          "requestMetadata": {
+            "Content-Type": "text/plain"
+          }
         }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "CONN-PS-15",
-      "rules": ["CONN-P-06"],
+      "rules": [
+        "CONN-P-06"
+      ],
       "section": "9.5",
       "description": "A 303 response is not followed by rewriting the Connect POST to GET; it remains the final non-200 failure response.",
       "given": {
@@ -395,23 +656,40 @@
           "location": "https://api.example",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 303,
-          "headers": { "Location": "https://other.example/get" },
+          "headers": {
+            "Location": "https://other.example/get"
+          },
           "body": ""
         },
-        "runtime": { "redirectPolicy": "ordinary-user-agent" }
+        "runtime": {
+          "redirectPolicy": "ordinary-user-agent"
+        }
       },
       "expected": [
         {
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/dispatches/0/method", "equals": "POST" },
-            { "path": "/dispatches/1", "absent": true },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/dispatches/0/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatches/1",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]

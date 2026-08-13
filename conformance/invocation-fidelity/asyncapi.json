@@ -2,26 +2,49 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.asyncapi@1",
   "family": "asyncapi",
-  "description": "AsyncAPI fidelity scenarios exercise joined source synthesis and operation invocation. Message payloads and emergent completion are the abstract surface; HTTP status, response bytes, WebSocket frames, and metadata are diagnostic or binding-internal evidence.",
+  "description": "AsyncAPI fidelity scenarios exercise joined source synthesis and operation invocation. Message payloads and emergent completion are the abstract surface; HTTP status, response bytes, WebSocket frames, and metadata remain lower-layer evidence.",
   "scenarios": [
     {
       "id": "ASYNC-FI-01",
-      "rules": ["OBI-B-02", "ASYNC-P-03", "ASYNC-P-05", "ASYNC-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "ASYNC-P-03",
+        "ASYNC-P-05",
+        "ASYNC-P-06"
+      ],
       "section": "9.3",
       "description": "An error-shaped reply payload on a successful HTTP publish remains one application output through synthesis and operation invocation.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Reply", "version": "1" },
-            "servers": { "api": { "host": "api.example", "protocol": "https" } },
+            "info": {
+              "title": "Reply",
+              "version": "1"
+            },
+            "servers": {
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
+            },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
                   "task": {
                     "contentType": "application/json",
-                    "payload": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] }
+                    "payload": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
                   },
                   "created": {
                     "contentType": "application/json",
@@ -30,13 +53,25 @@
                       "properties": {
                         "error": {
                           "type": "object",
-                          "properties": { "code": { "type": "string" } },
-                          "required": ["code"]
+                          "properties": {
+                            "code": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code"
+                          ]
                         }
                       },
-                      "required": ["error"]
+                      "required": [
+                        "error"
+                      ]
                     },
-                    "bindings": { "http": { "statusCode": 201 } }
+                    "bindings": {
+                      "http": {
+                        "statusCode": 201
+                      }
+                    }
                   }
                 }
               }
@@ -44,50 +79,114 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } },
-                "reply": { "messages": [{ "$ref": "#/channels/tasks/messages/created" }] }
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                },
+                "reply": {
+                  "messages": [
+                    {
+                      "$ref": "#/channels/tasks/messages/created"
+                    }
+                  ]
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 201,
-          "headers": { "Content-Type": "application/json", "X-Protocol-Trace": "hidden" },
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Protocol-Trace": "hidden"
+          },
           "body": "{\"error\":{\"code\":\"QUEUED\"}}"
         }
       },
-      "expected": [{
-        "disposition": "complete",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/joinedSynthesis", "equals": true },
-          { "path": "/outputs", "equals": [{ "error": { "code": "QUEUED" } }] },
-          { "path": "/error", "absent": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/joinedSynthesis",
+              "equals": true
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "error": {
+                    "code": "QUEUED"
+                  }
+                }
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "ASYNC-FI-02",
-      "rules": ["OBI-B-02", "ASYNC-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "ASYNC-P-06"
+      ],
       "section": "9.4",
-      "description": "A non-success HTTP response becomes structural unsuccessful completion; native status and bytes remain optional diagnostics rather than application details.",
+      "description": "A non-success HTTP response becomes structural unsuccessful completion; native status and bytes stay below the bridge rather than becoming application data.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Failure", "version": "1" },
-            "servers": { "api": { "host": "api.example", "protocol": "https" } },
+            "info": {
+              "title": "Failure",
+              "version": "1"
+            },
+            "servers": {
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
+            },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
                   "task": {
                     "contentType": "application/json",
-                    "payload": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"] }
+                    "payload": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
                   }
                 }
               }
@@ -95,46 +194,89 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } }
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 400,
-          "headers": { "Content-Type": "application/json" },
+          "headers": {
+            "Content-Type": "application/json"
+          },
           "body": "{\"protocolProblem\":\"bad\"}"
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "response",
-        "assertions": [
-          { "path": "/joinedSynthesis", "equals": true },
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/status", "equals": 400 },
-          { "path": "/error/diagnostics/body", "equals": "{\"protocolProblem\":\"bad\"}" }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/joinedSynthesis",
+              "equals": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "ASYNC-FI-03",
-      "rules": ["OBI-B-02", "ASYNC-P-03", "ASYNC-P-05", "ASYNC-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "ASYNC-P-03",
+        "ASYNC-P-05",
+        "ASYNC-P-06"
+      ],
       "section": "8",
       "description": "A WebSocket subscription emits one application value per complete message and completes cleanly without exposing WebSocket framing.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Events", "version": "1" },
-            "servers": { "socket": { "host": "events.example", "protocol": "ws" } },
+            "info": {
+              "title": "Events",
+              "version": "1"
+            },
+            "servers": {
+              "socket": {
+                "host": "events.example",
+                "protocol": "ws"
+              }
+            },
             "channels": {
               "events": {
                 "address": "/ws",
@@ -146,11 +288,19 @@
                       "properties": {
                         "error": {
                           "type": "object",
-                          "properties": { "code": { "type": "string" } },
-                          "required": ["code"]
+                          "properties": {
+                            "code": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code"
+                          ]
                         }
                       },
-                      "required": ["error"]
+                      "required": [
+                        "error"
+                      ]
                     }
                   }
                 }
@@ -159,28 +309,63 @@
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }]
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/operations/subscribe"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
-          "webSocketMessages": [{ "opcode": "text", "fragments": ["{\"error\":", "{\"code\":\"BUSINESS\"}}"] }],
+          "webSocketMessages": [
+            {
+              "opcode": "text",
+              "fragments": [
+                "{\"error\":",
+                "{\"code\":\"BUSINESS\"}}"
+              ]
+            }
+          ],
           "cleanClose": true
         }
       },
-      "expected": [{
-        "disposition": "complete",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/joinedSynthesis", "equals": true },
-          { "path": "/outputs", "equals": [{ "error": { "code": "BUSINESS" } }] },
-          { "path": "/error", "absent": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/joinedSynthesis",
+              "equals": true
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "error": {
+                    "code": "BUSINESS"
+                  }
+                }
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

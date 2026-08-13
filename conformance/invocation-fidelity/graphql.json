@@ -2,125 +2,281 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "GraphQL first-revision-candidate fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and diagnostic-only native evidence.",
+  "description": "GraphQL first-revision-candidate fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and native-evidence separation below the bridge.",
   "scenarios": [
     {
       "id": "GQL-FI-01",
-      "rules": ["OBI-B-02", "GQL-P-03"],
+      "rules": [
+        "OBI-B-02",
+        "GQL-P-03"
+      ],
       "section": "8.3",
       "description": "A successful aliased query emits the selected root application value alone, without a GraphQL response envelope.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
-          "content": { "data": { "__schema": {
-            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
-            "types": [
-              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
-              { "kind": "SCALAR", "name": "String" }
-            ]
-          } } }
+          "content": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "RootQuery"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "RootQuery",
+                    "fields": [
+                      {
+                        "name": "viewer",
+                        "args": [],
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
+                        "isDeprecated": false
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
+                ]
+              }
+            }
+          }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": { "document": { "source": "query { person: viewer }" } },
-        "invocation": { "inputPresent": false },
-        "peer": {
-          "status": 200,
-          "contentType": "application/graphql-response+json",
-          "body": { "data": { "person": "Ada" }, "extensions": { "trace": "success-native-only" } }
-        }
-      },
-      "expected": [{
-        "disposition": "complete",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": ["Ada"] },
-          { "path": "/error", "absent": true }
-        ]
-      }]
-    },
-    {
-      "id": "GQL-FI-02",
-      "rules": ["OBI-B-02", "GQL-P-03"],
-      "section": "8.4",
-      "description": "An untrusted legacy application/json 500 remains structural failure and preserves exact non-UTF-8 transport evidence only diagnostically.",
-      "given": {
-        "source": {
-          "location": "https://api.example.test/graphql",
-          "content": { "data": { "__schema": {
-            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
-            "types": [
-              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
-              { "kind": "SCALAR", "name": "String" }
-            ]
-          } } }
+        "binding": {
+          "ref": "query/viewer"
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": { "document": { "source": "query { viewer }" } },
-        "invocation": { "inputPresent": false },
-        "peer": {
-          "status": 500,
-          "contentType": "application/json",
-          "headers": { "X-Request-Id": "req-500" },
-          "bodyBase64": "AP+AQQ=="
-        }
-      },
-      "expected": [{
-        "disposition": "error",
-        "phase": "response",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/httpResponse/status", "equals": 500 },
-          { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-500"] },
-          { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 4 },
-          { "path": "/error/diagnostics/graphql/mediaType", "equals": "application/json" }
-        ]
-      }]
-    },
-    {
-      "id": "GQL-FI-03",
-      "rules": ["OBI-B-02", "GQL-P-03"],
-      "section": "8.4",
-      "description": "A trusted GraphQL response with partial root data emits that application value before unsuccessful completion; errors and extensions remain diagnostic.",
-      "given": {
-        "source": {
-          "location": "https://api.example.test/graphql",
-          "content": { "data": { "__schema": {
-            "queryType": { "name": "RootQuery" }, "mutationType": null, "subscriptionType": null,
-            "types": [
-              { "kind": "OBJECT", "name": "RootQuery", "fields": [{ "name": "viewer", "args": [], "type": { "kind": "SCALAR", "name": "String", "ofType": null }, "isDeprecated": false }] },
-              { "kind": "SCALAR", "name": "String" }
-            ]
-          } } }
+        "configuration": {
+          "document": {
+            "source": "query { person: viewer }"
+          }
         },
-        "binding": { "ref": "query/viewer" },
-        "configuration": { "document": { "source": "query { person: viewer }" } },
-        "invocation": { "inputPresent": false },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
           "contentType": "application/graphql-response+json",
           "body": {
-            "data": { "person": "Ada" },
-            "errors": [{ "message": "nested field unavailable", "extensions": { "code": "PARTIAL" } }],
-            "extensions": { "trace": "gql-fi-03" }
+            "data": {
+              "person": "Ada"
+            },
+            "extensions": {
+              "trace": "success-native-only"
+            }
           }
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": ["Ada"] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "nested field unavailable" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/graphql/response/errors/0/extensions/code", "equals": "PARTIAL" },
-          { "path": "/error/diagnostics/graphql/response/extensions/trace", "equals": "gql-fi-03" }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "Ada"
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-FI-02",
+      "rules": [
+        "OBI-B-02",
+        "GQL-P-03"
+      ],
+      "section": "8.4",
+      "description": "An untrusted legacy application/json 500 remains structural failure; exact non-UTF-8 transport evidence is retained only below the bridge.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "RootQuery"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "RootQuery",
+                    "fields": [
+                      {
+                        "name": "viewer",
+                        "args": [],
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
+                        "isDeprecated": false
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "query/viewer"
+        },
+        "configuration": {
+          "document": {
+            "source": "query { viewer }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 500,
+          "contentType": "application/json",
+          "headers": {
+            "X-Request-Id": "req-500"
+          },
+          "bodyBase64": "AP+AQQ=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-FI-03",
+      "rules": [
+        "OBI-B-02",
+        "GQL-P-03"
+      ],
+      "section": "8.4",
+      "description": "A trusted GraphQL response with partial root data emits that application value before unsuccessful completion; errors and extensions stay below the bridge.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "RootQuery"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "RootQuery",
+                    "fields": [
+                      {
+                        "name": "viewer",
+                        "args": [],
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
+                        "isDeprecated": false
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "String"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "query/viewer"
+        },
+        "configuration": {
+          "document": {
+            "source": "query { person: viewer }"
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "person": "Ada"
+            },
+            "errors": [
+              {
+                "message": "nested field unavailable",
+                "extensions": {
+                  "code": "PARTIAL"
+                }
+              }
+            ],
+            "extensions": {
+              "trace": "gql-fi-03"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "Ada"
+              ]
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

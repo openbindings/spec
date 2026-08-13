@@ -7,11 +7,11 @@
       "id": "OG-EX-17",
       "name": "Conduit terminal error handled via onError",
       "section": "operation / Failure",
-      "description": "The held items.list invocation terminates with backend_unavailable. The conduit sets onError, opting the terminal error into in-graph handling: the error event { error } — no event member, the failure belongs to the invocation as a whole — routes to the fallback transform, which emits a default. The graph completes normally.",
+      "description": "The held items.list invocation terminates with an abstract error carrying application data. The conduit sets onError, opting the complete {code,data?} terminal record into in-graph handling: the error event { error } — no event member, since the failure belongs to the invocation as a whole — routes to the fallback transform, which emits a default. The graph completes normally without losing the inner data.",
       "operations": {
         "items.list": {
           "closesAfter": 1,
-          "responses": [{ "fail": "backend_unavailable" }]
+          "responses": [{ "fail": "APP_FAILURE", "failData": { "reason": "inventory-offline" } }]
         }
       },
       "graph": {
@@ -37,7 +37,7 @@
       },
       "writes": [{ "filter": "active" }],
       "expected": {
-        "output": [{ "items": [], "degraded": "backend_unavailable" }],
+        "output": [{ "items": [], "degraded": { "code": "APP_FAILURE", "data": { "reason": "inventory-offline" } } }],
         "ordering": "exact"
       }
     },

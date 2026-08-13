@@ -59,9 +59,9 @@ Applied by layer:
 - **SDKs:** may add idiomatic conveniences or complete a binding
   specification's gaps locally, but those behaviors remain
   implementation-defined and do not become portable semantics by repetition.
-- **Diagnostics and conformance:** may retain concrete evidence needed to
-  explain or prove an implementation. That evidence stays optional for
-  ordinary operation use.
+- **Conformance and lower-layer tooling:** may inspect concrete evidence needed
+  to explain or prove an implementation at the binding or artifact-runtime
+  layer. That evidence does not become part of the abstract invocation result.
 
 Minimality is not lowest-common-denominator behavior. A small rule can still
 require a sophisticated binding implementation. The test is whether the
@@ -82,13 +82,13 @@ selected binding:
 - runtime prerequisites that must be satisfied for the binding to act
   correctly, without writing them into the OBI document.
 
-The ordinary operation surface need not expose protocol-only observations,
+The ordinary operation surface does not expose protocol-only observations,
 including native status numbers, headers or trailers as protocol structures,
 redirect history, framing, close frames, exact failure bytes, or connection
-diagnostics. A binding may consume any of those facts internally to produce the
+evidence. A binding may consume any of those facts internally to produce the
 correct application value or invocation behavior. Once their required effect
-has been incorporated, their native representation may disappear at the
-abstract boundary.
+has been incorporated, their native representation disappears at the abstract
+boundary.
 
 Information explicitly modeled by the operation contract is never covered by
 that permission. An implementation may not call dropping or changing an
@@ -114,7 +114,7 @@ policy. It defines:
    needed to close the portable boundary.
 
 It does not define an SDK API, invoker frame protocol, universal failure
-taxonomy, retry policy, diagnostic envelope, synthesis naming convention, or a
+taxonomy, retry policy, synthesis naming convention, or a
 protocol simulation model. It does not project a protocol fact into an
 operation value merely to avoid losing that fact. Once an implementation can
 perform the binding and produce the correct abstract values and lifecycle, the
@@ -138,14 +138,14 @@ alone could not establish.
 An error-like application object crosses `output` only when it is already an
 ordinary successful value under the governed interaction or an OBI author has
 deliberately modeled it in the operation contract. An invocation interface may
-instead preserve an author-intended JSON failure value as opaque failure detail
+instead preserve an author-intended JSON failure value as opaque failure data
 when the governing binding rules can distinguish that value from its protocol
 container without guessing. That does not add the value to the operation's
 output schema or give it universal semantics. Synthesis does not infer an
 operation result merely because a protocol artifact documents a non-success
 response.
 
-## Unsuccessful completion and diagnostics
+## Unsuccessful completion
 
 The abstract invocation needs a structural way to report that an attempt did
 not complete normally. The core OBI document does not need an exhaustive
@@ -153,25 +153,27 @@ vocabulary for why. SDKs and optional invoker interfaces may offer idiomatic
 errors, open-ended codes, or non-normative convenience classifications; no
 such vocabulary is presumed complete for future binding families.
 
-An application author may deliberately supply a structured failure value. An
-invocation interface may preserve that JSON value opaquely, without assigning
-it a cross-protocol category or requiring it to be described by the OBI core.
-This lane is not a license to carry raw response envelopes: the binding rules
-must identify the application value and discard or diagnose its status,
-headers, trailers, framing, and other concrete container facts.
+An application author may deliberately supply a JSON failure value. An
+invocation interface may preserve that value opaquely as optional failure
+`data`, without assigning it a cross-protocol category or requiring it to be
+described by the OBI core. Absence and an explicit JSON null are distinct. This
+lane is not a license to carry raw response envelopes: the binding rules must
+identify the application value and discard its status, headers, trailers,
+framing, and other concrete container facts at the abstract boundary.
 
 The same boundary applies to human-readable failure prose. A binding may
-preserve a message supplied by the application author when it can identify
-that message without its protocol container. A raw status line, library error
-wrapper, process exit description, or decoder provenance is not made abstract
-merely by placing it in a string; ordinary presentation stays
-protocol-independent and any concrete evidence moves to diagnostics.
+preserve a string supplied by the application author as the opaque failure
+`data`, or as a member of the author's value, when it can identify that value
+without its protocol container. It does not promote or duplicate that prose
+into a framework message. A raw status line, library error wrapper, process
+exit description, or decoder provenance is not made abstract merely by placing
+it in a string.
 
-Implementations may retain binding-native evidence for debugging,
-observability, conformance work, or expert escape hatches. That surface is
-explicitly diagnostic: it may reveal the selected binding, may be resource
-bounded when the loss is stated honestly, and must not be required for correct
-ordinary use of the operation.
+Implementations may retain binding-native evidence below the abstract boundary
+for logging, tracing, conformance work, or artifact-specific tooling. The
+project-published invocation interfaces and SDK handles do not transport that
+evidence to the operation caller. A developer who needs native observations
+uses the artifact runtime or protocol tooling directly.
 
 ## Acceptance gates
 

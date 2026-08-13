@@ -6,40 +6,63 @@
   "scenarios": [
     {
       "id": "ASYNC-PS-01",
-      "rules": ["ASYNC-P-01"],
+      "rules": [
+        "ASYNC-P-01"
+      ],
       "section": "3",
       "description": "An unadopted AsyncAPI edition is refused before reference resolution or dispatch.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.2.0",
-            "info": { "title": "Future", "version": "1" },
+            "info": {
+              "title": "Future",
+              "version": "1"
+            },
             "channels": {}
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": {} }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "load",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-02",
-      "rules": ["ASYNC-P-02"],
+      "rules": [
+        "ASYNC-P-02"
+      ],
       "section": "8",
       "description": "An HTTP receive operation without an artifact-declared HTTP method refuses; POST is not inferred.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "HTTP", "version": "1" },
+            "info": {
+              "title": "HTTP",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
@@ -47,7 +70,9 @@
                 "messages": {
                   "task": {
                     "contentType": "application/json",
-                    "payload": { "type": "object" }
+                    "payload": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -55,185 +80,331 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }]
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-03",
-      "rules": ["ASYNC-P-02"],
+      "rules": [
+        "ASYNC-P-02"
+      ],
       "section": "8",
       "description": "A reply-bearing WebSocket receive operation is outside the current revision and refuses rather than discarding declared replies.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "WS reply", "version": "1" },
+            "info": {
+              "title": "WS reply",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "request": { "contentType": "application/json" },
-                  "answer": { "contentType": "application/json" }
+                  "request": {
+                    "contentType": "application/json"
+                  },
+                  "answer": {
+                    "contentType": "application/json"
+                  }
                 }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/request" }],
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/request"
+                  }
+                ],
                 "reply": {
-                  "messages": [{ "$ref": "#/channels/tasks/messages/answer" }]
+                  "messages": [
+                    {
+                      "$ref": "#/channels/tasks/messages/answer"
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-04",
-      "rules": ["ASYNC-P-03", "ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-03",
+        "ASYNC-P-04"
+      ],
       "section": "9.1",
       "description": "Several artifact-declared input messages require the message configuration point; payload sniffing does not choose one.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Messages", "version": "1" },
+            "info": {
+              "title": "Messages",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "json": { "contentType": "application/json" },
-                  "text": { "contentType": "text/plain" }
+                  "json": {
+                    "contentType": "application/json"
+                  },
+                  "text": {
+                    "contentType": "text/plain"
+                  }
                 }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
                 "messages": [
-                  { "$ref": "#/channels/tasks/messages/json" },
-                  { "$ref": "#/channels/tasks/messages/text" }
+                  {
+                    "$ref": "#/channels/tasks/messages/json"
+                  },
+                  {
+                    "$ref": "#/channels/tasks/messages/text"
+                  }
                 ],
-                "bindings": { "http": { "method": "POST" } }
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": "hello" }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": "hello"
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-05",
-      "rules": ["ASYNC-P-03", "ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-03",
+        "ASYNC-P-04"
+      ],
       "section": "9.2",
       "description": "A selected message with no effective content type requires an explicit encode lane; the JSON value domain does not imply JSON wire encoding.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "No media", "version": "1" },
+            "info": {
+              "title": "No media",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
-                "messages": { "task": { "payload": { "type": "object" } } }
+                "messages": {
+                  "task": {
+                    "payload": {
+                      "type": "object"
+                    }
+                  }
+                }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } }
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-06",
-      "rules": ["ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-04"
+      ],
       "section": "9.2",
       "description": "A required HTTP query field is supplied only through protocolFields and encoded on the request channel, not taken from the payload.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Query", "version": "1" },
+            "info": {
+              "title": "Query",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
-                "messages": { "task": { "contentType": "application/json" } }
+                "messages": {
+                  "task": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
                 "bindings": {
                   "http": {
                     "method": "POST",
                     "query": {
                       "type": "object",
-                      "required": ["tenant"],
-                      "properties": { "tenant": { "type": "string" } }
+                      "required": [
+                        "tenant"
+                      ],
+                      "properties": {
+                        "tenant": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 }
@@ -241,15 +412,27 @@
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
         "configuration": {
-          "protocolFields": { "httpQuery": { "tenant": "acme" } }
+          "protocolFields": {
+            "httpQuery": {
+              "tenant": "acme"
+            }
+          }
         },
         "invocation": {
           "inputPresent": true,
-          "input": { "tenant": "payload", "id": "1" }
+          "input": {
+            "tenant": "payload",
+            "id": "1"
+          }
         },
-        "peer": { "status": 204, "body": "" }
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
@@ -262,34 +445,55 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": { "tenant": "payload", "id": "1" }
+              "equals": {
+                "tenant": "payload",
+                "id": "1"
+              }
             },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-07",
-      "rules": ["ASYNC-P-05", "ASYNC-P-06"],
+      "rules": [
+        "ASYNC-P-05",
+        "ASYNC-P-06"
+      ],
       "section": "9.3",
       "description": "An exact HTTP reply status selects its declared message; a 201 final status is transport success and its JSON body is one output.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Reply", "version": "1" },
+            "info": {
+              "title": "Reply",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "task": { "contentType": "application/json" },
+                  "task": {
+                    "contentType": "application/json"
+                  },
                   "created": {
                     "contentType": "application/json",
-                    "bindings": { "http": { "statusCode": 201 } }
+                    "bindings": {
+                      "http": {
+                        "statusCode": 201
+                      }
+                    }
                   }
                 }
               }
@@ -297,21 +501,44 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } },
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                },
                 "reply": {
-                  "messages": [{ "$ref": "#/channels/tasks/messages/created" }]
+                  "messages": [
+                    {
+                      "$ref": "#/channels/tasks/messages/created"
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 201,
-          "headers": { "Content-Type": "application/json" },
+          "headers": {
+            "Content-Type": "application/json"
+          },
           "body": "{\"id\":\"1\",\"state\":\"created\"}"
         }
       },
@@ -322,7 +549,12 @@
           "assertions": [
             {
               "path": "/outputs",
-              "equals": [{ "id": "1", "state": "created" }]
+              "equals": [
+                {
+                  "id": "1",
+                  "state": "created"
+                }
+              ]
             }
           ]
         }
@@ -330,25 +562,39 @@
     },
     {
       "id": "ASYNC-PS-08",
-      "rules": ["ASYNC-P-06"],
+      "rules": [
+        "ASYNC-P-06"
+      ],
       "section": "9.4",
       "description": "A declared reply body does not make a non-2xx HTTP publish successful; classification remains transport-native.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Failure", "version": "1" },
+            "info": {
+              "title": "Failure",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "task": { "contentType": "application/json" },
+                  "task": {
+                    "contentType": "application/json"
+                  },
                   "problem": {
                     "contentType": "application/json",
-                    "bindings": { "http": { "statusCode": 400 } }
+                    "bindings": {
+                      "http": {
+                        "statusCode": 400
+                      }
+                    }
                   }
                 }
               }
@@ -356,21 +602,44 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } },
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                },
                 "reply": {
-                  "messages": [{ "$ref": "#/channels/tasks/messages/problem" }]
+                  "messages": [
+                    {
+                      "$ref": "#/channels/tasks/messages/problem"
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 400,
-          "headers": { "Content-Type": "application/json" },
+          "headers": {
+            "Content-Type": "application/json"
+          },
           "body": "{\"error\":\"bad\"}"
         }
       },
@@ -378,26 +647,40 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [{ "path": "/outputs", "equals": [] }]
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-09",
-      "rules": ["ASYNC-P-07"],
+      "rules": [
+        "ASYNC-P-07"
+      ],
       "section": "9.5",
       "description": "A WebSocket upgrade query credential colliding with a declared protocol field is refused rather than overwritten or duplicated.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "WS security", "version": "1" },
+            "info": {
+              "title": "WS security",
+              "version": "1"
+            },
             "servers": {
               "socket": {
                 "host": "events.example",
                 "protocol": "wss",
                 "security": [
-                  { "type": "httpApiKey", "in": "query", "name": "token" }
+                  {
+                    "type": "httpApiKey",
+                    "in": "query",
+                    "name": "token"
+                  }
                 ]
               }
             },
@@ -408,70 +691,130 @@
                   "ws": {
                     "query": {
                       "type": "object",
-                      "properties": { "token": { "type": "string" } }
+                      "properties": {
+                        "token": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 },
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }]
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "configuration": {
-          "protocolFields": { "webSocketQuery": { "token": "field" } }
+        "binding": {
+          "ref": "#/operations/subscribe"
         },
-        "invocation": { "inputPresent": false },
-        "runtime": { "credentials": { "token": "credential" } }
+        "configuration": {
+          "protocolFields": {
+            "webSocketQuery": {
+              "token": "field"
+            }
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "token": "credential"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-10",
-      "rules": ["ASYNC-P-03", "ASYNC-P-05"],
+      "rules": [
+        "ASYNC-P-03",
+        "ASYNC-P-05"
+      ],
       "section": "9.3",
       "description": "A fragmented WebSocket data message is reassembled and decoded once; frame boundaries never create outputs.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Fragmentation", "version": "1" },
+            "info": {
+              "title": "Fragmentation",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "events": {
                 "address": "/events",
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }]
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/operations/subscribe"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "webSocketMessages": [
-            { "opcode": "text", "fragments": ["{\"id\":", "\"1\"}"] }
+            {
+              "opcode": "text",
+              "fragments": [
+                "{\"id\":",
+                "\"1\"}"
+              ]
+            }
           ],
           "cleanClose": true
         }
@@ -480,147 +823,255 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "assertions": [{ "path": "/outputs", "equals": [{ "id": "1" }] }]
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "id": "1"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-11",
-      "rules": ["ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-04"
+      ],
       "section": "9.2",
       "description": "A WebSocket publish requires an explicit text-or-binary message choice because the artifact binding does not define the opcode.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Opcode", "version": "1" },
+            "info": {
+              "title": "Opcode",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "events": {
                 "address": "/events",
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }]
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-12",
-      "rules": ["ASYNC-P-04", "ASYNC-P-05"],
+      "rules": [
+        "ASYNC-P-04",
+        "ASYNC-P-05"
+      ],
       "section": "9.3",
       "description": "Conflicting WebSocket subscription content types are refused even when decode configuration attempts to choose a lane.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Ambiguous subscription", "version": "1" },
+            "info": {
+              "title": "Ambiguous subscription",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "events": {
                 "address": "/events",
                 "messages": {
-                  "json": { "contentType": "application/json" },
-                  "text": { "contentType": "text/plain" }
+                  "json": {
+                    "contentType": "application/json"
+                  },
+                  "text": {
+                    "contentType": "text/plain"
+                  }
                 }
               }
             },
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
                 "messages": [
-                  { "$ref": "#/channels/events/messages/json" },
-                  { "$ref": "#/channels/events/messages/text" }
+                  {
+                    "$ref": "#/channels/events/messages/json"
+                  },
+                  {
+                    "$ref": "#/channels/events/messages/text"
+                  }
                 ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "configuration": { "decode": "json" },
-        "invocation": { "inputPresent": false }
+        "binding": {
+          "ref": "#/operations/subscribe"
+        },
+        "configuration": {
+          "decode": "json"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-13",
-      "rules": ["ASYNC-P-02"],
+      "rules": [
+        "ASYNC-P-02"
+      ],
       "section": "2",
       "description": "An explicitly different WebSockets binding version is outside the frozen revision-1 envelope.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Binding version", "version": "1" },
+            "info": {
+              "title": "Binding version",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "events": {
                 "address": "/events",
-                "bindings": { "ws": { "bindingVersion": "0.2.0" } },
-                "messages": { "event": { "contentType": "application/json" } }
+                "bindings": {
+                  "ws": {
+                    "bindingVersion": "0.2.0"
+                  }
+                },
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }]
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ]
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "invocation": { "inputPresent": false }
+        "binding": {
+          "ref": "#/operations/subscribe"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-14",
-      "rules": ["ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-04"
+      ],
       "section": "9.2",
       "description": "An address parameter location derives from the outgoing payload and is percent-encoded as one path-segment value.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Runtime address", "version": "1" },
+            "info": {
+              "title": "Runtime address",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "events": {
@@ -628,28 +1079,52 @@
                 "parameters": {
                   "tenant": {
                     "location": "$message.payload#/tenant",
-                    "schema": { "type": "string" }
+                    "schema": {
+                      "type": "string"
+                    }
                   }
                 },
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }],
-                "bindings": { "http": { "method": "POST" } }
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
         "invocation": {
           "inputPresent": true,
-          "input": { "tenant": "a/b", "id": "1" }
+          "input": {
+            "tenant": "a/b",
+            "id": "1"
+          }
         },
-        "peer": { "status": 204, "body": "" }
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
@@ -662,25 +1137,39 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": { "tenant": "a/b", "id": "1" }
+              "equals": {
+                "tenant": "a/b",
+                "id": "1"
+              }
             },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-15",
-      "rules": ["ASYNC-P-04"],
+      "rules": [
+        "ASYNC-P-04"
+      ],
       "section": "9.2",
       "description": "Configuration may not override an address parameter whose value the artifact derives with a location runtime expression.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Runtime address collision", "version": "1" },
+            "info": {
+              "title": "Runtime address collision",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "events": {
@@ -688,49 +1177,90 @@
                 "parameters": {
                   "tenant": {
                     "location": "$message.payload#/tenant",
-                    "schema": { "type": "string" }
+                    "schema": {
+                      "type": "string"
+                    }
                   }
                 },
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }],
-                "bindings": { "http": { "method": "POST" } }
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "configuration": { "parameters": { "tenant": "configured" } },
-        "invocation": { "inputPresent": true, "input": { "tenant": "payload" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "configuration": {
+          "parameters": {
+            "tenant": "configured"
+          }
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "tenant": "payload"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-16",
-      "rules": ["ASYNC-P-07"],
+      "rules": [
+        "ASYNC-P-07"
+      ],
       "section": "9.5",
       "description": "An HTTP API-key credential cannot replace the processor-owned Content-Type field selected by the message's declared media type.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "secure publish", "version": "1" },
+            "info": {
+              "title": "secure publish",
+              "version": "1"
+            },
             "servers": {
               "prod": {
                 "host": "api.example",
                 "protocol": "https",
-                "security": [{ "$ref": "#/components/securitySchemes/key" }]
+                "security": [
+                  {
+                    "$ref": "#/components/securitySchemes/key"
+                  }
+                ]
               }
             },
             "channels": {
@@ -739,7 +1269,9 @@
                 "messages": {
                   "command": {
                     "contentType": "application/json",
-                    "payload": { "type": "object" }
+                    "payload": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -747,9 +1279,13 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/commands" },
+                "channel": {
+                  "$ref": "#/channels/commands"
+                },
                 "messages": [
-                  { "$ref": "#/channels/commands/messages/command" }
+                  {
+                    "$ref": "#/channels/commands/messages/command"
+                  }
                 ],
                 "bindings": {
                   "http": {
@@ -770,43 +1306,77 @@
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": 1 } },
-        "runtime": { "credentials": { "key": "secret" } }
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": 1
+          }
+        },
+        "runtime": {
+          "credentials": {
+            "key": "secret"
+          }
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-17",
-      "rules": ["ASYNC-P-05"],
+      "rules": [
+        "ASYNC-P-05"
+      ],
       "section": "9.3",
       "description": "Two parameterized HTTP reply media declarations tying at the greatest match specificity are a protocol error, not message-list precedence.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Ambiguous reply media", "version": "1" },
+            "info": {
+              "title": "Ambiguous reply media",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "task": { "contentType": "application/json" },
+                  "task": {
+                    "contentType": "application/json"
+                  },
                   "profiled": {
                     "contentType": "application/json; profile=full",
-                    "bindings": { "http": { "statusCode": 200 } }
+                    "bindings": {
+                      "http": {
+                        "statusCode": 200
+                      }
+                    }
                   },
                   "utf8": {
                     "contentType": "application/json; charset=utf-8",
-                    "bindings": { "http": { "statusCode": 200 } }
+                    "bindings": {
+                      "http": {
+                        "statusCode": 200
+                      }
+                    }
                   }
                 }
               }
@@ -814,21 +1384,42 @@
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } },
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                },
                 "reply": {
                   "messages": [
-                    { "$ref": "#/channels/tasks/messages/profiled" },
-                    { "$ref": "#/channels/tasks/messages/utf8" }
+                    {
+                      "$ref": "#/channels/tasks/messages/profiled"
+                    },
+                    {
+                      "$ref": "#/channels/tasks/messages/utf8"
+                    }
                   ]
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
         "peer": {
           "status": 200,
           "headers": {
@@ -841,145 +1432,265 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [{ "path": "/outputs", "equals": [] }]
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-18",
-      "rules": ["ASYNC-P-06"],
+      "rules": [
+        "ASYNC-P-06"
+      ],
       "section": "9.4",
       "description": "A 303 response is not followed by rewriting the artifact-declared HTTP publish POST to GET or discarding its encoded message.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Redirect semantics", "version": "1" },
+            "info": {
+              "title": "Redirect semantics",
+              "version": "1"
+            },
             "servers": {
-              "api": { "host": "api.example", "protocol": "https" }
+              "api": {
+                "host": "api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "tasks": {
                 "address": "/tasks",
                 "messages": {
-                  "task": { "contentType": "application/json" }
+                  "task": {
+                    "contentType": "application/json"
+                  }
                 }
               }
             },
             "operations": {
               "publish": {
                 "action": "receive",
-                "channel": { "$ref": "#/channels/tasks" },
-                "messages": [{ "$ref": "#/channels/tasks/messages/task" }],
-                "bindings": { "http": { "method": "POST" } }
+                "channel": {
+                  "$ref": "#/channels/tasks"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/tasks/messages/task"
+                  }
+                ],
+                "bindings": {
+                  "http": {
+                    "method": "POST"
+                  }
+                }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": 1 } },
+        "binding": {
+          "ref": "#/operations/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": 1
+          }
+        },
         "peer": {
           "status": 303,
-          "headers": { "Location": "https://other.example/tasks" },
+          "headers": {
+            "Location": "https://other.example/tasks"
+          },
           "body": ""
         },
-        "runtime": { "redirectPolicy": "ordinary-user-agent" }
+        "runtime": {
+          "redirectPolicy": "ordinary-user-agent"
+        }
       },
       "expected": [
         {
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/dispatches/0/method", "equals": "POST" },
-            { "path": "/dispatches/1", "absent": true },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/dispatches/0/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatches/1",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-19",
-      "rules": ["ASYNC-P-02"],
+      "rules": [
+        "ASYNC-P-02"
+      ],
       "section": "8",
       "description": "A reply-bearing WebSocket send is refused before establishment rather than losing its declared reply contract.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "3.0.0",
-            "info": { "title": "Reply-bearing send", "version": "1" },
+            "info": {
+              "title": "Reply-bearing send",
+              "version": "1"
+            },
             "servers": {
-              "socket": { "host": "events.example", "protocol": "wss" }
+              "socket": {
+                "host": "events.example",
+                "protocol": "wss"
+              }
             },
             "channels": {
               "events": {
                 "address": "/events",
-                "messages": { "event": { "contentType": "application/json" } }
+                "messages": {
+                  "event": {
+                    "contentType": "application/json"
+                  }
+                }
               },
               "commands": {
                 "address": "/commands",
-                "messages": { "command": { "contentType": "application/json" } }
+                "messages": {
+                  "command": {
+                    "contentType": "application/json"
+                  }
+                }
               }
             },
             "operations": {
               "subscribe": {
                 "action": "send",
-                "channel": { "$ref": "#/channels/events" },
-                "messages": [{ "$ref": "#/channels/events/messages/event" }],
+                "channel": {
+                  "$ref": "#/channels/events"
+                },
+                "messages": [
+                  {
+                    "$ref": "#/channels/events/messages/event"
+                  }
+                ],
                 "reply": {
-                  "messages": [{ "$ref": "#/channels/commands/messages/command" }]
+                  "messages": [
+                    {
+                      "$ref": "#/channels/commands/messages/command"
+                    }
+                  ]
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/operations/subscribe" },
-        "invocation": { "inputPresent": false }
+        "binding": {
+          "ref": "#/operations/subscribe"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
       "expected": [
         {
           "disposition": "refusal",
           "phase": "resolution",
-          "assertions": [{ "path": "/dispatch", "absent": true }]
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "ASYNC-PS-20",
-      "rules": ["ASYNC-P-01", "ASYNC-P-02", "ASYNC-P-03"],
+      "rules": [
+        "ASYNC-P-01",
+        "ASYNC-P-02",
+        "ASYNC-P-03"
+      ],
       "section": "8",
       "description": "An AsyncAPI 2.6 publish target keeps its native ref and maps to caller input under the edition's application perspective.",
       "given": {
         "source": {
           "content": {
             "asyncapi": "2.6.0",
-            "info": { "title": "Legacy HTTP", "version": "1" },
+            "info": {
+              "title": "Legacy HTTP",
+              "version": "1"
+            },
             "defaultContentType": "application/json",
             "servers": {
-              "api": { "url": "https://api.example", "protocol": "https" }
+              "api": {
+                "url": "https://api.example",
+                "protocol": "https"
+              }
             },
             "channels": {
               "/tasks": {
                 "publish": {
-                  "message": { "payload": { "type": "object" } },
-                  "bindings": { "http": { "method": "POST" } }
+                  "message": {
+                    "payload": {
+                      "type": "object"
+                    }
+                  },
+                  "bindings": {
+                    "http": {
+                      "method": "POST"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/channels/~1tasks/publish" },
-        "invocation": { "inputPresent": true, "input": { "id": "1" } },
-        "peer": { "status": 204, "body": "" }
+        "binding": {
+          "ref": "#/channels/~1tasks/publish"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "1"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/dispatch/method", "equals": "POST" },
-            { "path": "/dispatch/url", "equals": "https://api.example/tasks" },
-            { "path": "/dispatch/body/id", "equals": "1" },
-            { "path": "/outputs", "equals": [] }
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/tasks"
+            },
+            {
+              "path": "/dispatch/body/id",
+              "equals": "1"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
           ]
         }
       ]

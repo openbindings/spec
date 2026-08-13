@@ -2,11 +2,15 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
-  "description": "OpenAPI fidelity scenarios with separate abstract and diagnostic assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
+  "description": "OpenAPI fidelity scenarios with separate abstract and lower-layer assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
   "scenarios": [
     {
       "id": "OAPI-FI-01",
-      "rules": ["OBI-B-02", "OAPI-P-07", "OAPI-P-08"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-07",
+        "OAPI-P-08"
+      ],
       "section": "9.5",
       "description": "An error-shaped JSON value returned with an artifact-defined successful status remains an ordinary output value.",
       "given": {
@@ -14,16 +18,25 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Result object", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Result object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/jobs": {
-          "post": {
-            "operationId": "fidelityJobs",
+                "post": {
+                  "operationId": "fidelityJobs",
                   "responses": {
                     "200": {
                       "description": "operation result",
-                      "content": { "application/json": {} }
+                      "content": {
+                        "application/json": {}
+                      }
                     }
                   }
                 }
@@ -31,11 +44,17 @@
             }
           }
         },
-        "binding": { "ref": "#/paths/~1jobs/post" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1jobs/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
-          "headers": { "Content-Type": "application/json" },
+          "headers": {
+            "Content-Type": "application/json"
+          },
           "body": "{\"error\":{\"code\":\"REJECTED\"}}"
         }
       },
@@ -44,32 +63,57 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [{ "error": { "code": "REJECTED" } }] },
-            { "path": "/error", "absent": true }
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "error": {
+                    "code": "REJECTED"
+                  }
+                }
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-02",
-      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-08"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-06",
+        "OAPI-P-08"
+      ],
       "section": "9.5",
-      "description": "A declared JSON 404 completes unsuccessfully without becoming an operation output; optional diagnostics retain the native observation.",
+      "description": "A declared JSON 404 completes unsuccessfully without becoming an operation output, while its application-authored JSON value is preserved as opaque failure data.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Declared failure", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Declared failure",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/items": {
-          "get": {
-            "operationId": "fidelityItems",
+                "get": {
+                  "operationId": "fidelityItems",
                   "responses": {
                     "default": {
                       "description": "failure",
-                      "content": { "application/json": {} }
+                      "content": {
+                        "application/json": {}
+                      }
                     }
                   }
                 }
@@ -77,8 +121,12 @@
             }
           }
         },
-        "binding": { "ref": "#/paths/~1items/get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 404,
           "headers": {
@@ -93,50 +141,71 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/status", "equals": 404 },
-            { "path": "/error/diagnostics/httpResponse/status", "equals": 404 },
-            { "path": "/error/diagnostics/httpResponse/headers/content-type", "equals": ["application/json"] },
-            { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-404"] },
-            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "eyJlcnJvciI6Im1pc3NpbmcifQ==" },
-            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 19 },
-            { "path": "/error/diagnostics/openapi/declared", "equals": true },
-            { "path": "/error/diagnostics/openapi/responseKey", "equals": "default" },
-            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "application/json" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "equals": {
+                "error": "missing"
+              }
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-03",
-      "rules": ["OBI-B-02", "OAPI-P-08"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-08"
+      ],
       "section": "9.5",
-      "description": "An undeclared binary 500 completes unsuccessfully; a diagnostic assertion separately proves exact bounded body capture instead of a lossy text rendering.",
+      "description": "An undeclared binary 500 completes unsuccessfully.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Binary failure", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Binary failure",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/binary": {
-          "get": {
-            "operationId": "fidelityBinary",
-                  "responses": { "200": { "description": "ok" } }
+                "get": {
+                  "operationId": "fidelityBinary",
+                  "responses": {
+                    "200": {
+                      "description": "ok"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1binary/get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1binary/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 500,
-          "headers": { "Content-Type": "application/octet-stream" },
+          "headers": {
+            "Content-Type": "application/octet-stream"
+          },
           "bodyBase64": "AP+AQQ=="
         }
       },
@@ -145,38 +214,54 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" },
-            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 4 },
-            { "path": "/error/diagnostics/openapi/declared", "equals": false },
-            { "path": "/error/diagnostics/openapi/responseKey", "absent": true }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-04",
-      "rules": ["OBI-B-02", "OAPI-P-08"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-08"
+      ],
       "section": "9.5",
-      "description": "A 504 completes unsuccessfully and is not converted into an output object; optional diagnostics retain the native response without defining retry semantics.",
+      "description": "A 504 completes unsuccessfully and is not converted into an output object.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Gateway timeout", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Gateway timeout",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/slow": {
-          "get": {
-            "operationId": "fidelitySlow",
+                "get": {
+                  "operationId": "fidelitySlow",
                   "responses": {
                     "504": {
                       "description": "timeout",
-                      "content": { "text/plain": {} }
+                      "content": {
+                        "text/plain": {}
+                      }
                     }
                   }
                 }
@@ -184,11 +269,17 @@
             }
           }
         },
-        "binding": { "ref": "#/paths/~1slow/get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1slow/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 504,
-          "headers": { "Content-Type": "text/plain; charset=utf-8" },
+          "headers": {
+            "Content-Type": "text/plain; charset=utf-8"
+          },
           "body": "gateway timeout"
         }
       },
@@ -197,29 +288,45 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "Z2F0ZXdheSB0aW1lb3V0" },
-            { "path": "/error/diagnostics/openapi/responseKey", "equals": "504" },
-            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "text/plain" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-05",
-      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-08"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-06",
+        "OAPI-P-08"
+      ],
       "section": "8",
-      "description": "A non-2xx event-stream response completes unsuccessfully; a diagnostic assertion proves its bounded body is not discarded when streaming framing is detected.",
+      "description": "A non-2xx event-stream response completes unsuccessfully.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Event-stream failure", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Event-stream failure",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/events": {
                 "get": {
@@ -227,11 +334,15 @@
                   "responses": {
                     "200": {
                       "description": "events",
-                      "content": { "text/event-stream": {} }
+                      "content": {
+                        "text/event-stream": {}
+                      }
                     },
                     "503": {
                       "description": "unavailable",
-                      "content": { "text/event-stream": {} }
+                      "content": {
+                        "text/event-stream": {}
+                      }
                     }
                   }
                 }
@@ -239,8 +350,12 @@
             }
           }
         },
-        "binding": { "ref": "#/paths/~1events/get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1events/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 503,
           "headers": {
@@ -255,25 +370,29 @@
           "disposition": "error",
           "phase": "response",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/httpResponse/status", "equals": 503 },
-            { "path": "/error/diagnostics/httpResponse/headers/content-type", "equals": ["text/event-stream"] },
-            { "path": "/error/diagnostics/httpResponse/headers/x-request-id", "equals": ["req-sse-503"] },
-            { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "ZXZlbnQ6IGVycm9yCmRhdGE6IHsiZXJyb3IiOiJ1bmF2YWlsYWJsZSJ9Cgo=" },
-            { "path": "/error/diagnostics/httpResponse/body/byteLength", "equals": 44 },
-            { "path": "/error/diagnostics/openapi/declared", "equals": true },
-            { "path": "/error/diagnostics/openapi/responseKey", "equals": "503" },
-            { "path": "/error/diagnostics/openapi/governingMedia", "equals": "text/event-stream" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-06",
-      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-03",
+        "OAPI-P-04"
+      ],
       "section": "9.2",
       "description": "A synthesized generic binary operation accepts a protocol-independent Base64 string field while concrete binding evidence proves byte-exact image upload.",
       "given": {
@@ -281,8 +400,15 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.0.4",
-            "info": { "title": "Binary abstraction", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Binary abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/image": {
                 "put": {
@@ -291,39 +417,68 @@
                     "required": true,
                     "content": {
                       "image/png": {
-                        "schema": { "type": "string", "format": "binary" }
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
                       }
                     }
                   },
-                  "responses": { "204": { "description": "stored" } }
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1image/put" },
+        "binding": {
+          "ref": "#/paths/~1image/put"
+        },
         "invocation": {
           "inputPresent": true,
-          "input": { "body": "AAH+/w==" }
+          "input": {
+            "body": "AAH+/w=="
+          }
         },
-        "peer": { "status": 204, "body": "" }
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error", "absent": true },
-            { "path": "/dispatch/headers/Content-Type", "equals": "image/png" },
-            { "path": "/dispatch/bodyBase64", "equals": "AAH+/w==" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "image/png"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-07",
-      "rules": ["OBI-B-02", "OAPI-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-04"
+      ],
       "section": "9.2",
       "description": "Configured wildcard carriage leaves the operation input as a pure application object while binding evidence proves the concrete JSON realization.",
       "given": {
@@ -331,8 +486,15 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Wildcard abstraction", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Wildcard abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/items": {
                 "post": {
@@ -343,42 +505,78 @@
                       "*/*": {
                         "schema": {
                           "type": "object",
-                          "properties": { "name": { "type": "string" } },
-                          "required": ["name"]
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
                         }
                       }
                     }
                   },
-                  "responses": { "204": { "description": "stored" } }
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1items/post" },
-        "configuration": { "requestMedia": "application/json" },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/json"
+        },
         "invocation": {
           "inputPresent": true,
-          "input": { "name": "Ada" }
+          "input": {
+            "name": "Ada"
+          }
         },
-        "peer": { "status": 204, "body": "" }
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error", "absent": true },
-            { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
-            { "path": "/dispatch/body", "equals": { "name": "Ada" } }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-08",
-      "rules": ["OBI-B-02", "OAPI-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-04"
+      ],
       "section": "9.2",
       "description": "A wildcard-only operation with no concrete media choice requests retryable configuration without dispatching or changing the application input contract.",
       "given": {
@@ -386,8 +584,15 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Wildcard context", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Wildcard context",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/items": {
                 "post": {
@@ -398,21 +603,33 @@
                       "*/*": {
                         "schema": {
                           "type": "object",
-                          "properties": { "name": { "type": "string" } }
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
                         }
                       }
                     }
                   },
-                  "responses": { "204": { "description": "stored" } }
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1items/post" },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
         "invocation": {
           "inputPresent": true,
-          "input": { "name": "Ada" }
+          "input": {
+            "name": "Ada"
+          }
         }
       },
       "expected": [
@@ -420,17 +637,37 @@
           "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/dispatch", "absent": true },
-            { "path": "/context/alternatives/0/requirements/0/type", "equals": "config.value" },
-            { "path": "/context/alternatives/0/requirements/0/point", "equals": "requestMedia" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "requestMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-09",
-      "rules": ["OBI-B-02", "OAPI-P-06", "OAPI-P-07"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
       "section": "9.5",
       "description": "A schema-omitted ranged binary response becomes one protocol-independent Base64 application value without exposing status, media, or headers in that value.",
       "given": {
@@ -438,25 +675,44 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Binary abstraction", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Binary abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/image": {
                 "get": {
                   "operationId": "fidelityImage",
                   "responses": {
-                    "200": { "description": "image", "content": { "image/*": {} } }
+                    "200": {
+                      "description": "image",
+                      "content": {
+                        "image/*": {}
+                      }
+                    }
                   }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1image/get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "#/paths/~1image/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "status": 200,
-          "headers": { "Content-Type": "image/png", "X-Trace": "native-only" },
+          "headers": {
+            "Content-Type": "image/png",
+            "X-Trace": "native-only"
+          },
           "bodyBase64": "AAH+/w=="
         }
       },
@@ -465,15 +721,27 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": ["AAH+/w=="] },
-            { "path": "/error", "absent": true }
+            {
+              "path": "/outputs",
+              "equals": [
+                "AAH+/w=="
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-10",
-      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-03",
+        "OAPI-P-04"
+      ],
       "section": "9.1",
       "description": "Joined synthesis keeps an explicitly dynamic body as one protocol-neutral application object while private routing preserves an independent same-named query value and exact form carriage.",
       "given": {
@@ -481,14 +749,28 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.0.4",
-            "info": { "title": "Dynamic abstraction", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Dynamic abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/items": {
                 "post": {
                   "operationId": "fidelityDynamicItem",
                   "parameters": [
-                    { "name": "id", "in": "query", "required": true, "schema": { "type": "string" } }
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
                   ],
                   "requestBody": {
                     "required": true,
@@ -496,45 +778,83 @@
                       "application/x-www-form-urlencoded": {
                         "schema": {
                           "type": "object",
-                          "properties": { "fixed": { "type": "string" } },
-                          "additionalProperties": { "type": "string" }
+                          "properties": {
+                            "fixed": {
+                              "type": "string"
+                            }
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
                         }
                       }
                     }
                   },
-                  "responses": { "204": { "description": "stored" } }
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "binding": { "ref": "#/paths/~1items/post" },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
         "invocation": {
           "inputPresent": true,
           "input": {
             "id": "query-value",
-            "payload": { "id": "body-value", "extra": "a b", "fixed": "yes" }
+            "payload": {
+              "id": "body-value",
+              "extra": "a b",
+              "fixed": "yes"
+            }
           }
         },
-        "peer": { "status": 204, "body": "" }
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
       "expected": [
         {
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error", "absent": true },
-            { "path": "/dispatch/url", "equals": "https://api.example/items?id=query-value" },
-            { "path": "/dispatch/headers/Content-Type", "equals": "application/x-www-form-urlencoded" },
-            { "path": "/dispatch/body", "equals": "extra=a+b&fixed=yes&id=body-value" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items?id=query-value"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "extra=a+b&fixed=yes&id=body-value"
+            }
           ]
         }
       ]
     },
     {
       "id": "OAPI-FI-11",
-      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-03",
+        "OAPI-P-04"
+      ],
       "section": "9.1",
       "description": "Joined synthesis preserves a declaration-complex JSON schema and value as one protocol-neutral property while the private route keeps a same-named query value independent.",
       "given": {
@@ -542,14 +862,28 @@
           "location": "https://api.example/openapi.json",
           "content": {
             "openapi": "3.1.2",
-            "info": { "title": "Whole JSON abstraction", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
+            "info": {
+              "title": "Whole JSON abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
             "paths": {
               "/items": {
                 "post": {
                   "operationId": "fidelityWholeJSON",
                   "parameters": [
-                    { "name": "kind", "in": "query", "required": true, "schema": { "type": "string" } }
+                    {
+                      "name": "kind",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
                   ],
                   "requestBody": {
                     "required": true,
@@ -559,70 +893,34 @@
                           "oneOf": [
                             {
                               "type": "object",
-                              "properties": { "kind": { "const": "named" }, "name": { "type": "string" } },
-                              "required": ["kind", "name"],
+                              "properties": {
+                                "kind": {
+                                  "const": "named"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "kind",
+                                "name"
+                              ],
                               "additionalProperties": false
                             },
-                            { "type": "array", "items": { "type": "string" } }
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
                           ]
                         }
                       }
                     }
                   },
-                  "responses": { "204": { "description": "stored" } }
-                }
-              }
-            }
-          }
-        },
-        "binding": { "ref": "#/paths/~1items/post" },
-        "invocation": {
-          "inputPresent": true,
-          "input": {
-            "kind": "query-value",
-            "payload": { "kind": "named", "name": "Ada" }
-          }
-        },
-        "peer": { "status": 204, "body": "" }
-      },
-      "expected": [
-        {
-          "disposition": "complete",
-          "phase": "completion",
-          "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error", "absent": true },
-            { "path": "/dispatch/url", "equals": "https://api.example/items?kind=query-value" },
-            { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
-            { "path": "/dispatch/body", "equals": { "kind": "named", "name": "Ada" } }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "OAPI-FI-12",
-      "rules": ["OBI-B-02", "OAPI-P-03", "OAPI-P-04", "OAPI-P-07"],
-      "section": "9.2",
-      "description": "Joined synthesis exposes one protocol-independent Base64 value while an exact schema-omitted OAS 3.0 declaration preserves request and response bytes.",
-      "given": {
-        "source": {
-          "location": "https://api.example/openapi.json",
-          "content": {
-            "openapi": "3.0.4",
-            "info": { "title": "Schema-omitted byte fidelity", "version": "1" },
-            "servers": [{ "url": "https://api.example" }],
-            "paths": {
-              "/archive": {
-                "post": {
-                  "operationId": "fidelityStoreArchive",
-                  "requestBody": {
-                    "required": true,
-                    "content": { "application/octet-stream": {} }
-                  },
                   "responses": {
-                    "200": {
-                      "description": "archive",
-                      "content": { "application/octet-stream": {} }
+                    "204": {
+                      "description": "stored"
                     }
                   }
                 }
@@ -630,14 +928,117 @@
             }
           }
         },
-        "binding": { "ref": "#/paths/~1archive/post" },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
         "invocation": {
           "inputPresent": true,
-          "input": { "body": "AAH+/w==" }
+          "input": {
+            "kind": "query-value",
+            "payload": {
+              "kind": "named",
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items?kind=query-value"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "kind": "named",
+                "name": "Ada"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-FI-12",
+      "rules": [
+        "OBI-B-02",
+        "OAPI-P-03",
+        "OAPI-P-04",
+        "OAPI-P-07"
+      ],
+      "section": "9.2",
+      "description": "Joined synthesis exposes one protocol-independent Base64 value while an exact schema-omitted OAS 3.0 declaration preserves request and response bytes.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Schema-omitted byte fidelity",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/archive": {
+                "post": {
+                  "operationId": "fidelityStoreArchive",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {}
+                    }
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "archive",
+                      "content": {
+                        "application/octet-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1archive/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w=="
+          }
         },
         "peer": {
           "status": 200,
-          "headers": { "Content-Type": "application/octet-stream" },
+          "headers": {
+            "Content-Type": "application/octet-stream"
+          },
           "bodyBase64": "3q2+7w=="
         }
       },
@@ -646,10 +1047,24 @@
           "disposition": "complete",
           "phase": "completion",
           "assertions": [
-            { "path": "/error", "absent": true },
-            { "path": "/dispatch/headers/Content-Type", "equals": "application/octet-stream" },
-            { "path": "/dispatch/bodyBase64", "equals": "AAH+/w==" },
-            { "path": "/outputs", "equals": ["3q2+7w=="] }
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/octet-stream"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "3q2+7w=="
+              ]
+            }
           ]
         }
       ]

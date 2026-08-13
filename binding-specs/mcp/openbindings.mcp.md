@@ -65,13 +65,13 @@ The caller input maps whole to the `tools/call` `arguments` member (**MCP-P-03**
 
 For a successful call, the single operation output is `CallToolResult.structuredContent`, unchanged (**MCP-P-04**). It MUST be present and MUST satisfy the selected tool's `outputSchema`; absence or nonconformance makes the invocation unsuccessful. The tool's `outputSchema` is the complete application output schema available to synthesis; no MCP wrapper is added around it.
 
-`content`, `_meta`, an explicit false `isError`, progress, JSON-RPC carriage, HTTP fields, and session facts are not additional operation values or output-schema members. A binding implementation may use them internally and may retain them through an explicit diagnostic surface. Correct ordinary operation use MUST NOT depend on their native representation.
+`content`, `_meta`, an explicit false `isError`, progress, JSON-RPC carriage, HTTP fields, and session facts are not additional operation values or output-schema members. A binding implementation may use them internally beneath the OpenBindings boundary. Correct ordinary operation use MUST NOT depend on their native representation.
 
 ### 9.3. Classification and unsuccessful completion
 
 Classification is protocol-native and not configurable (**MCP-P-06**). A `tools/call` result with `isError: true`, a JSON-RPC error response, an unsuccessful Streamable HTTP interaction, or a missing/nonconforming `structuredContent` value completes the invocation unsuccessfully. No such outcome is emitted as an operation output.
 
-The binding uses native facts internally but defines no universal error vocabulary and requires no MCP code, result envelope, HTTP status, header, or entity bytes to cross the ordinary boundary. Implementations MAY retain those facts diagnostically. An implementation may surface a tool-authored human message without requiring callers to understand its MCP representation.
+The binding uses native facts internally but defines no universal error vocabulary and requires no MCP code, result envelope, HTTP status, header, or entity bytes to cross the ordinary boundary. For a `tools/call` result with `isError: true`, a present `structuredContent` member is the tool-authored application failure value and MUST cross unchanged as the invocation error's `data`; absence leaves `data` absent. Its success output schema is not applied to failure data. `content` and `_meta` remain MCP-native lanes and do not cross. For a JSON-RPC error response, a present JSON-RPC `error.data` value likewise crosses unchanged as invocation error `data`; its code and message remain native evidence below the boundary. Other unsuccessful outcomes carry no `data` unless another rule expressly defines it.
 
 MCP does not define redirect following for its Streamable HTTP endpoint. Redirect policy is runtime surface. Any followed redirect MUST preserve the request method, complete body, MCP representation fields, protocol-version field, and established session identity; a redirect requiring method rewriting is not followed.
 
@@ -92,7 +92,7 @@ This specification defines no context bindings at transform positions. Transform
 - **MCP-P-02**: Live advertised listings are capability-gated and pagination-exhausted; a pin displaces live listing; resolution precedes dispatch.
 - **MCP-P-03**: Caller input maps whole and verbatim to an optional object-valued `arguments` member.
 - **MCP-P-04**: Only non-task-required tools with `outputSchema` are bindable; successful output is exactly conforming `structuredContent`; native result lanes and progress do not become operation values.
-- **MCP-P-06**: `isError`, JSON-RPC error, transport failure, and missing/nonconforming structured output complete unsuccessfully; native evidence is not required on the ordinary boundary; redirect handling preserves MCP semantics.
+- **MCP-P-06**: `isError`, JSON-RPC error, transport failure, and missing/nonconforming structured output complete unsuccessfully; tool `structuredContent` and JSON-RPC `error.data`, when present on their respective failure forms, cross unchanged as application-authored invocation error `data`, while other native evidence remains below the ordinary boundary; redirect handling preserves MCP semantics.
 - **MCP-P-07**: Listings yield no security metadata; credentials use explicit HTTP-header carriage and collisions refuse.
 - **MCP-P-08**: Required-task tools are unresolvable; optional task support uses ordinary invocation.
 

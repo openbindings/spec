@@ -15,9 +15,9 @@ The layering is intentionally thin:
 1. This specification incorporates AsyncAPI Core as authoritative over the artifact, its application perspective, channels, operations, messages, schemas, servers, security declarations, references, and traits.
 2. It incorporates the selected AsyncAPI protocol-binding specifications as authoritative over concrete protocol semantics wherever they speak.
 3. A protocol driver or codec interprets those concrete declarations and performs the exchange, preferably through mature protocol-native libraries.
-4. This specification defines only the OpenBindings correspondence: source carriage, operation addressing, complementary caller perspective, application-value mapping, and the boundary between successful outputs, unsuccessful completion, and diagnostics.
+4. This specification defines only the OpenBindings correspondence: source carriage, operation addressing, complementary caller perspective, application-value mapping, and the boundary between successful outputs and unsuccessful completion.
 
-An implementation MUST NOT substitute an OpenBindings interpretation for a concrete semantic already defined by AsyncAPI or the selected AsyncAPI protocol binding. Conversely, concrete protocol facts MUST NOT be placed in ordinary OpenBindings operation inputs or outputs merely to make them visible. Status codes, broker frames, topics, partitions, acknowledgements, protocol headers, and binding objects remain below the abstraction. Raw evidence MAY be retained through an explicitly diagnostic surface; correct application behavior MUST NOT require interpreting it.
+An implementation MUST NOT substitute an OpenBindings interpretation for a concrete semantic already defined by AsyncAPI or the selected AsyncAPI protocol binding. Conversely, concrete protocol facts MUST NOT be placed in ordinary OpenBindings operation inputs, outputs, or invocation errors merely to make them visible. Status codes, broker frames, topics, partitions, acknowledgements, protocol headers, and binding objects remain below the abstraction. Artifact runtimes, native clients, logs, and traces may retain raw evidence below this boundary; correct application behavior MUST NOT require interpreting it.
 
 Like Core, this document specifies portable meaning rather than a client API, driver registry, connection pool, retry policy, or command-line interface. A protocol driver is an implementation capability, not an OBI field and not a new binding-specification type.
 
@@ -102,6 +102,14 @@ Artifact declarations remain authoritative for server alternatives, variables, c
 
 Context names what is needed without turning protocol fields into operation input. At minimum, implementations distinguish the `server`, `message`, and artifact-declared credential requirements they can identify. A selected complete security alternative is satisfied as the governing AsyncAPI edition defines; requirements from different alternatives MUST NOT be combined into an undeclared hybrid. The driver applies resolved credentials through the selected protocol binding. Credentials and concrete protocol fields are never synthesized into the operation schema (**ASYNC-P-07**).
 
+When the project's portable invocation interface is used, a requirement
+derived from an artifact-authored reusable security declaration carries
+`durable: true`. That flag permits a surrounding runtime to persist the
+resolved credential; it neither requires persistence nor claims the credential
+never expires. Driver-discovered live challenges and one-shot proofs remain
+non-durable unless the governing protocol-binding rules explicitly make them
+reusable.
+
 Credential requirements are classified by the application material needed,
 not by copying a protocol mechanism into Core. AsyncAPI `userPassword`,
 `scramSha256`, and `scramSha512` declarations all request the existing abstract
@@ -117,13 +125,24 @@ A driver MAY define additional protocol-native configuration inside its standalo
 
 The driver preserves the selected interaction's ordering, delivery-unit boundaries, input half-close, outputs already observed before a later failure, cancellation, and completion semantics (**ASYNC-P-06**). These properties emerge through the cardinality-neutral invocation frames; this document adds no cardinality field to Core or OBI.
 
-Application-authored messages selected by the correspondence in §8 are ordinary outputs, including payload variants whose domain meaning is an error object. A protocol, broker, server, authorization, timeout, cancellation, driver, codec, or local runtime failure is instead unsuccessful invocation completion. This specification deliberately defines no cross-protocol failure vocabulary: the selected driver decides from its upstream authorities whether the interaction completed successfully, while preserving any portable application-authored failure value the artifact actually declares.
+Application-authored messages selected by the correspondence in §8 are ordinary outputs, including payload variants whose domain meaning is an error object. A protocol, broker, server, authorization, timeout, cancellation, driver, codec, or local runtime failure is instead unsuccessful invocation completion. This specification deliberately defines no cross-protocol failure vocabulary: the selected driver decides from its upstream authorities whether the interaction completed successfully.
+
+An unsuccessful completion's optional `data` member is present only when an
+incorporated artifact or protocol-binding rule identifies a faithfully decoded
+JSON-domain value as application-authored failure data distinct from an
+ordinary message payload. A conforming driver marks that admission explicitly
+at its artifact-runtime boundary; merely exposing a driver error's details,
+reason, acknowledgement, headers, or native envelope does not qualify. The
+OpenBindings adapter preserves the admitted value opaquely, including JSON
+null, and otherwise emits a code-only unsuccessful completion. This rule gives
+future AsyncAPI bindings room to define application failure data without
+turning today's known protocol evidence into a universal vocabulary.
 
 A driver MUST NOT turn a concrete protocol failure into an ordinary output merely to avoid an error path. It also MUST NOT discard output values already delivered before a later failure. Missing drivers and codecs fail locally before dispatch; cancellation and deadlines propagate to the active driver.
 
 ### 9.5. Diagnostics and abstraction boundary
 
-Protocol evidence MAY be exposed through the invocation's explicitly diagnostic surface: for example broker reason codes, HTTP status and headers, connection metadata, or driver traces. Such evidence is not an operation result, is not portable application data, and MUST NOT be required for correct use of the operation (**ASYNC-P-07**). SDK bugs and local programming errors remain ordinary language/runtime errors; they are not synthesized outputs.
+Protocol evidence—for example broker reason codes, HTTP status and headers, connection metadata, or driver traces—MUST NOT cross the abstract invocation boundary as output or failure data. Artifact runtimes and protocol tooling may expose it below that boundary. Such evidence is not an operation result, is not portable application data, and MUST NOT be required for correct use of the operation (**ASYNC-P-07**). SDK bugs and local programming errors remain ordinary language/runtime errors; they are not synthesized outputs.
 
 ## 10. Synthesis
 

@@ -93,8 +93,10 @@ The distinction is between **using** a native fact and **exposing** its native
 representation. A status or metadata field may select decoding, drive context
 resolution, distinguish normal from unsuccessful completion, or otherwise
 change binding behavior without crossing the operation boundary. Raw native
-evidence may remain available through an implementation's explicit diagnostic
-surface; ordinary callers must not require it to use the operation correctly.
+evidence may remain available in the artifact runtime or protocol-native
+tooling below the adapter; the abstract invoker frames do not provide a
+diagnostic escape lane, and ordinary callers must not require one to use the
+operation correctly.
 
 Three outcomes remain separate:
 
@@ -356,7 +358,7 @@ Where the artifact does not answer and the deference order reaches its final ste
 
 | Specification family | Routing                                                                           | Decode                                                                                                                                                                                                                                    | Classify                                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| openapi (HTTP)       | artifact: parameter locations                                                     | **declaration-and-framing rule**: status selects the Response Object; concrete `Content-Type` selects its exact/range declaration; JSON, text, SSE, and artifact-authorized raw-byte lanes then produce protocol-independent values | **2xx rule**: success iff status ∈ 2xx; declared `responses` refine failure _details_, never classification            |
+| openapi (HTTP)       | artifact: parameter locations                                                     | **declaration-and-framing rule**: status selects the Response Object; concrete `Content-Type` selects its exact/range declaration; JSON, text, SSE, and artifact-authorized raw-byte lanes then produce protocol-independent values | **2xx rule**: success iff status ∈ 2xx; declared `responses` may admit application failure _data_, never change classification |
 | asyncapi             | artifact: channel/message (payload wholesale — no field routing)                  | direction-correct declared content types (reply-side for publishes, message-side for subscriptions); conflicting declarations refuse, while universal absence requires an explicit `decode` choice; envelope unwrapping is never built in | transport-native per interaction cell (2xx final status on the unary publish lane); message content never reclassifies |
 | usage (CLI)          | assumption: argv (consumer hooks route fields to stdin / `-`-operand / temp file) | assumption: stdout as text, trailing newlines stripped (command-substitution semantics)                                                                                                                                                   | assumption: exit 0                                                                                                     |
 | mcp                  | artifact: tool `arguments` object whole                                           | artifact: tool `outputSchema`; successful value is `structuredContent` alone; progress is not solicited                                                                                                                                   | protocol: `isError` / JSON-RPC / transport failure                                                                    |
@@ -369,8 +371,8 @@ Two of these are the conventions the reference implementations hold fixed across
 Reference tooling reports which rule answered each axis using
 `x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance and may warn when a
 convention decoded into a contract that could not catch a wrong lane. That
-diagnostic surface is implementation documentation, not part of a binding's
-portable meaning.
+out-of-band observability is implementation documentation, not an invoker
+frame and not part of a binding's portable meaning.
 
 ### The bytes boundary
 

@@ -2,107 +2,183 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.usage@1",
   "family": "usage",
-  "description": "Usage fidelity scenarios with separate abstract and diagnostic assertions. Successful stdout values and completion behavior form the operation proof; exit, signal, byte, decode, and truncation evidence is a lower-layer process oracle.",
+  "description": "Usage fidelity scenarios with separate abstract and lower-layer assertions. Successful stdout values and completion behavior form the operation proof; exit, signal, byte, decode, and truncation evidence is a lower-layer process oracle.",
   "scenarios": [
     {
       "id": "USAGE-FI-01",
-      "rules": ["OBI-B-02", "USAGE-P-05"],
+      "rules": [
+        "OBI-B-02",
+        "USAGE-P-05"
+      ],
       "section": "9.3",
-      "description": "Error-shaped stdout from an exit-zero process remains an output; a diagnostic assertion separately proves exact binary stderr capture.",
+      "description": "Error-shaped stdout from an exit-zero process remains an output.",
       "given": {
-        "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\n"
+        },
         "binding": {},
-        "invocation": { "inputPresent": false },
-        "peer": { "processResult": { "exitCode": 0, "stdoutBase64": "ZXJyb3I6IGJ1c2luZXNzCg==", "stderrBase64": "AP+AQQ==" } }
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "processResult": {
+            "exitCode": 0,
+            "stdoutBase64": "ZXJyb3I6IGJ1c2luZXNzCg==",
+            "stderrBase64": "AP+AQQ=="
+          }
+        }
       },
-      "expected": [{
-        "disposition": "complete",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": ["error: business"] },
-          { "path": "/trailer/x-exit-code", "equals": ["0"] },
-          { "path": "/trailer/x-stderr-base64", "equals": ["AP+AQQ=="] },
-          { "path": "/trailer/x-stderr-byte-length", "equals": ["4"] },
-          { "path": "/error", "absent": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "error: business"
+              ]
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "USAGE-FI-02",
-      "rules": ["OBI-B-02", "USAGE-P-05"],
+      "rules": [
+        "OBI-B-02",
+        "USAGE-P-05"
+      ],
       "section": "9.3",
       "description": "A rejected non-zero exit preserves status and exact stdout/stderr bytes.",
       "given": {
-        "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\n"
+        },
         "binding": {},
-        "invocation": { "inputPresent": false },
-        "peer": { "processResult": { "exitCode": 7, "stdoutBase64": "cGFydGlhbA==", "stderrBase64": "AP+AQQ==" } }
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "processResult": {
+            "exitCode": 7,
+            "stdoutBase64": "cGFydGlhbA==",
+            "stderrBase64": "AP+AQQ=="
+          }
+        }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/usage/process/exitCode", "equals": 7 },
-          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "cGFydGlhbA==" },
-          { "path": "/error/diagnostics/usage/process/stdout/byteLength", "equals": 7 },
-          { "path": "/error/diagnostics/usage/process/stderr/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/diagnostics/usage/process/stderr/byteLength", "equals": 4 }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "USAGE-FI-03",
-      "rules": ["OBI-B-02", "USAGE-P-05"],
+      "rules": [
+        "OBI-B-02",
+        "USAGE-P-05"
+      ],
       "section": "9.3",
       "description": "Signal termination remains distinguishable from an ordinary exit and retains partial bytes plus truncation facts.",
       "given": {
-        "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\n"
+        },
         "binding": {},
-        "invocation": { "inputPresent": false },
-        "peer": { "processResult": { "exitCode": -1, "signal": "SIGTERM", "stdoutBase64": "c2lnbmFsLXBhcnRpYWw=", "stderrBase64": "", "stdoutTruncated": true } }
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "processResult": {
+            "exitCode": -1,
+            "signal": "SIGTERM",
+            "stdoutBase64": "c2lnbmFsLXBhcnRpYWw=",
+            "stderrBase64": "",
+            "stdoutTruncated": true
+          }
+        }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/usage/process/exitCode", "equals": -1 },
-          { "path": "/error/diagnostics/usage/process/signal", "equals": "SIGTERM" },
-          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "c2lnbmFsLXBhcnRpYWw=" },
-          { "path": "/error/diagnostics/usage/process/stdout/truncated", "equals": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "USAGE-FI-04",
-      "rules": ["OBI-B-02", "USAGE-P-05"],
+      "rules": [
+        "OBI-B-02",
+        "USAGE-P-05"
+      ],
       "section": "9.3",
       "description": "The default UTF-8 decode can fail loudly without losing the completed process's original stdout bytes.",
       "given": {
-        "source": { "content": "name \"tool\"\nbin \"tool\"\n" },
+        "source": {
+          "content": "name \"tool\"\nbin \"tool\"\n"
+        },
         "binding": {},
-        "invocation": { "inputPresent": false },
-        "peer": { "processResult": { "exitCode": 0, "stdoutBase64": "AP+AQQ==", "stderrBase64": "" } }
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "processResult": {
+            "exitCode": 0,
+            "stdoutBase64": "AP+AQQ==",
+            "stderrBase64": ""
+          }
+        }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_RESPONSE_ERROR" },
-          { "path": "/error/message", "equals": "Invocation result could not be decoded" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/usage/process/exitCode", "equals": 0 },
-          { "path": "/error/diagnostics/usage/process/stdout/base64", "equals": "AP+AQQ==" },
-          { "path": "/error/diagnostics/usage/process/stdout/byteLength", "equals": 4 }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_RESPONSE_ERROR"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

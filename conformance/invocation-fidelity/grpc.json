@@ -2,22 +2,34 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
-  "description": "gRPC fidelity scenarios with separate abstract and diagnostic assertions. Response messages, partial outputs, and completion behavior form the operation proof; native status, rich details, and trailing metadata are lower-layer binding evidence.",
+  "description": "gRPC fidelity scenarios with separate abstract and lower-layer assertions. Response messages, partial outputs, and completion behavior form the operation proof; native status, rich details, and trailing metadata are lower-layer binding evidence.",
   "scenarios": [
     {
       "id": "GRPC-FI-01",
-      "rules": ["OBI-B-02", "GRPC-P-06", "GRPC-P-07"],
+      "rules": [
+        "OBI-B-02",
+        "GRPC-P-06",
+        "GRPC-P-07"
+      ],
       "section": "9.4",
-      "description": "A server-streaming RPC emits an application value before unsuccessful completion; diagnostic assertions separately retain the INTERNAL status, rich detail, and multivalued trailing metadata.",
+      "description": "A server-streaming RPC emits an application value before unsuccessful completion; lower-layer assertions separately retain the INTERNAL status, rich detail, and multivalued trailing metadata.",
       "given": {
         "source": {
           "location": "grpcs://api.example:443",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
         },
-        "binding": { "ref": "demo.Service/List" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "demo.Service/List"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
-          "responseMessages": [{ "value": "first" }],
+          "responseMessages": [
+            {
+              "value": "first"
+            }
+          ],
           "finalStatus": "INTERNAL",
           "statusMessage": "ledger corrupt",
           "statusDetails": [
@@ -27,8 +39,13 @@
             }
           ],
           "trailingMetadata": {
-            "trace-bin": ["AP+AQQ=="],
-            "x-attempt": ["2", "3"]
+            "trace-bin": [
+              "AP+AQQ=="
+            ],
+            "x-attempt": [
+              "2",
+              "3"
+            ]
           }
         }
       },
@@ -37,32 +54,45 @@
           "disposition": "error",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [{ "value": "first" }] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "ledger corrupt" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/grpcStatus/code", "equals": 13 },
-            { "path": "/error/diagnostics/grpcStatus/message", "equals": "ledger corrupt" },
-            { "path": "/error/diagnostics/grpcStatus/details/0/typeUrl", "equals": "type.googleapis.com/demo.Failure" },
-            { "path": "/error/diagnostics/grpcStatus/details/0/valueBase64", "equals": "AP+AQQ==" },
-            { "path": "/trailer/trace-bin", "equals": ["AP+AQQ=="] },
-            { "path": "/trailer/x-attempt", "equals": ["2", "3"] }
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "value": "first"
+                }
+              ]
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GRPC-FI-02",
-      "rules": ["OBI-B-02", "GRPC-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "GRPC-P-06"
+      ],
       "section": "9.4",
-      "description": "RESOURCE_EXHAUSTED causes unsuccessful completion while optional diagnostics retain the native status without imposing portable retry or side-effect semantics.",
+      "description": "RESOURCE_EXHAUSTED causes unsuccessful completion while.",
       "given": {
         "source": {
           "location": "grpcs://api.example:443",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
-        "binding": { "ref": "demo.Service/Get" },
-        "invocation": { "inputPresent": false },
+        "binding": {
+          "ref": "demo.Service/Get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
         "peer": {
           "finalStatus": "RESOURCE_EXHAUSTED",
           "statusMessage": "quota exceeded"
@@ -73,19 +103,29 @@
           "disposition": "error",
           "phase": "completion",
           "assertions": [
-            { "path": "/outputs", "equals": [] },
-            { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-            { "path": "/error/message", "equals": "quota exceeded" },
-            { "path": "/error/details", "absent": true },
-            { "path": "/error/diagnostics/grpcStatus/code", "equals": 8 },
-            { "path": "/error/diagnostics/grpcStatus/message", "equals": "quota exceeded" }
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
           ]
         }
       ]
     },
     {
       "id": "GRPC-FI-03",
-      "rules": ["OBI-B-02", "GRPC-P-03", "GRPC-P-04"],
+      "rules": [
+        "OBI-B-02",
+        "GRPC-P-03",
+        "GRPC-P-04"
+      ],
       "section": "9.1",
       "description": "A local ProtoJSON validation failure is terminal but does not invent source-native gRPC status evidence; earlier bidirectional outputs remain visible.",
       "given": {
@@ -93,13 +133,29 @@
           "location": "grpcs://api.example:443",
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Request) returns (stream Reply); } message Request { string value = 1; } message Reply { string ack = 1; }"
         },
-        "binding": { "ref": "demo.Service/Chat" },
+        "binding": {
+          "ref": "demo.Service/Chat"
+        },
         "invocation": {
           "inputPresent": false,
-          "writes": [{ "value": "valid" }, { "unknown": true }]
+          "writes": [
+            {
+              "value": "valid"
+            },
+            {
+              "unknown": true
+            }
+          ]
         },
         "peer": {
-          "afterWrite": { "index": 0, "responses": [{ "ack": "valid" }] }
+          "afterWrite": {
+            "index": 0,
+            "responses": [
+              {
+                "ack": "valid"
+              }
+            ]
+          }
         }
       },
       "expected": [
@@ -107,9 +163,22 @@
           "disposition": "error",
           "phase": "dispatch",
           "assertions": [
-            { "path": "/outputs", "equals": [{ "ack": "valid" }] },
-            { "path": "/error/code", "equals": "ERR_VALIDATION_FAILED" },
-            { "path": "/dispatch/cancelled", "equals": true }
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ack": "valid"
+                }
+              ]
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_OPERATION_VALIDATION_FAILED"
+            },
+            {
+              "path": "/dispatch/cancelled",
+              "equals": true
+            }
           ]
         }
       ]

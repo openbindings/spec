@@ -140,7 +140,7 @@
       "id": "OG-EX-43",
       "name": "Startup output precedes immediate terminal failure",
       "section": "operation / Failure",
-      "description": "The invocation emits once and then fails while opening. The graph delivers the pre-failure output before terminating with the unwrapped inner error, exactly as direct invocation would.",
+      "description": "The invocation emits once and then fails while opening. The graph delivers the pre-failure output before terminating with the inner abstract terminal record, exactly as direct invocation would.",
       "operations": {
         "feed.open": {
           "onOpen": { "emit": ["opening"], "fail": "OPEN_FAILED" },
@@ -164,7 +164,7 @@
         "output": ["opening"],
         "ordering": "exact",
         "error": true,
-        "errorDetail": "OPEN_FAILED"
+        "errorDetail": { "code": "OPEN_FAILED" }
       }
     },
     {

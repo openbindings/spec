@@ -7,7 +7,7 @@
       "id": "OG-EX-06",
       "name": "Error handling with onError (error path)",
       "section": "Normative examples / Example 7",
-      "description": "One item's each invocation of items.get fails with TIMEOUT_EXCEEDED. Because this is a per-event failure and onError is set, the error event { error, event } is routed to the fallback transform, which reads event.id and error off the error event (event is the failed node's input value, distinct from $input) and produces a default record. That record reaches output.",
+      "description": "One item's each invocation fails with the code-only abstract record {code: TIMEOUT_EXCEEDED}. Because this is a per-event failure and onError is set, the error event { error, event } is routed to the fallback transform, which reads event.id and the complete abstract record from error. That record reaches output without inventing or dropping failure members.",
       "operations": {
         "items.get": {
           "responses": [
@@ -65,7 +65,7 @@
           {
             "id": "item-1",
             "name": "unknown",
-            "error": "TIMEOUT_EXCEEDED"
+            "error": { "code": "TIMEOUT_EXCEEDED" }
           }
         ],
         "ordering": "exact"

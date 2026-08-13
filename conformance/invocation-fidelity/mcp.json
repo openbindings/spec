@@ -2,140 +2,311 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
-  "description": "MCP first-revision-candidate fidelity scenarios separate application structuredContent from optional native diagnostics.",
+  "description": "MCP first-revision-candidate fidelity scenarios separate application structuredContent from native evidence retained only below the OpenBindings bridge.",
   "scenarios": [
     {
       "id": "MCP-FI-01",
-      "rules": ["OBI-B-02", "MCP-P-04", "MCP-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "MCP-P-04",
+        "MCP-P-06"
+      ],
       "section": "9.2",
       "description": "A successful error-shaped application object remains an ordinary output without its MCP result wrapper.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "lookup", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object", "properties": { "error": { "type": "object" } }, "required": ["error"] } }] }
+          "content": {
+            "tools": [
+              {
+                "name": "lookup",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "outputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            ]
+          }
         },
-        "binding": { "ref": "tools/lookup" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "binding": {
+          "ref": "tools/lookup"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "peer": {
           "toolResult": {
-            "content": [{ "type": "text", "text": "business result" }],
-            "structuredContent": { "error": { "code": "NOT_FOUND", "retryable": false } },
+            "content": [
+              {
+                "type": "text",
+                "text": "business result"
+              }
+            ],
+            "structuredContent": {
+              "error": {
+                "code": "NOT_FOUND",
+                "retryable": false
+              }
+            },
             "isError": false,
-            "_meta": { "trace": "trace-success" }
+            "_meta": {
+              "trace": "trace-success"
+            }
           }
         }
       },
-      "expected": [{
-        "disposition": "complete",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs/0/error/code", "equals": "NOT_FOUND" },
-          { "path": "/outputs/0/error/retryable", "equals": false },
-          { "path": "/outputs/0/content", "absent": true },
-          { "path": "/outputs/0/isError", "absent": true },
-          { "path": "/outputs/0/_meta", "absent": true },
-          { "path": "/error", "absent": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs/0/error/code",
+              "equals": "NOT_FOUND"
+            },
+            {
+              "path": "/outputs/0/error/retryable",
+              "equals": false
+            },
+            {
+              "path": "/outputs/0/content",
+              "absent": true
+            },
+            {
+              "path": "/outputs/0/isError",
+              "absent": true
+            },
+            {
+              "path": "/outputs/0/_meta",
+              "absent": true
+            },
+            {
+              "path": "/error",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "MCP-FI-02",
-      "rules": ["OBI-B-02", "MCP-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "MCP-P-06"
+      ],
       "section": "9.3",
-      "description": "A tools/call isError result is terminal; complete native result lanes remain optional diagnostic evidence.",
+      "description": "A tools/call isError result is terminal; complete native result lanes remain lower-layer evidence.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "mutate", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
+          "content": {
+            "tools": [
+              {
+                "name": "mutate",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "outputSchema": {
+                  "type": "object"
+                }
+              }
+            ]
+          }
         },
-        "binding": { "ref": "tools/mutate" },
-        "invocation": { "inputPresent": true, "input": { "id": "7" } },
+        "binding": {
+          "ref": "tools/mutate"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "7"
+          }
+        },
         "peer": {
           "toolResult": {
-            "content": [{ "type": "text", "text": "mutation refused" }],
-            "structuredContent": { "reason": { "code": "POLICY", "rule": "immutable" } },
+            "content": [
+              {
+                "type": "text",
+                "text": "mutation refused"
+              }
+            ],
+            "structuredContent": {
+              "reason": {
+                "code": "POLICY",
+                "rule": "immutable"
+              }
+            },
             "isError": true,
-            "_meta": { "trace": "trace-failure" }
+            "_meta": {
+              "trace": "trace-failure"
+            }
           }
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "completion",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "mutation refused" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/mcp/result/content/0/text", "equals": "mutation refused" },
-          { "path": "/error/diagnostics/mcp/result/structuredContent/reason/code", "equals": "POLICY" },
-          { "path": "/error/diagnostics/mcp/result/isError", "equals": true }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "equals": {
+                "reason": {
+                  "code": "POLICY",
+                  "rule": "immutable"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "MCP-FI-03",
-      "rules": ["OBI-B-02", "MCP-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "MCP-P-06"
+      ],
       "section": "9.3",
-      "description": "A JSON-RPC error remains terminal while native code and data are confined to diagnostics.",
+      "description": "A JSON-RPC error remains terminal.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "quota", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
+          "content": {
+            "tools": [
+              {
+                "name": "quota",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "outputSchema": {
+                  "type": "object"
+                }
+              }
+            ]
+          }
         },
-        "binding": { "ref": "tools/quota" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "binding": {
+          "ref": "tools/quota"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "peer": {
           "jsonrpcError": {
             "code": -32042,
             "message": "quota exhausted",
-            "data": { "limit": 10, "reset": "2026-08-09T00:00:00Z" }
+            "data": {
+              "limit": 10,
+              "reset": "2026-08-09T00:00:00Z"
+            }
           }
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "response",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "quota exhausted" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/mcp/jsonrpcError/code", "equals": -32042 },
-          { "path": "/error/diagnostics/mcp/jsonrpcError/data/limit", "equals": 10 }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "equals": {
+                "limit": 10,
+                "reset": "2026-08-09T00:00:00Z"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "MCP-FI-04",
-      "rules": ["OBI-B-02", "MCP-P-06"],
+      "rules": [
+        "OBI-B-02",
+        "MCP-P-06"
+      ],
       "section": "9.3",
-      "description": "A Streamable HTTP failure remains terminal while raw HTTP evidence is diagnostic only.",
+      "description": "A Streamable HTTP failure remains terminal while raw HTTP evidence stays below the bridge.",
       "given": {
         "source": {
           "location": "https://mcp.example.test/rpc",
-          "content": { "tools": [{ "name": "unstable", "inputSchema": { "type": "object" }, "outputSchema": { "type": "object" } }] }
+          "content": {
+            "tools": [
+              {
+                "name": "unstable",
+                "inputSchema": {
+                  "type": "object"
+                },
+                "outputSchema": {
+                  "type": "object"
+                }
+              }
+            ]
+          }
         },
-        "binding": { "ref": "tools/unstable" },
-        "invocation": { "inputPresent": true, "input": {} },
+        "binding": {
+          "ref": "tools/unstable"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
         "peer": {
           "httpStatus": 503,
-          "headers": { "X-Request-Id": "req-503" },
+          "headers": {
+            "X-Request-Id": "req-503"
+          },
           "bodyBase64": "AP+AQQ=="
         }
       },
-      "expected": [{
-        "disposition": "error",
-        "phase": "response",
-        "assertions": [
-          { "path": "/outputs", "equals": [] },
-          { "path": "/error/code", "equals": "ERR_EXECUTION_FAILED" },
-          { "path": "/error/message", "equals": "Invocation completed unsuccessfully" },
-          { "path": "/error/details", "absent": true },
-          { "path": "/error/diagnostics/httpResponse/status", "equals": 503 },
-          { "path": "/error/diagnostics/httpResponse/body/base64", "equals": "AP+AQQ==" }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

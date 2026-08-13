@@ -14,9 +14,10 @@ boundary defined by the informative
 equivalence with a native client. The concrete binding must perform the real
 interaction correctly, but the ordinary caller must not need the selected
 protocol's statuses, headers, trailers, frames, or wire bytes. Native facts
-may be consumed internally or retained on an explicit diagnostic surface;
-they do not become operation fields merely so that no native observation is
-lost.
+may be consumed or retained below the abstract bridge by artifact runtimes,
+logs, traces, and protocol tooling; the project invocation interfaces do not
+carry them, and they do not become operation fields merely so that no native
+observation is lost.
 
 Corollary: **refusal is per-unit and evidenced, never silent and never wider than the unit that earned it.** A source-level defect refuses the source; an operation-level limit excludes the operation with a durable, rule-identified coverage entry. One unrepresentable operation never vetoes its representable siblings. (This was the loop's first fix: rev 0 below.)
 
@@ -65,9 +66,9 @@ Before any widening ships, it passes the **faithfulness gate** — an adversaria
 5. **Can a caller use the result without knowing the selected binding?** A
    widening that recompiles protocol concepts into a nominally abstract schema
    fails this gate.
-6. **Can diagnostics be removed from the ordinary surface without breaking
-   correct use?** If not, the abstraction or binding interpretation remains
-   incomplete.
+6. **Does correct use depend on native evidence?** If so, the abstraction or
+   binding interpretation remains incomplete; the abstract invoker surface
+   has no diagnostic escape lane.
 7. **Does the coverage vocabulary account for whatever remains excluded?** Partiality is fine; unaccounted partiality is not.
 
 The gate's output is an adjudication record: scenarios affected, governing rules, what changed, what supersedes what. Superseded adjudications stay in the log — the paper trail is the point. (Example: BS-A-20260728-01 re-adjudicated OAPI-SS-03 from whole-source refusal to sound-partial synthesis, superseding BS-A-20260723-01 for that scenario, on the authority of the binding spec's own "narrows coverage" resolution.)
@@ -174,8 +175,9 @@ Status against these criteria is computed, not asserted: the harness's `status` 
 - **No protocol recompilation.** A native status, header, trailer, frame, or
   wire representation does not become an output-schema variant just to keep
   it visible.
-- **No diagnostics as contract.** Raw binding evidence may support debugging
-  and conformance, but ordinary application behavior never depends on it.
+- **No native evidence on the abstract invocation.** Raw binding evidence may
+  support debugging and conformance below the bridge, but ordinary application
+  behavior never receives or depends on it.
 - **No specification growth for implementation convenience.** Add only the
   minimum semantics needed to act faithfully; fix code in code.
 - **No fifth surface.** Tolerance lives in the evidenced surfaces; strictness lives in the strict one. New use cases pick one; they don't get a new posture.
