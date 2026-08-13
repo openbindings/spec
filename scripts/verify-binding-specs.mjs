@@ -43,7 +43,7 @@ import {
   writeFileSync,
   rmSync,
 } from "node:fs";
-import { join, dirname, resolve, basename } from "node:path";
+import { join, dirname, resolve, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
@@ -542,6 +542,57 @@ try {
   }
 } catch (e) {
   errors.push(`abstraction-fidelity/ledger.json: failed to parse or validate: ${e.message}`);
+}
+
+// --- Invocation-interface vocabulary containment -----------------------------
+// A binding specification is a semantic authority consumable by ANY invocation
+// surface; the project's invoker interfaces are one informative realization
+// (binding-specs/README.md, "Authentication and credentials"). A binding-spec
+// rule stated in the interfaces' vocabulary — its error-record members, its
+// owned code spellings, its frame model — reads as a dependency on the project's
+// tooling and gives a third-party implementer false grounds to think conformance
+// requires our contracts. The discipline: state the operation-boundary fact
+// abstractly (e.g. "admits application-authored failure data"), then scope any
+// interface mention as one realization ("when the project's portable invocation
+// interface is used, ..."). This check flags a paragraph that uses coupling
+// vocabulary without a scoping marker.
+{
+  const couplingTokens = [
+    [/\bERR_[A-Z][A-Z_]+\b/, "an interface-owned error-code spelling"],
+    [/\bCONTEXT_REQUIRED\b|`context-required`/, "the context-negotiation code"],
+    [/invocation error's|invocation error `data`|error `data` member|`data` member/, "the invocation error record's member"],
+    [/\binvocation interface\b/, "the invocation interface"],
+    [/\bbinding-invoker\b|\boperation-invoker\b/, "a project interface name"],
+    [/\binvocation frames?\b|\bframe protocol\b/, "the interface frame model"],
+  ];
+  const scopingMarkers = [
+    /informative/i,
+    /portable invocation interface is used/,
+    /under the project's portable invocation interface/,
+    /that surface's contract/,
+    /one such negotiation surface/,
+    /\brealization\b/,
+  ];
+  const specPages = readdirSync(join(SPEC_ROOT, "binding-specs"), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(SPEC_ROOT, "binding-specs", entry.name))
+    .flatMap((dir) => readdirSync(dir).filter((f) => /^openbindings\..*\.md$/.test(f)).map((f) => join(dir, f)));
+  for (const page of specPages) {
+    const text = readFileSync(page, "utf8");
+    let line = 1;
+    for (const rawParagraph of text.split(/\n\s*\n/)) {
+      const startLine = line;
+      line += rawParagraph.split("\n").length + 1;
+      // Hard-wrapped prose splits phrases across lines; match on the unwrapped text.
+      const paragraph = rawParagraph.replace(/\s+/g, " ");
+      const hit = couplingTokens.find(([token]) => token.test(paragraph));
+      if (!hit) continue;
+      if (scopingMarkers.some((marker) => marker.test(paragraph))) continue;
+      errors.push(
+        `${relative(SPEC_ROOT, page)}:${startLine}: paragraph uses ${hit[1]} without scoping it as an invocation-surface realization (state the binding-spec fact abstractly, then scope the interface mention)`
+      );
+    }
+  }
 }
 
 rmSync(tmp, { recursive: true, force: true });

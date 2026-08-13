@@ -92,7 +92,7 @@ The ordinary OpenBindings value at this boundary is the selected AsyncAPI **mess
 
 When an operation declares several message alternatives, the artifact's identity or correlation rules and the driver's protocol semantics govern selection. If the artifact leaves an invocation-time choice that cannot be derived without inspecting or guessing from the payload, the runtime requests an explicit `message` configuration choice before dispatch. It MUST NOT select an alternative by payload sniffing.
 
-AsyncAPI Schema Objects that are JSON Schema-compatible MAY be copied into the corresponding OBI input or output schema after reference resolution. A foreign `schemaFormat` or protocol codec does not authorize copying a non-JSON schema into an OBI JSON Schema position; the operation remains invocable, but that direction is represented by an unconstrained JSON Schema unless a faithful conversion exists. The driver and codec remain responsible for translating the abstract value to and from the artifact's declared representation (**ASYNC-P-05**).
+Every accepted edition's default Schema Object is a superset of JSON Schema Draft 07, while an OBI schema position requires JSON Schema 2020-12 (core [OBI-D-06](../../openbindings.md#102-document-rules)). An AsyncAPI Schema Object therefore enters an OBI input or output schema only under a semantic-preserving translation into the OBI dialect, after reference resolution. A verbatim copy is faithful only where the two dialects already agree; a copy that silently changes or discards a declared constraint — for example a Draft 07 assertion keyword that 2020-12 does not define — misstates the artifact's contract and, on the input direction, makes the OBI's minimum-acceptance claim false. The exact keyword mapping is a synthesis concern recorded with the project's synthesis and reference-tool documentation and pinned by the portable conformance scenarios, not restated here. A foreign `schemaFormat`, `contentType`, or protocol codec identifying a non-JSON-Schema representation does not authorize copying or translating that representation into an OBI JSON Schema position; the operation remains invocable, that direction is represented by an unconstrained JSON Schema unless a faithful conversion exists, and synthesis coverage records the degraded direction. A payload declaration that is invalid under its own declared dialect, with no foreign format declared, is the artifact's defect. In every case the consequence stays at its unit: a schema defect excludes or degrades the affected operation direction, never the sibling operations and never the artifact (**ASYNC-P-05**).
 
 This first candidate does not define a per-message payload-and-headers envelope. An author-declared Message Object `headers` contract is therefore not silently discarded or inserted into the payload. A target whose application contract requires those headers at the OpenBindings boundary is reported as an explicit synthesis exclusion. This is an acknowledged abstraction-boundary limitation, not a protocol-driver absence.
 
@@ -123,20 +123,24 @@ A driver MAY define additional protocol-native configuration inside its standalo
 
 ### 9.4. Lifecycle, outputs, and unsuccessful completion
 
-The driver preserves the selected interaction's ordering, delivery-unit boundaries, input half-close, outputs already observed before a later failure, cancellation, and completion semantics (**ASYNC-P-06**). These properties emerge through the cardinality-neutral invocation frames; this document adds no cardinality field to Core or OBI.
+The driver preserves the selected interaction's ordering, delivery-unit boundaries, input half-close, outputs already observed before a later failure, cancellation, and completion semantics (**ASYNC-P-06**). These properties are observable binding behavior, emergent from the artifact and the selected protocol; whatever invocation surface carries them observes them rather than declaring them, and this document adds no cardinality field to Core or OBI.
 
 Application-authored messages selected by the correspondence in §8 are ordinary outputs, including payload variants whose domain meaning is an error object. A protocol, broker, server, authorization, timeout, cancellation, driver, codec, or local runtime failure is instead unsuccessful invocation completion. This specification deliberately defines no cross-protocol failure vocabulary: the selected driver decides from its upstream authorities whether the interaction completed successfully.
 
-An unsuccessful completion's optional `data` member is present only when an
-incorporated artifact or protocol-binding rule identifies a faithfully decoded
-JSON-domain value as application-authored failure data distinct from an
-ordinary message payload. A conforming driver marks that admission explicitly
-at its artifact-runtime boundary; merely exposing a driver error's details,
-reason, acknowledgement, headers, or native envelope does not qualify. The
-OpenBindings adapter preserves the admitted value opaquely, including JSON
-null, and otherwise emits a code-only unsuccessful completion. This rule gives
-future AsyncAPI bindings room to define application failure data without
-turning today's known protocol evidence into a universal vocabulary.
+This specification admits **application-authored failure data** on an
+unsuccessful completion only when an incorporated artifact or protocol-binding
+rule identifies a faithfully decoded JSON-domain value as application-authored
+failure data distinct from an ordinary message payload. A conforming driver
+marks that admission explicitly at its artifact-runtime boundary; merely
+exposing a driver error's details, reason, acknowledgement, headers, or native
+envelope does not qualify. An unsuccessful completion with no admitted value
+carries none. How an invocation surface carries the admitted value is that
+surface's contract, not this specification's: when the project's portable
+invocation interface is used, the admitted value rides its optional error
+`data` member opaquely, including JSON null, and an unadmitted completion is
+code-only. This rule gives future AsyncAPI bindings room to define application
+failure data without turning today's known protocol evidence into a universal
+vocabulary.
 
 A driver MUST NOT turn a concrete protocol failure into an ordinary output merely to avoid an error path. It also MUST NOT discard output values already delivered before a later failure. Missing drivers and codecs fail locally before dispatch; cancellation and deadlines propagate to the active driver.
 
@@ -170,7 +174,7 @@ Processor rules:
 - **ASYNC-P-02**: preserve application perspective and delegate concrete protocol behavior to AsyncAPI's binding objects and a capable driver (§8, §9.1).
 - **ASYNC-P-03**: carry application message payload values without protocol-shaped ordinary fields (§9.2).
 - **ASYNC-P-04**: resolve artifact-declared alternatives and missing choices explicitly through context, never payload guessing (§9.3).
-- **ASYNC-P-05**: delegate encoding and decoding to the artifact's schema, format, binding, driver, and codec authorities (§9.2).
+- **ASYNC-P-05**: delegate encoding and decoding to the artifact's schema, format, binding, driver, and codec authorities; carry a Schema Object into an OBI schema position only under semantic-preserving dialect translation, with the unconstrained-and-accounted fallback for declared non-JSON-Schema representations, and confine any schema defect to the affected operation direction (§9.2).
 - **ASYNC-P-06**: preserve emergent lifecycle and distinguish outputs from unsuccessful completion (§9.4).
 - **ASYNC-P-07**: keep security and protocol evidence below the ordinary operation-value boundary (§9.3, §9.5).
 

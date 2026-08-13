@@ -419,6 +419,23 @@ declares security, its authority, alternatives, and wire placement still
 belong in operation-boundary correspondence; the implementation-specific
 negotiation surface does not.
 
+**State boundary facts abstractly; scope interface mentions as realizations.**
+A binding specification must remain consumable by any invocation surface, not
+only the project's published invoker interfaces. Its rules therefore state
+operation-boundary facts in the specification's own terms — "admits
+application-authored failure data," "refuses before dispatch," "completes
+unsuccessfully" — never in another contract's vocabulary (an error record's
+member names, interface-owned code spellings, a frame model). Where naming the
+project interfaces genuinely helps a reader, the mention is scoped as one
+realization: *"when the project's portable invocation interface is used, the
+admitted value rides its optional error `data` member."* A rule whose meaning
+depends on such a mention has placed part of the binding specification's
+authority in a non-normative, independently versioned contract; a third-party
+implementer reading it cannot tell whether conformance requires the project's
+tooling. The corpus verifier enforces this mechanically: a paragraph in a
+family specification using coupling vocabulary without a scoping marker fails
+`verify-binding-specs`.
+
 A specification whose address forms, artifact forms, or **execution model** create exposure beyond the core's threat surface — an executable address form, an artifact that names local resources, a composition engine with amplification or recursion surface — adds a **security consideration** with a normative floor where the exposure is of the specification's own making; `openbindings.usage@1`'s default-deny exec-address rule and `openbindings.operation-graph@1`'s security-considerations section are the patterns.
 
 Draft pages in this directory use the conventions-era tier tags; promotion maps them onto the template as follows: **[format-spec]** answers restate under _incorporated authorities_; **[convention]** answers become normative rules of the specification; **[assumption]** answers become normative defaults at named configuration points; **[open]** items must be resolved before promotion — as a rule, a configuration point, or an explicit exclusion.
