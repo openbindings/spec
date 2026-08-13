@@ -541,7 +541,7 @@
     },
     {
       "id": "ASYNC-SS-06",
-      "description": "A message whose declared content type identifies a non-JSON-Schema representation (application/avro) cannot contribute a faithful schema: the direction is represented by the unconstrained schema per the specification's floor, the operation remains invocable, and the artifact is never refused wholesale.",
+      "description": "A message whose effective content type has no JSON application-value carriage (application/avro) floors to the unconstrained representation: the payload bytes never cross the JSON boundary, so even a translatable schema could not describe the carried value. The alternative accounts as lossy under asyncapi.payload_carriage_unsupported, the artifact is never fully represented, and the operation remains invocable.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -604,7 +604,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": true,
+          "fullyRepresented": false,
           "entries": [
             {
               "sourceIndex": 0,
@@ -621,10 +621,114 @@
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
               "scope": "alternative",
+              "status": "lossy",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [],
+              "reasonCode": "asyncapi.payload_carriage_unsupported",
+              "rule": "ASYNC-P-05"
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#server[0]=broker",
+              "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
               "bindingRef": "#/operations/publishRecord",
               "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-07",
+      "description": "A message whose declared schemaFormat identifies a non-JSON-Schema language (Avro) cannot contribute a faithful schema even though its JSON carriage would work: the direction floors to the unconstrained representation and accounts as lossy under asyncapi.schema_format_not_convertible. Distinct from the carriage case: this loss has a conversion-shaped revisit trigger.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Foreign schema language",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "records": {
+              "address": "records.v1",
+              "messages": {
+                "record": {
+                  "payload": {
+                    "type": "record",
+                    "name": "Record",
+                    "fields": [
+                      {
+                        "name": "id",
+                        "type": "long"
+                      }
+                    ]
+                  },
+                  "schemaFormat": "application/vnd.apache.avro;version=1.9.0"
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishRecord": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/records"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/records/messages/record"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishRecord",
+            "bindingRef": "#/operations/publishRecord"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
+              "scope": "alternative",
+              "status": "lossy",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [],
+              "reasonCode": "asyncapi.schema_format_not_convertible",
+              "rule": "ASYNC-P-05"
             },
             {
               "sourceIndex": 0,

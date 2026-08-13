@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "family": "asyncapi",
+  "bindingSpec": "openbindings.asyncapi@1",
+  "method": "Direct inspection of immutable artifact bytes against the artifact's own declared AsyncAPI edition and the governing openbindings.asyncapi@1 candidate. Neither SDK's acceptance or rejection is used as the oracle. Every reason code observed in a corpus residual must appear here with exactly one classification (development-loop.md MC1).",
+  "classificationPolicy": {
+    "doctrine-refused": "Representing it would require an unwarranted or fidelity-damaging project convention. Permanent by design until that judgment changes. Carries a revisit trigger describing the evidence that would reopen it.",
+    "upstream-defective": "The artifact violates its own declared upstream specification. Not this project's gap; excluded from the supported-artifact denominator.",
+    "economically-deferred": "A faithful widening exists but measured prevalence is below the floor. Records the measured number and the revisit trigger.",
+    "implementation-debt": "NOT a valid terminal classification. Per MC2 an implementation loss can never be laundered by adjudication; entries carrying this classification are open work items and block measured-complete.",
+    "derivative": "Not independently adjudicable; the code is emitted as a consequence of another exclusion and shrinks when that one resolves."
+  },
+  "measuredAgainst": {
+    "corpusArtifacts": 340,
+    "vintages": [
+      {
+        "id": "vintage-1",
+        "artifacts": 250,
+        "sealed": "2026-08-10",
+        "disclosed": true,
+        "disclosure": "informed WebSocket reply-loop rules"
+      },
+      {
+        "id": "vintage-2",
+        "artifacts": 90,
+        "cohortSha256": "29285cb823385159ce7254af60078f807fea917f47b0a635c33383bd03c98d75",
+        "sealed": "2026-08-13",
+        "disclosed": true,
+        "disclosure": "informed the three reply-by-reference-class fixes"
+      }
+    ],
+    "reportTag": "asyncapi-at1-lossy2"
+  },
+  "entries": [
+    {
+      "reasonCode": "asyncapi.message_headers",
+      "classification": "doctrine-refused",
+      "measured": {
+        "coverageEntries": 394,
+        "artifacts": 45,
+        "artifactShare": 0.132
+      },
+      "authority": "openbindings.asyncapi.md \u00a79.2: the first candidate defines no per-message payload-and-headers envelope; a target whose application contract requires headers at the OpenBindings boundary is an explicit synthesis exclusion.",
+      "rationale": "Admitting headers would require either an envelope in the operation schema (protocol recompilation, forbidden by ABSTRACTION-FIDELITY.md) or a generic headers member on the invocation frames (explicitly rejected). The exclusion is the faithful outcome.",
+      "revisitTrigger": "An incorporated AsyncAPI Core or protocol-binding rule that identifies specific header content as application-required value with a defined faithful application-level mapping, such that the value can be projected without exposing a protocol container.",
+      "status": "PROPOSED - awaiting ruling R2"
+    },
+    {
+      "reasonCode": "asyncapi.no_effective_server",
+      "classification": "PENDING",
+      "measured": {
+        "coverageEntries": 217,
+        "artifacts": 74,
+        "artifactShare": 0.218
+      },
+      "note": "Top-ranked widening candidate. The binding-invoker contract's config.value requirement family already names 'a base URL for a document whose only server is the implied /' as negotiable context, so a widening would incorporate existing contract machinery rather than define a new default. Blocked on ruling R1 (OBI-D-13 sufficiency reading).",
+      "status": "OPEN - ruling R1"
+    },
+    {
+      "reasonCode": "asyncapi.parent_target_excluded",
+      "classification": "derivative",
+      "measured": {
+        "coverageEntries": 497,
+        "artifacts": 105
+      },
+      "rationale": "Emitted for message and server alternatives whose governing operation target was itself excluded. Never independently adjudicable; recompute after every widening that resolves a parent exclusion.",
+      "status": "SETTLED"
+    },
+    {
+      "reasonCode": "asyncapi.dangling_message_ref",
+      "classification": "PENDING",
+      "measured": {
+        "coverageEntries": 67,
+        "artifacts": 2
+      },
+      "note": "Verify against each artifact's own declared edition. A message $ref that does not resolve in the source is presumptively upstream-defective, but must be distinguished from a resolver gap of ours (cf. finding F2, where deep nested $refs were not resolved before schema copy).",
+      "status": "OPEN - Phase 1 classification"
+    },
+    {
+      "reasonCode": "asyncapi.no_resolved_messages",
+      "classification": "PENDING",
+      "measured": {
+        "coverageEntries": 14,
+        "artifacts": 2
+      },
+      "note": "Same verification as dangling_message_ref.",
+      "status": "OPEN - Phase 1 classification"
+    },
+    {
+      "reasonCode": "asyncapi.schema_format_not_convertible",
+      "classification": "doctrine-refused",
+      "note": "A declared foreign schema LANGUAGE (Avro, Protobuf, embedded OpenAPI Schema Objects). Sub-causes carry different remediation: Avro/Protobuf lean doctrine-refused with an authority-defined-conversion revisit trigger; embedded OpenAPI formats are potentially convertible with machinery the project already owns (formats/openapi translate.go) and lean economically-deferred. Re-adjudicate per-cause from the post-detector-fix corpus (the earlier heuristic misclassified application/schema+json as foreign and swept in absent-payload messages; both corrected 2026-08-13).",
+      "status": "ADJUDICATED 2026-08-13 (post-correction)",
+      "measured": {
+        "coverageEntries": 0,
+        "artifacts": 0,
+        "note": "zero corpus instances after detector correction; the cell is authority-derived (ASYNC-SS-07) per the anti-overfitting doctrine"
+      },
+      "revisitTrigger": "A faithful, authority-defined conversion from the declared schema language into JSON Schema 2020-12 adopted by a binding-specification revision (Avro/Protobuf), or, for embedded OpenAPI Schema Objects, adoption of the project's existing OpenAPI dialect translator as a named conversion."
+    },
+    {
+      "reasonCode": "asyncapi.payload_carriage_unsupported",
+      "classification": "doctrine-refused",
+      "note": "The effective content type has no JSON application-value carriage (application/avro, binary media): the payload bytes never cross the JSON boundary regardless of schema translatability. Aligns with the documented value-carriage boundary (binary/codec payload lanes only where an artifact-defined JSON correspondence exists). Lean doctrine-refused with that correspondence as the revisit trigger; confirm against post-fix measurements.",
+      "status": "ADJUDICATED 2026-08-13 (post-correction)",
+      "measured": {
+        "coverageEntries": 15,
+        "artifacts": 6,
+        "reportTag": "asyncapi-at1-lossy2"
+      },
+      "revisitTrigger": "An artifact-defined JSON/application value correspondence for the declared media (the documented value-carriage boundary: binary and codec payload lanes only where such a correspondence exists)."
+    }
+  ],
+  "loadFailureClassifications": {
+    "note": "Artifacts refused before synthesis. Per MC2, only upstream-invalid artifacts may fail loading; every other failure is open implementation work.",
+    "invalidSynthesizedInterface": {
+      "count": 7,
+      "finding": "F1/F2",
+      "classification": "implementation-debt",
+      "rootCauses": {
+        "A-foreign-schema-format": {
+          "artifacts": [
+            "danielgit0/spring-kafka-demo",
+            "specmesh/specmesh-build"
+          ],
+          "detail": "Avro payload schemas (contentType application/avro; $ref to .avsc) copied verbatim into an OBI 2020-12 schema position. Avro 'type' values such as 'record' and 'long' are not 2020-12 type values.",
+          "governingRule": "openbindings.asyncapi.md \u00a79.2 \u2014 a foreign schemaFormat does not authorize copying a non-JSON schema into an OBI JSON Schema position; the operation remains invocable and that direction is represented by an unconstrained JSON Schema unless a faithful conversion exists."
+        },
+        "B-dialect-draft07": {
+          "artifacts": [
+            "GamingAPI/definitions",
+            "murithigeo/ogc-edr-api",
+            "sswastioyono18/schema-registry-poc",
+            "indiealexh/quarkus-json-rpc-ws-next-example",
+            "jeffmikels/ProPresenter-API",
+            "superheromeZzh/pi-mono-java-design"
+          ],
+          "detail": "AsyncAPI 2.x Schema Objects are Draft-07-based. Copied verbatim they carry $schema: draft-07 (OBI-D-06) and draft tuple-form 'items' arrays (OBI-D-17, 2020-12 spells this prefixItems)."
+        },
+        "C-draft07-plain-name-id": {
+          "artifacts": [
+            "jonaslagoni/JMeter-template",
+            "Mrc0113/ep-design-workshop",
+            "Reya-Labs/reya-api-specs",
+            "ripple/rippled-api-spec"
+          ],
+          "detail": "Draft-07 plain-name and pointer-form $id values ('GeneralReply', '#MassCancelResponse', '#/properties/driver') copied into OBI positions, where OBI-D-05 requires an absolute URI. Note: the standalone Go client already carries an isDraft07PlainNameID grammar, so the knowledge exists but is not applied on the copy path."
+        },
+        "D-unresolved-nested-ref": {
+          "artifacts": [
+            "ivamuno/redoc-asyncapi",
+            "SENERGY-Platform/senergy-platform-connector",
+            "RobinTail/zod-sockets"
+          ],
+          "detail": "Schema $refs pointing into the AsyncAPI document's #/components/schemas were copied without being resolved or rewritten, so they dangle in the OBI (OBI-D-16). Observed at deep nested positions (inside allOf, inside properties chains). Same class as the reply-by-reference defect: reference resolution incomplete at a position the resolver does not traverse. \u00a76 of the binding spec assigns $ref resolution to the artifact processor.",
+          "finding": "F2"
+        }
+      },
+      "upstreamInvalid": [
+        {
+          "artifact": "Elhebert/asyncapi-validation",
+          "path": "tests/fixtures/invalid-schema-3.0.0.json",
+          "detail": "Upstream test fixture authored to be an invalid schema (properties/id/minimum is a boolean). Correctly refused; belongs in the validity ledger, not the supported denominator.",
+          "classification": "upstream-defective"
+        }
+      ],
+      "resolution": "2026-08-13: classes A-D resolved by the dialect translator + position-aware reference traversal + composition alignment (openbindings-go 77048e4/aa19355, openbindings-ts 745f404, asyncapi-client 660b82f/21b0cfb); 17 whole-artifact rejections -> 7. Remaining 7: Elhebert (deliberate invalid fixture), panproto (properties value not a schema), RobinTail (empty prefixItems), specmesh (undeclared Avro = artifact defect under its declared dialect), APIs-guru (properties member named $ref holding a string - investigate), plus 3 cyclic-schema artifacts (ripple, jeffmikels, SENERGY) awaiting $defs hoisting. All still veto siblings pending per-operation refusal narrowing."
+    },
+    "typescriptOnly": {
+      "maximumCallStackSizeExceeded": {
+        "count": 3,
+        "classification": "implementation-debt",
+        "detail": "TypeScript-only stack overflow where Go completes. Presumptive unguarded recursion on cyclic schemas; OBI-T-11 requires cycle handling without infinite loops for tools that resolve $ref. Distinct from F1/F2 and TS-lane only.",
+        "finding": "F3"
+      }
+    }
+  },
+  "home": "spec/conformance/binding-specs/ (moved in-tree 2026-08-13; the corpus-lab copy is a mirror \u2014 this file is authoritative)"
+}
