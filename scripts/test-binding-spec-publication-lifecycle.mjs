@@ -62,6 +62,10 @@ try {
   write(join(temp, "EDITORS.md"), "# Editors\n");
   write(join(temp, "binding-specs", "README.md"), "# Binding specs\n");
   write(
+    join(temp, "conformance", "binding-specs", "adjudication-fixture.md"),
+    "# Lifecycle-test adjudication record\n"
+  );
+  write(
     join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
     "# OpenAPI\n\nDefines `openbindings.openapi@1`.\n"
   );
@@ -80,6 +84,8 @@ try {
     "2026-07-23",
     "--core-release",
     "0.2.0",
+    "--adjudication",
+    "conformance/binding-specs/adjudication-fixture.md",
     "--families",
     "openapi@1",
   ]);
@@ -170,7 +176,9 @@ try {
       "2026-07-24",
       "--core-release",
       "0.2.0",
-      "--families",
+      "--adjudication",
+    "conformance/binding-specs/adjudication-fixture.md",
+    "--families",
       "openapi@3",
     ],
     2
@@ -195,7 +203,9 @@ try {
       "2026-07-24",
       "--core-release",
       "0.2.0",
-      "--families",
+      "--adjudication",
+    "conformance/binding-specs/adjudication-fixture.md",
+    "--families",
       "openapi@2",
     ],
     2
@@ -216,6 +226,8 @@ try {
     "2026-07-24",
     "--core-release",
     "0.2.0",
+    "--adjudication",
+    "conformance/binding-specs/adjudication-fixture.md",
     "--families",
     "openapi@2",
   ]);

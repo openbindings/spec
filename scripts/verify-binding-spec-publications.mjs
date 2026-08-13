@@ -96,6 +96,56 @@ if (manifest.format !== "openbindings.binding-spec-publications@1") {
 if (!manifest.latest || typeof manifest.latest !== "object" || Array.isArray(manifest.latest)) {
   errors.push("manifest.latest must be an object");
 }
+// --- Withdrawal-resistant floor ---------------------------------------------
+// The --base comparison has single-push memory: one violating push resets its
+// baseline, so it cannot catch a deletion twice (demonstrated 2026-08-11). The
+// floor is committed IN the manifest: publications may never number fewer than
+// it, the publish flow raises it, and removing a published entry therefore
+// requires visibly lowering the floor AND appending a dated tombstone. The
+// gate's job is that no deletion is silent; a deletion with a tombstone is a
+// recorded decision, which is the achievable invariant.
+{
+  const floor = manifest.floor;
+  if (floor !== undefined) {
+    if (typeof floor !== "object" || !Number.isInteger(floor.publications) || floor.publications < 0) {
+      errors.push("manifest.floor.publications must be a non-negative integer");
+    } else if (Array.isArray(manifest.publications) && manifest.publications.length < floor.publications) {
+      errors.push(
+        `publications count ${manifest.publications.length} is below the committed floor ${floor.publications}; removing a published entry requires lowering the floor and appending a tombstones entry`
+      );
+    }
+  }
+  for (const tombstone of Array.isArray(manifest.tombstones) ? manifest.tombstones : []) {
+    for (const field of ["identifier", "withdrawnAt", "reason"]) {
+      if (typeof tombstone?.[field] !== "string" || !tombstone[field]) {
+        errors.push(`tombstones entry ${JSON.stringify(tombstone?.identifier ?? tombstone)} missing ${field}`);
+      }
+    }
+    // A tombstoned identifier is spent: re-publication uses a new revision.
+    if (Array.isArray(manifest.publications) && manifest.publications.some((p) => p.identifier === tombstone?.identifier)) {
+      errors.push(`tombstoned identifier ${tombstone.identifier} also appears in publications`);
+    }
+  }
+  // developmentExercises records pre-publication machinery runs the project
+  // ruled non-publications (2026-08-13); their identifier spellings remain
+  // available, so no publications-collision check applies. Integrity only:
+  const exercises = manifest.developmentExercises;
+  if (exercises !== undefined) {
+    for (const field of ["withdrawnAt", "ruling", "preResetTree"]) {
+      if (typeof exercises?.[field] !== "string" || !exercises[field]) {
+        errors.push(`developmentExercises missing ${field}`);
+      }
+    }
+    for (const entry of Array.isArray(exercises?.entries) ? exercises.entries : []) {
+      for (const field of ["identifier", "family", "publishedAt", "publicationRecordSha256"]) {
+        if (entry?.[field] === undefined) {
+          errors.push(`developmentExercises entry ${entry?.identifier ?? "?"} missing ${field}`);
+        }
+      }
+    }
+  }
+}
+
 if (!Array.isArray(manifest.publications)) {
   errors.push("manifest.publications must be an array");
 }
