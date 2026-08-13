@@ -89,26 +89,26 @@
     {
       "reasonCode": "asyncapi.schema_format_not_convertible",
       "classification": "doctrine-refused",
-      "note": "A declared foreign schema LANGUAGE (Avro, Protobuf, embedded OpenAPI Schema Objects). Sub-causes carry different remediation: Avro/Protobuf lean doctrine-refused with an authority-defined-conversion revisit trigger; embedded OpenAPI formats are potentially convertible with machinery the project already owns (formats/openapi translate.go) and lean economically-deferred. Re-adjudicate per-cause from the post-detector-fix corpus (the earlier heuristic misclassified application/schema+json as foreign and swept in absent-payload messages; both corrected 2026-08-13).",
+      "note": "A declared foreign schema LANGUAGE (Avro, Protobuf, embedded OpenAPI Schema Objects) with no faithful JSON Schema 2020-12 conversion. The direction stays invocable through the unconstrained schema, so synthesis reports lossy, never a refusal. Single classification: doctrine-refused. Zero corpus instances after the 2026-08-13 detector correction (the earlier heuristic misclassified application/schema+json as foreign and swept in absent-payload messages); the cell is authority-derived (ASYNC-SS-07) per the anti-overfitting doctrine.",
       "status": "ADJUDICATED 2026-08-13 (post-correction)",
       "measured": {
         "coverageEntries": 0,
         "artifacts": 0,
-        "note": "zero corpus instances after detector correction; the cell is authority-derived (ASYNC-SS-07) per the anti-overfitting doctrine"
+        "reportTag": "asyncapi-at1-sweep"
       },
-      "revisitTrigger": "A faithful, authority-defined conversion from the declared schema language into JSON Schema 2020-12 adopted by a binding-specification revision (Avro/Protobuf), or, for embedded OpenAPI Schema Objects, adoption of the project's existing OpenAPI dialect translator as a named conversion."
+      "revisitTrigger": "A faithful, authority-defined conversion into JSON Schema 2020-12 adopted by a binding-specification revision: for Avro/Protobuf an upstream-defined mapping; for embedded OpenAPI Schema Objects adoption of the project's existing OpenAPI dialect translator (formats/openapi translate.go) as a named conversion \u2014 the latter would re-open this entry as economically-deferred pending prevalence measurement."
     },
     {
       "reasonCode": "asyncapi.payload_carriage_unsupported",
-      "classification": "doctrine-refused",
-      "note": "The effective content type has no JSON application-value carriage (application/avro, binary media): the payload bytes never cross the JSON boundary regardless of schema translatability. Aligns with the documented value-carriage boundary (binary/codec payload lanes only where an artifact-defined JSON correspondence exists). Lean doctrine-refused with that correspondence as the revisit trigger; confirm against post-fix measurements.",
-      "status": "ADJUDICATED 2026-08-13 (post-correction)",
+      "classification": "implementation-debt",
+      "note": "The effective content type has no JSON application-value carriage (application/avro, application/octet-stream, other binary media). Both directions refuse today: input encoding has no codec seam at all, and the decode hook exists but is unreachable behind content-type validation. Synthesis now surfaces this honestly as implementation-unsupported (target when every caller-input alternative is affected, alternative otherwise) rather than lossy-but-invocable. Per MC2 this cannot be adjudicated away: it is open work.",
+      "status": "OPEN 2026-08-13 (reclassified from doctrine-refused; carriage refusal is a missing codec seam, not a doctrine)",
       "measured": {
         "coverageEntries": 15,
         "artifacts": 6,
         "reportTag": "asyncapi-at1-lossy2"
       },
-      "revisitTrigger": "An artifact-defined JSON/application value correspondence for the declared media (the documented value-carriage boundary: binary and codec payload lanes only where such a correspondence exists)."
+      "discharge": "Extend the ruled hook architecture with a codec extension path (encode seam + reachable decode seam keyed by declared content type), then re-run the corpus; entries convert to represented or, where no artifact-defined JSON correspondence exists for the media, re-adjudicate the residue per-cause."
     }
   ],
   "loadFailureClassifications": {

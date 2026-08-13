@@ -541,7 +541,7 @@
     },
     {
       "id": "ASYNC-SS-06",
-      "description": "A message whose effective content type has no JSON application-value carriage (application/octet-stream) floors to the unconstrained representation even though its declared Schema Object is valid: the payload bytes never cross the JSON boundary. The alternative accounts as lossy under asyncapi.payload_carriage_unsupported, the artifact is never fully represented, and the operation remains invocable.",
+      "description": "A message whose effective content type has no JSON application-value carriage (application/octet-stream) cannot be invoked today: input encoding has no codec seam, so the runtime refuses before dispatch. The synthesis contract forbids presenting a statically-refusing operation as usable, so the target is implementation-unsupported (visible MC2 debt, discharged by a codec extension path) rather than lossy, and no operation is emitted. Distinct from schema-LANGUAGE loss (SS-07), which stays invocable and lossy.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -587,15 +587,8 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [
-          "publishRecord"
-        ],
-        "bindings": [
-          {
-            "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
-          }
-        ],
+        "operations": [],
+        "bindings": [],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
@@ -604,31 +597,27 @@
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord",
               "scope": "target",
-              "status": "represented",
-              "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
-              "requirements": [
-                "configuration.server"
-              ]
+              "status": "implementation-unsupported",
+              "reasonCode": "asyncapi.payload_carriage_unsupported",
+              "rule": "ASYNC-P-05",
+              "requirements": []
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
               "scope": "alternative",
-              "status": "lossy",
-              "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
-              "requirements": [],
-              "reasonCode": "asyncapi.payload_carriage_unsupported",
-              "rule": "ASYNC-P-05"
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-05",
+              "requirements": []
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#server[0]=broker",
               "scope": "alternative",
-              "status": "represented",
-              "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-02",
               "requirements": []
             }
           ]
