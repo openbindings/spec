@@ -423,6 +423,221 @@
           ]
         }
       }
+    },
+    {
+      "id": "ASYNC-SS-05",
+      "description": "An artifact whose payload schemas use Draft-07 spellings the OBI dialect changed (tuple items, additionalItems, dependencies, a declared $schema) synthesizes fully represented: Schema Objects enter OBI positions under semantic-preserving dialect translation, never verbatim copy and never whole-artifact refusal.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Draft-07 spellings",
+            "version": "1"
+          },
+          "servers": {
+            "ws": {
+              "host": "events.example",
+              "protocol": "wss"
+            }
+          },
+          "channels": {
+            "events": {
+              "address": "/events",
+              "messages": {
+                "event": {
+                  "payload": {
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "type": "object",
+                    "properties": {
+                      "pair": {
+                        "type": "array",
+                        "items": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ],
+                        "additionalItems": {
+                          "type": "boolean"
+                        }
+                      },
+                      "card": {
+                        "type": "string"
+                      }
+                    },
+                    "dependencies": {
+                      "card": [
+                        "cvv"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishEvent": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/events"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/events/messages/event"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishEvent"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishEvent",
+            "bindingRef": "#/operations/publishEvent"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishEvent",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishEvent",
+              "bindingRef": "#/operations/publishEvent",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishEvent#message[0]=#/channels/events/messages/event",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishEvent",
+              "bindingRef": "#/operations/publishEvent",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishEvent#server[0]=ws",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishEvent",
+              "bindingRef": "#/operations/publishEvent",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-06",
+      "description": "A message whose declared content type identifies a non-JSON-Schema representation (application/avro) cannot contribute a faithful schema: the direction is represented by the unconstrained schema per the specification's floor, the operation remains invocable, and the artifact is never refused wholesale.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Foreign representation",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "records": {
+              "address": "records.v1",
+              "messages": {
+                "record": {
+                  "contentType": "application/avro",
+                  "payload": {
+                    "type": "record",
+                    "name": "Record",
+                    "fields": [
+                      {
+                        "name": "id",
+                        "type": "long"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishRecord": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/records"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/records/messages/record"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishRecord",
+            "bindingRef": "#/operations/publishRecord"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
