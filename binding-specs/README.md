@@ -258,7 +258,22 @@ These decisions are intentionally specific. “Let each implementation choose”
 
 The shorthand is **incorporate → preserve → configure → refuse → default**. It is project quality doctrine, not a restriction on what a binding specification is allowed to mean. Its governing correction is **defer before defining; never guess privately**: completeness requires a definite answer, an explicit binding-specification convention is a definite answer, and an explicit exclusion is also a definite answer. An implementation-only approximation may be useful locally but does not close the portable specification.
 
-### The correspondence ladder (value carriage)
+### The context/input discriminator (amortization)
+
+Context negotiation is deliberately expensive — a pre-dispatch
+interruption of operational flow — and it earns that cost only by
+amortizing: **context is what an invocation flow resolves once and then
+runs on** (credentials, server selection, environment, session). A value
+that varies per invocation cannot amortize, so it was never context — it
+is **operation input**, whatever protocol position it rides (ruled
+2026-08-14; the contract's `durable: true` flag is this same amortization
+claim in requirement form). Applied: server selection and credentials are
+context; a parameterized channel address's per-invocation parameter (which
+user, which sensor) is operation input, on both directions — consumer
+configuration may still pre-fill an absent input parameter, which is
+amortized supply of an input, not a reclassification.
+
+### The correspondence ladder (value carriage)### The correspondence ladder (value carriage)
 
 The deference order's specialization for the question every family must
 answer completely — how application values cross the JSON boundary — is the
