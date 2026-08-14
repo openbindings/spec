@@ -258,7 +258,40 @@ These decisions are intentionally specific. “Let each implementation choose”
 
 The shorthand is **incorporate → preserve → configure → refuse → default**. It is project quality doctrine, not a restriction on what a binding specification is allowed to mean. Its governing correction is **defer before defining; never guess privately**: completeness requires a definite answer, an explicit binding-specification convention is a definite answer, and an explicit exclusion is also a definite answer. An implementation-only approximation may be useful locally but does not close the portable specification.
 
-This order does not require identical requests where an incorporated authority permits alternatives. For a project specification claiming faithful upstream deference, it requires every observable choice to remain inside the incorporated authority's permitted set unless the specification labels a deliberate divergence, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
+### The correspondence ladder (value carriage)
+
+The deference order's specialization for the question every family must
+answer completely — how application values cross the JSON boundary — is the
+**correspondence ladder** (ruled 2026-08-13):
+
+1. **Incorporate** the payload format's own canonical JSON encoding when its
+   upstream authority defines one (Avro's JSON Encoding, proto3's JSON
+   Mapping). Preferred because it costs no invented semantics, the upstream
+   maintains the mapping's edge cases, and boundary values align with the
+   format's whole ecosystem. The gRPC family has carried protobuf values
+   this way from its first revision.
+2. **Author** a correspondence under the binding specification's own
+   authority when the upstream is silent but the data is structured. Fully
+   legitimate — the specification is sovereign for its identifier, and a
+   mapping where the upstream defined none contradicts nobody — but the
+   specification becomes the mapping's owner, and the **falseness test**
+   governs what may be authored: total and deterministic (every valid
+   datum, exactly one JSON image, round-trippable given the format schema),
+   pinned in specification text so two implementations cannot diverge. A
+   format that resists such a mapping was not as structured as it looked.
+3. **The byte boundary** for genuinely opaque media: the exact octets as
+   the canonical Base64 boundary string. For this tier the boundary schema
+   is not a degraded stand-in — "the exact octets" is the complete
+   application contract, so the schema claim is simply true.
+
+In every case the specification NAMES its correspondences as a closed list
+per format identifier. No implementation ever judges whether a faithful
+conversion "exists"; it reads the list. A declared structured contract the
+named correspondences cannot express rides the byte boundary and accounts
+lossy — with the loss stated in the emitted schema, not only in synthesis
+coverage.
+
+This order does not require identical requests where an incorporated authority permits alternatives.This order does not require identical requests where an incorporated authority permits alternatives. For a project specification claiming faithful upstream deference, it requires every observable choice to remain inside the incorporated authority's permitted set unless the specification labels a deliberate divergence, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
 
 ## Release-quality review loop
 
