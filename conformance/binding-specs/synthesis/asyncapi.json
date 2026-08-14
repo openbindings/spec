@@ -635,7 +635,7 @@
     },
     {
       "id": "ASYNC-SS-07",
-      "description": "An AsyncAPI 3 Multi Format Schema Object declaring a non-JSON-Schema language (payload: {schemaFormat: avro, schema}) cannot contribute a faithful schema: the direction floors to the unconstrained representation and accounts as lossy under asyncapi.schema_format_not_convertible. Distinct from the carriage case: this loss has a conversion-shaped revisit trigger. The wrapper itself must never be emitted as the OBI schema.",
+      "description": "An AsyncAPI 3 Multi Format Schema Object declaring the Avro schema format crosses the boundary as logical application values under the named Avro correspondence (ruled 2026-08-14): the direction's schema derives from the Avro schema as the JSON Schema of its Avro-JSON-encoded data, and the artifact is fully represented \u2014 no longer lossy. (Formerly this cell pinned the pre-correspondence lossy accounting.)",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -700,7 +700,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -717,12 +717,10 @@
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
               "scope": "alternative",
-              "status": "lossy",
+              "status": "represented",
               "operationKey": "publishRecord",
               "bindingRef": "#/operations/publishRecord",
-              "requirements": [],
-              "reasonCode": "asyncapi.schema_format_not_convertible",
-              "rule": "ASYNC-P-05"
+              "requirements": []
             },
             {
               "sourceIndex": 0,
@@ -1886,7 +1884,7 @@
     },
     {
       "id": "ASYNC-SS-19",
-      "description": "Binary media with a declared contract the boundary cannot express (an Avro schema under application/avro) is still invocable: the direction is represented by the canonical Base64 boundary schema, and the alternative accounts lossy under asyncapi.payload_byte_carriage \u2014 never withheld, never unconstrained. Consumer codec hooks enrich to logical values at invocation.",
+      "description": "Binary media with a declared Avro contract crosses the boundary as logical application values under the named Avro correspondence (ruled 2026-08-14): the schema derives from the Avro schema, the wire carries the Avro binary encoding through the qualified codec, and the artifact is fully represented. (Formerly this cell pinned the byte-boundary lossy accounting the correspondence supersedes.)",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -1952,7 +1950,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -1969,11 +1967,9 @@
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
               "scope": "alternative",
-              "status": "lossy",
+              "status": "represented",
               "operationKey": "publishRecord",
               "bindingRef": "#/operations/publishRecord",
-              "reasonCode": "asyncapi.payload_byte_carriage",
-              "rule": "ASYNC-P-05",
               "requirements": []
             },
             {
@@ -1984,6 +1980,126 @@
               "operationKey": "publishRecord",
               "bindingRef": "#/operations/publishRecord",
               "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-20",
+      "description": "Avro named-type reuse: a record declares an enum inline and later fields reference it by name. The derivation materializes the named type once under the operation schema's $defs and every reference -- including references inside $defs members, which ride beside the derived root's own $ref -- rebases onto the operation pointer. The operation is fully represented; a synthesizer that leaves any derivation ref unrebased emits a dangling pointer and wrongly excludes the operation.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Reused named types",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "records": {
+              "address": "records.v1",
+              "messages": {
+                "record": {
+                  "payload": {
+                    "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+                    "schema": {
+                      "type": "record",
+                      "name": "ParentRecord",
+                      "fields": [
+                        {
+                          "name": "first",
+                          "type": {
+                            "type": "enum",
+                            "name": "Suit",
+                            "symbols": [
+                              "SPADES",
+                              "HEARTS"
+                            ]
+                          }
+                        },
+                        {
+                          "name": "second",
+                          "type": "Suit"
+                        },
+                        {
+                          "name": "maybe",
+                          "type": [
+                            "null",
+                            "Suit"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishRecord": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/records"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/records/messages/record"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishRecord",
+            "bindingRef": "#/operations/publishRecord"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
             }
           ]
         }

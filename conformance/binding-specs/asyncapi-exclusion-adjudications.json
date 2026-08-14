@@ -93,12 +93,12 @@
     {
       "reasonCode": "asyncapi.schema_format_not_convertible",
       "classification": "doctrine-refused",
-      "note": "A declared foreign schema LANGUAGE (Avro, Protobuf, embedded OpenAPI Schema Objects) with no faithful JSON Schema 2020-12 conversion. The direction stays invocable through the unconstrained schema, so synthesis reports lossy, never a refusal. Single classification: doctrine-refused. Zero corpus instances after the 2026-08-13 detector correction (the earlier heuristic misclassified application/schema+json as foreign and swept in absent-payload messages); the cell is authority-derived (ASYNC-SS-07) per the anti-overfitting doctrine.",
-      "status": "ADJUDICATED 2026-08-13 (post-correction)",
+      "note": "A declared foreign schema LANGUAGE (Avro, Protobuf, embedded OpenAPI Schema Objects) with no faithful JSON Schema 2020-12 conversion. The direction stays invocable through the unconstrained schema, so synthesis reports lossy, never a refusal. Single classification: doctrine-refused. Zero corpus instances after the 2026-08-13 detector correction (the earlier heuristic misclassified application/schema+json as foreign and swept in absent-payload messages); the cell is authority-derived (ASYNC-SS-07) per the anti-overfitting doctrine. NARROWED 2026-08-14 (correspondence ladder ruling, binding-specs README + \u00a79.2): Avro left this class \u2014 an on-list declared format now derives the direction's logical schema from the Avro specification's own JSON Encoding and is fully represented (ASYNC-SS-07/SS-19/SS-20 pin the cells). The class retains only off-list languages (Protobuf \u2014 named as the reserved next correspondence \u2014 embedded OpenAPI Schema Objects, unknown JSON Schema versions).",
+      "status": "ADJUDICATED 2026-08-13; NARROWED 2026-08-14 (Avro incorporated)",
       "measured": {
-        "coverageEntries": 0,
-        "artifacts": 0,
-        "reportTag": "asyncapi-at1-sweep"
+        "coverageEntries": 9,
+        "artifacts": 4,
+        "reportTag": "asyncapi-at1-avro"
       },
       "revisitTrigger": "A faithful, authority-defined conversion into JSON Schema 2020-12 adopted by a binding-specification revision: for Avro/Protobuf an upstream-defined mapping; for embedded OpenAPI Schema Objects adoption of the project's existing OpenAPI dialect translator (formats/openapi translate.go) as a named conversion \u2014 the latter would re-open this entry as economically-deferred pending prevalence measurement."
     },
@@ -119,21 +119,23 @@
       "note": "The payload declaration is invalid under its own declared dialect (minimum: true, a non-schema properties member, Avro content referenced into a Schema Object position with no schemaFormat declared) or carries a reference the artifact leaves dangling, so it projects to an ill-formed OBI schema. Per the ASYNC-P-05 confinement sentence this is the artifact's defect, confined to exactly the affected operation: the target is invalid, siblings and the artifact synthesize. Introduced 2026-08-13 when per-operation confinement replaced whole-artifact invalid-synthesis rejection (ASYNC-SS-16 pins the cell).",
       "status": "ADJUDICATED 2026-08-13",
       "measured": {
-        "reportTag": "asyncapi-at1-confine",
-        "note": "fill from the confine run: expected Elhebert, panproto, specmesh operations plus any per-op residue of formerly whole-artifact rejections"
+        "reportTag": "asyncapi-at1-avro",
+        "coverageEntries": 4,
+        "artifacts": 4
       },
       "revisitTrigger": "none \u2014 invalid-under-own-dialect is the upstream's defect by definition; a future binding-specification revision adopting a named repair convention would re-open per-cause"
     },
     {
       "reasonCode": "asyncapi.payload_byte_carriage",
       "classification": "doctrine-refused",
-      "note": "Declared binary media carries exact octets through the byte boundary; a declared payload contract (an Avro schema, a structural JSON schema) is not expressible at that boundary, so the direction is lossy: represented by {type: string, contentEncoding: base64}, invocable, honestly accounted. Authoring a conversion from the declared language into JSON Schema, or decoding binary payloads into logical values, would require OB-authored codec conventions the deference order refuses; the invocation encode/decode hook seam is the consumer's enrichment path (ASYNC-SS-19 pins the cell).",
-      "status": "ADJUDICATED 2026-08-13",
+      "note": "Declared binary media carries exact octets through the byte boundary; a declared payload contract (an Avro schema, a structural JSON schema) is not expressible at that boundary, so the direction is lossy: represented by {type: string, contentEncoding: base64}, invocable, honestly accounted. Authoring a conversion from the declared language into JSON Schema, or decoding binary payloads into logical values, would require OB-authored codec conventions the deference order refuses; the invocation encode/decode hook seam is the consumer's enrichment path (ASYNC-SS-19 pins the cell). NARROWED 2026-08-14: the revisit trigger fired \u2014 the correspondence ladder ruling incorporated the Avro JSON Encoding as a named correspondence, so an Avro-declared payload no longer rides the byte boundary in any direction (its binary wire is a codec capability that refuses when unqualified, never a base64 fallback). The remaining class is media whose declared contract is under NO named correspondence.",
+      "status": "ADJUDICATED 2026-08-13; NARROWED 2026-08-14 (Avro leaves the class)",
       "measured": {
-        "reportTag": "asyncapi-at1-codec",
-        "note": "fill from the codec run"
+        "coverageEntries": 16,
+        "artifacts": 6,
+        "reportTag": "asyncapi-at1-avro"
       },
-      "revisitTrigger": "An upstream authority defining a faithful JSON correspondence for the declared media (for example an Avro-JSON encoding adopted by a binding-specification revision), which would convert the affected directions to represented under that named conversion."
+      "revisitTrigger": "The next named correspondence adopted by a binding-specification revision (proto3 JSON Mapping is named-reserved in \u00a79.2), which would convert its affected directions to represented."
     }
   ],
   "loadFailureClassifications": {
