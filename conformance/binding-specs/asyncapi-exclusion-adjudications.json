@@ -8,7 +8,8 @@
     "upstream-defective": "The artifact violates its own declared upstream specification. Not this project's gap; excluded from the supported-artifact denominator.",
     "economically-deferred": "A faithful widening exists but measured prevalence is below the floor. Records the measured number and the revisit trigger.",
     "implementation-debt": "NOT a valid terminal classification. Per MC2 an implementation loss can never be laundered by adjudication; entries carrying this classification are open work items and block measured-complete.",
-    "derivative": "Not independently adjudicable; the code is emitted as a consequence of another exclusion and shrinks when that one resolves."
+    "derivative": "Not independently adjudicable; the code is emitted as a consequence of another exclusion and shrinks when that one resolves.",
+    "resolved-widened": "Historical: the reason code no longer occurs because a ruled widening represented the class. The entry records the ruling and the corpus effect; it does not classify a live residual."
   },
   "measuredAgainst": {
     "corpusArtifacts": 340,
@@ -47,14 +48,15 @@
     },
     {
       "reasonCode": "asyncapi.no_effective_server",
-      "classification": "implementation-debt",
+      "classification": "resolved-widened",
       "measured": {
-        "coverageEntries": 217,
-        "artifacts": 74,
-        "artifactShare": 0.218
+        "coverageEntries": 0,
+        "artifacts": 0,
+        "reportTag": "asyncapi-at1-server",
+        "note": "753 represented targets now carry the configuration.server requirement (Go)"
       },
-      "note": "RULED 2026-08-13 (R1+R5, one ruling for both families): WIDEN. A declared server is reachability configuration, not target identity \u2014 the operation+channel satisfies OBI-D-13 sufficiency, and the binding-invoker contract's config.value family already names the negotiable lane ('a channel address a service generates at runtime, a base URL for a document whose only server is the implied /'). Synthesis will represent these targets with a configuration.server requirement; invocation challenges CONTEXT_REQUIRED (config.value, point server) before dispatch. openapi \u00a79.3's select-or-refuse sentence is amended to the same negotiation, resolving its contradiction with \u00a79.2's requestMedia parallel. Until the widening lands this entry is open implementation work; it converts to represented-with-requirement on execution.",
-      "status": "OPEN - ruled, widening in progress (R1+R5)"
+      "note": "RESOLVED 2026-08-13 (R1+R5 executed same day as ruled): the exclusion no longer exists. A server is reachability configuration, not target identity; server-less operations synthesize with a configuration.server requirement and invocation challenges CONTEXT_REQUIRED (config.value, point server, path /url \u2014 the url form supplies the whole connection URL) before dispatch. ASYNC-P-04 amended; ASYNC-SS-18 pins the cell; openapi \u00a79.3 received the same ruling for its select-or-refuse contradiction. Corpus effect: zero residual entries under this code, +201 operations, fullyRepresented 191\u2192252 (Go).",
+      "status": "RESOLVED 2026-08-13 (widened per R1+R5)"
     },
     {
       "reasonCode": "asyncapi.parent_target_excluded",
