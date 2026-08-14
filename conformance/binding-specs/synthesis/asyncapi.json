@@ -6,7 +6,7 @@
   "scenarios": [
     {
       "id": "ASYNC-SS-01",
-      "description": "A publish target remains represented while every governing message, reply message, and effective server/protocol cell receives a disposition.",
+      "description": "A publish target remains represented while every governing message, reply message, and effective server/protocol cell receives a disposition. Under the routed-envelope ruling (2026-08-14) a message alternative declaring headers is REPRESENTED: declared headers are application data riding the envelope beside the payload, no longer an asyncapi.message_headers exclusion, so this cell is fully represented.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -91,20 +91,8 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/operations/publish",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
-              "requirements": [
-                "configuration.server",
-                "configuration.message"
-              ]
-            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publish#message[0]=#/channels/events/messages/good",
@@ -118,9 +106,9 @@
               "sourceIndex": 0,
               "sourceRef": "#/operations/publish#message[1]=#/channels/events/messages/headers",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "asyncapi.message_headers",
-              "rule": "ASYNC-P-03",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
               "requirements": []
             },
             {
@@ -158,6 +146,18 @@
               "operationKey": "publish",
               "bindingRef": "#/operations/publish",
               "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publish",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publish",
+              "bindingRef": "#/operations/publish",
+              "requirements": [
+                "configuration.message",
+                "configuration.server"
+              ]
             }
           ]
         }
@@ -2097,6 +2097,157 @@
               "status": "represented",
               "operationKey": "publishRecord",
               "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-21",
+      "description": "Channel parameters are operation input (ruled 2026-08-14, the amortization discriminator): a location-less parameter varies per invocation, so it rides the routed envelope as a caller-input field beside the payload, optional in the schema because configuration.address.parameters remains the amortized pre-fill. The receive operation's input is the envelope {payload (required), region}; the send (subscribe) operation gains a parameter-only input envelope -- addressing data is caller input even when no payload travels. Both targets are fully represented.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Parameterized channel",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "orders": {
+              "address": "orders/{region}",
+              "parameters": {
+                "region": {
+                  "enum": [
+                    "emea",
+                    "amer"
+                  ],
+                  "description": "Deployment region"
+                }
+              },
+              "messages": {
+                "order": {
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "placeOrder": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/orders"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/orders/messages/order"
+                }
+              ]
+            },
+            "watchOrders": {
+              "action": "send",
+              "channel": {
+                "$ref": "#/channels/orders"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/orders/messages/order"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "placeOrder",
+          "watchOrders"
+        ],
+        "bindings": [
+          {
+            "operationKey": "placeOrder",
+            "bindingRef": "#/operations/placeOrder"
+          },
+          {
+            "operationKey": "watchOrders",
+            "bindingRef": "#/operations/watchOrders"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/placeOrder#message[0]=#/channels/orders/messages/order",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "placeOrder",
+              "bindingRef": "#/operations/placeOrder",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/placeOrder#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "placeOrder",
+              "bindingRef": "#/operations/placeOrder",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/watchOrders#message[0]=#/channels/orders/messages/order",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "watchOrders",
+              "bindingRef": "#/operations/watchOrders",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/watchOrders#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "watchOrders",
+              "bindingRef": "#/operations/watchOrders",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/placeOrder",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "placeOrder",
+              "bindingRef": "#/operations/placeOrder",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/watchOrders",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "watchOrders",
+              "bindingRef": "#/operations/watchOrders",
               "requirements": [
                 "configuration.server"
               ]
