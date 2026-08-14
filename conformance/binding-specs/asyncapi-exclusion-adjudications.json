@@ -102,15 +102,14 @@
     },
     {
       "reasonCode": "asyncapi.payload_carriage_unsupported",
-      "classification": "implementation-debt",
-      "note": "The effective content type has no JSON application-value carriage (application/avro, application/octet-stream, other binary media). Both directions refuse today: input encoding has no codec seam at all, and the decode hook exists but is unreachable behind content-type validation. Synthesis now surfaces this honestly as implementation-unsupported (target when every caller-input alternative is affected, alternative otherwise) rather than lossy-but-invocable. Per MC2 this cannot be adjudicated away: it is open work.",
-      "status": "OPEN 2026-08-13 (reclassified from doctrine-refused; carriage refusal is a missing codec seam, not a doctrine)",
+      "classification": "resolved-widened",
+      "note": "RESOLVED 2026-08-13 (codec-seam ruling, same day as opened): the reason code no longer exists. Declared binary media now carries through the artifact-authorized byte rule (canonical RFC 4648 \u00a74 Base64 boundary, mirroring openbindings.openapi@1's raw-byte lane): the direction is invocable with the boundary schema {type: string, contentEncoding: base64}, and consumer Encode/Decode codec hooks enrich to logical values at invocation. Where a declared contract is not the boundary schema the direction accounts lossy under the new asyncapi.payload_byte_carriage code. The MC2 implementation-unsupported class this entry guarded is empty.",
+      "status": "RESOLVED 2026-08-13 (byte-boundary floor + codec hooks; ASYNC-SS-06/SS-19 pin the cells)",
       "measured": {
         "coverageEntries": 15,
         "artifacts": 6,
         "reportTag": "asyncapi-at1-lossy2"
-      },
-      "discharge": "Extend the ruled hook architecture with a codec extension path (encode seam + reachable decode seam keyed by declared content type), then re-run the corpus; entries convert to represented or, where no artifact-defined JSON correspondence exists for the media, re-adjudicate the residue per-cause."
+      }
     },
     {
       "reasonCode": "asyncapi.payload_schema_invalid",
@@ -122,6 +121,17 @@
         "note": "fill from the confine run: expected Elhebert, panproto, specmesh operations plus any per-op residue of formerly whole-artifact rejections"
       },
       "revisitTrigger": "none \u2014 invalid-under-own-dialect is the upstream's defect by definition; a future binding-specification revision adopting a named repair convention would re-open per-cause"
+    },
+    {
+      "reasonCode": "asyncapi.payload_byte_carriage",
+      "classification": "doctrine-refused",
+      "note": "Declared binary media carries exact octets through the byte boundary; a declared payload contract (an Avro schema, a structural JSON schema) is not expressible at that boundary, so the direction is lossy: represented by {type: string, contentEncoding: base64}, invocable, honestly accounted. Authoring a conversion from the declared language into JSON Schema, or decoding binary payloads into logical values, would require OB-authored codec conventions the deference order refuses; the invocation encode/decode hook seam is the consumer's enrichment path (ASYNC-SS-19 pins the cell).",
+      "status": "ADJUDICATED 2026-08-13",
+      "measured": {
+        "reportTag": "asyncapi-at1-codec",
+        "note": "fill from the codec run"
+      },
+      "revisitTrigger": "An upstream authority defining a faithful JSON correspondence for the declared media (for example an Avro-JSON encoding adopted by a binding-specification revision), which would convert the affected directions to represented under that named conversion."
     }
   ],
   "loadFailureClassifications": {

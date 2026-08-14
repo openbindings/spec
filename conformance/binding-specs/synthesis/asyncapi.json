@@ -541,7 +541,7 @@
     },
     {
       "id": "ASYNC-SS-06",
-      "description": "A message whose effective content type has no JSON application-value carriage (application/octet-stream) cannot be invoked today: input encoding has no codec seam, so the runtime refuses before dispatch. The synthesis contract forbids presenting a statically-refusing operation as usable, so the target is implementation-unsupported (visible MC2 debt, discharged by a codec extension path) rather than lossy, and no operation is emitted. Distinct from schema-LANGUAGE loss (SS-07), which stays invocable and lossy.",
+      "description": "Declared binary media (application/octet-stream) is invocable through the artifact-authorized byte rule (ruled 2026-08-13): exact octets cross the boundary as the canonical Base64 string. This artifact's author declared exactly the boundary schema ({type: string, contentEncoding: base64}), so nothing is lost and the artifact is fully represented. Consumer codec hooks are the enrichment path to logical values; a declared contract that differs from the boundary schema accounts lossy instead (ASYNC-SS-19).",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -587,37 +587,46 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [],
-        "bindings": [],
+        "operations": [
+          "publishRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishRecord",
+            "bindingRef": "#/operations/publishRecord"
+          }
+        ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord",
               "scope": "target",
-              "status": "implementation-unsupported",
-              "reasonCode": "asyncapi.payload_carriage_unsupported",
-              "rule": "ASYNC-P-05",
-              "requirements": []
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "asyncapi.parent_target_excluded",
-              "rule": "ASYNC-P-05",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
               "requirements": []
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/operations/publishRecord#server[0]=broker",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "asyncapi.parent_target_excluded",
-              "rule": "ASYNC-P-02",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
               "requirements": []
             }
           ]
@@ -1869,6 +1878,111 @@
               "status": "represented",
               "operationKey": "publishEvent",
               "bindingRef": "#/operations/publishEvent",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ASYNC-SS-19",
+      "description": "Binary media with a declared contract the boundary cannot express (an Avro schema under application/avro) is still invocable: the direction is represented by the canonical Base64 boundary schema, and the alternative accounts lossy under asyncapi.payload_byte_carriage \u2014 never withheld, never unconstrained. Consumer codec hooks enrich to logical values at invocation.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Avro over the byte boundary",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "records": {
+              "address": "records.v1",
+              "messages": {
+                "record": {
+                  "contentType": "application/avro",
+                  "payload": {
+                    "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+                    "schema": {
+                      "type": "record",
+                      "name": "Record",
+                      "fields": [
+                        {
+                          "name": "id",
+                          "type": "long"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishRecord": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/records"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/records/messages/record"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishRecord",
+            "bindingRef": "#/operations/publishRecord"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#message[0]=#/channels/records/messages/record",
+              "scope": "alternative",
+              "status": "lossy",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
+              "reasonCode": "asyncapi.payload_byte_carriage",
+              "rule": "ASYNC-P-05",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishRecord#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishRecord",
+              "bindingRef": "#/operations/publishRecord",
               "requirements": []
             }
           ]
