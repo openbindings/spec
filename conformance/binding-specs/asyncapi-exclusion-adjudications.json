@@ -117,12 +117,12 @@
       "reasonCode": "asyncapi.payload_schema_invalid",
       "classification": "upstream-defective",
       "note": "The payload declaration is invalid under its own declared dialect (minimum: true, a non-schema properties member, Avro content referenced into a Schema Object position with no schemaFormat declared) or carries a reference the artifact leaves dangling, so it projects to an ill-formed OBI schema. Per the ASYNC-P-05 confinement sentence this is the artifact's defect, confined to exactly the affected operation: the target is invalid, siblings and the artifact synthesize. Introduced 2026-08-13 when per-operation confinement replaced whole-artifact invalid-synthesis rejection (ASYNC-SS-16 pins the cell).",
-      "status": "ADJUDICATED 2026-08-13",
+      "status": "ADJUDICATED 2026-08-13; SWEEP COMPLETE 2026-08-14 (all 13 entries classified upstream-defective)",
       "measured": {
         "coverageEntries": 13,
         "artifacts": 6,
         "reportTag": "asyncapi-at1-envelope",
-        "note": "9 new entries surfaced by the envelope block (operations formerly hidden behind the headers exclusion, incl. the deliberately-broken microcks lint fixture); per-entry classification against artifact bytes queued"
+        "note": "Per-entry classification against artifact bytes, 2026-08-14: (1) ByteBardOrg/AsyncAPI.NET and LEGO/AsyncAPI.NET CompleteKafkaSpec.json (8 entries, one fixture twice) \u2014 \"minimum\"/\"maximum\" declared as JSON strings (\"0\", \"100\") in payload and headers schemas; the AsyncAPI 2.x Schema Object is a Draft-07 superset and Draft-07 \u00a76.2 requires numbers \u2014 invalid under its own declared dialect (a lenient .NET parser example fixture). (2) microcks/microcks-spectral-ruleset pastry-orders-asyncapi-bad.yml (1 entry) \u2014 schema-level \"examples\" declared as a named-example OBJECT (the Message Object examples style) inside a channel parameter schema, where the dialect requires an array; the file is a lint ruleset's deliberately-broken fixture, surfaced by the routed envelope carrying parameter schemas into the input. (3) The 4 pre-existing entries (Elhebert invalid-schema fixture, panproto, specmesh, rippled) stand as adjudicated 2026-08-13. No implementation defect found: the one implementation bug this class briefly absorbed (the derivation $defs anchor) was caught by the corpus and fixed in the envelope block, and its specimens (adeo, and the schema-valid portions of these fixtures) left the class."
       },
       "revisitTrigger": "none \u2014 invalid-under-own-dialect is the upstream's defect by definition; a future binding-specification revision adopting a named repair convention would re-open per-cause"
     },
