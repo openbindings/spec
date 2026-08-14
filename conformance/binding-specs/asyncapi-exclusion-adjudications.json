@@ -42,19 +42,19 @@
       },
       "authority": "openbindings.asyncapi.md \u00a79.2: the first candidate defines no per-message payload-and-headers envelope; a target whose application contract requires headers at the OpenBindings boundary is an explicit synthesis exclusion.",
       "rationale": "Admitting headers would require either an envelope in the operation schema (protocol recompilation, forbidden by ABSTRACTION-FIDELITY.md) or a generic headers member on the invocation frames (explicitly rejected). The exclusion is the faithful outcome.",
-      "revisitTrigger": "An incorporated AsyncAPI Core or protocol-binding rule that identifies specific header content as application-required value with a defined faithful application-level mapping, such that the value can be projected without exposing a protocol container.",
-      "status": "PROPOSED - awaiting ruling R2"
+      "revisitTrigger": "An incorporated AsyncAPI or protocol-binding rule that identifies specific header content as application-required value with a defined faithful mapping into the operation boundary \u2014 i.e. the upstream authority itself promotes the header into the application contract. Ruled R2, ratified 2026-08-13.",
+      "status": "ADJUDICATED 2026-08-13 (R2 ratified: doctrine-refused stands)"
     },
     {
       "reasonCode": "asyncapi.no_effective_server",
-      "classification": "PENDING",
+      "classification": "implementation-debt",
       "measured": {
         "coverageEntries": 217,
         "artifacts": 74,
         "artifactShare": 0.218
       },
-      "note": "Top-ranked widening candidate. The binding-invoker contract's config.value requirement family already names 'a base URL for a document whose only server is the implied /' as negotiable context, so a widening would incorporate existing contract machinery rather than define a new default. Blocked on ruling R1 (OBI-D-13 sufficiency reading).",
-      "status": "OPEN - ruling R1"
+      "note": "RULED 2026-08-13 (R1+R5, one ruling for both families): WIDEN. A declared server is reachability configuration, not target identity \u2014 the operation+channel satisfies OBI-D-13 sufficiency, and the binding-invoker contract's config.value family already names the negotiable lane ('a channel address a service generates at runtime, a base URL for a document whose only server is the implied /'). Synthesis will represent these targets with a configuration.server requirement; invocation challenges CONTEXT_REQUIRED (config.value, point server) before dispatch. openapi \u00a79.3's select-or-refuse sentence is amended to the same negotiation, resolving its contradiction with \u00a79.2's requestMedia parallel. Until the widening lands this entry is open implementation work; it converts to represented-with-requirement on execution.",
+      "status": "OPEN - ruled, widening in progress (R1+R5)"
     },
     {
       "reasonCode": "asyncapi.parent_target_excluded",
