@@ -9,7 +9,8 @@
     "economically-deferred": "A faithful widening exists but measured prevalence is below the floor. Records the measured number and the revisit trigger.",
     "implementation-debt": "NOT a valid terminal classification. Per MC2 an implementation loss can never be laundered by adjudication; entries carrying this classification are open work items and block measured-complete.",
     "derivative": "Not independently adjudicable; the code is emitted as a consequence of another exclusion and shrinks when that one resolves.",
-    "resolved-widened": "Historical: the reason code no longer occurs because a ruled widening represented the class. The entry records the ruling and the corpus effect; it does not classify a live residual."
+    "resolved-widened": "Historical: the reason code no longer occurs because a ruled widening represented the class. The entry records the ruling and the corpus effect; it does not classify a live residual.",
+    "superseded-narrowing": "Historical: a ruled change removed the exclusion's constraint; the code narrows to a residual capability bound recorded in the entry. Not a live doctrine classification."
   },
   "measuredAgainst": {
     "corpusArtifacts": 340,
@@ -35,7 +36,7 @@
   "entries": [
     {
       "reasonCode": "asyncapi.message_headers",
-      "classification": "doctrine-refused",
+      "classification": "superseded-narrowing",
       "measured": {
         "coverageEntries": 394,
         "artifacts": 45,
@@ -43,8 +44,9 @@
       },
       "authority": "openbindings.asyncapi.md \u00a79.2: the first candidate defines no per-message payload-and-headers envelope; a target whose application contract requires headers at the OpenBindings boundary is an explicit synthesis exclusion.",
       "rationale": "Admitting headers would require either an envelope in the operation schema (protocol recompilation, forbidden by ABSTRACTION-FIDELITY.md) or a generic headers member on the invocation frames (explicitly rejected). The exclusion is the faithful outcome.",
-      "revisitTrigger": "An incorporated AsyncAPI or protocol-binding rule that identifies specific header content as application-required value with a defined faithful mapping into the operation boundary \u2014 i.e. the upstream authority itself promotes the header into the application contract. Ruled R2, ratified 2026-08-13.",
-      "status": "ADJUDICATED 2026-08-13 (R2 ratified: doctrine-refused stands)"
+      "revisitTrigger": "none \u2014 the residual per-cell bound retires per protocol as driver header mapping lands (Kafka record headers, HTTP headers, MQTT 5 user properties, AMQP application-properties).",
+      "status": "SUPERSEDED 2026-08-14 (narrowed to no-carriage protocol cells; envelope block queued)",
+      "note": "SUPERSEDED 2026-08-14 (headers-envelope corollary of the channel-parameters ruling): the exclusion's load-bearing constraint \u2014 no envelope in the operation schema \u2014 was removed when the routed one-tuple envelope entered the family for channel parameters. Message.headers is application data by AsyncAPI's own definition and varies per message (the amortization discriminator: per-invocation values are operation input/output); declared headers now ride the routed envelope beside the payload on both directions. The frames-level rejection stands untouched: the invoker wire contract never learns a headers member. The exclusion NARROWS to protocol cells without native header carriage (MQTT 3.1.1) \u2014 a per-cell capability bound like the driver matrix, not a doctrine. Execution folded into the parameters-envelope block, staged after the parameter lane proves the mechanism."
     },
     {
       "reasonCode": "asyncapi.no_effective_server",
