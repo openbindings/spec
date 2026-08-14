@@ -537,7 +537,7 @@
         "OAPI-P-05"
       ],
       "section": "9.3",
-      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default.",
+      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default. A missing selection is missing consumer configuration (ruled 2026-08-13, R1+R5): the invocation challenges CONTEXT_REQUIRED (config.value, point server) through the retryable context negotiation \u2014 the same lane as a missing request-media selection \u2014 and nothing dispatches.",
       "given": {
         "source": {
           "content": {
@@ -576,12 +576,20 @@
       },
       "expected": [
         {
-          "disposition": "refusal",
+          "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
             {
               "path": "/dispatch",
               "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "server"
             }
           ]
         }

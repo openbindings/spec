@@ -98,7 +98,7 @@ This first candidate does not define a per-message payload-and-headers envelope.
 
 ### 9.3. Configuration, security, and context
 
-Artifact declarations remain authoritative for server alternatives, variables, channel parameters, message alternatives, correlation, security requirements, and protocol-binding configuration (**ASYNC-P-04**). When the artifact supplies one unambiguous answer it is used. When it declares alternatives or a required value without choosing one, the runtime obtains an explicit application-level choice through invocation context before any observable dispatch.
+Artifact declarations remain authoritative for server alternatives, variables, channel parameters, message alternatives, correlation, security requirements, and protocol-binding configuration (**ASYNC-P-04**). When the artifact supplies one unambiguous answer it is used. When it declares alternatives or a required value without choosing one, the runtime obtains an explicit application-level choice through invocation context before any observable dispatch. An artifact that declares no server at all still names a complete operation target: a server is reachability, not identity, so the operation is synthesized with a declared server-configuration requirement and the runtime obtains the connection target through the same context negotiation before any observable dispatch — never a synthesis exclusion, and never a guessed default.
 
 Context names what is needed without turning protocol fields into operation input. At minimum, implementations distinguish the `server`, `message`, and artifact-declared credential requirements they can identify. A selected complete security alternative is satisfied as the governing AsyncAPI edition defines; requirements from different alternatives MUST NOT be combined into an undeclared hybrid. The driver applies resolved credentials through the selected protocol binding. Credentials and concrete protocol fields are never synthesized into the operation schema (**ASYNC-P-07**).
 
@@ -173,7 +173,7 @@ Processor rules:
 - **ASYNC-P-01**: accept only the exact editions in §3 and preserve edition semantics through normalization.
 - **ASYNC-P-02**: preserve application perspective and delegate concrete protocol behavior to AsyncAPI's binding objects and a capable driver (§8, §9.1).
 - **ASYNC-P-03**: carry application message payload values without protocol-shaped ordinary fields (§9.2).
-- **ASYNC-P-04**: resolve artifact-declared alternatives and missing choices explicitly through context, never payload guessing (§9.3).
+- **ASYNC-P-04**: resolve artifact-declared alternatives and missing choices — including an artifact that declares no server, whose reachability is consumer configuration — explicitly through context, never payload guessing and never a synthesis exclusion (§9.3).
 - **ASYNC-P-05**: delegate encoding and decoding to the artifact's schema, format, binding, driver, and codec authorities; carry a Schema Object into an OBI schema position only under semantic-preserving dialect translation, with the unconstrained-and-accounted fallback for declared non-JSON-Schema representations; withhold an operation whose every caller-input alternative declares media without JSON application-value carriage; and confine any schema defect to the affected operation direction (§9.2).
 - **ASYNC-P-06**: preserve emergent lifecycle and distinguish outputs from unsuccessful completion (§9.4).
 - **ASYNC-P-07**: keep security and protocol evidence below the ordinary operation-value boundary (§9.3, §9.5).

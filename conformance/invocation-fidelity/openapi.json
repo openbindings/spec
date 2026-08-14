@@ -237,7 +237,7 @@
         "OAPI-P-08"
       ],
       "section": "9.5",
-      "description": "A 504 completes unsuccessfully and is not converted into an output object.",
+      "description": "A 504 completes unsuccessfully and is not converted into an output object. Its declared text/plain body decodes through the same text lane a successful response would use (\u00a79.5 names \u00a79.2's lanes, ruled 2026-08-13) and rides the error data member as application-authored failure data.",
       "given": {
         "source": {
           "location": "https://api.example/openapi.json",
@@ -298,7 +298,7 @@
             },
             {
               "path": "/error/data",
-              "absent": true
+              "equals": "gateway timeout"
             }
           ]
         }

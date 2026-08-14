@@ -1792,6 +1792,88 @@
           ]
         }
       }
+    },
+    {
+      "id": "ASYNC-SS-18",
+      "description": "An artifact that declares no server at all still names a complete operation target (ASYNC-P-04, ruled 2026-08-13): a server is reachability, not identity. The operation synthesizes with a configuration.server requirement \u2014 never a synthesis exclusion \u2014 and invocation obtains the connection target through the CONTEXT_REQUIRED context negotiation before any observable dispatch.",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Serverless contract",
+            "version": "1"
+          },
+          "channels": {
+            "events": {
+              "address": "events.v1",
+              "messages": {
+                "event": {
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishEvent": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/events"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/events/messages/event"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishEvent"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishEvent",
+            "bindingRef": "#/operations/publishEvent"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishEvent",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishEvent",
+              "bindingRef": "#/operations/publishEvent",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishEvent#message[0]=#/channels/events/messages/event",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishEvent",
+              "bindingRef": "#/operations/publishEvent",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
