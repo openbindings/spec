@@ -6,7 +6,7 @@
   "scenarios": [
     {
       "id": "OAPI-SS-01",
-      "description": "A supported path operation remains callable while every request-media declaration and webhook interaction receives its own disposition.",
+      "description": "A supported path operation remains callable while every request-media declaration and webhook interaction receives its own disposition; the object-schema custom media selects no carriage lane.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -34,7 +34,12 @@
                     },
                     "application/x-custom": {
                       "schema": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
@@ -1243,6 +1248,293 @@
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1pick/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-16",
+      "description": "The string-carriage lane is selected by the declaration, not by the media type: every concrete non-JSON, non-form declaration whose governing schema resolves to type string is represented -- text/plain, text/csv, and XML alike -- while the same media types declared with an object schema select no lane, because no lane builds a document from an object model.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "String carriage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/text": {
+              "post": {
+                "operationId": "sendText",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "text/csv": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/markup": {
+              "post": {
+                "operationId": "sendMarkup",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/xml": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/typed-markup": {
+              "post": {
+                "operationId": "sendTypedMarkup",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "application/xml": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "text/xml": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/nonstandard": {
+              "post": {
+                "operationId": "sendNonstandard",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "text/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "sendMarkup",
+          "sendNonstandard",
+          "sendText",
+          "sendTypedMarkup"
+        ],
+        "bindings": [
+          {
+            "operationKey": "sendMarkup",
+            "bindingRef": "#/paths/~1markup/post"
+          },
+          {
+            "operationKey": "sendNonstandard",
+            "bindingRef": "#/paths/~1nonstandard/post"
+          },
+          {
+            "operationKey": "sendText",
+            "bindingRef": "#/paths/~1text/post"
+          },
+          {
+            "operationKey": "sendTypedMarkup",
+            "bindingRef": "#/paths/~1typed-markup/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1markup/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendMarkup",
+              "bindingRef": "#/paths/~1markup/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1markup/post/requestBody/content/application~1xml",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendMarkup",
+              "bindingRef": "#/paths/~1markup/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1nonstandard/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendNonstandard",
+              "bindingRef": "#/paths/~1nonstandard/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1nonstandard/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendNonstandard",
+              "bindingRef": "#/paths/~1nonstandard/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1nonstandard/post/requestBody/content/text~1json",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1text/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendText",
+              "bindingRef": "#/paths/~1text/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1text/post/requestBody/content/text~1csv",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendText",
+              "bindingRef": "#/paths/~1text/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1text/post/requestBody/content/text~1plain",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendText",
+              "bindingRef": "#/paths/~1text/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1typed-markup/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendTypedMarkup",
+              "bindingRef": "#/paths/~1typed-markup/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1typed-markup/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendTypedMarkup",
+              "bindingRef": "#/paths/~1typed-markup/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1typed-markup/post/requestBody/content/application~1xml",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1typed-markup/post/requestBody/content/text~1xml",
               "scope": "alternative",
               "status": "excluded",
               "reasonCode": "openapi.request_media_excluded",
