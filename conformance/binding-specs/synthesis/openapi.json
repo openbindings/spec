@@ -275,7 +275,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["sendMessage"],
+        "operations": [
+          "sendMessage"
+        ],
         "bindings": [
           {
             "operationKey": "sendMessage",
@@ -293,7 +295,9 @@
               "status": "represented",
               "operationKey": "sendMessage",
               "bindingRef": "#/paths/~1messages/post",
-              "requirements": ["configuration.server"]
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -373,8 +377,15 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.0",
-          "info": { "title": "Parameter content soundness", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Parameter content soundness",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/search": {
               "get": {
@@ -385,12 +396,18 @@
                     "in": "query",
                     "content": {
                       "application/xml": {
-                        "schema": { "type": "string" }
+                        "schema": {
+                          "type": "string"
+                        }
                       }
                     }
                   }
                 ],
-                "responses": { "204": { "description": "done" } }
+                "responses": {
+                  "204": {
+                    "description": "done"
+                  }
+                }
               }
             }
           }
@@ -425,13 +442,24 @@
         "content": {
           "openapi": "3.1.0",
           "jsonSchemaDialect": "https://schemas.example.test/custom",
-          "info": { "title": "Per-operation schema dialect", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Per-operation schema dialect",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/health": {
               "get": {
                 "operationId": "health",
-                "responses": { "204": { "description": "healthy" } }
+                "responses": {
+                  "204": {
+                    "description": "healthy"
+                  }
+                }
               }
             },
             "/supported": {
@@ -460,7 +488,9 @@
                     "description": "inherits the custom dialect",
                     "content": {
                       "application/json": {
-                        "schema": { "type": "string" }
+                        "schema": {
+                          "type": "string"
+                        }
                       }
                     }
                   }
@@ -472,7 +502,10 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["health", "supported"],
+        "operations": [
+          "health",
+          "supported"
+        ],
         "bindings": [
           {
             "operationKey": "health",
@@ -525,8 +558,15 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.0.4",
-          "info": { "title": "Generic binary synthesis", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Generic binary synthesis",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/image": {
               "put": {
@@ -535,11 +575,18 @@
                   "required": true,
                   "content": {
                     "image/png": {
-                      "schema": { "type": "string", "format": "binary" }
+                      "schema": {
+                        "type": "string",
+                        "format": "binary"
+                      }
                     }
                   }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             }
           }
@@ -547,7 +594,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["uploadImage"],
+        "operations": [
+          "uploadImage"
+        ],
         "bindings": [
           {
             "operationKey": "uploadImage",
@@ -587,17 +636,30 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
-          "info": { "title": "OAS 3.1 binary synthesis", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "OAS 3.1 binary synthesis",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/raw": {
               "put": {
                 "operationId": "uploadRaw",
                 "requestBody": {
                   "required": true,
-                  "content": { "image/png": {} }
+                  "content": {
+                    "image/png": {}
+                  }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             },
             "/encoded": {
@@ -615,7 +677,11 @@
                     }
                   }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             }
           }
@@ -623,7 +689,10 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["uploadEncoded", "uploadRaw"],
+        "operations": [
+          "uploadEncoded",
+          "uploadRaw"
+        ],
         "bindings": [
           {
             "operationKey": "uploadEncoded",
@@ -685,8 +754,15 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
-          "info": { "title": "Range coverage", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Range coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/items": {
               "post": {
@@ -697,13 +773,23 @@
                     "*/*": {
                       "schema": {
                         "type": "object",
-                        "properties": { "name": { "type": "string" } },
-                        "required": ["name"]
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
                       }
                     }
                   }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             }
           }
@@ -711,7 +797,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createItem"],
+        "operations": [
+          "createItem"
+        ],
         "bindings": [
           {
             "operationKey": "createItem",
@@ -729,7 +817,9 @@
               "status": "represented",
               "operationKey": "createItem",
               "bindingRef": "#/paths/~1items/post",
-              "requirements": ["configuration.requestMedia"]
+              "requirements": [
+                "configuration.requestMedia"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -738,7 +828,9 @@
               "status": "represented",
               "operationKey": "createItem",
               "bindingRef": "#/paths/~1items/post",
-              "requirements": ["configuration.requestMedia"]
+              "requirements": [
+                "configuration.requestMedia"
+              ]
             }
           ]
         }
@@ -751,8 +843,15 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
-          "info": { "title": "Mixed range coverage", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Mixed range coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/items": {
               "post": {
@@ -761,14 +860,22 @@
                   "required": true,
                   "content": {
                     "application/json": {
-                      "schema": { "type": "object" }
+                      "schema": {
+                        "type": "object"
+                      }
                     },
                     "*/*": {
-                      "schema": { "type": "object" }
+                      "schema": {
+                        "type": "object"
+                      }
                     }
                   }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             }
           }
@@ -776,7 +883,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createItem"],
+        "operations": [
+          "createItem"
+        ],
         "bindings": [
           {
             "operationKey": "createItem",
@@ -812,7 +921,9 @@
               "status": "represented",
               "operationKey": "createItem",
               "bindingRef": "#/paths/~1items/post",
-              "requirements": ["configuration.requestMedia"]
+              "requirements": [
+                "configuration.requestMedia"
+              ]
             }
           ]
         }
@@ -825,18 +936,33 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
-          "info": { "title": "Optional range coverage", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Optional range coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/items": {
               "post": {
                 "operationId": "createOptionalItem",
                 "requestBody": {
                   "content": {
-                    "*/*": { "schema": { "type": "object" } }
+                    "*/*": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
                   }
                 },
-                "responses": { "204": { "description": "done" } }
+                "responses": {
+                  "204": {
+                    "description": "done"
+                  }
+                }
               }
             }
           }
@@ -844,7 +970,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createOptionalItem"],
+        "operations": [
+          "createOptionalItem"
+        ],
         "bindings": [
           {
             "operationKey": "createOptionalItem",
@@ -871,7 +999,9 @@
               "status": "represented",
               "operationKey": "createOptionalItem",
               "bindingRef": "#/paths/~1items/post",
-              "requirements": ["configuration.requestMedia"]
+              "requirements": [
+                "configuration.requestMedia"
+              ]
             }
           ]
         }
@@ -884,8 +1014,15 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.1.2",
-          "info": { "title": "Whole JSON coverage", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Whole JSON coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/items": {
               "post": {
@@ -896,14 +1033,33 @@
                     "application/json": {
                       "schema": {
                         "anyOf": [
-                          { "type": "object", "properties": { "name": { "type": "string" } }, "required": ["name"] },
-                          { "type": "array", "items": { "type": "string" } }
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ]
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
                         ]
                       }
                     }
                   }
                 },
-                "responses": { "204": { "description": "stored" } }
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
               }
             }
           }
@@ -911,9 +1067,14 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createItem"],
+        "operations": [
+          "createItem"
+        ],
         "bindings": [
-          { "operationKey": "createItem", "bindingRef": "#/paths/~1items/post" }
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
         ],
         "coverage": {
           "exhaustive": true,
@@ -948,20 +1109,31 @@
         "bindingSpec": "openbindings.openapi@1",
         "content": {
           "openapi": "3.0.4",
-          "info": { "title": "Schema-omitted byte coverage", "version": "1" },
-          "servers": [{ "url": "https://api.example.test" }],
+          "info": {
+            "title": "Schema-omitted byte coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
           "paths": {
             "/archive": {
               "post": {
                 "operationId": "storeArchive",
                 "requestBody": {
                   "required": true,
-                  "content": { "application/octet-stream": {} }
+                  "content": {
+                    "application/octet-stream": {}
+                  }
                 },
                 "responses": {
                   "200": {
                     "description": "archive",
-                    "content": { "application/octet-stream": {} }
+                    "content": {
+                      "application/octet-stream": {}
+                    }
                   }
                 }
               }
@@ -971,9 +1143,14 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["storeArchive"],
+        "operations": [
+          "storeArchive"
+        ],
         "bindings": [
-          { "operationKey": "storeArchive", "bindingRef": "#/paths/~1archive/post" }
+          {
+            "operationKey": "storeArchive",
+            "bindingRef": "#/paths/~1archive/post"
+          }
         ],
         "coverage": {
           "exhaustive": true,
@@ -1659,7 +1836,9 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["probe"],
+        "operations": [
+          "probe"
+        ],
         "bindings": [
           {
             "operationKey": "probe",
@@ -1693,7 +1872,134 @@
       },
       "expected": {
         "outcome": "refused",
-        "rules": ["OAPI-P-01"]
+        "rules": [
+          "OAPI-P-01"
+        ]
+      }
+    },
+    {
+      "id": "OAPI-SS-19",
+      "description": "A self-recursive component is reached from the request body only through a property the OAS declares readOnly, and from the response body directly. Request projection removes the property, so the emitted input contract must not publish a definition for a component no request instance can contain, while the output contract keeps the same component as its own recursive definition. Both boundaries stay realizable and the operation is fully represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "defs reachability",
+            "version": "1.0.0"
+          },
+          "paths": {
+            "/records": {
+              "post": {
+                "operationId": "createRecord",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/Record"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Record"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "Record": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "audit": {
+                    "readOnly": true,
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/components/schemas/AuditEntry"
+                      }
+                    ]
+                  }
+                }
+              },
+              "AuditEntry": {
+                "type": "object",
+                "properties": {
+                  "actor": {
+                    "type": "string"
+                  },
+                  "previous": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/components/schemas/AuditEntry"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createRecord"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createRecord",
+            "bindingRef": "#/paths/~1records/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1records/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createRecord",
+              "bindingRef": "#/paths/~1records/post",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1records/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createRecord",
+              "bindingRef": "#/paths/~1records/post",
+              "requirements": []
+            }
+          ]
+        }
       }
     }
   ]
