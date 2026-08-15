@@ -995,6 +995,263 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-14",
+      "description": "An unconstrained multipart part (a bare description with no type) is represented: its OAS per-type part default is keyed by the supplied value's JSON application type at invocation.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Unconstrained part coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/me/picture": {
+              "post": {
+                "operationId": "uploadPicture",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {
+                            "description": "Profile picture file"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "uploadPicture"
+        ],
+        "bindings": [
+          {
+            "operationKey": "uploadPicture",
+            "bindingRef": "#/paths/~1me~1picture/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1me~1picture/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "uploadPicture",
+              "bindingRef": "#/paths/~1me~1picture/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1me~1picture/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadPicture",
+              "bindingRef": "#/paths/~1me~1picture/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-15",
+      "description": "A part schema declaring one non-null anyOf branch beside a null branch collapses to that branch's carriage and is represented, while a choice with more than one non-null branch keeps its exclusion.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Nullable-choice part coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/process": {
+              "post": {
+                "operationId": "processFile",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "contentMediaType": "application/octet-stream"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The file to process; JSON null elides the part."
+                          },
+                          "options": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": true
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/pick": {
+              "post": {
+                "operationId": "pickOne",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "choice": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "integer"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "pickOne",
+          "processFile"
+        ],
+        "bindings": [
+          {
+            "operationKey": "pickOne",
+            "bindingRef": "#/paths/~1pick/post"
+          },
+          {
+            "operationKey": "processFile",
+            "bindingRef": "#/paths/~1process/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1process/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "processFile",
+              "bindingRef": "#/paths/~1process/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1process/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "processFile",
+              "bindingRef": "#/paths/~1process/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1pick/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "pickOne",
+              "bindingRef": "#/paths/~1pick/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1pick/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

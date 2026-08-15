@@ -4046,6 +4046,118 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-50",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "An unconstrained multipart part takes its OAS per-type default from the value's JSON application type, and a single-non-null-branch choice part carries its branch's serialization.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Part interpretation",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "description": "unconstrained part"
+                            },
+                            "file_id": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "profile": {
+              "role": "admin"
+            },
+            "file_id": "id-1"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"profile\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Type: application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "{\"role\":\"admin\"}"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"file_id\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "id-1"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
