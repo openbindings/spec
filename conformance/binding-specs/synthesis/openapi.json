@@ -1260,7 +1260,7 @@
     },
     {
       "id": "OAPI-SS-16",
-      "description": "The string-carriage lane is selected by the declaration, not by the media type: every concrete non-JSON, non-form declaration whose governing schema resolves to type string is represented -- text/plain, text/csv, and XML alike -- while the same media types declared with an object schema select no lane, because no lane builds a document from an object model.",
+      "description": "The string-carriage lane needs both halves of a derived scope: a governing schema that resolves to type string, and a media type that is character data. A concrete non-JSON, non-form declaration meeting both is represented -- text/plain, text/csv, and XML alike -- while the same media types declared with an object schema select no lane, because no lane builds a document from an object model. A media type whose registration establishes no character encoding has no defined string-to-octets mapping, so a string-typed binary declaration keeps the byte boundary and is an excluded alternative; under OAS 3.1 format binary carries no assertion force, so that declaration resolves to a bare type string and is decided entirely by its media type. A schema that asserts nothing is the same declaration as an omitted schema and takes the artifact-authorized byte lane.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -1399,6 +1399,55 @@
                   }
                 }
               }
+            },
+            "/binary": {
+              "post": {
+                "operationId": "sendBinary",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "application/vnd.apache.arrow.stream": {
+                      "schema": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/opaque": {
+              "post": {
+                "operationId": "sendOpaque",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "text/plain": {
+                      "schema": true
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
             }
           }
         }
@@ -1406,12 +1455,18 @@
       "expected": {
         "outcome": "synthesized",
         "operations": [
+          "sendBinary",
           "sendMarkup",
           "sendNonstandard",
+          "sendOpaque",
           "sendText",
           "sendTypedMarkup"
         ],
         "bindings": [
+          {
+            "operationKey": "sendBinary",
+            "bindingRef": "#/paths/~1binary/post"
+          },
           {
             "operationKey": "sendMarkup",
             "bindingRef": "#/paths/~1markup/post"
@@ -1419,6 +1474,10 @@
           {
             "operationKey": "sendNonstandard",
             "bindingRef": "#/paths/~1nonstandard/post"
+          },
+          {
+            "operationKey": "sendOpaque",
+            "bindingRef": "#/paths/~1opaque/post"
           },
           {
             "operationKey": "sendText",
@@ -1433,6 +1492,33 @@
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1binary/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendBinary",
+              "bindingRef": "#/paths/~1binary/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1binary/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendBinary",
+              "bindingRef": "#/paths/~1binary/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1binary/post/requestBody/content/application~1vnd.apache.arrow.stream",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1markup/post",
@@ -1476,6 +1562,24 @@
               "status": "excluded",
               "reasonCode": "openapi.request_media_excluded",
               "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1opaque/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "sendOpaque",
+              "bindingRef": "#/paths/~1opaque/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1opaque/post/requestBody/content/text~1plain",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "sendOpaque",
+              "bindingRef": "#/paths/~1opaque/post",
               "requirements": []
             },
             {
