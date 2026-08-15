@@ -1648,6 +1648,53 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-17",
+      "description": "String content parses under the YAML 1.2.2 grammar pin, and its plain scalars resolve by the core schema's tag resolution: date-shaped, time-shaped and YAML 1.1 boolean-word scalars match none of the null, bool, int or float patterns, so each is a string. The restriction is the artifact authority's, which limits tags to those allowed by YAML's JSON schema ruleset, so no accepted edition carries a timestamp-tagged node. The string-carried document synthesizes exactly as its JSON spelling does.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://scalars.example.test/openapi.yaml",
+        "content": "openapi: 3.0.0\ninfo:\n  title: Scalars\n  version: 1.0.0\nservers:\n  - url: https://scalars.example.test\npaths:\n  /probe:\n    get:\n      operationId: probe\n      parameters:\n        - name: issued\n          in: query\n          schema:\n            type: string\n            example: 2020-01-01T12:00:00Z\n        - name: day\n          in: query\n          schema:\n            type: string\n            example: 2020-01-01\n        - name: at\n          in: query\n          schema:\n            type: string\n            example: 12:30:45\n        - name: consent\n          in: query\n          schema:\n            type: string\n            example: yes\n      responses:\n        \"200\":\n          description: ok\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["probe"],
+        "bindings": [
+          {
+            "operationKey": "probe",
+            "bindingRef": "#/paths/~1probe/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1probe/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "probe",
+              "bindingRef": "#/paths/~1probe/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-18",
+      "description": "A plain scalar the YAML 1.2.2 core schema resolves to positive infinity has no JSON image, and an OpenAPI document is a JSON object whose YAML spelling exists to round-trip with JSON. The artifact is refused loudly rather than carried with a substituted null the author never wrote.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://scalars.example.test/openapi.yaml",
+        "content": "openapi: 3.0.0\ninfo:\n  title: No JSON image\n  version: 1.0.0\nservers:\n  - url: https://scalars.example.test\npaths:\n  /probe:\n    get:\n      operationId: probe\n      parameters:\n        - name: limit\n          in: query\n          schema:\n            type: number\n            example: .inf\n      responses:\n        \"200\":\n          description: ok\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": ["OAPI-P-01"]
+      }
     }
   ]
 }
