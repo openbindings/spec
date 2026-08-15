@@ -138,6 +138,19 @@
         "note": "grew 16\u219277 at the envelope tag: operations the headers exclusion previously hid now synthesize and their binary-media payloads account honestly at the byte floor"
       },
       "revisitTrigger": "The next named correspondence adopted by a binding-specification revision (proto3 JSON Mapping is named-reserved in \u00a79.2), which would convert its affected directions to represented."
+    },
+    {
+      "reasonCode": "asyncapi.invalid_action",
+      "classification": "upstream-defective",
+      "measured": {
+        "coverageEntries": 0,
+        "artifacts": 0,
+        "note": "Zero dev-corpus instances. First observed in the MC5 seal-1 sealed cohort (vintage-3, finding F-V3-1): an AsyncAPI 2.4.0 artifact writing Reference Objects at positions its edition does not admit them, which the TypeScript composer then tolerated into 3.x-normalized operations whose action was erased by reference-sibling policy."
+      },
+      "authority": "AsyncAPI 3.0.0 Operation Object: the REQUIRED `action` field is \"send\" or \"receive\"; and the AsyncAPI 2.x edition texts' Reference Object position admissions (Operation Objects, whole servers/channels maps, and string-typed fields admit no Reference Object in any accepted 2.x edition).",
+      "rationale": "An operations-map entry whose action is neither send nor receive violates its own edition and is confined to exactly that target (invalid, ASYNC-D-03); siblings and the artifact synthesize. The 2.x tolerance path that produced the seal-1 instances is CLOSED: both SDKs now refuse a 2.x document carrying a Reference Object at a non-admitting position whole-artifact, before reference composition (the adjudicated consistent-loud-refusal convergence for the parser-tolerance class). The code remains reachable only for a 3.x artifact that authors an action other than send/receive, where both SDKs behave identically.",
+      "revisitTrigger": "none \u2014 an action outside the edition's closed enumeration is the upstream's defect by definition",
+      "status": "ADJUDICATED 2026-08-15 (ordinary-loop closure of MC5 seal-1 finding F-V3-1)"
     }
   ],
   "loadFailureClassifications": {

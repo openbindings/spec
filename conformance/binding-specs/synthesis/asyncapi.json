@@ -2255,6 +2255,175 @@
           ]
         }
       }
+    },
+    {
+      "id": "ASYNC-SS-22",
+      "description": "AsyncAPI 2.x Reference Object position admission: the 2.x Operation Object admits no Reference Object (publish/subscribe must be Operation Objects in every accepted 2.x edition), and the whole servers field is a Servers Object map, never a Reference Object. A document writing $ref at either position has no interpretation under its own declared edition and is refused whole-artifact BEFORE reference composition -- tolerating it and synthesizing a degraded OBI is the parser-tolerance divergence class the refusal converges (MC5 seal-1 finding F-V3-1).",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "2.4.0",
+          "info": {
+            "title": "Ref at operation position",
+            "version": "1"
+          },
+          "servers": {
+            "$ref": "./servers.yml"
+          },
+          "channels": {
+            "events": {
+              "publish": {
+                "$ref": "#/components/operations/publishEvents"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "ASYNC-P-01"
+        ]
+      }
+    },
+    {
+      "id": "ASYNC-SS-23",
+      "description": "AsyncAPI 2.x Reference Object position admission at a string-typed field: Channel Item description is typed `string` in every accepted 2.x edition, so a Reference Object there is not admitted and the document is refused whole-artifact before composition (the string-position cell of MC5 seal-1 finding F-V3-1).",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "2.4.0",
+          "info": {
+            "title": "Ref at string position",
+            "version": "1"
+          },
+          "channels": {
+            "events": {
+              "description": {
+                "$ref": "#/components/x-descriptions/events"
+              },
+              "subscribe": {
+                "message": {
+                  "payload": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "ASYNC-P-01"
+        ]
+      }
+    },
+    {
+      "id": "ASYNC-SS-24",
+      "description": "A top-level Avro union: the Avro specification admits a JSON ARRAY as a complete schema, and the Multi Format Schema Object's schema member is untyped, so a union declared at the top level derives under the named Avro correspondence exactly like an interior union -- oneOf of the JSON Encoding's branches, null branch as the null schema, named branch under its single-key wrapper. The operation is fully represented; an implementation that demands an object schema at this position wrongly floors the direction as an inexpressible contract (the derivation cell of MC5 seal-1 finding F-V3-2).",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "Top-level Avro union",
+            "version": "1"
+          },
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "files": {
+              "address": "files.v1",
+              "messages": {
+                "file": {
+                  "payload": {
+                    "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+                    "schema": [
+                      "null",
+                      {
+                        "type": "record",
+                        "name": "File",
+                        "fields": [
+                          {
+                            "name": "path",
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "publishFile": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/files"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/files/messages/file"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "publishFile"
+        ],
+        "bindings": [
+          {
+            "operationKey": "publishFile",
+            "bindingRef": "#/operations/publishFile"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishFile",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "publishFile",
+              "bindingRef": "#/operations/publishFile",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishFile#message[0]=#/channels/files/messages/file",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishFile",
+              "bindingRef": "#/operations/publishFile",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/publishFile#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "publishFile",
+              "bindingRef": "#/operations/publishFile",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
