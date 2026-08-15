@@ -236,46 +236,54 @@ A candidate page remains informational until promotion. It uses the full authori
 
 ## The authority precedence: who has already decided
 
-The deference order below governs how a binding specification answers a
-question that is *its* to answer. This precedence governs the prior
-question — whether the question is its to answer at all. Consult in order,
-and stop at the first authority that answers:
+Two authorities govern a project binding specification's questions, and the
+binding specification is not one of them. It is the **gap pillar**: the
+text that states a definite answer exactly where those two are silent.
+Consult in order, and stop at the first that answers:
 
 1. **The core OpenBindings specification.** The abstraction boundary, the
-   document model, and the invocation contract. Nothing beneath may
-   contradict it.
-2. **The governing binding specification's own text**, including the
-   project doctrine recorded here. A rule this project already wrote binds
-   it until explicitly revised.
-3. **The incorporated upstream artifact authority** — the artifact
-   specification the binding specification defers to, *and everything that
-   authority itself incorporates*: the RFCs it cites, the media-type
-   registrations it relies on, the schema dialect it adopts. An answer
-   reached through an incorporated citation is an incorporated answer, not
-   a local invention.
-4. **Only where all three are silent** does the question become this
-   project's to decide, under the deference order below.
+   document model, and the invocation contract.
+2. **The incorporated upstream artifact authority** — the artifact
+   specification this family defers to, *and everything that authority
+   itself incorporates*: the RFCs it cites, the media-type registrations
+   it relies on, the schema dialect it adopts. An answer reached through an
+   incorporated citation is an incorporated answer, not a local invention.
+3. **Where both are silent**, the question is the binding specification's
+   to answer, under the deference order below. That answer is authored, not
+   discovered, and the text labels it as this specification's convention.
+
+The ordering has a direction that matters while these candidates are in
+flight. A project binding specification does not acquire standing over the
+authorities it defers to by having been written first. **Where a binding
+specification conflicts with the core or with the incorporated upstream
+authority, the binding specification is what gets revised** — its prior
+text is a draft position, not a precedent to be preserved. This is a
+property of the project's chosen close-deference policy, not of Core:
+Core permits a binding specification to override an upstream rule under
+its own identifier, and these candidates decline that freedom because
+duplicating or contradicting a capable authority reduces brownfield
+fidelity.
 
 Three corollaries carry most of the practical weight.
 
 **An implied answer is an answer.** A question is not open merely because
-no text addresses it by name. If the answer follows from rules that are
-already stated, adhere to it; re-deciding it privately is how two
+no text addresses it by name. If the answer follows from rules already
+stated by an authority, adhere to it; re-deciding it privately is how two
 paragraphs of one specification come to disagree.
 
-**Contradicting our own text is a revision, not a reading.** Where a
-binding specification already states a rule, discovering that the upstream
-authority never required it does not silently license a different rule.
-That is a specification-level change and it goes through a ruling, which
-records what the prior text got wrong and why the replacement is more
-faithful.
+**Revision is recorded, never silent.** Discovering that an authority
+contradicts, or never required, something a candidate says is a reason to
+change the candidate — and the change is written down with what the prior
+text got wrong and why the replacement is more faithful. The candidate's
+text does not bind the decision; the record of its revision binds the
+project's memory of why.
 
 **An implementation's behavior is never an authority.** What an SDK, a
 reference tool, or a widely used library happens to do carries no weight
-in this precedence, at any level. Reasoning from it inverts the whole
-relationship: it makes conformance mean "matches what we built" instead
-of "matches what the authorities say." Where implementations and
-authorities disagree, the implementations are wrong.
+at any level of this precedence. Reasoning from it inverts the whole
+relationship: it makes conformance mean "matches what we built" instead of
+"matches what the authorities say." Where implementations and authorities
+disagree, the implementations are wrong.
 
 ## The deference order
 
@@ -299,7 +307,7 @@ The adversarial review resolved the former lower-confidence questions below. The
 
 These decisions are intentionally specific. “Let each implementation choose” is not an acceptable substitute; a future review keeps the rule, replaces it with a better incorporated/configured rule, or narrows the supported set explicitly.
 
-The shorthand is **incorporate → preserve → configure → refuse → default**, and it applies only after the authority precedence above has established that the question is this project's to answer. It is project quality doctrine, not a restriction on what a binding specification is allowed to mean. Its governing correction is **defer before defining; never guess privately**: completeness requires a definite answer, an explicit binding-specification convention is a definite answer, and an explicit exclusion is also a definite answer. An implementation-only approximation may be useful locally but does not close the portable specification.
+The shorthand is **incorporate → preserve → configure → refuse → default**, and it applies only after the authority precedence above has established that neither Core nor the incorporated upstream authority already answers — that the question genuinely falls to the gap pillar. It is project quality doctrine, not a restriction on what a binding specification is allowed to mean. Its governing correction is **defer before defining; never guess privately**: completeness requires a definite answer, an explicit binding-specification convention is a definite answer, and an explicit exclusion is also a definite answer. An implementation-only approximation may be useful locally but does not close the portable specification.
 
 ### The context/input discriminator (amortization)
 
