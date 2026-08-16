@@ -21,9 +21,11 @@ An implementation MUST NOT substitute an OpenBindings interpretation for a concr
 
 Like Core, this document specifies portable meaning rather than a client API, driver registry, connection pool, retry policy, or command-line interface. A protocol driver is an implementation capability, not an OBI field and not a new binding-specification type.
 
+**Normative upstream snapshot.** Every authority incorporated above is pinned to an immutable text, so a claim about what an authority says is checkable against the exact bytes the claim was made from. AsyncAPI Core is the nine editions listed in [§3](#3-accepted-asyncapi-editions-and-source-representations), each read at its own tag in the [`asyncapi/spec`](https://github.com/asyncapi/spec) repository — commits [`b21cf1d8`](https://github.com/asyncapi/spec/blob/b21cf1d854994a8488c6575ae0dda461b51eb1d4/versions/2.0.0/asyncapi.md) (2.0.0, at `versions/2.0.0/asyncapi.md`), [`3470a638`](https://github.com/asyncapi/spec/blob/3470a6386736cf6002846d8eb7535308b79c75e8/spec/asyncapi.md) (2.1.0), [`01ffd5b4`](https://github.com/asyncapi/spec/blob/01ffd5b48875dc478b81c393f0595a4bc7f816bb/spec/asyncapi.md) (2.2.0), [`22c6f2c7`](https://github.com/asyncapi/spec/blob/22c6f2c7a61846338bfbd43d81024cb12cf4ed5f/spec/asyncapi.md) (2.3.0), [`65d58696`](https://github.com/asyncapi/spec/blob/65d58696f8c3ab6471aa48b12d878221b8d8109e/spec/asyncapi.md) (2.4.0), [`4ed40555`](https://github.com/asyncapi/spec/blob/4ed405556e5fe546cad389676c272ff29534e375/spec/asyncapi.md) (2.5.0), [`1824379b`](https://github.com/asyncapi/spec/blob/1824379ba6252bfb52550337a86ca9b10a33b3aa/spec/asyncapi.md) (2.6.0), [`d78dcea7`](https://github.com/asyncapi/spec/blob/d78dcea70c9b094a3df72f9a4e811828cec778cc/spec/asyncapi.md) (3.0.0), and [`b3fac5bb`](https://github.com/asyncapi/spec/blob/b3fac5bb522771428ea57b16129b273cd3ea0180/spec/asyncapi.md) (3.1.0), each at `spec/asyncapi.md` except where noted. The AsyncAPI protocol-binding authority is the published collection [`asyncapi/bindings`](https://github.com/asyncapi/bindings) at tag `v3.1.0`, commit [`ec5c590d4212905a13014cfd43f72fb086c00e85`](https://github.com/asyncapi/bindings/tree/ec5c590d4212905a13014cfd43f72fb086c00e85) — every protocol binding specification published there, since [§9.1](#91-protocol-and-driver-delegation) defines no protocol allowlist. The string carriage grammar is [YAML 1.2.2](https://yaml.org/spec/1.2.2/). The rendered documentation at <https://www.asyncapi.com/docs/reference/specification/> and every later upstream revision — including unreleased revisions on the bindings repository's default branch — are informative and do not alter this identifier. Accepting another edition or advancing a normative authority pin publishes a new binding-specification identifier.
+
 ## 3. Accepted AsyncAPI editions and source representations
 
-This candidate accepts exactly these published AsyncAPI editions, each interpreted under its own official specification text: **2.0.0, 2.1.0, 2.2.0, 2.3.0, 2.4.0, 2.5.0, 2.6.0, 3.0.0, and 3.1.0**. A future edition is not accepted merely because its version shares a major or minor line (**ASYNC-P-01**).
+This candidate accepts exactly these published AsyncAPI editions, each interpreted under its own official specification text at the immutable commit pinned in [§2](#2-purpose-scope-and-authority): **2.0.0, 2.1.0, 2.2.0, 2.3.0, 2.4.0, 2.5.0, 2.6.0, 3.0.0, and 3.1.0**. A future edition is not accepted merely because its version shares a major or minor line (**ASYNC-P-01**).
 
 Two carried representations are accepted:
 
@@ -192,11 +194,8 @@ Conformance to this binding candidate and conformance to a particular protocol d
 
 ## 12. References
 
-- [AsyncAPI 2.0.0 specification](https://www.asyncapi.com/docs/reference/specification/v2.0.0)
-- [AsyncAPI 2.6.0 specification](https://www.asyncapi.com/docs/reference/specification/v2.6.0)
-- [AsyncAPI 3.0.0 specification](https://www.asyncapi.com/docs/reference/specification/v3.0.0)
-- [AsyncAPI 3.1.0 specification](https://www.asyncapi.com/docs/reference/specification/v3.1.0)
-- [Migrating to AsyncAPI 3.0.0](https://www.asyncapi.com/docs/migration/migrating-to-v3)
-- [AsyncAPI protocol bindings](https://github.com/asyncapi/bindings)
-- [RFC 6901: JSON Pointer](https://www.rfc-editor.org/rfc/rfc6901)
-- [YAML 1.2.2](https://yaml.org/spec/1.2.2/)
+- **[AsyncAPI]** AsyncAPI Initiative, "AsyncAPI Specification," exact editions 2.0.0, 2.1.0, 2.2.0, 2.3.0, 2.4.0, 2.5.0, 2.6.0, 3.0.0, and 3.1.0, each at the immutable [`asyncapi/spec`](https://github.com/asyncapi/spec) commit enumerated in [§2](#2-purpose-scope-and-authority). Incorporated authority for the artifact and its application perspective. The [rendered specification pages](https://www.asyncapi.com/docs/reference/specification/) are informative for this identifier.
+- **[AsyncAPI Bindings]** AsyncAPI Initiative, "AsyncAPI protocol bindings," the published collection at [`asyncapi/bindings`](https://github.com/asyncapi/bindings) tag `v3.1.0`, commit [`ec5c590d4212905a13014cfd43f72fb086c00e85`](https://github.com/asyncapi/bindings/tree/ec5c590d4212905a13014cfd43f72fb086c00e85). Incorporated authority for concrete protocol semantics wherever a binding speaks ([§9.1](#91-protocol-and-driver-delegation)); the repository's default branch is informative.
+- [Migrating to AsyncAPI 3.0.0](https://www.asyncapi.com/docs/migration/migrating-to-v3) (informative)
+- **[RFC 6901]** "JavaScript Object Notation (JSON) Pointer." <https://www.rfc-editor.org/rfc/rfc6901>
+- **[YAML 1.2.2]** YAML Language Development Team, "YAML Ain't Markup Language, version 1.2.2." <https://yaml.org/spec/1.2.2/>. Binding-specification pin for string-carried documents.
