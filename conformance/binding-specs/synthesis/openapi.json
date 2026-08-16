@@ -2172,6 +2172,88 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-21",
+      "description": "A reference cycle closes through a schema position the artifact addresses but does not declare under components.schemas: `#/components/schemas/Wrapper/properties/inner` references itself. The cycle is a cycle wherever it closes, so the emitted operation schema must cut it at the addressed position and stay self-contained; emitting the artifact-space reference into the OBI would publish a reference that does not resolve in the emitted document (OBI-D-16). The operation is realizable and fully represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "addressed cut point",
+            "version": "1.0.0"
+          },
+          "paths": {
+            "/wrappers": {
+              "get": {
+                "operationId": "listWrappers",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Wrapper"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "Wrapper": {
+                "type": "object",
+                "properties": {
+                  "inner": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "back": {
+                        "$ref": "#/components/schemas/Wrapper/properties/inner"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "listWrappers"
+        ],
+        "bindings": [
+          {
+            "operationKey": "listWrappers",
+            "bindingRef": "#/paths/~1wrappers/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1wrappers/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listWrappers",
+              "bindingRef": "#/paths/~1wrappers/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            }
+          ]
+        }
+      }
     }
   ]
 }
