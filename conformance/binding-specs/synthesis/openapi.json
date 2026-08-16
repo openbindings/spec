@@ -2001,6 +2001,177 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-20",
+      "description": "JSON Schema 2020-12 defines an array-valued type as a union, so a form part typed [\"string\", \"null\"] declares exactly what the collapsing anyOf spelling declares and takes the same carriage: the part is represented, its sibling keywords still apply, and a supplied JSON null elides the optional part. A part typed [\"string\", \"object\"] declares two non-null alternatives, leaves no single faithful form carriage, and is an excluded alternative -- the same answer a choice with more than one non-null branch gets. Under the OAS 3.0 line, whose Schema Object requires type to be a string and does not support multiple types via an array, the same union spelling is not a union declaration and its multipart alternative is excluded there too.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Union type carriage",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/labels": {
+              "post": {
+                "operationId": "createLabel",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "required": [
+                          "name"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 100
+                          },
+                          "tags": {
+                            "type": [
+                              "array",
+                              "null"
+                            ],
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/notes": {
+              "post": {
+                "operationId": "createNote",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "body": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "body": {
+                            "type": [
+                              "string",
+                              "object"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createNote",
+          "createLabel"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createNote",
+            "bindingRef": "#/paths/~1notes/post"
+          },
+          {
+            "operationKey": "createLabel",
+            "bindingRef": "#/paths/~1labels/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
