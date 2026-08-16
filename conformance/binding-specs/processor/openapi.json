@@ -4158,6 +4158,215 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-51",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "A urlencoded property whose Encoding Object declares none of style, explode or allowReserved takes the OAS's content-based path, which the OAS pairs with RFC 1866 Section 8.2.1; a space therefore rides as +. The OAS also records that percent-encoding it as %20 satisfies the media type, so both spellings are permitted observations and neither is this specification's preference.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Form escaping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "note": "one two"
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "note": "note"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "RFC 1866 Section 8.2.1: space characters are replaced by +.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one+two"
+            }
+          ]
+        },
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "OAS 3.1.2 Section 4.8.12.4 records that %20 also meets the media type's requirements.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one%20two"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-52",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The same property with an Encoding Object declaring style takes the OAS's style-based path, which the OAS pairs with RFC 6570 and notes \"does not use + for form-urlencoded\"; a space therefore rides as %20. The two paths spelling a space differently is incorporation, not divergence.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Form escaping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        },
+                        "encoding": {
+                          "note": {
+                            "style": "form",
+                            "explode": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "note": "one two"
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "note": "note"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "RFC 6570 expansion percent-encodes the space, and the OAS states of this path that it \"does not use + for form-urlencoded\". One permitted observation, not a set.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one%20two"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
