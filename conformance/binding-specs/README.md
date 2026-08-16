@@ -169,6 +169,40 @@ source units, and required whole-source refusals. This corpus is designed to
 grow with newly discovered upstream edge cases; it is neither a crawler corpus
 nor an index format.
 
+### What a synthesis scenario may pin
+
+The compared surface stops where it does for a reason, and the reason is worth
+stating so a later widening is argued rather than assumed. **A scenario may
+require what an authority defines — the core specification, a binding
+specification, or a published project interface — and must not require what
+every authority delegates to an implementation.**
+
+Both halves need one fact that is easy to misread. A family specification's
+statement that generation is "outside this specification" is a **handoff, not an
+exclusion**: `openbindings.openapi@1` §10 sends operation-key derivation,
+output-schema selection and schema translation to "the project's
+interface-synthesizer and reference-tool documentation", and the published
+contract accepts the handoff — "Derivation is this contract's domain … per-family
+derivation detail belongs to each implementation's own reference documentation."
+So generation splits in two. Cross-family derivation principles are contract-
+defined and therefore comparable: an operation key derived from a source-level
+identifier, `$ref` resolution to a self-contained OBI, cycle protection, and
+creation-time soundness. Per-family detail is not: what a synthesized definition
+is *named*, which member of a reference cycle is cut. That is why the expected
+surface is operation-key and target identity plus an exhaustive coverage ledger,
+all of it contract-defined, and why emitted schema content is compared only where
+a defect in it makes the emitted document core-non-conformant.
+
+Requiring a name no authority fixes would make conformance mean "matches what we
+built" rather than "matches what the authorities say" — the inversion the
+[binding-specs authoring doctrine](../../binding-specs/README.md) names in its
+authority precedence — and it would fail an implementation that has broken no
+rule. Recording agreement is different from requiring conformance: where an
+authority requires a fact to exist but fixes no vocabulary for it (the contract
+requires a "stable family-namespaced reason code" without naming the codes), the
+corpus may record what the implementations agree on, which is what reference
+material is for under `openbindings.md` §10.1.
+
 ## Fixture file format
 
 One JSON file per rule, in the family's directory, named for the rule
