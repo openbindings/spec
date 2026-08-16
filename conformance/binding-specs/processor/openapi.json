@@ -4367,6 +4367,199 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-53",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "Path selection inside an urlencoded body is by an Encoding Object field's explicit PRESENCE, not by its value. OAS 3.0.4/3.1.1/3.1.2 say \"the presence of at least one of style, explode, or allowReserved with an explicit value is equivalent to using schema with in: \\\"query\\\" Parameter Objects\", and OAS 3.1.0 says of each field \"If a value is explicitly defined, then the value of contentType (implicit or explicit) SHALL be ignored.\" allowReserved: false restates the field's own default, so it is an explicit value and takes the style path.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Form escaping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        },
+                        "encoding": {
+                          "note": {
+                            "allowReserved": false
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "note": "one two"
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "note": "note"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "An engine that reads truthiness rather than presence puts this property on the content path and emits note=one+two. One permitted observation, not a set.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one%20two"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-54",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "OAS 3.0.4 is the edition where the 3.0 line first states the content interpretation (\"The absence of all three of those fields is the equivalent of using content\") and where Appendix E first appears. An urlencoded property with no Encoding Object therefore takes the content path there, which the OAS pairs with RFC 1866 Section 8.2.1, whose first escaping step replaces a space with +. OAS 3.0.0-3.0.3 state neither sentence and this specification states no path-selection rule for that line, so no scenario pins it.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Form escaping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "note": "one two"
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "note": "note"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The 3.0 line reaches the content path from 3.0.4 onward. One permitted observation, not a set.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one+two"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
