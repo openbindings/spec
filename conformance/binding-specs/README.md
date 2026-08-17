@@ -109,8 +109,12 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
-The current corpus contains 138 scenarios covering every P-rule of usage,
-OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (52 distinct rules). It includes
+The corpus covers every P-rule of usage, OpenAPI, AsyncAPI, MCP, gRPC, Connect,
+and GraphQL. Its inventory — how many scenarios, in how many files, covering how
+many rules — is printed and asserted by
+[`verify-binding-specs.mjs`](../../scripts/verify-binding-specs.mjs) rather than
+restated here, because a number restated in prose drifts silently and a number
+the verifier asserts fails loudly. It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
 collision cases. Independent adapters in `openbindings-go` and
@@ -162,12 +166,36 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The thirty
-scenarios exercise all seven standalone brownfield synthesis families and mix
+(`invalid` source units do not count as upstream-valid). The scenarios exercise
+all seven standalone brownfield synthesis families and mix
 faithful targets with artifact alternatives, binding-spec exclusions, invalid
-source units, and required whole-source refusals. This corpus is designed to
+source units, and required whole-source refusals; the live count is the
+verifier's, not this file's. This corpus is designed to
 grow with newly discovered upstream edge cases; it is neither a crawler corpus
 nor an index format.
+
+Revision 3 adds two members, both optional and neither a new compared surface
+by itself.
+
+A scenario MAY carry `resources`: the same closed, immutable dependency set
+keyed by absolute retrieval URI that a processor scenario carries under
+`given.resources`, served offline through the family adapter's ordinary
+artifact resolver. Without it the format could not express a multi-document
+artifact at all, so `openbindings.openapi@1` §6 "Reference scope" — normative
+binding-specification text about what an external reference composes — had no
+portable synthesis coverage, and a divergence was created in exactly the case
+§6 exists to decide with every project gate green. `resources` is harness
+input: it changes no comparison semantics, and every address a scenario reaches
+must be answerable from its own `content` or its own `resources`, so no runner
+touches the network.
+
+A `synthesized` scenario MAY carry `assertions`: pointer-addressed comparisons
+evaluated against the emitted OBI document, reusing the same
+`path`/`equals`/`absent`/`oneOf`/`setEquals`/`contains` object and the same
+evaluators the processor corpus already uses. An assertion pins what it names
+and nothing else, which is what keeps it on the authority-defined side of the
+line drawn immediately below. Author one only for a fact a finding is about: an
+assertion with no finding behind it is a golden file arriving by another route.
 
 ### What a synthesis scenario may pin
 
@@ -202,6 +230,36 @@ authority requires a fact to exist but fixes no vocabulary for it (the contract
 requires a "stable family-namespaced reason code" without naming the codes), the
 corpus may record what the implementations agree on, which is what reference
 material is for under `openbindings.md` §10.1.
+
+#### The addressing rule for assertions
+
+The same line, stated as a syntactic rule for the one place a scenario now
+reaches into emitted content. **An assertion's `path` may traverse names an
+authority defines and names the artifact itself supplies. It MUST NOT traverse
+a name an implementation mints.**
+
+- Authority-defined: the core document model's members (`operations`, `input`,
+  `output`, `bindings`), a published project interface's members, and the
+  JSON Schema dialect's keywords (`properties`, `items`, `allOf`, `$defs`,
+  `example`).
+- Artifact-supplied: an operation identifier the artifact declares, a property
+  or parameter name it declares, a media type it declares.
+- Minted, and therefore out of bounds: a generated or qualified `$defs`
+  cut-point key. Both the [binding-specs authoring
+  doctrine](../../binding-specs/README.md) and
+  [`ABSTRACTION-FIDELITY.md`](../../ABSTRACTION-FIDELITY.md) place a "synthesis
+  naming convention" outside every specification, so requiring a third-party
+  implementation to reproduce such a name would make conformance mean "matches
+  what we built".
+
+The rule has a known cost, recorded rather than worked around: a property an
+authority *does* define but that is reachable only through a minted name cannot
+be asserted with today's five verbs. "These are exactly the definitions" and
+"no extra definition appeared" are the worked cases — the second is why the
+`$defs` reachability closure behind `OAPI-SS-19` is pinned by SDK-local twin
+tests and not by an assertion. They stay there until the vocabulary gains a
+name-independent verb, which is a decision in its own right and not one an
+authoring pass may take.
 
 ## Fixture file format
 
