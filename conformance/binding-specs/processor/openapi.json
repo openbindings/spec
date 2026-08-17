@@ -4809,6 +4809,84 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-58",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "A multipart property declared as an array, supplied a value that is not an array, refuses before dispatch. §9.2 says of the form-serialization lanes that \"An invalid value or a member for which the resolved schema leaves no faithful form carriage refuses before dispatch.\" The declaration is what decides this part's carriage — an array property rides as one part per element, which OAPI-PS-55 pins — so a value carrying no elements has no faithful form carriage at all. The failure mode this excludes is silent: a processor that falls back to the WHOLE-property schema serializes the invalid value into one application/json part, the artifact's own declaration never described that part, and the caller is told nothing. Refusing is also the only outcome that keeps the two lanes agreeing, since the same processor refuses the declaration outright when the declared schema leaves no carriage.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Array part defaults",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/photos": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "tags": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "tags"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1photos/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "tags": "alpha"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "description": "No request is emitted. A processor keying the part on the whole-property schema instead would dispatch one application/json part carrying \"alpha\".",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }

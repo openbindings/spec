@@ -109,7 +109,7 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
-The current corpus contains 150 scenarios covering every P-rule of usage,
+The current corpus contains 151 scenarios covering every P-rule of usage,
 OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (51 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
