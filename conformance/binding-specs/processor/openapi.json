@@ -4887,6 +4887,111 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-59",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "A multipart part whose resolved Schema Object declares a non-string type and also carries `contentEncoding` keeps its own per-type default row. Every accepted 3.1 edition keys the application/octet-stream row on a declared string — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present — while the `number, integer, or boolean` row holds `n/a` in the contentEncoding column, which that table's own note defines as \"the presence or value of contentEncoding is irrelevant\". The incorporated dialect says the same independently: JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\" and conditions both `contentEncoding` and `contentMediaType` on the instance being a string. So an integer part carrying `contentEncoding` rides as text/plain carrying the value's own text, and does not take the encoded-string row, an octet boundary this revision does not define, or a refusal no edition states. The `sample` part's own Content-Type header is deliberately not asserted: a text/plain part may carry the header explicitly or omit it, and [RFC7578] Section 4.4 makes both the same wire fact — the reason OAPI-PS-55 declines the same assertion. What IS asserted is that the part carries the value's own text rather than an encoded-string or octet body, and that the sibling `note` part, which declares `type: string` with the same `contentEncoding`, still takes the encoded-string row and still carries the Content-Transfer-Encoding header JSON Schema 2020-12 derives that keyword from.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Inert content keywords on a declared non-string part",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/readings": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "sample": {
+                              "type": "integer",
+                              "contentEncoding": "base64"
+                            },
+                            "note": {
+                              "type": "string",
+                              "contentEncoding": "base64"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1readings/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "sample": 7,
+            "note": "YWJj"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"sample\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\n7\r\n"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"note\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Type: application/octet-stream"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Transfer-Encoding: base64"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

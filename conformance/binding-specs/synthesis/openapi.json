@@ -3077,6 +3077,221 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-30",
+      "description": "Every accepted OAS 3.1 edition keys the application/octet-stream part default on a DECLARED string carrying `contentEncoding` — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present. On a declared non-string type the keyword is inert: the same table holds `n/a` in the contentEncoding column of the `number, integer, or boolean` and `object` rows, defined by its own note as \"the presence or value of contentEncoding is irrelevant\", and JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\", each conditioned on a string instance. So recordSample and recordProfile keep the text/plain and application/json rows and are represented; uploadAvatar takes the encoded-string row and is represented; and only createNote's part, which declares no `type` at all, reaches the `type`-absent row's application/octet-stream, for which openbindings.openapi@1 defines no JSON-to-octet part boundary, so that alternative is excluded and its sole-candidate target with it. The excluded target carries `openapi.media_schema_mismatch` with no alternative entry beside it, which is the established accounting for a sole-candidate operation whose only alternative is excluded — the same shape OAPI-SS-23 pins for its `/avatars` target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.1",
+          "info": {
+            "title": "Content keywords on declared part types",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/samples": {
+              "post": {
+                "operationId": "recordSample",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "part": {
+                            "type": "integer",
+                            "contentEncoding": "base64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/profiles": {
+              "post": {
+                "operationId": "recordProfile",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "part": {
+                            "type": "object",
+                            "contentMediaType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "part": {
+                            "type": "string",
+                            "contentEncoding": "base64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/notes": {
+              "post": {
+                "operationId": "createNote",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "part": {
+                            "contentEncoding": "base64"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "recordProfile",
+          "recordSample",
+          "uploadAvatar"
+        ],
+        "bindings": [
+          {
+            "operationKey": "recordProfile",
+            "bindingRef": "#/paths/~1profiles/post"
+          },
+          {
+            "operationKey": "recordSample",
+            "bindingRef": "#/paths/~1samples/post"
+          },
+          {
+            "operationKey": "uploadAvatar",
+            "bindingRef": "#/paths/~1avatars/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1profiles/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "recordProfile",
+              "bindingRef": "#/paths/~1profiles/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1samples/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "recordSample",
+              "bindingRef": "#/paths/~1samples/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1profiles/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "recordProfile",
+              "bindingRef": "#/paths/~1profiles/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1samples/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "recordSample",
+              "bindingRef": "#/paths/~1samples/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
