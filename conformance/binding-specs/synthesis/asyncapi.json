@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.asyncapi@1",
   "family": "asyncapi",
   "description": "AsyncAPI operation, message, reply-message, and protocol-cell accounting.",

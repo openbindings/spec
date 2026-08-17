@@ -13,44 +13,6 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
-- **`openbindings.binding-spec-synthesis-scenarios@3`**, replacing `@2`. Two
-  optional members, and a revision rather than an additive field because a
-  runner that predates a member ignores it, reports the scenario green, and has
-  verified none of it. A scenario may carry `resources`, the same closed,
-  immutable, absolute-URI-keyed companion-document set a processor scenario
-  carries under `given.resources`, served offline through the family adapter's
-  own artifact resolver; without it the format could not express a
-  multi-document artifact at all, so `openbindings.openapi@1` §6 "Reference
-  scope" had no portable synthesis coverage. A `synthesized` scenario may carry
-  `assertions`, pointer-addressed comparisons against the emitted OBI document
-  reusing the processor corpus's own assertion object and evaluators. Neither
-  widens the identity surface: `operations`, `bindings`, `coverage` and
-  `outcome` are compared exactly as before. The scenario `source` also adopts
-  `interface-synthesizer` 0.2's `anyOf: [location, content]` constraint, which
-  the corpus schema had dropped, closing the latent case of a location-only
-  source becoming a live network fetch inside both SDK test suites.
-  `conformance/binding-specs/README.md` states the addressing rule that keeps an
-  assertion on the authority-defined side of the line: a path may traverse names
-  an authority defines and names the artifact supplies, never a name an
-  implementation mints.
-
-- **Five portable synthesis scenarios for `openbindings.openapi@1` §6
-  "Reference scope"** (`OAPI-SS-23`–`OAPI-SS-27`), authored from the
-  multi-document case table the three engines already share. A dangling
-  reference outside the composed closure synthesizes; the same defect inside it
-  refuses; a pointer into one property composes that property and not its
-  siblings; and two sequence cases pin index-scoped retention, where a sequence
-  keeps its length and every index and an uncomposed element cannot decide the
-  artifact. Four of the five fail when the pointer-scope implementation is
-  reverted, in both runners, proven by execution.
-
-- **`OAPI-SS-17` gains four assertions** pinning that a date-, time- or
-  boolean-word-shaped plain scalar crosses the boundary as the string the
-  artifact wrote. That value is decided by every accepted edition's "Tags MUST
-  be limited to those allowed by [YAML's] JSON schema ruleset" and YAML 1.2.2
-  §10.3.2, and it was previously invisible to the corpus: the scenario passed
-  while one implementation emitted `{}`.
-
 - The unreleased first `openbindings.asyncapi@1` candidate. It treats AsyncAPI
   Core and each artifact-declared protocol binding as authority incorporated
   by this candidate's deliberate upstream-deferential policy,

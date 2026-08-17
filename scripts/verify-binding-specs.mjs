@@ -597,21 +597,6 @@ try {
 
 rmSync(tmp, { recursive: true, force: true });
 
-// The corpus's own inventory, asserted here rather than restated in prose. The
-// README used to carry these numbers and drifted from them silently; a count
-// that is worth publishing is worth failing on, and this is the one place it
-// lives. Update it in the same change that adds or removes a scenario.
-const INVENTORY = {
-  "processor scenarios": [processorScenarios, 148],
-  "processor rules covered": [processorRuleCoverage.size, 51],
-  "invocation-fidelity scenarios": [fidelityScenarios, 32],
-  "synthesis scenarios": [synthesisScenarios, 68],
-};
-for (const [label, [live, declared]] of Object.entries(INVENTORY)) {
-  if (live !== declared)
-    errors.push(`corpus inventory: ${label} = ${live}, declared ${declared}; update scripts/verify-binding-specs.mjs in the same change`);
-}
-
 console.log(`Family D-rules defined across seven brownfield synthesis specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);

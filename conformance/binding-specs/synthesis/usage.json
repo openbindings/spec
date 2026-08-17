@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.usage@1",
   "family": "usage",
   "description": "Usage artifact interaction inventory, root operation, and exact alias-path preservation.",

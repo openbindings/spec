@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
   "description": "MCP first-revision-candidate sound synthesis: only tools with declared application output schemas are represented; every other listed target is evidenced.",

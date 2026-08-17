@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
   "description": "GraphQL query/mutation application contracts with explicit subscription coverage exclusion.",

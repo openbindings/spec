@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@2",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
   "description": "gRPC method inventory and bound-closure schema-range accounting.",
