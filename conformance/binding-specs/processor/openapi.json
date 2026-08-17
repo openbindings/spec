@@ -4887,6 +4887,60 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-59",
+      "rules": [
+        "OAPI-P-05"
+      ],
+      "section": "9.3",
+      "description": "A sole effective server whose URL cannot resolve to an absolute URL refuses before dispatch, TERMINALLY — it is not the retryable context challenge OAPI-PS-08 pins. §9.3 partitions the two in one sentence: \"A missing selection from a multi-entry list is the retryable context challenge above, never a terminal refusal; an out-of-enum variable value, or a server URL that cannot resolve to an absolute URL — the implied `/` with no base URI, for instance — is a pre-dispatch refusal.\" OAPI-P-05 restates the second half: \"unresolvable targets refuse before dispatch.\" Here the sole entry selects itself under §9.3's first clause, but the OAS substitutes only variables a Server Object DECLARES, so `{subdomain}` survives and `{`/`}` appear in no RFC 3986 production: the string is not a URI and names no address. The distinction is not cosmetic — a retryable challenge invites a resolve-and-retry loop for a value the artifact never had, and a consumer that supplies one is overriding the declaration rather than completing it. Nothing dispatches under either reading, so a scenario asserting only the absence of a request would pass on both; the disposition is the whole assertion.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "Unresolvable sole server",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://{subdomain}.api.example/v1"
+              }
+            ],
+            "paths": {
+              "/ping": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1ping/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "description": "No request is emitted, and the outcome is terminal. A processor treating an unresolvable target as a missing consumer choice would observe context-required here instead.",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
