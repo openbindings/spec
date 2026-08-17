@@ -2424,6 +2424,179 @@
           ]
         }
       }
+    },
+    {
+      "id": "ASYNC-SS-25",
+      "description": "A payload declared under an ON-LIST foreign schema format that is not a valid schema of that language is the artifact's defect under its own declared dialect, not a conversion loss. The Avro specification's resolution scope is the single JSON parse tree \u2014 it defines no cross-document import, and its Names rule requires that \"a name must be defined before it is used\" \u2014 so an Avro record whose field names the type Item, which the schema does not define, is invalid under Avro 1.9.0 itself. On JSON-family carriage the affected direction is therefore invalid with asyncapi.payload_schema_invalid, never lossy with asyncapi.schema_format_not_convertible (whose adjudicated scope Avro left when the correspondence was incorporated) and never represented by an unconstrained schema asserting that any JSON value satisfies a contract the artifact got wrong. Confinement is exactly ASYNC-P-05's: the sibling operation, whose Avro schema is self-contained, derives and synthesizes untouched, and the artifact is not refused. The byte-carriage half of the same declaration is unchanged and stays lossy (ASYNC-SS-19).",
+      "source": {
+        "bindingSpec": "openbindings.asyncapi@1",
+        "content": {
+          "asyncapi": "3.0.0",
+          "info": {
+            "title": "On-list foreign schema, invalid under its own language",
+            "version": "1"
+          },
+          "defaultContentType": "application/json",
+          "servers": {
+            "broker": {
+              "host": "broker.example:9092",
+              "protocol": "kafka"
+            }
+          },
+          "channels": {
+            "added": {
+              "address": "cart.item.added.v1",
+              "messages": {
+                "m": {
+                  "payload": {
+                    "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+                    "schema": {
+                      "type": "record",
+                      "name": "ItemAdded",
+                      "namespace": "example.cart",
+                      "fields": [
+                        {
+                          "name": "cartId",
+                          "type": "string"
+                        },
+                        {
+                          "name": "item",
+                          "type": "Item"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "created": {
+              "address": "cart.created.v1",
+              "messages": {
+                "m": {
+                  "payload": {
+                    "schemaFormat": "application/vnd.apache.avro;version=1.9.0",
+                    "schema": {
+                      "type": "record",
+                      "name": "CartCreated",
+                      "namespace": "example.cart",
+                      "fields": [
+                        {
+                          "name": "cartId",
+                          "type": "string"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "onCartCreated": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/created"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/created/messages/m"
+                }
+              ]
+            },
+            "onItemAdded": {
+              "action": "receive",
+              "channel": {
+                "$ref": "#/channels/added"
+              },
+              "messages": [
+                {
+                  "$ref": "#/channels/added/messages/m"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "onCartCreated"
+        ],
+        "bindings": [
+          {
+            "operationKey": "onCartCreated",
+            "bindingRef": "#/operations/onCartCreated"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/onItemAdded",
+            "absent": true
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onCartCreated",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "onCartCreated",
+              "bindingRef": "#/operations/onCartCreated",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onCartCreated#message[0]=#/channels/created/messages/m",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "onCartCreated",
+              "bindingRef": "#/operations/onCartCreated",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onCartCreated#server[0]=broker",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "onCartCreated",
+              "bindingRef": "#/operations/onCartCreated",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onItemAdded",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "asyncapi.payload_schema_invalid",
+              "rule": "ASYNC-P-05",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onItemAdded#message[0]=#/channels/added/messages/m",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-05",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/operations/onItemAdded#server[0]=broker",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "asyncapi.parent_target_excluded",
+              "rule": "ASYNC-P-02",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
