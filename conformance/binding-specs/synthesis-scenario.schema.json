@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
   "title": "OpenBindings binding-specification synthesis scenarios",
-  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API.",
+  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
   "properties": {
-    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@2" },
+    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@3" },
     "bindingSpec": {
       "type": "string",
       "pattern": "^openbindings\\.(usage|openapi|asyncapi|mcp|grpc|connect|graphql)@[1-9][0-9]*$"
@@ -48,6 +48,21 @@
               "description": { "type": "string" }
             }
           },
+          "resources": {
+            "type": "object",
+            "description": "A closed, immutable artifact dependency set keyed by absolute retrieval URI, lifted from processor-scenario.schema.json's given.resources. Family adapters expose these resources through their ordinary artifact resolver; this is harness input, not an OBI document field. It adds no comparison semantics: the compared surface stays operations, bindings, coverage and outcome. Every address a scenario reaches must be answerable from its own source or its own resources, so no runner touches the network.",
+            "propertyNames": {
+              "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:",
+              "description": "Absolute URI spelling; adapters do not infer a base for corpus resources."
+            },
+            "additionalProperties": {
+              "description": "The parsed object or source text returned for this artifact URI.",
+              "oneOf": [
+                { "type": "object" },
+                { "type": "string" }
+              ]
+            }
+          },
           "expected": {
             "type": "object",
             "required": ["outcome"],
@@ -76,6 +91,35 @@
                     "operationKey": { "type": "string", "minLength": 1 },
                     "bindingRef": { "type": "string" }
                   }
+                }
+              },
+              "assertions": {
+                "description": "Optional pointer-addressed assertions evaluated against the emitted OBI document, reusing processor-scenario.schema.json's assertion object verbatim. Addressing rule: a path may traverse names an authority defines (the core document model, a binding specification, a published project interface, the JSON Schema dialect) and names the artifact itself supplies (an operation identifier, a declared property name). It MUST NOT traverse a name an implementation mints, such as a generated or qualified `$defs` cut-point key, because requiring a third-party implementation to reproduce a name no authority states makes conformance mean 'matches what we built'. Author an assertion only for a fact a finding is about; an assertion with no finding behind it is a golden file arriving by another route.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["path"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "pattern": "^/",
+                      "description": "JSON Pointer into the emitted OBI document."
+                    },
+                    "equals": {},
+                    "absent": { "const": true },
+                    "oneOf": { "type": "array", "minItems": 1 },
+                    "setEquals": { "type": "array", "uniqueItems": true },
+                    "contains": {}
+                  },
+                  "oneOf": [
+                    { "required": ["equals"] },
+                    { "required": ["absent"] },
+                    { "required": ["oneOf"] },
+                    { "required": ["setEquals"] },
+                    { "required": ["contains"] }
+                  ]
                 }
               },
               "coverage": {
@@ -107,7 +151,8 @@
                     "anyOf": [
                       { "required": ["operations"] },
                       { "required": ["bindings"] },
-                      { "required": ["coverage"] }
+                      { "required": ["coverage"] },
+                      { "required": ["assertions"] }
                     ]
                   }
                 }

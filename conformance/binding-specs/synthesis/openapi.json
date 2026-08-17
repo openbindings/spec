@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@2",
+  "format": "openbindings.binding-spec-synthesis-scenarios@3",
   "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
   "description": "OpenAPI path-operation coverage, request-media alternatives, and reverse-direction exclusions.",
@@ -1845,6 +1845,24 @@
             "bindingRef": "#/paths/~1probe/get"
           }
         ],
+        "assertions": [
+          {
+            "path": "/operations/probe/input/properties/issued/example",
+            "equals": "2020-01-01T12:00:00Z"
+          },
+          {
+            "path": "/operations/probe/input/properties/day/example",
+            "equals": "2020-01-01"
+          },
+          {
+            "path": "/operations/probe/input/properties/at/example",
+            "equals": "12:30:45"
+          },
+          {
+            "path": "/operations/probe/input/properties/consent/example",
+            "equals": "yes"
+          }
+        ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": true,
@@ -2799,6 +2817,261 @@
               "status": "represented",
               "operationKey": "createNote",
               "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-25",
+      "description": "openbindings.openapi@1 section 6 composes the value AT the referenced JSON Pointer together with that value's transitive closure of references, and nothing else. A dangling reference in a component the pointer never reaches is outside that closure, so the referencing artifact resolves and its operation is represented. A whole-file composer refuses the same artifact.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Used\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Used:\n      type: object\n      properties:\n        name: {$ref: \"#/components/schemas/Name\"}\n    Name: {type: string}\n    Unused:\n      type: object\n      properties:\n        broken: {$ref: \"#/components/schemas/NeverDeclared\"}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/name/type",
+            "equals": "string"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-26",
+      "description": "The twin of the scenario above, differing only in which component carries the dangling reference. Reachable from the referenced pointer and unresolvable there, it makes the referencing artifact unresolvable, and the whole source refuses. The pair is what shows the pointer-scoped rule narrowed composition rather than merely widening acceptance.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Used\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Used:\n      type: object\n      properties:\n        name: {$ref: \"#/components/schemas/NeverDeclared\"}\n    Unused: {type: string}\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "OAPI-P-01"
+        ]
+      }
+    },
+    {
+      "id": "OAPI-SS-27",
+      "description": "The composed value is the value at the pointer, not the component object that contains it: a sibling property of the same Schema Object is outside the closure even though it shares a parent. The artifact resolves. No assertion pins the emitted body value, because the operation property that would carry it is named by the synthesizer rather than by the artifact.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Big/properties/kept\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Big:\n      type: object\n      properties:\n        kept: {type: string}\n        broken: {$ref: \"#/components/schemas/NeverDeclared\"}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-28",
+      "description": "A sequence member is addressed by index exactly as an object member is addressed by name (RFC 6901 section 4). The composed value is allOf/0, so the defective allOf/1 beside it is outside the closure and the artifact resolves.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Combo/allOf/0\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Combo:\n      allOf:\n        - type: object\n          properties:\n            name: {$ref: \"#/components/schemas/Name\"}\n        - {$ref: \"#/components/schemas/NeverDeclared\"}\n    Name: {type: string}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/name/type",
+            "equals": "string"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-29",
+      "description": "Two references compose two elements of the same sequence and the defective element between them is composed by neither. Index identity has to survive that: allOf/2 must still denote the third element, so no index may be renumbered when one is left out. The two assertions are what distinguish surviving indices from a silently compacted sequence, which the operation set alone cannot see.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Combo/allOf/0\"}\n      responses: {\"204\": {description: ok}}\n  /others:\n    post:\n      operationId: createOther\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: {$ref: \"./library.yaml#/components/schemas/Combo/allOf/2\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Combo:\n      allOf:\n        - type: object\n          properties:\n            alpha: {$ref: \"#/components/schemas/Alpha\"}\n        - {$ref: \"#/components/schemas/NeverDeclared\"}\n        - type: object\n          properties:\n            gamma: {$ref: \"#/components/schemas/Gamma\"}\n    Alpha: {type: string}\n    Gamma: {type: integer}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem",
+          "createOther"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          },
+          {
+            "operationKey": "createOther",
+            "bindingRef": "#/paths/~1others/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/alpha/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/createOther/input/properties/gamma/type",
+            "equals": "integer"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1others/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createOther",
+              "bindingRef": "#/paths/~1others/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1others/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createOther",
+              "bindingRef": "#/paths/~1others/post",
               "requirements": []
             }
           ]

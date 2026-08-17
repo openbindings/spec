@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@2",
+  "format": "openbindings.binding-spec-synthesis-scenarios@3",
   "bindingSpec": "openbindings.connect@1",
   "family": "connect",
   "description": "Connect schema-mode method inventory and bound-closure schema-range accounting.",
