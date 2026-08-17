@@ -2254,6 +2254,194 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-22",
+      "description": "Whether a declared server URL denotes a target address at all decides whether the server configuration point is a runtime prerequisite of the represented target. A sole entry selects itself and, when it resolves, requires nothing. A sole entry whose URL template variable has no Server Variable Object never reduces to a URL -- the OAS substitutes only variables the Server Object declares, and braces appear in no RFC 3986 production -- while a declared variable's REQUIRED default always reduces. A sole entry whose http authority carries no host names no origin server, because RFC 9110 requires a recipient to reject such a URI as invalid. Each of those leaves the target address undetermined, and so does a multi-entry list with no selection, so all three raise configuration.server. Neither answer may be decided by a host language's URL parser: Go's net/url and the WHATWG parser disagree about exactly these two shapes, in opposite directions.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Server target base",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test/v1"
+            }
+          ],
+          "paths": {
+            "/usable": {
+              "get": {
+                "operationId": "listUsable",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/substituted": {
+              "get": {
+                "operationId": "listSubstituted",
+                "servers": [
+                  {
+                    "url": "https://{region}.example.test/v1",
+                    "variables": {
+                      "region": {
+                        "default": "eu"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/templated": {
+              "get": {
+                "operationId": "listTemplated",
+                "servers": [
+                  {
+                    "url": "https://{tenant}.example.test/v1"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/hostless": {
+              "get": {
+                "operationId": "listHostless",
+                "servers": [
+                  {
+                    "url": "http://:8080"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/alternatives": {
+              "get": {
+                "operationId": "listAlternatives",
+                "servers": [
+                  {
+                    "url": "https://a.example.test/v1"
+                  },
+                  {
+                    "url": "https://b.example.test/v1"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "listUsable",
+          "listSubstituted",
+          "listTemplated",
+          "listHostless",
+          "listAlternatives"
+        ],
+        "bindings": [
+          {
+            "operationKey": "listUsable",
+            "bindingRef": "#/paths/~1usable/get"
+          },
+          {
+            "operationKey": "listSubstituted",
+            "bindingRef": "#/paths/~1substituted/get"
+          },
+          {
+            "operationKey": "listTemplated",
+            "bindingRef": "#/paths/~1templated/get"
+          },
+          {
+            "operationKey": "listHostless",
+            "bindingRef": "#/paths/~1hostless/get"
+          },
+          {
+            "operationKey": "listAlternatives",
+            "bindingRef": "#/paths/~1alternatives/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1alternatives/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listAlternatives",
+              "bindingRef": "#/paths/~1alternatives/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1hostless/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listHostless",
+              "bindingRef": "#/paths/~1hostless/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1substituted/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listSubstituted",
+              "bindingRef": "#/paths/~1substituted/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1templated/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listTemplated",
+              "bindingRef": "#/paths/~1templated/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1usable/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listUsable",
+              "bindingRef": "#/paths/~1usable/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
