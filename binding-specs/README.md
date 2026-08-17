@@ -285,6 +285,26 @@ relationship: it makes conformance mean "matches what we built" instead of
 "matches what the authorities say." Where implementations and authorities
 disagree, the implementations are wrong.
 
+**Coverage never buys drift.** Where supporting more artifacts and adhering
+to the governing authority genuinely conflict, adherence wins. This is not
+a trade to be weighed case by case, and a measured coverage cost is not an
+argument against it. The project's product is a truth claim about what it
+supports; a number inflated by artifacts we serve unfaithfully is worth
+less than a smaller number that holds. Supporting an artifact its own
+authority does not support is not support, it is a guess wearing the
+authority's name.
+
+The converse does not follow, and mistaking it for a corollary is the
+likelier error. This principle governs a conflict between coverage and
+fidelity. It says nothing about how coarsely to refuse when there is no
+conflict at all. Where a defect is owned by one member, one part, or one
+carriage, refusing the whole operation is not the more faithful answer; it
+is a different inaccuracy, claiming less than is known rather than more.
+The obligation is that the claim be exact in both directions, so the unit
+that refuses is the smallest unit that actually owns the defect, and what
+it could not carry is named rather than implied. A refusal wider than its
+cause buys no fidelity and costs real coverage.
+
 ## The deference order
 
 A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
