@@ -3292,6 +3292,198 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-31",
+      "description": "A reference's fragment addresses what looks like a sibling member of a $ref node, and on the 3.0 line there is no such member to address. The Reference Object is defined by JSON Reference, whose section 3 states that any members other than \"$ref\" in a JSON Reference object SHALL be ignored, so `Alias` has exactly one denotable member and the token `properties` cannot name the declared sibling. Evaluation therefore continues into the referenced value exactly as it does when no sibling is declared, and the emitted value is `Real`'s, not the sibling's. The assertion is the whole scenario: the operation set is identical under either reading, and only the value distinguishes them.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.0.4\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              properties:\n                pick: {$ref: \"./library.yaml#/components/schemas/Alias/properties/name\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.0.4\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Alias:\n      $ref: \"#/components/schemas/Real\"\n      properties:\n        name: {type: string, title: sibling}\n    Real:\n      type: object\n      properties:\n        name: {type: integer, title: target}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/pick/type",
+            "equals": "integer"
+          },
+          {
+            "path": "/operations/createItem/input/properties/pick/title",
+            "equals": "target"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-32",
+      "description": "The twin of the scenario above on a byte-identical artifact apart from the declared edition. No 3.1 edition incorporates JSON Reference; the 3.1 Schema Object is a superset of JSON Schema 2020-12, whose section 8.2.3.1 carries the authors' note that other keywords can appear alongside \"$ref\" in the same schema object. The node keeps its own members, the token names one of them, and the composed value is the sibling. The pair is what shows the rule is the incorporated authority's and splits by edition line rather than being one averaged convention.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              properties:\n                pick: {$ref: \"./library.yaml#/components/schemas/Alias/properties/name\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Alias:\n      $ref: \"#/components/schemas/Real\"\n      properties:\n        name: {type: string, title: sibling}\n    Real:\n      type: object\n      properties:\n        name: {type: integer, title: target}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/pick/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/createItem/input/properties/pick/title",
+            "equals": "sibling"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-33",
+      "description": "The retention consequence of OAPI-SS-31's reading, as a defect, and the twin of OAPI-SS-34. On the 3.0 line the fragment's next token cannot name an ignored member, so what the pointer runs into is the reference itself: the reference is composed, its target is inside the closure, and a target that is never declared makes the whole source unresolvable. Nothing about the sibling's own shape changes that, which is what separates a reference the closure composes from one a pointer merely walks past.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.0.4\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              properties:\n                pick: {$ref: \"./library.yaml#/components/schemas/Alias/properties/name\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.0.4\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Alias:\n      $ref: \"#/components/schemas/NeverDeclared\"\n      properties:\n        name: {type: string, title: sibling}\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "OAPI-P-01"
+        ]
+      }
+    },
+    {
+      "id": "OAPI-SS-34",
+      "description": "The retention consequence of OAPI-SS-32's reading, as a defect. Because the composed value is the sibling, the $ref the fragment walked past is composed by nothing, and section 6's reference scope — the value at the pointer plus that value's own transitive closure, and nothing else — puts its target outside the artifact. A dangling target there is a defect outside the closure, which does not make the referencing artifact unresolvable. Its OAPI-SS-33 twin is the same artifact on the other edition line, where the same reference IS composed and the same defect refuses.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://composition.example/openapi.yaml",
+        "content": "openapi: 3.1.2\ninfo: {title: Entry, version: \"1\"}\nservers: [{url: \"https://api.example\"}]\npaths:\n  /items:\n    post:\n      operationId: createItem\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema:\n              type: object\n              properties:\n                pick: {$ref: \"./library.yaml#/components/schemas/Alias/properties/name\"}\n      responses: {\"204\": {description: ok}}\n"
+      },
+      "resources": {
+        "https://composition.example/library.yaml": "openapi: 3.1.2\ninfo: {title: Library, version: \"1\"}\ncomponents:\n  schemas:\n    Alias:\n      $ref: \"#/components/schemas/NeverDeclared\"\n      properties:\n        name: {type: string, title: sibling}\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/createItem/input/properties/pick/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/createItem/input/properties/pick/title",
+            "equals": "sibling"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
