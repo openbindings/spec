@@ -27,6 +27,10 @@
 //   8. Adjudications resolve to live synthesis scenarios and keep core and
 //      family authority in their declared lanes.
 //   9. The abstraction-fidelity alignment ledger validates against its schema.
+//  10. The scenario counts the subcorpus README states in prose equal the
+//      counts derived from the corpus by count-binding-spec-scenarios.mjs.
+//  11. The synthesis scenario schema still enforces the published
+//      interface-synthesizer contract's source shape (probes below).
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -47,6 +51,7 @@ import { join, dirname, resolve, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
+import { countBindingSpecScenarios } from "./count-binding-spec-scenarios.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SPEC_ROOT = resolve(__dirname, "..");
@@ -595,7 +600,108 @@ try {
   }
 }
 
+// --- 11. The synthesis source shape still matches the published contract ----
+// synthesis-scenario.schema.json adopts interface-synthesizer 0.2's
+// SynthesizeInterfaceSource `anyOf` verbatim, so a scenario cannot declare a
+// source the published contract forbids. A constraint nothing exercises is not
+// a constraint: every live scenario satisfies it, so the corpus alone cannot
+// show the schema still carries it. These probes do — removing the `anyOf`
+// turns the third one red.
+{
+  const synthesisSchema = JSON.parse(readFileSync(SYNTHESIS_SCHEMA, "utf8"));
+  const probeFile = (source) => ({
+    format: synthesisSchema.properties.format.const,
+    bindingSpec: "openbindings.openapi@1",
+    family: "openapi",
+    description: "verifier probe; not part of the corpus",
+    scenarios: [
+      {
+        id: "OAPI-SS-99",
+        description: "verifier probe; not part of the corpus",
+        source,
+        expected: { outcome: "refused", rules: ["OAPI-P-01"] },
+      },
+    ],
+  });
+  const probes = [
+    ["carrying `content`", { bindingSpec: "openbindings.openapi@1", content: {} }, true],
+    [
+      "carrying `location`",
+      { bindingSpec: "openbindings.openapi@1", location: "https://example.com/a.yaml" },
+      true,
+    ],
+    ["carrying neither `location` nor `content`", { bindingSpec: "openbindings.openapi@1" }, false],
+  ];
+  for (const [what, source, shouldValidate] of probes) {
+    const probe = ajvOk(SYNTHESIS_SCHEMA, probeFile(source));
+    if (probe.ok === shouldValidate) continue;
+    errors.push(
+      shouldValidate
+        ? `synthesis-scenario.schema.json rejects a scenario source ${what}, which the interface-synthesizer contract accepts\n${probe.out}`
+        : `synthesis-scenario.schema.json accepts a scenario source ${what}; interface-synthesizer 0.2's SynthesizeInterfaceSource requires one of them (restore the 'anyOf' on the source object)`
+    );
+  }
+}
+
 rmSync(tmp, { recursive: true, force: true });
+
+// --- 10. The README's scenario counts are derived, not hand-maintained ------
+// count-binding-spec-scenarios.mjs is the single derivation; this check makes
+// the README's prose fail the build when it drifts from the corpus, which is
+// how three stale numbers survived several corpus growths.
+{
+  const counts = countBindingSpecScenarios(SPEC_ROOT);
+
+  // The verifier's own walk and the shared derivation must agree; otherwise a
+  // number could be "asserted" against a second, silently different count.
+  const crossChecks = [
+    ["processor scenarios", counts.processor.scenarios, processorScenarios],
+    ["distinct processor rules", counts.processor.coveredRules.length, processorRuleCoverage.size],
+    ["synthesis scenarios", counts.synthesis.scenarios, synthesisScenarios],
+  ];
+  for (const [what, derived, walked] of crossChecks) {
+    if (derived !== walked)
+      errors.push(
+        `count-binding-spec-scenarios.mjs counts ${derived} ${what}; this verifier's own walk counts ${walked}`
+      );
+  }
+
+  // The README is hard-wrapped, so match against the unwrapped text.
+  const prose = readme.replace(/\s+/g, " ");
+  const stated = [
+    {
+      what: "portable processor scenarios",
+      pattern: /The current corpus contains (\d+) scenarios/,
+      shape: "The current corpus contains <N> scenarios",
+      actual: counts.processor.scenarios,
+    },
+    {
+      what: "distinct P-rules the processor scenarios cover",
+      pattern: /\((\d+) distinct rules\)/,
+      shape: "(<N> distinct rules)",
+      actual: counts.processor.coveredRules.length,
+    },
+    {
+      what: "portable synthesis scenarios",
+      pattern: /The (\d+) scenarios exercise all seven standalone brownfield synthesis families/,
+      shape: "The <N> scenarios exercise all seven standalone brownfield synthesis families",
+      actual: counts.synthesis.scenarios,
+    },
+  ];
+  for (const { what, pattern, shape, actual } of stated) {
+    const found = prose.match(pattern);
+    if (!found) {
+      errors.push(
+        `conformance/binding-specs/README.md: no sentence of the form "${shape}" states the ${what}; the verifier asserts that count and needs the sentence to stay matchable`
+      );
+      continue;
+    }
+    if (Number(found[1]) !== actual)
+      errors.push(
+        `conformance/binding-specs/README.md states ${found[1]} ${what}; the corpus holds ${actual} (run: node scripts/count-binding-spec-scenarios.mjs)`
+      );
+  }
+}
 
 console.log(`Family D-rules defined across seven brownfield synthesis specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);

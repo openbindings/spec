@@ -30,8 +30,13 @@
           },
           "description": { "type": "string", "minLength": 1 },
           "source": {
+            "description": "One binding source, shaped by the published interface-synthesizer 0.2 contract's SynthesizeInterfaceSource schema. Its `anyOf` is adopted verbatim: a source the contract forbids cannot be declared here, so no scenario can require behavior from an input no conformant synthesizer accepts.",
             "type": "object",
             "required": ["bindingSpec"],
+            "anyOf": [
+              { "required": ["location"] },
+              { "required": ["content"] }
+            ],
             "additionalProperties": false,
             "properties": {
               "bindingSpec": { "type": "string" },

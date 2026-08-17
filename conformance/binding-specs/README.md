@@ -109,8 +109,8 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
-The current corpus contains 138 scenarios covering every P-rule of usage,
-OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (52 distinct rules). It includes
+The current corpus contains 148 scenarios covering every P-rule of usage,
+OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (51 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
 collision cases. Independent adapters in `openbindings-go` and
@@ -162,12 +162,24 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The thirty
-scenarios exercise all seven standalone brownfield synthesis families and mix
-faithful targets with artifact alternatives, binding-spec exclusions, invalid
-source units, and required whole-source refusals. This corpus is designed to
-grow with newly discovered upstream edge cases; it is neither a crawler corpus
-nor an index format.
+(`invalid` source units do not count as upstream-valid). The 63 scenarios
+exercise all seven standalone brownfield synthesis families and mix faithful
+targets with artifact alternatives, binding-spec exclusions, invalid source
+units, and required whole-source refusals. This corpus is designed to grow
+with newly discovered upstream edge cases; it is neither a crawler corpus nor
+an index format.
+
+A scenario's `source` is shaped by the published
+[`interface-synthesizer`](https://openbindings.com/interfaces/interface-synthesizer)
+0.2 contract's `SynthesizeInterfaceSource`, whose `anyOf` this schema adopts
+verbatim: a source declares `location`, `content`, or both. A scenario
+therefore cannot demand behavior from an input shape no conformant synthesizer
+accepts.
+
+The three scenario counts stated in this file are derived, not maintained by
+hand. `node scripts/count-binding-spec-scenarios.mjs` prints them per family
+and in total, and `verify-binding-specs.mjs` fails when the prose and the
+corpus disagree; a count worth publishing is worth failing on.
 
 ### What a synthesis scenario may pin
 
@@ -302,9 +314,12 @@ or the core spec actually defines. Processor scenario files validate against
 their own schema; family, identifier, section, scenario ids, and every
 referenced P-rule are cross-checked, and the verifier requires complete P-rule
 coverage for all seven families. Synthesis scenario files are likewise checked
-for all seven families, including target/disposition consistency. It does not
-judge D verdicts or execute processor/synthesis scenarios — those are the jobs
-of family processors and adapters.
+for all seven families, including target/disposition consistency. It asserts
+this README's three scenario counts against the corpus, and probes the
+synthesis schema with a source declaring neither `location` nor `content` to
+prove the adopted contract constraint is still enforced. It does not judge D
+verdicts or execute processor/synthesis scenarios — those are the jobs of
+family processors and adapters.
 
 The spec repository's CI also checks out both reference SDKs and executes every
 portable processor and synthesis scenario against each family implementation.

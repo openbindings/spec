@@ -63,6 +63,22 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- The portable synthesis scenario schema adopts the published
+  `interface-synthesizer` 0.2 contract's `SynthesizeInterfaceSource`
+  constraint verbatim: a scenario's `source` declares `location`, `content`,
+  or both. A scenario can no longer demand behavior from an input shape no
+  conformant synthesizer accepts. Every one of the 63 existing scenarios
+  already satisfied it; the corpus is unchanged and no runner behavior moves.
+
+- The binding-specification subcorpus README's scenario counts are now derived
+  rather than maintained by hand. Three of them had gone stale across several
+  corpus growths, each restated in prose with nothing checking it: 138
+  processor scenarios, 52 distinct P-rules, thirty synthesis scenarios, against
+  a corpus holding 148, 51 and 63. The new
+  `scripts/count-binding-spec-scenarios.mjs` derives all three from the corpus
+  files and prints them per family, and `scripts/verify-binding-specs.mjs`
+  fails when the README and the corpus disagree.
+
 - `openbindings.openapi@1` §6 now states **reference traversal** — what a
   reference's fragment means when its own path runs below another reference
   (`#/components/schemas/Alias/properties/name`, where `Alias` is a `$ref`
