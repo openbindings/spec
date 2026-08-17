@@ -63,6 +63,28 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- `openbindings.openapi@1` §6 now states **reference traversal** — what a
+  reference's fragment means when its own path runs below another reference
+  (`#/components/schemas/Alias/properties/name`, where `Alias` is a `$ref`
+  object) — and the accepted editions answer it differently, so both branches
+  are stated. Under OAS 3.0.0–3.0.4 the reference standing in the path is
+  resolved and evaluation continues into the target, because those editions
+  process `$ref` as per JSON Reference, which frames itself as transclusion,
+  ignores every other member, and resolves to the referenced value. Under
+  OAS 3.1.0–3.1.2 it is not, and the reference is unresolvable: §4.6 makes the
+  fragment a JSON-Pointer over the referenced document, and the 3.1 Schema
+  Object's JSON Schema 2020-12 dialect makes `$ref` an applicator that
+  substitutes nothing, so the next token identifies no member and RFC 6901 §4's
+  error condition arises. The governing edition is the artifact's own. Three
+  citations are corrected with it: §6 and §11 qualify `[JSON Reference]` to the
+  five 3.0 editions that name it, §11 adds the JSON Schema 2020-12 **core**
+  vocabulary that every reference semantic actually lives in beside the
+  validation vocabulary it already cited, and §7 no longer attributes its
+  path-item `$ref` rule to "OAS reference resolution" — no accepted edition
+  states it, and the rule is this specification's under core OBI-B-02 item 5
+  and RFC 6901 §7's delegation to an application of JSON Pointer. No Core OBI
+  document-model field changed.
+
 - The invocation interfaces now define unsuccessful completion as exactly
   `{code,data?}`. They have no portable message or diagnostic escape lane;
   application-authored JSON failure values may cross only when the governing
