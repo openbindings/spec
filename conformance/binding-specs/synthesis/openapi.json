@@ -3292,6 +3292,57 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-31",
+      "description": "String content parses under the YAML 1.2.2 grammar pin, whose core tag resolution matches a plain scalar against a fixed list of regular expressions and makes every scalar matching none of them a string. `<<` matches none, so a mapping entry keyed `<<` is an ordinary property named `<<` and nothing is merged into its mapping: YAML 1.1's merge type is outside the tag set the artifact authority permits. The anchored operationId therefore does not reach the operation, whose key is synthesized from its method and path instead, and the alias target survives as an ordinary extension property.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://merge.example.test/openapi.yaml",
+        "content": "openapi: 3.0.3\ninfo:\n  title: Merge keys\n  version: '1'\nservers:\n  - url: https://merge.example.test\nx-common: &common\n  operationId: merged\npaths:\n  /probe:\n    get:\n      <<: *common\n      responses:\n        \"200\":\n          description: ok\n"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "probe.get"
+        ],
+        "bindings": [
+          {
+            "operationKey": "probe.get",
+            "bindingRef": "#/paths/~1probe/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1probe/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "probe.get",
+              "bindingRef": "#/paths/~1probe/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-32",
+      "description": "Every accepted edition requires that tags be limited to those allowed by YAML's JSON schema ruleset, which is the null, boolean, integer and float types alongside the failsafe map, sequence and string. An explicit !!timestamp tag names a YAML 1.1 type outside that set, so the artifact is refused loudly rather than resolved into a value the author's own edition forbids.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "location": "https://tags.example.test/openapi.yaml",
+        "content": "openapi: 3.0.3\ninfo:\n  title: Unpermitted tag\n  version: '1'\nservers:\n  - url: https://tags.example.test\npaths:\n  /probe:\n    get:\n      operationId: probe\n      parameters:\n        - name: since\n          in: query\n          schema:\n            type: string\n            example: !!timestamp 2020-01-01\n      responses:\n        \"200\":\n          description: ok\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "rules": [
+          "OAPI-P-01"
+        ]
+      }
     }
   ]
 }
