@@ -1180,13 +1180,13 @@
     },
     {
       "id": "OAPI-SS-14",
-      "description": "An unconstrained multipart part (a bare description with no type) is represented: its OAS per-type part default is keyed by the supplied value's JSON application type at invocation.",
+      "description": "A multipart part declaring no `type` (a bare description) is represented UNDER THE 3.0 LINE, where no accepted edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type. There openbindings.openapi@1 supplies the answer as its own convention: the part default is keyed by the supplied value's JSON application type at invocation. This scenario carried `openapi: 3.1.0` until 2026-08-17 and asserted the same representation there, which was wrong — every accepted 3.1 edition states application/octet-stream for that part, and OAPI-SS-23 and OAPI-SS-24 now pin those dispositions.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
-          "openapi": "3.1.0",
+          "openapi": "3.0.3",
           "info": {
-            "title": "Unconstrained part coverage",
+            "title": "Type-absent part coverage on the 3.0 line",
             "version": "1"
           },
           "servers": [
@@ -2437,6 +2437,368 @@
               "status": "represented",
               "operationKey": "listUsable",
               "bindingRef": "#/paths/~1usable/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-23",
+      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table. openbindings.openapi@1 defines no boundary from a JSON application value to octets for a form part, so a multipart alternative carrying such a part is an excluded alternative: uploadAvatar, whose only candidate is that alternative, is an excluded target; createNote keeps its JSON alternative and stays represented with the multipart alternative excluded; createLabel, whose part declares `type: string`, is unaffected. OAS 3.1.2 carries the same row verbatim and takes the same dispositions.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.1",
+          "info": {
+            "title": "Type-absent form parts",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {
+                            "description": "the picture"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/notes": {
+              "post": {
+                "operationId": "createNote",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "body": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/labels": {
+              "post": {
+                "operationId": "createLabel",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createLabel",
+          "createNote"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createLabel",
+            "bindingRef": "#/paths/~1labels/post"
+          },
+          {
+            "operationKey": "createNote",
+            "bindingRef": "#/paths/~1notes/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-24",
+      "description": "OAS 3.1.0 states the same answer as 3.1.1 for a part whose `type` is absent, by a different sentence: its Encoding Object contentType enumeration closes with a total catch-all — \"for object - application/json; for array - the default is defined based on the inner type; for all other cases the default is application/octet-stream\" — whose complement includes a declaration carrying no type at all. The dispositions are therefore the 3.1.1 ones, and this scenario exists because that ground is an implied answer rather than a tabulated row.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Type-absent form parts",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {
+                            "description": "the picture"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/notes": {
+              "post": {
+                "operationId": "createNote",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "body": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/labels": {
+              "post": {
+                "operationId": "createLabel",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createLabel",
+          "createNote"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createLabel",
+            "bindingRef": "#/paths/~1labels/post"
+          },
+          {
+            "operationKey": "createNote",
+            "bindingRef": "#/paths/~1notes/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
               "requirements": []
             }
           ]

@@ -537,7 +537,7 @@
         "OAPI-P-05"
       ],
       "section": "9.3",
-      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default. A missing selection is missing consumer configuration (ruled 2026-08-13, R1+R5): the invocation challenges CONTEXT_REQUIRED (config.value, point server) through the retryable context negotiation \u2014 the same lane as a missing request-media selection \u2014 and nothing dispatches.",
+      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default. A missing selection is missing consumer configuration (ruled 2026-08-13, R1+R5): the invocation challenges CONTEXT_REQUIRED (config.value, point server) through the retryable context negotiation — the same lane as a missing request-media selection — and nothing dispatches.",
       "given": {
         "source": {
           "content": {
@@ -4053,7 +4053,7 @@
         "OAPI-P-04"
       ],
       "section": "9.2",
-      "description": "An unconstrained multipart part takes its OAS per-type default from the value's JSON application type, and a single-non-null-branch choice part carries its branch's serialization.",
+      "description": "A single-non-null-branch choice part carries its branch's serialization. This scenario also asserted, until 2026-08-17, that an unconstrained part beside it takes its OAS per-type default from the value's JSON application type — at `openapi: 3.1.2`, whose Encoding Object default table states application/octet-stream for a part whose `type` is absent. That half was wrong and moved to OAPI-PS-56 (the 3.0 line, where the convention applies) and OAPI-PS-57 (the refusal the 3.1 line requires).",
       "given": {
         "source": {
           "content": {
@@ -4077,9 +4077,6 @@
                         "schema": {
                           "type": "object",
                           "properties": {
-                            "profile": {
-                              "description": "unconstrained part"
-                            },
                             "file_id": {
                               "anyOf": [
                                 {
@@ -4111,9 +4108,6 @@
         "invocation": {
           "inputPresent": true,
           "input": {
-            "profile": {
-              "role": "admin"
-            },
             "file_id": "id-1"
           }
         },
@@ -4130,18 +4124,6 @@
             {
               "path": "/dispatch/headers/Content-Type",
               "contains": "multipart/form-data; boundary="
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "name=\"profile\""
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "Content-Type: application/json"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "{\"role\":\"admin\"}"
             },
             {
               "path": "/dispatch/body",
@@ -4567,7 +4549,7 @@
         "OAPI-P-04"
       ],
       "section": "9.2",
-      "description": "An array-valued multipart property takes its per-part default Content-Type from its ITEMS schema, never from the array. Every accepted OAS edition states this, in one of two ways. The Encoding Object's contentType default says \"for array \u2013 the default is defined based on the inner type\" (3.0.0\u20133.0.3, 3.1.0), \"according to the type and format of the items schema\" (3.0.4), \"according to the type of the items schema\" (3.1.1, 3.1.2). Independently, the multipart guidance in 3.0.0\u20133.0.3 and 3.1.0 says \"If the property is a primitive, or an array of primitive values, the default Content-Type is text/plain\". A string items schema with no contentEncoding therefore reaches text/plain on every edition, and each element takes its own part. An engine that keyed the default on the array itself would emit ONE part carrying the whole JSON array, which is what the per-element body assertions below exclude. The per-part Content-Type header is deliberately NOT asserted: [RFC7578] Section 4.4, which 3.1.1 incorporates, says \"Each part MAY have an (optional) 'Content-Type' header field, which defaults to 'text/plain'\", so emitting it and omitting it are both inside the permitted set and requiring either would invent a preference the authority does not state.",
+      "description": "An array-valued multipart property takes its per-part default Content-Type from its ITEMS schema, never from the array. Every accepted OAS edition states this, in one of two ways. The Encoding Object's contentType default says \"for array – the default is defined based on the inner type\" (3.0.0–3.0.3, 3.1.0), \"according to the type and format of the items schema\" (3.0.4), \"according to the type of the items schema\" (3.1.1, 3.1.2). Independently, the multipart guidance in 3.0.0–3.0.3 and 3.1.0 says \"If the property is a primitive, or an array of primitive values, the default Content-Type is text/plain\". A string items schema with no contentEncoding therefore reaches text/plain on every edition, and each element takes its own part. An engine that keyed the default on the array itself would emit ONE part carrying the whole JSON array, which is what the per-element body assertions below exclude. The per-part Content-Type header is deliberately NOT asserted: [RFC7578] Section 4.4, which 3.1.1 incorporates, says \"Each part MAY have an (optional) 'Content-Type' header field, which defaults to 'text/plain'\", so emitting it and omitting it are both inside the permitted set and requiring either would invent a preference the authority does not state.",
       "given": {
         "source": {
           "content": {
@@ -4657,6 +4639,172 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-56",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type. openbindings.openapi@1 answers there with its own convention, keying the per-type default from the supplied value's JSON application type, so an object value rides as an application/json part.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "Type-absent part interpretation",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "description": "a part declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "profile": {
+              "role": "admin"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"profile\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Type: application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "{\"role\":\"admin\"}"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-57",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table, and openbindings.openapi@1 defines no boundary from a JSON application value to octets for a form part. The multipart alternative is therefore not a carriage candidate, and with no other alternative the invocation refuses before dispatch rather than guessing a lane. OAS 3.1.0 reaches the same answer through the total catch-all closing its prose enumeration, and OAS 3.1.2 carries 3.1.1's row verbatim.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.1",
+            "info": {
+              "title": "Type-absent part interpretation",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "description": "a part declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "profile": {
+              "role": "admin"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }

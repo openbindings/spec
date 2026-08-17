@@ -13,6 +13,34 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- `openbindings.openapi@1` §9.2 and OAPI-P-04 state, per edition, what a form
+  part whose resolved Schema Object declares no `type` defaults to. Every
+  accepted 3.1 edition states `application/octet-stream` for it — 3.1.1 and
+  3.1.2 tabulate a `type`-absent first row in the Encoding Object's own default
+  table, and 3.1.0 reaches the same answer through the total catch-all closing
+  its prose enumeration — and this revision defines no boundary from a JSON
+  application value to octets for a form part, so such a part refuses before
+  dispatch there and its alternative is an accounted exclusion. The 3.0 line
+  states no row that reaches it: 3.0.0 through 3.0.3 enumerate a `string` with
+  `format: binary`, other primitive types, `object`, and `array` without a
+  catch-all, and 3.0.4 tabulates the same cases keyed on a declared `type`.
+  This specification's own convention answers there, keyed the same way those
+  editions key their stated rows, and it now says which five editions it
+  covers.
+
+  **This revises a prior draft position, and the prior text was wrong.** §9.2
+  read an unconstrained part as asserting nothing and applied the convention on
+  every edition, which displaced a stated authority row on three of the eight.
+  Two portable scenarios asserted the displaced reading and are corrected:
+  OAPI-SS-14 moves to `openapi: 3.0.3`, and OAPI-PS-50 keeps only its
+  nullable-choice half. New scenarios pin the corrected split: OAPI-SS-23
+  (3.1.1, the tabulated row), OAPI-SS-24 (3.1.0, the catch-all), OAPI-PS-56
+  (the 3.0-line convention) and OAPI-PS-57 (the 3.1 refusal). The convention's
+  predicate is also stated exactly — `type`-absence, the key the editions' own
+  rows use — rather than the narrower "memberless or boolean `true`" the prior
+  text named, which never matched the behavior a `description`-carrying part
+  received.
+
 - The unreleased first `openbindings.asyncapi@1` candidate. It treats AsyncAPI
   Core and each artifact-declared protocol binding as authority incorporated
   by this candidate's deliberate upstream-deferential policy,
