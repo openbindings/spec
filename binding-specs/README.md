@@ -342,6 +342,65 @@ answer it the same way or state why this family cannot. A question that
 recurs across families is a candidate for this file rather than for a
 per-family section.
 
+### Whole-source refusal, and what it is not
+
+Ratified by Matt, 2026-08-18, after an adversarial assessment of a broader
+candidate (the derivation-only form failed against the load gates, against
+`openbindings.usage@1`'s source-scope exclusions, and against three published
+refusals; the record is the corpus lab's candidate-doctrine assessment of the
+same date). Whole-source refusal is not one thing. Every one of this
+project's binding specifications answers it in the same three parts, in this
+order.
+
+**1. Load gates are enumerated, and the enumeration is closed.** A condition
+that fires before the artifact has a JSON image, or before its governing
+edition or revision is determined, is stated as an explicit member of a closed
+set: the accepted-representation grammar, scalar resolution and key
+uniqueness, the root's shape, and the edition or revision gate. These cannot
+be derived from any per-unit rule, because there is no inventory to reason
+over until they have passed — asking which units survive a defect that
+prevents the document from existing has no answer, and manufacturing one means
+inventing a value the artifact does not carry. The edition or revision gate is
+always evaluated first.
+
+**2. Below the load gates there is exactly one whole-source refusal, and it
+is derived, not enumerated.** Once the artifact has a JSON image and a
+determined edition, every defect confines to the smallest unit that owns it.
+The source refuses only when **no addressable target remains**: no conformant
+`ref` resolves to an invocable target, because every position that would have
+carried one is defective under the governing authority. This single rule
+replaces both "the artifact declares no addressable target" and "the artifact
+declares addressable targets and every one of them is destroyed" — an empty
+set has no survivors, so one sentence covers both. Specific shapes that
+trigger it are illustrations, never a closed list.
+
+**"Addressable" is the test, and it is deliberately not "representable."** A
+target that resolves and is then unusable for another reason — no admissible
+media, an unavailable prerequisite, a unit the revision excludes from its
+supported subset — is still an addressed target. It refuses at invocation, or
+is accounted as excluded, and never here. Whether a target is ultimately
+*represented* is a synthesis outcome and may differ between conformant
+implementations; whole-source refusal must not.
+
+**What the artifact never declared is not a defect.** An artifact that
+conformantly declares no target — an empty Paths Object, an empty Path Item
+Object, a server advertising no bindable tool — is accepted and yields an
+interface with no operations. The rule reaches the artifact whose targets
+were destroyed, never the artifact that had none to begin with. Where a
+family's governing authority states this permission, the specification quotes
+it.
+
+**3. A revision MAY decline a feature at source scope, and that is a third
+thing.** Where a revision does not bind a declared upstream feature and
+cannot confine the consequence — because resolving it would determine the
+artifact's own inventory, or import an execution or filesystem authority the
+revision does not define — it refuses the source and says so as an explicit
+coverage limit with its reason. This is an exclusion, not a defect, and it is
+not derivable from part 2. `openbindings.usage@1`'s refusal of `include`,
+`mount`, and the configuration-file and external-parse lanes is the pattern.
+A revision does not reach for this to avoid designing a confinement boundary;
+where a defect has a defensible owning unit, it confines.
+
 ## The deference order
 
 A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
