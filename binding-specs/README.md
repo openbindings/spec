@@ -305,6 +305,43 @@ that refuses is the smallest unit that actually owns the defect, and what
 it could not carry is named rather than implied. A refusal wider than its
 cause buys no fidelity and costs real coverage.
 
+## Sibling uniformity across this project's binding specifications
+
+Ratified by Matt, 2026-08-18. **Where two of this project's binding
+specifications face the same structural question, they answer it the same
+way, in the same place, in the same words** — so that `openbindings.openapi`,
+`openbindings.asyncapi`, `openbindings.usage`, `openbindings.graphql` and the
+rest read as siblings rather than as unrelated documents that happen to share
+a namespace. A reader who has learned one should be able to predict where a
+second states its refusals, its coverage accounting, its configuration points,
+and its gaps.
+
+This is normative for **this project's own binding specifications only**. It
+says nothing about the core specification, and nothing about the artifacts we
+incorporate.
+
+**It is subordinate to fidelity, and the subordination is not close.** The
+families are genuinely different — a CLI descriptor and an event-driven
+artifact do not have the same shape, and pretending otherwise would be worse
+than inconsistency. Where uniformity would cost faithfulness to an
+incorporated authority, or force a family to state something its artifact does
+not support, **fidelity wins and the divergence is stated with its reason**.
+Uniformity is a strong default for the questions the families genuinely share,
+not a mould to press them into.
+
+**Do not confuse this with the independent-interfaces principle.** That
+principle governs the SURFACES an artifact describes: a CLI must feel like a
+native CLI, an HTTP API like a native HTTP API, never "designed for the OBI."
+This one governs OUR OWN documents about those surfaces. Making our
+specifications predictable siblings does not make the interfaces they describe
+any less independent.
+
+**The operative test when authoring:** before answering a structural question
+in one family, ask whether another family has already answered it. If so,
+answer it the same way or state why this family cannot. A question that
+recurs across families is a candidate for this file rather than for a
+per-family section.
+
 ## The deference order
 
 A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
