@@ -3769,6 +3769,451 @@
           }
         ]
       }
+    },
+    {
+      "id": "OAPI-SS-36",
+      "description": "A style-lane declaration whose resolved schema carries a member with no defined expansion is refused at ADMISSION and accounted, not published as represented and refused at invocation. The offending member is an array whose resolved items are object or array, or an object one of whose resolved property schemas is. Every style this lane serves expands a composite value exactly one level — each member becomes a member string — so every value conforming to such a declaration is one the candidate is statically guaranteed to refuse, and the refusal is decided by the declaration alone. The governing text is read per edition. The form row cites [RFC6570] Section 3.2.8 on every accepted edition, and RFC 6570 Section 2.4.2 applies the expansion process \"to each member of the composite as if it were listed as a separate variable\", whose expansions append member strings. The deepObject row cites no RFC section on any edition: on 3.0.0 through 3.0.3 and 3.1.0 it reads \"Provides a simple way of rendering nested objects using form parameters\", which governs this case without defining it, and on 3.0.4, 3.1.1 and 3.1.2 it says so outright — \"The representation of array or object properties is not defined.\" No accepted edition supplies a representation, and this specification authors none. listRecords is the mover: its deepObject filter declares a `where` property of type object, so its TARGET is excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02) — a parameter has no sibling alternative to fall back to, so the unit that owns the defect is the operation. countRecords is the control that matters most: the same style on a bare `{type: object}` declaring NO members at all. Its runtime members may all be scalars, so a declaration-keyed refusal must not reach it and the operation stays represented. listTags is the scalar-list control. upload carries the body half of the same rule: an Encoding Object writing an explicit `style` puts the property on the RFC6570-style lane, its array of objects has no member expansion, and there the smallest owning unit is the ALTERNATIVE — the request media is excluded under openapi.request_media_excluded (OAPI-P-04) while the target survives, because the body is optional and the operation remains invocable with no body. The published operation consequently advertises no input at all, which the assertion pins directly.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Style-lane composite members",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/records": {
+              "get": {
+                "operationId": "listRecords",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "where": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/records/count": {
+              "get": {
+                "operationId": "countRecords",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/tags": {
+              "get": {
+                "operationId": "listTags",
+                "parameters": [
+                  {
+                    "name": "tags",
+                    "in": "query",
+                    "style": "form",
+                    "explode": false,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/upload": {
+              "post": {
+                "operationId": "upload",
+                "requestBody": {
+                  "content": {
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "payload": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      },
+                      "encoding": {
+                        "payload": {
+                          "style": "form"
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "countRecords",
+          "listTags",
+          "upload"
+        ],
+        "bindings": [
+          {
+            "operationKey": "countRecords",
+            "bindingRef": "#/paths/~1records~1count/get"
+          },
+          {
+            "operationKey": "listTags",
+            "bindingRef": "#/paths/~1tags/get"
+          },
+          {
+            "operationKey": "upload",
+            "bindingRef": "#/paths/~1upload/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1records/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.parameter_style_expansion_excluded",
+              "rule": "OAPI-P-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1records~1count/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "countRecords",
+              "bindingRef": "#/paths/~1records~1count/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1tags/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listTags",
+              "bindingRef": "#/paths/~1tags/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1upload/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "upload",
+              "bindingRef": "#/paths/~1upload/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1upload/post/requestBody/content/application~1x-www-form-urlencoded",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/countRecords/input/properties/filter/type",
+            "equals": "object"
+          },
+          {
+            "path": "/operations/upload/input",
+            "absent": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "OAPI-SS-37",
+      "description": "The 3.1 half of an edition-scoped pair whose member bytes are identical to OAPI-SS-38's. Under the 3.1 line the Schema Object is a JSON Schema 2020-12 schema, and [JSON Schema 2020-12] Section 6.1.1 defines an array-valued `type` as a union — \"if the value of `type` is an array, then an instance validates successfully if its type matches any of the types indicated by the strings in the array\". So `{\"type\": [\"object\", \"null\"]}` asserts exactly what `{\"anyOf\": [{\"type\": \"object\"}, {\"type\": \"null\"}]}` asserts and takes the same collapse to its single non-null member: the artifact declared exactly one carriage and it is an object, whose expansion the deepObject row leaves undefined. nullableObjectMember is therefore excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02). twoNonNullMembers is the control on the same line: two non-null members declare value-dependent alternatives, do not collapse to one declared kind, and admit a string value, so a declaration-keyed refusal must not reach it.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.1",
+          "info": {
+            "title": "Union-typed style-lane members",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/a": {
+              "get": {
+                "operationId": "nullableObjectMember",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "where": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/b": {
+              "get": {
+                "operationId": "twoNonNullMembers",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "where": {
+                          "type": [
+                            "object",
+                            "string"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "twoNonNullMembers"
+        ],
+        "bindings": [
+          {
+            "operationKey": "twoNonNullMembers",
+            "bindingRef": "#/paths/~1b/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1a/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.parameter_style_expansion_excluded",
+              "rule": "OAPI-P-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1b/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "twoNonNullMembers",
+              "bindingRef": "#/paths/~1b/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-38",
+      "description": "The 3.0 half of the pair OAPI-SS-37 opens: the same two parameters, the same member bytes, and BOTH operations represented. Every 3.0 edition states of the Schema Object that \"type - Value MUST be a string. Multiple types via an array are not supported\", so on that line an array-valued `type` is not a union declaration this specification can read, there is nothing to collapse, and neither member resolves to `object`. The pair is what keeps the collapse edition-scoped rather than asserted of every accepted edition: a processor that applied the 3.1 reading to a 3.0 artifact would exclude nullableObjectMember here too, and one that applied the 3.0 reading to a 3.1 artifact would admit it there.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Union-typed style-lane members",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/a": {
+              "get": {
+                "operationId": "nullableObjectMember",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "where": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/b": {
+              "get": {
+                "operationId": "twoNonNullMembers",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "where": {
+                          "type": [
+                            "object",
+                            "string"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "nullableObjectMember",
+          "twoNonNullMembers"
+        ],
+        "bindings": [
+          {
+            "operationKey": "nullableObjectMember",
+            "bindingRef": "#/paths/~1a/get"
+          },
+          {
+            "operationKey": "twoNonNullMembers",
+            "bindingRef": "#/paths/~1b/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1a/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "nullableObjectMember",
+              "bindingRef": "#/paths/~1a/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1b/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "twoNonNullMembers",
+              "bindingRef": "#/paths/~1b/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

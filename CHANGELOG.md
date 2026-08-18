@@ -32,6 +32,41 @@ below may continue to change until the 0.2 release is cut.
   implementation mints — and states the two places that rule costs the corpus
   evidence today.
 
+- `openbindings.openapi@1` §9.1 and OAPI-P-02 state that a `form`,
+  `spaceDelimited`, `pipeDelimited` or `deepObject` declaration whose resolved
+  schema carries a member with **no defined expansion** is refused at admission
+  and its exclusion accounted. Each of those styles expands a composite value
+  exactly one level, so every member becomes a member string; an array whose
+  resolved items resolve to `object` or `array`, or an object one of whose
+  resolved property schemas does, therefore declares a member with no
+  representation. The refusal is decided by the DECLARATION, because every
+  value conforming to it carries that member as a composite — the unit was
+  previously published as represented and refused only once a caller populated
+  it. The authority is read per edition: the `form` row cites [RFC 6570] §3.2.8
+  on every accepted edition and those expansions append member strings, while
+  `spaceDelimited`, `pipeDelimited` and `deepObject` cite no RFC section on any
+  edition; the `deepObject` row governs the case without defining it on 3.0.0,
+  3.0.1, 3.0.2, 3.0.3 and 3.1.0 ("Provides a simple way of rendering nested
+  objects using form parameters"), and 3.0.4, 3.1.1 and 3.1.2 state it outright
+  ("The representation of array or object properties is not defined"). No
+  representation is authored, and whether to expose an interpretation choice
+  for these declarations is left open. The excluded unit is the smallest one
+  that owns the defect: a parameter's **target**, a form-body property's
+  **alternative**. A typeless member, a choice with more than one non-null
+  branch, and an object declaring no members at all are deliberately not
+  reached, because a declaration-keyed rule must not refuse a declaration that
+  admits a scalar value. `simple`, `label` and `matrix` are not addressed.
+
+- **Three portable synthesis scenarios for the style-lane composite-member
+  rule** (`OAPI-SS-36`–`OAPI-SS-38`). `OAPI-SS-36` pins both positions and
+  their two accountings side by side with the controls the rule must not
+  reach; `OAPI-SS-37` and `OAPI-SS-38` are an edition-scoped pair with
+  identical member bytes and opposite answers, because the 3.1 line reads an
+  array-valued `type` as a union under [JSON Schema 2020-12] §6.1.1 while every
+  3.0 edition states that "Multiple types via an array are not supported". Both
+  of the first two fail in both runners when the synthesis gate is reverted;
+  the 3.0 twin stays green, which is what scopes the collapse to one line.
+
 - **Five portable synthesis scenarios for `openbindings.openapi@1` §6
   "Reference scope"** (`OAPI-SS-25`–`OAPI-SS-29`), authored from the
   multi-document case table the three engines already share. A dangling
