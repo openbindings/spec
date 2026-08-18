@@ -3484,6 +3484,291 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-35",
+      "description": "A urlencoded property whose resolved schema declares a choice with MORE THAN ONE non-null branch has no single faithful form carriage, so openbindings.openapi@1 Section 9.2 refuses that alternative before dispatch — and it does so on every accepted edition, including the 3.0-line patches whose own text states no lane-selection rule. Those four editions reach the content path through their own Section 4.1 (\"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\") together with 3.0.4's Section 4.7.15.1.2 (\"Encoding is to be based on contentType alone\"), so a part carriage IS resolved here and the two-branch anyOf is caught. A processor that keyed this on the patch component would instead put the property on the RFC6570-style path, which checks only that a coherent serialization method exists, never resolves a part carriage, and would therefore ADMIT the declaration and serve it. Three accountings are pinned because the artifact's requestBody shape decides which applies. toggleWarninglist keeps a JSON sibling, so only its urlencoded alternative is excluded and both the target and the operation's input survive through the other candidate. toggleWarninglistOnly declares urlencoded as its only request media AND marks the body required, so the same defect leaves no invocable form at all and excludes its TARGET, recorded on the target entry alone (openapi.media_schema_mismatch) — the established sole-candidate accounting OAPI-SS-30 pins. toggleWarninglistOptional is the third cell and the one the corpus actually moved: urlencoded as the ONLY content entry with NO required key. Read at its own artifact bytes, that is the shape MISP/MISP POST /warninglists/toggleEnable has (its requestBody $refs a component declaring application/x-www-form-urlencoded alone and carrying no required), and it was the sole specimen movement of the 2026-08-17 lane ruling. Because the body is optional the operation remains invocable with no body, so its target stays represented and the excluded alternative is the only place the loss is accounted; the published operation consequently advertises NO input at all while the artifact declares a form field, which the assertion on /operations/toggleWarninglistOptional/input pins directly rather than leaving to be inferred from the coverage entries. recordPlace is the unaffected control: an ordinary object property on the same content path.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Non-collapsing choice in a urlencoded body",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/warninglists/toggle": {
+              "post": {
+                "operationId": "toggleWarninglist",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "toggled"
+                  }
+                }
+              }
+            },
+            "/warninglists/toggle-only": {
+              "post": {
+                "operationId": "toggleWarninglistOnly",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "toggled"
+                  }
+                }
+              }
+            },
+            "/places": {
+              "post": {
+                "operationId": "recordPlace",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "object",
+                            "properties": {
+                              "street": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/warninglists/toggle-optional": {
+              "post": {
+                "operationId": "toggleWarninglistOptional",
+                "requestBody": {
+                  "content": {
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "toggled"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "recordPlace",
+          "toggleWarninglist",
+          "toggleWarninglistOptional"
+        ],
+        "bindings": [
+          {
+            "operationKey": "recordPlace",
+            "bindingRef": "#/paths/~1places/post"
+          },
+          {
+            "operationKey": "toggleWarninglist",
+            "bindingRef": "#/paths/~1warninglists~1toggle/post"
+          },
+          {
+            "operationKey": "toggleWarninglistOptional",
+            "bindingRef": "#/paths/~1warninglists~1toggle-optional/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1places/post/requestBody/content/application~1x-www-form-urlencoded",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "recordPlace",
+              "bindingRef": "#/paths/~1places/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "toggleWarninglist",
+              "bindingRef": "#/paths/~1warninglists~1toggle/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle/post/requestBody/content/application~1x-www-form-urlencoded",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1places/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "recordPlace",
+              "bindingRef": "#/paths/~1places/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle-only/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "toggleWarninglist",
+              "bindingRef": "#/paths/~1warninglists~1toggle/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle-optional/post/requestBody/content/application~1x-www-form-urlencoded",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1warninglists~1toggle-optional/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "toggleWarninglistOptional",
+              "bindingRef": "#/paths/~1warninglists~1toggle-optional/post",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/toggleWarninglistOptional/input",
+            "absent": true
+          },
+          {
+            "path": "/operations/toggleWarninglist/input/type",
+            "equals": "object"
+          }
+        ]
+      }
     }
   ]
 }

@@ -4992,6 +4992,541 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-60",
+      "rules": [
+        "OAPI-P-01",
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.0 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.0 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "address": {
+                  "street": "main st"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "address": "address"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.0. It is byte-identical in all five 3.0-line scenarios, OAPI-PS-60 through OAPI-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-61",
+      "rules": [
+        "OAPI-P-01",
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.1 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.1 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.1",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "address": {
+                  "street": "main st"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "address": "address"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.1. It is byte-identical in all five 3.0-line scenarios, OAPI-PS-60 through OAPI-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-62",
+      "rules": [
+        "OAPI-P-01",
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.2 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.2 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.2",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "address": {
+                  "street": "main st"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "address": "address"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.2. It is byte-identical in all five 3.0-line scenarios, OAPI-PS-60 through OAPI-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-63",
+      "rules": [
+        "OAPI-P-01",
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.3 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.3 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "address": {
+                  "street": "main st"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "address": "address"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.3. It is byte-identical in all five 3.0-line scenarios, OAPI-PS-60 through OAPI-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-64",
+      "rules": [
+        "OAPI-P-01",
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.4 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.4 states it outright at Section 4.7.15.1.2 — with all three fields absent, \"Encoding is to be based on contentType alone\" — and prints the worked bytes for this exact shape at Section 4.7.15.2.1. A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "address": {
+                  "street": "main st"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "properties": {
+                  "address": "address"
+                }
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.4. It is byte-identical in all five 3.0-line scenarios, OAPI-PS-60 through OAPI-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
