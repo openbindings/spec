@@ -1180,7 +1180,7 @@
     },
     {
       "id": "OAPI-SS-14",
-      "description": "A multipart part declaring no `type` (a bare description) is represented UNDER THE 3.0 LINE, where no accepted edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type. There openbindings.openapi@1 supplies the answer as its own convention: the part default is keyed by the supplied value's JSON application type at invocation. This scenario carried `openapi: 3.1.0` until 2026-08-17 and asserted the same representation there, which was wrong — every accepted 3.1 edition states application/octet-stream for that part, and OAPI-SS-23 and OAPI-SS-24 now pin those dispositions.",
+      "description": "A multipart part declaring no `type` (a bare description) is an EXCLUDED ALTERNATIVE under the 3.0 line, on that line's own ground: no accepted 3.0 edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi@1 authors no row for that residue. The request body here is OPTIONAL, so the operation stays represented and invocable bodyless while its one alternative is accounted excluded; OAPI-SS-23 and OAPI-SS-24 carry the 3.1 twins, where a REQUIRED body with the same part excludes the target itself. This scenario carried `openapi: 3.1.0` and asserted representation until 2026-08-17, which was wrong for that line; it then asserted representation under 3.0.3 until 2026-08-20, pinning the specification's own value-keyed convention, which escalation M2 deleted.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -1242,21 +1242,21 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": true,
+          "fullyRepresented": false,
           "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/paths/~1me~1picture/post",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "uploadPicture",
-              "bindingRef": "#/paths/~1me~1picture/post",
-              "requirements": []
-            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1me~1picture/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1me~1picture/post",
+              "scope": "target",
               "status": "represented",
               "operationKey": "uploadPicture",
               "bindingRef": "#/paths/~1me~1picture/post",
