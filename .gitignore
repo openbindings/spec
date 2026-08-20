@@ -21,5 +21,9 @@ ERGONOMICS.md
 # Dependencies
 node_modules/
 
+# Fetched authority-pin bytes (digests are tracked in
+# binding-specs/AUTHORITY-PINS.json; bytes are not)
+.authority-cache/
+
 # Go runner build artifacts
 conformance/runners/go/go
