@@ -109,7 +109,7 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
-The current corpus contains 157 scenarios covering every P-rule of usage,
+The current corpus contains 167 scenarios covering every P-rule of usage,
 OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (51 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
@@ -162,7 +162,7 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The 80 scenarios
+(`invalid` source units do not count as upstream-valid). The 81 scenarios
 exercise all seven standalone brownfield synthesis families and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow

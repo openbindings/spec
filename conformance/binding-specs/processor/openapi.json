@@ -5527,6 +5527,826 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-65",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "8",
+      "description": "A lone empty data line DISPATCHES an event whose data is the empty string, at its position in the output sequence. The WHATWG dispatch steps check the data buffer for emptiness BEFORE the trailing-LF strip: a received data line always appends its value plus one U+000A to the buffer, so a lone empty data line leaves the buffer holding a single LF — it survives the emptiness check and the strip leaves the empty string. Only a block that carried no data line at all — a comment-only block, or an event/id-only block — dispatches nothing. An incomplete final event (end of stream before its dispatching blank line) is discarded, never flushed.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Empty-data events",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/events": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "events",
+                      "content": {
+                        "text/event-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1events/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/event-stream"
+          },
+          "body": ": comment only\n\nevent: tick\nid: 7\n\ndata: first\n\ndata:\n\ndata: third\n\ndata: incomplete-final-event"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "first",
+                "",
+                "third"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-66",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "Absent input with a required non-path parameter DISPATCHES: exactly two conditions refuse before dispatch — a required request body with no value to carry and an unsupplied path parameter — and each applies to absent and supplied-but-incomplete input alike. A required query parameter is neither condition, so the request rides with the declaration unsupplied and the server's validation remains authoritative; refusing here would treat two wire-identical requests (absent input and a supplied empty object) differently. This scenario pins the removal of the superseded any-required-parameter refusal (minimality-audit M9).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Required query parameter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/search": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "done"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1search/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/search"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-67",
+      "rules": [
+        "OAPI-P-03",
+        "OAPI-P-04"
+      ],
+      "section": "9.1",
+      "description": "A supplied input that yields NO request body where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and §9.1 applies it to absent and supplied-but-incomplete input alike — a supplied empty object routes nothing to the body, leaves no value to carry, and is wire-identical to no input at all. The twin of OAPI-PS-31 on the supplied side of the one rule.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Required body, bodyless input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-68",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "On the 3.0 line `patternProperties` is not in the Schema Object dialect at all, so it decides as if absent and the body stays FLATTENED. §9.1 reads the explicitly-dynamic trigger keywords under the governing edition's dialect: every 3.0 edition states of the Schema Object that any keyword it does not list is strictly unsupported, and none of the five lists `patternProperties`, so the 3.0-line trigger is an explicit `additionalProperties` alone. A flat input therefore routes the artifact's own named property to the JSON body rather than being refused for a whole-value carriage the declaration never selected.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "patternProperties": {
+                            "^x-": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "value": "v"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-69",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "On the 3.0 line `if`, `dependentSchemas` and `unevaluatedProperties` are likewise outside the Schema Object dialect, so a declaration carrying all three is NOT declaration-complex and the body stays FLATTENED. §9.1's declaration-complex trigger set is read per line: the 3.0 line's Schema Object carries `oneOf`, `anyOf` and `not` only. One document carries all three strictly-unsupported keywords at once, so a flattened dispatch proves each of them inert rather than one of them masking the others.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "if": {
+                            "required": [
+                              "value"
+                            ]
+                          },
+                          "dependentSchemas": {
+                            "value": {
+                              "required": [
+                                "value"
+                              ]
+                            }
+                          },
+                          "unevaluatedProperties": false
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "value": "v"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-70",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "An explicit `unevaluatedProperties: false` on the 3.1 line makes the body declaration-complex and it rides WHOLE. §9.1's trigger is any-value PRESENCE — a schema \"carries an explicit `unevaluatedProperties` (any value)\" — so the `false` spelling triggers exactly like `true` or a Schema Object: `false` closes the instance to unevaluated members, which is a validation contract a projection to finitely named body properties cannot preserve, not a declaration that there is nothing to preserve. The routed one-tuple's `body.whole` carries the complete application value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "unevaluatedProperties": false
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "payload": {
+                  "value": "v"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "whole": "payload"
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-71",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "A normalized collision CONFINES to the colliding parsed identity: the two application/json spellings are unusable, but the map's non-colliding application/vnd.safe+json sibling is still an ordinary selectable alternative and dispatches under its own declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "Application/JSON;charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/vnd.safe+json"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "name": "Ada"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.safe+json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-72",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The other half of confinement, on the same artifact: no request selection may LAND on the colliding parsed identity. Configuring it refuses before dispatch instead of picking one of the two colliding spellings by source order.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "Application/JSON;charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/json; charset=utf-8"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "name": "Ada"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-73",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "9.2",
+      "description": "Response-side confinement: a normalized collision between two application/json spellings does not poison the map's clean text/plain declaration, which still governs the decode. The Accept set advertises only the usable membership, because a colliding identity can govern no match.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "text/plain": {},
+                        "application/json; charset=utf-8": {},
+                        "Application/JSON;charset=\"UTF-8\"": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain; charset=utf-8"
+          },
+          "body": "hello"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "equals": "text/plain"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "hello"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-74",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "9.2",
+      "description": "The other half on the response side, same artifact: no response match may be GOVERNED BY the colliding parsed identity. A peer selecting it is a protocol error rather than a first-key decode.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "text/plain": {},
+                        "application/json; charset=utf-8": {},
+                        "Application/JSON;charset=\"UTF-8\"": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json; charset=UTF-8"
+          },
+          "body": "{\"id\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
