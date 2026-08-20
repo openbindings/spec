@@ -5527,6 +5527,74 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-65",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "8",
+      "description": "A lone empty data line DISPATCHES an event whose data is the empty string, at its position in the output sequence. The WHATWG dispatch steps check the data buffer for emptiness BEFORE the trailing-LF strip: a received data line always appends its value plus one U+000A to the buffer, so a lone empty data line leaves the buffer holding a single LF — it survives the emptiness check and the strip leaves the empty string. Only a block that carried no data line at all — a comment-only block, or an event/id-only block — dispatches nothing. An incomplete final event (end of stream before its dispatching blank line) is discarded, never flushed.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Empty-data events",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/events": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "events",
+                      "content": {
+                        "text/event-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1events/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/event-stream"
+          },
+          "body": ": comment only\n\nevent: tick\nid: 7\n\ndata: first\n\ndata:\n\ndata: third\n\ndata: incomplete-final-event"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "first",
+                "",
+                "third"
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
