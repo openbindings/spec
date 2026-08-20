@@ -5595,6 +5595,151 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-66",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "Absent input with a required non-path parameter DISPATCHES: exactly two conditions refuse before dispatch — a required request body with no value to carry and an unsupplied path parameter — and each applies to absent and supplied-but-incomplete input alike. A required query parameter is neither condition, so the request rides with the declaration unsupplied and the server's validation remains authoritative; refusing here would treat two wire-identical requests (absent input and a supplied empty object) differently. This scenario pins the removal of the superseded any-required-parameter refusal (minimality-audit M9).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Required query parameter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/search": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "done"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1search/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/search"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-67",
+      "rules": [
+        "OAPI-P-03",
+        "OAPI-P-04"
+      ],
+      "section": "9.1",
+      "description": "A supplied input that yields NO request body where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and §9.1 applies it to absent and supplied-but-incomplete input alike — a supplied empty object routes nothing to the body, leaves no value to carry, and is wire-identical to no input at all. The twin of OAPI-PS-31 on the supplied side of the one rule.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Required body, bodyless input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
