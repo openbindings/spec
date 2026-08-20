@@ -2463,7 +2463,7 @@
     },
     {
       "id": "OAPI-SS-23",
-      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table. openbindings.openapi@1 defines no boundary from a JSON application value to octets for a form part, so a multipart alternative carrying such a part is an excluded alternative: uploadAvatar, whose only candidate is that alternative, is an excluded target; createNote keeps its JSON alternative and stays represented with the multipart alternative excluded; createLabel, whose part declares `type: string`, is unaffected. OAS 3.1.2 carries the same row verbatim and takes the same dispositions.",
+      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 — the alternative excluded and the sole-candidate target excluded with it — on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. uploadAvatar is represented on its sole alternative, createNote on both of its, and createLabel, whose part declares `type: string`, is unaffected. OAS 3.1.2 carries the same row verbatim and takes the same dispositions.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -2568,7 +2568,8 @@
         "outcome": "synthesized",
         "operations": [
           "createLabel",
-          "createNote"
+          "createNote",
+          "uploadAvatar"
         ],
         "bindings": [
           {
@@ -2578,12 +2579,25 @@
           {
             "operationKey": "createNote",
             "bindingRef": "#/paths/~1notes/post"
+          },
+          {
+            "operationKey": "uploadAvatar",
+            "bindingRef": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": []
+            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
@@ -2606,18 +2620,18 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
-              "rule": "OAPI-P-04",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
               "requirements": []
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1avatars/post",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.media_schema_mismatch",
-              "rule": "OAPI-P-04",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -2644,7 +2658,7 @@
     },
     {
       "id": "OAPI-SS-24",
-      "description": "OAS 3.1.0 states the same answer as 3.1.1 for a part whose `type` is absent, by a different sentence: its Encoding Object contentType enumeration closes with a total catch-all — \"for object - application/json; for array - the default is defined based on the inner type; for all other cases the default is application/octet-stream\" — whose complement includes a declaration carrying no type at all. The dispositions are therefore the 3.1.1 ones, and this scenario exists because that ground is an implied answer rather than a tabulated row.",
+      "description": "OAS 3.1.0 states the same answer as 3.1.1 for a part whose `type` is absent, by a different sentence: its Encoding Object contentType enumeration closes with a total catch-all — \"for object - application/json; for array - the default is defined based on the inner type; for all other cases the default is application/octet-stream\" — whose complement includes a declaration carrying no type at all. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 — the alternative excluded and the sole-candidate target excluded with it — on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. The dispositions are therefore the 3.1.1 ones, and this scenario exists because that ground is an implied answer rather than a tabulated row.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -2749,7 +2763,8 @@
         "outcome": "synthesized",
         "operations": [
           "createLabel",
-          "createNote"
+          "createNote",
+          "uploadAvatar"
         ],
         "bindings": [
           {
@@ -2759,12 +2774,25 @@
           {
             "operationKey": "createNote",
             "bindingRef": "#/paths/~1notes/post"
+          },
+          {
+            "operationKey": "uploadAvatar",
+            "bindingRef": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": []
+            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
@@ -2787,18 +2815,18 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
-              "rule": "OAPI-P-04",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
               "requirements": []
             },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1avatars/post",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.media_schema_mismatch",
-              "rule": "OAPI-P-04",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -3080,7 +3108,7 @@
     },
     {
       "id": "OAPI-SS-30",
-      "description": "Every accepted OAS 3.1 edition keys the application/octet-stream part default on a DECLARED string carrying `contentEncoding` — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present. On a declared non-string type the keyword is inert: the same table holds `n/a` in the contentEncoding column of the `number, integer, or boolean` and `object` rows, defined by its own note as \"the presence or value of contentEncoding is irrelevant\", and JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\", each conditioned on a string instance. So recordSample and recordProfile keep the text/plain and application/json rows and are represented; uploadAvatar takes the encoded-string row and is represented; and only createNote's part, which declares no `type` at all, reaches the `type`-absent row's application/octet-stream, for which openbindings.openapi@1 defines no JSON-to-octet part boundary, so that alternative is excluded and its sole-candidate target with it. The excluded target carries `openapi.media_schema_mismatch` with no alternative entry beside it, which is the established accounting for a sole-candidate operation whose only alternative is excluded — the same shape OAPI-SS-23 pins for its `/avatars` target.",
+      "description": "Every accepted OAS 3.1 edition keys the application/octet-stream part default on a DECLARED string carrying `contentEncoding` — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present. On a declared non-string type the keyword is inert: the same table holds `n/a` in the contentEncoding column of the `number, integer, or boolean` and `object` rows, defined by its own note as \"the presence or value of contentEncoding is irrelevant\", and JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\", each conditioned on a string instance. So recordSample and recordProfile keep the text/plain and application/json rows and are represented; uploadAvatar takes the encoded-string row and is represented; and createNote's part, which declares no `type` at all, reaches the `type`-absent row's application/octet-stream and rides the canonical Base64 boundary this specification already defines for its byte lanes, so that alternative and its sole-candidate target are represented too — the same disposition OAPI-SS-23 pins for its `/avatars` target. The keyword-inertness this scenario exists to pin is therefore visible in the content types, not in an exclusion.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -3204,11 +3232,16 @@
       "expected": {
         "outcome": "synthesized",
         "operations": [
+          "createNote",
           "recordProfile",
           "recordSample",
           "uploadAvatar"
         ],
         "bindings": [
+          {
+            "operationKey": "createNote",
+            "bindingRef": "#/paths/~1notes/post"
+          },
           {
             "operationKey": "recordProfile",
             "bindingRef": "#/paths/~1profiles/post"
@@ -3224,7 +3257,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -3233,6 +3266,15 @@
               "status": "represented",
               "operationKey": "uploadAvatar",
               "bindingRef": "#/paths/~1avatars/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -3266,9 +3308,9 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1notes/post",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.media_schema_mismatch",
-              "rule": "OAPI-P-04",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -4429,7 +4471,7 @@
     },
     {
       "id": "OAPI-SS-41",
-      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there — and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion — the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell and its alternative is an ordinary accounted exclusion, which OAPI-SS-23 and OAPI-SS-24 already pin.",
+      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there — and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion — the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell, which carries octets across the canonical Base64 boundary as OAPI-SS-23 and OAPI-SS-24 pin.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
