@@ -4604,6 +4604,207 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-42",
+      "description": "The 3.0-line twin of OAPI-SS-23. No accepted 3.0 edition states a default contentType row reaching a part that declares no `type`, and openbindings.openapi@1 authors none, so that part's content type is the required `partMedia` configuration point. The consequence for synthesis is that the alternative is REPRESENTED carrying a configuration requirement, not excluded: what is missing is a settled configuration value, not a carriage the specification lacks. uploadAvatar carries the requirement on its sole alternative and on the target; createNote carries it only on the multipart alternative, because its JSON alternative needs no choice and the target can act through that one; createLabel, whose part declares `type: string`, takes 3.0.4's `text/plain` row read line-uniformly and requires nothing.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Type-absent form parts on the 3.0 line",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {
+                            "description": "the picture"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/notes": {
+              "post": {
+                "operationId": "createNote",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "body": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "file": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/labels": {
+              "post": {
+                "operationId": "createLabel",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createLabel",
+          "createNote",
+          "uploadAvatar"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createLabel",
+            "bindingRef": "#/paths/~1labels/post"
+          },
+          {
+            "operationKey": "createNote",
+            "bindingRef": "#/paths/~1notes/post"
+          },
+          {
+            "operationKey": "uploadAvatar",
+            "bindingRef": "#/paths/~1avatars/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": [
+                "configuration.partMedia"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": [
+                "configuration.partMedia"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "uploadAvatar",
+              "bindingRef": "#/paths/~1avatars/post",
+              "requirements": [
+                "configuration.partMedia"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1labels/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createLabel",
+              "bindingRef": "#/paths/~1labels/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1notes/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

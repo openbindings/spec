@@ -4650,7 +4650,7 @@
         "OAPI-P-04"
       ],
       "section": "9.2",
-      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi@1 authors no row for that residue, so the multipart alternative is not a carriage candidate and, with no other alternative, the invocation refuses before dispatch. This scenario asserted the opposite until 2026-08-20: it pinned the specification's own value-keyed convention, which keyed the per-type part default from the supplied value's JSON application type so that an object value rode as an application/json part. Escalation M2 deleted that convention, and this scenario is now the 3.0-line twin of OAPI-PS-57 — one outcome on two grounds, the 3.1 line refusing because it STATES application/octet-stream for the part and this revision defines no JSON-to-octet part boundary to cross, the 3.0 line refusing because it states nothing and this revision fills nothing.",
+      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi@1 authors no row for that residue. The single missing fact is one media type, so the part's content type is the required `partMedia` configuration point, keyed by the part's property name: a required body carrying such a part challenges CONTEXT_REQUIRED (config.value, point partMedia, path /profile) before input consumption and dispatches nothing. This scenario pinned the specification's own value-keyed convention until 2026-08-20 (the supplied value's JSON type chose the part default), then a flat pre-dispatch refusal after escalation M2 deleted that convention; the revision-is-not-a-roadmap ruling replaced the refusal with the rung-3 answer the deference order ranks above it, since the authority is genuinely silent here rather than answering.",
       "given": {
         "source": {
           "content": {
@@ -4706,12 +4706,24 @@
       },
       "expected": [
         {
-          "disposition": "refusal",
+          "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
             {
               "path": "/dispatch",
               "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "partMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": "/profile"
             }
           ]
         }
