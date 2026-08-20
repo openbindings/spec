@@ -5740,6 +5740,303 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-68",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "On the 3.0 line `patternProperties` is not in the Schema Object dialect at all, so it decides as if absent and the body stays FLATTENED. §9.1 reads the explicitly-dynamic trigger keywords under the governing edition's dialect: every 3.0 edition states of the Schema Object that any keyword it does not list is strictly unsupported, and none of the five lists `patternProperties`, so the 3.0-line trigger is an explicit `additionalProperties` alone. A flat input therefore routes the artifact's own named property to the JSON body rather than being refused for a whole-value carriage the declaration never selected.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "patternProperties": {
+                            "^x-": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "value": "v"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-69",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "On the 3.0 line `if`, `dependentSchemas` and `unevaluatedProperties` are likewise outside the Schema Object dialect, so a declaration carrying all three is NOT declaration-complex and the body stays FLATTENED. §9.1's declaration-complex trigger set is read per line: the 3.0 line's Schema Object carries `oneOf`, `anyOf` and `not` only. One document carries all three strictly-unsupported keywords at once, so a flattened dispatch proves each of them inert rather than one of them masking the others.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "if": {
+                            "required": [
+                              "value"
+                            ]
+                          },
+                          "dependentSchemas": {
+                            "value": {
+                              "required": [
+                                "value"
+                              ]
+                            }
+                          },
+                          "unevaluatedProperties": false
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "value": "v"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-70",
+      "rules": [
+        "OAPI-P-03"
+      ],
+      "section": "9.1",
+      "description": "An explicit `unevaluatedProperties: false` on the 3.1 line makes the body declaration-complex and it rides WHOLE. §9.1's trigger is any-value PRESENCE — a schema \"carries an explicit `unevaluatedProperties` (any value)\" — so the `false` spelling triggers exactly like `true` or a Schema Object: `false` closes the instance to unevaluated members, which is a validation contract a projection to finitely named body properties cannot preserve, not a declaration that there is nothing to preserve. The routed one-tuple's `body.whole` carries the complete application value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "unevaluatedProperties": false
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": [
+            {
+              "$openbindings": "openbindings.openapi@1",
+              "value": {
+                "payload": {
+                  "value": "v"
+                }
+              },
+              "parameters": [],
+              "body": {
+                "whole": "payload"
+              }
+            }
+          ]
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
