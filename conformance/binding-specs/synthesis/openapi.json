@@ -1180,7 +1180,7 @@
     },
     {
       "id": "OAPI-SS-14",
-      "description": "A multipart part declaring no `type` (a bare description) is represented UNDER THE 3.0 LINE, where no accepted edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type. There openbindings.openapi@1 supplies the answer as its own convention: the part default is keyed by the supplied value's JSON application type at invocation. This scenario carried `openapi: 3.1.0` until 2026-08-17 and asserted the same representation there, which was wrong — every accepted 3.1 edition states application/octet-stream for that part, and OAPI-SS-23 and OAPI-SS-24 now pin those dispositions.",
+      "description": "A multipart part declaring no `type` (a bare description) is an EXCLUDED ALTERNATIVE under the 3.0 line, on that line's own ground: no accepted 3.0 edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi@1 authors no row for that residue. The request body here is OPTIONAL, so the operation stays represented and invocable bodyless while its one alternative is accounted excluded; OAPI-SS-23 and OAPI-SS-24 carry the 3.1 twins, where a REQUIRED body with the same part excludes the target itself. This scenario carried `openapi: 3.1.0` and asserted representation until 2026-08-17, which was wrong for that line; it then asserted representation under 3.0.3 until 2026-08-20, pinning the specification's own value-keyed convention, which escalation M2 deleted.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -1242,21 +1242,21 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": true,
+          "fullyRepresented": false,
           "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/paths/~1me~1picture/post",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "uploadPicture",
-              "bindingRef": "#/paths/~1me~1picture/post",
-              "requirements": []
-            },
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1me~1picture/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1me~1picture/post",
+              "scope": "target",
               "status": "represented",
               "operationKey": "uploadPicture",
               "bindingRef": "#/paths/~1me~1picture/post",
@@ -4314,6 +4314,249 @@
               "status": "represented",
               "operationKey": "createItem",
               "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-40",
+      "description": "The COVERAGE half of the 3.0 `format: byte` cell. Every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", so an exact non-JSON, non-form declaration governed by a `type: string`, `format: byte` schema has a defined carriage — the caller's artifact-encoded text, sent as-is — and its alternative is REPRESENTED. Before that lane existed the same declaration fell to an exclusion: application/pdf is outside section 9.2's closed character-data test, so no string-carriage lane applied, and with the byte cell unanswered the alternative had no candidate at all. uploadPlain is the control that shows the lane is keyed on the `byte` DECLARATION and not on the media type: the identical application/pdf declaration carrying a bare `type: string` still has no defined carriage, and because its body is required and that is its only alternative the target itself is excluded under the standing openapi.unresolvable_request_body convention. The same bare-string declaration is what a `format: byte` schema becomes on the 3.1 line, where `format` is an annotation with no content-encoding force and `byte` is absent from the format tables — that line spells an already-encoded string with `contentEncoding` instead.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "format: byte request coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/documents": {
+              "post": {
+                "operationId": "uploadDocument",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/pdf": {
+                      "schema": {
+                        "type": "string",
+                        "format": "byte"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/plain": {
+              "post": {
+                "operationId": "uploadPlain",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/pdf": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "uploadDocument"
+        ],
+        "bindings": [
+          {
+            "operationKey": "uploadDocument",
+            "bindingRef": "#/paths/~1documents/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1documents/post/requestBody/content/application~1pdf",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadDocument",
+              "bindingRef": "#/paths/~1documents/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1documents/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "uploadDocument",
+              "bindingRef": "#/paths/~1documents/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1plain/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unresolvable_request_body",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-41",
+      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there — and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion — the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell and its alternative is an ordinary accounted exclusion, which OAPI-SS-23 and OAPI-SS-24 already pin.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Boolean-literal part schema",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/uploads": {
+              "post": {
+                "operationId": "upload",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "note": true,
+                          "label": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "note": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "upload"
+        ],
+        "bindings": [
+          {
+            "operationKey": "upload",
+            "bindingRef": "#/paths/~1uploads/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "upload",
+              "bindingRef": "#/paths/~1uploads/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "upload",
+              "bindingRef": "#/paths/~1uploads/post",
               "requirements": []
             }
           ]
