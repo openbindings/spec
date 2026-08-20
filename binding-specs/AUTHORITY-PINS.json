@@ -558,6 +558,26 @@
       ]
     },
     {
+      "id": "rfc6750",
+      "family": "openapi",
+      "name": "RFC 6750: The OAuth 2.0 Authorization Framework: Bearer Token Usage",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6750.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6750"
+      ],
+      "sha256": "9dc385cf4ecdd85024e5a95e447ede9230e11700bf35251906b25b37557d604b",
+      "bytes": 38949,
+      "retrievedAt": "2026-08-20T22:00:00Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc6750",
+        "RFC 6750"
+      ]
+    },
+    {
       "id": "json-reference-draft-03",
       "family": "openapi",
       "name": "JSON Reference (draft-pbryan-zyp-json-ref-03)",
