@@ -1,0 +1,1334 @@
+{
+  "$comment": "Tracked authority-pin manifest for the binding-specification family. One entry per incorporated upstream authority per pinned edition; digests are sha256 over the exact bytes at the pinned source (git-tree entries pin a commit and digest a probe file inside the pinned tree). Verified by scripts/verify-authority-pins.mjs; bytes are not stored in this repository.",
+  "manifestVersion": 1,
+  "generatedAt": "2026-08-20T17:06:56Z",
+  "informativeCitations": {
+    "exact": [
+      "https://spec.openapis.org",
+      "https://www.rfc-editor.org/info/bcp14",
+      "https://json-schema.org/draft/2020-12/schema",
+      "https://github.com/asyncapi/spec",
+      "https://github.com/asyncapi/bindings",
+      "https://github.com/apache/avro",
+      "https://github.com/jdx/usage"
+    ],
+    "prefixes": [
+      "https://openbindings.com",
+      "https://example.com",
+      "http://example.com",
+      "https://api.example.com",
+      "https://html.spec.whatwg.org",
+      "https://www.asyncapi.com",
+      "https://avro.apache.org",
+      "https://usage.jdx.dev",
+      "https://docs.jsonata.org",
+      "https://protobuf.dev",
+      "https://grpc.io",
+      "https://connectrpc.com"
+    ]
+  },
+  "entries": [
+    {
+      "id": "rfc2119",
+      "family": "shared",
+      "name": "RFC 2119: Key words for use in RFCs to Indicate Requirement Levels (BCP 14)",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc2119.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc2119"
+      ],
+      "sha256": "3c2ceb7bfc84cd34720f4a5271338ab9d8280d34bdd1eb250c64306202f2ed8b",
+      "bytes": 4723,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/usage/openbindings.usage.md",
+        "binding-specs/mcp/openbindings.mcp.md",
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/connect/openbindings.connect.md",
+        "binding-specs/graphql/openbindings.graphql.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md",
+        "binding-specs/README.md"
+      ],
+      "matchTokens": [
+        "rfc2119",
+        "RFC 2119"
+      ]
+    },
+    {
+      "id": "rfc8174",
+      "family": "shared",
+      "name": "RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words (BCP 14)",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8174.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc8174"
+      ],
+      "sha256": "5ca0e2f90be0bc5928ee465f76518fee316dfa775aed885658a29a419cc293b7",
+      "bytes": 6071,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/usage/openbindings.usage.md",
+        "binding-specs/mcp/openbindings.mcp.md",
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/connect/openbindings.connect.md",
+        "binding-specs/graphql/openbindings.graphql.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md",
+        "binding-specs/README.md"
+      ],
+      "matchTokens": [
+        "rfc8174",
+        "RFC 8174"
+      ]
+    },
+    {
+      "id": "rfc6901",
+      "family": "shared",
+      "name": "RFC 6901: JavaScript Object Notation (JSON) Pointer",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6901.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6901"
+      ],
+      "sha256": "12f9f4fc13d686aa4fbe7d144d70166cd3fcd4ab89174c2b13bda8f4b55e49da",
+      "bytes": 13037,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md",
+        "binding-specs/README.md"
+      ],
+      "matchTokens": [
+        "rfc6901",
+        "RFC 6901"
+      ]
+    },
+    {
+      "id": "rfc8259",
+      "family": "shared",
+      "name": "RFC 8259: The JavaScript Object Notation (JSON) Data Interchange Format",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8259.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc8259"
+      ],
+      "sha256": "61a5378f4255c720beb2a4b4a63b29540147c140f36988bf086291989b4cd2d7",
+      "bytes": 28360,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "rfc8259",
+        "RFC 8259"
+      ]
+    },
+    {
+      "id": "rfc3986",
+      "family": "shared",
+      "name": "RFC 3986: Uniform Resource Identifier (URI): Generic Syntax",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc3986.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc3986"
+      ],
+      "sha256": "3102dae4b68cebe40337730312fcb612297b8928547267e8b3d1ee6002b2d683",
+      "bytes": 141811,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "rfc3986",
+        "RFC 3986"
+      ]
+    },
+    {
+      "id": "rfc9110",
+      "family": "shared",
+      "name": "RFC 9110: HTTP Semantics",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc9110"
+      ],
+      "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+      "bytes": 502941,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/connect/openbindings.connect.md"
+      ],
+      "matchTokens": [
+        "rfc9110",
+        "RFC 9110"
+      ]
+    },
+    {
+      "id": "yaml-1.2.2",
+      "family": "shared",
+      "name": "YAML Ain't Markup Language, version 1.2.2",
+      "edition": "1.2.2",
+      "kind": "url",
+      "url": "https://yaml.org/spec/1.2.2/",
+      "citedUrls": [],
+      "sha256": "2fe1bf40792df22ef8b8a5972a34c48e639969222e0bbae605aa9bb2ca85e9ab",
+      "bytes": 383078,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "yaml.org/spec/1.2.2"
+      ]
+    },
+    {
+      "id": "json-schema-2020-12-validation",
+      "family": "shared",
+      "name": "JSON Schema Validation 2020-12 (draft-bhutton-json-schema-validation-01)",
+      "edition": "2020-12",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-bhutton-json-schema-validation-01.txt",
+      "citedUrls": [
+        "https://json-schema.org/draft/2020-12",
+        "https://json-schema.org/draft/2020-12/json-schema-validation.html"
+      ],
+      "sha256": "1f8832490b4b8a5876b9f571afce4051a5ccbae2811220d70f8e86c3c08da414",
+      "bytes": 64328,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "json-schema-validation",
+        "json-schema.org/draft/2020-12"
+      ]
+    },
+    {
+      "id": "json-schema-2020-12-core",
+      "family": "shared",
+      "name": "JSON Schema Core 2020-12 (draft-bhutton-json-schema-01)",
+      "edition": "2020-12",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-bhutton-json-schema-01.txt",
+      "citedUrls": [
+        "https://json-schema.org/draft/2020-12",
+        "https://json-schema.org/draft/2020-12/json-schema-core.html"
+      ],
+      "sha256": "03834e2a60caff313476df9913dac2ccf9a34aad569df570f8ab80db7bd6d24a",
+      "bytes": 162227,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md",
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "json-schema-core",
+        "json-schema.org/draft/2020-12"
+      ]
+    },
+    {
+      "id": "oas-3.0.0",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.0.0",
+      "edition": "3.0.0",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.0.0.html",
+      "citedUrls": [],
+      "sha256": "22100101eb3afeaaa825ac6ce80ef6107b3e6f0e3decd30074983c09a7217080",
+      "bytes": 386549,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.0.0.html"
+      ]
+    },
+    {
+      "id": "oas-3.0.1",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.0.1",
+      "edition": "3.0.1",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.0.1.html",
+      "citedUrls": [],
+      "sha256": "4b61a152aba64f501f5cd1a8874404b253ff5c45edef0794c1f3b42069c8beb6",
+      "bytes": 382358,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.0.1.html"
+      ]
+    },
+    {
+      "id": "oas-3.0.2",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.0.2",
+      "edition": "3.0.2",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.0.2.html",
+      "citedUrls": [],
+      "sha256": "d2a2e3c897fad0571bdc54a0158ea7cab5e47ecc85b76f3bf890469ab2da6d16",
+      "bytes": 391249,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.0.2.html"
+      ]
+    },
+    {
+      "id": "oas-3.0.3",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.0.3",
+      "edition": "3.0.3",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.0.3.html",
+      "citedUrls": [],
+      "sha256": "436d80127eafd6f831e42db7ecff3ba61c901b2447ccfbd90e4e6d9322623c95",
+      "bytes": 398758,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.0.3.html"
+      ]
+    },
+    {
+      "id": "oas-3.0.4",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.0.4",
+      "edition": "3.0.4",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.0.4.html",
+      "citedUrls": [],
+      "sha256": "67696a1c67dbba72f1b8aa2455915ec28178829b56f5c292116573c4357155ff",
+      "bytes": 537214,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.0.4.html"
+      ]
+    },
+    {
+      "id": "oas-3.1.0",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.1.0",
+      "edition": "3.1.0",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.1.0.html",
+      "citedUrls": [],
+      "sha256": "ca07378639431519731065e397fa4170c2ddfe501a4aa69db60d6a3a9bb669fe",
+      "bytes": 406582,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.1.0.html"
+      ]
+    },
+    {
+      "id": "oas-3.1.1",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.1.1",
+      "edition": "3.1.1",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.1.1.html",
+      "citedUrls": [],
+      "sha256": "15fbd8e4e9ab6490d439f3e357afa8b0d43bfdabdbda12ae122034ef07fc3eff",
+      "bytes": 574412,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.1.1.html"
+      ]
+    },
+    {
+      "id": "oas-3.1.2",
+      "family": "openapi",
+      "name": "OpenAPI Specification 3.1.2",
+      "edition": "3.1.2",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.1.2.html",
+      "citedUrls": [],
+      "sha256": "7ae322f88be070455e926d3a28ff46703870753f7ca34c58fc910b2554804a0d",
+      "bytes": 593002,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.1.2.html"
+      ]
+    },
+    {
+      "id": "whatwg-html-sse",
+      "family": "openapi",
+      "name": "WHATWG HTML source snapshot (server-sent events processing model)",
+      "kind": "git-file",
+      "repo": "whatwg/html",
+      "commit": "24c5e48bf66ea61bc199ec6338c81258275ba9c6",
+      "path": "source",
+      "sha256": "b160c424aacc4116168174b90ae91b29df6a48af25be660ceac3862daef495fa",
+      "bytes": 7892171,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "24c5e48bf66ea61bc199ec6338c81258275ba9c6"
+      ]
+    },
+    {
+      "id": "rfc4648",
+      "family": "openapi",
+      "name": "RFC 4648: The Base16, Base32, and Base64 Data Encodings",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc4648.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc4648"
+      ],
+      "sha256": "84e14418f795d503be5f34bf23ce4ebaa119e9ec7c9f667d8caeb111385b178f",
+      "bytes": 35491,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc4648",
+        "RFC 4648"
+      ]
+    },
+    {
+      "id": "rfc6838",
+      "family": "openapi",
+      "name": "RFC 6838: Media Type Specifications and Registration Procedures",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6838.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6838"
+      ],
+      "sha256": "b08ccba7e5116e61085f2e1fe447d90eee785fb0efaa448a4b4ef6ea48b03b80",
+      "bytes": 72942,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc6838",
+        "RFC 6838"
+      ]
+    },
+    {
+      "id": "rfc2046",
+      "family": "openapi",
+      "name": "RFC 2046: MIME Part Two: Media Types",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc2046.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc2046"
+      ],
+      "sha256": "7ac4096b9263e11a704f06892638258ac1ddc0394dd75ffdc171e7b5ba0123e0",
+      "bytes": 105854,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc2046",
+        "RFC 2046"
+      ]
+    },
+    {
+      "id": "rfc7303",
+      "family": "openapi",
+      "name": "RFC 7303: XML Media Types",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7303.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7303"
+      ],
+      "sha256": "d80c0afc29b563fd159567bf4f97829eed81b84a5c85d18a2263e763eb86b005",
+      "bytes": 77654,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc7303",
+        "RFC 7303"
+      ]
+    },
+    {
+      "id": "rfc4180",
+      "family": "openapi",
+      "name": "RFC 4180: Common Format and MIME Type for CSV Files",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc4180.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc4180"
+      ],
+      "sha256": "5d9ec035aa40c0108362cb767c9e2d08c30f7225cb2a4715f484cb13c29b5f21",
+      "bytes": 12931,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc4180",
+        "RFC 4180"
+      ]
+    },
+    {
+      "id": "rfc6570",
+      "family": "openapi",
+      "name": "RFC 6570: URI Template",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6570.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6570"
+      ],
+      "sha256": "c7b8c79f432821e867fafb1127080545202994c156405ae89cbae42ec0c66810",
+      "bytes": 79813,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc6570",
+        "RFC 6570"
+      ]
+    },
+    {
+      "id": "rfc1866",
+      "family": "openapi",
+      "name": "RFC 1866: Hypertext Markup Language - 2.0",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc1866.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc1866"
+      ],
+      "sha256": "fb868a2d946c25b621ee8afaa1cbf0e4d609ffc26f88bcd188f9684e9be7152c",
+      "bytes": 146904,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc1866",
+        "RFC 1866"
+      ]
+    },
+    {
+      "id": "rfc1738",
+      "family": "openapi",
+      "name": "RFC 1738: Uniform Resource Locators (URL)",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc1738.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc1738"
+      ],
+      "sha256": "2622f97a21c8b28558e860c2ad53a6f3114ac0cf905eb51aefa38e0629d76b2d",
+      "bytes": 51348,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "rfc1738",
+        "RFC 1738"
+      ]
+    },
+    {
+      "id": "json-reference-draft-03",
+      "family": "openapi",
+      "name": "JSON Reference (draft-pbryan-zyp-json-ref-03)",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-pbryan-zyp-json-ref-03.txt",
+      "citedUrls": [
+        "https://datatracker.ietf.org/doc/html/draft-pbryan-zyp-json-ref-03"
+      ],
+      "sha256": "a116ce650612639f62c12445b8d2efab2ed56b3956f7242fd65b85bdc371fd55",
+      "bytes": 7009,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/openapi/openbindings.openapi.md"
+      ],
+      "matchTokens": [
+        "draft-pbryan-zyp-json-ref-03"
+      ]
+    },
+    {
+      "id": "asyncapi-2.0.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.0.0",
+      "edition": "2.0.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.0.0",
+      "commit": "b21cf1d854994a8488c6575ae0dda461b51eb1d4",
+      "path": "versions/2.0.0/asyncapi.md",
+      "sha256": "925607614c765134d7af6b9de206a54efbebc9041c9e4f56dedf345118afe1a1",
+      "bytes": 87850,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "b21cf1d854994a8488c6575ae0dda461b51eb1d4"
+      ]
+    },
+    {
+      "id": "asyncapi-2.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.1.0",
+      "edition": "2.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.1.0",
+      "commit": "3470a6386736cf6002846d8eb7535308b79c75e8",
+      "path": "spec/asyncapi.md",
+      "sha256": "f86b4bb44f32a42dd2186b5beac605a3c33885b6592865fbc48a94c8dde24f9d",
+      "bytes": 95083,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "3470a6386736cf6002846d8eb7535308b79c75e8"
+      ]
+    },
+    {
+      "id": "asyncapi-2.2.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.2.0",
+      "edition": "2.2.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.2.0",
+      "commit": "01ffd5b48875dc478b81c393f0595a4bc7f816bb",
+      "path": "spec/asyncapi.md",
+      "sha256": "8a7ac2eea6cd40d8678bd2662a63a56f0ea7d47a2d4361e37132cf34c184b925",
+      "bytes": 98764,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "01ffd5b48875dc478b81c393f0595a4bc7f816bb"
+      ]
+    },
+    {
+      "id": "asyncapi-2.3.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.3.0",
+      "edition": "2.3.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.3.0",
+      "commit": "22c6f2c7a61846338bfbd43d81024cb12cf4ed5f",
+      "path": "spec/asyncapi.md",
+      "sha256": "fb9544da110fa7727009d292b851f029c3ca52f0cacd2d23bd5fe0869f4ed5f1",
+      "bytes": 101194,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "22c6f2c7a61846338bfbd43d81024cb12cf4ed5f"
+      ]
+    },
+    {
+      "id": "asyncapi-2.4.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.4.0",
+      "edition": "2.4.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.4.0",
+      "commit": "65d58696f8c3ab6471aa48b12d878221b8d8109e",
+      "path": "spec/asyncapi.md",
+      "sha256": "b6b4e63fbaebff9300f38e48baaabe3373986ef2a89f6b2bc367535e52e56bf7",
+      "bytes": 104655,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "65d58696f8c3ab6471aa48b12d878221b8d8109e"
+      ]
+    },
+    {
+      "id": "asyncapi-2.5.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.5.0",
+      "edition": "2.5.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.5.0",
+      "commit": "4ed405556e5fe546cad389676c272ff29534e375",
+      "path": "spec/asyncapi.md",
+      "sha256": "85f094b3498783bc789bbf8bb0905bd2e29378e862f06f28c257f0782c3e5bfd",
+      "bytes": 107305,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "4ed405556e5fe546cad389676c272ff29534e375"
+      ]
+    },
+    {
+      "id": "asyncapi-2.6.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 2.6.0",
+      "edition": "2.6.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v2.6.0",
+      "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+      "path": "spec/asyncapi.md",
+      "sha256": "5f2cdf48b891382993d64ca9870f82b9f37ea643c61bbb4a44d6e22562521428",
+      "bytes": 108113,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "1824379ba6252bfb52550337a86ca9b10a33b3aa"
+      ]
+    },
+    {
+      "id": "asyncapi-3.0.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 3.0.0",
+      "edition": "3.0.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v3.0.0",
+      "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+      "path": "spec/asyncapi.md",
+      "sha256": "2c57c205e0c3f75fba504b4ed978064cd9f6878b8d8ca3eec57646525fc50cf8",
+      "bytes": 119815,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "d78dcea70c9b094a3df72f9a4e811828cec778cc"
+      ]
+    },
+    {
+      "id": "asyncapi-3.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI Specification 3.1.0",
+      "edition": "3.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/spec",
+      "tag": "v3.1.0",
+      "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+      "path": "spec/asyncapi.md",
+      "sha256": "983a9c0ccb35412d4f6f254ab1ae9ea09a560664b1e41efb0109b12d0cd91869",
+      "bytes": 132656,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "b3fac5bb522771428ea57b16129b273cd3ea0180"
+      ]
+    },
+    {
+      "id": "asyncapi-bindings-v3.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI protocol bindings collection (asyncapi/bindings)",
+      "edition": "v3.1.0",
+      "kind": "git-tree",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.1.0",
+      "commit": "ec5c590d4212905a13014cfd43f72fb086c00e85",
+      "path": "",
+      "probe": {
+        "path": "README.md",
+        "sha256": "ed825fa6ee399d0a6c02b2b805680ef0c836247d56e21a8b55cd7851c1c3bfa8",
+        "bytes": 616
+      },
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "ec5c590d4212905a13014cfd43f72fb086c00e85"
+      ]
+    },
+    {
+      "id": "avro-1.9.0",
+      "family": "asyncapi",
+      "name": "Apache Avro Specification 1.9.0",
+      "edition": "1.9.0",
+      "kind": "git-file",
+      "repo": "apache/avro",
+      "tag": "release-1.9.0",
+      "commit": "3c76495e9524ef322726d03d7ee406be89e8fde0",
+      "path": "doc/src/content/xdocs/spec.xml",
+      "sha256": "e651efca9e00f6f4a863f45ad89cbb435c2294e7c666c2b431b6645096f3ea5d",
+      "bytes": 70029,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/asyncapi/openbindings.asyncapi.md"
+      ],
+      "matchTokens": [
+        "3c76495e9524ef322726d03d7ee406be89e8fde0"
+      ]
+    },
+    {
+      "id": "usage-v3.5.6",
+      "family": "usage",
+      "name": "jdx usage specification release (jdx/usage)",
+      "edition": "v3.5.6",
+      "kind": "git-tree",
+      "repo": "jdx/usage",
+      "tag": "v3.5.6",
+      "commit": "84719de261e2cbd2db83d149bb7511c29f95206a",
+      "path": "",
+      "probe": {
+        "path": "README.md",
+        "sha256": "37efac800c1f5dd15f5694060fc47f89e174ee68e9d9e5a68acbf4e4b36acfe9",
+        "bytes": 789
+      },
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/usage/openbindings.usage.md"
+      ],
+      "matchTokens": [
+        "84719de261e2cbd2db83d149bb7511c29f95206a"
+      ]
+    },
+    {
+      "id": "mcp-2025-11-25-schema",
+      "family": "mcp",
+      "name": "Model Context Protocol 2025-11-25 generated schema",
+      "edition": "2025-11-25",
+      "kind": "git-file",
+      "repo": "modelcontextprotocol/modelcontextprotocol",
+      "tag": "2025-11-25",
+      "commit": "38c84e9f93ad191d9eb26d92b945d17bd0efcaf3",
+      "path": "schema/2025-11-25/schema.json",
+      "sha256": "1ffe4c5577974012f5fa02af14ea88df4b7146679df1abaaad497c8d9230ca8a",
+      "bytes": 174246,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/mcp/openbindings.mcp.md"
+      ],
+      "matchTokens": [
+        "38c84e9f93ad191d9eb26d92b945d17bd0efcaf3"
+      ]
+    },
+    {
+      "id": "mcp-2025-11-25-prose",
+      "family": "mcp",
+      "name": "Model Context Protocol 2025-11-25 specification prose",
+      "edition": "2025-11-25",
+      "kind": "git-tree",
+      "repo": "modelcontextprotocol/modelcontextprotocol",
+      "tag": "2025-11-25",
+      "commit": "38c84e9f93ad191d9eb26d92b945d17bd0efcaf3",
+      "path": "docs/specification/2025-11-25",
+      "probe": {
+        "path": "docs/specification/2025-11-25/index.mdx",
+        "sha256": "5e282cf4b53c153f79d009e0354e787dc7e063358d814dc776ba37bd17e62bcb",
+        "bytes": 5421
+      },
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/mcp/openbindings.mcp.md"
+      ],
+      "matchTokens": [
+        "38c84e9f93ad191d9eb26d92b945d17bd0efcaf3"
+      ]
+    },
+    {
+      "id": "protobuf-descriptor-proto",
+      "family": "grpc",
+      "name": "protobuf descriptor.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/descriptor.proto",
+      "sha256": "f46ec56fc26c48433f4cebfdc98cf1cdd5ae15f129f150256dfa82c1ec77e0a3",
+      "bytes": 58877,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-any-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/any.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/any.proto",
+      "sha256": "8e56f61e3078e9232d39ce1b1bab28613783af8191f93a910c3617933f87a179",
+      "bytes": 5552,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-api-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/api.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/api.proto",
+      "sha256": "6d47d6272eb687c806b6feb08ef3925243c64ea076cd9440b783e27a7aec5502",
+      "bytes": 8845,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-duration-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/duration.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/duration.proto",
+      "sha256": "a3f7301ff2956ec2e30c2241ece07197e4a86c752348d5607224819d4921c9fe",
+      "bytes": 4892,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-empty-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/empty.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/empty.proto",
+      "sha256": "ecef3d54cc9e079673b9816c67bac770f7f3bf6dada2d4596ba69d71daa971e6",
+      "bytes": 2363,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-field-mask-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/field_mask.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/field_mask.proto",
+      "sha256": "9f031219ae54383afa84299fdd747e119b5f83c8e3dab060930ebb126af4460f",
+      "bytes": 8041,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-source-context-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/source_context.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/source_context.proto",
+      "sha256": "37d3401de89af1d1496fc949924a5f2011bd2fadfbeb0da1caa277159a96776d",
+      "bytes": 2341,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-struct-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/struct.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/struct.proto",
+      "sha256": "4f46aa6248ddcd0ac820aab2ffd4f4e02c5bcd09596edc763fa6764f74deb785",
+      "bytes": 4317,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-timestamp-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/timestamp.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/timestamp.proto",
+      "sha256": "fa6c44dca2c90a2aaf3a1e4776cef2e9177f70fba365f236269f0f41ac166c96",
+      "bytes": 6595,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-type-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/type.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/type.proto",
+      "sha256": "50a3b67b4d894e828173319aafcd6ac440c15340048452bd13a13e8b47cc6637",
+      "bytes": 7774,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-wrappers-proto",
+      "family": "grpc",
+      "name": "protobuf bundled google/protobuf/wrappers.proto (v35.0)",
+      "edition": "v35.0",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v35.0",
+      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "path": "src/google/protobuf/wrappers.proto",
+      "sha256": "6878dc7534cf9805eee56345cdc38b5e9ca39dece246710c663c7007a67fef49",
+      "bytes": 5392,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+      ]
+    },
+    {
+      "id": "protobuf-proto2-spec",
+      "family": "grpc",
+      "name": "Protocol Buffers proto2 language specification",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "path": "content/reference/protobuf/proto2-spec.md",
+      "sha256": "6efbbdabe66d9a64d9d9bddf3e476ce53c13a73e3c75f32114f2a7facbf51697",
+      "bytes": 11036,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+      ]
+    },
+    {
+      "id": "protobuf-proto3-spec",
+      "family": "grpc",
+      "name": "Protocol Buffers proto3 language specification",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "path": "content/reference/protobuf/proto3-spec.md",
+      "sha256": "4502b11352581af381af4aa53f8d7a7b3404c2f0ab8fd742ece0e2295123008f",
+      "bytes": 8821,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+      ]
+    },
+    {
+      "id": "protobuf-edition-2023-spec",
+      "family": "grpc",
+      "name": "Protocol Buffers Edition 2023 language specification",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "path": "content/reference/protobuf/edition-2023-spec.md",
+      "sha256": "8d1c74b661975afc5ecbde8a9dc36822e6aec9bfce13b6bde7e393fd2db7290b",
+      "bytes": 10087,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+      ]
+    },
+    {
+      "id": "protobuf-edition-2024-spec",
+      "family": "grpc",
+      "name": "Protocol Buffers Edition 2024 language specification",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "path": "content/reference/protobuf/edition-2024-spec.md",
+      "sha256": "0bb977cf525929a4f66af8e1f8c7ff851edffdbb98b85bd47173bc572d133207",
+      "bytes": 10594,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+      ]
+    },
+    {
+      "id": "protojson",
+      "family": "grpc",
+      "name": "ProtoJSON Format guide",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "path": "content/programming-guides/json.md",
+      "sha256": "ee87ab41162d7f7142e240cdd3e99cca5b67fe7fa103df0a3b06340329bd164f",
+      "bytes": 29811,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+      ]
+    },
+    {
+      "id": "grpc-protocol-http2",
+      "family": "grpc",
+      "name": "gRPC over HTTP/2 protocol (PROTOCOL-HTTP2.md, v1.83.0)",
+      "edition": "v1.83.0",
+      "kind": "git-file",
+      "repo": "grpc/grpc",
+      "tag": "v1.83.0",
+      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "path": "doc/PROTOCOL-HTTP2.md",
+      "sha256": "b51ea1b8cee67ad3477e73152bb60ac3ebf6e164962b46ba79434e980739256f",
+      "bytes": 16105,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c876f4da50f7da2f331888b88b2a7243514139fe"
+      ]
+    },
+    {
+      "id": "grpc-reflection-v1",
+      "family": "grpc",
+      "name": "gRPC Server Reflection v1 service definition (v1.83.0)",
+      "edition": "v1.83.0",
+      "kind": "git-file",
+      "repo": "grpc/grpc",
+      "tag": "v1.83.0",
+      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "path": "src/proto/grpc/reflection/v1/reflection.proto",
+      "sha256": "92fe8aab9378b0b9807b081de1fc743f847262c1fb6d1ca16501f9e91d450b19",
+      "bytes": 5952,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c876f4da50f7da2f331888b88b2a7243514139fe"
+      ]
+    },
+    {
+      "id": "grpc-reflection-v1alpha",
+      "family": "grpc",
+      "name": "gRPC Server Reflection v1alpha service definition (v1.83.0)",
+      "edition": "v1.83.0",
+      "kind": "git-file",
+      "repo": "grpc/grpc",
+      "tag": "v1.83.0",
+      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "path": "src/proto/grpc/reflection/v1alpha/reflection.proto",
+      "sha256": "7359100201654510cd159cbb5c468a8bec14b549973c6f8ff7aee9a1237aec47",
+      "bytes": 5442,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "c876f4da50f7da2f331888b88b2a7243514139fe"
+      ]
+    },
+    {
+      "id": "connect-protocol",
+      "family": "connect",
+      "name": "The Connect protocol (connectrpc.com protocol.md)",
+      "kind": "git-file",
+      "repo": "connectrpc/connectrpc.com",
+      "commit": "c547a5412ee4f8428f31fce83dd2bb2a82942b76",
+      "path": "src/content/docs/docs/protocol.md",
+      "sha256": "36165b8ec0a21ad70f72cdb96a8f80a5ae9a75cf8c1863230867a8396484d59a",
+      "bytes": 31842,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/connect/openbindings.connect.md"
+      ],
+      "matchTokens": [
+        "c547a5412ee4f8428f31fce83dd2bb2a82942b76"
+      ]
+    },
+    {
+      "id": "graphql-september2025",
+      "family": "graphql",
+      "name": "GraphQL Specification, September 2025",
+      "edition": "September2025",
+      "kind": "url",
+      "url": "https://spec.graphql.org/September2025/",
+      "citedUrls": [],
+      "sha256": "39fb3aeffd9b5acebb0830ddc6dcc243c1280a9f0e977897ae59c5cc165511d6",
+      "bytes": 1112753,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
+      "matchTokens": [
+        "spec.graphql.org/September2025"
+      ]
+    },
+    {
+      "id": "graphql-over-http",
+      "family": "graphql",
+      "name": "GraphQL-over-HTTP draft (GraphQLOverHTTP.md)",
+      "kind": "git-file",
+      "repo": "graphql/graphql-over-http",
+      "commit": "4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3",
+      "path": "spec/GraphQLOverHTTP.md",
+      "sha256": "b44b6c9581c7f892caeeef19996a1b7ed455185cbde20e75e12268b4c9042f86",
+      "bytes": 32372,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
+      "matchTokens": [
+        "4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3"
+      ]
+    },
+    {
+      "id": "jsonata-2.1",
+      "family": "operation-graph",
+      "name": "JSONata 2.1 documentation source snapshot (jsonata-js 2.1.1 behavioral tiebreak)",
+      "edition": "2.1 (jsonata-js 2.1.1)",
+      "kind": "git-tree",
+      "repo": "jsonata-js/jsonata",
+      "tag": "v2.1.1",
+      "commit": "5d1473277e0022d8580e00f891b12080eb3edd74",
+      "path": "website/versioned_docs/version-2.1.0",
+      "probe": {
+        "path": "website/versioned_docs/version-2.1.0/overview.md",
+        "sha256": "ca3237d14a1fa62c455511037cf97a0eed92d0a94e730f811b0b15e19d8c990a",
+        "bytes": 2180
+      },
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "5d1473277e0022d8580e00f891b12080eb3edd74"
+      ]
+    },
+    {
+      "id": "semver-2.0.0",
+      "family": "operation-graph",
+      "name": "Semantic Versioning 2.0.0",
+      "edition": "2.0.0",
+      "kind": "url",
+      "url": "https://semver.org/spec/v2.0.0.html",
+      "citedUrls": [],
+      "sha256": "f9d4b8b1a5e9a0de6621dbbc70d69fdf05310b7a737509317b94a7bddfb9409e",
+      "bytes": 31121,
+      "retrievedAt": "2026-08-20T17:06:56Z",
+      "citedBy": [
+        "binding-specs/operation-graph/openbindings.operation-graph.md"
+      ],
+      "matchTokens": [
+        "semver.org/spec/v2.0.0.html"
+      ]
+    }
+  ]
+}
