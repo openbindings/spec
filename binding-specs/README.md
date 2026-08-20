@@ -440,7 +440,7 @@ user, which sensor) is operation input, on both directions — consumer
 configuration may still pre-fill an absent input parameter, which is
 amortized supply of an input, not a reclassification.
 
-### The correspondence ladder (value carriage)### The correspondence ladder (value carriage)
+### The correspondence ladder (value carriage)
 
 The deference order's specialization for the question every family must
 answer completely — how application values cross the JSON boundary — is the
