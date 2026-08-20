@@ -4426,6 +4426,142 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-41",
+      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there — and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion — the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell and its alternative is an ordinary accounted exclusion, which OAPI-SS-23 and OAPI-SS-24 already pin.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Boolean-literal part schema",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/uploads": {
+              "post": {
+                "operationId": "upload",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "note": true,
+                          "label": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/avatars": {
+              "post": {
+                "operationId": "uploadAvatar",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "note": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "upload"
+        ],
+        "bindings": [
+          {
+            "operationKey": "upload",
+            "bindingRef": "#/paths/~1uploads/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "upload",
+              "bindingRef": "#/paths/~1uploads/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1avatars/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.media_schema_mismatch",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1uploads/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "upload",
+              "bindingRef": "#/paths/~1uploads/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
