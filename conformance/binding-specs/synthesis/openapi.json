@@ -4319,6 +4319,113 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-40",
+      "description": "The COVERAGE half of the 3.0 `format: byte` cell. Every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", so an exact non-JSON, non-form declaration governed by a `type: string`, `format: byte` schema has a defined carriage — the caller's artifact-encoded text, sent as-is — and its alternative is REPRESENTED. Before that lane existed the same declaration fell to an exclusion: application/pdf is outside section 9.2's closed character-data test, so no string-carriage lane applied, and with the byte cell unanswered the alternative had no candidate at all. uploadPlain is the control that shows the lane is keyed on the `byte` DECLARATION and not on the media type: the identical application/pdf declaration carrying a bare `type: string` still has no defined carriage, and because its body is required and that is its only alternative the target itself is excluded under the standing openapi.unresolvable_request_body convention. The same bare-string declaration is what a `format: byte` schema becomes on the 3.1 line, where `format` is an annotation with no content-encoding force and `byte` is absent from the format tables — that line spells an already-encoded string with `contentEncoding` instead.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "format: byte request coverage",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/documents": {
+              "post": {
+                "operationId": "uploadDocument",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/pdf": {
+                      "schema": {
+                        "type": "string",
+                        "format": "byte"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/plain": {
+              "post": {
+                "operationId": "uploadPlain",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/pdf": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "uploadDocument"
+        ],
+        "bindings": [
+          {
+            "operationKey": "uploadDocument",
+            "bindingRef": "#/paths/~1documents/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1documents/post/requestBody/content/application~1pdf",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "uploadDocument",
+              "bindingRef": "#/paths/~1documents/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1documents/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "uploadDocument",
+              "bindingRef": "#/paths/~1documents/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1plain/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unresolvable_request_body",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

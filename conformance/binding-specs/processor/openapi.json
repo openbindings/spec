@@ -6327,6 +6327,177 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-75",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "On the 3.0 line a `type: string` with `format: byte` is ALREADY the encoded characters — every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", 3.0.4's row citing [RFC 4648] Section 4 — so an exact non-JSON, non-form selection governed by that declaration carries the caller's string as artifact-encoded Base64 text, sent AS-IS. The OpenBindings raw-byte boundary decode does not run: artifact encoding and the OpenBindings boundary encoding are distinct, exactly as they are for the 3.1 `contentEncoding` lane this rule parallels. The lane is not gated on character-data media — application/pdf is outside that test — because here the ARTIFACT, not the media-type registration, is what declares the value to be characters. The wire body is therefore the string itself and not the three octets it encodes.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "format: byte body carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/documents": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/pdf": {
+                        "schema": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1documents/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "QUJD"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/pdf"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "QUJD"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-76",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The form-part half of the same 3.0 cell, and its part default. 3.0.4's Encoding Object default-`contentType` table gives `string` with `format` \"`binary` or `byte`\" the default application/octet-stream, while 3.0.0 through 3.0.3's prose names only `binary` before \"other primitive types\"; under the editions' own Section 4.1 patch-uniformity instruction the line answers uniformly and 3.0.4 read under its own text fixes what the uniform answer is, so a `byte` part defaults to application/octet-stream on every 3.0 edition rather than to the primitive text/plain row. Its value is the caller's artifact-encoded Base64 text sent as-is — the contrast with the `binary` sibling, which takes the SAME default Content-Type while its value is the OpenBindings canonical Base64 boundary and emits the decoded octets, is carried by the shared format-byte-carriage case table rather than here, because one multipart body containing both parts cannot assert which part a Content-Type belongs to through a substring. 3.0.4 additionally equates a `byte` part with an Encoding Object whose `headers` field carries a Content-Transfer-Encoding schema requiring base64; this specification reads that equivalence as declaration semantics, so no such header is emitted for an artifact that does not declare one.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "format: byte part carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/uploads": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1uploads/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "encoded": "QUJD"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"encoded\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Type: application/octet-stream"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "QUJD"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
