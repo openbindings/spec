@@ -6037,6 +6037,316 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI-PS-71",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "A normalized collision CONFINES to the colliding parsed identity: the two application/json spellings are unusable, but the map's non-colliding application/vnd.safe+json sibling is still an ordinary selectable alternative and dispatches under its own declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "Application/JSON;charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/vnd.safe+json"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "name": "Ada"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.safe+json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-72",
+      "rules": [
+        "OAPI-P-04"
+      ],
+      "section": "9.2",
+      "description": "The other half of confinement, on the same artifact: no request selection may LAND on the colliding parsed identity. Configuring it refuses before dispatch instead of picking one of the two colliding spellings by source order.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "Application/JSON;charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/json; charset=utf-8"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "name": "Ada"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-73",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "9.2",
+      "description": "Response-side confinement: a normalized collision between two application/json spellings does not poison the map's clean text/plain declaration, which still governs the decode. The Accept set advertises only the usable membership, because a colliding identity can govern no match.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "text/plain": {},
+                        "application/json; charset=utf-8": {},
+                        "Application/JSON;charset=\"UTF-8\"": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain; charset=utf-8"
+          },
+          "body": "hello"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "equals": "text/plain"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "hello"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI-PS-74",
+      "rules": [
+        "OAPI-P-06",
+        "OAPI-P-07"
+      ],
+      "section": "9.2",
+      "description": "The other half on the response side, same artifact: no response match may be GOVERNED BY the colliding parsed identity. A peer selecting it is a protocol error rather than a first-key decode.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "item",
+                      "content": {
+                        "text/plain": {},
+                        "application/json; charset=utf-8": {},
+                        "Application/JSON;charset=\"UTF-8\"": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "ref": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json; charset=UTF-8"
+          },
+          "body": "{\"id\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

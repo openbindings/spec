@@ -4214,6 +4214,111 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI-SS-39",
+      "description": "The ACCOUNTING half of section 9.2's normalized-collision confinement. Two content-map keys denoting one parsed media identity are a collision that confines to that identity: each colliding key is an accounted `excluded` alternative under the ordinary OAPI-P-04 media-exclusion reason, while the map's non-colliding sibling stays represented and the required-body operation survives on it. Before confinement the whole candidate set was unresolvable and the operation disappeared.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Normalized collision accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/items": {
+              "post": {
+                "operationId": "createItem",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json; charset=utf-8": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    },
+                    "Application/JSON;charset=\"UTF-8\"": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    },
+                    "application/vnd.safe+json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "createItem"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createItem",
+            "bindingRef": "#/paths/~1items/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json; charset=utf-8",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/Application~1JSON;charset=\"UTF-8\"",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.request_media_excluded",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1items/post/requestBody/content/application~1vnd.safe+json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "createItem",
+              "bindingRef": "#/paths/~1items/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
