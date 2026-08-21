@@ -13,6 +13,17 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- **Named operation dependencies in the Core document model.** The optional
+  `dependencies` map declares named consumption points that reference operation
+  keys and may carry a nonempty, unique, unordered `bindingSpecs` any-of list of
+  exact binding-specification identifiers. Operations are now explicitly neutral
+  contracts: bindings attest concrete realizations, dependencies declare
+  consumption, and either relationship may appear independently or together.
+  Dependency satisfaction, provider matching and selection, registration,
+  lifecycle/readiness, and unsatisfied-dependency behavior remain implementation
+  concerns. OBI-D-19 provides same-document dependency-to-operation integrity;
+  the derived schema and core conformance corpus cover the new structure.
+
 - **`openbindings.binding-spec-synthesis-scenarios@3`**, replacing `@2`. Two
   optional members, and a revision rather than an additive field because a
   runner that predates a member ignores it, reports the scenario green, and has

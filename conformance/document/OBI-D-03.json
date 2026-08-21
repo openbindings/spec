@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-03",
   "section": "10.2",
-  "description": "Has every map key and every operation alias matching the pattern ^[A-Za-z0-9_][A-Za-z0-9_.-]*$. The grammar permits a leading digit (2fa.verify): names are opaque data labels, not host-language identifiers. Only the start character is constrained to an alphanumeric or underscore; a leading dot or hyphen, embedded whitespace, slashes, non-ASCII characters, and the empty string remain rejected.",
+  "description": "Has every map key, including dependency keys, and every operation alias matching the pattern ^[A-Za-z0-9_][A-Za-z0-9_.-]*$. The grammar permits a leading digit (2fa.verify): names are opaque data labels, not host-language identifiers. Only the start character is constrained to an alphanumeric or underscore; a leading dot or hyphen, embedded whitespace, slashes, non-ASCII characters, and the empty string remain rejected.",
   "tests": [
     {
       "description": "operation key with simple alphanumeric identifier",
@@ -294,6 +294,39 @@
       "violates": [
         "OBI-D-03",
         "OBI-D-08"
+      ]
+    },
+    {
+      "description": "dependency key matching the identifier pattern",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "customer.delivery-2": {
+            "operation": "deliverEvent"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dependency key containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "customer delivery": {
+            "operation": "deliverEvent"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
       ]
     }
   ]

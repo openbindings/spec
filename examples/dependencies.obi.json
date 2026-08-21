@@ -1,0 +1,69 @@
+{
+  "openbindings": "0.2.0",
+  "name": "Task Export Service",
+  "version": "1.0",
+  "description": "A service that provides export creation and consumes a caller-supplied delivery operation.",
+  "operations": {
+    "exports.create": {
+      "description": "Start an export.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "enum": ["csv", "json"]
+          }
+        },
+        "required": ["format"]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "exportId": {
+            "type": "string"
+          }
+        },
+        "required": ["exportId"]
+      }
+    },
+    "exports.deliver": {
+      "description": "Deliver a completed export to a consumer.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "exportId": {
+            "type": "string"
+          },
+          "downloadUrl": {
+            "type": "string"
+          }
+        },
+        "required": ["exportId", "downloadUrl"]
+      },
+      "output": {
+        "type": "object"
+      }
+    }
+  },
+  "dependencies": {
+    "completedExportDelivery": {
+      "operation": "exports.deliver",
+      "bindingSpecs": [
+        "openbindings.openapi@1",
+        "openbindings.grpc@1"
+      ]
+    }
+  },
+  "sources": {
+    "exportsApi": {
+      "bindingSpec": "openbindings.openapi@1",
+      "location": "https://exports.example.com/openapi.json"
+    }
+  },
+  "bindings": {
+    "exports.create.http": {
+      "operation": "exports.create",
+      "source": "exportsApi",
+      "ref": "#/paths/~1exports/post"
+    }
+  }
+}

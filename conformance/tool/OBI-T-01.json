@@ -1,7 +1,7 @@
 {
   "rule": "OBI-T-01",
   "section": "10.3",
-  "description": "Does not fail processing a document solely because the document contains an unsupported binding specification. Tools MAY surface diagnostics; bindings depending on unsupported artifacts are unactionable.",
+  "description": "Does not fail processing a document solely because the document contains an unsupported binding specification in a source or dependency. Tools MAY surface diagnostics; governed bindings and unsupported dependency families are unavailable to that tool.",
   "notes": "All tests are positive (valid: true). The rule is anti-failure: it asserts the tool does NOT refuse to process these inputs. A tool that emits diagnostics while still processing the document is conformant (the rule says 'MAY surface diagnostics'). Tests only verify the SDK didn't refuse the document.",
   "tests": [
     {
@@ -52,6 +52,24 @@
           "createTask.exotic": {
             "operation": "createTask",
             "source": "exotic"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dependency lists only an unknown binding specification without making the document invalid",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent",
+            "bindingSpecs": [
+              "totally-fictional-format@9.9.9"
+            ]
           }
         }
       },

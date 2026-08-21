@@ -1,0 +1,146 @@
+{
+  "rule": "OBI-D-19",
+  "section": "10.2",
+  "description": "Has every dependencies[*].operation value present as a key in the document's operations map.",
+  "tests": [
+    {
+      "description": "dependency references an existing operation key with no binding-family constraint",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "multiple named dependencies reference the same operation with different binding-family constraints",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "customerDelivery": {
+            "operation": "deliverEvent",
+            "bindingSpecs": [
+              "openbindings.openapi@1"
+            ]
+          },
+          "internalDelivery": {
+            "operation": "deliverEvent",
+            "bindingSpecs": [
+              "openbindings.grpc@1"
+            ]
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "the same operation is both realized by a binding and consumed through a dependency",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "forwardDelivery": {
+            "operation": "deliverEvent"
+          }
+        },
+        "sources": {
+          "localDelivery": {
+            "bindingSpec": "example.delivery@1",
+            "content": {}
+          }
+        },
+        "bindings": {
+          "deliverEvent.local": {
+            "operation": "deliverEvent",
+            "source": "localDelivery"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dependency references a non-existent operation key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "missingOperation"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-19"
+      ]
+    },
+    {
+      "description": "dependency operation value matches an alias rather than a key in the operations map",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {
+            "aliases": [
+              "events.deliver"
+            ]
+          }
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "events.deliver"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-19"
+      ]
+    },
+    {
+      "description": "dependency references operation constructor, a valid identifier and built-in object property name, with no such operation defined",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "constructor"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-19"
+      ]
+    },
+    {
+      "description": "document may genuinely define and depend on an operation named constructor",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "constructor": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "constructor"
+          }
+        }
+      },
+      "valid": true
+    }
+  ]
+}

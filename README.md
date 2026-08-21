@@ -8,7 +8,7 @@
 <h1 align="center">OpenBindings</h1>
 
 <p align="center">
-  One interface. Any binding. Describe what a service does separately from how you access it.
+  One interface. Any binding. Describe what a component provides and what it depends on.
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@
 
 ## What is OpenBindings?
 
-OpenBindings defines a standard way to describe **what a service does** — its operations and their input/output contracts — separately from **how you reach it** over any particular protocol.
+OpenBindings defines a standard way to declare protocol-independent operation contracts, describe concrete realizations a component provides, and name operation dependencies it consumes without coupling either side to one protocol.
 
 A single OpenBindings Interface (OBI) can point at bindings governed by
 OpenAPI, AsyncAPI, MCP, gRPC, GraphQL, or any other binding specification,
@@ -41,6 +41,10 @@ operation-level overlay remains faithful and reusable across them.
 │    placeOrder   (aliases: orders.create)   │
 │    getMenu                                 │
 │    orderUpdates (event)                    │
+│    payments.authorize                      │
+│                                            │
+│  dependencies:                             │
+│    payment → payments.authorize            │
 │                                            │
 │  bindings:                                 │
 │    placeOrder   → OpenAPI   POST /orders   │
@@ -51,14 +55,15 @@ operation-level overlay remains faithful and reusable across them.
 
 ### Core concepts
 
-- **Operations** are the contract: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples).
+- **Operations** are neutral contracts: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples). Presence alone does not assert availability.
+- **Dependencies** are named consumption points that reference operations and may constrain acceptable binding-specification families. They carry no concrete target.
 - **Bindings** map an operation to a concrete protocol target without redefining the contract. One operation can carry many bindings.
 - **Sources** carry or address governed artifacts and live surfaces through an exact binding-specification identifier plus `content`, `location`, or both.
 - **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, binding-selection policy, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). HTTP discovery is an optional companion specification, not part of the core document model.
+The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, dependency composition, provider and binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). HTTP discovery is an optional companion specification, not part of the core document model.
 
 Authentication in particular is **not** part of an OBI document. It is a
 runtime prerequisite negotiated by the binding invoker at call time and

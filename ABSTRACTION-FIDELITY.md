@@ -43,9 +43,10 @@ Applied by layer:
 
 - **Core and OBI document:** contain only the portable author-declared
   operation contract, the identifier of the governing binding specification,
-  and binding relationships needed to select and act through a concrete
-  realization. A cross-protocol convenience or diagnostic need does not
-  justify a core field.
+  binding relationships needed to select and act through a concrete
+  realization, and named operation-dependency relationships needed to express
+  portable consumption. A cross-protocol convenience or diagnostic need does
+  not justify a core field.
 - **Binding specification:** is sovereign over its governed sources. It may
   define semantics itself or incorporate, subset, extend, or override another
   authority. The OpenBindings project's brownfield specifications choose the
@@ -79,8 +80,10 @@ selected binding:
 - value ordering and outputs emitted before a later unsuccessful completion;
 - interaction behavior such as input closure, streaming, cancellation, and
   normal or unsuccessful completion, as it emerges from the binding; and
-- runtime prerequisites that must be satisfied for the binding to act
-  correctly, without writing them into the OBI document.
+- non-operation runtime prerequisites such as credentials and transport context
+  that must be satisfied for a binding to act correctly, without writing them
+  into the OBI document. Required operation capabilities may instead be declared
+  as Core dependencies without specifying how they are discovered or supplied.
 
 The ordinary operation surface does not expose protocol-only observations,
 including native status numbers, headers or trailers as protocol structures,

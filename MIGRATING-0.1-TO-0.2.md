@@ -18,6 +18,7 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | Transform objects such as `{ "language": "jsonata", "expression": "..." }` | A JSONata expression string |
 | `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
+| No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `bindingSpecs` |
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
 | Relative source locations and schema references | Make source locations binding-spec-valid absolute addresses; make OBI-governed references absolute or same-document |
 
@@ -53,6 +54,35 @@ The 0.2 `idempotent` field is an author-attested claim about intended
 operation-level effects under equivalent input and relevant context. It is not
 authorization to retry, cache, or assume stable output. Recheck any 0.1 value
 that was written with the broader “safe to retry” description in mind.
+
+## Declare consumed operations where applicable
+
+The 0.2 draft can describe operations the component consumes as named entries
+in `dependencies`. Each entry references an operation key in the same document
+and may list one or more exact binding-specification identifiers acceptable at
+that consumption point:
+
+```json
+{
+  "openbindings": "0.2.0",
+  "operations": {
+    "events.deliver": {}
+  },
+  "dependencies": {
+    "customerDelivery": {
+      "operation": "events.deliver",
+      "bindingSpecs": ["openbindings.openapi@1"]
+    }
+  }
+}
+```
+
+There is no direct 0.1 equivalent and no automatic migration. In particular,
+do not translate former `roles` or `satisfies` declarations into dependencies:
+those fields expressed cross-document correspondence, while a dependency is a
+local consumption point. Provider discovery, compatibility, registration,
+selection, readiness, and behavior when a dependency is unsatisfied remain
+outside the document model.
 
 ## Rebind every source
 

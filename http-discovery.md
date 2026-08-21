@@ -6,6 +6,8 @@ This companion specification defines configuration-free discovery of an OpenBind
 
 This document is a **companion** to the OpenBindings core specification (`openbindings.md`). It is normative for implementations that claim conformance to it, and optional for everyone else: a conformant OBI producer, consumer, or processor is not required to implement HTTP discovery, an OBI may be obtained through any mechanism without changing its meaning (core §1.4), and other discovery mechanisms (registries, configuration, service meshes) remain valid. Conformance to this specification is claimed and versioned separately from core conformance.
 
+Retrieving an OBI through this endpoint retrieves the complete document, including any Core `dependencies` declarations. Discovery does not register, wire, select, or satisfy those dependencies; those composition behaviors remain outside both this companion and the Core specification.
+
 ## Status of this document
 
 This is version 0.1.0 of OpenBindings HTTP Discovery. It versions independently of the core specification; the OBI documents it serves declare their own `openbindings` version, and this specification is agnostic to that value. Citations of core sections and rules in this document refer to the core specification at version 0.2.0; core rule identifiers are stable across core versions, and a core release that changes the substance of a cited section is adopted here by a revision of this specification.

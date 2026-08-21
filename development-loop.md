@@ -75,7 +75,15 @@ The gate's output is an adjudication record: scenarios affected, governing rules
 
 ### 4. Widen
 
-A widening lands as one changeset with four mandatory forms of evidence:
+A widening in a released specification has four mandatory forms of evidence.
+While a specification version remains an explicitly unreleased working draft,
+the forms MAY land as staged changes so normative text and portable fixtures can
+be reviewed before downstream implementation work begins. Such an intermediate
+stage is visibly incomplete: it MUST NOT be described as a completed widening
+or carried into a release until all four forms have landed and their combined
+verification passes.
+
+The four mandatory forms are:
 
 - **An ownership decision** identifying whether the gap is doctrine,
   binding-specification, synthesis, invoker, or SDK debt. Normative text
