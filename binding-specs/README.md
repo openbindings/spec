@@ -130,6 +130,41 @@ When published, project binding specifications are identified as `openbindings.<
 - **The OpenBindings project publishes an `openbindings.*` identifier only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on the existence or local use of identifiers governed by other authorities.
 - **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
 
+### A revision is not a roadmap
+
+Ratified by Matt, 2026-08-20. The `@<rev>` token is part of an identifier
+matched exactly and opaquely (OBI-B-01). It is not a version number with an
+ordering, and publishing `@2` does not upgrade `@1`: it mints a second
+identifier, so documents bound to the first and tools speaking the second no
+longer meet. **A revision therefore advances for exactly one reason — to break
+what a published revision got wrong.** Filling a gap additively changes no
+prior meaning, so it needs no new identifier; it needs the work finished.
+
+It follows that _"a later revision may…"_ is not a disposition a specification
+may write down. Before publication every candidate is amendable in place, so a
+deferral written into a candidate is simply a hole that ships. Every question
+the text raises and does not answer resolves as exactly one of three things,
+and the text says which:
+
+1. **Fill it now.** The authorities answer it, or an answer this specification
+   already states elsewhere reaches the case. Finish it.
+2. **A permanent exclusion, with its revisit trigger.** The specification
+   states what it does not bind and why, and names the condition under which
+   the question reopens: an **authority** condition — the incorporated
+   authority defines what it today leaves undefined, a registration appears, a
+   later edition states the missing row — or a demonstrated consumer need. **A
+   revisit trigger never names a revision number.** "In `@2`" describes when
+   someone might look again; it is neither a condition nor a reason.
+3. **A stated abstraction limit.** The operation boundary genuinely cannot
+   carry the thing. Say so plainly, and say what would have to change for that
+   to stop being true; do not dress a limit as a scheduling decision.
+
+Reaching a trigger does not make the resulting change compatible. Where an
+exclusion reopens and binding it changes observable behavior, that is
+[OBI-B-03](../openbindings.md#104-binding-specification-rules)'s new
+identifier — arrived at honestly when the condition actually holds, rather than
+promised in advance to whoever reads the gap today.
+
 ### Publication lifecycle
 
 The mutable family path is the candidate. After first publication it becomes a
