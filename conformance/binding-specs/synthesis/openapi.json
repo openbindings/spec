@@ -1180,7 +1180,7 @@
     },
     {
       "id": "OAPI-SS-14",
-      "description": "A multipart part declaring no `type` (a bare description) is an EXCLUDED ALTERNATIVE under the 3.0 line, on that line's own ground: no accepted 3.0 edition states a default contentType row that reaches it — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi@1 authors no row for that residue. The request body here is OPTIONAL, so the operation stays represented and invocable bodyless while its one alternative is accounted excluded; OAPI-SS-23 and OAPI-SS-24 carry the 3.1 twins, where a REQUIRED body with the same part excludes the target itself. This scenario carried `openapi: 3.1.0` and asserted representation until 2026-08-17, which was wrong for that line; it then asserted representation under 3.0.3 until 2026-08-20, pinning the specification's own value-keyed convention, which escalation M2 deleted.",
+      "description": "A multipart part declaring no `type` (a bare description) is an EXCLUDED ALTERNATIVE under the 3.0 line, on that line's own ground: no accepted 3.0 edition states a default contentType row that reaches it \u2014 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type \u2014 and openbindings.openapi@1 authors no row for that residue. The request body here is OPTIONAL, so the operation stays represented and invocable bodyless while its one alternative is accounted excluded; OAPI-SS-23 and OAPI-SS-24 carry the 3.1 twins, where a REQUIRED body with the same part excludes the target itself. This scenario carried `openapi: 3.1.0` and asserted representation until 2026-08-17, which was wrong for that line; it then asserted representation under 3.0.3 until 2026-08-20, pinning the specification's own value-keyed convention, which escalation M2 deleted.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -2463,7 +2463,7 @@
     },
     {
       "id": "OAPI-SS-23",
-      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 — the alternative excluded and the sole-candidate target excluded with it — on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. uploadAvatar is represented on its sole alternative, createNote on both of its, and createLabel, whose part declares `type: string`, is unaffected. OAS 3.1.2 carries the same row verbatim and takes the same dispositions.",
+      "description": "OAS 3.1.1 tabulates the Encoding Object default contentType for a part whose `type` is absent as application/octet-stream, in the first row of that field's own table. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 \u2014 the alternative excluded and the sole-candidate target excluded with it \u2014 on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. uploadAvatar is represented on its sole alternative, createNote on both of its, and createLabel, whose part declares `type: string`, is unaffected. OAS 3.1.2 carries the same row verbatim and takes the same dispositions.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -2658,7 +2658,7 @@
     },
     {
       "id": "OAPI-SS-24",
-      "description": "OAS 3.1.0 states the same answer as 3.1.1 for a part whose `type` is absent, by a different sentence: its Encoding Object contentType enumeration closes with a total catch-all — \"for object - application/json; for array - the default is defined based on the inner type; for all other cases the default is application/octet-stream\" — whose complement includes a declaration carrying no type at all. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 — the alternative excluded and the sole-candidate target excluded with it — on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. The dispositions are therefore the 3.1.1 ones, and this scenario exists because that ground is an implied answer rather than a tabulated row.",
+      "description": "OAS 3.1.0 states the same answer as 3.1.1 for a part whose `type` is absent, by a different sentence: its Encoding Object contentType enumeration closes with a total catch-all \u2014 \"for object - application/json; for array - the default is defined based on the inner type; for all other cases the default is application/octet-stream\" \u2014 whose complement includes a declaration carrying no type at all. The part is thereby routed to octets by the authority itself, and openbindings.openapi@1 carries them with the canonical Base64 boundary it already defines for its byte lanes, so a multipart alternative carrying such a part is represented. This scenario pinned the opposite until 2026-08-20 \u2014 the alternative excluded and the sole-candidate target excluded with it \u2014 on the ground that no JSON-to-octet part boundary existed; it did, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred. The dispositions are therefore the 3.1.1 ones, and this scenario exists because that ground is an implied answer rather than a tabulated row.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -3108,7 +3108,7 @@
     },
     {
       "id": "OAPI-SS-30",
-      "description": "Every accepted OAS 3.1 edition keys the application/octet-stream part default on a DECLARED string carrying `contentEncoding` — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present. On a declared non-string type the keyword is inert: the same table holds `n/a` in the contentEncoding column of the `number, integer, or boolean` and `object` rows, defined by its own note as \"the presence or value of contentEncoding is irrelevant\", and JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\", each conditioned on a string instance. So recordSample and recordProfile keep the text/plain and application/json rows and are represented; uploadAvatar takes the encoded-string row and is represented; and createNote's part, which declares no `type` at all, reaches the `type`-absent row's application/octet-stream and rides the canonical Base64 boundary this specification already defines for its byte lanes, so that alternative and its sole-candidate target are represented too — the same disposition OAPI-SS-23 pins for its `/avatars` target. The keyword-inertness this scenario exists to pin is therefore visible in the content types, not in an exclusion.",
+      "description": "Every accepted OAS 3.1 edition keys the application/octet-stream part default on a DECLARED string carrying `contentEncoding` \u2014 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present. On a declared non-string type the keyword is inert: the same table holds `n/a` in the contentEncoding column of the `number, integer, or boolean` and `object` rows, defined by its own note as \"the presence or value of contentEncoding is irrelevant\", and JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\", each conditioned on a string instance. So recordSample and recordProfile keep the text/plain and application/json rows and are represented; uploadAvatar takes the encoded-string row and is represented; and createNote's part, which declares no `type` at all, reaches the `type`-absent row's application/octet-stream and rides the canonical Base64 boundary this specification already defines for its byte lanes, so that alternative and its sole-candidate target are represented too \u2014 the same disposition OAPI-SS-23 pins for its `/avatars` target. The keyword-inertness this scenario exists to pin is therefore visible in the content types, not in an exclusion.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -3471,7 +3471,7 @@
     },
     {
       "id": "OAPI-SS-34",
-      "description": "The retention consequence of OAPI-SS-32's reading, as a defect. Because the composed value is the sibling, the $ref the fragment walked past is composed by nothing, and section 6's reference scope — the value at the pointer plus that value's own transitive closure, and nothing else — puts its target outside the artifact. A dangling target there is a defect outside the closure, which does not make the referencing artifact unresolvable. Its OAPI-SS-33 twin is the same artifact on the other edition line, where the same reference IS composed and the same defect refuses.",
+      "description": "The retention consequence of OAPI-SS-32's reading, as a defect. Because the composed value is the sibling, the $ref the fragment walked past is composed by nothing, and section 6's reference scope \u2014 the value at the pointer plus that value's own transitive closure, and nothing else \u2014 puts its target outside the artifact. A dangling target there is a defect outside the closure, which does not make the referencing artifact unresolvable. Its OAPI-SS-33 twin is the same artifact on the other edition line, where the same reference IS composed and the same defect refuses.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "location": "https://composition.example/openapi.yaml",
@@ -3529,7 +3529,7 @@
     },
     {
       "id": "OAPI-SS-35",
-      "description": "A urlencoded property whose resolved schema declares a choice with MORE THAN ONE non-null branch has no single faithful form carriage, so openbindings.openapi@1 Section 9.2 refuses that alternative before dispatch — and it does so on every accepted edition, including the 3.0-line patches whose own text states no lane-selection rule. Those four editions reach the content path through their own Section 4.1 (\"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\") together with 3.0.4's Section 4.7.15.1.2 (\"Encoding is to be based on contentType alone\"), so a part carriage IS resolved here and the two-branch anyOf is caught. A processor that keyed this on the patch component would instead put the property on the RFC6570-style path, which checks only that a coherent serialization method exists, never resolves a part carriage, and would therefore ADMIT the declaration and serve it. Three accountings are pinned because the artifact's requestBody shape decides which applies. toggleWarninglist keeps a JSON sibling, so only its urlencoded alternative is excluded and both the target and the operation's input survive through the other candidate. toggleWarninglistOnly declares urlencoded as its only request media AND marks the body required, so the same defect leaves no invocable form at all and excludes its TARGET, recorded on the target entry alone (openapi.media_schema_mismatch) — the established sole-candidate accounting OAPI-SS-30 pins. toggleWarninglistOptional is the third cell and the one the corpus actually moved: urlencoded as the ONLY content entry with NO required key. Read at its own artifact bytes, that is the shape MISP/MISP POST /warninglists/toggleEnable has (its requestBody $refs a component declaring application/x-www-form-urlencoded alone and carrying no required), and it was the sole specimen movement of the 2026-08-17 lane ruling. Because the body is optional the operation remains invocable with no body, so its target stays represented and the excluded alternative is the only place the loss is accounted; the published operation consequently advertises NO input at all while the artifact declares a form field, which the assertion on /operations/toggleWarninglistOptional/input pins directly rather than leaving to be inferred from the coverage entries. recordPlace is the unaffected control: an ordinary object property on the same content path.",
+      "description": "A urlencoded property whose resolved schema declares a choice with MORE THAN ONE non-null branch has no single faithful form carriage, so openbindings.openapi@1 Section 9.2 refuses that alternative before dispatch \u2014 and it does so on every accepted edition, including the 3.0-line patches whose own text states no lane-selection rule. Those four editions reach the content path through their own Section 4.1 (\"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\") together with 3.0.4's Section 4.7.15.1.2 (\"Encoding is to be based on contentType alone\"), so a part carriage IS resolved here and the two-branch anyOf is caught. A processor that keyed this on the patch component would instead put the property on the RFC6570-style path, which checks only that a coherent serialization method exists, never resolves a part carriage, and would therefore ADMIT the declaration and serve it. Three accountings are pinned because the artifact's requestBody shape decides which applies. toggleWarninglist keeps a JSON sibling, so only its urlencoded alternative is excluded and both the target and the operation's input survive through the other candidate. toggleWarninglistOnly declares urlencoded as its only request media AND marks the body required, so the same defect leaves no invocable form at all and excludes its TARGET, recorded on the target entry alone (openapi.media_schema_mismatch) \u2014 the established sole-candidate accounting OAPI-SS-30 pins. toggleWarninglistOptional is the third cell and the one the corpus actually moved: urlencoded as the ONLY content entry with NO required key. Read at its own artifact bytes, that is the shape MISP/MISP POST /warninglists/toggleEnable has (its requestBody $refs a component declaring application/x-www-form-urlencoded alone and carrying no required), and it was the sole specimen movement of the 2026-08-17 lane ruling. Because the body is optional the operation remains invocable with no body, so its target stays represented and the excluded alternative is the only place the loss is accounted; the published operation consequently advertises NO input at all while the artifact declares a form field, which the assertion on /operations/toggleWarninglistOptional/input pins directly rather than leaving to be inferred from the coverage entries. recordPlace is the unaffected control: an ordinary object property on the same content path.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -3814,7 +3814,7 @@
     },
     {
       "id": "OAPI-SS-36",
-      "description": "A style-lane declaration whose resolved schema carries a member with no defined expansion is refused at ADMISSION and accounted, not published as represented and refused at invocation. The offending member is an array whose resolved items are object or array, or an object one of whose resolved property schemas is. Every style this lane serves expands a composite value exactly one level — each member becomes a member string — so every value conforming to such a declaration is one the candidate is statically guaranteed to refuse, and the refusal is decided by the declaration alone. The governing text is read per edition. The form row cites [RFC6570] Section 3.2.8 on every accepted edition, and RFC 6570 Section 2.4.2 applies the expansion process \"to each member of the composite as if it were listed as a separate variable\", whose expansions append member strings. The deepObject row cites no RFC section on any edition: on 3.0.0 through 3.0.3 and 3.1.0 it reads \"Provides a simple way of rendering nested objects using form parameters\", which governs this case without defining it, and on 3.0.4, 3.1.1 and 3.1.2 it says so outright — \"The representation of array or object properties is not defined.\" No accepted edition supplies a representation, and this specification authors none. listRecords is the mover: its deepObject filter declares a `where` property of type object, so its TARGET is excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02) — a parameter has no sibling alternative to fall back to, so the unit that owns the defect is the operation. countRecords is the control that matters most: the same style on a bare `{type: object}` declaring NO members at all. Its runtime members may all be scalars, so a declaration-keyed refusal must not reach it and the operation stays represented. listTags is the scalar-list control. upload carries the body half of the same rule: an Encoding Object writing an explicit `style` puts the property on the RFC6570-style lane, its array of objects has no member expansion, and there the smallest owning unit is the ALTERNATIVE — the request media is excluded under openapi.request_media_excluded (OAPI-P-04) while the target survives, because the body is optional and the operation remains invocable with no body. The published operation consequently advertises no input at all, which the assertion pins directly.",
+      "description": "A style-lane declaration whose resolved schema carries a member with no defined expansion is refused at ADMISSION and accounted, not published as represented and refused at invocation. The offending member is an array whose resolved items are object or array, or an object one of whose resolved property schemas is. Every style this lane serves expands a composite value exactly one level \u2014 each member becomes a member string \u2014 so every value conforming to such a declaration is one the candidate is statically guaranteed to refuse, and the refusal is decided by the declaration alone. The governing text is read per edition. The form row cites [RFC6570] Section 3.2.8 on every accepted edition, and RFC 6570 Section 2.4.2 applies the expansion process \"to each member of the composite as if it were listed as a separate variable\", whose expansions append member strings. The deepObject row cites no RFC section on any edition: on 3.0.0 through 3.0.3 and 3.1.0 it reads \"Provides a simple way of rendering nested objects using form parameters\", which governs this case without defining it, and on 3.0.4, 3.1.1 and 3.1.2 it says so outright \u2014 \"The representation of array or object properties is not defined.\" No accepted edition supplies a representation, and this specification authors none. listRecords is the mover: its deepObject filter declares a `where` property of type object, so its TARGET is excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02) \u2014 a parameter has no sibling alternative to fall back to, so the unit that owns the defect is the operation. countRecords is the control that matters most: the same style on a bare `{type: object}` declaring NO members at all. Its runtime members may all be scalars, so a declaration-keyed refusal must not reach it and the operation stays represented. listTags is the scalar-list control. upload carries the body half of the same rule: an Encoding Object writing an explicit `style` puts the property on the RFC6570-style lane, its array of objects has no member expansion, and there the smallest owning unit is the ALTERNATIVE \u2014 the request media is excluded under openapi.request_media_excluded (OAPI-P-04) while the target survives, because the body is optional and the operation remains invocable with no body. The published operation consequently advertises no input at all, which the assertion pins directly.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -4024,7 +4024,7 @@
     },
     {
       "id": "OAPI-SS-37",
-      "description": "The 3.1 half of an edition-scoped pair whose member bytes are identical to OAPI-SS-38's. Under the 3.1 line the Schema Object is a JSON Schema 2020-12 schema, and [JSON Schema 2020-12] Section 6.1.1 defines an array-valued `type` as a union — \"if the value of `type` is an array, then an instance validates successfully if its type matches any of the types indicated by the strings in the array\". So `{\"type\": [\"object\", \"null\"]}` asserts exactly what `{\"anyOf\": [{\"type\": \"object\"}, {\"type\": \"null\"}]}` asserts and takes the same collapse to its single non-null member: the artifact declared exactly one carriage and it is an object, whose expansion the deepObject row leaves undefined. nullableObjectMember is therefore excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02). twoNonNullMembers is the control on the same line: two non-null members declare value-dependent alternatives, do not collapse to one declared kind, and admit a string value, so a declaration-keyed refusal must not reach it.",
+      "description": "The 3.1 half of an edition-scoped pair whose member bytes are identical to OAPI-SS-38's. Under the 3.1 line the Schema Object is a JSON Schema 2020-12 schema, and [JSON Schema 2020-12] Section 6.1.1 defines an array-valued `type` as a union \u2014 \"if the value of `type` is an array, then an instance validates successfully if its type matches any of the types indicated by the strings in the array\". So `{\"type\": [\"object\", \"null\"]}` asserts exactly what `{\"anyOf\": [{\"type\": \"object\"}, {\"type\": \"null\"}]}` asserts and takes the same collapse to its single non-null member: the artifact declared exactly one carriage and it is an object, whose expansion the deepObject row leaves undefined. nullableObjectMember is therefore excluded under openapi.parameter_style_expansion_excluded (OAPI-P-02). twoNonNullMembers is the control on the same line: two non-null members declare value-dependent alternatives, do not collapse to one declared kind, and admit a string value, so a declaration-keyed refusal must not reach it.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -4364,7 +4364,7 @@
     },
     {
       "id": "OAPI-SS-40",
-      "description": "The COVERAGE half of the 3.0 `format: byte` cell. Every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", so an exact non-JSON, non-form declaration governed by a `type: string`, `format: byte` schema has a defined carriage — the caller's artifact-encoded text, sent as-is — and its alternative is REPRESENTED. Before that lane existed the same declaration fell to an exclusion: application/pdf is outside section 9.2's closed character-data test, so no string-carriage lane applied, and with the byte cell unanswered the alternative had no candidate at all. uploadPlain is the control that shows the lane is keyed on the `byte` DECLARATION and not on the media type: the identical application/pdf declaration carrying a bare `type: string` still has no defined carriage, and because its body is required and that is its only alternative the target itself is excluded under the standing openapi.unresolvable_request_body convention. The same bare-string declaration is what a `format: byte` schema becomes on the 3.1 line, where `format` is an annotation with no content-encoding force and `byte` is absent from the format tables — that line spells an already-encoded string with `contentEncoding` instead.",
+      "description": "The COVERAGE half of the 3.0 `format: byte` cell. Every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", so an exact non-JSON, non-form declaration governed by a `type: string`, `format: byte` schema has a defined carriage \u2014 the caller's artifact-encoded text, sent as-is \u2014 and its alternative is REPRESENTED. Before that lane existed the same declaration fell to an exclusion: application/pdf is outside section 9.2's closed character-data test, so no string-carriage lane applied, and with the byte cell unanswered the alternative had no candidate at all. uploadPlain is the control that shows the lane is keyed on the `byte` DECLARATION and not on the media type: the identical application/pdf declaration carrying a bare `type: string` still has no defined carriage, and because its body is required and that is its only alternative the target itself is excluded under the standing openapi.unresolvable_request_body convention. The same bare-string declaration is what a `format: byte` schema becomes on the 3.1 line, where `format` is an annotation with no content-encoding force and `byte` is absent from the format tables \u2014 that line spells an already-encoded string with `contentEncoding` instead.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -4471,7 +4471,7 @@
     },
     {
       "id": "OAPI-SS-41",
-      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there — and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion — the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell, which carries octets across the canonical Base64 boundary as OAPI-SS-23 and OAPI-SS-24 pin.",
+      "description": "F-O1-13, the portable statement of the ruled outcome. A boolean-literal Schema Object is legal on the 3.1 line, whose Schema Object IS a JSON Schema 2020-12 schema, and is not a Schema Object at all on the 3.0 line: that line's Schema Object is the Wright Draft 00 subset, where \"A JSON schema MUST be an object\" (draft-wright-json-schema-00 Section 4.4), each value of `properties` \"MUST be an object\" (its validation companion Section 5.16), and OAS 3.0.4 Section 4.7.24 says \"Property definitions MUST be a Schema Object and not a standard JSON Schema\" with `additionalProperties` the only position that line grants a boolean. So the spelling is a DEFECT there \u2014 and Section 3's acceptance floor confines a defect to the smallest unit that owns it, which here is the request media alternative carrying the part. That alternative is accounted `invalid` under openapi.invalid_unit, never a whole-source refusal, and not the ordinary media exclusion either: the artifact is upstream-invalid at that position rather than merely uncarriable, which is the distinction the two reason codes keep. The two operations are the two consequences of that one confinement. `upload` declares a healthy application/json sibling, so the invalid alternative costs only itself and the operation stays represented and invocable. `uploadAvatar` declares the same defective alternative as its ONLY one against a required body, so it reaches the standing openapi.media_schema_mismatch target exclusion \u2014 the confinement bounds the blast radius at the unit, it does not make every unit survive. The 3.1 half of this cell is not here because it is not a defect at all: `true` is a legal schema that asserts nothing, so it is the type-absent part cell, which carries octets across the canonical Base64 boundary as OAPI-SS-23 and OAPI-SS-24 pin.",
       "source": {
         "bindingSpec": "openbindings.openapi@1",
         "content": {
@@ -4800,6 +4800,449 @@
               "status": "represented",
               "operationKey": "createNote",
               "bindingRef": "#/paths/~1notes/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-43",
+      "description": "The acceptance floor's Schema Object verdict on the 3.1 line is the GOVERNING DIALECT'S, not a keyword list of ours. Absent `jsonSchemaDialect` -- and this document sets none -- every accepted 3.1 edition says in the same words that \"the OAS dialect schema id MUST be used for these Schema Objects\", and that dialect (https://spec.openapis.org/oas/3.1/dialect/base) composes the ROOT JSON Schema 2020-12 meta-schema. Two of its constraints are unreachable by anyone enumerating keywords from the vocabulary texts. `$recursiveAnchor` appears ZERO times in either pinned 2020-12 draft, yet the root meta-schema deliberately re-declares it as an anchor STRING -- \"This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use\" -- so a boolean fails a guard no vocabulary states. And `required` reaches `uniqueItems` through `$defs/stringArray`, so a DUPLICATED entry is invalid even though the array is an array. Each defect confines to the smallest unit that owns it, per Section 3's floor: `describeFilter` and `listContainers` lose their targets and every other operation is delivered. The three operations beside them are the negative controls that make the delegation's shape visible rather than its outcome: a STRING-valued `$recursiveAnchor` is legal (the meta-schema types the keyword, it does not ban it), `$recursiveRef: \"#\"` is legal (re-declared as a URI reference, which `#` satisfies), and `nullable`, a misspelled `min_items` and an arbitrary vendor keyword are legal annotations under core Section 4.3.1 and the edition's own \"or entirely arbitrary properties\". A conformant processor that refused any of those three would be narrowing what the authority admits. `searchFilters` carries the other measured consequence of the same confinement: its REQUIRED request body declares exactly one media alternative, that alternative is the invalid unit, and so the target is excluded under OAPI-P-04's unresolvable-request-body rule rather than becoming an invalid target itself -- the ladder confining at the alternative and the operation losing its target for a different, already-stated reason.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Schema Object dialect, 3.1 line",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/filters/{filter_id}": {
+              "get": {
+                "operationId": "describeFilter",
+                "parameters": [
+                  {
+                    "name": "filter_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/CompoundFilter"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/containers": {
+              "get": {
+                "operationId": "listContainers",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ContainerResource"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/anchors": {
+              "get": {
+                "operationId": "describeAnchor",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$recursiveAnchor": "root",
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/recursions": {
+              "get": {
+                "operationId": "describeRecursion",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "child": {
+                              "$recursiveRef": "#"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/searches": {
+              "post": {
+                "operationId": "searchFilters",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CompoundFilter"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/annotations": {
+              "get": {
+                "operationId": "describeAnnotation",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "nullable": true,
+                          "min_items": 3,
+                          "vendorSpecificThing": {
+                            "whatever": true
+                          },
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "CompoundFilter": {
+                "$recursiveAnchor": true,
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  }
+                }
+              },
+              "ContainerResource": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "name",
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "describeAnchor",
+          "describeAnnotation",
+          "describeRecursion"
+        ],
+        "bindings": [
+          {
+            "operationKey": "describeAnchor",
+            "bindingRef": "#/paths/~1anchors/get"
+          },
+          {
+            "operationKey": "describeAnnotation",
+            "bindingRef": "#/paths/~1annotations/get"
+          },
+          {
+            "operationKey": "describeRecursion",
+            "bindingRef": "#/paths/~1recursions/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1anchors/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "describeAnchor",
+              "bindingRef": "#/paths/~1anchors/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1annotations/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "describeAnnotation",
+              "bindingRef": "#/paths/~1annotations/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1containers/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1filters~1{filter_id}/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1recursions/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "describeRecursion",
+              "bindingRef": "#/paths/~1recursions/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1searches/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unresolvable_request_body",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1searches/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI-SS-44",
+      "description": "The 3.0 line's half of the same class, and the reason its treatment is not the 3.1 line's. That line's Schema Object is \"an extended subset of the JSON Schema Specification Draft Wright-00\", and no meta-schema for that draft was ever published -- so a conformant processor has nothing to point at there and reads the edition's own sentences. Two of them decide this scenario. Section 4.7.24.1 lists `required` among the keywords \"taken directly from the JSON Schema definition and follow the same specifications\", and that definition makes it an array whose elements are unique, so `listContainers` carries an invalid unit exactly as its 3.1 sibling does. And a BOOLEAN `exclusiveMinimum` is this line's own correct spelling -- the draft it extends defines the keyword as a boolean modifier on `minimum` -- so `listBounded` is represented, where the identical declaration on the 3.1 line would be invalid. A processor that decided this line by validating against JSON Schema 2020-12 would refuse what the edition admits; one that decided it by an enumeration missing the uniqueness rule would deliver a document position the edition rejects. Both operations together pin the line's own answer.",
+      "source": {
+        "bindingSpec": "openbindings.openapi@1",
+        "content": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Schema Object dialect, 3.0 line",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/containers": {
+              "get": {
+                "operationId": "listContainers",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/ContainerResource"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/searches": {
+              "post": {
+                "operationId": "searchContainers",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ContainerResource"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/bounded": {
+              "get": {
+                "operationId": "listBounded",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "beta": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 2,
+                              "exclusiveMinimum": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "schemas": {
+              "ContainerResource": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "name",
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "listBounded"
+        ],
+        "bindings": [
+          {
+            "operationKey": "listBounded",
+            "bindingRef": "#/paths/~1bounded/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1bounded/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "listBounded",
+              "bindingRef": "#/paths/~1bounded/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1containers/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1searches/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unresolvable_request_body",
+              "rule": "OAPI-P-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1searches/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             }
           ]
