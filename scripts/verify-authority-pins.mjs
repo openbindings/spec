@@ -9,7 +9,8 @@
 // cache (.authority-cache/) and re-digests.
 //
 // Checks performed:
-//   1. Manifest shape: every entry carries the fields its kind requires.
+//   1. Manifest shape: every entry carries the fields its kind requires and
+//      names either one `family` or a non-empty `families` set.
 //   2. Byte fidelity: each entry's source is fetched and re-digested.
 //      A digest or size mismatch is MOVED. A git-tree entry pins a commit and
 //      digests a probe file inside the pinned tree (git content addressing
@@ -25,18 +26,24 @@
 //   5. Pin completeness, pinned -> cited: every manifest entry's citedBy files
 //      exist and contain at least one of its match tokens. A dangling entry is
 //      PINNED-UNUSED.
+//      An entry carrying "status": "reference-only" pins bytes deliberately
+//      cited by nothing. Its completeness check is INVERTED rather than
+//      skipped: its match tokens must appear in NO spec text, so the moment a
+//      specification cites it the entry fails as REFERENCE-ONLY-CITED and the
+//      status has to be dropped deliberately. Byte and tag fidelity are
+//      unchanged.
 //
 // Network failure is a distinct, named condition (UNREACHABLE), never a
 // silent pass.
 //
 // Exits 0 when every entry is OK and both completeness directions hold;
-// 1 on any MOVED, TAG-MOVED, NAMED-UNPINNED, PINNED-UNUSED, or manifest
-// defect; 3 when the only failures are UNREACHABLE (network); 2 on usage/IO
-// error.
+// 1 on any MOVED, TAG-MOVED, NAMED-UNPINNED, PINNED-UNUSED,
+// REFERENCE-ONLY-CITED, or manifest defect; 3 when the only failures are
+// UNREACHABLE (network); 2 on usage/IO error.
 //
 // Usage: node scripts/verify-authority-pins.mjs
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname, resolve, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
@@ -47,17 +54,16 @@ const SPEC_ROOT = resolve(__dirname, "..");
 const MANIFEST = join(SPEC_ROOT, "binding-specs", "AUTHORITY-PINS.json");
 const CACHE = join(SPEC_ROOT, ".authority-cache");
 
-const SPEC_TEXTS = [
-  "binding-specs/openapi/openbindings.openapi.md",
-  "binding-specs/asyncapi/openbindings.asyncapi.md",
-  "binding-specs/usage/openbindings.usage.md",
-  "binding-specs/mcp/openbindings.mcp.md",
-  "binding-specs/grpc/openbindings.grpc.md",
-  "binding-specs/connect/openbindings.connect.md",
-  "binding-specs/graphql/openbindings.graphql.md",
-  "binding-specs/operation-graph/openbindings.operation-graph.md",
-  "binding-specs/README.md",
-];
+const BINDING_SPECS = join(SPEC_ROOT, "binding-specs");
+const SPEC_TEXTS = readdirSync(BINDING_SPECS, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .flatMap((entry) =>
+    readdirSync(join(BINDING_SPECS, entry.name))
+      .filter((name) => /^openbindings\..+\.md$/.test(name))
+      .map((name) => `binding-specs/${entry.name}/${name}`),
+  )
+  .sort();
+SPEC_TEXTS.push("binding-specs/README.md");
 
 const problems = []; // { kind, message } — kind: moved | unreachable | completeness | manifest
 const seenProblems = new Set();
@@ -85,14 +91,39 @@ if (!Array.isArray(entries) || entries.length === 0) {
 // 1. Manifest shape.
 // ---------------------------------------------------------------------------
 
+const REFERENCE_ONLY = "reference-only";
+const isReferenceOnly = (e) => e.status === REFERENCE_ONLY;
+
 const seenIds = new Set();
 for (const e of entries) {
   const where = `entry ${e.id ?? "<no id>"}`;
   if (!e.id || seenIds.has(e.id)) problem("manifest", `${where}: missing or duplicate id`);
   seenIds.add(e.id);
-  if (!e.family) problem("manifest", `${where}: missing family`);
-  if (!Array.isArray(e.citedBy) || e.citedBy.length === 0)
+
+  if (e.family !== undefined && e.families !== undefined) {
+    problem("manifest", `${where}: family and families are mutually exclusive`);
+  } else if (e.family !== undefined) {
+    if (typeof e.family !== "string" || e.family.trim() === "")
+      problem("manifest", `${where}: family must be a non-empty string`);
+  } else if (!Array.isArray(e.families) || e.families.length === 0) {
+    problem("manifest", `${where}: missing family/families`);
+  } else {
+    if (e.families.some((family) => typeof family !== "string" || family.trim() === ""))
+      problem("manifest", `${where}: families must contain only non-empty strings`);
+    if (new Set(e.families).size !== e.families.length)
+      problem("manifest", `${where}: families contains duplicates`);
+  }
+
+  if (e.status !== undefined && !isReferenceOnly(e))
+    problem("manifest", `${where}: unknown status ${JSON.stringify(e.status)}`);
+  if (isReferenceOnly(e)) {
+    if (typeof e.reason !== "string" || e.reason.trim() === "")
+      problem("manifest", `${where}: ${REFERENCE_ONLY} entry needs a non-empty reason`);
+    if (!Array.isArray(e.citedBy) || e.citedBy.length !== 0)
+      problem("manifest", `${where}: ${REFERENCE_ONLY} entry must carry an empty citedBy`);
+  } else if (!Array.isArray(e.citedBy) || e.citedBy.length === 0) {
     problem("manifest", `${where}: empty citedBy`);
+  }
   if (!Array.isArray(e.matchTokens) || e.matchTokens.length === 0)
     problem("manifest", `${where}: empty matchTokens`);
   if (e.kind === "url") {
@@ -306,6 +337,21 @@ function specText(rel) {
 }
 
 for (const e of entries) {
+  if (isReferenceOnly(e)) {
+    for (const rel of SPEC_TEXTS) {
+      const text = specText(rel);
+      if (text === null) continue;
+      const hit = (e.matchTokens ?? []).find((token) => text.includes(token));
+      if (hit !== undefined) {
+        problem(
+          "completeness",
+          `REFERENCE-ONLY-CITED: ${e.id} is marked ${REFERENCE_ONLY} but ${rel} cites ${JSON.stringify(hit)} — ` +
+            `drop the status and give the entry a citedBy, or remove the citation`,
+        );
+      }
+    }
+    continue;
+  }
   for (const rel of e.citedBy ?? []) {
     const text = specText(rel);
     if (text === null) {
@@ -328,9 +374,11 @@ for (const e of entries) {
   counts[status] = (counts[status] ?? 0) + 1;
   if (status !== "OK") console.log(`${status.padEnd(11)} ${e.id}`);
 }
+const referenceOnly = entries.filter(isReferenceOnly);
 console.log(
   `\nauthority pins: ${counts.OK} OK, ${counts.MOVED} MOVED, ${counts.UNREACHABLE} UNREACHABLE ` +
-    `(${entries.length} entries; ${tagPairs.size} tags checked)`,
+    `(${entries.length} entries; ${tagPairs.size} tags checked; ` +
+    `${referenceOnly.length} reference-only: ${referenceOnly.map((e) => e.id).join(", ") || "none"})`,
 );
 
 if (problems.length) {

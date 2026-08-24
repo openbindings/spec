@@ -1,7 +1,7 @@
 {
-  "$comment": "Tracked authority-pin manifest for the binding-specification family. One entry per incorporated upstream authority per pinned edition; digests are sha256 over the exact bytes at the pinned source (git-tree entries pin a commit and digest a probe file inside the pinned tree). Verified by scripts/verify-authority-pins.mjs; bytes are not stored in this repository.",
-  "manifestVersion": 1,
-  "generatedAt": "2026-08-20T17:06:56Z",
+  "$comment": "Tracked authority-pin manifest for the binding-specification family. One entry per incorporated upstream authority per pinned edition; digests are sha256 over the exact bytes at the pinned source (git-tree entries pin a commit and digest a probe file inside the pinned tree). Verified by scripts/verify-authority-pins.mjs; bytes are not stored in this repository. `families` records applicability where one authority serves multiple binding-specification families. An entry carrying `status: reference-only` prepares verified bytes that no binding-specification text yet cites; it states why, carries an empty citedBy, and the verifier asserts that its matchTokens appear in no specification text until the status is deliberately removed.",
+  "manifestVersion": 3,
+  "generatedAt": "2026-08-24T23:11:00Z",
   "informativeCitations": {
     "exact": [
       "https://spec.openapis.org",
@@ -236,8 +236,30 @@
       ]
     },
     {
+      "id": "oas-2.0",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "OpenAPI Specification 2.0",
+      "edition": "2.0",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v2.0.html",
+      "citedUrls": [],
+      "sha256": "46f356ad4dd434cdab1d467ba9db9d3568efa1aa4d8523d3942342d0d0573c86",
+      "bytes": 256976,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared for openbindings.openapi-2.0@1. No current binding specification cites or accepts this edition; its status must be removed and citedBy populated when the 2.0 sibling is emitted.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/v2.0.html"
+      ]
+    },
+    {
       "id": "oas-3.0.0",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0"
+      ],
       "name": "OpenAPI Specification 3.0.0",
       "edition": "3.0.0",
       "kind": "url",
@@ -255,7 +277,9 @@
     },
     {
       "id": "oas-3.0.1",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0"
+      ],
       "name": "OpenAPI Specification 3.0.1",
       "edition": "3.0.1",
       "kind": "url",
@@ -273,7 +297,9 @@
     },
     {
       "id": "oas-3.0.2",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0"
+      ],
       "name": "OpenAPI Specification 3.0.2",
       "edition": "3.0.2",
       "kind": "url",
@@ -291,7 +317,9 @@
     },
     {
       "id": "oas-3.0.3",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0"
+      ],
       "name": "OpenAPI Specification 3.0.3",
       "edition": "3.0.3",
       "kind": "url",
@@ -309,7 +337,9 @@
     },
     {
       "id": "oas-3.0.4",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0"
+      ],
       "name": "OpenAPI Specification 3.0.4",
       "edition": "3.0.4",
       "kind": "url",
@@ -327,7 +357,9 @@
     },
     {
       "id": "oas-3.1.0",
-      "family": "openapi",
+      "families": [
+        "openapi-3.1"
+      ],
       "name": "OpenAPI Specification 3.1.0",
       "edition": "3.1.0",
       "kind": "url",
@@ -345,7 +377,9 @@
     },
     {
       "id": "oas-3.1.1",
-      "family": "openapi",
+      "families": [
+        "openapi-3.1"
+      ],
       "name": "OpenAPI Specification 3.1.1",
       "edition": "3.1.1",
       "kind": "url",
@@ -363,7 +397,9 @@
     },
     {
       "id": "oas-3.1.2",
-      "family": "openapi",
+      "families": [
+        "openapi-3.1"
+      ],
       "name": "OpenAPI Specification 3.1.2",
       "edition": "3.1.2",
       "kind": "url",
@@ -380,8 +416,30 @@
       ]
     },
     {
+      "id": "oas-3.2.0",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI Specification 3.2.0",
+      "edition": "3.2.0",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.2.0.html",
+      "citedUrls": [],
+      "sha256": "15f12e539a3ac811c5f18950bc9cff296b43a22ad4d50b4db8d533f37ebc1d23",
+      "bytes": 672716,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared for openbindings.openapi-3.2@1. No current binding specification cites or accepts this edition; its status must be removed and citedBy populated when the 3.2 sibling is emitted.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.2.0.html"
+      ]
+    },
+    {
       "id": "whatwg-html-sse",
-      "family": "openapi",
+      "families": [
+        "openapi-3.2"
+      ],
       "name": "WHATWG HTML source snapshot (server-sent events processing model)",
       "kind": "git-file",
       "repo": "whatwg/html",
@@ -399,7 +457,12 @@
     },
     {
       "id": "rfc4648",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 4648: The Base16, Base32, and Base64 Data Encodings",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc4648.txt",
@@ -419,7 +482,12 @@
     },
     {
       "id": "rfc6838",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 6838: Media Type Specifications and Registration Procedures",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc6838.txt",
@@ -439,7 +507,12 @@
     },
     {
       "id": "rfc2046",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 2046: MIME Part Two: Media Types",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc2046.txt",
@@ -459,7 +532,12 @@
     },
     {
       "id": "rfc7303",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 7303: XML Media Types",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc7303.txt",
@@ -479,7 +557,12 @@
     },
     {
       "id": "rfc4180",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 4180: Common Format and MIME Type for CSV Files",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc4180.txt",
@@ -499,7 +582,11 @@
     },
     {
       "id": "rfc6570",
-      "family": "openapi",
+      "families": [
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 6570: URI Template",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc6570.txt",
@@ -519,7 +606,12 @@
     },
     {
       "id": "rfc1866",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 1866: Hypertext Markup Language - 2.0",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc1866.txt",
@@ -539,7 +631,12 @@
     },
     {
       "id": "rfc1738",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 1738: Uniform Resource Locators (URL)",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc1738.txt",
@@ -559,7 +656,12 @@
     },
     {
       "id": "rfc6750",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
       "name": "RFC 6750: The OAuth 2.0 Authorization Framework: Bearer Token Usage",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc6750.txt",
@@ -579,7 +681,10 @@
     },
     {
       "id": "json-reference-draft-03",
-      "family": "openapi",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0"
+      ],
       "name": "JSON Reference (draft-pbryan-zyp-json-ref-03)",
       "kind": "url",
       "url": "https://www.ietf.org/archive/id/draft-pbryan-zyp-json-ref-03.txt",
@@ -594,6 +699,533 @@
       ],
       "matchTokens": [
         "draft-pbryan-zyp-json-ref-03"
+      ]
+    },
+    {
+      "id": "oas-2.0-schema-2017-08-27",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "OpenAPI 2.0 validation schema, revision 2017-08-27",
+      "edition": "2.0 schema 2017-08-27",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/2.0/schema/2017-08-27",
+      "citedUrls": [],
+      "sha256": "b36871c8016292c5e66dd3b203e69aeff98bfef97e0b3c67c1909036095586a5",
+      "bytes": 40247,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared as the official supporting validation schema for the OpenAPI 2.0 sibling; the published OAS prose remains controlling on conflict.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/2.0/schema/2017-08-27"
+      ]
+    },
+    {
+      "id": "json-schema-draft-04-core",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "JSON Schema Core draft 04 (draft-zyp-json-schema-04)",
+      "edition": "draft-04",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-zyp-json-schema-04.txt",
+      "citedUrls": [
+        "https://tools.ietf.org/html/draft-zyp-json-schema-04"
+      ],
+      "sha256": "416d309dbb8254b7d0b374925991be5bc2082ff7195598418f56be2b99eeee25",
+      "bytes": 24220,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared for the OpenAPI 2.0 Schema Object dialect analysis; OAS 2.0 normatively cites this draft and defines a subset of it.",
+      "citedBy": [],
+      "matchTokens": [
+        "draft-zyp-json-schema-04"
+      ]
+    },
+    {
+      "id": "json-schema-draft-04-validation",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "JSON Schema Validation draft 04 (draft-fge-json-schema-validation-00)",
+      "edition": "draft-04",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-fge-json-schema-validation-00.txt",
+      "citedUrls": [
+        "https://tools.ietf.org/html/draft-fge-json-schema-validation-00"
+      ],
+      "sha256": "d87e72f3df3249843322cded0800b4729cb64e6280d8eb1ac10a8aeeb140cbf1",
+      "bytes": 41082,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared for the OpenAPI 2.0 Schema Object dialect analysis; OAS 2.0 normatively cites this validation draft.",
+      "citedBy": [],
+      "matchTokens": [
+        "draft-fge-json-schema-validation-00"
+      ]
+    },
+    {
+      "id": "rfc3339",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "RFC 3339: Date and Time on the Internet: Timestamps",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc3339.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc3339"
+      ],
+      "sha256": "9ab2b8864a85dca73a88f49b0927bc7bc85f596926e4fd1890905777924e700a",
+      "bytes": 35064,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 2.0 normative citation set for its date and date-time data formats.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc3339",
+        "RFC 3339"
+      ]
+    },
+    {
+      "id": "rfc7159",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "RFC 7159: The JavaScript Object Notation (JSON) Data Interchange Format",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7159.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7159"
+      ],
+      "sha256": "50aa72534210945457f5460a50f263c1d6cf87a3da8c814c1d9f54cb04f22342",
+      "bytes": 27451,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 2.0 normative citation set for the JSON data model its document and Schema Object use.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc7159",
+        "RFC 7159"
+      ]
+    },
+    {
+      "id": "rfc7231",
+      "families": [
+        "openapi-2.0"
+      ],
+      "name": "RFC 7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7231.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7231"
+      ],
+      "sha256": "a83d026937f6f7929a0e53f8a9bfec4104285f0f89d6dbabd3927c4208a715b2",
+      "bytes": 235053,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 2.0 normative citation set. RFC 9110 remains the binding family's pinned current HTTP-semantics authority where the emitted specification says so.",
+      "citedBy": [],
+      "matchTokens": [
+        "www.rfc-editor.org/rfc/rfc7231"
+      ]
+    },
+    {
+      "id": "oas-3.2-schema-2025-11-23",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI 3.2 validation schema, revision 2025-11-23",
+      "edition": "3.2 schema 2025-11-23",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/3.2/schema/2025-11-23",
+      "citedUrls": [],
+      "sha256": "7d48f01f37eeae4799041b371ad5f533f9f533fd2b0caa1011a8ba27c5b48b70",
+      "bytes": 39731,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared as the official supporting validation schema for the OpenAPI 3.2 sibling; the published OAS prose remains controlling on conflict.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/3.2/schema/2025-11-23"
+      ]
+    },
+    {
+      "id": "oas-3.2-schema-base-2025-11-23",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI 3.2 base-dialect validation schema, revision 2025-11-23",
+      "edition": "3.2 schema-base 2025-11-23",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/3.2/schema-base/2025-11-23",
+      "citedUrls": [],
+      "sha256": "423daa88e2285fa343856c08502fe63fd8aa3674cd5b4ef88746ba6f82647af3",
+      "bytes": 721,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared as the official supporting base-dialect schema for the OpenAPI 3.2 sibling.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/3.2/schema-base/2025-11-23"
+      ]
+    },
+    {
+      "id": "oas-3.2-meta-2025-09-17",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI 3.2 vocabulary meta-schema, revision 2025-09-17",
+      "edition": "3.2 meta 2025-09-17",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/3.2/meta/2025-09-17",
+      "citedUrls": [],
+      "sha256": "a1959c0aa1f9a7ce58f2b75699be5bc5187c8a25901fe04a227f1d9419ba4e9c",
+      "bytes": 2433,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared as the official supporting vocabulary meta-schema for the OpenAPI 3.2 sibling.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/3.2/meta/2025-09-17"
+      ]
+    },
+    {
+      "id": "oas-3.2-dialect-2025-09-17",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI 3.2 base dialect, revision 2025-09-17",
+      "edition": "3.2 dialect 2025-09-17",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/3.2/dialect/2025-09-17",
+      "citedUrls": [],
+      "sha256": "4e2c989f3d1e6489d41bc1ca4ade11743278c612b82fba9144c6116c79f1c273",
+      "bytes": 1029,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared as the official supporting base dialect for the OpenAPI 3.2 sibling.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/oas/3.2/dialect/2025-09-17"
+      ]
+    },
+    {
+      "id": "http-query-draft-11",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "The HTTP QUERY Method (draft-ietf-httpbis-safe-method-w-body-11)",
+      "edition": "draft-11",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.txt",
+      "citedUrls": [
+        "https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.html"
+      ],
+      "sha256": "5ebc046e7aa00eae4ca19100caedd255776bfbe2a28ea3d11ecca51cf5838ad0",
+      "bytes": 42843,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared for the OpenAPI 3.2 Path Item Object's fixed `query` operation.",
+      "pinChoice": "OAS 3.2.0 visibly labels the inline citation as draft-08 but links to draft-11. The hyperlink target is the cited evidence and identifies exact retrievable bytes, so this manifest pins draft-11 and preserves the label/target mismatch here rather than silently choosing the visible label.",
+      "citedBy": [],
+      "matchTokens": [
+        "draft-ietf-httpbis-safe-method-w-body-11"
+      ]
+    },
+    {
+      "id": "iana-http-status-codes",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.2"
+      ],
+      "name": "IANA Hypertext Transfer Protocol (HTTP) Status Code Registry",
+      "kind": "url",
+      "url": "https://www.iana.org/assignments/http-status-codes/http-status-codes.xml",
+      "citedUrls": [
+        "https://www.iana.org/assignments/http-status-codes/"
+      ],
+      "sha256": "0a83f83eb55f1a0c514e63dc11f53c03f5b56f038bc811d3e8bd02b769b58add",
+      "bytes": 13823,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from both new siblings' upstream citation sets for status-code interpretation and response classification.",
+      "citedBy": [],
+      "matchTokens": [
+        "www.iana.org/assignments/http-status-codes"
+      ]
+    },
+    {
+      "id": "rfc3987",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 3987: Internationalized Resource Identifiers (IRIs)",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc3987.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc3987"
+      ],
+      "sha256": "7cc9e3c4e61ea326130d29d959b723209fe3a6c75cdcfb5badbd315d96cd7878",
+      "bytes": 111190,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for URI-reference and IRI handling.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc3987",
+        "RFC 3987"
+      ]
+    },
+    {
+      "id": "rfc6265",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 6265: HTTP State Management Mechanism",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6265.txt",
+      "citedUrls": [
+        "https://httpwg.org/specs/rfc6265.html"
+      ],
+      "sha256": "dc4177094813e85a44a7897b892b76bc09160b3a03aea44f0f511f3a98f91933",
+      "bytes": 79724,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for cookie parameter wire semantics.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc6265",
+        "RFC 6265"
+      ]
+    },
+    {
+      "id": "rfc6749",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 6749: The OAuth 2.0 Authorization Framework",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6749.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6749"
+      ],
+      "sha256": "f204fc8661d6c92d2ec6e0b54808f961a9ad26e792f57f312d9528335519bd71",
+      "bytes": 163498,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for OAuth 2.0 security flows and scope semantics.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc6749",
+        "RFC 6749"
+      ]
+    },
+    {
+      "id": "rfc7578",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 7578: Returning Values from Forms: multipart/form-data",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7578.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7578"
+      ],
+      "sha256": "813277f91c6c65c9047da9e9a8f1f0c19c1fb4bb1aaeea944bcf3bbdcc2eef49",
+      "bytes": 30240,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for multipart/form-data carriage.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc7578",
+        "RFC 7578"
+      ]
+    },
+    {
+      "id": "rfc8414",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 8414: OAuth 2.0 Authorization Server Metadata",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8414.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc8414"
+      ],
+      "sha256": "16c816e4e0fdbffb7e910ff3017867bf39debe9cb7f52f5cbc508a052ed660e8",
+      "bytes": 53831,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for OAuth authorization-server metadata discovery.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc8414",
+        "RFC 8414"
+      ]
+    },
+    {
+      "id": "rfc8628",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 8628: OAuth 2.0 Device Authorization Grant",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8628.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc8628"
+      ],
+      "sha256": "ebd3c37415aa665b55b412fccd9571943e8dbd3f2bf0b18fee4924264252decd",
+      "bytes": 46718,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for the device authorization flow.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc8628",
+        "RFC 8628"
+      ]
+    },
+    {
+      "id": "rfc7464",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 7464: JavaScript Object Notation (JSON) Text Sequences",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7464.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7464"
+      ],
+      "sha256": "a8eadbcdce5fc508b9e014299621562da041232af13848632092164d50b3f482",
+      "bytes": 16132,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 sequential-media citation set for JSON text sequences.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc7464",
+        "RFC 7464"
+      ]
+    },
+    {
+      "id": "rfc8091",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 8091: A Media Type Structured Syntax Suffix for JSON Text Sequences",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8091.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc8091"
+      ],
+      "sha256": "79c57255cbfbf566ca33a15fb281e94ec99b7e1e839c3b2e3788aed5bba72c58",
+      "bytes": 9494,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 sequential-media citation set for the +json-seq suffix.",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc8091",
+        "RFC 8091"
+      ]
+    },
+    {
+      "id": "iana-http-authschemes",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "IANA Hypertext Transfer Protocol (HTTP) Authentication Scheme Registry",
+      "kind": "url",
+      "url": "https://www.iana.org/assignments/http-authschemes/http-authschemes.xml",
+      "citedUrls": [
+        "https://www.iana.org/assignments/http-authschemes/"
+      ],
+      "sha256": "9454650216849d7a115b339a72810e22f11137654dc39f3abb882823ee6df608",
+      "bytes": 4259,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for HTTP authentication scheme names.",
+      "citedBy": [],
+      "matchTokens": [
+        "www.iana.org/assignments/http-authschemes"
+      ]
+    },
+    {
+      "id": "openapi-registry",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI Initiative Registry",
+      "kind": "url",
+      "url": "https://spec.openapis.org/registry/index.html",
+      "citedUrls": [],
+      "sha256": "ce3a41ccfc1bee1acd6c1e82e55d7aa543f653a54d8cf67fd62723a88599dcdd",
+      "bytes": 14546,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for the registries its document fields reference.",
+      "citedBy": [],
+      "matchTokens": [
+        "spec.openapis.org/registry/index.html"
+      ]
+    },
+    {
+      "id": "openid-connect-core-1.0",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenID Connect Core 1.0 incorporating errata set 2",
+      "kind": "url",
+      "url": "https://openid.net/specs/openid-connect-core-1_0.html",
+      "citedUrls": [],
+      "sha256": "4d016752a645e8a3c259baa4173b5a90cb6c82898ce868fc8444adde262a5aed",
+      "bytes": 437508,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for the OpenID Connect security scheme.",
+      "citedBy": [],
+      "matchTokens": [
+        "openid.net/specs/openid-connect-core-1_0.html"
+      ]
+    },
+    {
+      "id": "openid-connect-discovery-1.0",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "OpenID Connect Discovery 1.0 incorporating errata set 2",
+      "kind": "url",
+      "url": "https://openid.net/specs/openid-connect-discovery-1_0.html",
+      "citedUrls": [],
+      "sha256": "0401a07b35de50e914e195aa2c3c64cc4f6542464381c885d24a2623fbf75ec2",
+      "bytes": 109112,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for OpenID Connect discovery metadata.",
+      "citedBy": [],
+      "matchTokens": [
+        "openid.net/specs/openid-connect-discovery-1_0.html"
+      ]
+    },
+    {
+      "id": "whatwg-url",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "WHATWG URL Standard snapshot",
+      "kind": "url",
+      "url": "https://url.spec.whatwg.org/",
+      "citedUrls": [],
+      "sha256": "c4065780495d5aa8ec46aa4062a4b7b15688c51f039fcb585b0724e873c417da",
+      "bytes": 729455,
+      "retrievedAt": "2026-08-24T23:27:03Z",
+      "status": "reference-only",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set because its querystring and application/x-www-form-urlencoded rules explicitly incorporate WHATWG URL parsing and percent-decoding behavior. The live rendering is mutable; the digest makes movement fail loudly.",
+      "citedBy": [],
+      "matchTokens": [
+        "url.spec.whatwg.org"
       ]
     },
     {
