@@ -27,7 +27,7 @@ const CANON = {
   ],
   Source: ["bindingSpec", "location", "content", "description"],
   BindingEntry: [
-    "operation", "source", "ref", "preference", "description",
+    "operation", "source", "selector", "preference", "description",
     "deprecated", "inputTransform", "outputTransform",
   ],
   OperationExample: ["description", "input", "output"],

@@ -63,7 +63,7 @@
     "exports.create.http": {
       "operation": "exports.create",
       "source": "exportsApi",
-      "ref": "#/paths/~1exports/post"
+      "selector": "#/paths/~1exports/post"
     }
   }
 }

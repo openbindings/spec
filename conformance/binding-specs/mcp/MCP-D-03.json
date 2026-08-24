@@ -2,11 +2,11 @@
   "rule": "MCP-D-03",
   "bindingSpec": "openbindings.mcp@1",
   "section": "7",
-  "description": "`ref` is present and is `tools/<name>`; the non-empty remainder after the first slash is matched byte-exactly and unambiguously against the tool listing.",
+  "description": "`selector` is present and is `tools/<name>`; the non-empty remainder after the first slash is matched byte-exactly and unambiguously against the tool listing.",
   "notes": "Resolution-dependent tests carry a pinned listing so the verdict is offline-decidable. Eligibility under outputSchema and task support is processor rule MCP-P-04/MCP-P-08, not document grammar.",
   "tests": [
     {
-      "description": "tool ref resolves byte-exactly against the pinned listing",
+      "description": "tool selector resolves byte-exactly against the pinned listing",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
@@ -15,7 +15,7 @@
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "get_weather", "outputSchema": { "type": "object" } }] }
         } },
-        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "ref": "tools/get_weather" } }
+        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "selector": "tools/get_weather" } }
       },
       "valid": true
     },
@@ -29,22 +29,22 @@
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "group/run", "outputSchema": { "type": "object" } }] }
         } },
-        "bindings": { "run.server": { "operation": "run", "source": "server", "ref": "tools/group/run" } }
+        "bindings": { "run.server": { "operation": "run", "source": "server", "selector": "tools/group/run" } }
       },
       "valid": true
     },
     {
-      "description": "grammar-valid tool ref on a location-only source remains unverifiable offline",
+      "description": "grammar-valid tool selector on a location-only source remains unverifiable offline",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
         "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
-        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "ref": "tools/get_weather" } }
+        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "selector": "tools/get_weather" } }
       },
       "valid": true
     },
     {
-      "description": "ref is required",
+      "description": "selector is required",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
@@ -55,29 +55,29 @@
       "violates": ["MCP-D-03"]
     },
     {
-      "description": "ref without the tools/name separator is invalid",
+      "description": "selector without the tools/name separator is invalid",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },
         "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
-        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "ref": "tools" } }
+        "bindings": { "getWeather.server": { "operation": "getWeather", "source": "server", "selector": "tools" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
     },
     {
-      "description": "a non-tool entity token is outside the first-revision candidate's ref grammar",
+      "description": "a non-tool entity token is outside the first-revision candidate's selector grammar",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "read": {} },
         "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
-        "bindings": { "read.server": { "operation": "read", "source": "server", "ref": "resources/file:///x" } }
+        "bindings": { "read.server": { "operation": "read", "source": "server", "selector": "resources/file:///x" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
     },
     {
-      "description": "a ref matching nothing in the pinned listing is unresolvable",
+      "description": "a selector matching nothing in the pinned listing is unresolvable",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "forecast": {} },
@@ -86,7 +86,7 @@
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "weather", "outputSchema": { "type": "object" } }] }
         } },
-        "bindings": { "forecast.server": { "operation": "forecast", "source": "server", "ref": "tools/forecast" } }
+        "bindings": { "forecast.server": { "operation": "forecast", "source": "server", "selector": "tools/forecast" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
@@ -101,13 +101,13 @@
           "location": "https://mcp.example.com/mcp",
           "content": { "tools": [{ "name": "weather", "outputSchema": { "type": "object" } }] }
         } },
-        "bindings": { "weather.server": { "operation": "weather", "source": "server", "ref": "tools/Weather" } }
+        "bindings": { "weather.server": { "operation": "weather", "source": "server", "selector": "tools/Weather" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
     },
     {
-      "description": "duplicate matching tools make the ref ambiguous",
+      "description": "duplicate matching tools make the selector ambiguous",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "weather": {} },
@@ -119,7 +119,7 @@
             { "name": "weather", "outputSchema": { "type": "object" } }
           ] }
         } },
-        "bindings": { "weather.server": { "operation": "weather", "source": "server", "ref": "tools/weather" } }
+        "bindings": { "weather.server": { "operation": "weather", "source": "server", "selector": "tools/weather" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]
@@ -130,7 +130,7 @@
         "openbindings": "0.2.0",
         "operations": { "weather": {} },
         "sources": { "server": { "bindingSpec": "openbindings.mcp@1", "location": "https://mcp.example.com/mcp" } },
-        "bindings": { "weather.server": { "operation": "weather", "source": "server", "ref": "tools/" } }
+        "bindings": { "weather.server": { "operation": "weather", "source": "server", "selector": "tools/" } }
       },
       "valid": false,
       "violates": ["MCP-D-03"]

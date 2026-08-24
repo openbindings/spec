@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.openapi@1",
   "family": "openapi",
   "description": "OpenAPI path-operation coverage, request-media alternatives, and reverse-direction exclusions.",
@@ -73,7 +73,7 @@
         "bindings": [
           {
             "operationKey": "createJob",
-            "bindingRef": "#/paths/~1jobs/post"
+            "bindingSelector": "#/paths/~1jobs/post"
           }
         ],
         "coverage": {
@@ -86,7 +86,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createJob",
-              "bindingRef": "#/paths/~1jobs/post",
+              "bindingSelector": "#/paths/~1jobs/post",
               "requirements": [
                 "configuration.server"
               ]
@@ -97,7 +97,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createJob",
-              "bindingRef": "#/paths/~1jobs/post",
+              "bindingSelector": "#/paths/~1jobs/post",
               "requirements": []
             },
             {
@@ -184,7 +184,7 @@
         "bindings": [
           {
             "operationKey": "sendMessage",
-            "bindingRef": "#/paths/~1messages/post"
+            "bindingSelector": "#/paths/~1messages/post"
           }
         ],
         "coverage": {
@@ -197,7 +197,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendMessage",
-              "bindingRef": "#/paths/~1messages/post",
+              "bindingSelector": "#/paths/~1messages/post",
               "requirements": [
                 "configuration.server"
               ]
@@ -208,7 +208,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendMessage",
-              "bindingRef": "#/paths/~1messages/post",
+              "bindingSelector": "#/paths/~1messages/post",
               "requirements": []
             },
             {
@@ -217,7 +217,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendMessage",
-              "bindingRef": "#/paths/~1messages/post",
+              "bindingSelector": "#/paths/~1messages/post",
               "requirements": []
             }
           ]
@@ -281,7 +281,7 @@
         "bindings": [
           {
             "operationKey": "sendMessage",
-            "bindingRef": "#/paths/~1messages/post"
+            "bindingSelector": "#/paths/~1messages/post"
           }
         ],
         "coverage": {
@@ -294,7 +294,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendMessage",
-              "bindingRef": "#/paths/~1messages/post",
+              "bindingSelector": "#/paths/~1messages/post",
               "requirements": [
                 "configuration.server"
               ]
@@ -305,7 +305,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendMessage",
-              "bindingRef": "#/paths/~1messages/post",
+              "bindingSelector": "#/paths/~1messages/post",
               "requirements": []
             }
           ]
@@ -350,7 +350,7 @@
         "bindings": [
           {
             "operationKey": "getStatus",
-            "bindingRef": "#/paths/~1status/get"
+            "bindingSelector": "#/paths/~1status/get"
           }
         ],
         "coverage": {
@@ -363,7 +363,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "getStatus",
-              "bindingRef": "#/paths/~1status/get",
+              "bindingSelector": "#/paths/~1status/get",
               "requirements": []
             }
           ]
@@ -509,11 +509,11 @@
         "bindings": [
           {
             "operationKey": "health",
-            "bindingRef": "#/paths/~1health/get"
+            "bindingSelector": "#/paths/~1health/get"
           },
           {
             "operationKey": "supported",
-            "bindingRef": "#/paths/~1supported/get"
+            "bindingSelector": "#/paths/~1supported/get"
           }
         ],
         "coverage": {
@@ -526,7 +526,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "health",
-              "bindingRef": "#/paths/~1health/get",
+              "bindingSelector": "#/paths/~1health/get",
               "requirements": []
             },
             {
@@ -535,7 +535,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "supported",
-              "bindingRef": "#/paths/~1supported/get",
+              "bindingSelector": "#/paths/~1supported/get",
               "requirements": []
             },
             {
@@ -600,7 +600,7 @@
         "bindings": [
           {
             "operationKey": "uploadImage",
-            "bindingRef": "#/paths/~1image/put"
+            "bindingSelector": "#/paths/~1image/put"
           }
         ],
         "coverage": {
@@ -613,7 +613,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadImage",
-              "bindingRef": "#/paths/~1image/put",
+              "bindingSelector": "#/paths/~1image/put",
               "requirements": []
             },
             {
@@ -622,7 +622,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadImage",
-              "bindingRef": "#/paths/~1image/put",
+              "bindingSelector": "#/paths/~1image/put",
               "requirements": []
             }
           ]
@@ -696,11 +696,11 @@
         "bindings": [
           {
             "operationKey": "uploadEncoded",
-            "bindingRef": "#/paths/~1encoded/put"
+            "bindingSelector": "#/paths/~1encoded/put"
           },
           {
             "operationKey": "uploadRaw",
-            "bindingRef": "#/paths/~1raw/put"
+            "bindingSelector": "#/paths/~1raw/put"
           }
         ],
         "coverage": {
@@ -713,7 +713,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadEncoded",
-              "bindingRef": "#/paths/~1encoded/put",
+              "bindingSelector": "#/paths/~1encoded/put",
               "requirements": []
             },
             {
@@ -722,7 +722,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadEncoded",
-              "bindingRef": "#/paths/~1encoded/put",
+              "bindingSelector": "#/paths/~1encoded/put",
               "requirements": []
             },
             {
@@ -731,7 +731,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadRaw",
-              "bindingRef": "#/paths/~1raw/put",
+              "bindingSelector": "#/paths/~1raw/put",
               "requirements": []
             },
             {
@@ -740,7 +740,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadRaw",
-              "bindingRef": "#/paths/~1raw/put",
+              "bindingSelector": "#/paths/~1raw/put",
               "requirements": []
             }
           ]
@@ -803,7 +803,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -816,7 +816,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": [
                 "configuration.requestMedia"
               ]
@@ -827,7 +827,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": [
                 "configuration.requestMedia"
               ]
@@ -889,7 +889,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -902,7 +902,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -911,7 +911,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -920,7 +920,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": [
                 "configuration.requestMedia"
               ]
@@ -976,7 +976,7 @@
         "bindings": [
           {
             "operationKey": "createOptionalItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -989,7 +989,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createOptionalItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -998,7 +998,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createOptionalItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": [
                 "configuration.requestMedia"
               ]
@@ -1073,7 +1073,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -1086,7 +1086,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -1095,7 +1095,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -1149,7 +1149,7 @@
         "bindings": [
           {
             "operationKey": "storeArchive",
-            "bindingRef": "#/paths/~1archive/post"
+            "bindingSelector": "#/paths/~1archive/post"
           }
         ],
         "coverage": {
@@ -1162,7 +1162,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "storeArchive",
-              "bindingRef": "#/paths/~1archive/post",
+              "bindingSelector": "#/paths/~1archive/post",
               "requirements": []
             },
             {
@@ -1171,7 +1171,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "storeArchive",
-              "bindingRef": "#/paths/~1archive/post",
+              "bindingSelector": "#/paths/~1archive/post",
               "requirements": []
             }
           ]
@@ -1237,7 +1237,7 @@
         "bindings": [
           {
             "operationKey": "uploadPicture",
-            "bindingRef": "#/paths/~1me~1picture/post"
+            "bindingSelector": "#/paths/~1me~1picture/post"
           }
         ],
         "coverage": {
@@ -1259,7 +1259,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadPicture",
-              "bindingRef": "#/paths/~1me~1picture/post",
+              "bindingSelector": "#/paths/~1me~1picture/post",
               "requirements": []
             }
           ]
@@ -1384,11 +1384,11 @@
         "bindings": [
           {
             "operationKey": "pickOne",
-            "bindingRef": "#/paths/~1pick/post"
+            "bindingSelector": "#/paths/~1pick/post"
           },
           {
             "operationKey": "processFile",
-            "bindingRef": "#/paths/~1process/post"
+            "bindingSelector": "#/paths/~1process/post"
           }
         ],
         "coverage": {
@@ -1401,7 +1401,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "processFile",
-              "bindingRef": "#/paths/~1process/post",
+              "bindingSelector": "#/paths/~1process/post",
               "requirements": []
             },
             {
@@ -1410,7 +1410,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "processFile",
-              "bindingRef": "#/paths/~1process/post",
+              "bindingSelector": "#/paths/~1process/post",
               "requirements": []
             },
             {
@@ -1419,7 +1419,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "pickOne",
-              "bindingRef": "#/paths/~1pick/post",
+              "bindingSelector": "#/paths/~1pick/post",
               "requirements": []
             },
             {
@@ -1642,27 +1642,27 @@
         "bindings": [
           {
             "operationKey": "sendBinary",
-            "bindingRef": "#/paths/~1binary/post"
+            "bindingSelector": "#/paths/~1binary/post"
           },
           {
             "operationKey": "sendMarkup",
-            "bindingRef": "#/paths/~1markup/post"
+            "bindingSelector": "#/paths/~1markup/post"
           },
           {
             "operationKey": "sendNonstandard",
-            "bindingRef": "#/paths/~1nonstandard/post"
+            "bindingSelector": "#/paths/~1nonstandard/post"
           },
           {
             "operationKey": "sendOpaque",
-            "bindingRef": "#/paths/~1opaque/post"
+            "bindingSelector": "#/paths/~1opaque/post"
           },
           {
             "operationKey": "sendText",
-            "bindingRef": "#/paths/~1text/post"
+            "bindingSelector": "#/paths/~1text/post"
           },
           {
             "operationKey": "sendTypedMarkup",
-            "bindingRef": "#/paths/~1typed-markup/post"
+            "bindingSelector": "#/paths/~1typed-markup/post"
           }
         ],
         "coverage": {
@@ -1675,7 +1675,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendBinary",
-              "bindingRef": "#/paths/~1binary/post",
+              "bindingSelector": "#/paths/~1binary/post",
               "requirements": []
             },
             {
@@ -1684,7 +1684,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendBinary",
-              "bindingRef": "#/paths/~1binary/post",
+              "bindingSelector": "#/paths/~1binary/post",
               "requirements": []
             },
             {
@@ -1702,7 +1702,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendMarkup",
-              "bindingRef": "#/paths/~1markup/post",
+              "bindingSelector": "#/paths/~1markup/post",
               "requirements": []
             },
             {
@@ -1711,7 +1711,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendMarkup",
-              "bindingRef": "#/paths/~1markup/post",
+              "bindingSelector": "#/paths/~1markup/post",
               "requirements": []
             },
             {
@@ -1720,7 +1720,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendNonstandard",
-              "bindingRef": "#/paths/~1nonstandard/post",
+              "bindingSelector": "#/paths/~1nonstandard/post",
               "requirements": []
             },
             {
@@ -1729,7 +1729,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendNonstandard",
-              "bindingRef": "#/paths/~1nonstandard/post",
+              "bindingSelector": "#/paths/~1nonstandard/post",
               "requirements": []
             },
             {
@@ -1747,7 +1747,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendOpaque",
-              "bindingRef": "#/paths/~1opaque/post",
+              "bindingSelector": "#/paths/~1opaque/post",
               "requirements": []
             },
             {
@@ -1756,7 +1756,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendOpaque",
-              "bindingRef": "#/paths/~1opaque/post",
+              "bindingSelector": "#/paths/~1opaque/post",
               "requirements": []
             },
             {
@@ -1765,7 +1765,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendText",
-              "bindingRef": "#/paths/~1text/post",
+              "bindingSelector": "#/paths/~1text/post",
               "requirements": []
             },
             {
@@ -1774,7 +1774,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendText",
-              "bindingRef": "#/paths/~1text/post",
+              "bindingSelector": "#/paths/~1text/post",
               "requirements": []
             },
             {
@@ -1783,7 +1783,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendText",
-              "bindingRef": "#/paths/~1text/post",
+              "bindingSelector": "#/paths/~1text/post",
               "requirements": []
             },
             {
@@ -1792,7 +1792,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "sendTypedMarkup",
-              "bindingRef": "#/paths/~1typed-markup/post",
+              "bindingSelector": "#/paths/~1typed-markup/post",
               "requirements": []
             },
             {
@@ -1801,7 +1801,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "sendTypedMarkup",
-              "bindingRef": "#/paths/~1typed-markup/post",
+              "bindingSelector": "#/paths/~1typed-markup/post",
               "requirements": []
             },
             {
@@ -1842,7 +1842,7 @@
         "bindings": [
           {
             "operationKey": "probe",
-            "bindingRef": "#/paths/~1probe/get"
+            "bindingSelector": "#/paths/~1probe/get"
           }
         ],
         "assertions": [
@@ -1873,7 +1873,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "probe",
-              "bindingRef": "#/paths/~1probe/get",
+              "bindingSelector": "#/paths/~1probe/get",
               "requirements": []
             }
           ]
@@ -1989,7 +1989,7 @@
         "bindings": [
           {
             "operationKey": "createRecord",
-            "bindingRef": "#/paths/~1records/post"
+            "bindingSelector": "#/paths/~1records/post"
           }
         ],
         "coverage": {
@@ -2002,7 +2002,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createRecord",
-              "bindingRef": "#/paths/~1records/post",
+              "bindingSelector": "#/paths/~1records/post",
               "requirements": [
                 "configuration.server"
               ]
@@ -2013,7 +2013,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createRecord",
-              "bindingRef": "#/paths/~1records/post",
+              "bindingSelector": "#/paths/~1records/post",
               "requirements": []
             }
           ]
@@ -2131,11 +2131,11 @@
         "bindings": [
           {
             "operationKey": "createNote",
-            "bindingRef": "#/paths/~1notes/post"
+            "bindingSelector": "#/paths/~1notes/post"
           },
           {
             "operationKey": "createLabel",
-            "bindingRef": "#/paths/~1labels/post"
+            "bindingSelector": "#/paths/~1labels/post"
           }
         ],
         "coverage": {
@@ -2148,7 +2148,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2157,7 +2157,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2175,7 +2175,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -2184,7 +2184,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             }
           ]
@@ -2251,7 +2251,7 @@
         "bindings": [
           {
             "operationKey": "listWrappers",
-            "bindingRef": "#/paths/~1wrappers/get"
+            "bindingSelector": "#/paths/~1wrappers/get"
           }
         ],
         "coverage": {
@@ -2264,7 +2264,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listWrappers",
-              "bindingRef": "#/paths/~1wrappers/get",
+              "bindingSelector": "#/paths/~1wrappers/get",
               "requirements": [
                 "configuration.server"
               ]
@@ -2383,23 +2383,23 @@
         "bindings": [
           {
             "operationKey": "listUsable",
-            "bindingRef": "#/paths/~1usable/get"
+            "bindingSelector": "#/paths/~1usable/get"
           },
           {
             "operationKey": "listSubstituted",
-            "bindingRef": "#/paths/~1substituted/get"
+            "bindingSelector": "#/paths/~1substituted/get"
           },
           {
             "operationKey": "listTemplated",
-            "bindingRef": "#/paths/~1templated/get"
+            "bindingSelector": "#/paths/~1templated/get"
           },
           {
             "operationKey": "listHostless",
-            "bindingRef": "#/paths/~1hostless/get"
+            "bindingSelector": "#/paths/~1hostless/get"
           },
           {
             "operationKey": "listAlternatives",
-            "bindingRef": "#/paths/~1alternatives/get"
+            "bindingSelector": "#/paths/~1alternatives/get"
           }
         ],
         "coverage": {
@@ -2412,7 +2412,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listAlternatives",
-              "bindingRef": "#/paths/~1alternatives/get",
+              "bindingSelector": "#/paths/~1alternatives/get",
               "requirements": [
                 "configuration.server"
               ]
@@ -2423,7 +2423,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listHostless",
-              "bindingRef": "#/paths/~1hostless/get",
+              "bindingSelector": "#/paths/~1hostless/get",
               "requirements": [
                 "configuration.server"
               ]
@@ -2434,7 +2434,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listSubstituted",
-              "bindingRef": "#/paths/~1substituted/get",
+              "bindingSelector": "#/paths/~1substituted/get",
               "requirements": []
             },
             {
@@ -2443,7 +2443,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listTemplated",
-              "bindingRef": "#/paths/~1templated/get",
+              "bindingSelector": "#/paths/~1templated/get",
               "requirements": [
                 "configuration.server"
               ]
@@ -2454,7 +2454,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listUsable",
-              "bindingRef": "#/paths/~1usable/get",
+              "bindingSelector": "#/paths/~1usable/get",
               "requirements": []
             }
           ]
@@ -2574,15 +2574,15 @@
         "bindings": [
           {
             "operationKey": "createLabel",
-            "bindingRef": "#/paths/~1labels/post"
+            "bindingSelector": "#/paths/~1labels/post"
           },
           {
             "operationKey": "createNote",
-            "bindingRef": "#/paths/~1notes/post"
+            "bindingSelector": "#/paths/~1notes/post"
           },
           {
             "operationKey": "uploadAvatar",
-            "bindingRef": "#/paths/~1avatars/post"
+            "bindingSelector": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
@@ -2595,7 +2595,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -2604,7 +2604,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -2613,7 +2613,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2622,7 +2622,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2631,7 +2631,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -2640,7 +2640,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -2649,7 +2649,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             }
           ]
@@ -2769,15 +2769,15 @@
         "bindings": [
           {
             "operationKey": "createLabel",
-            "bindingRef": "#/paths/~1labels/post"
+            "bindingSelector": "#/paths/~1labels/post"
           },
           {
             "operationKey": "createNote",
-            "bindingRef": "#/paths/~1notes/post"
+            "bindingSelector": "#/paths/~1notes/post"
           },
           {
             "operationKey": "uploadAvatar",
-            "bindingRef": "#/paths/~1avatars/post"
+            "bindingSelector": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
@@ -2790,7 +2790,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -2799,7 +2799,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -2808,7 +2808,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2817,7 +2817,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -2826,7 +2826,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -2835,7 +2835,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -2844,7 +2844,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             }
           ]
@@ -2870,7 +2870,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "assertions": [
@@ -2889,7 +2889,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -2898,7 +2898,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -2942,7 +2942,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -2955,7 +2955,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -2964,7 +2964,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -2990,7 +2990,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "assertions": [
@@ -3009,7 +3009,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3018,7 +3018,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -3045,11 +3045,11 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           },
           {
             "operationKey": "createOther",
-            "bindingRef": "#/paths/~1others/post"
+            "bindingSelector": "#/paths/~1others/post"
           }
         ],
         "assertions": [
@@ -3072,7 +3072,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3081,7 +3081,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3090,7 +3090,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createOther",
-              "bindingRef": "#/paths/~1others/post",
+              "bindingSelector": "#/paths/~1others/post",
               "requirements": []
             },
             {
@@ -3099,7 +3099,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createOther",
-              "bindingRef": "#/paths/~1others/post",
+              "bindingSelector": "#/paths/~1others/post",
               "requirements": []
             }
           ]
@@ -3240,19 +3240,19 @@
         "bindings": [
           {
             "operationKey": "createNote",
-            "bindingRef": "#/paths/~1notes/post"
+            "bindingSelector": "#/paths/~1notes/post"
           },
           {
             "operationKey": "recordProfile",
-            "bindingRef": "#/paths/~1profiles/post"
+            "bindingSelector": "#/paths/~1profiles/post"
           },
           {
             "operationKey": "recordSample",
-            "bindingRef": "#/paths/~1samples/post"
+            "bindingSelector": "#/paths/~1samples/post"
           },
           {
             "operationKey": "uploadAvatar",
-            "bindingRef": "#/paths/~1avatars/post"
+            "bindingSelector": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
@@ -3265,7 +3265,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -3274,7 +3274,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -3283,7 +3283,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "recordProfile",
-              "bindingRef": "#/paths/~1profiles/post",
+              "bindingSelector": "#/paths/~1profiles/post",
               "requirements": []
             },
             {
@@ -3292,7 +3292,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "recordSample",
-              "bindingRef": "#/paths/~1samples/post",
+              "bindingSelector": "#/paths/~1samples/post",
               "requirements": []
             },
             {
@@ -3301,7 +3301,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": []
             },
             {
@@ -3310,7 +3310,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -3319,7 +3319,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "recordProfile",
-              "bindingRef": "#/paths/~1profiles/post",
+              "bindingSelector": "#/paths/~1profiles/post",
               "requirements": []
             },
             {
@@ -3328,7 +3328,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "recordSample",
-              "bindingRef": "#/paths/~1samples/post",
+              "bindingSelector": "#/paths/~1samples/post",
               "requirements": []
             }
           ]
@@ -3354,7 +3354,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "assertions": [
@@ -3377,7 +3377,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3386,7 +3386,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -3412,7 +3412,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "assertions": [
@@ -3435,7 +3435,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3444,7 +3444,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -3488,7 +3488,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "assertions": [
@@ -3511,7 +3511,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -3520,7 +3520,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -3711,15 +3711,15 @@
         "bindings": [
           {
             "operationKey": "recordPlace",
-            "bindingRef": "#/paths/~1places/post"
+            "bindingSelector": "#/paths/~1places/post"
           },
           {
             "operationKey": "toggleWarninglist",
-            "bindingRef": "#/paths/~1warninglists~1toggle/post"
+            "bindingSelector": "#/paths/~1warninglists~1toggle/post"
           },
           {
             "operationKey": "toggleWarninglistOptional",
-            "bindingRef": "#/paths/~1warninglists~1toggle-optional/post"
+            "bindingSelector": "#/paths/~1warninglists~1toggle-optional/post"
           }
         ],
         "coverage": {
@@ -3732,7 +3732,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "recordPlace",
-              "bindingRef": "#/paths/~1places/post",
+              "bindingSelector": "#/paths/~1places/post",
               "requirements": []
             },
             {
@@ -3741,7 +3741,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "toggleWarninglist",
-              "bindingRef": "#/paths/~1warninglists~1toggle/post",
+              "bindingSelector": "#/paths/~1warninglists~1toggle/post",
               "requirements": []
             },
             {
@@ -3759,7 +3759,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "recordPlace",
-              "bindingRef": "#/paths/~1places/post",
+              "bindingSelector": "#/paths/~1places/post",
               "requirements": []
             },
             {
@@ -3777,7 +3777,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "toggleWarninglist",
-              "bindingRef": "#/paths/~1warninglists~1toggle/post",
+              "bindingSelector": "#/paths/~1warninglists~1toggle/post",
               "requirements": []
             },
             {
@@ -3795,7 +3795,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "toggleWarninglistOptional",
-              "bindingRef": "#/paths/~1warninglists~1toggle-optional/post",
+              "bindingSelector": "#/paths/~1warninglists~1toggle-optional/post",
               "requirements": []
             }
           ]
@@ -3948,15 +3948,15 @@
         "bindings": [
           {
             "operationKey": "countRecords",
-            "bindingRef": "#/paths/~1records~1count/get"
+            "bindingSelector": "#/paths/~1records~1count/get"
           },
           {
             "operationKey": "listTags",
-            "bindingRef": "#/paths/~1tags/get"
+            "bindingSelector": "#/paths/~1tags/get"
           },
           {
             "operationKey": "upload",
-            "bindingRef": "#/paths/~1upload/post"
+            "bindingSelector": "#/paths/~1upload/post"
           }
         ],
         "coverage": {
@@ -3978,7 +3978,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "countRecords",
-              "bindingRef": "#/paths/~1records~1count/get",
+              "bindingSelector": "#/paths/~1records~1count/get",
               "requirements": []
             },
             {
@@ -3987,7 +3987,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listTags",
-              "bindingRef": "#/paths/~1tags/get",
+              "bindingSelector": "#/paths/~1tags/get",
               "requirements": []
             },
             {
@@ -3996,7 +3996,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "upload",
-              "bindingRef": "#/paths/~1upload/post",
+              "bindingSelector": "#/paths/~1upload/post",
               "requirements": []
             },
             {
@@ -4108,7 +4108,7 @@
         "bindings": [
           {
             "operationKey": "twoNonNullMembers",
-            "bindingRef": "#/paths/~1b/get"
+            "bindingSelector": "#/paths/~1b/get"
           }
         ],
         "coverage": {
@@ -4130,7 +4130,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "twoNonNullMembers",
-              "bindingRef": "#/paths/~1b/get",
+              "bindingSelector": "#/paths/~1b/get",
               "requirements": []
             }
           ]
@@ -4224,11 +4224,11 @@
         "bindings": [
           {
             "operationKey": "nullableObjectMember",
-            "bindingRef": "#/paths/~1a/get"
+            "bindingSelector": "#/paths/~1a/get"
           },
           {
             "operationKey": "twoNonNullMembers",
-            "bindingRef": "#/paths/~1b/get"
+            "bindingSelector": "#/paths/~1b/get"
           }
         ],
         "coverage": {
@@ -4241,7 +4241,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "nullableObjectMember",
-              "bindingRef": "#/paths/~1a/get",
+              "bindingSelector": "#/paths/~1a/get",
               "requirements": []
             },
             {
@@ -4250,7 +4250,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "twoNonNullMembers",
-              "bindingRef": "#/paths/~1b/get",
+              "bindingSelector": "#/paths/~1b/get",
               "requirements": []
             }
           ]
@@ -4315,7 +4315,7 @@
         "bindings": [
           {
             "operationKey": "createItem",
-            "bindingRef": "#/paths/~1items/post"
+            "bindingSelector": "#/paths/~1items/post"
           }
         ],
         "coverage": {
@@ -4328,7 +4328,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             },
             {
@@ -4355,7 +4355,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createItem",
-              "bindingRef": "#/paths/~1items/post",
+              "bindingSelector": "#/paths/~1items/post",
               "requirements": []
             }
           ]
@@ -4431,7 +4431,7 @@
         "bindings": [
           {
             "operationKey": "uploadDocument",
-            "bindingRef": "#/paths/~1documents/post"
+            "bindingSelector": "#/paths/~1documents/post"
           }
         ],
         "coverage": {
@@ -4444,7 +4444,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadDocument",
-              "bindingRef": "#/paths/~1documents/post",
+              "bindingSelector": "#/paths/~1documents/post",
               "requirements": []
             },
             {
@@ -4453,7 +4453,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadDocument",
-              "bindingRef": "#/paths/~1documents/post",
+              "bindingSelector": "#/paths/~1documents/post",
               "requirements": []
             },
             {
@@ -4551,7 +4551,7 @@
         "bindings": [
           {
             "operationKey": "upload",
-            "bindingRef": "#/paths/~1uploads/post"
+            "bindingSelector": "#/paths/~1uploads/post"
           }
         ],
         "coverage": {
@@ -4572,7 +4572,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "upload",
-              "bindingRef": "#/paths/~1uploads/post",
+              "bindingSelector": "#/paths/~1uploads/post",
               "requirements": []
             },
             {
@@ -4598,7 +4598,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "upload",
-              "bindingRef": "#/paths/~1uploads/post",
+              "bindingSelector": "#/paths/~1uploads/post",
               "requirements": []
             }
           ]
@@ -4718,15 +4718,15 @@
         "bindings": [
           {
             "operationKey": "createLabel",
-            "bindingRef": "#/paths/~1labels/post"
+            "bindingSelector": "#/paths/~1labels/post"
           },
           {
             "operationKey": "createNote",
-            "bindingRef": "#/paths/~1notes/post"
+            "bindingSelector": "#/paths/~1notes/post"
           },
           {
             "operationKey": "uploadAvatar",
-            "bindingRef": "#/paths/~1avatars/post"
+            "bindingSelector": "#/paths/~1avatars/post"
           }
         ],
         "coverage": {
@@ -4739,7 +4739,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": [
                 "configuration.partMedia"
               ]
@@ -4750,7 +4750,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -4759,7 +4759,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             },
             {
@@ -4768,7 +4768,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": [
                 "configuration.partMedia"
               ]
@@ -4779,7 +4779,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "uploadAvatar",
-              "bindingRef": "#/paths/~1avatars/post",
+              "bindingSelector": "#/paths/~1avatars/post",
               "requirements": [
                 "configuration.partMedia"
               ]
@@ -4790,7 +4790,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createLabel",
-              "bindingRef": "#/paths/~1labels/post",
+              "bindingSelector": "#/paths/~1labels/post",
               "requirements": []
             },
             {
@@ -4799,7 +4799,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "createNote",
-              "bindingRef": "#/paths/~1notes/post",
+              "bindingSelector": "#/paths/~1notes/post",
               "requirements": []
             }
           ]
@@ -5008,15 +5008,15 @@
         "bindings": [
           {
             "operationKey": "describeAnchor",
-            "bindingRef": "#/paths/~1anchors/get"
+            "bindingSelector": "#/paths/~1anchors/get"
           },
           {
             "operationKey": "describeAnnotation",
-            "bindingRef": "#/paths/~1annotations/get"
+            "bindingSelector": "#/paths/~1annotations/get"
           },
           {
             "operationKey": "describeRecursion",
-            "bindingRef": "#/paths/~1recursions/get"
+            "bindingSelector": "#/paths/~1recursions/get"
           }
         ],
         "coverage": {
@@ -5029,7 +5029,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "describeAnchor",
-              "bindingRef": "#/paths/~1anchors/get",
+              "bindingSelector": "#/paths/~1anchors/get",
               "requirements": []
             },
             {
@@ -5038,7 +5038,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "describeAnnotation",
-              "bindingRef": "#/paths/~1annotations/get",
+              "bindingSelector": "#/paths/~1annotations/get",
               "requirements": []
             },
             {
@@ -5063,7 +5063,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "describeRecursion",
-              "bindingRef": "#/paths/~1recursions/get",
+              "bindingSelector": "#/paths/~1recursions/get",
               "requirements": []
             },
             {
@@ -5204,7 +5204,7 @@
         "bindings": [
           {
             "operationKey": "listBounded",
-            "bindingRef": "#/paths/~1bounded/get"
+            "bindingSelector": "#/paths/~1bounded/get"
           }
         ],
         "coverage": {
@@ -5217,7 +5217,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "listBounded",
-              "bindingRef": "#/paths/~1bounded/get",
+              "bindingSelector": "#/paths/~1bounded/get",
               "requirements": []
             },
             {

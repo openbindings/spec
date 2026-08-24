@@ -15,6 +15,7 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | `sources.*.format` | `sources.*.bindingSpec` |
 | Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi@1` |
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
+| `bindings.*.ref` | `bindings.*.selector`; same meaning — the binding-specification-defined selector of a target within the governed source |
 | Transform objects such as `{ "language": "jsonata", "expression": "..." }` | A JSONata expression string |
 | `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
@@ -92,7 +93,7 @@ format. For every source:
 1. Select the binding specification that actually governs the source and its
    bindings.
 2. Replace `format` with that specification's exact identifier.
-3. Validate `location`, `content`, and every binding `ref` under that
+3. Validate `location`, `content`, and every binding `selector` under that
    specification.
 4. Supply any required runtime choices through invocation context
    configuration; do not invent them in the OBI.
@@ -194,14 +195,14 @@ verification must not be presented as unqualified conformance.
     "getPet.http": {
       "operation": "getPet",
       "source": "api",
-      "ref": "#/paths/~1pets~1{id}/get"
+      "selector": "#/paths/~1pets~1{id}/get"
     }
   }
 }
 ```
 
 The example shows document-shape changes only. Whether that `location` and
-`ref` pair is sufficient and invocable depends on
+`selector` pair is sufficient and invocable depends on
 [`openbindings.openapi@1`](binding-specs/openapi/openbindings.openapi.md), and
 the operation schemas still need to be checked against the actual upstream
 interaction.

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/openbindings.operation-graph-0.2.0.json",
   "title": "OpenBindings Operation Graph Definition (v0.2.0)",
-  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's ref resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification. Structural validation only; behavioral rules (identity law, back-closure, cycle rules) are defined by the specification prose, which governs. Working draft accompanying the v0.2.0 specification working draft; not yet tagged.",
+  "description": "JSON Schema for an openbindings.operation-graph definition — the addressable unit of this binding format. A binding's selector resolves (via JSON Pointer) to a value matching this schema. The shape of the enclosing JSON document is not constrained by this specification. Structural validation only; behavioral rules (identity law, back-closure, cycle rules) are defined by the specification prose, which governs. Working draft accompanying the v0.2.0 specification working draft; not yet tagged.",
   "$ref": "#/$defs/OperationGraph",
   "$defs": {
     "OperationGraph": {

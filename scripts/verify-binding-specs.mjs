@@ -474,7 +474,7 @@ for (const dir of processorTargets) {
 
     const operations = new Set(scenario.expected.operations);
     const bindings = new Set(
-      scenario.expected.bindings.map((binding) => `${binding.operationKey}\0${binding.bindingRef}`)
+      scenario.expected.bindings.map((binding) => `${binding.operationKey}\0${binding.bindingSelector}`)
     );
     for (const binding of scenario.expected.bindings) {
       if (!operations.has(binding.operationKey))
@@ -483,7 +483,7 @@ for (const dir of processorTargets) {
     for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
       const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
       if (entry.status === "represented") {
-        if (!bindings.has(`${entry.operationKey}\0${entry.bindingRef}`))
+        if (!bindings.has(`${entry.operationKey}\0${entry.bindingSelector}`))
           errors.push(`${entryAt}: represented disposition has no expected binding identity`);
       } else if (
         entry.rule

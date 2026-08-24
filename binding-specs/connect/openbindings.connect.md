@@ -27,7 +27,7 @@ This family has **two modes**, discriminated structurally by `content` presence 
 
 A source's `location` is REQUIRED and MUST be an absolute `http`/`https` URI naming the service's **base URL** (**CONN-D-02**): scheme, host, optional port (ordinary HTTP defaults), and an optional path prefix without a trailing `/` — `https://api.example.com`, `https://example.com/api`. Query, fragment, and userinfo components are not part of a base URL, and a `location` carrying any of them is not conformant. Transport security follows the scheme, as ordinary HTTPS — schemes are TLS-unambiguous here, so this family has no transport configuration point (unlike `openbindings.grpc@1`); consumer-supplied channel security (a custom CA, a mutual-TLS identity) is consumer configuration, declared outside this document. This family is service-addressed: a `content`-only source is not conformant under this specification.
 
-The request URL for an invocation is the Connect protocol's routing, incorporated: the base URL **string-concatenated** with `/<fully-qualified-service>/<method>` from the binding's `ref` — concatenation, not RFC 3986 resolution, so the path prefix is preserved.
+The request URL for an invocation is the Connect protocol's routing, incorporated: the base URL **string-concatenated** with `/<fully-qualified-service>/<method>` from the binding's `selector` — concatenation, not RFC 3986 resolution, so the path prefix is preserved.
 
 ## 5. `content`
 
@@ -37,11 +37,11 @@ A source's `content`, when present, MUST be one of the two **embedded** schema c
 
 When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)); `location` remains the invocation target — the service-addressed pairing. Embedded schemas are self-contained by construction; this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_). Staleness is defined rather than surprising: the pin stays authoritative for interpretation, dispatch proceeds against it, and a drifted server answers with its own error — a failure outcome under [§9.5](#95-classification), not a resolution failure.
 
-## 7. `ref`
+## 7. `selector`
 
-A binding's `ref` is REQUIRED — this family defines no whole-artifact invocation — and takes exactly `openbindings.grpc@1` [§7](../grpc/openbindings.grpc.md#7-ref)'s grammar (rule GRPC-D-03), incorporated: `<fully-qualified-service>/<method>`, package-qualified or bare for packageless schemas, matched **byte-exactly** in schema mode (**CONN-D-03**).
+A binding's `selector` is REQUIRED — this family defines no whole-artifact invocation — and takes exactly `openbindings.grpc@1` [§7](../grpc/openbindings.grpc.md#7-selector)'s grammar (rule GRPC-D-03), incorporated: `<fully-qualified-service>/<method>`, package-qualified or bare for packageless schemas, matched **byte-exactly** in schema mode (**CONN-D-03**).
 
-In schema mode, resolution against the schema precedes dispatch, and a `ref` matching no method makes the binding unresolvable — offline-checkable, per the core's partial-verification posture. In descriptorless mode there is nothing to resolve against: the `ref` segments ride **verbatim** into the request URL (casing flows through to the server), and an unknown method surfaces as the server's own error — a failure outcome, a stated limit of the mode.
+In schema mode, resolution against the schema precedes dispatch, and a `selector` matching no method makes the binding unresolvable — offline-checkable, per the core's partial-verification posture. In descriptorless mode there is nothing to resolve against: the `selector` segments ride **verbatim** into the request URL (casing flows through to the server), and an unknown method surfaces as the server's own error — a failure outcome, a stated limit of the mode.
 
 ## 8. Target and interaction
 
@@ -89,7 +89,7 @@ Rules carry stable identifiers under the same discipline as the core's: never re
 
 - **CONN-D-01**: `content`, when present, is one of `openbindings.grpc@1`'s two embedded schema carriages under its parse pins and accepted range, per [§3](#3-accepted-source-representations) and [§5](#5-content).
 - **CONN-D-02**: `location` is present and is an absolute `http`/`https` base URL — optional path prefix, no query, fragment, or userinfo — per [§4](#4-location); a `content`-only source is not conformant.
-- **CONN-D-03**: `ref` is present and is `<fully-qualified-service>/<method>`, matched byte-exactly in schema mode, per [§7](#7-ref).
+- **CONN-D-03**: `selector` is present and is `<fully-qualified-service>/<method>`, matched byte-exactly in schema mode, per [§7](#7-selector).
 - **CONN-P-01**: The mode is discriminated by `content` presence: schema mode with it, descriptorless mode without, per [§3](#3-accepted-source-representations).
 - **CONN-P-02**: Schema-mode input and decode follow `openbindings.grpc@1`'s correspondence — canonical JSON forms, unknown input or response members refused, absent-input rules, and the first-value-pre-dispatch / later-streaming-value-cancellation refusal split — per [§9.2](#92-schema-mode-input-and-decode).
 - **CONN-P-03**: Descriptorless mode requires exactly one input value and sends it as the verbatim JSON body; absent input refuses before dispatch. Output is the verbatim parsed non-empty JSON body; an empty or invalid JSON success body is a protocol error rather than an invented value, per [§9.3](#93-descriptorless-mode-input-and-decode).
@@ -103,7 +103,7 @@ Conformance fixtures keyed to these identifiers are maintained in the project's 
 ## 11. References
 
 - **[Connect]** ["The Connect protocol"](https://github.com/connectrpc/connectrpc.com/blob/c547a5412ee4f8428f31fce83dd2bb2a82942b76/src/content/docs/docs/protocol.md) at official repository commit `c547a5412ee4f8428f31fce83dd2bb2a82942b76`. Incorporated authority for routing, framing, errors, compression, metadata, and transport requirements ([§2](#2-scope-and-incorporated-authorities)); the [rendered page](https://connectrpc.com/docs/protocol/) is informative.
-- **[openbindings.grpc@1]** `openbindings.grpc@1`, [`../grpc/openbindings.grpc.md`](../grpc/openbindings.grpc.md). Incorporated by exact-identifier citation for the schema layer and schema-mode correspondence ([§2](#2-scope-and-incorporated-authorities), [§3](#3-accepted-source-representations), [§7](#7-ref), [§9.2](#92-schema-mode-input-and-decode)).
+- **[openbindings.grpc@1]** `openbindings.grpc@1`, [`../grpc/openbindings.grpc.md`](../grpc/openbindings.grpc.md). Incorporated by exact-identifier citation for the schema layer and schema-mode correspondence ([§2](#2-scope-and-incorporated-authorities), [§3](#3-accepted-source-representations), [§7](#7-selector), [§9.2](#92-schema-mode-input-and-decode)).
 - **[protobuf] / [ProtoJSON]** As incorporated through `openbindings.grpc@1`.
 - **[RFC 9110]** "HTTP Semantics." <https://www.rfc-editor.org/rfc/rfc9110>. Cited for header-field credential carriage ([§9.6](#96-credentials)) and ordinary HTTP transport ([§4](#4-location)).
 - **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository.

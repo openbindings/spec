@@ -2,8 +2,8 @@
   "rule": "USAGE-D-03",
   "bindingSpec": "openbindings.usage@1",
   "section": "7",
-  "description": "`ref`, when present, is a non-empty space-separated command path resolving in the artifact's command tree; each segment matches exactly one sibling command by its declared name or any of its declared aliases, exactly and case-sensitively. Zero or multiple matches are unresolvable. The root command is addressed by omitting `ref`; an empty-string `ref` is not conformant.",
-  "notes": "Resolution-dependent tests always embed the descriptor as content, so the verdict is offline-decidable; verifying them requires a usage (KDL) descriptor parser, and a validator without one reports those tests unverified rather than passing or failing them (core partial-verification posture). Grammar tests (empty ref, empty segment) are decidable without the artifact.",
+  "description": "`selector`, when present, is a non-empty space-separated command path resolving in the artifact's command tree; each segment matches exactly one sibling command by its declared name or any of its declared aliases, exactly and case-sensitively. Zero or multiple matches are unresolvable. The root command is addressed by omitting `selector`; an empty-string `selector` is not conformant.",
+  "notes": "Resolution-dependent tests always embed the descriptor as content, so the verdict is offline-decidable; verifying them requires a usage (KDL) descriptor parser, and a validator without one reports those tests unverified rather than passing or failing them (core partial-verification posture). Grammar tests (empty selector, empty segment) are decidable without the artifact.",
   "tests": [
     {
       "description": "single-segment command path resolving to a declared command",
@@ -17,7 +17,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": true
@@ -37,7 +37,7 @@
           "runMigrations.cli": {
             "operation": "runMigrations",
             "source": "cli",
-            "ref": "db migrate run"
+            "selector": "db migrate run"
           }
         }
       },
@@ -58,14 +58,14 @@
           "runMigrations.cli": {
             "operation": "runMigrations",
             "source": "cli",
-            "ref": "db m run"
+            "selector": "db m run"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "omitted ref addresses the root command",
+      "description": "omitted selector addresses the root command",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "runTool": {} },
@@ -82,7 +82,7 @@
       "valid": true
     },
     {
-      "description": "empty-string ref is not conformant: this specification gives each meaning one spelling (the root command is addressed by omitting ref)",
+      "description": "empty-string selector is not conformant: this specification gives each meaning one spelling (the root command is addressed by omitting selector)",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "runTool": {} },
@@ -93,7 +93,7 @@
           }
         },
         "bindings": {
-          "runTool.cli": { "operation": "runTool", "source": "cli", "ref": "" }
+          "runTool.cli": { "operation": "runTool", "source": "cli", "selector": "" }
         }
       },
       "valid": false,
@@ -114,7 +114,7 @@
           "runMigrations.cli": {
             "operation": "runMigrations",
             "source": "cli",
-            "ref": "db  migrate"
+            "selector": "db  migrate"
           }
         }
       },
@@ -133,7 +133,7 @@
           }
         },
         "bindings": {
-          "deploy.cli": { "operation": "deploy", "source": "cli", "ref": "deploy" }
+          "deploy.cli": { "operation": "deploy", "source": "cli", "selector": "deploy" }
         }
       },
       "valid": false,
@@ -151,7 +151,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "Status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "Status" }
         }
       },
       "valid": false,
@@ -169,7 +169,7 @@
           }
         },
         "bindings": {
-          "run.cli": { "operation": "run", "source": "cli", "ref": "x" }
+          "run.cli": { "operation": "run", "source": "cli", "selector": "x" }
         }
       },
       "valid": false,

@@ -1,7 +1,7 @@
 {
   "format": "openbindings.operation-graph@1",
   "kind": "validation",
-  "description": "Document-shaped fixtures for the format's source rules (OG-D-01 through OG-D-03), which bind OBI content governed by openbindings.operation-graph@1: accepted content representations, location form, and ref addressing. Tests carry a full OBI document embedding an operation-graph source and binding; each document is otherwise core-valid so only the named rule discriminates.",
+  "description": "Document-shaped fixtures for the format's source rules (OG-D-01 through OG-D-03), which bind OBI content governed by openbindings.operation-graph@1: accepted content representations, location form, and selector addressing. Tests carry a full OBI document embedding an operation-graph source and binding; each document is otherwise core-valid so only the named rule discriminates.",
   "notes": "OG-D-01/OG-D-03 judgments need embedded content, so every resolution-dependent test embeds it; a location-only source leaves resolution unverified (the core's partial-verification posture) and is not fixtured. The OG-D-02 negative cases are relative references, which also violate core OBI-D-05 — the overlap is inherent, since OG-D-02 restates absoluteness for this family and narrows the form to an absolute URI. content: null is a present member per core §5.4 presence semantics, and null is neither of this family's two accepted representations.",
   "rules": [
     {
@@ -30,7 +30,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -47,7 +47,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -64,7 +64,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#" }
             }
           }
         },
@@ -87,7 +87,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/0" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/0" }
             }
           }
         },
@@ -105,7 +105,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         }
@@ -129,7 +129,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -146,7 +146,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -163,7 +163,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -180,7 +180,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         }
@@ -188,7 +188,7 @@
     },
     {
       "rule": "OG-D-03",
-      "title": "ref is present and is an RFC 6901 JSON Pointer fragment resolving to a graph definition (\"#\" addressing a root-level graph).",
+      "title": "selector is present and is an RFC 6901 JSON Pointer fragment resolving to a graph definition (\"#\" addressing a root-level graph).",
       "schemaEnforced": false,
       "tests": [
         {
@@ -212,7 +212,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
@@ -233,7 +233,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#" }
             }
           }
         },
@@ -250,12 +250,12 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/main" }
             }
           }
         },
         {
-          "description": "ref absent: this specification defines no whole-document interpretation for an absent ref",
+          "description": "selector absent: this specification defines no whole-document interpretation for an absent selector",
           "valid": false,
           "document": {
             "openbindings": "0.2.0",
@@ -296,7 +296,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "main" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "main" }
             }
           }
         },
@@ -321,7 +321,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/graphs/missing" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/graphs/missing" }
             }
           }
         },
@@ -347,7 +347,7 @@
               }
             },
             "bindings": {
-              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "ref": "#/notes" }
+              "wrapped.graph": { "operation": "wrapped", "source": "graphs", "selector": "#/notes" }
             }
           }
         }

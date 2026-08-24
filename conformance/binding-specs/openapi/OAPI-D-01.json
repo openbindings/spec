@@ -28,7 +28,7 @@
           "createTask.api": {
             "operation": "createTask",
             "source": "api",
-            "ref": "#/paths/~1tasks/post"
+            "selector": "#/paths/~1tasks/post"
           }
         }
       },
@@ -49,7 +49,7 @@
           "createTask.api": {
             "operation": "createTask",
             "source": "api",
-            "ref": "#/paths/~1tasks/post"
+            "selector": "#/paths/~1tasks/post"
           }
         }
       },
@@ -67,7 +67,7 @@
           "createTask.api": {
             "operation": "createTask",
             "source": "api",
-            "ref": "#/paths/~1tasks/post"
+            "selector": "#/paths/~1tasks/post"
           }
         }
       },
@@ -89,7 +89,7 @@
           "createTask.api": {
             "operation": "createTask",
             "source": "api",
-            "ref": "#/paths/~1tasks/post"
+            "selector": "#/paths/~1tasks/post"
           }
         }
       },
@@ -108,7 +108,7 @@
           "createTask.api": {
             "operation": "createTask",
             "source": "api",
-            "ref": "#/paths/~1tasks/post"
+            "selector": "#/paths/~1tasks/post"
           }
         }
       },

@@ -21,7 +21,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -43,7 +43,7 @@
           "ping.shop": {
             "operation": "ping",
             "source": "shop",
-            "ref": "blend.CoffeeShop/Ping"
+            "selector": "blend.CoffeeShop/Ping"
           }
         }
       },
@@ -100,7 +100,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -122,7 +122,7 @@
           "getPair.shop": {
             "operation": "getPair",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetPair"
+            "selector": "blend.CoffeeShop/GetPair"
           }
         }
       },
@@ -144,7 +144,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -167,7 +167,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -190,7 +190,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -235,7 +235,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -280,7 +280,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },

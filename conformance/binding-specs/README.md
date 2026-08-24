@@ -43,9 +43,9 @@ family rule. The verdict is defined precisely:
   specification **refuses this document's family-scoped material at or
   before bind time** — a refusal decidable offline from the document plus
   the family specification alone, with no network access and no live
-  source. That covers grammar violations (a malformed `location` or `ref`,
+  source. That covers grammar violations (a malformed `location` or `selector`,
   a `content` value outside the family's accepted representations) and
-  resolution failures against **embedded** content (a `ref` that does not
+  resolution failures against **embedded** content (a `selector` that does not
   resolve in the artifact the document itself carries).
 - **`valid: true`** means: the document's family-scoped material gives such
   a processor **nothing to refuse**. Where resolution would require a live
@@ -60,7 +60,7 @@ violates core OBI-D-05; such fixtures list both in `violates`).
 
 Two boundaries keep the verdicts honest:
 
-- **Resolution-dependent tests always embed content.** A `ref`-resolution
+- **Resolution-dependent tests always embed content.** A `selector`-resolution
   negative is only offline-decidable when the artifact rides in the
   document; a location-only source leaves resolution unverified and is
   never fixtured as a resolution negative (the operation-graph subcorpus's
@@ -71,7 +71,7 @@ Two boundaries keep the verdicts honest:
   for those families. A validator without the capability reports those tests
   unverifiable rather than passing or failing them, mirroring the core
   corpus's posture for OBI-D-11/OBI-D-18. Type-level and grammar-level tests
-  (content JSON type, address form, ref spelling) are decidable by any
+  (content JSON type, address form, selector spelling) are decidable by any
   validator.
 
 D-rules bind documents; each family's P-rules bind processors (wire
@@ -137,9 +137,9 @@ usable after the source or peer changes.
 ## Portable synthesis scenarios
 
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json) defines the
-artifact-to-OBI proof boundary. Its version-3 exchange distinguishes two
+artifact-to-OBI proof boundary. Its version-4 exchange distinguishes two
 outcomes. A `synthesized` scenario contains one native source and expects the
-exact operation-key set, the exact `(operationKey, bindingRef)` target
+exact operation-key set, the exact `(operationKey, bindingSelector)` target
 identities, and an exhaustive coverage ledger normalized to stable semantic
 fields (`sourceRef`, scope, status, rule/reason identity, and runtime
 requirements). A `refused` scenario proves creation-time soundness: when an
@@ -194,6 +194,15 @@ and nothing else, which is what keeps it on the authority-defined side of the
 line drawn below under "What a synthesis scenario may pin". Author one only for
 a fact a finding is about: an assertion with no finding behind it is a golden
 file arriving by another route.
+
+Revision 4 renames the binding identity member `bindingRef` to
+`bindingSelector`, tracking the core rename of the binding member `ref` to
+`selector`. Alongside it the usage corpus renames the coverage-identity
+spellings that carried the old word: the reason code
+`usage.no_unique_command_ref` becomes `usage.no_unique_command_selector`, and
+the sentinel `sourceRef` prefix `ambiguous-ref:` becomes
+`ambiguous-selector:`. `sourceRef` itself is unchanged — it names a
+source-local unit, not the binding member. Nothing else changes.
 
 A scenario's `source` is shaped by the published
 [`interface-synthesizer`](https://openbindings.com/interfaces/interface-synthesizer)
@@ -288,7 +297,7 @@ by this subtree's own [`fixture.schema.json`](fixture.schema.json):
   (`"openbindings.usage@1"`), exact and opaque per core OBI-B-01.
 - `section` cites the **family** specification's section — the section the
   rule is substantively defined in (`"5"` for content rules, `"4"` for
-  location rules, `"7"` for ref rules; the family specs share this
+  location rules, `"7"` for selector rules; the family specs share this
   skeleton) — never a core-spec section.
 
 `violates` keeps the core corpus's **minimum-set semantics** verbatim: for
@@ -309,7 +318,7 @@ core, and resolution clauses are fixtured via embedded content.
 | ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | USAGE-D-01 | 1/3         | content string; number/object/null negatives                                                                                                                                         |
 | USAGE-D-02 | 4/5         | document + exec address forms; relative-in-form, empty-token, and empty-command negatives                                                                                            |
-| USAGE-D-03 | 4/4         | command-path grammar, alias segment, omitted-ref root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL)                                                 |
+| USAGE-D-03 | 4/4         | command-path grammar, alias segment, omitted-selector root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL)                                                 |
 | OAPI-D-01  | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
 | OAPI-D-02  | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
 | OAPI-D-03  | 3/10        | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, percent-encoded-spelling, webhooks, and dangling-target negatives                        |
@@ -318,7 +327,7 @@ core, and resolution clauses are fixtured via embedded content.
 | MCP-D-03   | 5/8         | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings)                              |
 | GRPC-D-01  | 4/5         | proto-string + FDS carriages, shared-type (DAG-reuse) source; import-prefix, unknown-member, extension-member, and type negatives                                                    |
 | GRPC-D-02  | 6/9         | all three port-explicit address forms and host shapes; component, portless, undefined-scheme, and content-only negatives                                                             |
-| GRPC-D-03  | 3/7         | packaged + packageless service refs; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas)                                                             |
+| GRPC-D-03  | 3/7         | packaged + packageless service selectors; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas)                                                             |
 | CONN-D-01  | 4/3         | incorporated carriages + descriptorless-mode positive + shared-type (DAG-reuse) source; import, type, unknown-member negatives                                                       |
 | CONN-D-02  | 3/8         | base-URL grammar incl. path prefix; trailing-slash, component, scheme, and content-only negatives                                                                                    |
 | CONN-D-03  | 2/4         | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives                                                                                      |
@@ -327,7 +336,7 @@ core, and resolution clauses are fixtured via embedded content.
 | ASYNC-D-03 | 5/7         | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
 | GQL-D-01   | 2/3         | absolute HTTP(S) GraphQL endpoint; missing, relative, and WebSocket-location negatives                                                                                                |
 | GQL-D-02   | 2/4         | successful introspection execution-result object; bare schema, wrapper-stripped, stringified, and errored-result negatives                                                           |
-| GQL-D-03   | 2/4         | exact lower-case root-kind/field refs with actual root-type mapping; case, path-shape, and dangling-field negatives                                                                  |
+| GQL-D-03   | 2/4         | exact lower-case root-kind/field selectors with actual root-type mapping; case, path-shape, and dangling-field negatives                                                                  |
 
 ## Layout
 

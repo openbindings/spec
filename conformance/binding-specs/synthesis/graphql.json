@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
   "description": "GraphQL query/mutation application contracts with explicit subscription coverage exclusion.",
@@ -69,9 +69,9 @@
         "outcome": "synthesized",
         "operations": ["mutation_status", "status", "viewer"],
         "bindings": [
-          { "operationKey": "mutation_status", "bindingRef": "mutation/status" },
-          { "operationKey": "status", "bindingRef": "query/status" },
-          { "operationKey": "viewer", "bindingRef": "query/viewer" }
+          { "operationKey": "mutation_status", "bindingSelector": "mutation/status" },
+          { "operationKey": "status", "bindingSelector": "query/status" },
+          { "operationKey": "viewer", "bindingSelector": "query/viewer" }
         ],
         "coverage": {
           "exhaustive": true,
@@ -83,7 +83,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "mutation_status",
-              "bindingRef": "mutation/status",
+              "bindingSelector": "mutation/status",
               "requirements": ["document"]
             },
             {
@@ -92,7 +92,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "status",
-              "bindingRef": "query/status",
+              "bindingSelector": "query/status",
               "requirements": ["document"]
             },
             {
@@ -101,7 +101,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "viewer",
-              "bindingRef": "query/viewer",
+              "bindingSelector": "query/viewer",
               "requirements": ["document"]
             },
             {
@@ -190,11 +190,11 @@
         "bindings": [
           {
             "operationKey": "currentStatus",
-            "bindingRef": "query/currentStatus"
+            "bindingSelector": "query/currentStatus"
           },
           {
             "operationKey": "legacyStatus",
-            "bindingRef": "query/legacyStatus"
+            "bindingSelector": "query/legacyStatus"
           }
         ],
         "coverage": {
@@ -207,7 +207,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "currentStatus",
-              "bindingRef": "query/currentStatus",
+              "bindingSelector": "query/currentStatus",
               "requirements": [
                 "document"
               ]
@@ -218,7 +218,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "legacyStatus",
-              "bindingRef": "query/legacyStatus",
+              "bindingSelector": "query/legacyStatus",
               "requirements": [
                 "document"
               ]

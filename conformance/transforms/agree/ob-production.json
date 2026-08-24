@@ -555,12 +555,12 @@
     {
       "id": "obp-27-bind",
       "description": "bind mapper",
-      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"source\": $$.source, \"ref\": $$.ref, \"preference\": $$.preference, \"input-transform\": $$.inputTransform, \"output-transform\": $$.outputTransform, \"transform-stub\": $$.transformStub, \"force\": $$.force}",
+      "expr": "{\"obi-path\": $$.interface, \"operation\": $$.operation, \"source\": $$.source, \"selector\": $$.selector, \"preference\": $$.preference, \"input-transform\": $$.inputTransform, \"output-transform\": $$.outputTransform, \"transform-stub\": $$.transformStub, \"force\": $$.force}",
       "input": {
         "interface": "x.obi.json",
         "operation": "users.get",
         "source": "s1",
-        "ref": "#/paths/x",
+        "selector": "#/paths/x",
         "preference": 1,
         "inputTransform": "$",
         "outputTransform": "$",
@@ -573,7 +573,7 @@
           "obi-path": "x.obi.json",
           "operation": "users.get",
           "source": "s1",
-          "ref": "#/paths/x",
+          "selector": "#/paths/x",
           "preference": 1,
           "input-transform": "$",
           "output-transform": "$",

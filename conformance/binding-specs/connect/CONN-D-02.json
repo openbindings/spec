@@ -19,7 +19,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -40,7 +40,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -61,7 +61,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -82,7 +82,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -104,7 +104,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -126,7 +126,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -148,7 +148,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -170,7 +170,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -192,7 +192,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -214,7 +214,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -236,7 +236,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },

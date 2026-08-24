@@ -2,8 +2,8 @@
   "rule": "CONN-D-03",
   "bindingSpec": "openbindings.connect@1",
   "section": "7",
-  "description": "`ref` is present and is `<fully-qualified-service>/<method>` (exactly `openbindings.grpc@1` §7's grammar, incorporated), matched byte-exactly in schema mode. In descriptorless mode the segments ride verbatim into the request URL and there is nothing to resolve against.",
-  "notes": "Schema-mode resolution tests embed the schema as content; verifying them requires a protobuf compiler, and a validator without one reports those tests unverified rather than passing or failing them. Descriptorless-mode positives pin that an unresolvable-at-the-server ref is that mode's stated limit, not a document defect.",
+  "description": "`selector` is present and is `<fully-qualified-service>/<method>` (exactly `openbindings.grpc@1` §7's grammar, incorporated), matched byte-exactly in schema mode. In descriptorless mode the segments ride verbatim into the request URL and there is nothing to resolve against.",
+  "notes": "Schema-mode resolution tests embed the schema as content; verifying them requires a protobuf compiler, and a validator without one reports those tests unverified rather than passing or failing them. Descriptorless-mode positives pin that an unresolvable-at-the-server selector is that mode's stated limit, not a document defect.",
   "tests": [
     {
       "description": "schema mode: package-qualified service and method resolving byte-exactly in the embedded schema",
@@ -21,14 +21,14 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "descriptorless mode: grammar-valid ref on a location-only source rides verbatim into the request URL",
+      "description": "descriptorless mode: grammar-valid selector on a location-only source rides verbatim into the request URL",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "echo": {} },
@@ -42,14 +42,14 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "ref is required: this family defines no whole-artifact invocation",
+      "description": "selector is required: this family defines no whole-artifact invocation",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "echo": {} },
@@ -67,7 +67,7 @@
       "violates": ["CONN-D-03"]
     },
     {
-      "description": "ref without the service/method separator",
+      "description": "selector without the service/method separator",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "echo": {} },
@@ -81,7 +81,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService"
+            "selector": "demo.EchoService"
           }
         }
       },
@@ -103,7 +103,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/"
+            "selector": "demo.EchoService/"
           }
         }
       },
@@ -126,7 +126,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/getMenu"
+            "selector": "blend.CoffeeShop/getMenu"
           }
         }
       },

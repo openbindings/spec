@@ -31,9 +31,9 @@ No wrapper-stripped schema, SDL, stringified JSON, or executable document is acc
 
 Present `content` MUST be the pinned introspection response of §3 (**GQL-D-02**). It is authoritative for schema interpretation and displaces live introspection. `location` remains the invocation target. Schema drift is surfaced by the live interaction; processors do not silently replace the pin.
 
-## 6. `ref` and eligible targets
+## 6. `selector` and eligible targets
 
-A candidate `ref` is REQUIRED and has exactly one of these forms (**GQL-D-03**):
+A candidate `selector` is REQUIRED and has exactly one of these forms (**GQL-D-03**):
 
 ```text
 query/<field-name>
@@ -46,7 +46,7 @@ The non-empty field portion is one exact GraphQL Name. Resolution follows the sc
 
 The target is the HTTP endpoint in `location`. The abstract interaction is unary: zero or one input application value and exactly one successful output application value.
 
-An exact executable document is REQUIRED through the `document` interpretation point. The selected GraphQL operation MUST be selected unambiguously under GraphQL's `operationName` rules, have the kind named by `ref`, and, for the supplied variables, collect exactly one root response-key group whose selections all name the root field selected by `ref` (**GQL-P-02**). Aliasing that group is allowed. This check yields the response key used for output projection.
+An exact executable document is REQUIRED through the `document` interpretation point. The selected GraphQL operation MUST be selected unambiguously under GraphQL's `operationName` rules, have the kind named by `selector`, and, for the supplied variables, collect exactly one root response-key group whose selections all name the root field selected by `selector` (**GQL-P-02**). Aliasing that group is allowed. This check yields the response key used for output projection.
 
 The live service remains authoritative for full GraphQL request validation and variable coercion. A processor does not synthesize an executable document from introspection and does not consume a legacy `_query` input member.
 
@@ -103,7 +103,7 @@ Every non-introspection query and mutation root field is eligible for representa
 
 - **GQL-D-01**: `location` is a required absolute HTTP(S) GraphQL endpoint.
 - **GQL-D-02**: Present `content` is one successful introspection execution result with object `data.__schema` and no `errors` member, sufficient for each represented target.
-- **GQL-D-03**: `ref` is a required exact `query/<field>` or `mutation/<field>` reference resolving through the schema's declared root type.
+- **GQL-D-03**: `selector` is a required exact `query/<field>` or `mutation/<field>` reference resolving through the schema's declared root type.
 - **GQL-P-01**: Supplied caller input is one variables object wholesale; absent input omits `variables`.
 - **GQL-P-02**: `document` and `protocolFields` act only at their named interpretation points; document/root correspondence and field-collision refusals follow §7 and §8.2.
 - **GQL-P-03**: HTTP classification, root-value projection, synthesized output shape, partial-value preservation, and unsuccessful completion follow §8.3 and §8.4; native envelopes and transport facts are not ordinary values.

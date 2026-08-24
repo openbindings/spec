@@ -93,7 +93,7 @@
           "content": "name \"tool\"\nbin \"tool\"\ncmd \"run\" { mount run=\"tool emit-commands\" }\n"
         },
         "binding": {
-          "ref": "run task"
+          "selector": "run task"
         },
         "invocation": {
           "inputPresent": false
@@ -406,13 +406,13 @@
         "USAGE-P-04"
       ],
       "section": "9.1",
-      "description": "A ref alias is emitted exactly as selected, and flags precede positionals in descriptor declaration order independently of input-object order.",
+      "description": "A selector alias is emitted exactly as selected, and flags precede positionals in descriptor declaration order independently of input-object order.",
       "given": {
         "source": {
           "content": "name \"mytool\"\nbin \"mytool\"\ncmd \"db\" {\n  cmd \"migrate\" {\n    alias \"m\"\n    cmd \"run\" {\n      flag \"--zeta <value>\"\n      flag \"-a --alpha\"\n      arg \"<file>\"\n    }\n  }\n}\n"
         },
         "binding": {
-          "ref": "db m run"
+          "selector": "db m run"
         },
         "invocation": {
           "inputPresent": true,

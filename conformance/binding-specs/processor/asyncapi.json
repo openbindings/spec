@@ -23,7 +23,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -93,7 +93,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -172,7 +172,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -253,7 +253,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -328,7 +328,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -413,7 +413,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "configuration": {
           "protocolFields": {
@@ -526,7 +526,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -627,7 +627,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -722,7 +722,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "configuration": {
           "protocolFields": {
@@ -801,7 +801,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "invocation": {
           "inputPresent": false
@@ -883,7 +883,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -959,7 +959,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "configuration": {
           "decode": "json"
@@ -1033,7 +1033,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "invocation": {
           "inputPresent": false
@@ -1112,7 +1112,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -1210,7 +1210,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "configuration": {
           "parameters": {
@@ -1307,7 +1307,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -1412,7 +1412,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -1493,7 +1493,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -1595,7 +1595,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "invocation": {
           "inputPresent": false
@@ -1622,7 +1622,7 @@
         "ASYNC-P-03"
       ],
       "section": "8",
-      "description": "An AsyncAPI 2.6 publish target keeps its native ref and maps to caller input under the edition's application perspective.",
+      "description": "An AsyncAPI 2.6 publish target keeps its native selector and maps to caller input under the edition's application perspective.",
       "given": {
         "source": {
           "content": {
@@ -1657,7 +1657,7 @@
           }
         },
         "binding": {
-          "ref": "#/channels/~1tasks/publish"
+          "selector": "#/channels/~1tasks/publish"
         },
         "invocation": {
           "inputPresent": true,

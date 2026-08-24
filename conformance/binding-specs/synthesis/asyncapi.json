@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.asyncapi@1",
   "family": "asyncapi",
   "description": "AsyncAPI operation, message, reply-message, and protocol-cell accounting.",
@@ -86,7 +86,7 @@
         "bindings": [
           {
             "operationKey": "publish",
-            "bindingRef": "#/operations/publish"
+            "bindingSelector": "#/operations/publish"
           }
         ],
         "coverage": {
@@ -99,7 +99,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -108,7 +108,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -117,7 +117,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -126,7 +126,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -135,7 +135,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -144,7 +144,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": []
             },
             {
@@ -153,7 +153,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publish",
-              "bindingRef": "#/operations/publish",
+              "bindingSelector": "#/operations/publish",
               "requirements": [
                 "configuration.message",
                 "configuration.server"
@@ -254,7 +254,7 @@
         "bindings": [
           {
             "operationKey": "subscribe",
-            "bindingRef": "#/operations/subscribe"
+            "bindingSelector": "#/operations/subscribe"
           }
         ],
         "coverage": {
@@ -267,7 +267,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -276,7 +276,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -285,7 +285,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -294,7 +294,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             }
           ]
@@ -377,7 +377,7 @@
         "bindings": [
           {
             "operationKey": "subscribe",
-            "bindingRef": "#/operations/subscribe"
+            "bindingSelector": "#/operations/subscribe"
           }
         ],
         "coverage": {
@@ -390,7 +390,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -399,7 +399,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -408,7 +408,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             },
             {
@@ -417,7 +417,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "subscribe",
-              "bindingRef": "#/operations/subscribe",
+              "bindingSelector": "#/operations/subscribe",
               "requirements": []
             }
           ]
@@ -501,7 +501,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -514,7 +514,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -523,7 +523,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -532,7 +532,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -593,7 +593,7 @@
         "bindings": [
           {
             "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
+            "bindingSelector": "#/operations/publishRecord"
           }
         ],
         "coverage": {
@@ -606,7 +606,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": [
                 "configuration.server"
               ]
@@ -617,7 +617,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -626,7 +626,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             }
           ]
@@ -695,7 +695,7 @@
         "bindings": [
           {
             "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
+            "bindingSelector": "#/operations/publishRecord"
           }
         ],
         "coverage": {
@@ -708,7 +708,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": [
                 "configuration.server"
               ]
@@ -719,7 +719,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -728,7 +728,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             }
           ]
@@ -806,7 +806,7 @@
         "bindings": [
           {
             "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
+            "bindingSelector": "#/operations/publishRecord"
           }
         ],
         "coverage": {
@@ -819,7 +819,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": [
                 "configuration.server"
               ]
@@ -830,7 +830,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -839,7 +839,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             }
           ]
@@ -848,7 +848,7 @@
     },
     {
       "id": "ASYNC-SS-09",
-      "description": "An operation declared in components.operations and referenced from the operations map synthesizes identically to the inline form: the operations-map entry resolves through the reference before the operation-object test, and the binding ref remains the operations-map pointer.",
+      "description": "An operation declared in components.operations and referenced from the operations map synthesizes identically to the inline form: the operations-map entry resolves through the reference before the operation-object test, and the binding selector remains the operations-map pointer.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
@@ -905,7 +905,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -918,7 +918,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -927,7 +927,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -936,7 +936,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1002,7 +1002,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1015,7 +1015,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1024,7 +1024,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1033,7 +1033,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1099,7 +1099,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1112,7 +1112,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1121,7 +1121,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1130,7 +1130,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1198,7 +1198,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1211,7 +1211,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1220,7 +1220,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1229,7 +1229,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1303,7 +1303,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1316,7 +1316,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1325,7 +1325,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1334,7 +1334,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1405,7 +1405,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1418,7 +1418,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1427,7 +1427,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             },
             {
@@ -1436,7 +1436,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1513,7 +1513,7 @@
         "bindings": [
           {
             "operationKey": "publishNode",
-            "bindingRef": "#/operations/publishNode"
+            "bindingSelector": "#/operations/publishNode"
           }
         ],
         "coverage": {
@@ -1526,7 +1526,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishNode",
-              "bindingRef": "#/operations/publishNode",
+              "bindingSelector": "#/operations/publishNode",
               "requirements": [
                 "configuration.server"
               ]
@@ -1537,7 +1537,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishNode",
-              "bindingRef": "#/operations/publishNode",
+              "bindingSelector": "#/operations/publishNode",
               "requirements": []
             },
             {
@@ -1546,7 +1546,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishNode",
-              "bindingRef": "#/operations/publishNode",
+              "bindingSelector": "#/operations/publishNode",
               "requirements": []
             }
           ]
@@ -1637,7 +1637,7 @@
         "bindings": [
           {
             "operationKey": "publishGood",
-            "bindingRef": "#/operations/publishGood"
+            "bindingSelector": "#/operations/publishGood"
           }
         ],
         "coverage": {
@@ -1677,7 +1677,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishGood",
-              "bindingRef": "#/operations/publishGood",
+              "bindingSelector": "#/operations/publishGood",
               "requirements": [
                 "configuration.server"
               ]
@@ -1688,7 +1688,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishGood",
-              "bindingRef": "#/operations/publishGood",
+              "bindingSelector": "#/operations/publishGood",
               "requirements": []
             },
             {
@@ -1697,7 +1697,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishGood",
-              "bindingRef": "#/operations/publishGood",
+              "bindingSelector": "#/operations/publishGood",
               "requirements": []
             }
           ]
@@ -1760,7 +1760,7 @@
         "bindings": [
           {
             "operationKey": "publishPing",
-            "bindingRef": "#/operations/publishPing"
+            "bindingSelector": "#/operations/publishPing"
           }
         ],
         "coverage": {
@@ -1773,7 +1773,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishPing",
-              "bindingRef": "#/operations/publishPing",
+              "bindingSelector": "#/operations/publishPing",
               "requirements": [
                 "configuration.server"
               ]
@@ -1784,7 +1784,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishPing",
-              "bindingRef": "#/operations/publishPing",
+              "bindingSelector": "#/operations/publishPing",
               "requirements": []
             },
             {
@@ -1793,7 +1793,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishPing",
-              "bindingRef": "#/operations/publishPing",
+              "bindingSelector": "#/operations/publishPing",
               "requirements": []
             }
           ]
@@ -1851,7 +1851,7 @@
         "bindings": [
           {
             "operationKey": "publishEvent",
-            "bindingRef": "#/operations/publishEvent"
+            "bindingSelector": "#/operations/publishEvent"
           }
         ],
         "coverage": {
@@ -1864,7 +1864,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": [
                 "configuration.server"
               ]
@@ -1875,7 +1875,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishEvent",
-              "bindingRef": "#/operations/publishEvent",
+              "bindingSelector": "#/operations/publishEvent",
               "requirements": []
             }
           ]
@@ -1945,7 +1945,7 @@
         "bindings": [
           {
             "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
+            "bindingSelector": "#/operations/publishRecord"
           }
         ],
         "coverage": {
@@ -1958,7 +1958,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": [
                 "configuration.server"
               ]
@@ -1969,7 +1969,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -1978,7 +1978,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             }
           ]
@@ -2065,7 +2065,7 @@
         "bindings": [
           {
             "operationKey": "publishRecord",
-            "bindingRef": "#/operations/publishRecord"
+            "bindingSelector": "#/operations/publishRecord"
           }
         ],
         "coverage": {
@@ -2078,7 +2078,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -2087,7 +2087,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": []
             },
             {
@@ -2096,7 +2096,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishRecord",
-              "bindingRef": "#/operations/publishRecord",
+              "bindingSelector": "#/operations/publishRecord",
               "requirements": [
                 "configuration.server"
               ]
@@ -2183,11 +2183,11 @@
         "bindings": [
           {
             "operationKey": "placeOrder",
-            "bindingRef": "#/operations/placeOrder"
+            "bindingSelector": "#/operations/placeOrder"
           },
           {
             "operationKey": "watchOrders",
-            "bindingRef": "#/operations/watchOrders"
+            "bindingSelector": "#/operations/watchOrders"
           }
         ],
         "coverage": {
@@ -2200,7 +2200,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "placeOrder",
-              "bindingRef": "#/operations/placeOrder",
+              "bindingSelector": "#/operations/placeOrder",
               "requirements": []
             },
             {
@@ -2209,7 +2209,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "placeOrder",
-              "bindingRef": "#/operations/placeOrder",
+              "bindingSelector": "#/operations/placeOrder",
               "requirements": []
             },
             {
@@ -2218,7 +2218,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "watchOrders",
-              "bindingRef": "#/operations/watchOrders",
+              "bindingSelector": "#/operations/watchOrders",
               "requirements": []
             },
             {
@@ -2227,7 +2227,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "watchOrders",
-              "bindingRef": "#/operations/watchOrders",
+              "bindingSelector": "#/operations/watchOrders",
               "requirements": []
             },
             {
@@ -2236,7 +2236,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "placeOrder",
-              "bindingRef": "#/operations/placeOrder",
+              "bindingSelector": "#/operations/placeOrder",
               "requirements": [
                 "configuration.server"
               ]
@@ -2247,7 +2247,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "watchOrders",
-              "bindingRef": "#/operations/watchOrders",
+              "bindingSelector": "#/operations/watchOrders",
               "requirements": [
                 "configuration.server"
               ]
@@ -2385,7 +2385,7 @@
         "bindings": [
           {
             "operationKey": "publishFile",
-            "bindingRef": "#/operations/publishFile"
+            "bindingSelector": "#/operations/publishFile"
           }
         ],
         "coverage": {
@@ -2398,7 +2398,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "publishFile",
-              "bindingRef": "#/operations/publishFile",
+              "bindingSelector": "#/operations/publishFile",
               "requirements": [
                 "configuration.server"
               ]
@@ -2409,7 +2409,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishFile",
-              "bindingRef": "#/operations/publishFile",
+              "bindingSelector": "#/operations/publishFile",
               "requirements": []
             },
             {
@@ -2418,7 +2418,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "publishFile",
-              "bindingRef": "#/operations/publishFile",
+              "bindingSelector": "#/operations/publishFile",
               "requirements": []
             }
           ]
@@ -2525,7 +2525,7 @@
         "bindings": [
           {
             "operationKey": "onCartCreated",
-            "bindingRef": "#/operations/onCartCreated"
+            "bindingSelector": "#/operations/onCartCreated"
           }
         ],
         "assertions": [
@@ -2544,7 +2544,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "onCartCreated",
-              "bindingRef": "#/operations/onCartCreated",
+              "bindingSelector": "#/operations/onCartCreated",
               "requirements": [
                 "configuration.server"
               ]
@@ -2555,7 +2555,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "onCartCreated",
-              "bindingRef": "#/operations/onCartCreated",
+              "bindingSelector": "#/operations/onCartCreated",
               "requirements": []
             },
             {
@@ -2564,7 +2564,7 @@
               "scope": "alternative",
               "status": "represented",
               "operationKey": "onCartCreated",
-              "bindingRef": "#/operations/onCartCreated",
+              "bindingSelector": "#/operations/onCartCreated",
               "requirements": []
             },
             {

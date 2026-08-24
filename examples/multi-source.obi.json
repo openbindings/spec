@@ -126,27 +126,27 @@
     "getUser.publicApi": {
       "operation": "getUser",
       "source": "publicApi",
-      "ref": "#/paths/~1users~1{userId}/get"
+      "selector": "#/paths/~1users~1{userId}/get"
     },
     "getUser.adminApi": {
       "operation": "getUser",
       "source": "adminApi",
-      "ref": "#/paths/~1admin~1users~1{userId}/get"
+      "selector": "#/paths/~1admin~1users~1{userId}/get"
     },
     "createUser.publicApi": {
       "operation": "createUser",
       "source": "publicApi",
-      "ref": "#/paths/~1users/post"
+      "selector": "#/paths/~1users/post"
     },
     "createUser.adminApi": {
       "operation": "createUser",
       "source": "adminApi",
-      "ref": "#/paths/~1admin~1users/post"
+      "selector": "#/paths/~1admin~1users/post"
     },
     "listUsers.adminApi": {
       "operation": "listUsers",
       "source": "adminApi",
-      "ref": "#/paths/~1admin~1users/get"
+      "selector": "#/paths/~1admin~1users/get"
     }
   }
 }
