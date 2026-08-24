@@ -199,17 +199,17 @@ function checkSourceRule(rule, doc) {
         }
       });
     case "OG-D-03":
-      // ref is present and is a JSON Pointer fragment resolving to a graph
+      // selector is present and is a JSON Pointer fragment resolving to a graph
       // definition ("#" addressing a root-level graph). Judged against
       // embedded content; fixtures for this rule always embed it.
       return ogBindings(doc).every(([, b]) => {
-        if (typeof b.ref !== "string" || !b.ref.startsWith("#")) return false;
+        if (typeof b.selector !== "string" || !b.selector.startsWith("#")) return false;
         const [, srcObj] =
           ogSources(doc).find(([k]) => k === b.source) ?? [];
         if (!srcObj) return false;
         const sourceDoc = parseOgContent(srcObj);
         if (sourceDoc === undefined) return false;
-        let fragment = b.ref.slice(1);
+        let fragment = b.selector.slice(1);
         try {
           fragment = decodeURIComponent(fragment);
         } catch {

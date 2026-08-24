@@ -19,7 +19,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -40,7 +40,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -61,7 +61,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -82,7 +82,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -103,7 +103,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -124,7 +124,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -145,7 +145,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -167,7 +167,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -189,7 +189,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -211,7 +211,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -233,7 +233,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -255,7 +255,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -277,7 +277,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -299,7 +299,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -321,7 +321,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },

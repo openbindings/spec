@@ -39,9 +39,9 @@ Present `content` is authoritative for listing interpretation under core content
 
 The pin may be stale. Dispatch still proceeds against the addressed server; a server response showing that the declared target is no longer available is an unsuccessful invocation, not permission to substitute a live listing. A processor MAY compare the pin to live discovery diagnostically.
 
-## 7. `ref` and eligible targets
+## 7. `selector` and eligible targets
 
-A candidate binding `ref` is REQUIRED and MUST be `tools/<name>`, where `<name>` is the non-empty remainder after the first `/` and is matched byte-exactly to a listed tool name (**MCP-D-03**). Exactly one tool must match. Zero matches and duplicate matches are unresolvable; declaration order never resolves ambiguity.
+A candidate binding `selector` is REQUIRED and MUST be `tools/<name>`, where `<name>` is the non-empty remainder after the first `/` and is matched byte-exactly to a listed tool name (**MCP-D-03**). Exactly one tool must match. Zero matches and duplicate matches are unresolvable; declaration order never resolves ambiguity.
 
 The matched tool MUST declare an `outputSchema` (**MCP-P-04**). MCP defines that member as the schema for the application object returned in `CallToolResult.structuredContent`; it is therefore the source's application-level output contract. A tool without `outputSchema` is not bindable in this candidate because its remaining result lanes are MCP-native representations, not a protocol-independent application contract.
 
@@ -51,7 +51,7 @@ Resources, resource templates, and prompts remain part of the listing inventory 
 
 ## 8. Target and interaction
 
-The target is the listed tool selected by `ref`, invoked with one `tools/call`. The abstract interaction is unary: zero or one input application value and exactly one successful output application value.
+The target is the listed tool selected by `selector`, invoked with one `tools/call`. The abstract interaction is unary: zero or one input application value and exactly one successful output application value.
 
 This candidate does not solicit MCP progress. Progress notifications are protocol-native observability and do not cross as operation values. Task augmentation, resources, prompts, subscriptions, sampling, elicitation, roots, and log streams are excluded. These are coverage boundaries, not invitations for processors to approximate them.
 
@@ -87,7 +87,7 @@ This specification defines no context bindings at transform positions. Transform
 
 - **MCP-D-01**: Present `content` is the pinned-listing object of §3 and §5.
 - **MCP-D-02**: `location` is a required absolute HTTP(S) Streamable HTTP endpoint.
-- **MCP-D-03**: `ref` is a required `tools/<name>` reference resolving byte-exactly and unambiguously to one listed tool.
+- **MCP-D-03**: `selector` is a required `tools/<name>` reference resolving byte-exactly and unambiguously to one listed tool.
 - **MCP-P-01**: Negotiation follows MCP and accepts only revision `2025-11-25`.
 - **MCP-P-02**: Live advertised listings are capability-gated and pagination-exhausted; a pin displaces live listing; resolution precedes dispatch.
 - **MCP-P-03**: Caller input maps whole and verbatim to an optional object-valued `arguments` member.

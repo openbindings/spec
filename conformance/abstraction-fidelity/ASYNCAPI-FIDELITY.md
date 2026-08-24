@@ -53,7 +53,7 @@ protocol-extensible artifact family:
 
 1. the standalone artifact runtime parses and normalizes AsyncAPI 2.x and 3.x;
 2. synthesis preserves every bindable authored operation, both directions of
-   declared replies, and the exact native ref without consulting driver
+   declared replies, and the exact native selector without consulting driver
    availability;
 3. a protocol driver receives the normalized artifact and owns the nested
    protocol binding's execution semantics;
@@ -97,7 +97,7 @@ than receiving corpus-specific preprocessing.
 The operation-count difference outside the supported envelope reflects invalid
 or noncandidate inputs, not a semantic or interface mismatch within the
 adjudicated envelope. The final parity report records zero supported semantic,
-schema, ref, coverage, or operation-boundary mismatches.
+schema, selector, coverage, or operation-boundary mismatches.
 
 ### WebSocket reply loop
 

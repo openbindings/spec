@@ -265,9 +265,14 @@ below may continue to change until the 0.2 release is cut.
   retry or cache and not a stable-output guarantee.
 - Inline transforms are JSONata expression strings. Transforms operate once
   per value and never change cardinality.
-- Source `location`/`content` pairing and binding `ref` meaning are governed
-  by the exact binding specification. Relative, retrieval-context-dependent
-  OBI references are no longer portable.
+- The binding member `ref` was renamed `selector`: the
+  binding-specification-defined selector of a specific target within the
+  governed source. Only the member name changed — syntax, meaning, the
+  absent-`selector` case, and binding-specification ownership are unchanged,
+  and rule identifiers (OBI-*, family rules) are untouched.
+- Source `location`/`content` pairing and binding `selector` meaning are
+  governed by the exact binding specification. Relative,
+  retrieval-context-dependent OBI references are no longer portable.
 - Document authentication declarations moved out of the core. Credentials,
   configuration choices, approvals, and other prerequisites are supplied as
   invocation context and may be surfaced through context requirements.

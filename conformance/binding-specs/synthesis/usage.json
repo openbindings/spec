@@ -40,7 +40,7 @@
     },
     {
       "id": "USAGE-SS-02",
-      "description": "Sibling spelling collisions are explicitly excluded, unique spellings remain represented, and a command with no unique ref is not advertised.",
+      "description": "Sibling spelling collisions are explicitly excluded, unique spellings remain represented, and a command with no unique selector is not advertised.",
       "source": {
         "bindingSpec": "openbindings.usage@1",
         "content": "bin \"tool\"\ncmd \"x\"\ncmd \"beta\" {\n  alias \"x\"\n}\n"

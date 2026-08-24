@@ -201,9 +201,9 @@ A binding specification governs a family of sources and bindings; it is not requ
 
 1. A specification may incorporate an existing artifact format and protocol. `openbindings.openapi@1` incorporates OpenAPI and HTTP.
 2. A specification may define the artifact format and interaction model itself. `openbindings.operation-graph@1` defines the graph artifact, its nodes, and its execution semantics; there is no external artifact authority for it to incorporate.
-3. A specification may accept an artifactless source mode. `openbindings.connect@1`'s descriptorless mode uses a service `location` and binding `ref` without schema `content`; the Connect protocol and the binding specification completely define the narrower interaction. A specification may also define absent `ref` to target `location` itself, leaving `bindingSpec` plus `location` as the complete concrete address.
+3. A specification may accept an artifactless source mode. `openbindings.connect@1`'s descriptorless mode uses a service `location` and binding `selector` without schema `content`; the Connect protocol and the binding specification completely define the narrower interaction. A specification may also define absent `selector` to target `location` itself, leaving `bindingSpec` plus `location` as the complete concrete address.
 
-The **source** remains required in every case. An artifactless source is location-only: the binding specification defines what the location addresses, what `ref` means or whether it is absent, and every interaction and operation-boundary rule an artifact would otherwise have supplied. Calling the mode artifactless does not relax [OBI-B-02](../openbindings.md#104-binding-specification-rules); it makes more of that semantic burden the binding specification's own.
+The **source** remains required in every case. An artifactless source is location-only: the binding specification defines what the location addresses, what `selector` means or whether it is absent, and every interaction and operation-boundary rule an artifact would otherwise have supplied. Calling the mode artifactless does not relax [OBI-B-02](../openbindings.md#104-binding-specification-rules); it makes more of that semantic burden the binding specification's own.
 
 ## Implementation layering
 
@@ -256,10 +256,10 @@ replaces a library that hides required facts or imposes conflicting policy.
 
 ## Index
 
-| Specification   | Document                                                                           | Status                                                                                             | Identifier(s)                    | `ref` shape (summary)                                                                                                                                              |
+| Specification   | Document                                                                           | Status                                                                                             | Identifier(s)                    | `selector` shape (summary)                                                                                                                                              |
 | --------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **unreleased @1 candidate** | `openbindings.operation-graph@1` | JSON Pointer to a graph definition |
-| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **unreleased @1 candidate** | `openbindings.usage@1`           | space-separated command path (absent ref = root) |
+| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **unreleased @1 candidate** | `openbindings.usage@1`           | space-separated command path (absent selector = root) |
 | openapi         | [openbindings.openapi.md](openapi/openbindings.openapi.md)                         | **unreleased @1 candidate** | `openbindings.openapi@1`         | JSON Pointer to the operation object |
 | mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **unreleased @1 candidate** | `openbindings.mcp@1`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
 | grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **unreleased @1 candidate** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
@@ -402,7 +402,7 @@ always evaluated first.
 is derived, not enumerated.** Once the artifact has a JSON image and a
 determined edition, every defect confines to the smallest unit that owns it.
 The source refuses only when **no addressable target remains**: no conformant
-`ref` resolves to an invocable target, because every position that would have
+`selector` resolves to an invocable target, because every position that would have
 carried one is defective under the governing authority. This single rule
 replaces both "the artifact declares no addressable target" and "the artifact
 declares addressable targets and every one of them is destroyed" — an empty
@@ -657,7 +657,7 @@ Apply the [deference order](#the-deference-order) to every answer in the templat
 4. **`location`** (item 2) — the accepted absolute-address syntax and what it addresses. **Acquisition-failure semantics follow the address scheme:** where `location` is a URI, whether a dereference succeeded is the scheme's own affair (an HTTP status, a `file://` open error, a TLS failure), and a specification need say nothing — the terseness is deference, not an omission. A specification that mints an address form with no incorporating scheme (an executable address, say) owes the success condition itself, because none is inherited (`openbindings.usage@1`'s `exec:` requires exit 0, its stdout otherwise not an artifact, is the pattern).
 5. **`content`** (item 3) — the accepted JSON values and their meaning, including any mode in which `content` is forbidden.
 6. **Composition** (item 4) — the role of a co-present `location`, including whether it supplies a reference base for embedded content, within the content-primacy floor of core [§5.4](../openbindings.md#54-sources). Service-addressed families additionally define their pin's **staleness** posture (dispatch proceeds against the pin; the live server's own error is a failure outcome) — a drift question artifact-located families do not have.
-7. **`ref`** (item 5) — syntax, resolution into an artifact or live surface, and the absent-`ref` case.
+7. **`selector`** (item 5) — syntax, resolution into an artifact or live surface, and the absent-`selector` case.
 8. **Target and interaction** (item 6) — how the bound target and its interaction pattern are identified.
 9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named interpretation points for anything incorporated authorities do not answer (see _Portable actionability_).
 10. **Conformance** (recommended) — stable rule identifiers for the specification's own requirements, and fixtures. Diagnostic and provenance-stamp names are implementation surface (reference-tool documentation), not specification content.
@@ -700,9 +700,9 @@ Promotion is **spec-first**: it designs the ideal specification for the family, 
 
 When an accepted artifact is itself a JSON document (rather than a wire-protocol identifier like a gRPC method name or an MCP tool name), the author chooses what to make normative: the document shape, or just the binding unit inside it. **Prefer the latter:**
 
-- **The specification defines the addressable binding unit** (the value a `ref` resolves to), not the enclosing document.
+- **The specification defines the addressable binding unit** (the value a `selector` resolves to), not the enclosing document.
 - **The binding unit declares its own format version**, embedded on the unit itself, so one host document can carry units at different versions and the version travels with the unit when moved or copied. Under the identifier discipline this unit version is artifact self-identification — which unit versions a given revision accepts belongs in its _accepted source representations_ section; it is not the specification's `<rev>`.
-- **`ref` is a JSON Pointer ([RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).** Concretely, refs look like `"#/graphs/foo"` rather than `"foo"`. The empty pointer `"#"` resolves to the document root, so a document whose root _is_ a binding unit can be addressed without a name. This convention exists to prevent addressing sprawl across JSON-based sources: one shared scheme keeps refs self-describing and lets tools share resolution machinery. Authors with a concrete reason to deviate are free to do so — `ref` syntax is each binding specification's own to define (core [§5.3](../openbindings.md#53-bindings), OBI-B-02 item 5).
+- **`selector` is a JSON Pointer ([RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).** Concretely, selectors look like `"#/graphs/foo"` rather than `"foo"`. The empty pointer `"#"` resolves to the document root, so a document whose root _is_ a binding unit can be addressed without a name. This convention exists to prevent addressing sprawl across JSON-based sources: one shared scheme keeps selectors self-describing and lets tools share resolution machinery. Authors with a concrete reason to deviate are free to do so — `selector` syntax is each binding specification's own to define (core [§5.3](../openbindings.md#53-bindings), OBI-B-02 item 5).
 - **The enclosing document's shape is the author's concern.** Units may be embedded in a dedicated file, alongside units of other specifications, or at an `x-`-prefixed location inside an unrelated host document.
 
 [`openbindings.operation-graph`](operation-graph/openbindings.operation-graph.md) follows this pattern: the specification defines a graph definition (its `nodes`, `edges`, validation rules, and required version field); the enclosing JSON document has no prescribed shape. A conventional `graphs` map at the root is documented for ergonomics but is non-normative.

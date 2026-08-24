@@ -46,11 +46,11 @@ A source's `content`, when present, MUST be one of the two representations in [�
 
 When `content` is present it is the artifact the processor interprets, following Core's content-primacy rule. A co-present `location` is that content's origin and base URI. Relative references resolve exactly as the governing AsyncAPI edition specifies. Embedded content without a co-present `location` MUST be self-contained; location-only sources use their location as the artifact base.
 
-The artifact processor, not the OBI processor, owns AsyncAPI `$ref`, trait, component, and protocol-binding resolution. Resolution MUST retain enough native identity for diagnostics, coverage, and exact `ref` round trips.
+The artifact processor, not the OBI processor, owns AsyncAPI `$ref`, trait, component, and protocol-binding resolution. Resolution MUST retain enough native identity for diagnostics, coverage, and exact `selector` round trips.
 
-## 7. `ref`
+## 7. `selector`
 
-A binding's `ref` is REQUIRED and selects exactly one native AsyncAPI operation target (**ASYNC-D-03**):
+A binding's `selector` is REQUIRED and selects exactly one native AsyncAPI operation target (**ASYNC-D-03**):
 
 - In AsyncAPI **3.x**, it is `#/operations/<operation-key>`.
 - In AsyncAPI **2.x**, it is `#/channels/<channel-key>/publish` or `#/channels/<channel-key>/subscribe`.
@@ -178,7 +178,7 @@ Document rules:
 
 - **ASYNC-D-01**: `content`, when present, is an accepted AsyncAPI object or YAML 1.2.2 string representation (§5).
 - **ASYNC-D-02**: `location`, when present, is an absolute URI addressing the artifact (§4).
-- **ASYNC-D-03**: `ref` is the exact edition-native operation pointer and resolves to an operation (§7).
+- **ASYNC-D-03**: `selector` is the exact edition-native operation pointer and resolves to an operation (§7).
 
 Processor rules:
 

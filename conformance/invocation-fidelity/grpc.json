@@ -19,7 +19,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/List"
+          "selector": "demo.Service/List"
         },
         "invocation": {
           "inputPresent": false
@@ -88,7 +88,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -134,7 +134,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Request) returns (stream Reply); } message Request { string value = 1; } message Reply { string ack = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/Chat"
+          "selector": "demo.Service/Chat"
         },
         "invocation": {
           "inputPresent": false,

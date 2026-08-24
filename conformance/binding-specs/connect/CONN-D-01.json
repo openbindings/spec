@@ -21,7 +21,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -78,7 +78,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -100,7 +100,7 @@
           "getPair.shop": {
             "operation": "getPair",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetPair"
+            "selector": "blend.CoffeeShop/GetPair"
           }
         }
       },
@@ -121,7 +121,7 @@
           "echo.svc": {
             "operation": "echo",
             "source": "svc",
-            "ref": "demo.EchoService/Echo"
+            "selector": "demo.EchoService/Echo"
           }
         }
       },
@@ -143,7 +143,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -166,7 +166,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },
@@ -211,7 +211,7 @@
           "getMenu.shop": {
             "operation": "getMenu",
             "source": "shop",
-            "ref": "blend.CoffeeShop/GetMenu"
+            "selector": "blend.CoffeeShop/GetMenu"
           }
         }
       },

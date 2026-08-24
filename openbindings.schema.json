@@ -235,7 +235,7 @@
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
           "description": "Source key from sources."
         },
-        "ref": {
+        "selector": {
           "type": "string",
           "description": "Selector identifying a specific target within the governed source, whether an artifact entry, live-surface member, or another target form. Syntax and meaning are the governing binding specification's concern."
         },

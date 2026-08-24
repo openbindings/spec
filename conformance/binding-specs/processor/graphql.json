@@ -66,7 +66,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -158,7 +158,7 @@
           }
         },
         "binding": {
-          "ref": "query/ping"
+          "selector": "query/ping"
         },
         "configuration": {
           "document": {
@@ -203,7 +203,7 @@
           "location": "https://api.example.test/graphql"
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "invocation": {
           "inputPresent": false
@@ -245,7 +245,7 @@
         "GQL-P-05"
       ],
       "section": "8",
-      "description": "A configured document selecting a different root field than the binding ref is refused before dispatch after resolving the root against the pinned schema.",
+      "description": "A configured document selecting a different root field than the binding selector is refused before dispatch after resolving the root against the pinned schema.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -294,7 +294,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -367,7 +367,7 @@
           }
         },
         "binding": {
-          "ref": "query/ping"
+          "selector": "query/ping"
         },
         "configuration": {
           "document": {
@@ -441,7 +441,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -532,7 +532,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -619,7 +619,7 @@
           }
         },
         "binding": {
-          "ref": "subscription/updates"
+          "selector": "subscription/updates"
         },
         "configuration": {
           "document": {
@@ -731,7 +731,7 @@
           }
         },
         "binding": {
-          "ref": "subscription/updates"
+          "selector": "subscription/updates"
         },
         "configuration": {
           "document": {
@@ -830,7 +830,7 @@
           }
         },
         "binding": {
-          "ref": "query/ping"
+          "selector": "query/ping"
         },
         "configuration": {
           "document": {
@@ -914,7 +914,7 @@
           }
         },
         "binding": {
-          "ref": "query/ping"
+          "selector": "query/ping"
         },
         "configuration": {
           "document": {
@@ -992,7 +992,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {

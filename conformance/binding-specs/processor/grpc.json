@@ -16,7 +16,7 @@
           "location": "grpcs://api.example:443"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -58,7 +58,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -90,7 +90,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request { string known = 1; } message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": true,
@@ -126,7 +126,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Note) returns (stream Note); } message Note { string text = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/Chat"
+          "selector": "demo.Service/Chat"
         },
         "invocation": {
           "inputPresent": false,
@@ -183,7 +183,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply { int64 count = 1; string omitted = 2; }"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -239,7 +239,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc List (Request) returns (stream Reply); } message Request {} message Reply { string value = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/List"
+          "selector": "demo.Service/List"
         },
         "invocation": {
           "inputPresent": false
@@ -283,7 +283,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -320,7 +320,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply { string ok = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false
@@ -362,7 +362,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "configuration": {
           "transport": "plaintext"
@@ -405,7 +405,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Chat (stream Request) returns (stream Reply); } message Request { string value = 1; } message Reply { string ack = 1; }"
         },
         "binding": {
-          "ref": "demo.Service/Chat"
+          "selector": "demo.Service/Chat"
         },
         "invocation": {
           "inputPresent": false,
@@ -463,7 +463,7 @@
           "content": "syntax = \"proto3\"; package demo; service Service { rpc Get (Request) returns (Reply); } message Request {} message Reply {}"
         },
         "binding": {
-          "ref": "demo.Service/Get"
+          "selector": "demo.Service/Get"
         },
         "invocation": {
           "inputPresent": false

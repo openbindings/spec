@@ -23,7 +23,7 @@ model. It observes their caller-facing effects through the selected binding.
    internally where necessary. Native-client and scripted-peer differentials
    are the principal oracle for this gate.
 2. **Synthesis abstraction** — synthesis retains source carriage, target
-   identity, exact ref, required interpretation points, and every supported
+   identity, exact selector, required interpretation points, and every supported
    operation, while deriving schemas only from application-level declarations.
    It never recompiles protocol observations into operation fields. An
    unrepresentable operation is excluded loudly with a reason.

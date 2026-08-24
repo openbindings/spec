@@ -16,7 +16,7 @@
           "location": "https://mcp.example/rpc"
         },
         "binding": {
-          "ref": "tools/weather"
+          "selector": "tools/weather"
         },
         "invocation": {
           "inputPresent": true,
@@ -50,13 +50,13 @@
         "MCP-P-04"
       ],
       "section": "3",
-      "description": "A live tool listing is pagination-exhausted before an eligible ref is resolved and dispatched.",
+      "description": "A live tool listing is pagination-exhausted before an eligible selector is resolved and dispatched.",
       "given": {
         "source": {
           "location": "https://mcp.example/rpc"
         },
         "binding": {
-          "ref": "tools/weather"
+          "selector": "tools/weather"
         },
         "invocation": {
           "inputPresent": true,
@@ -167,7 +167,7 @@
           }
         },
         "binding": {
-          "ref": "tools/weather"
+          "selector": "tools/weather"
         },
         "invocation": {
           "inputPresent": true,
@@ -217,7 +217,7 @@
           }
         },
         "binding": {
-          "ref": "tools/build"
+          "selector": "tools/build"
         },
         "configuration": {
           "solicit": true
@@ -298,7 +298,7 @@
           }
         },
         "binding": {
-          "ref": "tools/inspect"
+          "selector": "tools/inspect"
         },
         "invocation": {
           "inputPresent": false
@@ -366,7 +366,7 @@
           }
         },
         "binding": {
-          "ref": "tools/fail"
+          "selector": "tools/fail"
         },
         "invocation": {
           "inputPresent": true,
@@ -419,7 +419,7 @@
           }
         },
         "binding": {
-          "ref": "tools/hello"
+          "selector": "tools/hello"
         },
         "invocation": {
           "inputPresent": false
@@ -468,7 +468,7 @@
           }
         },
         "binding": {
-          "ref": "tools/long"
+          "selector": "tools/long"
         },
         "invocation": {
           "inputPresent": true,
@@ -494,7 +494,7 @@
         "MCP-P-04"
       ],
       "section": "7",
-      "description": "A resource ref is refused because the listing supplies no application output contract.",
+      "description": "A resource selector is refused because the listing supplies no application output contract.",
       "given": {
         "source": {
           "location": "https://mcp.example/rpc",
@@ -508,7 +508,7 @@
           }
         },
         "binding": {
-          "ref": "resources/data://record"
+          "selector": "resources/data://record"
         },
         "invocation": {
           "inputPresent": false
@@ -549,7 +549,7 @@
           }
         },
         "binding": {
-          "ref": "tools/missing"
+          "selector": "tools/missing"
         },
         "invocation": {
           "inputPresent": false
@@ -600,7 +600,7 @@
           }
         },
         "binding": {
-          "ref": "tools/hello"
+          "selector": "tools/hello"
         },
         "invocation": {
           "inputPresent": false
@@ -635,7 +635,7 @@
         "MCP-P-02"
       ],
       "section": "7",
-      "description": "Duplicate byte-exact tool names make the ref ambiguous rather than first-match.",
+      "description": "Duplicate byte-exact tool names make the selector ambiguous rather than first-match.",
       "given": {
         "source": {
           "location": "https://mcp.example/rpc",
@@ -662,7 +662,7 @@
           }
         },
         "binding": {
-          "ref": "tools/same"
+          "selector": "tools/same"
         },
         "invocation": {
           "inputPresent": true,
@@ -701,7 +701,7 @@
           }
         },
         "binding": {
-          "ref": "tools/untyped"
+          "selector": "tools/untyped"
         },
         "invocation": {
           "inputPresent": false
@@ -742,7 +742,7 @@
           }
         },
         "binding": {
-          "ref": "tools/echo"
+          "selector": "tools/echo"
         },
         "invocation": {
           "inputPresent": true,
@@ -806,7 +806,7 @@
           }
         },
         "binding": {
-          "ref": "tools/hello"
+          "selector": "tools/hello"
         },
         "invocation": {
           "inputPresent": false
@@ -862,7 +862,7 @@
           }
         },
         "binding": {
-          "ref": "tools/badshape"
+          "selector": "tools/badshape"
         },
         "invocation": {
           "inputPresent": false

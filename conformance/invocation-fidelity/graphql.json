@@ -50,7 +50,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -138,7 +138,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {
@@ -224,7 +224,7 @@
           }
         },
         "binding": {
-          "ref": "query/viewer"
+          "selector": "query/viewer"
         },
         "configuration": {
           "document": {

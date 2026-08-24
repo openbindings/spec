@@ -2,10 +2,10 @@
   "rule": "GQL-D-03",
   "bindingSpec": "openbindings.graphql@1",
   "section": "7",
-  "description": "`ref` is required, has a `query/` or `mutation/` prefix plus one exact GraphQL field name, and resolves through the schema's declared root type.",
+  "description": "`selector` is required, has a `query/` or `mutation/` prefix plus one exact GraphQL field name, and resolves through the schema's declared root type.",
   "tests": [
     {
-      "description": "query ref resolves through a non-canonical root type name",
+      "description": "query selector resolves through a non-canonical root type name",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "viewer": {} },
@@ -43,14 +43,14 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "subscription refs are outside the first-revision candidate rather than admitted pending live resolution",
+      "description": "subscription selectors are outside the first-revision candidate rather than admitted pending live resolution",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "updates": {} },
@@ -64,7 +64,7 @@
           "updates.api": {
             "operation": "updates",
             "source": "api",
-            "ref": "subscription/updates"
+            "selector": "subscription/updates"
           }
         }
       },
@@ -72,7 +72,7 @@
       "violates": ["GQL-D-03"]
     },
     {
-      "description": "ref is required because this family defines no whole-schema invocation",
+      "description": "selector is required because this family defines no whole-schema invocation",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "viewer": {} },
@@ -107,7 +107,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "Query/viewer"
+            "selector": "Query/viewer"
           }
         }
       },
@@ -129,7 +129,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer/details"
+            "selector": "query/viewer/details"
           }
         }
       },
@@ -175,7 +175,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/Viewer"
+            "selector": "query/Viewer"
           }
         }
       },

@@ -45,7 +45,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1jobs/post"
+          "selector": "#/paths/~1jobs/post"
         },
         "invocation": {
           "inputPresent": false
@@ -122,7 +122,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1items/get"
+          "selector": "#/paths/~1items/get"
         },
         "invocation": {
           "inputPresent": false
@@ -196,7 +196,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1binary/get"
+          "selector": "#/paths/~1binary/get"
         },
         "invocation": {
           "inputPresent": false
@@ -270,7 +270,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1slow/get"
+          "selector": "#/paths/~1slow/get"
         },
         "invocation": {
           "inputPresent": false
@@ -351,7 +351,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1events/get"
+          "selector": "#/paths/~1events/get"
         },
         "invocation": {
           "inputPresent": false
@@ -435,7 +435,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1image/put"
+          "selector": "#/paths/~1image/put"
         },
         "invocation": {
           "inputPresent": true,
@@ -528,7 +528,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1items/post"
+          "selector": "#/paths/~1items/post"
         },
         "configuration": {
           "requestMedia": "application/json"
@@ -623,7 +623,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1items/post"
+          "selector": "#/paths/~1items/post"
         },
         "invocation": {
           "inputPresent": true,
@@ -702,7 +702,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1image/get"
+          "selector": "#/paths/~1image/get"
         },
         "invocation": {
           "inputPresent": false
@@ -801,7 +801,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1items/post"
+          "selector": "#/paths/~1items/post"
         },
         "invocation": {
           "inputPresent": true,
@@ -929,7 +929,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1items/post"
+          "selector": "#/paths/~1items/post"
         },
         "invocation": {
           "inputPresent": true,
@@ -1026,7 +1026,7 @@
           }
         },
         "binding": {
-          "ref": "#/paths/~1archive/post"
+          "selector": "#/paths/~1archive/post"
         },
         "invocation": {
           "inputPresent": true,

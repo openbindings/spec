@@ -39,7 +39,7 @@
     "echo.restApi": {
       "operation": "echo",
       "source": "restApi",
-      "ref": "#/paths/~1echo/post"
+      "selector": "#/paths/~1echo/post"
     }
   }
 }

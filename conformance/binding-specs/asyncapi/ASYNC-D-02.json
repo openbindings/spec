@@ -20,7 +20,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
@@ -41,7 +41,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
@@ -62,7 +62,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
@@ -84,7 +84,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
@@ -106,7 +106,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },

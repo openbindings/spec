@@ -39,7 +39,7 @@
           }
         },
         "binding": {
-          "ref": "tools/lookup"
+          "selector": "tools/lookup"
         },
         "invocation": {
           "inputPresent": true,
@@ -125,7 +125,7 @@
           }
         },
         "binding": {
-          "ref": "tools/mutate"
+          "selector": "tools/mutate"
         },
         "invocation": {
           "inputPresent": true,
@@ -206,7 +206,7 @@
           }
         },
         "binding": {
-          "ref": "tools/quota"
+          "selector": "tools/quota"
         },
         "invocation": {
           "inputPresent": true,
@@ -273,7 +273,7 @@
           }
         },
         "binding": {
-          "ref": "tools/unstable"
+          "selector": "tools/unstable"
         },
         "invocation": {
           "inputPresent": true,

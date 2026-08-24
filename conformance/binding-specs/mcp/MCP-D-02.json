@@ -19,7 +19,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },
@@ -45,7 +45,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },
@@ -70,7 +70,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },
@@ -92,7 +92,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },
@@ -111,7 +111,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },
@@ -133,7 +133,7 @@
           "getWeather.server": {
             "operation": "getWeather",
             "source": "server",
-            "ref": "tools/get_weather"
+            "selector": "tools/get_weather"
           }
         }
       },

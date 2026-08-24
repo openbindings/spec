@@ -2,8 +2,8 @@
   "rule": "ASYNC-D-03",
   "bindingSpec": "openbindings.asyncapi@1",
   "section": "7",
-  "description": "`ref` is present and is a JSON Pointer `#/operations/<operation-key>` addressing an operations-map entry — the only conformant spelling; a bare operation key without the pointer prefix is not conformant, keys containing `/` or `~` carry RFC 6901 escaping, the spelling is verbatim (matched byte-for-byte, never percent-decoded), and an entry that is a Reference Object resolves through it before the operation-object test.",
-  "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an AsyncAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the ref alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
+  "description": "`selector` is present and is a JSON Pointer `#/operations/<operation-key>` addressing an operations-map entry — the only conformant spelling; a bare operation key without the pointer prefix is not conformant, keys containing `/` or `~` carry RFC 6901 escaping, the spelling is verbatim (matched byte-for-byte, never percent-decoded), and an entry that is a Reference Object resolves through it before the operation-object test.",
+  "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an AsyncAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the selector alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
   "tests": [
     {
       "description": "pointer addressing a declared operations-map entry",
@@ -33,7 +33,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
@@ -67,7 +67,7 @@
           "createTask.events": {
             "operation": "createTask",
             "source": "events",
-            "ref": "#/operations/tasks~1create"
+            "selector": "#/operations/tasks~1create"
           }
         }
       },
@@ -101,7 +101,7 @@
           "nightAudit.events": {
             "operation": "nightAudit",
             "source": "events",
-            "ref": "#/operations/night~0audit"
+            "selector": "#/operations/night~0audit"
           }
         }
       },
@@ -135,7 +135,7 @@
           "tildeOp.events": {
             "operation": "tildeOp",
             "source": "events",
-            "ref": "#/operations/a~01b"
+            "selector": "#/operations/a~01b"
           }
         }
       },
@@ -174,14 +174,14 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/operations/publishTask"
+            "selector": "#/operations/publishTask"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "ref is required",
+      "description": "selector is required",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "publishTask": {} },
@@ -226,7 +226,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "publishTask"
+            "selector": "publishTask"
           }
         }
       },
@@ -261,7 +261,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#/channels/tasks"
+            "selector": "#/channels/tasks"
           }
         }
       },
@@ -296,7 +296,7 @@
           "publishTask.events": {
             "operation": "publishTask",
             "source": "events",
-            "ref": "#"
+            "selector": "#"
           }
         }
       },
@@ -331,7 +331,7 @@
           "createTask.events": {
             "operation": "createTask",
             "source": "events",
-            "ref": "#/operations/tasks/create"
+            "selector": "#/operations/tasks/create"
           }
         }
       },
@@ -366,7 +366,7 @@
           "createTask.events": {
             "operation": "createTask",
             "source": "events",
-            "ref": "#/operations/tasks%2Fcreate"
+            "selector": "#/operations/tasks%2Fcreate"
           }
         }
       },
@@ -401,7 +401,7 @@
           "deleteTask.events": {
             "operation": "deleteTask",
             "source": "events",
-            "ref": "#/operations/deleteTask"
+            "selector": "#/operations/deleteTask"
           }
         }
       },

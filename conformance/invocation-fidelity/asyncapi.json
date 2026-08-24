@@ -104,7 +104,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -212,7 +212,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/publish"
+          "selector": "#/operations/publish"
         },
         "invocation": {
           "inputPresent": true,
@@ -322,7 +322,7 @@
           }
         },
         "binding": {
-          "ref": "#/operations/subscribe"
+          "selector": "#/operations/subscribe"
         },
         "invocation": {
           "inputPresent": false

@@ -17,7 +17,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": true
@@ -34,7 +34,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": true
@@ -51,7 +51,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": true
@@ -65,7 +65,7 @@
           "cli": { "bindingSpec": "openbindings.usage@1", "location": "exec:mytool" }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": true
@@ -79,7 +79,7 @@
           "cli": { "bindingSpec": "openbindings.usage@1", "location": "./usage.kdl" }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": false,
@@ -97,7 +97,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": false,
@@ -112,7 +112,7 @@
           "cli": { "bindingSpec": "openbindings.usage@1", "location": "usage.kdl" }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": false,
@@ -130,7 +130,7 @@
           }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": false,
@@ -145,7 +145,7 @@
           "cli": { "bindingSpec": "openbindings.usage@1", "location": "exec:" }
         },
         "bindings": {
-          "status.cli": { "operation": "status", "source": "cli", "ref": "status" }
+          "status.cli": { "operation": "status", "source": "cli", "selector": "status" }
         }
       },
       "valid": false,

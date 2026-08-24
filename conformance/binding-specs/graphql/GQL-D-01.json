@@ -19,7 +19,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },
@@ -40,7 +40,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },
@@ -84,7 +84,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },
@@ -106,7 +106,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },
@@ -128,7 +128,7 @@
           "viewer.api": {
             "operation": "viewer",
             "source": "api",
-            "ref": "query/viewer"
+            "selector": "query/viewer"
           }
         }
       },

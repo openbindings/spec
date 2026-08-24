@@ -848,7 +848,7 @@
     },
     {
       "id": "ASYNC-SS-09",
-      "description": "An operation declared in components.operations and referenced from the operations map synthesizes identically to the inline form: the operations-map entry resolves through the reference before the operation-object test, and the binding ref remains the operations-map pointer.",
+      "description": "An operation declared in components.operations and referenced from the operations map synthesizes identically to the inline form: the operations-map entry resolves through the reference before the operation-object test, and the binding selector remains the operations-map pointer.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {
