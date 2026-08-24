@@ -24,8 +24,9 @@ below may continue to change until the 0.2 release is cut.
   concerns. OBI-D-19 provides same-document dependency-to-operation integrity;
   the derived schema and core conformance corpus cover the new structure.
 
-- **`openbindings.binding-spec-synthesis-scenarios@3`**, replacing `@2`. Two
-  optional members, and a revision rather than an additive field because a
+- **`openbindings.binding-spec-synthesis-scenarios@4`**, replacing `@2` across
+  two revisions. `@3` carries two optional members, and is a revision rather
+  than an additive field because a
   runner that predates a member ignores it, reports the scenario green, and has
   verified none of it. A scenario may carry `resources`, the same closed,
   immutable, absolute-URI-keyed companion-document set a processor scenario
@@ -36,7 +37,13 @@ below may continue to change until the 0.2 release is cut.
   `assertions`, pointer-addressed comparisons against the emitted OBI document
   reusing the processor corpus's own assertion object and evaluators. Neither
   widens the identity surface: `operations`, `bindings`, `coverage` and
-  `outcome` are compared exactly as before.
+  `outcome` are compared exactly as before. `@4` renames the identity member
+  `bindingRef` to `bindingSelector`, tracking the core rename of the binding
+  member `ref` to `selector`, and with it the usage corpus's durable
+  coverage-identity spellings: reason code `usage.no_unique_command_ref`
+  becomes `usage.no_unique_command_selector` and the sentinel `sourceRef`
+  prefix `ambiguous-ref:` becomes `ambiguous-selector:` (`sourceRef` itself,
+  a source-local unit identifier, is unchanged).
   `conformance/binding-specs/README.md` states the addressing rule that keeps an
   assertion on the authority-defined side of the line — a path may traverse
   names an authority defines and names the artifact supplies, never a name an

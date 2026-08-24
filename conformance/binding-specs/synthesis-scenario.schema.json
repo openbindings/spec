@@ -2,12 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
   "title": "OpenBindings binding-specification synthesis scenarios",
-  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about.",
+  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about. Revision 4 renames the binding identity member bindingRef to bindingSelector, tracking the core rename of the binding member ref to selector; sourceRef names a source-local unit, not the binding member, and is unchanged.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
   "properties": {
-    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@3" },
+    "format": { "const": "openbindings.binding-spec-synthesis-scenarios@4" },
     "bindingSpec": {
       "type": "string",
       "pattern": "^openbindings\\.(usage|openapi|asyncapi|mcp|grpc|connect|graphql)@[1-9][0-9]*$"
@@ -85,11 +85,11 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": ["operationKey", "bindingRef"],
+                  "required": ["operationKey", "bindingSelector"],
                   "additionalProperties": false,
                   "properties": {
                     "operationKey": { "type": "string", "minLength": 1 },
-                    "bindingRef": { "type": "string" }
+                    "bindingSelector": { "type": "string" }
                   }
                 }
               },
@@ -182,7 +182,7 @@
           ]
         },
         "operationKey": { "type": "string", "minLength": 1 },
-        "bindingRef": { "type": "string" },
+        "bindingSelector": { "type": "string" },
         "reasonCode": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)+$"
@@ -198,7 +198,7 @@
         {
           "if": { "properties": { "status": { "const": "represented" } } },
           "then": {
-            "required": ["operationKey", "bindingRef"],
+            "required": ["operationKey", "bindingSelector"],
             "not": { "required": ["reasonCode"] }
           },
           "else": { "required": ["reasonCode"] }

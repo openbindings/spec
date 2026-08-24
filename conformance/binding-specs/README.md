@@ -137,9 +137,9 @@ usable after the source or peer changes.
 ## Portable synthesis scenarios
 
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json) defines the
-artifact-to-OBI proof boundary. Its version-3 exchange distinguishes two
+artifact-to-OBI proof boundary. Its version-4 exchange distinguishes two
 outcomes. A `synthesized` scenario contains one native source and expects the
-exact operation-key set, the exact `(operationKey, bindingRef)` target
+exact operation-key set, the exact `(operationKey, bindingSelector)` target
 identities, and an exhaustive coverage ledger normalized to stable semantic
 fields (`sourceRef`, scope, status, rule/reason identity, and runtime
 requirements). A `refused` scenario proves creation-time soundness: when an
@@ -194,6 +194,15 @@ and nothing else, which is what keeps it on the authority-defined side of the
 line drawn below under "What a synthesis scenario may pin". Author one only for
 a fact a finding is about: an assertion with no finding behind it is a golden
 file arriving by another route.
+
+Revision 4 renames the binding identity member `bindingRef` to
+`bindingSelector`, tracking the core rename of the binding member `ref` to
+`selector`. Alongside it the usage corpus renames the coverage-identity
+spellings that carried the old word: the reason code
+`usage.no_unique_command_ref` becomes `usage.no_unique_command_selector`, and
+the sentinel `sourceRef` prefix `ambiguous-ref:` becomes
+`ambiguous-selector:`. `sourceRef` itself is unchanged — it names a
+source-local unit, not the binding member. Nothing else changes.
 
 A scenario's `source` is shaped by the published
 [`interface-synthesizer`](https://openbindings.com/interfaces/interface-synthesizer)

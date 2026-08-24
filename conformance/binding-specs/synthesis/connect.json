@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.connect@1",
   "family": "connect",
   "description": "Connect schema-mode method inventory and bound-closure schema-range accounting.",
@@ -16,13 +16,13 @@
         "outcome": "synthesized",
         "operations": ["Accepted"],
         "bindings": [
-          { "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted" }
+          { "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted" }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "demo.Echo/Excluded", "scope": "target", "status": "excluded", "reasonCode": "connect.schema_range", "rule": "CONN-P-02", "requirements": [] }
           ]
         }

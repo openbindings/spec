@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
   "description": "gRPC method inventory and bound-closure schema-range accounting.",
@@ -16,13 +16,13 @@
         "outcome": "synthesized",
         "operations": ["Accepted"],
         "bindings": [
-          { "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted" }
+          { "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted" }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingRef": "demo.Echo/Accepted", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "demo.Echo/Excluded", "scope": "target", "status": "excluded", "reasonCode": "grpc.schema_range", "rule": "GRPC-P-03", "requirements": [] }
           ]
         }
@@ -59,7 +59,7 @@
         "bindings": [
           {
             "operationKey": "Call",
-            "bindingRef": "demo.Echo/Call"
+            "bindingSelector": "demo.Echo/Call"
           }
         ],
         "coverage": {
@@ -72,7 +72,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "Call",
-              "bindingRef": "demo.Echo/Call",
+              "bindingSelector": "demo.Echo/Call",
               "requirements": [
                 "configuration.transport"
               ]
@@ -98,7 +98,7 @@
         "bindings": [
           {
             "operationKey": "Call",
-            "bindingRef": "demo.Echo/Call"
+            "bindingSelector": "demo.Echo/Call"
           }
         ],
         "coverage": {
@@ -111,7 +111,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "Call",
-              "bindingRef": "demo.Echo/Call",
+              "bindingSelector": "demo.Echo/Call",
               "requirements": [
                 "configuration.transport"
               ]
@@ -137,7 +137,7 @@
         "bindings": [
           {
             "operationKey": "Call",
-            "bindingRef": "demo.Echo/Call"
+            "bindingSelector": "demo.Echo/Call"
           }
         ],
         "coverage": {
@@ -150,7 +150,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "Call",
-              "bindingRef": "demo.Echo/Call",
+              "bindingSelector": "demo.Echo/Call",
               "requirements": []
             }
           ]

@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.mcp@1",
   "family": "mcp",
   "description": "MCP first-revision-candidate sound synthesis: only tools with declared application output schemas are represented; every other listed target is evidenced.",
@@ -33,13 +33,13 @@
         "outcome": "synthesized",
         "operations": ["ok"],
         "bindings": [
-          { "operationKey": "ok", "bindingRef": "tools/ok" }
+          { "operationKey": "ok", "bindingSelector": "tools/ok" }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "tools/ok", "scope": "target", "status": "represented", "operationKey": "ok", "bindingRef": "tools/ok", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "tools/ok", "scope": "target", "status": "represented", "operationKey": "ok", "bindingSelector": "tools/ok", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "tools/untyped", "scope": "target", "status": "excluded", "reasonCode": "mcp.missing_application_output_schema", "rule": "MCP-P-04", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=2", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },
             { "sourceIndex": 0, "sourceRef": "tools/duplicate#listing-index=3", "scope": "target", "status": "excluded", "reasonCode": "mcp.ambiguous_identity", "rule": "MCP-P-02", "requirements": [] },

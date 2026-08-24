@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@3",
+  "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.usage@1",
   "family": "usage",
   "description": "Usage artifact interaction inventory, root operation, and exact alias-path preservation.",
@@ -15,25 +15,25 @@
         "outcome": "synthesized",
         "operations": ["database", "database.run", "tool"],
         "bindings": [
-          { "operationKey": "tool", "bindingRef": "" },
-          { "operationKey": "database", "bindingRef": "database" },
-          { "operationKey": "database", "bindingRef": "db" },
-          { "operationKey": "database.run", "bindingRef": "database run" },
-          { "operationKey": "database.run", "bindingRef": "database r" },
-          { "operationKey": "database.run", "bindingRef": "db run" },
-          { "operationKey": "database.run", "bindingRef": "db r" }
+          { "operationKey": "tool", "bindingSelector": "" },
+          { "operationKey": "database", "bindingSelector": "database" },
+          { "operationKey": "database", "bindingSelector": "db" },
+          { "operationKey": "database.run", "bindingSelector": "database run" },
+          { "operationKey": "database.run", "bindingSelector": "database r" },
+          { "operationKey": "database.run", "bindingSelector": "db run" },
+          { "operationKey": "database.run", "bindingSelector": "db r" }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": true,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "<root>", "scope": "target", "status": "represented", "operationKey": "tool", "bindingRef": "", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "database", "scope": "target", "status": "represented", "operationKey": "database", "bindingRef": "database", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "db", "scope": "target", "status": "represented", "operationKey": "database", "bindingRef": "db", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "database run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "database run", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "database r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "database r", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "db run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "db run", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "db r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingRef": "db r", "requirements": [] }
+            { "sourceIndex": 0, "sourceRef": "<root>", "scope": "target", "status": "represented", "operationKey": "tool", "bindingSelector": "", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database", "scope": "target", "status": "represented", "operationKey": "database", "bindingSelector": "database", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db", "scope": "target", "status": "represented", "operationKey": "database", "bindingSelector": "db", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingSelector": "database run", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "database r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingSelector": "database r", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db run", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingSelector": "db run", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "db r", "scope": "target", "status": "represented", "operationKey": "database.run", "bindingSelector": "db r", "requirements": [] }
           ]
         }
       }
@@ -54,11 +54,11 @@
         "bindings": [
           {
             "operationKey": "tool",
-            "bindingRef": ""
+            "bindingSelector": ""
           },
           {
             "operationKey": "beta",
-            "bindingRef": "beta"
+            "bindingSelector": "beta"
           }
         ],
         "coverage": {
@@ -71,12 +71,12 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "tool",
-              "bindingRef": "",
+              "bindingSelector": "",
               "requirements": []
             },
             {
               "sourceIndex": 0,
-              "sourceRef": "ambiguous-ref:x",
+              "sourceRef": "ambiguous-selector:x",
               "scope": "alternative",
               "status": "excluded",
               "reasonCode": "usage.ambiguous_command_spelling",
@@ -88,7 +88,7 @@
               "sourceRef": "command:x",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "usage.no_unique_command_ref",
+              "reasonCode": "usage.no_unique_command_selector",
               "rule": "USAGE-D-03",
               "requirements": []
             },
@@ -98,7 +98,7 @@
               "scope": "target",
               "status": "represented",
               "operationKey": "beta",
-              "bindingRef": "beta",
+              "bindingSelector": "beta",
               "requirements": []
             }
           ]
