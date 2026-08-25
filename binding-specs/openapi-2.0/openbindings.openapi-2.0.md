@@ -4,9 +4,9 @@
 
 **Status: unreleased first-revision candidate.**
 
-**[B — convention]** The proposed opaque binding-specification identifier is **`openbindings.openapi-2.0@1`**.
+**[B — convention]** The proposed opaque binding-specification identifier has exactly the spelling **`openbindings.openapi-2.0@1`**.
 
-**[C]** Publication mints the proposed opaque identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**[C]** Publication mints §1's identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
 **[A]** The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** in this document are interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals.
 
@@ -28,9 +28,9 @@
 
 **[C]** `content` is either the parsed Swagger document object or string content; `location` is an absolute URI for that document; content has primacy, a co-present location supplies its base URI, and the OBI retrieval URI is never that base (Core [§5.4](../../openbindings.md#54-sources), [§7](../../openbindings.md#7-reference-resolution)).
 
-**[A]** String content MUST use the edition's cited [YAML 1.2 (2009)](https://yaml.org/spec/1.2-old/spec.html) syntax and MUST produce the JSON-object representation OAS defines; field names are case-sensitive ([OAS 2.0 §§6.1–6.2](https://spec.openapis.org/oas/v2.0.html#format)).
+**[A]** The edition cites [YAML 1.2 (2009)](https://yaml.org/spec/1.2-old/spec.html) as its serialization target, requires the resulting representation to be a JSON object, and makes field names case-sensitive ([OAS 2.0 §§6.1–6.2](https://spec.openapis.org/oas/v2.0.html#format)).
 
-**[B — pin]** YAML is resolved with that publication's JSON schema; duplicate mapping keys, non-scalar-string mapping keys, tags outside the JSON schema, and resolved values with no RFC 7159 JSON image refuse at load ([YAML 1.2 §§1.3, 3.2.1.1, 10.2](https://yaml.org/spec/1.2-old/spec.html#id2803231), [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159)).
+**[B — pin]** As this specification's rendering of that YAML 1.2 language, string content MUST parse as YAML 1.2.2, of which JSON is a subset; duplicate mapping keys, non-scalar-string mapping keys, explicit tags outside YAML's JSON-compatible tag set, and resolved values with no RFC 7159 JSON image (`.inf`, `-.inf`, `.nan`) refuse at load ([YAML 1.2.2 §§3.2.1, 10.2.1, 10.3.2](https://yaml.org/spec/1.2.2/), [RFC 7159](https://www.rfc-editor.org/rfc/rfc7159)).
 
 **[A]** The root MUST be a JSON object and its required `swagger` field MUST be exactly `"2.0"` ([OAS 2.0 Format and Swagger Object](https://spec.openapis.org/oas/v2.0.html#swagger-object)).
 
@@ -68,7 +68,9 @@
 
 **[A]** A Reference Object contains one required `$ref`; non-`$ref` siblings have no effect, the value is a URI, relative values use the referring-document base, and fragment resolution uses RFC 6901 JSON Pointer under canonical dereferencing ([OAS 2.0 Reference Object](https://spec.openapis.org/oas/v2.0.html#reference-object), [JSON Reference draft-03 §§3–4](https://datatracker.ietf.org/doc/html/draft-pbryan-zyp-json-ref-03), [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).
 
-**[A]** A reference composes its target plus the transitive closure reachable from that target, not unrelated definitions, parameters, or responses in the retrieved resource; reusable root maps create no global declaration until referenced ([OAS 2.0 File Structure, Definitions, Parameters Definitions, and Responses Definitions](https://spec.openapis.org/oas/v2.0.html#file-structure)).
+**[A]** A reference composes its target plus the transitive closure of references reachable from that target, not unrelated material in the same retrieved document; a referenced document need not itself be a conforming Swagger Document ([OAS 2.0 Reference Object](https://spec.openapis.org/oas/v2.0.html#reference-object)).
+
+**[A]** Reusable root definitions, parameters, and responses create no global declaration until referenced ([OAS 2.0 File Structure, Definitions, Parameters Definitions, and Responses Definitions](https://spec.openapis.org/oas/v2.0.html#file-structure)).
 
 **[A]** OAS 2.0 Schema Objects omit draft-04 `id`, so no in-schema member changes a Schema Object's resource base; external and fragment references retain the containing schema resource URI ([OAS 2.0 Schema Object](https://spec.openapis.org/oas/v2.0.html#schema-object), [JSON Schema Core draft-04 §7](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7)).
 
@@ -140,11 +142,11 @@
 
 **[A]** Operation Parameters override Path Item Parameters only at the same exact name-plus-location identity; duplicate effective Parameters in one location are upstream-invalid, while same-name Parameters in different locations are distinct ([OAS 2.0 Path Item, Operation, and Parameter Objects](https://spec.openapis.org/oas/v2.0.html#fixed-fields-4)).
 
-**[B — limit]** Duplicate effective Parameters in one location exclude their smallest owning operation.
+**[B — exclusion]** Duplicate effective Parameters in one location exclude their smallest owning operation permanently under this identifier; this exclusion reopens only if an incorporated OAS 2.0 authority admits such duplicates.
 
 **[B — convention]** Legal cross-location duplicates remain independently supplied through §7's qualified mode.
 
-**[B — limit]** Two effective header Parameters whose names differ only by ASCII case exclude the selected target permanently under this identifier because OAS Parameter names are case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
+**[B — exclusion]** Two effective header Parameters whose names differ only by ASCII case exclude the selected target permanently under this identifier because OAS Parameter names are case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction. This exclusion reopens only if an incorporated OAS or HTTP authority defines a portable mapping for the case-colliding names ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
 **[B — convention]** Every unknown caller-envelope key refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
 
@@ -208,7 +210,7 @@
 
 **[B — convention]** Header values perform no URI percent-encoding and add no automatic quotes; a value containing CR, LF, or another field-invalid byte refuses before dispatch ([RFC 9110 §§5.1, 5.5](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
-**[B — limit]** An effective header Parameter named `Host` or `Content-Length` excludes the target because those fields are processor-owned; `Content-Type` collides only when the binding emits payload content, and `Authorization` collides only with a selected credential alternative.
+**[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target permanently under this identifier because those fields are processor-owned and cannot be replaced by caller input; the exclusion reopens only if an incorporated HTTP authority defines caller control that preserves the processor's framing and routing obligations.
 
 **[B — convention]** The binding emits no implicit `Accept` field; an artifact-declared header Parameter named `Accept` remains an ordinary caller-supplied Parameter because OAS 2.0 defines no ignored-header rule ([RFC 7231 §5.3.2](https://www.rfc-editor.org/rfc/rfc7231#section-5.3.2), [OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
@@ -258,7 +260,9 @@
 
 **[B — configuration point]** A missing required media choice, unmatched or ambiguous choice, unsupported selected lane, or form selection inconsistent with effective `formData` refuses before dispatch; no body bytes, examples, or schema shape are sniffed to select a lane.
 
-**[A]** Examples illustrate values but never select a request or response media type, carriage lane, or declaration ([OAS 2.0 Example Object](https://spec.openapis.org/oas/v2.0.html#example-object)).
+**[A]** Examples illustrate values ([OAS 2.0 Example Object](https://spec.openapis.org/oas/v2.0.html#example-object)).
+
+**[B — limit]** Examples create no operation input or output member and never select a declaration, carriage lane, or media type.
 
 **[B — limit]** A supplied body or `formData` payload on GET, HEAD, DELETE, or OPTIONS is excluded at that request lane because the incorporated HTTP authority assigns no portable payload semantics for those method cells; the operation remains usable without an optional payload, and this limit reopens only if incorporated authority defines the cell ([RFC 7231 §§4.3.1–4.3.2, 4.3.5, 4.3.7](https://www.rfc-editor.org/rfc/rfc7231#section-4.3.1)).
 
@@ -268,7 +272,7 @@
 
 **[B — convention]** `text/json` is not a member of that JSON lane; as `text/*`, it can use the character-data lane only when the governing declaration admits `string`. This convention reopens under a new identifier only if the IANA media-type registry registers `text/json` with JSON semantics.
 
-**[B — convention]** A concrete character-data selection governed by a declaration admitting only `string` carries the supplied string under its declared `charset`, defaulting to UTF-8; the closed character-data set is `text/*`, `application/xml`, and `+xml`, while JSON media are claimed by the JSON lane ([RFC 6838 §4.2.1](https://www.rfc-editor.org/rfc/rfc6838#section-4.2.1), [RFC 2046 §4.1](https://www.rfc-editor.org/rfc/rfc2046#section-4.1), [RFC 7303 §§3, 9](https://www.rfc-editor.org/rfc/rfc7303#section-3)).
+**[B — convention]** A concrete character-data selection governed by a declaration admitting only `string` carries the supplied string under its declared `charset`, defaulting to UTF-8; the closed character-data set is `text/*`, `application/xml`, and `+xml`, while JSON media are claimed by the JSON lane. The set is fixed from the named authority properties rather than inferred from registry columns: `application/json` registers binary, `text/csv` records no value, and a live registry lookup would make this pinned reading time-dependent ([RFC 6838 §4.2.1](https://www.rfc-editor.org/rfc/rfc6838#section-4.2.1), [RFC 2046 §4.1](https://www.rfc-editor.org/rfc/rfc2046#section-4.1), [RFC 7303 §§3, 9](https://www.rfc-editor.org/rfc/rfc7303#section-3)).
 
 **[B — convention]** The charset parameter is the only character-encoding source this lane consults; BOMs and XML declarations do not alter it, and unsupported or invalid character decoding refuses.
 
@@ -288,7 +292,7 @@
 
 **[A]** The artifact declaration surfaces are an effective request header Parameter named `Content-Encoding` and a governing response Header Object of that name; field-name comparison is ASCII case-insensitive ([OAS 2.0 Parameter, Response, and Header Objects](https://spec.openapis.org/oas/v2.0.html#header-object), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
-**[B — configuration point]** `requestContentCodings` and `responseContentCodings` are finite consumer maps from case-insensitive content-coding tokens to deterministic encoders and decoders; the artifact-declared request field value and actual admitted response field value fix the ordered stack.
+**[B — configuration point]** `requestContentCodings` and `responseContentCodings` are finite consumer maps from case-insensitive content-coding tokens to deterministic encoders and decoders; the artifact-declared field value fixes the ordered stack, and no configuration preference narrows its declared alternatives.
 
 **[B — configuration point]** An unsupported token, a field value not admitted by its governing declaration, an ambiguous coding declaration, or an actual response coding with no governing Header Object refuses rather than being skipped or sniffed; configuring a codec supplies capability but never declares a coding the artifact omitted.
 
@@ -296,17 +300,19 @@
 
 **[A]** Every Operation requires a Responses Object, and that object contains at least one exact status or `default` Response; violating either upstream floor excludes the selected operation ([OAS 2.0 Operation and Responses Objects](https://spec.openapis.org/oas/v2.0.html#responses-object)).
 
-**[A]** A Responses Object is closed to exact HTTP status-code keys, `default`, and specification extensions; the governing lookup order is exact actual status and then `default`, with no range-key step ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
+**[A]** A Responses Object is closed to exact HTTP status-code keys, `default`, and specification extensions, with no range-key form ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
 
-**[A]** Success is the final RFC 9110 status in the 2xx class; the selected exact or `default` Response Object never reclassifies that native status ([RFC 9110 §15.3](https://www.rfc-editor.org/rfc/rfc9110#section-15.3), [OAS 2.0 HTTP Status Codes](https://spec.openapis.org/oas/v2.0.html#http-status-codes)).
+**[B — convention]** The governing Response Object lookup order is exact status, then `default`; declarations never reclassify the native status.
+
+**[A]** Success is the final RFC 9110 status in the 2xx class ([RFC 9110 §15.3](https://www.rfc-editor.org/rfc/rfc9110#section-15.3)).
 
 **[B — convention]** Redirect following is runtime policy; a followed redirect MUST preserve the bound method and complete body, while a method-rewriting redirect is treated as the final response ([RFC 9110 §15.4](https://www.rfc-editor.org/rfc/rfc9110#section-15.4)).
 
 **[A]** A governing Response Object without `schema` declares that no response content is returned ([OAS 2.0 Response Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-9)).
 
-**[B — limit]** An actual nonempty body governed by a Response Object without `schema` refuses as a protocol error.
+**[A]** A response Header Object has no `required` field; the required-response-header question is therefore inapplicable ([OAS 2.0 Header Object](https://spec.openapis.org/oas/v2.0.html#header-object)).
 
-**[B — convention]** An empty response emits no output value whether or not the governing Response Object carries a schema; the binding manufactures neither JSON null nor an empty string.
+**[B — limit]** An actual nonempty body governed by a Response Object without `schema` refuses as a protocol error.
 
 **[A]** A nonempty response with a governing schema selects its concrete media type from `Content-Type`, which MUST match the effective `produces` set under §9.1 before the schema's carriage lane decodes it ([OAS 2.0 Swagger, Operation, and Response Objects](https://spec.openapis.org/oas/v2.0.html#response-object)).
 
@@ -314,9 +320,9 @@
 
 **[B — limit]** An unmatched, ambiguous, normalized-colliding, or absent effective response media declaration, or an actual status with no exact or `default` Response Object, is a loud protocol error; no bytes are sniffed and no undeclared fallback is invented.
 
-**[B — convention]** Successful nonempty responses emit the selected lane's one application value; failure bodies use the same lanes and remain opaque application-authored failure data.
+**[B — convention]** Empty responses emit no output value; successful non-empty responses emit the selected lane's one application value, while failure bodies use the same lanes and remain opaque application-authored failure data.
 
-**[B — limit]** Declared response headers and examples do not create caller-visible output members.
+**[B — limit]** Because Core provides no response-header carriage in an operation value, Response Header Objects create no output members under this identifier; consequently, even a declared `Location` header on a `201` response has no output representation ([OAS 2.0 Response and Header Objects](https://spec.openapis.org/oas/v2.0.html#response-object), Core [§5.1](../../openbindings.md#51-operations)).
 
 **[B — limit]** One HTTP response body produces at most one operation value: OAS 2.0 defines the response schema as the complete body and supplies no construct that frames it into multiple application values. This limit is permanent under this identifier and reopens only if incorporated authority defines such framing ([OAS 2.0 Response Object](https://spec.openapis.org/oas/v2.0.html#response-object)).
 
@@ -374,13 +380,13 @@
 
 ### 12.2 Synthesis boundary and coverage
 
-**[C]** Operation contracts remain protocol-neutral and MAY remain flat under Core [§5.5](../../openbindings.md#55-transforms).
+**[C]** Operation contracts remain protocol-neutral and MAY remain flat (Core [§5.5](../../openbindings.md#55-transforms)).
 
 **[B — convention]** Synthesis emits an `inputTransform` that constructs §7's envelope, and transforms never route values to HTTP locations.
 
 **[B — convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
-**[B — limit]** Operation-key spelling, flattening, output-schema choice, and exact Schema Object projection are synthesis policy, not binding semantics; no dynamic-object trigger, declaration-complex trigger, dialect trigger, `body.properties`, `body.whole`, routed tuple, or unmatched-field passthrough exists.
+**[B — limit]** Operation/dependency key spelling, flattening, output-schema choice, and Schema Object translation are synthesis policy, not binding semantics; no dynamic-object trigger, declaration-complex trigger, dialect trigger, `body.properties`, `body.whole`, routed tuple, or unmatched-field passthrough exists.
 
 **[A]** OAS 2.0's closed object inventory contains no callback or webhook declaration, so this sibling synthesizes no inbound dependency surface from the artifact ([OAS 2.0 §6.4](https://spec.openapis.org/oas/v2.0.html#specification)).
 
@@ -410,6 +416,7 @@
 
 - [OpenAPI Specification 2.0](https://spec.openapis.org/oas/v2.0.html)
 - [YAML 1.2, 1 October 2009](https://yaml.org/spec/1.2-old/spec.html)
+- [YAML 1.2.2](https://yaml.org/spec/1.2.2/)
 - [HTML 4.01 §17.13.4](https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4)
 - [JSON Reference draft-03](https://datatracker.ietf.org/doc/html/draft-pbryan-zyp-json-ref-03)
 - [JSON Schema Core draft-04](https://tools.ietf.org/html/draft-zyp-json-schema-04)
