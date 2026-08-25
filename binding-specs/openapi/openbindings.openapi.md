@@ -1,5 +1,7 @@
 # `openbindings.openapi` Binding Specification
 
+> **Superseded:** This legacy single-family candidate is replaced by the `openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`, `openbindings.openapi-3.1@1`, and `openbindings.openapi-3.2@1` candidates; it remains here pending an archival decision.
+
 ## 1. Status and identifier
 
 **Status: unreleased first-revision candidate.** This document proposes **`openbindings.openapi@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
