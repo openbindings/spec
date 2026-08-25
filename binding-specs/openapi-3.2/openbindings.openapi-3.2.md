@@ -4,7 +4,7 @@
 
 **Status: unreleased first-revision candidate.**
 
-**[B — convention]** The proposed opaque binding-specification identifier is exactly **`openbindings.openapi-3.2@1`**.
+**[B — convention]** The proposed opaque binding-specification identifier has exactly the spelling **`openbindings.openapi-3.2@1`**.
 
 **[C]** Publication mints §1's identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
@@ -246,7 +246,7 @@
 
 **[B — convention]** An effective Header Parameter named `Cookie` supplies one raw Cookie field only when no effective cookie-location Parameter and no selected cookie credential contributes; the binding does not parse or merge the raw string, and a raw/structured collision refuses the target or makes the selected credential alternative unusable.
 
-**[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target permanently under this identifier because those fields are processor-owned and cannot be replaced by caller input. This exclusion reopens only if an incorporated HTTP or OAS authority defines portable caller control of the affected field.
+**[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target permanently under this identifier because those fields are processor-owned and cannot be replaced by caller input; the exclusion reopens only if an incorporated HTTP authority defines caller control that preserves the processor's framing and routing obligations.
 
 ## 9. Request and response media
 
@@ -396,7 +396,7 @@
 
 **[B — convention]** Failure bodies use the same selected carriage lanes as successful bodies and remain opaque application-authored failure data.
 
-**[B — limit]** A non-empty response with no governing Response Object is a loud protocol error, even though omission of `responses` leaves the operation addressable. Response headers and Link Objects have no operation-value representation under this identifier: lifting that limit would require a Core value-carriage model that admits both body and header carriage. Until then, body-derived application values remain representable while header-only information—including `Location` on a `201` response and `Link` pagination—is not caller-visible ([OAS 3.2.0 §§4.10.1, 4.17, 4.20–4.21](https://spec.openapis.org/oas/v3.2.0.html#response-object), Core [§5.1](../../openbindings.md#51-operations)).
+**[B — limit]** A non-empty response with no governing Response Object is a loud protocol error, even though omission of `responses` leaves the operation addressable. Because Core provides no response-header or Link carriage in an operation value, Response Header and Link Objects create no output members under this identifier; consequently, even a declared `Location` header on a `201` response has no output representation ([OAS 3.2.0 §§4.10.1, 4.17, 4.20–4.21](https://spec.openapis.org/oas/v3.2.0.html#response-object), Core [§5.1](../../openbindings.md#51-operations)).
 
 ## 10. Servers and target URL
 
@@ -464,9 +464,9 @@
 
 ### 12.2 Synthesis boundary and coverage
 
-**[C]** Operation contracts remain protocol-neutral and MAY remain flat; Core supplies directional per-value transform positions at the operation/binding boundary (Core [§5.5](../../openbindings.md#55-transforms)).
+**[C]** Operation contracts remain protocol-neutral and MAY remain flat (Core [§5.5](../../openbindings.md#55-transforms)).
 
-**[B — convention]** Synthesis emits an `inputTransform` that constructs §7's envelope, and that transform never performs protocol routing to HTTP locations.
+**[B — convention]** Synthesis emits an `inputTransform` that constructs §7's envelope, and transforms never route values to HTTP locations.
 
 **[B — convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
