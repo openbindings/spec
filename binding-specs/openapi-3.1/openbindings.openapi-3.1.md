@@ -78,6 +78,8 @@
 
 **[A]** The supported default Schema Object dialect is `https://spec.openapis.org/oas/3.1/dialect/base`; root `jsonSchemaDialect` changes the document default, and a schema-resource-root `$schema` overrides that default only within its schema resource ([OAS 3.1.2 §§4.8.24.1, 4.8.24.5](https://spec.openapis.org/oas/v3.1.2.html#specifying-schema-dialects)).
 
+**[B — pin]** For this identifier, that base-dialect URI is fixed to the official [`2024-11-10` revision](https://spec.openapis.org/oas/3.1/dialect/2024-11-10); a later change in the alias's resolution does not alter this specification.
+
 **[B — exclusion]** A root `jsonSchemaDialect` naming any other URI excludes the whole source because it changes every contained Schema Object; this exclusion is permanent under this identifier and reopens only if that exact dialect becomes incorporated authority.
 
 **[B — exclusion]** A schema-resource-root `$schema` naming any other URI excludes only each selected unit whose reachable closure enters that resource; this exclusion is permanent under this identifier and reopens only if that exact dialect becomes incorporated authority.
@@ -128,6 +130,8 @@
 
 **[A]** Operation parameters override Path Item parameters only at the same exact name-plus-location identity, and every remaining effective `path`, `query`, `header`, or `cookie` Parameter Object governs its own contribution ([OAS 3.1.2 §§4.8.9.1, 4.8.10.1, 4.8.12.1](https://spec.openapis.org/oas/v3.1.2.html#parameter-locations)).
 
+**[A]** A Header Parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored and creates no effective parameter, caller-envelope key, or emitted field ([OAS 3.1.2 §§3.8, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
+
 **[B — configuration point]** For `schema`-form Parameter serialization, `parameterConversion` is a deterministic consumer-supplied conversion from each JSON boolean or number to a string; strings pass identically, JSON null is omitted under RFC 6570's undefined-value rule, and any supplied non-string scalar without a configured conversion refuses before dispatch ([RFC 6570 §2.3](https://www.rfc-editor.org/rfc/rfc6570#section-2.3)).
 
 **[B — configuration point]** This specification defines no partial canonicalization default for `parameterConversion`; the converter applies recursively to array members and object values before serialization and MUST be deterministic for every accepted scalar.
@@ -152,7 +156,7 @@
 
 **[B — convention]** For `spaceDelimited`, `pipeDelimited`, and `deepObject`, the exact bytes are the corresponding OAS Style Examples: delimiters and deep-object brackets are percent-encoded, object names and values retain their shown alternation, and no unstated escape convention is added ([OAS 3.1.2 §4.8.12.6](https://spec.openapis.org/oas/v3.1.2.html#style-examples)).
 
-**[B — exclusion]** An explicit `explode` value in a Style Examples `n/a` cell, a `deepObject` property that is an array or object, or any array member/object value that is itself compound under any compound-capable style excludes that parameter because OAS/RFC 6570 defines no expansion; the owning target is excluded permanently under this identifier unless an incorporated authority defines that exact cell ([OAS 3.1.2 §§4.8.12.3, E.4](https://spec.openapis.org/oas/v3.1.2.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
+**[B — exclusion]** An explicit `explode` value in a Style Examples `n/a` cell excludes that parameter; otherwise a compound-capable style is excluded only when its resolved declaration proves an unsupported compound member—an array whose resolved `items` schema declares only `object` or `array`, or an object with at least one declared property whose resolved schema declares only `object` or `array`. A typeless member proves no compound shape, a choice with multiple non-null possibilities supplies no single resolved member schema, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value. The rule applies symmetrically to every compound-capable Parameter style and to §9.3's Encoding style path, where the smallest owner is the selected media alternative rather than the target. OAS/RFC 6570 defines no expansion for the excluded cells, so the owning unit is excluded permanently under this identifier unless an incorporated authority defines that exact cell ([OAS 3.1.2 §§4.8.12.3, E.4](https://spec.openapis.org/oas/v3.1.2.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
 
 **[A]** Every path-template expression MUST have a corresponding effective path parameter, and an expanded path value containing unescaped `/`, `?`, or `#` refuses before dispatch ([OAS 3.1.2 §§3.5, 4.8.12.4](https://spec.openapis.org/oas/v3.1.2.html#path-templating)).
 
@@ -200,7 +204,9 @@
 
 **[B — convention]** The charset parameter is the only character-encoding source this lane consults; BOMs and XML declarations do not alter it, and unsupported or invalid character decoding refuses.
 
-**[B — convention]** A non-JSON, non-form concrete selection whose present schema declares no `type` uses the raw-octet lane; memberless `{}` and boolean `true` assert nothing and therefore meet this condition, while an omitted `schema` does not declare the lane and is inadmissible unless another rule supplies carriage ([OAS 3.1.2 §§4.4.2, 4.8.24](https://spec.openapis.org/oas/v3.1.2.html#working-with-binary-data)).
+**[A]** OAS permits a concrete binary media declaration to omit `schema`; a memberless Schema Object and boolean `true` likewise assert no instance type, so all three forms declare no `type` ([OAS 3.1.2 §§4.4.2, 4.8.14.3, 4.8.24](https://spec.openapis.org/oas/v3.1.2.html#working-with-binary-data)).
+
+**[B — convention]** A non-JSON, non-form concrete selection whose Media Type Object omits `schema`, or whose present schema declares no `type`, uses the raw-octet lane. A schema-omitted media range does not gain this lane because it declares no single concrete representation.
 
 **[A]** Every other keyword in a no-`type` schema still applies, and `maxLength` on raw content measures wire octets rather than the Base64 boundary string ([OAS 3.1.2 §4.4.2](https://spec.openapis.org/oas/v3.1.2.html#working-with-binary-data), [JSON Schema Validation §8.4](https://json-schema.org/draft/2020-12/json-schema-validation.html#section-8.4)).
 
@@ -343,6 +349,7 @@
 - [OpenAPI Specification 3.1.0](https://spec.openapis.org/oas/v3.1.0.html)
 - [OpenAPI Specification 3.1.1](https://spec.openapis.org/oas/v3.1.1.html)
 - [OpenAPI Specification 3.1.2](https://spec.openapis.org/oas/v3.1.2.html)
+- [OpenAPI 3.1 base dialect, revision 2024-11-10](https://spec.openapis.org/oas/3.1/dialect/2024-11-10)
 - [YAML 1.2.2](https://yaml.org/spec/1.2.2/)
 - [JSON Schema Core 2020-12](https://json-schema.org/draft/2020-12/json-schema-core.html)
 - [JSON Schema Validation 2020-12](https://json-schema.org/draft/2020-12/json-schema-validation.html)

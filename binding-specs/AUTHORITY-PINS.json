@@ -428,6 +428,28 @@
       ]
     },
     {
+      "id": "oas-3.1-dialect-2024-11-10",
+      "families": [
+        "openapi-3.1"
+      ],
+      "name": "OpenAPI 3.1 base dialect, revision 2024-11-10",
+      "edition": "3.1 dialect 2024-11-10",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/3.1/dialect/2024-11-10",
+      "citedUrls": [
+        "https://spec.openapis.org/oas/3.1/dialect/base"
+      ],
+      "sha256": "647f32dfff64949d5020a28ecd1af4ffeffb1e9c695f861a52255a8004e07460",
+      "bytes": 1027,
+      "retrievedAt": "2026-08-21T23:11:57Z",
+      "citedBy": [
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/3.1/dialect/base"
+      ]
+    },
+    {
       "id": "oas-3.2.0",
       "families": [
         "openapi-3.2"
