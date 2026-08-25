@@ -56,7 +56,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -117,7 +117,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         }
       },
@@ -152,7 +152,7 @@
           "delivery": {
             "operation": "deliverEvent",
             "bindingSpecs": [
-              "openbindings.openapi@1"
+              "openbindings.openapi-3.1@1"
             ]
           }
         }
@@ -197,7 +197,7 @@
         "dependencies": {
           "delivery": {
             "bindingSpecs": [
-              "openbindings.openapi@1"
+              "openbindings.openapi-3.1@1"
             ]
           }
         }
@@ -235,7 +235,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": "openbindings.openapi@1"
+            "bindingSpecs": "openbindings.openapi-3.1@1"
           }
         }
       },
@@ -274,8 +274,8 @@
           "delivery": {
             "operation": "deliverEvent",
             "bindingSpecs": [
-              "openbindings.openapi@1",
-              "openbindings.openapi@1"
+              "openbindings.openapi-3.1@1",
+              "openbindings.openapi-3.1@1"
             ]
           }
         }
