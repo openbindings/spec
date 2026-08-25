@@ -1,0 +1,1733 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "bindingSpec": "openbindings.openapi-3.0@1",
+  "family": "openapi-3.0",
+  "description": "Portable processor scenarios for the OpenAPI 3.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
+  "scenarios": [
+    {
+      "id": "OAPI30-PS-02",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "A scalar query parameter uses the OpenAPI-declared query location and serialization rather than becoming a body field. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Search",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/search": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "limit",
+                      "in": "query",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1search/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "limit": 2
+            }
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "[]"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/search?limit=2"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                []
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-20",
+      "rules": [
+        "OAPI30-P-01"
+      ],
+      "section": "3",
+      "description": "The first patch-looking edition beyond the accepted OpenAPI 3.0 set is refused rather than inferred compatible.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.5",
+            "info": {
+              "title": "Future patch",
+              "version": "1"
+            },
+            "paths": {}
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-28",
+      "rules": [
+        "OAPI30-P-02",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "An OAS 3.0 binary schema carries exact raw bytes for a concrete image media type; the lane is schema-driven rather than restricted to application/octet-stream. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Generic raw binary",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w=="
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "PUT"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "image/png"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-29",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A non-canonical Base64 boundary value for an OAS 3.0 raw body refuses before dispatch. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Invalid raw boundary",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/blob": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1blob/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w="
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-30",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "Raw-body bytes are declaration-selected and never sniffed as JSON merely because their decoded spelling is JSON text. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "No byte sniffing",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/blob": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1blob/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "e30="
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/octet-stream"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "e30="
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-31",
+      "rules": [
+        "OAPI30-P-02",
+        "OAPI30-P-03"
+      ],
+      "section": "7",
+      "description": "A required raw body with no caller input refuses before dispatch like every other required request body.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Required raw body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/blob": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1blob/put"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-42",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "An OAS 3.0 binary success response crosses the protocol-independent output boundary as canonical Base64 of its exact octets.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Binary response",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "image",
+                      "content": {
+                        "image/png": {
+                          "schema": {
+                            "type": "string",
+                            "format": "binary"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "image/png"
+          },
+          "bodyBase64": "AAH+/w=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "AAH+/w=="
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-46",
+      "rules": [
+        "OAPI30-P-02",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A dynamic form object is the envelope's one body value, independently of a same-named query parameter; no declaration trigger changes caller correspondence. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Dynamic form",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "fixed": {
+                              "type": "string"
+                            }
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "query-value"
+            },
+            "body": {
+              "id": "body-value",
+              "extra": "a b",
+              "fixed": "yes"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items?id=query-value"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "extra=a+b&fixed=yes&id=body-value"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-49",
+      "rules": [
+        "OAPI30-P-02",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "An exact schema-omitted OAS 3.0 non-JSON declaration carries request and response octets through the canonical Base64 application boundary. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Schema-omitted bytes",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/archive": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {}
+                    }
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "archive",
+                      "content": {
+                        "application/octet-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1archive/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w=="
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/octet-stream"
+          },
+          "bodyBase64": "3q2+7w=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/octet-stream"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "3q2+7w=="
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-54",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "OAS 3.0.4 is the edition where the 3.0 line first states the content interpretation (\"The absence of all three of those fields is the equivalent of using content\") and where Appendix E first appears. An urlencoded property with no Encoding Object therefore takes the content path there, which the OAS pairs with RFC 1866 Section 8.2.1, whose first escaping step replaces a space with +. OAS 3.0.0-3.0.3 state neither sentence and this specification states no path-selection rule for that line, so no scenario pins it. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Form escaping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "note": "one two"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The 3.0 line reaches the content path from 3.0.4 onward. One permitted observation, not a set.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=one+two"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-56",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi-3.0@1 authors no row for that residue. The single missing fact is one media type, so the part's content type is the required `partMedia` configuration point, keyed by the part's property name: a required body carrying such a part challenges CONTEXT_REQUIRED (config.value, point partMedia, path /profile) before input consumption and dispatches nothing. This scenario pinned the specification's own value-keyed convention until 2026-08-20 (the supplied value's JSON type chose the part default), then a flat pre-dispatch refusal after escalation M2 deleted that convention; the revision-is-not-a-roadmap ruling replaced the refusal with the rung-3 answer the deference order ranks above it, since the authority is genuinely silent here rather than answering. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "Type-absent part interpretation",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "description": "a part declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "profile": {
+                "role": "admin"
+              }
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "partMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": "/profile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-60",
+      "rules": [
+        "OAPI30-P-01",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.0 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.0 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "address": {
+                "street": "main st"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.0. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-61",
+      "rules": [
+        "OAPI30-P-01",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.1 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.1 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.1",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "address": {
+                "street": "main st"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.1. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-62",
+      "rules": [
+        "OAPI30-P-01",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.2 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.2 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.2",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "address": {
+                "street": "main st"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.2. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-63",
+      "rules": [
+        "OAPI30-P-01",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.3 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.3 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "address": {
+                "street": "main st"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.3. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-64",
+      "rules": [
+        "OAPI30-P-01",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.4 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.4 states it outright at Section 4.7.15.1.2 — with all three fields absent, \"Encoding is to be based on contentType alone\" — and prints the worked bytes for this exact shape at Section 4.7.15.2.1. A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Form content path across the 3.0 line",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/places": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "address": {
+                              "type": "object",
+                              "properties": {
+                                "street": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "required": [
+                            "address"
+                          ]
+                        },
+                        "encoding": {
+                          "address": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1places/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "address": {
+                "street": "main st"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "description": "The emitted body under edition 3.0.4. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-68",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "On the 3.0 line patternProperties is outside the Schema Object dialect and decides as if absent, while CO30-03 independently makes the envelope body the complete caller value without any dialect-keyed correspondence trigger. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "patternProperties": {
+                            "^x-": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "value": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-69",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "On the 3.0 line if, dependentSchemas, and unevaluatedProperties are outside the Schema Object dialect and decide as if absent, while CO30-03 independently makes the envelope body the complete caller value without making correspondence dialect-dependent. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "JSON body trigger scoping",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "if": {
+                            "required": [
+                              "value"
+                            ]
+                          },
+                          "dependentSchemas": {
+                            "value": {
+                              "required": [
+                                "value"
+                              ]
+                            }
+                          },
+                          "unevaluatedProperties": false
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "value": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "value": "v"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-75",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "On the 3.0 line a `type: string` with `format: byte` is ALREADY the encoded characters — every accepted 3.0 edition's own Data Types format registry defines `byte` as \"base64 encoded characters\", 3.0.4's row citing [RFC 4648] Section 4 — so an exact non-JSON, non-form selection governed by that declaration carries the caller's string as artifact-encoded Base64 text, sent AS-IS. The OpenBindings raw-byte boundary decode does not run: artifact encoding and the OpenBindings boundary encoding are distinct, exactly as they are for the 3.1 `contentEncoding` lane this rule parallels. The lane is not gated on character-data media — application/pdf is outside that test — because here the ARTIFACT, not the media-type registration, is what declares the value to be characters. The wire body is therefore the string itself and not the three octets it encodes. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "format: byte body carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/documents": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/pdf": {
+                        "schema": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1documents/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "QUJD"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/pdf"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "QUJD"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-76",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The form-part half of the same 3.0 cell, and its part default. 3.0.4's Encoding Object default-`contentType` table gives `string` with `format` \"`binary` or `byte`\" the default application/octet-stream, while 3.0.0 through 3.0.3's prose names only `binary` before \"other primitive types\"; under the editions' own Section 4.1 patch-uniformity instruction the line answers uniformly and 3.0.4 read under its own text fixes what the uniform answer is, so a `byte` part defaults to application/octet-stream on every 3.0 edition rather than to the primitive text/plain row. Its value is the caller's artifact-encoded Base64 text sent as-is — the contrast with the `binary` sibling, which takes the SAME default Content-Type while its value is the OpenBindings canonical Base64 boundary and emits the decoded octets, is carried by the shared format-byte-carriage case table rather than here, because one multipart body containing both parts cannot assert which part a Content-Type belongs to through a substring. 3.0.4 additionally equates a `byte` part with an Encoding Object whose `headers` field carries a Content-Transfer-Encoding schema requiring base64; this specification reads that equivalence as declaration semantics, so no such header is emitted for an artifact that does not declare one. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "format: byte part carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/uploads": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1uploads/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "encoded": "QUJD"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"encoded\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Type: application/octet-stream"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "QUJD"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

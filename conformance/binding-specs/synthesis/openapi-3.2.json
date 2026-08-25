@@ -1,0 +1,90 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@5",
+  "bindingSpec": "openbindings.openapi-3.2@1",
+  "family": "openapi-3.2",
+  "description": "OpenAPI 3.2 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "scenarios": [
+    {
+      "id": "OAPI32-SS-01",
+      "description": "OAS 3.2.0 Path Item fixed fields add query and define additionalOperations keys as the HTTP method with the capitalization sent on the wire (edition analysis STRUCT-E16/E17). Both authority-defined targets are represented under the two selector forms ordered by CO32-04.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Additional methods",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/pets": {
+              "query": {
+                "operationId": "queryPets",
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              },
+              "additionalOperations": {
+                "COPY": {
+                  "operationId": "copyPets",
+                  "responses": {
+                    "204": {
+                      "description": "copied"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "queryPets",
+          "copyPets"
+        ],
+        "bindings": [
+          {
+            "operationKey": "queryPets",
+            "bindingSelector": "#/paths/~1pets/query"
+          },
+          {
+            "operationKey": "copyPets",
+            "bindingSelector": "#/paths/~1pets/additionalOperations/COPY"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1pets/query",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "queryPets",
+              "bindingSelector": "#/paths/~1pets/query",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1pets/additionalOperations/COPY",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "copyPets",
+              "bindingSelector": "#/paths/~1pets/additionalOperations/COPY",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

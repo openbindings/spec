@@ -1,0 +1,66 @@
+{
+  "format": "openbindings.binding-spec-synthesis-scenarios@5",
+  "bindingSpec": "openbindings.openapi-2.0@1",
+  "family": "openapi-2.0",
+  "description": "OpenAPI 2.0 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "scenarios": [
+    {
+      "id": "OAPI20-SS-01",
+      "description": "OAS 2.0 defines seven fixed Path Item operation slots and operationId as the unique operation identifier. A simple GET under an absolute schemes/host/basePath target is therefore represented with its literal paths selector (edition analysis N2-03/N2-04).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Health",
+            "version": "1"
+          },
+          "schemes": [
+            "https"
+          ],
+          "host": "api.example",
+          "basePath": "/v1",
+          "paths": {
+            "/health": {
+              "get": {
+                "operationId": "healthCheck",
+                "responses": {
+                  "204": {
+                    "description": "healthy"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "healthCheck"
+        ],
+        "bindings": [
+          {
+            "operationKey": "healthCheck",
+            "bindingSelector": "#/paths/~1health/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1health/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "healthCheck",
+              "bindingSelector": "#/paths/~1health/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

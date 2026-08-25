@@ -1,0 +1,281 @@
+{
+  "rule": "OAPI30-D-01",
+  "bindingSpec": "openbindings.openapi-3.0@1",
+  "section": "5",
+  "description": "The source content and location carriages satisfy the OpenAPI sibling's closed document-loading rules.",
+  "notes": "openbindings.openapi-3.0@1 combines the former content and location fixture cells under one document-conformance rule. Edition discrimination remains a processor and binding obligation rather than a content-type fixture.",
+  "tests": [
+    {
+      "description": "object content: the parsed OpenAPI document",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "string content: the document's source text (JSON spelling, a valid subset of the YAML 1.2 grammar pin)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": "{\"openapi\":\"3.0.4\",\"info\":{\"title\":\"Tasks\",\"version\":\"1.0.0\"},\"paths\":{\"/tasks\":{\"post\":{\"responses\":{\"200\":{\"description\":\"Created\"}}}}}}"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "content carrying a JSON number is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": 42
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01"
+      ]
+    },
+    {
+      "description": "content carrying a JSON array is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": [
+              {
+                "openapi": "3.0.4"
+              }
+            ]
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01"
+      ]
+    },
+    {
+      "description": "content carrying JSON null is a present member (core presence rule) and is not an accepted content value",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": null
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01"
+      ]
+    },
+    {
+      "description": "https document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "location": "https://example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "file document address (absolute URI spelling for a local artifact)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "location": "file:///srv/api/openapi.yaml"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bare relative filesystem path is a relative reference in form, not a document address",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "location": "./openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01",
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "bare absolute filesystem path carries no scheme and is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "location": "/srv/api/openapi.yaml"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01",
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "authority-looking string without a scheme is relative in form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "location": "example.com/openapi.json"
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-01",
+        "OBI-D-05"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,591 @@
+{
+  "rule": "OAPI30-D-02",
+  "bindingSpec": "openbindings.openapi-3.0@1",
+  "section": "6",
+  "description": "The binding names this exact binding specification, carries a literal selector admitted by the sibling, and identifies a source inside its exact edition gate.",
+  "notes": "Resolution-dependent tests embed the artifact so the verdict is offline-decidable. The two explicit gate negatives keep family identifiers and accepted editions exact rather than inferred from adjacent siblings.",
+  "tests": [
+    {
+      "description": "pointer addressing a declared operation, path escaped per RFC 6901",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "templated multi-segment path, every / escaped as ~1",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getUser": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Users",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/users/{userId}": {
+                  "get": {
+                    "parameters": [
+                      {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    ],
+                    "responses": {
+                      "200": {
+                        "description": "OK"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "getUser.api": {
+            "operation": "getUser",
+            "source": "api",
+            "selector": "#/paths/~1users~1{userId}/get"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "selector is required: the OAS defines no whole-artifact invocation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "uppercase method is refused, never case-folded: methods are lowercase exactly as the artifact spells them",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/POST"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "pointer without the # fragment prefix is not the required form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "unescaped path slash breaks the two-segment form: the path segment carries RFC 6901 escaping",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getUser": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Users",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/users/{userId}": {
+                  "get": {
+                    "parameters": [
+                      {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    ],
+                    "responses": {
+                      "200": {
+                        "description": "OK"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "getUser.api": {
+            "operation": "getUser",
+            "source": "api",
+            "selector": "#/paths//users/{userId}/get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "percent-encoded rendering of an otherwise-valid target denotes nothing: the pointer is a verbatim string, never percent-decoded, and `#/paths/~1users~1%7BuserId%7D/get` is not the one spelling `#/paths/~1users~1{userId}/get`",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getUser": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Users",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/users/{userId}": {
+                  "get": {
+                    "parameters": [
+                      {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    ],
+                    "responses": {
+                      "200": {
+                        "description": "OK"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "getUser.api": {
+            "operation": "getUser",
+            "source": "api",
+            "selector": "#/paths/~1users~1%7BuserId%7D/get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "pointer missing the method segment does not address an operation object",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "final segment that is not an OAS HTTP method key",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/submit"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "well-formed pointer whose method is absent from the resolved artifact makes the binding unresolvable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "listTasks": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "listTasks.api": {
+            "operation": "listTasks",
+            "source": "api",
+            "selector": "#/paths/~1tasks/get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "well-formed pointer whose path is absent from the resolved artifact makes the binding unresolvable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "listUsers": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "listUsers.api": {
+            "operation": "listUsers",
+            "source": "api",
+            "selector": "#/paths/~1users/get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "a sibling binding-specification identifier does not select this exact family",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.1@1",
+            "content": {
+              "openapi": "3.0.4",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    },
+    {
+      "description": "an artifact outside this sibling's exact edition gate is not accepted by inference",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.openapi-3.0@1",
+            "content": {
+              "openapi": "3.1.0",
+              "info": {
+                "title": "Tasks",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/tasks": {
+                  "post": {
+                    "responses": {
+                      "200": {
+                        "description": "Created"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "createTask.api": {
+            "operation": "createTask",
+            "source": "api",
+            "selector": "#/paths/~1tasks/post"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OAPI30-D-02"
+      ]
+    }
+  ]
+}
