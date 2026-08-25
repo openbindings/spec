@@ -177,6 +177,26 @@
       ]
     },
     {
+      "id": "rfc7617",
+      "family": "openapi-3.1",
+      "name": "RFC 7617: The 'Basic' HTTP Authentication Scheme",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7617.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc7617"
+      ],
+      "sha256": "bc941321da9912fbb1bc92ad1820848ddfd3283dbfbc30f26ea2800bdaf541db",
+      "bytes": 30163,
+      "retrievedAt": "2026-08-21T23:24:59Z",
+      "citedBy": [
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+      ],
+      "matchTokens": [
+        "rfc7617",
+        "RFC 7617"
+      ]
+    },
+    {
       "id": "yaml-1.2.2",
       "family": "shared",
       "name": "YAML Ain't Markup Language, version 1.2.2",
