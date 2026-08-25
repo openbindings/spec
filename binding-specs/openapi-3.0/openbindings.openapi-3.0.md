@@ -4,7 +4,9 @@
 
 **Status: unreleased first-revision candidate.**
 
-**[C]** The proposed opaque binding-specification identifier is **`openbindings.openapi-3.0@1`**; publication mints that exact identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**[B — convention]** The proposed opaque binding-specification identifier is exactly **`openbindings.openapi-3.0@1`**.
+
+**[C]** Publication mints the proposed opaque identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
 **[A]** The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** in this document are interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals.
 
@@ -12,7 +14,9 @@
 
 ## 2. Scope and incorporated authorities
 
-**[A]** This specification accepts exactly OpenAPI Specification (OAS) editions [`3.0.0`](https://spec.openapis.org/oas/v3.0.0.html), [`3.0.1`](https://spec.openapis.org/oas/v3.0.1.html), [`3.0.2`](https://spec.openapis.org/oas/v3.0.2.html), [`3.0.3`](https://spec.openapis.org/oas/v3.0.3.html), and [`3.0.4`](https://spec.openapis.org/oas/v3.0.4.html); the artifact's exact `openapi` value selects its admitted edition, and no wildcard or compatible-looking value widens this closed set ([OAS 3.0.4 §§4.2, 4.7.1.1](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields)).
+**[A]** An artifact's required `openapi` string gives the exact OAS edition that the OpenAPI Document uses ([OAS 3.0.4 §§3.2, 4.7.1.1](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields)).
+
+**[B — convention]** This specification accepts exactly OAS editions [`3.0.0`](https://spec.openapis.org/oas/v3.0.0.html), [`3.0.1`](https://spec.openapis.org/oas/v3.0.1.html), [`3.0.2`](https://spec.openapis.org/oas/v3.0.2.html), [`3.0.3`](https://spec.openapis.org/oas/v3.0.3.html), and [`3.0.4`](https://spec.openapis.org/oas/v3.0.4.html); no wildcard or compatible-looking value widens this closed set.
 
 **[B — convention]** Within that closed set, observable behavior MUST NOT turn on the patch component: the admitted editions are read as one `3.0` feature set, corrected patch text governs a contradiction, and the accepted domain remains the five exact values above. This applies the editions' explicit patch-compatibility instruction without allowing anomalous copied examples in 3.0.4 §4.1 to widen or rename this line ([OAS 3.0.0 §4.1](https://spec.openapis.org/oas/v3.0.0.html#versions), [3.0.1 §4.1](https://spec.openapis.org/oas/v3.0.1.html#versions), [3.0.2 §4.1](https://spec.openapis.org/oas/v3.0.2.html#versions), [3.0.3 §4.1](https://spec.openapis.org/oas/v3.0.3.html#versions), [3.0.4 §4.1](https://spec.openapis.org/oas/v3.0.4.html#versions)).
 
@@ -30,7 +34,9 @@
 
 **[A]** The line's format rule historically calls the admitted tag set the “JSON Schema ruleset” in editions 3.0.0–3.0.3 and clarifies it as “YAML's JSON schema ruleset,” unrelated to JSON Schema, in 3.0.4; the clarified reading governs, and YAML map keys MUST be scalar strings ([OAS 3.0.0 §4.2](https://spec.openapis.org/oas/v3.0.0.html#format), [3.0.1 §4.2](https://spec.openapis.org/oas/v3.0.1.html#format), [3.0.2 §4.2](https://spec.openapis.org/oas/v3.0.2.html#format), [3.0.3 §4.2](https://spec.openapis.org/oas/v3.0.3.html#format), [3.0.4 §4.2](https://spec.openapis.org/oas/v3.0.4.html#format)).
 
-**[A]** The root MUST be a JSON object and its `openapi` field MUST be exactly `3.0.0`, `3.0.1`, `3.0.2`, `3.0.3`, or `3.0.4`; an absent, mismatched, or unlisted value refuses at load ([OAS 3.0.4 §§4.2, 4.7.1.1](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields)).
+**[A]** The root MUST be a JSON object with the required `openapi` string that identifies the OAS edition it uses ([OAS 3.0.4 §§4.2, 4.7.1.1](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields)).
+
+**[B — convention]** The `openapi` value MUST be exactly `3.0.0`, `3.0.1`, `3.0.2`, `3.0.3`, or `3.0.4`; an absent, mismatched, or unlisted value refuses at this binding's edition load gate.
 
 ### 3.2 Closed load gates and confined defects
 
@@ -41,6 +47,8 @@
 **[A]** A conforming artifact that declares no operation target is accepted and synthesizes no operation: the required Paths Object may contain no path entries, and a Path Item Object may be empty ([OAS 3.0.4 §§4.7.1.1, 4.7.8, 4.7.9](https://spec.openapis.org/oas/v3.0.4.html#paths-object)).
 
 **[B — limit]** A target that is addressable but unusable because of a missing choice, unsupported alternative, or exclusion refuses at invocation or is reported as synthesis coverage loss; it never becomes a whole-source load refusal.
+
+**[B — limit]** This revision declares no source-scope exclusion: unlike the `include`/`mount` filtering surface of `openbindings.usage@1`, no source member or addressable target is filtered merely by its position in the source.
 
 **[A]** Unknown non-extension fields create no binding behavior and are ignored only where the governing OAS object permits them; no unknown member is guessed into a known field ([OAS 3.0.4 §§4.7, 4.8](https://spec.openapis.org/oas/v3.0.4.html#specification-extensions)).
 
@@ -59,6 +67,8 @@
 ### 5.1 Reference semantics
 
 **[A]** A Reference Object is JSON Reference transclusion: the resolved target replaces the referencing object, and its transitive reachable references compose with it; unrelated material in the same retrieved document is not part of that selected closure ([OAS 3.0.4 §§4.6, 4.7.23](https://spec.openapis.org/oas/v3.0.4.html#reference-object), [JSON Reference draft-03 §4](https://datatracker.ietf.org/doc/html/draft-pbryan-zyp-json-ref-03#section-4)).
+
+**[A]** Only the entry document is required to be an OpenAPI Document; a retrieved document containing a referenced value need not itself be a conforming OpenAPI Document ([OAS 3.0.4 §§3.1–3.2, 4.3](https://spec.openapis.org/oas/v3.0.4.html#openapi-description-structure)).
 
 **[B — convention]** When one JSON or YAML node is reached from reference positions requiring different OAS Object types, each reference context interprets the node independently as its own required Object type; this is the deterministic choice within OAS's implementation-defined multi-context license ([OAS 3.0.4 §4.3.1](https://spec.openapis.org/oas/v3.0.4.html#structural-interoperability)).
 
@@ -122,15 +132,19 @@
 
 **[B — convention]** When every effective parameter name is unique across locations, its caller key is the exact declared name; if any name is repeated across legal locations, the target uses qualified mode for every parameter and each key is `<location>/<RFC6901-escaped-name>`, making the flat map injective without depending on map order.
 
-**[A]** Duplicate effective parameters in the same location are upstream-invalid and exclude their smallest owning operation; legal cross-location duplicates remain independently supplied through §7's qualified mode ([OAS 3.0.4 §§4.7.9.1, 4.7.10.1, 4.7.12](https://spec.openapis.org/oas/v3.0.4.html#operation-parameters)).
+**[A]** Effective parameter identity is exact name plus location; duplicate effective parameters at the same identity are upstream-invalid, while the same name in different locations denotes distinct parameters ([OAS 3.0.4 §§4.7.9.1, 4.7.10.1, 4.7.12](https://spec.openapis.org/oas/v3.0.4.html#operation-parameters)).
 
-**[B — limit]** Two effective header parameters whose names differ only by ASCII case exclude the selected target permanently under this identifier because OAS parameter identity is case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction ([OAS 3.0.4 §§3.8, 4.7.12](https://spec.openapis.org/oas/v3.0.4.html#case-sensitivity), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
+**[B — limit]** Duplicate effective parameters at the same identity exclude their smallest owning operation permanently under this identifier; this exclusion reopens only if an incorporated OAS edition admits such duplicates.
+
+**[B — limit]** Two effective header parameters whose names differ only by ASCII case exclude the selected target permanently under this identifier because OAS parameter identity is case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction. This exclusion reopens only if an incorporated authority defines a wire mapping that preserves such case-distinct declarations ([OAS 3.0.4 §§3.8, 4.7.12](https://spec.openapis.org/oas/v3.0.4.html#case-sensitivity), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
 **[B — convention]** Every unknown caller-envelope parameter key refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
 
 **[A]** Missing required parameters and a missing `required: true` effective request body refuse before dispatch; path parameters are always required ([OAS 3.0.4 §§4.7.12.2.1, 4.7.13.1](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields)).
 
-**[A]** A `requestBody` declaration on GET, HEAD, or DELETE is ignored and therefore creates no body requirement, accepted body value, emitted body bytes, or `Content-Type`; a supplied `body` for such a target refuses as unroutable before dispatch ([OAS 3.0.4 §4.7.10.1](https://spec.openapis.org/oas/v3.0.4.html#operation-request-body)).
+**[A]** A `requestBody` declaration on GET, HEAD, or DELETE is ignored and therefore creates no body requirement, accepted body value, emitted body bytes, or `Content-Type` ([OAS 3.0.4 §4.7.10.1](https://spec.openapis.org/oas/v3.0.4.html#operation-request-body)).
+
+**[B — convention]** A supplied `body` for a target whose `requestBody` is ignored refuses as unroutable before dispatch.
 
 ## 8. Parameter serialization
 
@@ -140,7 +154,7 @@
 
 **[A]** A Header Parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored and creates no effective parameter, caller-envelope key, or emitted field ([OAS 3.0.4 §§3.8, 4.7.12.2.1](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
-**[B — configuration point]** Whenever a `schema`-form Parameter or §9.3 form/part property must convert a JSON scalar to a string, `parameterConversion` is the same deterministic consumer-supplied conversion: strings pass identically, JSON null is omitted under RFC 6570's undefined-value rule, and any supplied boolean or number without a configured conversion refuses before dispatch ([OAS 3.0.4 Appendix B](https://spec.openapis.org/oas/v3.0.4.html#appendix-b-data-type-conversion), [RFC 6570 §2.3](https://www.rfc-editor.org/rfc/rfc6570#section-2.3)).
+**[B — configuration point]** Whenever a `schema`-form Parameter or §9.3 form/part property must convert a JSON scalar to a string, `parameterConversion` is the same deterministic consumer-supplied conversion: strings pass identically, and any supplied boolean or number without a configured conversion refuses before dispatch. JSON null does not enter this conversion point; §8.2 governs RFC 6570-style paths and §9.3 governs content-based form and multipart paths ([OAS 3.0.4 Appendix B](https://spec.openapis.org/oas/v3.0.4.html#appendix-b-data-type-conversion), [RFC 6570 §2.3](https://www.rfc-editor.org/rfc/rfc6570#section-2.3)).
 
 **[B — configuration point]** This specification defines no partial canonicalization default for `parameterConversion`; the converter applies recursively to scalar array members and object values before style serialization and MUST be deterministic for every accepted scalar.
 
@@ -160,6 +174,8 @@
 
 **[A]** Default style is `form` for query and cookie and `simple` for path and header; default `explode` is `true` only for `form` and `false` otherwise; `allowReserved` applies only to query parameters ([OAS 3.0.4 §4.7.12.2.2](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields-for-use-with-schema)).
 
+**[A]** On a `schema`-form Parameter or an Encoding RFC 6570-style path, JSON null is an undefined value and uses the effective style and `explode` cell: the Style Examples bytes are `;name` for `matrix`, `.` for `label`, an empty representation for `simple`, and `?name=` for `form`; a form-urlencoded body removes the leading `?` but retains `name=`. The empty string is not undefined, and every `n/a` cell remains undefined behavior ([OAS 3.0.4 §§4.7.12.4, 4.7.15.1.2, Appendix B](https://spec.openapis.org/oas/v3.0.4.html#style-examples)).
+
 **[A]** RFC 6570 serialization MUST use its declared operator, `*` for `explode: true`, and a comma for non-exploded label lists/maps. Multiple regular form-style query parameters share one `?` variable list; separately expanding multiple `?` templates is not conformant ([OAS 3.0.4 §§C.1–C.2](https://spec.openapis.org/oas/v3.0.4.html#equivalences-between-fields-and-rfc6570-operators)).
 
 **[A]** Because RFC 6570 prefix operators cannot combine, a query mixing regular form expansion with `allowReserved: true` MUST be constructed manually per parameter: reserved-permitting values use reserved expansion, and `[`, `]`, `#`, `&`, `=`, and `+` are pre-percent-encoded where Appendix C requires ([OAS 3.0.4 §§C.3–C.4.2](https://spec.openapis.org/oas/v3.0.4.html#non-rfc6570-field-values-and-combinations)).
@@ -174,7 +190,7 @@
 
 **[B — convention]** Before dispatch, the binding refuses a supplied parameter or property name or scalar value containing its non-RFC style's structural delimiter: U+0020 SPACE for `spaceDelimited`, `|` for `pipeDelimited`, or any of `[`, `]`, `=`, and `&` for `deepObject`; no escape-convention configuration point is offered.
 
-**[B — exclusion]** An explicit `explode` value in a Style Examples `n/a` cell excludes that parameter; otherwise a compound-capable style is excluded only when its resolved declaration proves an unsupported compound member—an array whose resolved `items` schema declares only `object` or `array`, or an object with at least one declared property whose resolved schema declares only `object` or `array`. A typeless member proves no compound shape, a choice with multiple non-null possibilities supplies no single resolved member schema, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value. The rule applies symmetrically to every compound-capable Parameter style and to §9.3's URL-encoded Encoding style path, where the smallest owner is the selected media alternative rather than the target. OAS/RFC 6570 defines no expansion for the excluded cells, so the owning unit is excluded permanently under this identifier unless an incorporated authority defines that exact cell ([OAS 3.0.4 §§4.7.12.3, C.1](https://spec.openapis.org/oas/v3.0.4.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
+**[B — exclusion]** An effective `explode` value, including its default, in a Style Examples `n/a` cell excludes that parameter; therefore omitted `explode` on `deepObject` computes to the excluded `false` cell. Otherwise a compound-capable style is excluded only when its resolved declaration proves an unsupported compound member—an array whose resolved `items` schema declares only `object` or `array`, or an object with at least one declared property whose resolved schema declares only `object` or `array`. A typeless member proves no compound shape, a choice with multiple non-null possibilities supplies no single resolved member schema, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value. The rule applies symmetrically to every compound-capable Parameter style and to §9.3's URL-encoded Encoding style path, including its defaulted `explode`, where the smallest owner is the selected media alternative rather than the target. OAS/RFC 6570 defines no expansion for the excluded cells, so the owning unit is excluded permanently under this identifier unless an incorporated authority defines that exact cell ([OAS 3.0.4 §§4.7.12.2.2–4.7.12.4, 4.7.15.1.2, C.1](https://spec.openapis.org/oas/v3.0.4.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
 
 **[A]** Every path-template expression MUST have a corresponding effective path parameter, and an expanded path value containing unescaped `/`, `?`, or `#` refuses before dispatch ([OAS 3.0.4 §§3.5, 4.7.12.2.1](https://spec.openapis.org/oas/v3.0.4.html#path-templating)).
 
@@ -190,7 +206,7 @@
 
 **[B — convention]** An effective Header Parameter named `Cookie` supplies one raw Cookie field only when no effective cookie-location Parameter and no selected cookie credential contributes; the binding does not parse or merge the raw string, and a raw/structured collision refuses the target or makes the selected credential alternative unusable.
 
-**[B — limit]** An effective Header Parameter named `Host` or `Content-Length` excludes the target because those fields are processor-owned and cannot be replaced by caller input.
+**[B — limit]** An effective Header Parameter named `Host` or `Content-Length` excludes the target permanently under this identifier because those fields are processor-owned and cannot be replaced by caller input; this exclusion reopens only if an incorporated HTTP authority defines caller replacement semantics for the affected field.
 
 **[B — exclusion]** A form-style cookie declaration that produces multiple values excludes the target because OAS identifies RFC 6570's `&`-separated expansion as incorrect for Cookie's `; ` delimiter; the exclusion is permanent under this identifier unless an incorporated OAS edition defines a correct multi-value mapping ([OAS 3.0.4 Appendix D](https://spec.openapis.org/oas/v3.0.4.html#appendix-d-serializing-headers-and-cookies)).
 
@@ -220,7 +236,7 @@
 
 **[B — convention]** `text/json` is not a member of that JSON lane; as a `text/*` type it can use the character-data lane only when its schema declares `type: string` without `format: binary`. This convention reopens under a new identifier only if the IANA media-type registry registers `text/json` with JSON semantics.
 
-**[B — convention]** A concrete character-data selection governed by a schema declaring `type: string` without `format: binary` carries the supplied string under its declared `charset`, defaulting to UTF-8; the closed character-data set is `text/*`, `application/xml`, and `+xml`, while `application/json` and `+json` are claimed by the JSON lane ([RFC 6838 §4.2.1](https://www.rfc-editor.org/rfc/rfc6838#section-4.2.1), [RFC 2046 §4.1](https://www.rfc-editor.org/rfc/rfc2046#section-4.1), [RFC 7303 §§3, 9](https://www.rfc-editor.org/rfc/rfc7303#section-3)).
+**[B — convention]** A concrete character-data selection governed by a schema declaring `type: string` without `format: binary` carries the supplied string under its declared `charset`, defaulting to UTF-8; the closed character-data set is `text/*`, `application/xml`, and `+xml`, while `application/json` and `+json` are claimed by the JSON lane. The binding does not consult the live media-type registry's `Encoding considerations`: `application/json` is registered as binary, `text/csv` records no value, and a live lookup would violate this pinned, immutable reading ([RFC 6838 §4.2.1](https://www.rfc-editor.org/rfc/rfc6838#section-4.2.1), [RFC 2046 §4.1](https://www.rfc-editor.org/rfc/rfc2046#section-4.1), [RFC 7303 §§3, 9](https://www.rfc-editor.org/rfc/rfc7303#section-3)).
 
 **[B — convention]** The charset parameter is the only character-encoding source this lane consults; BOMs and XML declarations do not alter it, and unsupported or invalid character decoding refuses.
 
@@ -244,23 +260,29 @@
 
 **[A]** For a dynamic object member, the effective property schema is the applicable exact `properties` schema, or `additionalProperties` when no exact property schema exists; applicable `allOf` constraints remain in force, and unsupported schema keywords create no additional property-routing behavior ([OAS 3.0.4 §4.7.24.1](https://spec.openapis.org/oas/v3.0.4.html#json-schema-keywords)).
 
-**[B — convention]** For form-carriage selection, a resolved property declaration with exactly one non-null branch plus any null admission uses that sole non-null branch; `nullable: true` at the same level as `type` contributes null admission but no second carriage shape. A supplied null form member is elided as an omitted optional member and contributes neither a form-urlencoded field nor a multipart part ([OAS 3.0.4 §§4.7.15.1.1, Appendix B](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields-0)).
+**[B — convention]** For form-carriage selection, a resolved property declaration with exactly one non-null branch plus any null admission uses that sole non-null branch; `nullable: true` at the same level as `type` contributes null admission but no second carriage shape ([OAS 3.0.4 §§4.7.15.1.1, Appendix B](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields-0)).
+
+**[B — convention]** On the content-based form-urlencoded path and on the multipart path, a supplied JSON null for an optional property is elided as an omitted member and contributes neither a form-urlencoded field nor a multipart part. The Encoding RFC 6570-style path instead follows §8.2's authority-derived undefined-value bytes.
 
 **[A]** Encoding `style`, `explode`, and `allowReserved` controls apply only to `application/x-www-form-urlencoded`; explicit presence of any control selects RFC 6570-style serialization and absent sibling controls take their defaults, while absence of all three selects content-based encoding. All three controls are ignored for multipart bodies ([OAS 3.0.4 §§4.7.15.1.2, C](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields-for-rfc6570-style-serialization)).
 
-**[A]** Form-urlencoded removes RFC 6570's leading `?`; its content path follows RFC 1866 form encoding while its style path follows RFC 6570, and the binding preserves the permitted encodings of each path rather than collapsing them to one authored byte spelling ([OAS 3.0.4 §§4.7.15.1.2, 4.7.15.2, Appendix E](https://spec.openapis.org/oas/v3.0.4.html#encoding-the-x-www-form-urlencoded-media-type), [RFC 1866 §8.2.1](https://www.rfc-editor.org/rfc/rfc1866#section-8.2.1), [RFC 6570](https://www.rfc-editor.org/rfc/rfc6570)).
+**[A]** Form-urlencoded removes RFC 6570's leading `?`; its content path follows RFC 1866 form encoding while its style path follows RFC 6570, and the binding preserves the permitted encodings of each path rather than collapsing them to one authored byte spelling. On the content path, Encoding `contentType` routes a property's serialization and may declare a concrete type, wildcard, or comma-separated list ([OAS 3.0.4 §§4.7.15.1.1–4.7.15.2, Appendix E](https://spec.openapis.org/oas/v3.0.4.html#encoding-the-x-www-form-urlencoded-media-type), [RFC 1866 §8.2.1](https://www.rfc-editor.org/rfc/rfc1866#section-8.2.1), [RFC 6570](https://www.rfc-editor.org/rfc/rfc6570)).
 
-**[A]** Multipart part `Content-Type` selection is: an explicit single concrete Encoding `contentType`; otherwise `application/octet-stream` for `type: string` with `format: binary` or `format: byte`, `text/plain` for a plain string or number/integer/boolean, `application/json` for an object, and the item-type default for an array. A no-`type` part has no default concrete type and uses `partMedia` below ([OAS 3.0.4 §4.7.15.1.1](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields-0)).
+**[A]** Multipart part `Content-Type` selection is: an explicit single concrete Encoding `contentType`; otherwise `application/octet-stream` for `type: string` with `format: binary` or `format: byte`, `text/plain` for a plain string or number/integer/boolean, `application/json` for an object, and the item-type default for an array. A no-`type` part has no default concrete type ([OAS 3.0.4 §4.7.15.1.1](https://spec.openapis.org/oas/v3.0.4.html#common-fixed-fields-0)).
 
 **[A]** Every `multipart/form-data` part carries `Content-Disposition: form-data` with the schema-property name in its `name` parameter; an array property emits one part per element under that same name ([OAS 3.0.4 §4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-multipart-media-types)).
 
-**[B — convention]** Repeated parts for one array preserve element order; cross-property part order has no portable meaning, while property-to-name membership is fixed.
+**[B — convention]** Repeated parts for one array preserve element order; cross-property multipart part order and cross-property form-urlencoded field order have no portable meaning. An implementation MAY emit a deterministic cross-property order, but the binding exposes and requires none; property-to-name membership and array-member order remain separate.
 
-**[B — convention]** A no-`type` or `format: binary` part uses the raw-octet lane and §9.2's canonical Base64 boundary; a `format: byte` part remains artifact-encoded Base64 text, and none emits `Content-Transfer-Encoding`.
+**[A]** For a multipart field, `format: byte` is declaration-equivalent to an Encoding `Content-Transfer-Encoding` Header schema that requires `base64`; OAS also notes that `Content-Transfer-Encoding` is deprecated for `multipart/form-data`, and defines serialization and parsing as undefined when an explicit Encoding Header schema conflicts by disallowing `base64` ([OAS 3.0.4 §4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-multipart-media-types)).
 
-**[B — configuration point]** `partMedia` supplies one concrete per-property part media type whenever the part lacks exactly that fact: its resolved schema declares no `type`, its Encoding `contentType` is a wildcard, or that field is a comma-separated list. The choice MUST satisfy one declared member under §9.1, and an absent, unmatched, or ambiguous required choice refuses before dispatch.
+**[B — convention]** A no-`type` or `format: binary` part uses the raw-octet lane and §9.2's canonical Base64 boundary; a `format: byte` part rides as artifact-encoded Base64 text. The declaration equivalence alone emits no `Content-Transfer-Encoding`; when the artifact explicitly declares that Encoding header and its schema admits `base64`, the emitted field is `Content-Transfer-Encoding: base64`.
 
-**[B — limit]** Encoding `headers` are descriptive at this operation boundary: the binding emits no part header merely from a Header Object schema and never emits an undeclared `Content-Transfer-Encoding`; alternatives needing caller-supplied part headers have no representation under this identifier ([OAS 3.0.4 §§4.7.15.1.1, 4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-headers)).
+**[B — exclusion]** A `format: byte` part whose explicit Encoding `Content-Transfer-Encoding` Header schema disallows `base64` is unusable and any invocation that would emit it refuses loudly before dispatch; the defect is confined to that declared part. This exclusion is permanent under this identifier and reopens only if an incorporated OAS edition defines serialization and parsing for the conflict ([OAS 3.0.4 §4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-multipart-media-types)).
+
+**[B — configuration point]** `propertyMedia` supplies one concrete media type per affected form or multipart property. It is required for a content-based form-urlencoded property whose Encoding `contentType` is a wildcard or comma-separated list, and for a multipart part whose resolved schema declares no `type` or whose Encoding `contentType` is a wildcard or comma-separated list. The choice MUST satisfy a declared member under §9.1, and an absent, unmatched, or ambiguous required choice refuses the selected media alternative before dispatch.
+
+**[B — limit]** Except for the artifact-declared `Content-Transfer-Encoding: base64` case above, Encoding `headers` are descriptive at this operation boundary: the binding emits no part header merely from a Header Object schema and never emits an undeclared `Content-Transfer-Encoding`; alternatives needing caller-supplied part headers have no representation under this identifier ([OAS 3.0.4 §§4.7.15.1.1, 4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-headers)).
 
 **[B — exclusion]** A multipart media type other than `multipart/form-data` is excluded because OAS defines no property-to-part correlation for unnamed ordered parts; the exclusion is permanent under this identifier and reopens only if an incorporated OAS edition defines that correlation ([OAS 3.0.4 §4.7.15.3](https://spec.openapis.org/oas/v3.0.4.html#encoding-multipart-media-types)).
 
@@ -284,13 +306,15 @@
 
 **[B — convention]** Redirect following is runtime policy; a followed redirect MUST preserve the bound method and complete body, while a method-rewriting redirect is treated as the final response ([RFC 9110 §15.4](https://www.rfc-editor.org/rfc/rfc9110#section-15.4)).
 
-**[A]** A non-empty response selects its concrete media type from `Content-Type` and then the most-specific matching governing content declaration; an unmatched, ambiguous, or normalized-colliding result is a protocol error ([OAS 3.0.4 §§4.7.16, 4.7.17](https://spec.openapis.org/oas/v3.0.4.html#response-object)).
+**[A]** A non-empty response selects its concrete media type from `Content-Type` and then the most-specific matching governing content declaration ([OAS 3.0.4 §§4.7.16, 4.7.17](https://spec.openapis.org/oas/v3.0.4.html#response-object)).
+
+**[B — convention]** An unmatched or ambiguous response media selection is a protocol error; a normalized collision follows §9.1's smallest-identity limit.
 
 **[B — convention]** When a non-empty response omits `Content-Type`, the binding takes RFC 9110's permitted `application/octet-stream` assumption before ordinary matching; the resulting type still MUST match a governing declaration ([RFC 9110 §8.3](https://www.rfc-editor.org/rfc/rfc9110#section-8.3)).
 
-**[C]** Empty responses emit no output value; successful non-empty responses emit the selected lane's one application value, while failure bodies use the same lanes and remain opaque application-authored failure data.
+**[B — convention]** Empty responses emit no output value; successful non-empty responses emit the selected lane's one application value, while failure bodies use the same lanes and remain opaque application-authored failure data.
 
-**[B — limit]** A non-empty response with no governing Response Object is a loud protocol error; response headers and Link Objects have no operation-value representation under this identifier ([OAS 3.0.4 §§4.7.16, 4.7.17](https://spec.openapis.org/oas/v3.0.4.html#response-object)).
+**[B — limit]** A non-empty response with no governing Response Object is a loud protocol error; response headers, Link Objects, and examples have no operation-value representation under this identifier. Lifting that limit would require a Core value-carriage model that admits both body and header carriage; until then, representative information such as `Location` on a `201` response is not caller-visible ([OAS 3.0.4 §§4.7.16, 4.7.17](https://spec.openapis.org/oas/v3.0.4.html#response-object)).
 
 **[B — limit]** One HTTP response body produces at most one operation value: the accepted 3.0 editions define no construct that frames one response body into multiple application values, including for `text/event-stream`; this is permanent under this identifier and reopens only if an incorporated authority defines such framing ([OAS 3.0.0 §4.7.17](https://spec.openapis.org/oas/v3.0.0.html#response-object), [3.0.1 §4.7.17](https://spec.openapis.org/oas/v3.0.1.html#response-object), [3.0.2 §4.7.17](https://spec.openapis.org/oas/v3.0.2.html#response-object), [3.0.3 §4.7.17](https://spec.openapis.org/oas/v3.0.3.html#response-object), [3.0.4 §4.7.17](https://spec.openapis.org/oas/v3.0.4.html#response-object)).
 
@@ -320,7 +344,7 @@
 
 **[B — configuration point]** The binding preserves every complete alternative and invents no anonymous-versus-credentialed preference; the consumer selects one complete alternative, and fragments from different alternatives are never combined.
 
-**[A]** Requirement arrays for OAuth 2.0 and OpenID Connect contain scopes and may be empty; arrays for every other scheme type MUST be empty, and this binding surfaces the exact OAuth/OpenID scope strings without executing acquisition flows ([OAS 3.0.4 §4.7.30.1](https://spec.openapis.org/oas/v3.0.4.html#security-requirements-name)).
+**[A]** Requirement arrays for OAuth 2.0 and OpenID Connect contain scopes and may be empty; arrays for every other scheme type MUST be empty, and this binding surfaces the exact OAuth/OpenID scope strings ([OAS 3.0.4 §4.7.30.1](https://spec.openapis.org/oas/v3.0.4.html#security-requirements-name)).
 
 **[B — configuration point]** `implicitConnectionScope` selects `entry` or `referring` document resolution for Security Requirement names and defaults to `entry`, following OAS's recommended entry-document scope while preserving the explicit alternative ([OAS 3.0.4 §4.3.2](https://spec.openapis.org/oas/v3.0.4.html#resolving-implicit-connections)).
 
@@ -344,13 +368,15 @@
 
 ### 12.1 Configuration vocabulary
 
-**[B — configuration point]** The complete binding-specific configuration vocabulary is `requestMedia` (one concrete media type), `server` (one effective Server alternative plus exact variable values), `parameterConversion` (deterministic scalar converter), `implicitConnectionScope` (`entry` or `referring`), `requestContentCodings` (coding-to-encoder map), `responseContentCodings` (coding-to-decoder map), and conditional `partMedia` (concrete media type per affected part).
+**[B — configuration point]** The complete binding-specific configuration vocabulary is `requestMedia` (one concrete media type), `server` (one effective Server alternative plus exact variable values), `parameterConversion` (deterministic scalar converter), `implicitConnectionScope` (`entry` or `referring`), `requestContentCodings` (coding-to-encoder map), `responseContentCodings` (coding-to-decoder map), and conditional `propertyMedia` (one concrete media type per affected form or multipart property).
 
 **[B — configuration point]** Every requirement is typed, discoverable from declarations, and preflightable; no configuration member appears in the caller envelope or operation contract, and decode and classification are fixed rules rather than configuration points.
 
 ### 12.2 Synthesis boundary and coverage
 
-**[C]** Operation contracts remain protocol-neutral and MAY remain flat; synthesis emits an `inputTransform` that constructs §7's envelope, and transforms never route values to HTTP locations (Core [§5.5](../../openbindings.md#55-transforms)).
+**[C]** Operation contracts remain protocol-neutral and MAY remain flat (Core [§5.5](../../openbindings.md#55-transforms)).
+
+**[B — convention]** Synthesis emits an `inputTransform` that constructs §7's envelope, and transforms never route values to HTTP locations.
 
 **[B — convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
