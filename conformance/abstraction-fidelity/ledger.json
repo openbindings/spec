@@ -286,9 +286,9 @@
       "normativeImpact": "binding-candidate",
       "status": "resolved",
       "evidence": [
-        "../../binding-specs/openapi/openbindings.openapi.md",
-        "../binding-specs/processor/openapi.json",
-        "../binding-specs/synthesis/openapi.json",
+        "../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "../binding-specs/processor/openapi-3.1.json",
+        "../binding-specs/synthesis/openapi-3.1.json",
         "../../../openbindings-go/formats/openapi/native_differential_test.go",
         "../../../openbindings-ts/packages/openapi/src/native-differential.test.ts",
         "../../../ob/internal/app/openapi_v2_fidelity_test.go"

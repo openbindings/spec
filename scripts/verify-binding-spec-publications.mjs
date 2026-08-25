@@ -237,7 +237,7 @@ for (const entry of errataEntries) {
     errors.push(`${entry.id}: publishedAt must be YYYY-MM-DD`);
   }
   const documentMatch = (entry.document || "").match(
-    /^binding-specs\/errata\/([a-z0-9-]+)\/([1-9][0-9]*)\/([0-9]{4})\.md$/
+    /^binding-specs\/errata\/([a-z0-9]+(?:[.-][a-z0-9]+)*)\/([1-9][0-9]*)\/([0-9]{4})\.md$/
   );
   if (!documentMatch) {
     errors.push(`${entry.id}: document must use binding-specs/errata/<family>/<revision>/<sequence>.md`);
