@@ -29,7 +29,7 @@
           "customerDelivery": {
             "operation": "deliverEvent",
             "bindingSpecs": [
-              "openbindings.openapi@1"
+              "openbindings.openapi-3.1@1"
             ]
           },
           "internalDelivery": {

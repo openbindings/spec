@@ -219,7 +219,7 @@
   },
   "sources": {
     "rest": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://blend.openbindings.com/openapi.json",
       "description": "REST API for the ordering app"
     },

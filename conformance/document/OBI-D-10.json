@@ -12,7 +12,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -34,7 +34,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -57,7 +57,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -85,7 +85,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -116,7 +116,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },
@@ -147,7 +147,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi@1",
+            "bindingSpec": "openbindings.openapi-3.1@1",
             "location": "https://api.example.com/openapi.json"
           }
         },

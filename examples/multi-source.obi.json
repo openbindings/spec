@@ -112,12 +112,12 @@
   },
   "sources": {
     "publicApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://api.example.com/openapi.json",
       "description": "Public-facing REST API"
     },
     "adminApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://admin.example.com/openapi.json",
       "description": "Internal admin REST API"
     }
