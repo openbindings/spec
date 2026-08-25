@@ -949,7 +949,8 @@
     {
       "id": "rfc7231",
       "families": [
-        "openapi-2.0"
+        "openapi-2.0",
+        "openapi-3.0"
       ],
       "name": "RFC 7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content",
       "kind": "url",
@@ -961,10 +962,34 @@
       "bytes": 235053,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
         "www.rfc-editor.org/rfc/rfc7231"
+      ]
+    },
+    {
+      "id": "rfc5789",
+      "families": [
+        "openapi-3.0",
+        "openapi-3.1"
+      ],
+      "name": "RFC 5789: PATCH Method for HTTP",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc5789.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc5789"
+      ],
+      "sha256": "9405262c2f3a33848c6cf1694e5e40222eb27a6858a6d93e70328b444d197e8f",
+      "bytes": 21706,
+      "retrievedAt": "2026-08-25T21:31:28Z",
+      "citedBy": [
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+      ],
+      "matchTokens": [
+        "www.rfc-editor.org/rfc/rfc5789"
       ]
     },
     {
@@ -1117,6 +1142,8 @@
     {
       "id": "rfc6265",
       "families": [
+        "openapi-3.0",
+        "openapi-3.1",
         "openapi-3.2"
       ],
       "name": "RFC 6265: HTTP State Management Mechanism",
@@ -1129,6 +1156,8 @@
       "bytes": 79724,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
