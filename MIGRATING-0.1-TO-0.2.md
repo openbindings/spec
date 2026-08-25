@@ -203,6 +203,6 @@ verification must not be presented as unqualified conformance.
 
 The example shows document-shape changes only. Whether that `location` and
 `selector` pair is sufficient and invocable depends on
-[`openbindings.openapi@1`](binding-specs/openapi/openbindings.openapi.md), and
+the `openbindings.openapi-2.0@1`/`-3.0@1`/`-3.1@1`/`-3.2@1` family (see [binding-specs/README.md](binding-specs/README.md)), and
 the operation schemas still need to be checked against the actual upstream
 interaction.

@@ -66,8 +66,8 @@ try {
     "# Lifecycle-test adjudication record\n"
   );
   write(
-    join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
-    "# OpenAPI\n\nDefines `openbindings.openapi@1`.\n"
+    join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
+    "# OpenAPI 3.1\n\nDefines `openbindings.openapi-3.1@1`.\n"
   );
   write(
     join(temp, "binding-specs", "errata.json"),
@@ -87,7 +87,7 @@ try {
     "--adjudication",
     "conformance/binding-specs/adjudication-fixture.md",
     "--families",
-    "openapi@1",
+    "openapi-3.1@1",
   ]);
   run("node", ["scripts/verify-binding-spec-publications.mjs"]);
 
@@ -98,8 +98,8 @@ try {
     "first",
     "root",
     "binding-specs",
-    "openapi",
-    "openbindings.openapi.md"
+    "openapi-3.1",
+    "openbindings.openapi-3.1.md"
   );
   const firstDigest = digest(firstDoc);
 
@@ -122,23 +122,23 @@ try {
     temp,
     "binding-specs",
     "errata",
-    "openapi",
+    "openapi-3.1",
     "1",
     "0001.md"
   );
   write(
     erratumPath,
-    "# `openbindings.openapi@1` erratum 1\n\nEditorial clarification only.\n"
+    "# `openbindings.openapi-3.1@1` erratum 1\n\nEditorial clarification only.\n"
   );
   const errataPath = join(temp, "binding-specs", "errata.json");
   const errataManifest = {
     format: "openbindings.binding-spec-errata@1",
     errata: [
       {
-        id: "openbindings.openapi@1-erratum-1",
-        identifier: "openbindings.openapi@1",
+        id: "openbindings.openapi-3.1@1-erratum-1",
+        identifier: "openbindings.openapi-3.1@1",
         publishedAt: "2026-07-24",
-        document: "binding-specs/errata/openapi/1/0001.md",
+        document: "binding-specs/errata/openapi-3.1/1/0001.md",
         sha256: digest(erratumPath),
       },
     ],
@@ -163,8 +163,8 @@ try {
   writeFileSync(errataPath, `${JSON.stringify(errataManifest, null, 2)}\n`);
 
   write(
-    join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
-    "# OpenAPI\n\nDefines `openbindings.openapi@3`.\n"
+    join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
+    "# OpenAPI\n\nDefines `openbindings.openapi-3.1@3`.\n"
   );
   const skippedRevision = run(
     "node",
@@ -179,7 +179,7 @@ try {
       "--adjudication",
     "conformance/binding-specs/adjudication-fixture.md",
     "--families",
-      "openapi@3",
+      "openapi-3.1@3",
     ],
     2
   );
@@ -188,10 +188,10 @@ try {
   }
 
   write(
-    join(temp, "binding-specs", "openapi", "openbindings.openapi.md"),
-    "# OpenAPI\n\nDefines `openbindings.openapi@2`.\n"
+    join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
+    "# OpenAPI\n\nDefines `openbindings.openapi-3.1@2`.\n"
   );
-  const sourceSymlink = join(temp, "binding-specs", "openapi", "linked.md");
+  const sourceSymlink = join(temp, "binding-specs", "openapi-3.1", "linked.md");
   symlinkSync("../../openbindings.md", sourceSymlink);
   const symlinkFailure = run(
     "node",
@@ -206,7 +206,7 @@ try {
       "--adjudication",
     "conformance/binding-specs/adjudication-fixture.md",
     "--families",
-      "openapi@2",
+      "openapi-3.1@2",
     ],
     2
   );
@@ -229,7 +229,7 @@ try {
     "--adjudication",
     "conformance/binding-specs/adjudication-fixture.md",
     "--families",
-    "openapi@2",
+    "openapi-3.1@2",
   ]);
   run("node", ["scripts/verify-binding-spec-publications.mjs", "--base", base]);
 
@@ -241,7 +241,7 @@ try {
   const goodManifest = readFileSync(manifestPath, "utf8");
   const changedManifest = JSON.parse(goodManifest);
   changedManifest.publications.find(
-    (entry) => entry.identifier === "openbindings.openapi@1"
+    (entry) => entry.identifier === "openbindings.openapi-3.1@1"
   ).publishedAt = "2099-01-01";
   writeFileSync(manifestPath, `${JSON.stringify(changedManifest, null, 2)}\n`);
   const manifestFailure = run(

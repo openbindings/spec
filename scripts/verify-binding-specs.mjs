@@ -225,9 +225,17 @@ for (const [dir, fam] of Object.entries(FAMILIES)) {
   }
   for (const id of extractAllRuleIds(md, fam.prefix)) allRuleIds.add(id);
 }
-const legacyOpenapiFidelityText = readFileSync(LEGACY_OPENAPI_FIDELITY.spec, "utf8");
-for (const id of extractAllRuleIds(legacyOpenapiFidelityText, LEGACY_OPENAPI_FIDELITY.prefix)) {
-  allRuleIds.add(id);
+// The superseded unified candidate was deleted (retire-legacy-openapi-candidate);
+// until its invocation-fidelity profile migrates to the family identities (N10),
+// legacy OAPI-* citations validate by pattern only, against git history.
+const legacyOpenapiDocPresent = existsSync(LEGACY_OPENAPI_FIDELITY.spec);
+const legacyOpenapiFidelityText = legacyOpenapiDocPresent
+  ? readFileSync(LEGACY_OPENAPI_FIDELITY.spec, "utf8")
+  : null;
+if (legacyOpenapiDocPresent) {
+  for (const id of extractAllRuleIds(legacyOpenapiFidelityText, LEGACY_OPENAPI_FIDELITY.prefix)) {
+    allRuleIds.add(id);
+  }
 }
 
 const fixtureRules = new Map(); // family-dir + rule id → relPath
@@ -437,7 +445,7 @@ let fidelityScenarios = 0;
 for (const dir of fidelityTargets) {
   const fam = dir === "openapi" ? LEGACY_OPENAPI_FIDELITY : FAMILIES[dir];
   const fidelitySpecText = dir === "openapi"
-    ? legacyOpenapiFidelityText
+    ? legacyOpenapiFidelityText // null once the superseded candidate is deleted
     : specTexts[dir];
   const path = join(FIDELITY_DIR, `${dir}.json`);
   if (!existsSync(path)) {
@@ -464,10 +472,13 @@ for (const dir of fidelityTargets) {
     fidelityScenarios++;
     if (!scenario.id.startsWith(`${fam.prefix}-FI-`))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
-    if (!sectionExists(fidelitySpecText, scenario.section))
+    if (fidelitySpecText !== null && !sectionExists(fidelitySpecText, scenario.section))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
     for (const rule of scenario.rules) {
-      if (!allRuleIds.has(rule))
+      if (fidelitySpecText === null) {
+        if (!/^(OBI|OAPI)-[A-Z]+-\d+$/.test(rule))
+          errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: rule '${rule}' is not a recognizable legacy or core rule id`);
+      } else if (!allRuleIds.has(rule))
         errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: rule '${rule}' is not defined by core or the family specification`);
     }
   }

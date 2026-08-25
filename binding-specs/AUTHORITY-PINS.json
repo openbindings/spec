@@ -41,7 +41,6 @@
       "bytes": 4723,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -73,7 +72,6 @@
       "bytes": 6071,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -105,7 +103,6 @@
       "bytes": 13037,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -132,7 +129,6 @@
       "bytes": 28360,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -157,7 +153,6 @@
       "bytes": 141811,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -182,7 +177,6 @@
       "bytes": 502941,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -234,7 +228,6 @@
       "bytes": 383078,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
@@ -305,7 +298,6 @@
       "bytes": 64328,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
@@ -329,7 +321,6 @@
       "bytes": 162227,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
@@ -372,7 +363,6 @@
       "bytes": 386549,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -393,7 +383,6 @@
       "bytes": 382358,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -414,7 +403,6 @@
       "bytes": 391249,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -435,7 +423,6 @@
       "bytes": 398758,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -456,7 +443,6 @@
       "bytes": 537214,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -477,7 +463,6 @@
       "bytes": 406582,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
@@ -498,7 +483,6 @@
       "bytes": 574412,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
@@ -519,7 +503,6 @@
       "bytes": 593002,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
@@ -583,12 +566,12 @@
       "sha256": "b160c424aacc4116168174b90ae91b29df6a48af25be660ceac3862daef495fa",
       "bytes": 7892171,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "24c5e48bf66ea61bc199ec6338c81258275ba9c6"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Was the withdrawn unified candidate's SSE authority; the openapi-3.2 sibling incorporates OAS 3.2's own event-stream processing instead. Retained as verified bytes until a family text cites WHATWG directly."
     },
     {
       "id": "rfc4648",
@@ -608,7 +591,6 @@
       "bytes": 35491,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -637,7 +619,6 @@
       "bytes": 72942,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -666,7 +647,6 @@
       "bytes": 105854,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -695,7 +675,6 @@
       "bytes": 77654,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -723,13 +702,13 @@
       "sha256": "5d9ec035aa40c0108362cb767c9e2d08c30f7225cb2a4715f484cb13c29b5f21",
       "bytes": 12931,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "rfc4180",
         "RFC 4180"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Was cited only by the withdrawn unified candidate's character-data rationale; the family siblings state the anti-registry rationale without citing the registration RFC. Retained as verified bytes until a family text cites it."
     },
     {
       "id": "rfc6570",
@@ -748,7 +727,6 @@
       "bytes": 79813,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
@@ -776,7 +754,6 @@
       "bytes": 146904,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -802,13 +779,13 @@
       "sha256": "2622f97a21c8b28558e860c2ad53a6f3114ac0cf905eb51aefa38e0629d76b2d",
       "bytes": 51348,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "rfc1738",
         "RFC 1738"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Was the withdrawn unified candidate's form-encoding supplement; openapi-2.0 cites HTML 4.01 directly and the 3.x siblings cite RFC 1866. Retained as verified bytes until a family text cites it."
     },
     {
       "id": "rfc6750",
@@ -828,7 +805,6 @@
       "bytes": 38949,
       "retrievedAt": "2026-08-20T22:00:00Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
@@ -855,7 +831,6 @@
       "bytes": 7009,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],

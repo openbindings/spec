@@ -50,9 +50,21 @@ const FAMILIES = {
     identifier: "openbindings.usage",
     document: "binding-specs/usage/openbindings.usage.md",
   },
-  openapi: {
-    identifier: "openbindings.openapi",
-    document: "binding-specs/openapi/openbindings.openapi.md",
+  "openapi-2.0": {
+    identifier: "openbindings.openapi-2.0",
+    document: "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+  },
+  "openapi-3.0": {
+    identifier: "openbindings.openapi-3.0",
+    document: "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+  },
+  "openapi-3.1": {
+    identifier: "openbindings.openapi-3.1",
+    document: "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+  },
+  "openapi-3.2": {
+    identifier: "openbindings.openapi-3.2",
+    document: "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
   },
   mcp: {
     identifier: "openbindings.mcp",
@@ -178,7 +190,9 @@ if (!existsSync(join(ROOT, adjudication))) {
 }
 
 const selected = requested.map((item) => {
-  const match = item.match(/^([a-z0-9-]+)@([1-9][0-9]*)$/);
+  // Family slugs may carry an upstream-line segment with dots (openapi-3.1),
+  // per the README naming convention.
+  const match = item.match(/^([a-z0-9]+(?:[.-][a-z0-9]+)*)@([1-9][0-9]*)$/);
   if (!match) fail(`invalid family revision ${item}`);
   const family = match[1];
   const revision = Number(match[2]);
