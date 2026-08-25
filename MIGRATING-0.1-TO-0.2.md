@@ -13,7 +13,7 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | 0.1 | 0.2 draft |
 | --- | --- |
 | `sources.*.format` | `sources.*.bindingSpec` |
-| Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi@1` |
+| Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi-3.1@1`, selected to match the artifact’s edition line |
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
 | `bindings.*.ref` | `bindings.*.selector`; same meaning — the binding-specification-defined selector of a target within the governed source |
 | Transform objects such as `{ "language": "jsonata", "expression": "..." }` | A JSONata expression string |
@@ -72,7 +72,7 @@ that consumption point:
   "dependencies": {
     "customerDelivery": {
       "operation": "events.deliver",
-      "bindingSpecs": ["openbindings.openapi@1"]
+      "bindingSpecs": ["openbindings.openapi-3.1@1"]
     }
   }
 }
@@ -187,7 +187,7 @@ verification must not be presented as unqualified conformance.
   },
   "sources": {
     "api": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://api.example.com/openapi.json"
     }
   },

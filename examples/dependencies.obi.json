@@ -48,14 +48,14 @@
     "completedExportDelivery": {
       "operation": "exports.deliver",
       "bindingSpecs": [
-        "openbindings.openapi@1",
+        "openbindings.openapi-3.1@1",
         "openbindings.grpc@1"
       ]
     }
   },
   "sources": {
     "exportsApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://exports.example.com/openapi.json"
     }
   },

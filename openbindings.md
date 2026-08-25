@@ -22,7 +22,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://example.com/openapi.json"
     }
   },
@@ -216,7 +216,7 @@ An operation's presence alone declares a contract, not availability. A binding d
     "customerDelivery": {
       "operation": "events.deliver",
       "bindingSpecs": [
-        "openbindings.openapi@1",
+        "openbindings.openapi-3.1@1",
         "openbindings.grpc@1"
       ]
     }
@@ -244,7 +244,7 @@ An operation is the contract, a source carries or addresses a governed concrete 
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://example.com/openapi.json"
     }
   },
@@ -278,7 +278,7 @@ The same operation can be realized over a second protocol by adding another bind
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://example.com/openapi.json"
     },
     "mcpServer": {
@@ -339,7 +339,7 @@ A realistic OBI layers in shared schemas, a named transform bridging a source's 
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi@1",
+      "bindingSpec": "openbindings.openapi-3.1@1",
       "location": "https://example.com/openapi.json"
     },
     "mcpServer": {
@@ -482,7 +482,7 @@ And MAY contain:
 | `inputTransform`  | JSONata string or `$ref` | See [Transforms].                                                                                 |
 | `outputTransform` | JSONata string or `$ref` | See [Transforms].                                                                                 |
 
-`selector` identifies a specific target within the governed source. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. Its syntax and meaning — including the absent-`selector` case, which targets whatever source-level default the binding specification defines — are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)); tools that resolve or act on `selector` MUST honor those conventions ([OBI-T-06](#103-tool-rules)). For example: JSON Pointer fragments under `openbindings.openapi@1`; fully-qualified method names for gRPC-family specifications; tool names for MCP-family specifications.
+`selector` identifies a specific target within the governed source. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. Its syntax and meaning — including the absent-`selector` case, which targets whatever source-level default the binding specification defines — are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)); tools that resolve or act on `selector` MUST honor those conventions ([OBI-T-06](#103-tool-rules)). For example: JSON Pointer fragments under `openbindings.openapi-3.1@1` and its siblings; fully-qualified method names for gRPC-family specifications; tool names for MCP-family specifications.
 
 **Realizations.** Multiple bindings MAY reference the same operation. Each is an author-declared realization of the operation: attaching several bindings asserts that each realizes the same logical capability through a different concrete target and that each honors every portable fact the operation represents — its per-value schemas after any declared transforms, and its operation-level claims such as `idempotent`. The assertion's truth is author-attested, like `idempotent` itself ([§5.1](#51-operations)): a binding that does not honor the represented facts makes the document's claim false, which no structural rule detects. A caller interacts with the operation through any one of its bindings; using one binding is a complete use of the operation. OpenBindings does not prove semantic equivalence or mechanical interchangeability among realizations beyond the represented facts (invariant 1); a caller that requires a particular interaction pattern constrains or inspects binding selection.
 
@@ -632,7 +632,7 @@ Identifiers intended to circulate across independently administered environments
 
 **Formality and completeness.** A binding specification is governing rules under a stable identifier, at whatever formality its author chooses: a published normative document, an internal design page, or rules that exist only as an implementation's committed behavior. Formality determines reach, not standing — how far conformance claims travel and who can verify them ([§10.5](#105-verification-conclusions)); [OBI-B-02](#104-binding-specification-rules)'s floor gates portable claims (and this project's catalog minting), never existence. An incomplete specification may therefore exist, be named by a conformant OBI, and have useful implementations. An implementation may choose behavior where that specification is silent, but the choice is implementation-defined: repetition or market adoption does not make it portable meaning under the identifier, and support documentation or conformance claims must not attribute it to the specification. Divergent implementations are evidence that the specification may need a more complete revision, an explicit permitted set, or a named choice. What no formality or completeness level relaxes is the identifier contract: one identifier, one meaning where meaning is actually defined ([OBI-B-01](#104-binding-specification-rules)). An implementation-defined specification is pinned to the behavior committed under its identifier — the identifier abstracts those rules from the code, and changed specified behavior is a new identifier ([OBI-B-03](#104-binding-specification-rules)), never a silent redefinition by deployment.
 
-**Project and third-party publication.** The OpenBindings project publishes binding specifications for the source families it supports under identifiers of the form `openbindings.<name>@<rev>` (e.g., `openbindings.openapi@1`, `openbindings.mcp@1`), where `<rev>` is an integer revision of the binding specification itself. Where a family has artifact or dialect versions, they live in the artifact and the specification's accepted-representations list, never in the identifier. Third parties publish equally valid binding specifications under their own authority — `com.example.<name>@<rev>` fits the same shape — with no project registration or approval. The project's authoring guidance for binding specifications (`binding-specs/README.md` in this repository) provides an informative template derived from the normative floor of [OBI-B-02](#104-binding-specification-rules); the template itself is not a conformance target. Implementation support may complete behavior the specification leaves open, but it must not be presented as if it completes the specification's portable meaning: the completion remains local to that implementation unless a binding-specification revision adopts it.
+**Project and third-party publication.** The OpenBindings project publishes binding specifications for the source families it supports under identifiers of the form `openbindings.<name>@<rev>` (e.g., `openbindings.openapi-3.1@1`, `openbindings.mcp@1`), where `<rev>` is an integer revision of the binding specification itself; when a versioned upstream family is divided by upstream line, `<name>` carries that line spelled exactly as the upstream spells it (`binding-specs/README.md` states the naming convention). Artifact patch editions and dialect versions never appear in the identifier: they live in the artifact and the specification’s accepted-representations list. Third parties publish equally valid binding specifications under their own authority — `com.example.<name>@<rev>` fits the same shape — with no project registration or approval. The project's authoring guidance for binding specifications (`binding-specs/README.md` in this repository) provides an informative template derived from the normative floor of [OBI-B-02](#104-binding-specification-rules); the template itself is not a conformance target. Implementation support may complete behavior the specification leaves open, but it must not be presented as if it completes the specification's portable meaning: the completion remains local to that implementation unless a binding-specification revision adopts it.
 
 One binding-specification revision may accept one upstream artifact edition or several exact editions when they share one correspondence. That accepted domain is part of the identifier's meaning: after publication, adding or removing an accepted upstream edition, source mode, or previously excluded feature or interaction changes the identifier's semantic definition even when all previously accepted inputs would behave unchanged. Such a change publishes a new binding-specification identifier; artifact versions are still discriminated from the artifact or protocol rather than encoded into the identifier.
 
