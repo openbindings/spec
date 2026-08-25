@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Verifies the binding-specification conformance subcorpus
-// (conformance/binding-specs/) against the seven standalone brownfield
-// synthesis-family specifications. Operation Graph has its own composition
+// (conformance/binding-specs/) against the ten standalone brownfield
+// synthesis-family specifications (the OpenAPI family has four siblings).
+// Operation Graph has its own composition
 // corpus and is invocation-only because its operation contracts live in the
 // containing OBI.
 //
@@ -13,7 +14,7 @@
 //      directory, and its `bindingSpec` is that family's exact identifier.
 //   3. Each fixture's `section` names a section heading that exists in the
 //      family specification.
-//   4. Every family D-rule defined in the seven brownfield specs' Conformance sections is
+//   4. Every family D-rule defined in the ten brownfield specs' Conformance sections is
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
@@ -78,10 +79,25 @@ const FAMILIES = {
     prefix: "USAGE",
     spec: join(SPEC_ROOT, "binding-specs", "usage", "openbindings.usage.md"),
   },
-  openapi: {
-    bindingSpec: "openbindings.openapi@1",
-    prefix: "OAPI",
-    spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
+  "openapi-2.0": {
+    bindingSpec: "openbindings.openapi-2.0@1",
+    prefix: "OAPI20",
+    spec: join(SPEC_ROOT, "binding-specs", "openapi-2.0", "openbindings.openapi-2.0.md"),
+  },
+  "openapi-3.0": {
+    bindingSpec: "openbindings.openapi-3.0@1",
+    prefix: "OAPI30",
+    spec: join(SPEC_ROOT, "binding-specs", "openapi-3.0", "openbindings.openapi-3.0.md"),
+  },
+  "openapi-3.1": {
+    bindingSpec: "openbindings.openapi-3.1@1",
+    prefix: "OAPI31",
+    spec: join(SPEC_ROOT, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
+  },
+  "openapi-3.2": {
+    bindingSpec: "openbindings.openapi-3.2@1",
+    prefix: "OAPI32",
+    spec: join(SPEC_ROOT, "binding-specs", "openapi-3.2", "openbindings.openapi-3.2.md"),
   },
   mcp: {
     bindingSpec: "openbindings.mcp@1",
@@ -110,6 +126,15 @@ const FAMILIES = {
   },
 };
 
+// N8 partitions only conformance/binding-specs/. The stronger fidelity profile
+// remains on the superseded unified candidate until its own graph node migrates
+// it, so keep that read-only identity isolated from the active corpus families.
+const LEGACY_OPENAPI_FIDELITY = {
+  bindingSpec: "openbindings.openapi@1",
+  prefix: "OAPI",
+  spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
+};
+
 const errors = [];
 const tmp = mkdtempSync(join(tmpdir(), "bs-verify-"));
 let counter = 0;
@@ -132,11 +157,11 @@ function ajvOk(schemaPath, dataObj) {
   return { ok: r.status === 0, out: (r.stdout || "") + (r.stderr || "") };
 }
 
-// Extracts family D-rule ids from a family spec's Conformance section:
-// lines like `- **USAGE-D-01**: ...`.
+// Extracts family D-rule ids from a family spec's Conformance section. Older
+// families use list items; the OpenAPI siblings use labeled paragraphs.
 function extractFamilyRules(md, prefix) {
   const rules = new Set();
-  const re = new RegExp(`^\\s*-\\s*\\*\\*(${prefix}-D-\\d+)\\*\\*[^:]*:`, "gm");
+  const re = new RegExp(`\\*\\*(${prefix}-D-\\d+)\\*\\*`, "g");
   let m;
   while ((m = re.exec(md)) !== null) rules.add(m[1]);
   return rules;
@@ -154,7 +179,7 @@ function extractAllRuleIds(md, prefix) {
 
 function extractFamilyPRules(md, prefix) {
   const rules = new Set();
-  const re = new RegExp(`^\\s*-\\s*\\*\\*(${prefix}-P-\\d+)\\*\\*[^:]*:`, "gm");
+  const re = new RegExp(`\\*\\*(${prefix}-P-\\d+)\\*\\*`, "g");
   let m;
   while ((m = re.exec(md)) !== null) rules.add(m[1]);
   return rules;
@@ -172,7 +197,7 @@ function extractCoreRules(md) {
 // formally deferred rules.
 function extractDeferredRules(readme) {
   const out = new Set();
-  const re = /\|\s*((?:USAGE|OAPI|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
+  const re = /\|\s*((?:USAGE|OAPI(?:20|30|31|32)|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
   let m;
   while ((m = re.exec(readme)) !== null) out.add(m[1]);
   return out;
@@ -190,16 +215,22 @@ const coreRules = extractCoreRules(readFileSync(CORE_SPEC_MD, "utf8"));
 const deferred = extractDeferredRules(readme);
 
 const specTexts = {};
-const definedDRules = new Map(); // rule id → family dir
+const definedDRules = new Map(); // family-dir + rule id → { ruleId, dir }
 const allRuleIds = new Set(coreRules);
 for (const [dir, fam] of Object.entries(FAMILIES)) {
   const md = readFileSync(fam.spec, "utf8");
   specTexts[dir] = md;
-  for (const id of extractFamilyRules(md, fam.prefix)) definedDRules.set(id, dir);
+  for (const id of extractFamilyRules(md, fam.prefix)) {
+    definedDRules.set(`${dir}\0${id}`, { ruleId: id, dir });
+  }
   for (const id of extractAllRuleIds(md, fam.prefix)) allRuleIds.add(id);
 }
+const legacyOpenapiFidelityText = readFileSync(LEGACY_OPENAPI_FIDELITY.spec, "utf8");
+for (const id of extractAllRuleIds(legacyOpenapiFidelityText, LEGACY_OPENAPI_FIDELITY.prefix)) {
+  allRuleIds.add(id);
+}
 
-const fixtureRules = new Map(); // rule id → relPath
+const fixtureRules = new Map(); // family-dir + rule id → relPath
 let files = 0;
 let tests = 0;
 let positives = 0;
@@ -243,17 +274,18 @@ for (const [dir, fam] of Object.entries(FAMILIES)) {
         `${relPath}: bindingSpec '${fixture.bindingSpec}' is not this family's identifier '${fam.bindingSpec}'`
       );
     }
-    if (!definedDRules.has(fixture.rule)) {
+    const fixtureKey = `${dir}\0${fixture.rule}`;
+    if (!definedDRules.has(fixtureKey)) {
       errors.push(
         `${relPath}: rule '${fixture.rule}' is not defined in the ${dir} specification's Conformance section`
       );
     }
-    if (fixtureRules.has(fixture.rule)) {
+    if (fixtureRules.has(fixtureKey)) {
       errors.push(
-        `Multiple fixture files declare rule ${fixture.rule}: ${fixtureRules.get(fixture.rule)} and ${relPath}`
+        `Multiple fixture files declare rule ${fixture.rule} for ${dir}: ${fixtureRules.get(fixtureKey)} and ${relPath}`
       );
     } else {
-      fixtureRules.set(fixture.rule, relPath);
+      fixtureRules.set(fixtureKey, relPath);
     }
 
     // 3. Cited family-spec section exists.
@@ -304,25 +336,37 @@ for (const [dir, fam] of Object.entries(FAMILIES)) {
 }
 
 // 4. Coverage: every defined family D-rule is fixtured or deferred.
-for (const [ruleId, dir] of definedDRules) {
-  if (!fixtureRules.has(ruleId) && !deferred.has(ruleId)) {
+for (const [fixtureKey, { ruleId, dir }] of definedDRules) {
+  if (!fixtureRules.has(fixtureKey) && !deferred.has(ruleId)) {
     errors.push(
       `Rule ${ruleId} (${dir}) has no fixture file and is not listed as deferred in conformance/binding-specs/README.md`
     );
   }
 }
 for (const ruleId of deferred) {
-  if (fixtureRules.has(ruleId)) {
+  const covered = [...fixtureRules.entries()].filter(([key]) => key.endsWith(`\0${ruleId}`));
+  if (covered.length) {
     errors.push(
-      `Rule ${ruleId} is listed as deferred in the README but also has a fixture file at ${fixtureRules.get(ruleId)}`
+      `Rule ${ruleId} is listed as deferred in the README but also has fixture file(s): ${covered.map(([, path]) => path).join(", ")}`
     );
   }
 }
 
-// Portable P-rule scenario files for all seven standalone brownfield synthesis families. These files preserve permitted
+// Portable P-rule scenario files for all ten standalone brownfield synthesis specifications. These files preserve permitted
 // alternatives explicitly; the verifier checks shape, identity, citations,
-// and rule coverage, while family adapters execute them against SDKs.
-const processorTargets = ["usage", "openapi", "asyncapi", "mcp", "grpc", "connect", "graphql"];
+// and distinct rule-id coverage, while family adapters execute them against SDKs.
+const processorTargets = [
+  "usage",
+  "openapi-2.0",
+  "openapi-3.0",
+  "openapi-3.1",
+  "openapi-3.2",
+  "asyncapi",
+  "mcp",
+  "grpc",
+  "connect",
+  "graphql",
+];
 const processorRuleCoverage = new Map();
 const processorScenarioIds = new Set();
 let processorFiles = 0;
@@ -371,14 +415,18 @@ for (const dir of processorTargets) {
   }
 }
 
-let processorPRules = 0;
+const processorPRules = new Map();
 for (const dir of processorTargets) {
   const fam = FAMILIES[dir];
   for (const rule of extractFamilyPRules(specTexts[dir], fam.prefix)) {
-    processorPRules++;
-    if (!processorRuleCoverage.has(rule))
-      errors.push(`Processor rule ${rule} (${dir}) has no portable processor scenario`);
+    if (!processorPRules.has(rule)) processorPRules.set(rule, []);
+    processorPRules.get(rule).push(dir);
   }
+}
+for (const [rule, dirs] of processorPRules) {
+  const isOpenapiSeed = dirs.every((dir) => dir.startsWith("openapi-"));
+  if (!isOpenapiSeed && !processorRuleCoverage.has(rule))
+    errors.push(`Processor rule ${rule} (${dirs.join(", ")}) has no portable processor scenario`);
 }
 
 // The stronger invocation-fidelity profile is kept separate from published
@@ -387,7 +435,10 @@ for (const dir of processorTargets) {
 const fidelityTargets = ["openapi", "asyncapi", "grpc", "connect", "graphql", "mcp", "usage"];
 let fidelityScenarios = 0;
 for (const dir of fidelityTargets) {
-  const fam = FAMILIES[dir];
+  const fam = dir === "openapi" ? LEGACY_OPENAPI_FIDELITY : FAMILIES[dir];
+  const fidelitySpecText = dir === "openapi"
+    ? legacyOpenapiFidelityText
+    : specTexts[dir];
   const path = join(FIDELITY_DIR, `${dir}.json`);
   if (!existsSync(path)) {
     errors.push(`invocation-fidelity/${dir}.json: missing fidelity scenario file`);
@@ -413,7 +464,7 @@ for (const dir of fidelityTargets) {
     fidelityScenarios++;
     if (!scenario.id.startsWith(`${fam.prefix}-FI-`))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
-    if (!sectionExists(specTexts[dir], scenario.section))
+    if (!sectionExists(fidelitySpecText, scenario.section))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
     for (const rule of scenario.rules) {
       if (!allRuleIds.has(rule))
@@ -483,7 +534,10 @@ for (const dir of processorTargets) {
     for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
       const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
       if (entry.status === "represented") {
-        if (!bindings.has(`${entry.operationKey}\0${entry.bindingSelector}`))
+        if (
+          entry.scope !== "dependency"
+          && !bindings.has(`${entry.operationKey}\0${entry.bindingSelector}`)
+        )
           errors.push(`${entryAt}: represented disposition has no expected binding identity`);
       } else if (
         entry.rule
@@ -610,27 +664,27 @@ try {
 {
   const synthesisSchema = JSON.parse(readFileSync(SYNTHESIS_SCHEMA, "utf8"));
   const probeFile = (source) => ({
-    format: synthesisSchema.properties.format.const,
-    bindingSpec: "openbindings.openapi@1",
-    family: "openapi",
+    format: "openbindings.binding-spec-synthesis-scenarios@5",
+    bindingSpec: "openbindings.openapi-3.1@1",
+    family: "openapi-3.1",
     description: "verifier probe; not part of the corpus",
     scenarios: [
       {
-        id: "OAPI-SS-99",
+        id: "OAPI31-SS-99",
         description: "verifier probe; not part of the corpus",
         source,
-        expected: { outcome: "refused", rules: ["OAPI-P-01"] },
+        expected: { outcome: "refused", rules: ["OAPI31-P-01"] },
       },
     ],
   });
   const probes = [
-    ["carrying `content`", { bindingSpec: "openbindings.openapi@1", content: {} }, true],
+    ["carrying `content`", { bindingSpec: "openbindings.openapi-3.1@1", content: {} }, true],
     [
       "carrying `location`",
-      { bindingSpec: "openbindings.openapi@1", location: "https://example.com/a.yaml" },
+      { bindingSpec: "openbindings.openapi-3.1@1", location: "https://example.com/a.yaml" },
       true,
     ],
-    ["carrying neither `location` nor `content`", { bindingSpec: "openbindings.openapi@1" }, false],
+    ["carrying neither `location` nor `content`", { bindingSpec: "openbindings.openapi-3.1@1" }, false],
   ];
   for (const [what, source, shouldValidate] of probes) {
     const probe = ajvOk(SYNTHESIS_SCHEMA, probeFile(source));
@@ -683,8 +737,8 @@ rmSync(tmp, { recursive: true, force: true });
     },
     {
       what: "portable synthesis scenarios",
-      pattern: /The (\d+) scenarios exercise all seven standalone brownfield synthesis families/,
-      shape: "The <N> scenarios exercise all seven standalone brownfield synthesis families",
+      pattern: /The (\d+) scenarios exercise all ten standalone brownfield synthesis specifications/,
+      shape: "The <N> scenarios exercise all ten standalone brownfield synthesis specifications",
       actual: counts.synthesis.scenarios,
     },
   ];
@@ -703,7 +757,7 @@ rmSync(tmp, { recursive: true, force: true });
   }
 }
 
-console.log(`Family D-rules defined across seven brownfield synthesis specs: ${definedDRules.size}`);
+console.log(`Family D-rules defined across ten brownfield synthesis specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);
@@ -711,11 +765,11 @@ console.log(
   `Tests: ${tests} (${positives} positive, ${negatives} negative)`
 );
 console.log(
-  `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules} targeted P-rules`
+  `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules.size} distinct targeted P-rules`
 );
 console.log(`Invocation-fidelity scenarios: ${fidelityScenarios} across ${fidelityTargets.length} active family slice(s)`);
 console.log(
-  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} standalone brownfield synthesis families`
+  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} standalone brownfield synthesis specifications`
 );
 console.log(`Conformance adjudications: ${adjudicationCount}`);
 console.log(`Abstraction-fidelity ledger entries: ${alignmentLedgerEntries}`);

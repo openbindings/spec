@@ -1,0 +1,107 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "bindingSpec": "openbindings.openapi-3.2@1",
+  "family": "openapi-3.2",
+  "description": "Portable processor scenarios for the OpenAPI 3.2 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
+  "scenarios": [
+    {
+      "id": "OAPI32-PS-01",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "OAS 3.2.0 §§4.14.3.1, 4.14.4, and 4.14.6.3 require ordered per-item processing for sequential media and model each parsed text/event-stream item as the applicable data/event/id/retry object. This seed uses the edition's worked SSE bytes and equivalent JSON records [CO32-12, CO32-13].",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "SSE event objects",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/events": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "events",
+                      "content": {
+                        "text/event-stream": {
+                          "itemSchema": {
+                            "type": "object",
+                            "required": [
+                              "data"
+                            ],
+                            "properties": {
+                              "data": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string"
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "retry": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1events/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/event-stream"
+          },
+          "body": "event: addString\ndata: This data is formatted\ndata: across two lines\nretry: 5\n\nevent: addInt64\ndata: 1234.5678\nunknownField: this is ignored\n\n: This is a comment\nevent: addJSON\ndata: {\"foo\": 42}\n\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "event": "addString",
+                  "data": "This data is formatted\nacross two lines",
+                  "retry": 5
+                },
+                {
+                  "event": "addInt64",
+                  "data": "1234.5678"
+                },
+                {
+                  "event": "addJSON",
+                  "data": "{\"foo\": 42}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

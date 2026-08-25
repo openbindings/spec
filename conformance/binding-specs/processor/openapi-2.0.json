@@ -1,0 +1,108 @@
+{
+  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "bindingSpec": "openbindings.openapi-2.0@1",
+  "family": "openapi-2.0",
+  "description": "Portable processor scenarios for the OpenAPI 2.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
+  "scenarios": [
+    {
+      "id": "OAPI20-PS-01",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "7",
+      "description": "OAS 2.0 Parameter Object text states that a body parameter's name has no effect on the parameter itself and that only one payload exists (edition analysis N2-09). The caller therefore supplies the JSON value once in body, and the declared name payload never appears on the wire [CO20-03].",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Nameless body",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "basePath": "/v1",
+            "consumes": [
+              "application/json"
+            ],
+            "paths": {
+              "/pets": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/v1/pets"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

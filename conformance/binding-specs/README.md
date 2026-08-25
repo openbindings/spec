@@ -1,13 +1,16 @@
 # Binding-specification conformance subcorpus
 
 Source fixtures (D-rules) and portable processor scenarios (P-rules) for the
-seven standalone brownfield synthesis binding specifications, keyed to each family's specification under
+ten standalone brownfield synthesis binding specifications, keyed to each specification under
 [`binding-specs/`](../../binding-specs/):
 
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
-| openapi  | `openbindings.openapi@1`  | [`openapi/openbindings.openapi.md`](../../binding-specs/openapi/openbindings.openapi.md)     | OAPI-D-01..03  | OAPI-P-01..10     |
+| openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..04 |
+| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..04 |
+| openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..04 |
+| openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..04 |
 | mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
@@ -20,12 +23,12 @@ core corpus but is verified separately: the core tooling
 (`verify-corpus.mjs`, `generate-conformance-manifest.mjs`) scans only
 `document/` and `tool/`, so it neither picks up nor is broken by this
 directory. The dedicated verifier is `scripts/verify-binding-specs.mjs`
-(run in CI). The seven families share one source-fixture shape in
+(run in CI). The ten specifications share one source-fixture shape in
 [`fixture.schema.json`](fixture.schema.json), one portable behavior shape in
 [`processor-scenario.schema.json`](processor-scenario.schema.json), and one
 portable authoring shape in
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json). Source
-fixtures live in seven family directories; processor scenarios live in
+fixtures live in ten specification directories; processor scenarios live in
 [`processor/`](processor/), and synthesis scenarios live in
 [`synthesis/`](synthesis/).
 
@@ -77,10 +80,11 @@ Two boundaries keep the verdicts honest:
 D-rules bind documents; each family's P-rules bind processors (wire
 behavior, configuration points, classification). The rule-keyed D fixture
 format remains document-only. A separate portable processor-scenario format
-under `processor/` covers all seven standalone brownfield synthesis families. Where a
+under `processor/` covers all ten standalone brownfield synthesis specifications. Where a
 family attributes a constraint to a P-rule (the YAML
-grammar pin and exact `openapi`/`asyncapi` edition discrimination under
-OAPI-P-01/ASYNC-P-01, gRPC's bound-closure schema range under GRPC-P-03),
+grammar pin and exact OpenAPI/AsyncAPI edition discrimination under the
+OAPI20/OAPI30/OAPI31/OAPI32-P-01 and ASYNC-P-01 rules, gRPC's bound-closure
+schema range under GRPC-P-03),
 the D fixtures deliberately do not duplicate it, even when the constraint
 reads document-shaped; the fixture files note each such exclusion.
 
@@ -103,14 +107,21 @@ normalized observation satisfies every assertion in any one `expected`
 alternative.
 
 Several alternatives are a feature: they preserve an artifact-permitted set
-without giving array order preference semantics. `OAPI-PS-04` permits either
+without giving array order preference semantics. `OAPI31-PS-04` permits either
 declared JSON request media, and `USAGE-PS-07` permits either artifact-allowed
 optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
+Processor-scenario revision 2 re-keys the former unified `openapi` family as
+the exact `openapi-2.0`, `openapi-3.0`, `openapi-3.1`, and `openapi-3.2`
+siblings and carries their exact binding-specification identifiers. The
+exchange shape is otherwise unchanged. Revision-1 files for the other
+families remain valid and are not rewritten merely to advance a version.
+
 The current corpus contains 169 scenarios covering every P-rule of usage,
-OpenAPI, AsyncAPI, MCP, gRPC, Connect, and GraphQL (51 distinct rules). It includes
+AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
+3.0/3.1 scenarios and authority-derived 2.0/3.2 seeds (51 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
 collision cases. Independent adapters in `openbindings-go` and
@@ -162,8 +173,8 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The 86 scenarios
-exercise all seven standalone brownfield synthesis families and mix faithful
+(`invalid` source units do not count as upstream-valid). The 88 scenarios
+exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
 with newly discovered upstream edge cases; it is neither a crawler corpus nor
@@ -176,7 +187,7 @@ A scenario MAY carry `resources`: the same closed, immutable dependency set
 keyed by absolute retrieval URI that a processor scenario carries under
 `given.resources`, served offline through the family adapter's ordinary
 artifact resolver. Without it the format could not express a multi-document
-artifact at all, so `openbindings.openapi@1` §6 "Reference scope" — normative
+artifact at all, so `openbindings.openapi-3.1@1` §6 "Reference scope" — normative
 binding-specification text about what an external reference composes — had no
 portable synthesis coverage, and a divergence was created in exactly the case
 §6 exists to decide with every project gate green. `resources` is harness
@@ -204,6 +215,14 @@ the sentinel `sourceRef` prefix `ambiguous-ref:` becomes
 `ambiguous-selector:`. `sourceRef` itself is unchanged — it names a
 source-local unit, not the binding member. Nothing else changes.
 
+Revision 5 adds `dependency` as a coverage scope for a source interaction that
+the governing binding specification requires synthesis to represent as a
+targetless Core dependency. A represented dependency entry is identified by
+its authority-defined `sourceRef` and therefore carries neither an operation
+key nor a binding selector. This keeps dependency-key spelling outside the
+portable comparison surface, as the OpenAPI family requires. Revision-4 files
+for families with no dependency scenarios remain valid and unchanged.
+
 A scenario's `source` is shaped by the published
 [`interface-synthesizer`](https://openbindings.com/interfaces/interface-synthesizer)
 0.2 contract's `SynthesizeInterfaceSource`, whose `anyOf` this schema adopts
@@ -226,7 +245,7 @@ every authority delegates to an implementation.**
 
 Both halves need one fact that is easy to misread. A family specification's
 statement that generation is "outside this specification" is a **handoff, not an
-exclusion**: `openbindings.openapi@1` §10 sends operation-key derivation,
+exclusion**: the OpenAPI siblings' synthesis boundary sends operation-key derivation,
 output-schema selection and schema translation to "the project's
 interface-synthesizer and reference-tool documentation", and the published
 contract accepts the handoff — "Derivation is this contract's domain … per-family
@@ -265,8 +284,8 @@ a name an implementation mints.**
   or parameter name it declares, a media type it declares.
 - Minted, and therefore out of bounds: a generated or qualified `$defs`
   cut-point key, and any operation-facing field name the artifact does not
-  supply — `openbindings.openapi@1` §9.1 sends "deterministic generation of the
-  operation-facing field names" to synthesis, so the wrapper property a
+  supply — the OpenAPI siblings send deterministic generation of the
+  operation-facing field names to synthesis, so the wrapper property a
   whole-value body rides under is the implementations' own name. Both the
   [binding-specs authoring doctrine](../../binding-specs/README.md) and
   [`ABSTRACTION-FIDELITY.md`](../../ABSTRACTION-FIDELITY.md) place a "synthesis
@@ -279,8 +298,8 @@ twice in the corpus as it stands. A property an authority *does* define but
 that is reachable only through a minted name cannot be asserted with today's
 five verbs: "these are exactly the definitions" and "no extra definition
 appeared" are the worked cases, which is why the `$defs` reachability closure
-behind `OAPI-SS-19` stays pinned by SDK-local twin tests instead. And
-`OAPI-SS-27` carries no assertion at all, because the value its case is about
+behind `OAPI31-SS-19` stays pinned by SDK-local twin tests instead. And
+`OAPI31-SS-27` carries no assertion at all, because the value its case is about
 rides the synthesizer-named whole-body property. Both stay there until the
 vocabulary gains a name-independent verb, which is a decision in its own right
 and not one an authoring pass may take.
@@ -292,7 +311,8 @@ One JSON file per rule, in the family's directory, named for the rule
 [`fixture.schema.json`](../fixture.schema.json) with three changes, pinned
 by this subtree's own [`fixture.schema.json`](fixture.schema.json):
 
-- `rule` matches the seven family prefixes (`^(USAGE|OAPI|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+$`).
+- `rule` matches the published rule prefixes (`USAGE`, `OAPI20`, `OAPI30`,
+  `OAPI31`, `OAPI32`, `MCP`, `GRPC`, `CONN`, `ASYNC`, or `GQL`).
 - `bindingSpec` (required) carries the exact governing identifier
   (`"openbindings.usage@1"`), exact and opaque per core OBI-B-01.
 - `section` cites the **family** specification's section — the section the
@@ -310,7 +330,7 @@ intent, exactly as in the core corpus.
 
 ## Coverage
 
-All 21 rules are fixtured with at least one positive and one negative case;
+All 26 rules are fixtured with at least one positive and one negative case;
 no rule needed a deferral row — every family D-rule has an offline-decidable
 core, and resolution clauses are fixtured via embedded content.
 
@@ -319,9 +339,14 @@ core, and resolution clauses are fixtured via embedded content.
 | USAGE-D-01 | 1/3         | content string; number/object/null negatives                                                                                                                                         |
 | USAGE-D-02 | 4/5         | document + exec address forms; relative-in-form, empty-token, and empty-command negatives                                                                                            |
 | USAGE-D-03 | 4/4         | command-path grammar, alias segment, omitted-selector root; empty-string, empty-segment, case, and dangling-path negatives (embedded KDL)                                                 |
-| OAPI-D-01  | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
-| OAPI-D-02  | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
-| OAPI-D-03  | 3/10        | pointer form incl. 3.1 `components.pathItems` resolution; lowercase-exact method, escaping, percent-encoded-spelling, webhooks, and dangling-target negatives                        |
+| OAPI20-D-01 | 4/6        | object/string content plus absolute-URI location; content-type and relative-in-form negatives                                                                                       |
+| OAPI20-D-02 | 2/11       | 2.0 paths selectors; literal spelling, resolution, exact identifier, and exact-edition negatives                                                                                     |
+| OAPI30-D-01 | 4/6        | object/string content plus absolute-URI location; content-type and relative-in-form negatives                                                                                       |
+| OAPI30-D-02 | 2/11       | 3.0 paths selectors; literal spelling, resolution, exact identifier, and exact-edition negatives                                                                                     |
+| OAPI31-D-01 | 4/6        | object/string content plus absolute-URI location; content-type and relative-in-form negatives                                                                                       |
+| OAPI31-D-02 | 3/12       | 3.1 paths selectors including `components.pathItems`; literal spelling, webhooks, resolution, identifier, and edition negatives                                                      |
+| OAPI32-D-01 | 4/6        | object/string content plus absolute-URI location; content-type and relative-in-form negatives                                                                                       |
+| OAPI32-D-02 | 5/12       | 3.2 paths, QUERY, and capitalization-preserving `additionalOperations` selectors; literal spelling, webhooks, resolution, identifier, and edition negatives                         |
 | MCP-D-01   | 2/7         | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives                                                                                                   |
 | MCP-D-02   | 2/4         | required absolute http/https address; content-only-source negative                                                                                                                   |
 | MCP-D-03   | 5/8         | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings)                              |
@@ -343,16 +368,19 @@ core, and resolution clauses are fixtured via embedded content.
 ```
 binding-specs/
   README.md            (this file)
-  fixture.schema.json  (shared fixture shape for all seven families)
+  fixture.schema.json  (shared fixture shape for all ten specifications)
   processor-scenario.schema.json (portable P-rule scenario shape)
   synthesis-scenario.schema.json (portable artifact-to-OBI scenario shape)
   adjudication.schema.json (discrepancy-disposition record shape)
   adjudications.json    (review decisions from corpus findings)
-  processor/            usage.json, openapi.json, asyncapi.json,
+  processor/            usage.json, openapi-{2.0,3.0,3.1,3.2}.json, asyncapi.json,
                         mcp.json, grpc.json, connect.json, graphql.json
-  synthesis/            one portable authoring file per published family
+  synthesis/            one portable authoring file per published specification
   usage/               USAGE-D-01.json ... USAGE-D-03.json
-  openapi/             OAPI-D-01.json  ... OAPI-D-03.json
+  openapi-2.0/         OAPI20-D-01.json ... OAPI20-D-02.json
+  openapi-3.0/         OAPI30-D-01.json ... OAPI30-D-02.json
+  openapi-3.1/         OAPI31-D-01.json ... OAPI31-D-02.json
+  openapi-3.2/         OAPI32-D-01.json ... OAPI32-D-02.json
   mcp/                 MCP-D-01.json   ... MCP-D-03.json
   grpc/                GRPC-D-01.json  ... GRPC-D-03.json
   connect/             CONN-D-01.json  ... CONN-D-03.json
@@ -377,14 +405,16 @@ of treating a shared major/minor line as implicitly accepted.
 internally consistent: every D-rule fixture file validates against this subtree's
 `fixture.schema.json`; each file's `rule` matches its filename, family
 directory, and `bindingSpec`; the cited `section` exists in the family
-spec; every family D-rule extracted from the seven specifications is either
+spec; every family D-rule extracted from the ten specifications is either
 fixtured here or listed as deferred in this README; every negative test
 carries `violates`, and every `violates` entry names a rule the family spec
 or the core spec actually defines. Processor scenario files validate against
 their own schema; family, identifier, section, scenario ids, and every
-referenced P-rule are cross-checked, and the verifier requires complete P-rule
-coverage for all seven families. Synthesis scenario files are likewise checked
-for all seven families, including target/disposition consistency. It asserts
+referenced P-rule are cross-checked. The verifier requires complete P-rule
+coverage for the six non-OpenAPI rule-prefix families; the four new OpenAPI
+files are intentionally partitioned seeds and report their partial rule
+coverage honestly. Synthesis scenario files are likewise checked for all ten
+specifications, including target/disposition consistency. It asserts
 this README's three scenario counts against the corpus, and probes the
 synthesis schema with a source declaring neither `location` nor `content` to
 prove the adopted contract constraint is still enforced. It does not judge D
