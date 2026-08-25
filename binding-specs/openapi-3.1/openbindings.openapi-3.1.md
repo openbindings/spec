@@ -1,10 +1,8 @@
 # `openbindings.openapi-3.1` Binding Specification
 
-## 1. Status, identifier, and rule labels
+## 1. Identifier and rule labels
 
-**Status: unreleased first-revision candidate.**
-
-**[B — convention]** The proposed opaque binding-specification identifier has exactly the spelling **`openbindings.openapi-3.1@1`**.
+**[B — convention]** The opaque binding-specification identifier has exactly the spelling **`openbindings.openapi-3.1@1`**.
 
 **[C]** Publication mints §1's identifier under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
 
