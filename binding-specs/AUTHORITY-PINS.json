@@ -43,6 +43,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
@@ -74,6 +75,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
@@ -105,6 +107,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
@@ -131,6 +134,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
@@ -155,6 +159,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
@@ -179,6 +184,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/connect/openbindings.connect.md"
@@ -191,8 +197,8 @@
     {
       "id": "rfc7617",
       "families": [
-        "openapi-2.0",
         "openapi-3.1",
+        "openapi-2.0",
         "openapi-3.0",
         "openapi-3.2"
       ],
@@ -206,8 +212,9 @@
       "bytes": 30163,
       "retrievedAt": "2026-08-21T23:24:59Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -229,6 +236,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md"
       ],
@@ -521,7 +529,8 @@
     {
       "id": "oas-3.1-dialect-2024-11-10",
       "families": [
-        "openapi-3.1"
+        "openapi-3.1",
+        "openapi-3.2"
       ],
       "name": "OpenAPI 3.1 base dialect, revision 2024-11-10",
       "edition": "3.1 dialect 2024-11-10",
@@ -534,7 +543,8 @@
       "bytes": 1027,
       "retrievedAt": "2026-08-21T23:11:57Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/3.1/dialect/base"
@@ -553,9 +563,9 @@
       "sha256": "15f12e539a3ac811c5f18950bc9cff296b43a22ad4d50b4db8d533f37ebc1d23",
       "bytes": 672716,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared for openbindings.openapi-3.2@1. No current binding specification cites or accepts this edition; its status must be removed and citedBy populated when the 3.2 sibling is emitted.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "spec.openapis.org/oas/v3.2.0.html"
       ]
@@ -599,8 +609,9 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -627,8 +638,9 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -655,8 +667,9 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -683,8 +696,9 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -736,6 +750,7 @@
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -814,8 +829,9 @@
       "retrievedAt": "2026-08-20T22:00:00Z",
       "citedBy": [
         "binding-specs/openapi/openbindings.openapi.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -1071,10 +1087,10 @@
       "sha256": "5ebc046e7aa00eae4ca19100caedd255776bfbe2a28ea3d11ecca51cf5838ad0",
       "bytes": 42843,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared for the OpenAPI 3.2 Path Item Object's fixed `query` operation.",
       "pinChoice": "OAS 3.2.0 visibly labels the inline citation as draft-08 but links to draft-11. The hyperlink target is the cited evidence and identifies exact retrievable bytes, so this manifest pins draft-11 and preserves the label/target mismatch here rather than silently choosing the visible label.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "draft-ietf-httpbis-safe-method-w-body-11"
       ]
@@ -1137,9 +1153,9 @@
       "sha256": "dc4177094813e85a44a7897b892b76bc09160b3a03aea44f0f511f3a98f91933",
       "bytes": 79724,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 normative citation set for cookie parameter wire semantics.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc6265",
         "RFC 6265"
@@ -1181,9 +1197,9 @@
       "sha256": "813277f91c6c65c9047da9e9a8f1f0c19c1fb4bb1aaeea944bcf3bbdcc2eef49",
       "bytes": 30240,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 normative citation set for multipart/form-data carriage.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc7578",
         "RFC 7578"
@@ -1247,9 +1263,9 @@
       "sha256": "a8eadbcdce5fc508b9e014299621562da041232af13848632092164d50b3f482",
       "bytes": 16132,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 sequential-media citation set for JSON text sequences.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc7464",
         "RFC 7464"
@@ -1269,9 +1285,9 @@
       "sha256": "79c57255cbfbf566ca33a15fb281e94ec99b7e1e839c3b2e3788aed5bba72c58",
       "bytes": 9494,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 sequential-media citation set for the +json-seq suffix.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc8091",
         "RFC 8091"
@@ -1367,9 +1383,9 @@
       "sha256": "c4065780495d5aa8ec46aa4062a4b7b15688c51f039fcb585b0724e873c417da",
       "bytes": 729455,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 normative citation set because its querystring and application/x-www-form-urlencoded rules explicitly incorporate WHATWG URL parsing and percent-decoding behavior. The live rendering is mutable; the digest makes movement fail loudly.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "url.spec.whatwg.org"
       ]
