@@ -140,21 +140,37 @@ below may continue to change until the 0.2 release is cut.
   drivers happen to be installed; unsupported execution fails locally before
   dispatch. No Core OBI document-model field changed.
 
-- The unreleased first `openbindings.openapi@1` candidate. Its accumulated
-  first-revision behavior preserves same-named input declarations through a
-  binding-private route, exact and declaration-complex JSON values, dynamic
-  objects, artifact-authorized raw request and response bytes through a
-  protocol-independent Base64 boundary, media-range selection, forms, text,
-  and SSE. Protocol facts remain below the ordinary operation boundary. No
-  Core OBI document-model field changed.
+- **The OpenAPI binding-specification family**: four sibling
+  specifications, one per published OAS minor line — `openbindings.openapi-2.0@1`
+  (edition 2.0), `openbindings.openapi-3.0@1` (3.0.0–3.0.4),
+  `openbindings.openapi-3.1@1` (3.1.0–3.1.2), and `openbindings.openapi-3.2@1`
+  (3.2.0) — replacing the earlier unified `openbindings.openapi@1` candidate,
+  which is deleted. Each sibling states its own line's rules flatly with
+  per-clause provenance labels and pinned authority citations. The
+  caller-facing correspondence value is the `{parameters?, body?}` envelope
+  with artifact-derived routing; the flattening trigger apparatus, routed
+  tuple, and unmatched-field passthrough are removed, with flat synthesized
+  contracts carried by emitted `inputTransform`s. Callbacks and webhooks
+  synthesize as targetless Core dependencies with role-inverted contracts.
+  The 3.2 sibling incorporates OAS 3.2's sequential-media, `itemSchema`, and
+  SSE event model; 3.0 and 3.1 state the one-body/one-value limit their
+  editions force. The naming convention
+  `openbindings.<family>-<upstream-line>@<rev>` is recorded in the
+  binding-specs README. Earlier working-draft entries below that cite
+  `openbindings.openapi@1` or `OAPI-*` rule identifiers record development
+  history now carried forward — where their rules survived — under the
+  family identifiers and `OAPI20`/`OAPI30`/`OAPI31`/`OAPI32` rule prefixes,
+  with the conformance corpus partitioned per family
+  (`processor-scenarios@2`, `synthesis-scenarios@5`).
 
 - A small, explicit set of core invariants: per-value contracts,
   enabling-not-invoking, split authority, context-free documents,
   offline-decidable core conformance, and decentralized extension.
 - Exact `bindingSpec` identifiers and the `OBI-B-01` through `OBI-B-03`
   completeness and revision rules for binding specifications.
-- Unreleased first-revision candidates for OpenAPI, AsyncAPI, GraphQL, gRPC,
-  Connect, MCP, usage/CLI, and operation graphs, plus publication tooling for
+- Unreleased first-revision candidates for AsyncAPI, GraphQL, gRPC,
+  Connect, MCP, usage/CLI, and operation graphs, alongside the OpenAPI
+  family above, plus publication tooling for
   creating immutable, content-addressed defining bundles with portable
   conformance evidence and append-only errata when a candidate is actually
   released. No binding specification has yet been published.
