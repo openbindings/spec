@@ -8,9 +8,11 @@
 
 **[A]** The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** in this document are interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals.
 
-**[B — convention]** Every normative paragraph and normative table row carries one visible provenance label: **A** is derived from incorporated authority and cites it, **C** is derived from the OpenBindings Core, and **B** is this specification's explicitly classified bridge (`convention`, `pin`, `configuration point`, `exclusion`, or `limit`).
+**[B — convention]** Every normative paragraph and normative table row carries one visible provenance label: **A** is derived from incorporated authority and cites it, **C** is derived from the OpenBindings Core, and **B** is this specification's explicitly classified bridge (`convention`, `pin`, `configuration point`, `exclusion`, or `limit`). A `convention` is a choice this specification makes where no authority speaks; a `pin` fixes one reading of an ambiguous or versioned authority; a `configuration point` names a decision deferred to the consumer; an `exclusion` removes something from the accepted surface behind a stated reopen trigger; a `limit` states a boundary this specification does not cross.
 
 ## 2. Scope and incorporated authorities
+
+**[B — convention]** This binding specification defines how OpenAPI 3.2 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes. It presumes the OpenBindings Core specification (`../../openbindings.md`).
 
 **[A]** OpenAPI Specification (OAS) edition [`3.2.0`](https://spec.openapis.org/oas/v3.2.0.html) defines the required `openapi` field as the semantic-version string `3.2.0` identifying that edition ([OAS 3.2.0 §§2.1, 4.1.1](https://spec.openapis.org/oas/v3.2.0.html#oas-version)).
 
@@ -44,13 +46,15 @@
 
 **[A]** An OpenAPI Object MUST contain at least one of `components`, `paths`, or `webhooks`; a root omitting all three is upstream-invalid, unlike any present-but-empty surface above ([OAS 3.2.0 §4.1.1](https://spec.openapis.org/oas/v3.2.0.html#fixed-fields)).
 
-**[B — limit]** Because that three-field omission leaves no position that could contain an addressable target, it triggers §3.2's existing derived no-addressable-target source refusal after the load gates; it is not a fifth load gate and does not reach a valid present-but-empty surface.
+**[B — limit]** Because that three-field omission leaves no position that could contain an addressable target, it triggers §3.2's whole-source refusal rule after the load gates; it is not a fifth load gate and does not reach a valid present-but-empty surface.
 
 **[B — limit]** A target that is addressable but unusable because of a missing choice, unsupported alternative, or exclusion refuses at invocation or is reported as synthesis coverage loss; it never becomes a whole-source load refusal.
 
 **[B — limit]** §5.2's root `jsonSchemaDialect` exclusion is this revision's only source-scope exclusion: unlike the [`include`/`mount` filtering surface of `openbindings.usage@1`](../usage/openbindings.usage.md#3-accepted-source-representations), no other source member or addressable target is filtered merely by its position in the source.
 
 **[A]** Unknown non-extension fields create no binding behavior and are ignored only where the governing OAS object permits them; no unknown member is guessed into a known field ([OAS 3.2.0 §4](https://spec.openapis.org/oas/v3.2.0.html#objects-and-fields)).
+
+**[B — convention]** Defect outcomes use a fixed vocabulary: a source **refuses at load** only at §3.2's gates; a declaration defect **excludes** its smallest owning unit from synthesis and selection; an addressable target whose use requires a missing choice or unsupported alternative is **unusable** and **refuses before dispatch** when invoked; a wire fact this specification cannot represent faithfully is a **loud protocol error**; and synthesis reports every exclusion and inexpressible declaration as **coverage loss**.
 
 ## 4. `location`, `content`, and composition
 
@@ -72,7 +76,7 @@
 
 **[A]** A referenced document need not itself be a conforming OpenAPI Document: an OAD document may instead have a Schema Object at its root, but every document admitted to the OAD MUST have either an OpenAPI Object or Schema Object root. When a target document declares `$self`, references to that document MUST use the `$self` identity; a reference to a Schema Object beneath an `$id` boundary MUST use the nearest such `$id` rather than cross the resource boundary with another base plus JSON Pointer ([OAS 3.2.0 §§4.1.1–4.1.2, Appendix F.1](https://spec.openapis.org/oas/v3.2.0.html#base-uri-within-content)).
 
-**[B — exclusion]** A selected reference that reaches a document with neither admitted root, uses a retrieval alias despite a declared `$self`, or crosses a nearer `$id` resource boundary noncanonically is unresolvable under this binding; §5.1's table confines the loud consequence, and no private alias fallback applies. The exclusion is permanent under this identifier and reopens only if incorporated authority admits the exact root or reference form.
+**[B — exclusion]** A selected reference that reaches a document with neither admitted root, uses a retrieval alias despite a declared `$self`, or crosses a nearer `$id` resource boundary noncanonically is unresolvable under this binding; §5.1's table confines the loud consequence, and no private alias fallback applies. The exclusion reopens only if incorporated authority admits the exact root or reference form.
 
 **[B — convention]** When one JSON or YAML node is reached from reference positions requiring different OAS Object types, each reference context interprets the node independently as its own required Object type; this is the deterministic choice within OAS's implementation-defined multi-context license ([OAS 3.2.0 Appendix G.2](https://spec.openapis.org/oas/v3.2.0.html#conflicts-between-field-types-and-reference-contexts)).
 
@@ -82,7 +86,7 @@
 
 **[C]** A cyclic but resolvable graph is legitimate: cycle detection terminates traversal and is not itself a refusal (Core [OBI-T-11](../../openbindings.md#103-tool-rules)).
 
-**[B — exclusion]** When a selected Path Item carries `$ref`, the selected operation target is excluded only if a fixed field used by that target appears in both the referenced Path Item and its adjacent declaration, because OAS defines that collision as undefined; collisions confined to unused fields and all non-colliding adjacent fields leave the target usable, and the exclusion is permanent under this identifier unless an incorporated OAS edition defines the collision ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#path-item-ref)).
+**[B — exclusion]** When a selected Path Item carries `$ref`, the selected operation target is excluded only if a fixed field used by that target appears in both the referenced Path Item and its adjacent declaration, because OAS defines that collision as undefined; collisions confined to unused fields and all non-colliding adjacent fields leave the target usable, and the exclusion reopens only if an incorporated OAS edition defines the collision ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#path-item-ref)).
 
 **[A]** The following confinement table applies ([OAS 3.2.0 §§4.1.2, 4.9](https://spec.openapis.org/oas/v3.2.0.html#openapi-description-structure)):
 
@@ -100,9 +104,9 @@
 
 **[B — pin]** For this identifier, that base-dialect URI is fixed to the official [`2024-11-10` revision](https://spec.openapis.org/oas/3.1/dialect/2024-11-10); a later change in the alias's resolution does not alter this specification.
 
-**[B — exclusion]** A root `jsonSchemaDialect` naming any other URI excludes the whole source because this specification refuses to prove, per source, that no reachable Schema Object depends on that changed default; this exclusion is permanent under this identifier and reopens only if that exact dialect becomes incorporated authority.
+**[B — exclusion]** A root `jsonSchemaDialect` naming any other URI excludes the whole source because this specification refuses to prove, per source, that no reachable Schema Object depends on that changed default; this exclusion reopens only if that exact dialect becomes incorporated authority.
 
-**[B — exclusion]** A schema-resource-root `$schema` naming any other URI excludes only each selected unit whose reachable closure enters that resource; this exclusion is permanent under this identifier and reopens only if that exact dialect becomes incorporated authority.
+**[B — exclusion]** A schema-resource-root `$schema` naming any other URI excludes only each selected unit whose reachable closure enters that resource; this exclusion reopens only if that exact dialect becomes incorporated authority.
 
 ## 6. Selector and inbound dependencies
 
@@ -112,7 +116,7 @@
 
 **[A]** An `additionalOperations` key MUST be an HTTP method token in the exact capitalization sent on the wire and MUST NOT denote a method represented by a fixed Operation field; the fixed `query` field denotes QUERY under the pinned draft-11 target that OAS links despite displaying a draft-08 label ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#path-item-additional-operations), [RFC 9110 §9.1](https://www.rfc-editor.org/rfc/rfc9110#section-9.1), [HTTP QUERY draft-11](https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.html)).
 
-**[B — exclusion]** `additionalOperations` keys compare byte-exactly for map identity and selector resolution; a key that compares ASCII case-insensitively equal to any fixed Operation field name is a declaration defect that excludes only that additional-operation entry. The exclusion is permanent under this identifier and reopens only if incorporated authority admits the collision and defines its unique operation mapping.
+**[B — exclusion]** `additionalOperations` keys compare byte-exactly for map identity and selector resolution; a key that compares ASCII case-insensitively equal to any fixed Operation field name is a declaration defect that excludes only that additional-operation entry. The exclusion reopens only if incorporated authority admits the collision and defines its unique operation mapping.
 
 **[A]** Selector evaluation never percent-decodes the pointer and fails unresolvable when the selected operation is absent ([RFC 6901 §§3–4](https://www.rfc-editor.org/rfc/rfc6901#section-3), [OAS 3.2.0 §§4.8, 4.9](https://spec.openapis.org/oas/v3.2.0.html#path-item-object)).
 
@@ -122,7 +126,7 @@
 
 **[A]** When `responses` is present, its Responses Object MUST contain at least one response code; a present empty object is upstream-invalid, distinct from valid omission ([OAS 3.2.0 §4.16](https://spec.openapis.org/oas/v3.2.0.html#responses-object)).
 
-**[B — exclusion]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The exclusion is permanent under this identifier and reopens only if an incorporated OAS edition admits a present empty Responses Object.
+**[B — exclusion]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The exclusion reopens only if an incorporated OAS edition admits a present empty Responses Object.
 
 ### 6.2 Callbacks and webhooks
 
@@ -148,9 +152,11 @@
 
 **[A]** Effective parameter identity is exact name plus location; duplicate effective parameters at the same identity are upstream-invalid, while the same name in different locations denotes distinct parameters ([OAS 3.2.0 §§4.9.1, 4.10.1, 4.12](https://spec.openapis.org/oas/v3.2.0.html#operation-parameters)).
 
-**[B — exclusion]** Duplicate effective parameters at the same identity exclude their smallest owning operation, while legal cross-location duplicates remain independently supplied through §7's qualified mode. The exclusion is permanent under this identifier and reopens only if an incorporated OAS edition admits duplicate effective parameters at one identity.
+**[B — exclusion]** Duplicate effective parameters at the same identity exclude their smallest owning operation. The exclusion reopens only if an incorporated OAS edition admits duplicate effective parameters at one identity.
 
-**[B — exclusion]** Two effective header parameters whose names differ only by ASCII case exclude the selected target permanently under this identifier because OAS parameter identity is case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction. This exclusion reopens only if an incorporated authority defines a wire mapping that preserves such case-distinct declarations ([OAS 3.2.0 §§3.2, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#case-sensitivity), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
+**[B — convention]** Legal cross-location duplicates remain independently supplied through the qualified mode above.
+
+**[B — exclusion]** Two effective header parameters whose names differ only by ASCII case exclude the selected target because OAS parameter identity is case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction. This exclusion reopens only if an incorporated authority defines a wire mapping that preserves such case-distinct declarations ([OAS 3.2.0 §§3.2, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#case-sensitivity), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
 **[B — convention]** Every unknown caller-envelope parameter key refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
 
@@ -168,7 +174,7 @@
 
 **[A]** Every effective Parameter Object MUST declare `name` and one of the five admissible `in` values, and MUST use exactly one of `schema` or `content`; a `path` Parameter MUST declare `required: true`, a `querystring` Parameter MUST use `content` and none of the schema-form fields, and a content-form map MUST contain exactly one entry ([OAS 3.2.0 §§4.12.1–4.12.2.3](https://spec.openapis.org/oas/v3.2.0.html#parameter-object)).
 
-**[B — exclusion]** A selected effective Parameter Object violating any constraint in that closed declaration list is a declaration defect that excludes the selected target before caller values are inspected; sibling targets survive. The exclusion is permanent under this identifier and reopens only if an incorporated OAS edition removes the violated constraint or defines the malformed form's wire meaning.
+**[B — exclusion]** A selected effective Parameter Object violating any constraint in that closed declaration list is a declaration defect that excludes the selected target before caller values are inspected; sibling targets survive. The exclusion reopens only if an incorporated OAS edition removes the violated constraint or defines the malformed form's wire meaning.
 
 **[A]** A Header Parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored ([OAS 3.2.0 §§3.2, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#parameter-name), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
@@ -202,7 +208,7 @@
 | **[A]** `cookie` | cookie | primitive, array, object | `false` | RFC 6265 bytes | `name=` |
 | **[A]** `cookie` | cookie | primitive, array, object | `true` | RFC 6265 bytes | `name=` |
 
-**[B — exclusion]** A selected declaration whose style, location, shape, or explicit `explode` lies outside the table excludes the selected target; on §9.3's Encoding style path, the smallest owner is the selected media alternative rather than the target. A supplied null reaching an authority-undefined `n/a` cell instead refuses that invocation before dispatch at the affected Parameter or Encoding property, without excluding other values admitted by the same cell. These exclusions are permanent under this identifier and reopen only if incorporated authority defines the exact missing cell.
+**[B — exclusion]** A selected declaration whose style, location, shape, or explicit `explode` lies outside the table excludes the selected target; on §9.3's Encoding style path, the smallest owner is the selected media alternative rather than the target. A supplied null reaching an authority-undefined `n/a` cell instead refuses that invocation before dispatch at the affected Parameter or Encoding property, without excluding other values admitted by the same cell. These exclusions reopen only if incorporated authority defines the exact missing cell.
 
 **[A]** Default style is `form` for query and cookie and `simple` for path and header; default `explode` is `true` for `form` and `cookie` and `false` otherwise; `allowReserved` applies only where the destination/style percent-encodes ([OAS 3.2.0 §4.12.2.2](https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-for-use-with-schema)).
 
@@ -220,11 +226,11 @@
 
 **[B — convention]** Before dispatch, the binding refuses a supplied parameter or property name or scalar value containing its non-RFC style's structural delimiter: U+0020 SPACE for `spaceDelimited`, `|` for `pipeDelimited`, or any of `[`, `]`, `=`, and `&` for `deepObject`; no escape-convention configuration point is offered.
 
-**[B — exclusion]** A compound-capable style is excluded only when its resolved declaration proves an unsupported compound member—an array whose resolved `items` schema declares only `object` or `array`, or an object with at least one declared property whose resolved schema declares only `object` or `array`. A typeless member proves no compound shape, a choice with multiple non-null possibilities supplies no single resolved member schema, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value. The rule applies symmetrically to every compound-capable Parameter style and to §9.3's Encoding style path, where the smallest owner is the selected media alternative rather than the target. OAS/RFC 6570 defines no expansion for the excluded cells, so the owning unit is excluded permanently under this identifier unless an incorporated authority defines that exact cell ([OAS 3.2.0 §§4.12.3, 4.12.6, Appendix C.1](https://spec.openapis.org/oas/v3.2.0.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
+**[B — exclusion]** A compound-capable style is excluded only when its resolved declaration proves an unsupported compound member—an array whose resolved `items` schema declares only `object` or `array`, or an object with at least one declared property whose resolved schema declares only `object` or `array`. A typeless member proves no compound shape, a choice with multiple non-null possibilities supplies no single resolved member schema, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value. The rule applies symmetrically to every compound-capable Parameter style and to §9.3's Encoding style path, where the smallest owner is the selected media alternative rather than the target. OAS/RFC 6570 defines no expansion for the excluded cells, so the owning unit is excluded unless an incorporated authority defines that exact cell ([OAS 3.2.0 §§4.12.3, 4.12.6, Appendix C.1](https://spec.openapis.org/oas/v3.2.0.html#style-values), [RFC 6570 §3.2.1](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.1)).
 
 **[A]** The Paths Object MUST NOT contain two templated path keys with equivalent hierarchies but different template names. Within one selected target, every path-template expression MUST have exactly one corresponding effective `path` Parameter, every effective `path` Parameter MUST correspond to exactly one expression, and an expression MUST occur no more than once ([OAS 3.2.0 §§4.8.1–4.8.2, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#path-templating)).
 
-**[B — exclusion]** Either path-key ambiguity or either direction of a path-expression/Parameter mismatch is a declaration defect that excludes the selected target before any caller value is inspected; non-conflicting targets survive. The exclusion is permanent under this identifier and reopens only if incorporated authority admits the declaration or defines its unique target mapping.
+**[B — exclusion]** Either path-key ambiguity or either direction of a path-expression/Parameter mismatch is a declaration defect that excludes the selected target before any caller value is inspected; non-conflicting targets survive. The exclusion reopens only if incorporated authority admits the declaration or defines its unique target mapping.
 
 **[A]** An expanded path value containing unescaped `/`, `?`, or `#` refuses before dispatch ([OAS 3.2.0 §4.8.2](https://spec.openapis.org/oas/v3.2.0.html#path-templating)).
 
@@ -240,7 +246,7 @@
 
 **[B — pin]** For every admitted non-urlencoded `querystring` media lane, the incorporated serialization's bytes are percent-encoded into the query component under the preceding uppercase `%HH` rule; raw insertion is not permitted.
 
-**[B — exclusion]** A `querystring` media entry whose format has no serialization incorporated by this specification excludes only that parameter lane; this exclusion is permanent under this identifier and reopens only when a pinned authority incorporated by this specification defines that mapping.
+**[B — exclusion]** A `querystring` media entry whose format has no serialization incorporated by this specification excludes only that parameter lane; this exclusion reopens only when a pinned authority incorporated by this specification defines that mapping.
 
 **[A]** For a query parameter with `allowEmptyValue: true`, a supplied empty string emits a present zero-length value; absence still means omitted, the empty string remains distinct from §8.2's undefined null, and this binding infers no schema-validity consequence because OAS leaves that interaction implementation-defined ([OAS 3.2.0 §§4.12.2.1, 4.12.6](https://spec.openapis.org/oas/v3.2.0.html#parameter-allow-empty-value)).
 
@@ -250,7 +256,7 @@
 
 **[B — convention]** An effective Header Parameter named `Cookie` supplies one raw Cookie field only when no effective cookie-location Parameter and no selected cookie credential contributes; the binding does not parse or merge the raw string, and a raw/structured collision refuses the target or makes the selected credential alternative unusable.
 
-**[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target permanently under this identifier because those fields are processor-owned and cannot be replaced by caller input; the exclusion reopens only if an incorporated HTTP authority defines caller control that preserves the processor's framing and routing obligations.
+**[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target because those fields are processor-owned and cannot be replaced by caller input; the exclusion reopens only if an incorporated HTTP authority defines caller control that preserves the processor's framing and routing obligations.
 
 ## 9. Request and response media
 
@@ -266,7 +272,7 @@
 
 **[B — configuration point]** A body-emitting invocation preserves every admissible declared request alternative: a sole concrete declaration selects itself; multiple declarations or a range-only declaration require a concrete `requestMedia` choice before input consumption; the choice MUST match under §9.1 and never substitutes another declaration's schema.
 
-**[B — configuration point]** A missing required choice, unmatched or ambiguous choice, unsupported selected lane, or body-emitting invocation with no admissible candidate refuses before dispatch; no body bytes, media registry entry, or example is sniffed to select a lane.
+**[B — configuration point]** A missing required choice, unmatched or ambiguous choice, unsupported selected lane, or body-emitting invocation with no admissible candidate refuses before dispatch; no body bytes, media registry entry, or examples are sniffed to select a lane.
 
 **[A]** A content-map Media Type Object or `components.mediaTypes` reference MUST resolve before lane selection ([OAS 3.2.0 §§4.7.1, 4.14.1](https://spec.openapis.org/oas/v3.2.0.html#media-type-object)).
 
@@ -306,11 +312,11 @@
 
 **[B — pin]** Every OpenBindings raw-octet value is a JSON string containing canonical RFC 4648 §4 Base64: standard alphabet, required padding, no ignored non-alphabet characters, and zero unused pad bits; requests decode before dispatch and responses encode the exact octets ([RFC 4648 §§3.3, 3.5, 4](https://www.rfc-editor.org/rfc/rfc4648)).
 
-**[B — exclusion]** This specification does not generate XML from an object model because OAS 3.2 still leaves ordinary object-node order and null serialization implementation-defined and identifies adjacent text nodes as ambiguous; the selected media alternative is excluded permanently under this identifier until incorporated authority defines those remaining bytes, while string and raw-octet XML carriage remain admitted ([OAS 3.2.0 §§4.26.1, 4.26.2.2, 4.26.5](https://spec.openapis.org/oas/v3.2.0.html#xml-object)).
+**[B — exclusion]** This specification does not generate XML from an object model because OAS 3.2 still leaves ordinary object-node order and null serialization implementation-defined and identifies adjacent text nodes as ambiguous; the selected media alternative is excluded until incorporated authority defines those remaining bytes, while string and raw-octet XML carriage remain admitted ([OAS 3.2.0 §§4.26.1, 4.26.2.2, 4.26.5](https://spec.openapis.org/oas/v3.2.0.html#xml-object)).
 
 **[B — convention]** Because `readOnly` and `writeOnly` are annotations whose enforcement OAS leaves to the application, this binding never uses them to delete a supplied wire member or synthesize an absent one ([OAS 3.2.0 §4.24.5.2](https://spec.openapis.org/oas/v3.2.0.html#validating-readonly-and-writeonly)).
 
-**[B — exclusion]** A concrete request or response selection admitted by none of the JSON, character-data, raw-octet, XML-string, form, multipart, sequential, or other explicitly incorporated lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion is permanent under this identifier unless an incorporated authority defines that media/data-form cell.
+**[B — exclusion]** A concrete request or response selection admitted by none of the JSON, character-data, raw-octet, string XML carriage under §9.2's XML rule, form, multipart, sequential, or other explicitly incorporated lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
 
 ### 9.3 Form bodies, multipart parts, and Encoding Objects
 
@@ -332,7 +338,7 @@
 
 **[A]** A no-`type` part uses the raw-octet lane and §9.2's canonical Base64 boundary; a string part with `contentEncoding` remains artifact-encoded text. For multipart, that `contentEncoding` also declares the equivalent `Content-Transfer-Encoding`, and an explicit Encoding header whose schema disallows the value makes both serialization and parsing undefined ([OAS 3.2.0 §§4.15.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#content-transfer-encoding-and-contentencoding)).
 
-**[B — exclusion]** Such an explicit Encoding-header contradiction excludes the affected multipart field, not the whole media alternative. A body-emitting invocation that reaches the field refuses before dispatch, parsing that reaches it fails loudly, and synthesis reports that field as excluded coverage loss; unaffected fields and media alternatives remain available. The field exclusion is permanent under this identifier and reopens only if incorporated authority defines both serialization and parsing for the contradiction.
+**[B — exclusion]** Such an explicit Encoding-header contradiction excludes the affected multipart field, not the whole media alternative. A body-emitting invocation that reaches the field refuses before dispatch, parsing that reaches it fails loudly, and synthesis reports that field as excluded coverage loss; unaffected fields and media alternatives remain available. The field exclusion reopens only if incorporated authority defines both serialization and parsing for the contradiction.
 
 **[A]** Name-based `encoding` is mutually exclusive with `prefixEncoding` and `itemEncoding`. Positional encoding applies only to `multipart`, requires `itemSchema` or an array `schema`, models one part per array item in order, applies each `prefixEncoding` entry to its corresponding position, ignores surplus prefix entries, and applies `itemEncoding` to every remaining item ([OAS 3.2.0 §§4.14.1, 4.14.5.2](https://spec.openapis.org/oas/v3.2.0.html#encoding-by-position)).
 
@@ -348,7 +354,7 @@
 
 **[A]** An Encoding Object's nested `encoding`, `prefixEncoding`, and `itemEncoding` fields apply recursively, and every processor MUST support one level of nesting ([OAS 3.2.0 §4.15.2](https://spec.openapis.org/oas/v3.2.0.html#nested-encoding)).
 
-**[B — exclusion]** A selected media alternative requiring more than one nested Encoding level is excluded because OAS makes deeper support optional; the exclusion belongs only to that alternative, is permanent under this identifier, and reopens only if an incorporated authority requires the deeper level.
+**[B — exclusion]** A selected media alternative requiring more than one nested Encoding level is excluded because OAS makes deeper support optional; the exclusion belongs only to that alternative and reopens only if an incorporated authority requires the deeper level.
 
 ### 9.4 HTTP content codings
 
@@ -372,9 +378,9 @@
 
 **[A]** Sequential request serialization emits one media item per array element; `schema` governs the complete array and `itemSchema` governs each emitted element ([OAS 3.2.0 §§4.14.3.1, 4.14.3.1.1](https://spec.openapis.org/oas/v3.2.0.html#streaming-sequential-media-types)).
 
-**[B — exclusion]** Sequential request emission is available only for forms whose incorporated authority defines write-direction item serialization. OAS defines post-parse handling and supplies examples for `text/event-stream` but no object-to-event write algorithm, so a `text/event-stream` request-body alternative is excluded; the exclusion belongs only to that alternative, is permanent under this identifier, and reopens only if incorporated authority defines the missing write mapping.
+**[B — exclusion]** Sequential request emission is available only for forms whose incorporated authority defines write-direction item serialization. OAS defines post-parse handling and supplies examples for `text/event-stream` but no object-to-event write algorithm, so a `text/event-stream` request-body alternative is excluded; the exclusion belongs only to that alternative and reopens only if incorporated authority defines the missing write mapping.
 
-**[B — convention]** Synthesis determines streaming capability statically from the artifact alone. Its bound considers every Response Object that could govern a final 2xx status and every media declaration such a response can select; the operation is streaming-capable when at least one admitted success declaration is sequential.
+**[B — convention]** Synthesis determines streaming capability statically from the artifact alone. Its bound considers every Response Object that could govern a status classified as successful by §9.6 and every media declaration such a response can select; the operation is streaming-capable when at least one admitted success declaration is sequential.
 
 **[A]** A sequential response is server-streaming; `itemSchema` applies independently to each parsed item, while a co-present `schema` remains an aggregate constraint over the complete ordered sequence ([OAS 3.2.0 §§4.14.3.1, 4.14.3.1.1](https://spec.openapis.org/oas/v3.2.0.html#streaming-sequential-media-types)).
 
@@ -392,11 +398,11 @@
 
 **[A]** Response keys are closed to exact HTTP status codes, the five ranges `1XX` through `5XX`, `default`, and specification extensions; an exact key overrides its matching range ([OAS 3.2.0 §§4.16.1–4.16.3](https://spec.openapis.org/oas/v3.2.0.html#responses-object)).
 
-**[B — exclusion]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the exclusion is permanent under this identifier and reopens only if an incorporated OAS 3.2 edition admits that exact key form.
+**[B — exclusion]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the exclusion reopens only if an incorporated OAS 3.2 edition admits that exact key form.
 
 **[B — convention]** The governing Response Object lookup order is exact status, then the single matching range, then `default`; range-over-default is this specification's reading, and declarations never reclassify the native status.
 
-**[A]** Success is the final RFC 9110 status in the 2xx class ([RFC 9110 §15.3](https://www.rfc-editor.org/rfc/rfc9110#section-15.3)).
+**[A]** Success means that the final RFC 9110 status (the status after any interim responses and any redirects the runtime chose to follow) is in the 2xx class ([RFC 9110 §15.3](https://www.rfc-editor.org/rfc/rfc9110#section-15.3)).
 
 **[B — convention]** Redirect following is runtime policy. A redirect followed with the bound method and complete body preserved remains this interaction; a method-rewriting redirect is a final response of this interaction ([RFC 9110 §15.4](https://www.rfc-editor.org/rfc/rfc9110#section-15.4)).
 
@@ -428,7 +434,7 @@
 
 **[A]** Server variables substitute their declared value, use `default` when no consumer value is supplied, MUST satisfy a nonempty declared `enum`, and each variable MUST occur no more than once in its Server URL template; an unresolved variable refuses before dispatch ([OAS 3.2.0 §§4.5.1, 4.6.1](https://spec.openapis.org/oas/v3.2.0.html#server-variable-object)).
 
-**[B — exclusion]** A Server URL template repeating a variable is a declaration defect that excludes only that Server alternative; no private repeated-substitution convention is applied and sibling alternatives survive. The exclusion is permanent under this identifier and reopens only if an incorporated OAS edition defines repeated-variable substitution.
+**[B — exclusion]** A Server URL template repeating a variable is a declaration defect that excludes only that Server alternative; no private repeated-substitution convention is applied and sibling alternatives survive. The exclusion reopens only if an incorporated OAS edition defines repeated-variable substitution.
 
 **[A]** Server URLs satisfy the 3.2 Server URL field rules, may be relative to the retrieval location of the document containing the Server Object, and MUST contain neither query nor fragment. The root `$self` identifies the OpenAPI document and MUST NOT replace that retrieval-URI base for API URLs ([OAS 3.2.0 §§4.5.1, 4.5.2](https://spec.openapis.org/oas/v3.2.0.html#relative-references-in-api-urls)).
 
@@ -452,7 +458,7 @@
 
 **[A]** A Security Scheme Object's `type` is closed to `apiKey`, `http`, `mutualTLS`, `oauth2`, and `openIdConnect`; `apiKey` additionally requires `name` and an admissible `in`, `http` requires `scheme`, `oauth2` requires `flows`, and `openIdConnect` requires `openIdConnectUrl` ([OAS 3.2.0 §4.27.1](https://spec.openapis.org/oas/v3.2.0.html#security-scheme-object)).
 
-**[B — exclusion]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—makes every complete security alternative requiring it unusable; other OR alternatives remain selectable. The alternative-level exclusion is permanent under this identifier and reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
+**[B — exclusion]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—makes every complete security alternative requiring it unusable; other OR alternatives remain selectable. The alternative-level exclusion reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
 
 **[B — configuration point]** For a component-name requirement occurring in a referenced non-entry document, `implicitConnectionScope` selects `entry` or `referring` resolution and defaults to `entry`, preserving OAS's implementation-defined multi-document choice while following its recommendation; URI-identified requirements bypass this point ([OAS 3.2.0 §§4.1.2.3, Appendix G.3](https://spec.openapis.org/oas/v3.2.0.html#resolving-implicit-connections)).
 
@@ -494,7 +500,7 @@
 
 **[B — limit]** Operation/dependency key spelling, flattening, output-schema choice, and Schema Object translation are synthesis policy, not binding semantics; no dynamic-object trigger, declaration-complex trigger, dialect trigger, `body.properties`, `body.whole`, routed tuple, or unmatched-field passthrough exists.
 
-**[B — convention]** A synthesizer MUST account for every fixed or additional addressable operation and every callback/webhook dependency as represented, excluded with §12.3's exact reason, or unsupported; a failure in an unused description position is coverage loss rather than invocation behavior.
+**[B — convention]** A synthesizer MUST account for every fixed or additional addressable operation and every callback/webhook dependency as represented, excluded with the exact reason stated beside the applicable exclusion, or unsupported; a failure in an unused description position is coverage loss rather than invocation behavior.
 
 **[C]** Every binding-specific configuration requirement remains in coverage accounting and invocation context, assigned to its represented target or declared alternative, and MUST NOT enter the operation input schema (Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules)).
 
