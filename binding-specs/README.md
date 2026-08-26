@@ -514,7 +514,7 @@ named correspondences cannot express rides the byte boundary and accounts
 lossy — with the loss stated in the emitted schema, not only in synthesis
 coverage.
 
-This order does not require identical requests where an incorporated authority permits alternatives.This order does not require identical requests where an incorporated authority permits alternatives. For a project specification claiming faithful upstream deference, it requires every observable choice to remain inside the incorporated authority's permitted set unless the specification labels a deliberate divergence, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
+This order does not require identical requests where an incorporated authority permits alternatives. For a project specification claiming faithful upstream deference, it requires every observable choice to remain inside the incorporated authority's permitted set unless the specification labels a deliberate divergence, every OpenBindings convention to be necessary and visible, and the same declared configuration to have the same semantic effect. During review, words such as _first_, _default_, _precedence_, _discard_, _ignore_, _one value_, and _this specification's pin_ deserve an authority check: who supplied that rule, and could incorporation, configuration, or refusal preserve more of the artifact instead?
 
 ## Release-quality review loop
 

@@ -18,7 +18,9 @@
 
 **[A]** Within that closed set, the artifact's exact `openapi` value selects its admitted edition under OAS's version-field semantics ([OAS 3.1.2 §4.1](https://spec.openapis.org/oas/v3.1.2.html#versions)).
 
-**[B — convention]** Within that closed set, observable behavior MUST NOT turn on the patch component: each accepted edition instructs tooling to support the `3.1.*` feature set uniformly and not distinguish patch versions, so corrected patch text governs a contradiction ([OAS 3.1.0 §4.1](https://spec.openapis.org/oas/v3.1.0.html#versions), [3.1.1 §4.1](https://spec.openapis.org/oas/v3.1.1.html#versions), [3.1.2 §4.1](https://spec.openapis.org/oas/v3.1.2.html#versions)).
+**[B — convention]** Within that closed set, observable behavior MUST NOT turn on the patch component: each accepted edition instructs tooling to support the `3.1.*` feature set uniformly and not distinguish patch versions ([OAS 3.1.0 §4.1](https://spec.openapis.org/oas/v3.1.0.html#versions), [3.1.1 §4.1](https://spec.openapis.org/oas/v3.1.1.html#versions), [3.1.2 §4.1](https://spec.openapis.org/oas/v3.1.2.html#versions)).
+
+**[B — pin]** Where accepted patch editions contradict one another, the corrected patch text governs.
 
 **[B — convention]** That corrected-patch reading does not widen the closed accepted domain beyond §2's three exact values.
 

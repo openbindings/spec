@@ -120,7 +120,9 @@
 
 **[B — convention]** `selector` is REQUIRED and has exactly one of two literal spellings: `#/paths/<escaped-path>/<lowercase-method>` for a fixed-field operation, where `<lowercase-method>` is one of `get`, `put`, `post`, `delete`, `options`, `head`, `patch`, `trace`, or `query`; or `#/paths/<escaped-path>/additionalOperations/<METHOD-as-spelled>` for an additional operation. Each map-key segment is escaped once under [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), and the additional-operation method retains its exact case after that unescaping ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-6)).
 
-**[A]** An `additionalOperations` key MUST be an HTTP method token in the exact capitalization sent on the wire and MUST NOT denote a method represented by a fixed Operation field; the fixed `query` field denotes QUERY under the linked draft target. The OAS document's link text reads draft-08 while its hyperlink target is draft-11; this specification follows the linked target ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#path-item-additional-operations), [RFC 9110 §9.1](https://www.rfc-editor.org/rfc/rfc9110#section-9.1), [HTTP QUERY draft-11](https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.html)).
+**[A]** An `additionalOperations` key MUST be an HTTP method token in the exact capitalization sent on the wire and MUST NOT denote a method represented by a fixed Operation field; the fixed `query` field denotes QUERY under the linked draft target. The OAS document's link text reads draft-08 while its hyperlink target is draft-11 ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#path-item-additional-operations), [RFC 9110 §9.1](https://www.rfc-editor.org/rfc/rfc9110#section-9.1), [HTTP QUERY draft-11](https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.html)).
+
+**[B — pin]** Between the displayed draft-08 label and the linked draft-11 target, this specification follows the linked target.
 
 **[B — exclusion]** `additionalOperations` keys compare byte-exactly for map identity and selector resolution; a key that compares ASCII case-insensitively equal to any fixed Operation field name is a declaration defect that excludes only that additional-operation entry. The exclusion reopens only if incorporated authority admits the collision and defines its unique operation mapping.
 
@@ -316,7 +318,9 @@
 
 **[B — limit]** UTF-8 decoding MUST be supported; any further charset is an implementation capability whose absence refuses loudly.
 
-**[A]** OAS 3.2 describes raw binary with a typeless resolved declaration; a non-JSON, non-form concrete selection whose Media Type Object omits `schema`, or whose present resolved declaration is typeless, therefore uses the raw-octet lane. A schema-omitted media range does not gain this lane because it declares no single concrete representation ([OAS 3.2.0 §§4.13.2, 4.24.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#working-with-binary-data)).
+**[A]** OAS 3.2 describes raw binary with a typeless resolved declaration ([OAS 3.2.0 §§4.13.2, 4.24.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#working-with-binary-data)).
+
+**[B — convention]** A non-JSON, non-form concrete selection whose Media Type Object omits `schema`, or whose present resolved declaration is typeless, uses the raw-octet lane. A schema-omitted media range does not gain this lane because it declares no single concrete representation.
 
 **[A]** Every other keyword in a typeless resolved declaration still applies, and `maxLength` on raw content measures wire octets rather than the Base64 boundary string ([OAS 3.2.0 §§4.14.3.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#binary-streams)).
 
@@ -330,7 +334,7 @@
 
 **[B — convention]** For this binding, `validated runtime data` means the supplied JSON value's own type; no validation is implied or performed. That supplied type resolves the determination when it identifies one permitted non-JSON serialization type.
 
-**[B — pin]** After that type determination, a boolean serializes as exactly `true` or `false`; a number uses the shortest RFC 8259 number spelling denoting the same mathematical value, with ties preferring non-exponent form, lowercase `e` without `+` or leading exponent zeros, and `0` for zero including negative zero. The mathematical value is the supplied JSON number's exact value under Core's RFC 8259 model, with no binary64 reduction ([RFC 8259 §6](https://www.rfc-editor.org/rfc/rfc8259#section-6), Core [§4.1](../../openbindings.md#41-data-model)).
+**[B — pin]** After that type determination, a boolean serializes as exactly `true` or `false`; a number uses the shortest RFC 8259 number spelling denoting the same mathematical value, with ties preferring non-exponent form, lowercase `e` without `+` or leading exponent zeros, and `0` for zero including negative zero. The mathematical value is the supplied JSON number's exact value under Core's RFC 8259 model, with no binary64 reduction ([RFC 8259 §6](https://www.rfc-editor.org/rfc/rfc8259#section-6), Core [§5](../../openbindings.md#5-document-model)).
 
 **[B — limit]** If type ambiguity remains after §5.2 resolution and inspection of the supplied JSON value's own type when available, the invocation or response decoding fails rather than choosing one privately.
 
@@ -362,7 +366,9 @@
 
 **[B — configuration point]** A wildcard or comma-separated multi-valued Encoding `contentType` on a content-based form-urlencoded or multipart property requires `propertyMedia`: one concrete media type per affected property. The choice MUST satisfy one declared member under §9.1, and an absent, unmatched, or ambiguous required choice refuses before dispatch.
 
-**[A]** A part with a typeless resolved declaration uses the raw-octet lane and §9.2's canonical Base64 boundary; a part whose resolved declaration admits `string` as its sole non-null type with `contentEncoding` remains artifact-encoded text. For multipart, that `contentEncoding` declares the equivalent `Content-Transfer-Encoding` header on the part, and an explicit Encoding header whose resolved declaration disallows the value makes both serialization and parsing undefined ([OAS 3.2.0 §§4.15.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#content-transfer-encoding-and-contentencoding)).
+**[A]** A part whose resolved declaration admits `string` as its sole non-null type with `contentEncoding` remains artifact-encoded text. For multipart, that `contentEncoding` declares the equivalent `Content-Transfer-Encoding` header on the part, and an explicit Encoding header whose resolved declaration disallows the value makes both serialization and parsing undefined ([OAS 3.2.0 §§4.15.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#content-transfer-encoding-and-contentencoding)).
+
+**[B — convention]** A part with a typeless resolved declaration uses the raw-octet lane and §9.2's canonical Base64 boundary.
 
 **[B — convention]** A multipart part with such `contentEncoding` emits the equivalent `Content-Transfer-Encoding` header.
 
@@ -412,13 +418,13 @@
 
 **[A]** A sequential response is server-streaming; `itemSchema` applies independently to each parsed item, while a co-present `schema` remains an aggregate constraint over the complete ordered sequence ([OAS 3.2.0 §§4.14.3.1, 4.14.3.1.1](https://spec.openapis.org/oas/v3.2.0.html#streaming-sequential-media-types)).
 
-**[B — convention]** Each parsed sequential-response item emits one successful operation value in order (Core [§5.1](../../openbindings.md#51-operations)). An actual response's interaction shape and media are governed only by the Response Object selected for its final status: declarations for every other status affect the static bound above but never change that response from unary to streaming or vice versa.
+**[B — convention]** When §9.6 classifies the final status as successful, each parsed sequential-response item emits one successful operation value in order (Core [§5.1](../../openbindings.md#51-operations)); under a non-successful final status the sequential body is §9.6's failure data like any other body, and no item emits an operation value. An actual response's interaction shape and media are governed only by the Response Object selected for its final status: declarations for every other status affect the static bound above but never change that response from unary to streaming or vice versa.
 
 **[B — convention]** An item whose incorporated sequential framing is malformed, or whose parsed SSE value lacks required string `data`, carries non-string `event` or `id`, or carries a `retry` other than a nonnegative integer, is not emitted and ends the interaction unsuccessfully; earlier emitted values remain successful values. Invocation evaluates neither `itemSchema` nor complete-sequence `schema` conformance: items are emitted as parsed, and only a tool separately claiming validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
 **[A]** `text/event-stream` MUST first be parsed under OAS's incorporated event-stream processing rules, including ignored comments and fields, multi-line data combination, and field-specific parsing. Each item is then an object with required string `data`, optional string `event` and `id`, and optional nonnegative integer `retry`; no field is collapsed into a data-only value ([OAS 3.2.0 §§4.14.4, 4.14.6.3](https://spec.openapis.org/oas/v3.2.0.html#special-considerations-for-server-sent-events)).
 
-**[B — convention]** A server-initiated clean close after zero or more valid SSE items completes the interaction successfully.
+**[B — convention]** A server-initiated clean close after zero or more valid SSE items completes a §9.6-successful interaction successfully; it never upgrades a non-successful classification.
 
 **[B — limit]** `retry` crosses the operation-value boundary because the incorporated authority defines it as part of the event data model; this authority-shaped exception to the rule that transport directives do not become values is not a license to surface other transport directives.
 
