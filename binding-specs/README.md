@@ -400,8 +400,9 @@ uniqueness, the root's shape, and the edition or revision gate. These cannot
 be derived from any per-unit rule, because there is no inventory to reason
 over until they have passed — asking which units survive a defect that
 prevents the document from existing has no answer, and manufacturing one means
-inventing a value the artifact does not carry. The edition or revision gate is
-always evaluated first.
+inventing a value the artifact does not carry. The edition or revision gate
+concludes the load gates after the artifact has a JSON image and its root shape
+has been established.
 
 **2. Below the load gates there is exactly one whole-source refusal, and it
 is derived, not enumerated.** Once the artifact has a JSON image and a
