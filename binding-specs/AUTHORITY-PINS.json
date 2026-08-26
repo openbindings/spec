@@ -1,7 +1,7 @@
 {
   "$comment": "Tracked authority-pin manifest for the binding-specification family. One entry per incorporated upstream authority per pinned edition; digests are sha256 over the exact bytes at the pinned source (git-tree entries pin a commit and digest a probe file inside the pinned tree). Verified by scripts/verify-authority-pins.mjs; bytes are not stored in this repository. `families` records applicability where one authority serves multiple binding-specification families. An entry carrying `status: reference-only` prepares verified bytes that no binding-specification text yet cites; it states why, carries an empty citedBy, and the verifier asserts that its matchTokens appear in no specification text until the status is deliberately removed.",
   "manifestVersion": 3,
-  "generatedAt": "2026-08-25T15:35:03Z",
+  "generatedAt": "2026-08-26T13:52:31Z",
   "informativeCitations": {
     "exact": [
       "https://spec.openapis.org",
@@ -1380,18 +1380,19 @@
       "families": [
         "openapi-3.2"
       ],
-      "name": "WHATWG URL Standard snapshot",
+      "name": "WHATWG URL Standard Review Draft, 18 August 2026",
+      "edition": "Review Draft — 18 August 2026",
       "kind": "url",
-      "url": "https://url.spec.whatwg.org/",
+      "url": "https://url.spec.whatwg.org/review-drafts/2026-08/",
       "citedUrls": [],
-      "sha256": "c4065780495d5aa8ec46aa4062a4b7b15688c51f039fcb585b0724e873c417da",
-      "bytes": 729455,
-      "retrievedAt": "2026-08-24T23:27:03Z",
+      "sha256": "098cea86ed96efac01c6c7269534358759e71801283342d2a139b08db4eed181",
+      "bytes": 299385,
+      "retrievedAt": "2026-08-26T13:52:31Z",
       "citedBy": [
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
-        "url.spec.whatwg.org"
+        "url.spec.whatwg.org/review-drafts/2026-08/"
       ]
     },
     {
