@@ -52,6 +52,9 @@ jobs:
       - name: Verify binding-specs conformance subcorpus
         run: node scripts/verify-binding-specs.mjs
 
+      - name: Verify binding-spec publication records
+        run: node scripts/verify-binding-spec-publications.mjs
+
       - name: Validate transform conformance corpus
         run: |
           for f in conformance/transforms/agree/*.json conformance/transforms/known-divergence/*.json; do
@@ -241,3 +244,20 @@ jobs:
         env:
           OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
           OB_CORPUS_REQUIRED: "1"
+
+  authority:
+    name: Authority pins and transcription
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fetches every pinned authority, verifies size + sha256 against
+      # AUTHORITY-PINS.json, and populates .authority-cache/ for the
+      # transcription verifier below. Network-dependent by design, so it
+      # lives in its own job and never blocks the deterministic Validate
+      # job's signal.
+      - name: Verify authority pins (fetch + sha256)
+        run: node scripts/verify-authority-pins.mjs
+
+      - name: Verify OpenAPI 3.0 Schema Object transcription
+        run: node scripts/verify-openapi-30-schema-object-transcription.mjs
