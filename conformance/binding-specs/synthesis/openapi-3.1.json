@@ -434,7 +434,7 @@
     },
     {
       "id": "OAPI31-SS-06",
-      "description": "A document-level custom schema dialect excludes only operations whose projected contracts inherit it; schema-free operations and supported per-schema overrides remain faithfully synthesizable.",
+      "description": "A document-level custom schema dialect excludes the whole source; neither schema-free operations nor per-schema overrides can reopen the source-scope exclusion.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -499,54 +499,10 @@
         }
       },
       "expected": {
-        "outcome": "synthesized",
-        "operations": [
-          "health",
-          "supported"
-        ],
-        "bindings": [
-          {
-            "operationKey": "health",
-            "bindingSelector": "#/paths/~1health/get"
-          },
-          {
-            "operationKey": "supported",
-            "bindingSelector": "#/paths/~1supported/get"
-          }
-        ],
-        "coverage": {
-          "exhaustive": true,
-          "fullyRepresented": false,
-          "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/paths/~1health/get",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "health",
-              "bindingSelector": "#/paths/~1health/get",
-              "requirements": []
-            },
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/paths/~1supported/get",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "supported",
-              "bindingSelector": "#/paths/~1supported/get",
-              "requirements": []
-            },
-            {
-              "sourceIndex": 0,
-              "sourceRef": "#/paths/~1unsupported/get",
-              "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.unsupported_schema_dialect",
-              "rule": "OBI-D-06",
-              "requirements": []
-            }
-          ]
-        }
+        "outcome": "refused",
+        "rules": [
+          "OAPI31-P-01"
+        ]
       }
     },
     {
@@ -3140,7 +3096,7 @@
     },
     {
       "id": "OAPI31-SS-37",
-      "description": "The 3.1 half of an edition-scoped pair whose member bytes are identical to OAPI30-SS-38's. Under the 3.1 line the Schema Object is a JSON Schema 2020-12 schema, and [JSON Schema 2020-12] Section 6.1.1 defines an array-valued `type` as a union — \"if the value of `type` is an array, then an instance validates successfully if its type matches any of the types indicated by the strings in the array\". So `{\"type\": [\"object\", \"null\"]}` asserts exactly what `{\"anyOf\": [{\"type\": \"object\"}, {\"type\": \"null\"}]}` asserts and takes the same collapse to its single non-null member: the artifact declared exactly one carriage and it is an object, whose expansion the deepObject row leaves undefined. nullableObjectMember is therefore excluded under openapi.parameter_style_expansion_excluded (OAPI31-P-02). twoNonNullMembers is the control on the same line: two non-null members declare value-dependent alternatives, do not collapse to one declared kind, and admit a string value, so a declaration-keyed refusal must not reach it.",
+      "description": "The 3.1 half of an edition-scoped pair whose member bytes are identical to OAPI30-SS-38's. A 3.1 type array contributes every listed type to the resolved set and is not the single-non-null-branch choice procedure used for anyOf/oneOf. Therefore neither {\"type\":[\"object\",\"null\"]} nor {\"type\":[\"object\",\"string\"]} declares only a compound kind, and the declaration-keyed compound-member exclusion reaches neither operation.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -3219,9 +3175,14 @@
       "expected": {
         "outcome": "synthesized",
         "operations": [
+          "nullableObjectMember",
           "twoNonNullMembers"
         ],
         "bindings": [
+          {
+            "operationKey": "nullableObjectMember",
+            "bindingSelector": "#/paths/~1a/get"
+          },
           {
             "operationKey": "twoNonNullMembers",
             "bindingSelector": "#/paths/~1b/get"
@@ -3229,15 +3190,15 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1a/get",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.parameter_style_expansion_excluded",
-              "rule": "OAPI31-P-02",
+              "status": "represented",
+              "operationKey": "nullableObjectMember",
+              "bindingSelector": "#/paths/~1a/get",
               "requirements": []
             },
             {

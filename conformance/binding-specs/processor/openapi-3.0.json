@@ -2092,6 +2092,42 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-82",
+      "rules": ["OAPI30-P-02"],
+      "section": "8",
+      "description": "A deepObject member value containing its structural ampersand delimiter refuses instead of percent-encoding the ambiguity.",
+      "given": {
+        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Structural delimiter", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "filter", "in": "query", "style": "deepObject", "explode": true, "schema": {"type": "object", "properties": {"kind": {"type": "string"}}}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"filter": {"kind": "a&b"}}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI30-PS-83",
+      "rules": ["OAPI30-P-02"],
+      "section": "8",
+      "description": "The unified resolved-declaration proof follows $ref and allOf and excludes a form-style object member that declares only an object compound shape.",
+      "given": {
+        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Resolved compound member", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "filter", "in": "query", "style": "form", "explode": false, "schema": {"type": "object", "properties": {"where": {"$ref": "#/components/schemas/Nested"}}}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"schemas": {"Nested": {"allOf": [{"type": "object"}]}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI30-PS-84",
+      "rules": ["OAPI30-P-02"],
+      "section": "8",
+      "description": "A schema-form Header Parameter value containing CR/LF refuses before an HTTP field is constructed.",
+      "given": {
+        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Header field bytes", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "X-Note", "in": "header", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"X-Note": "safe\r\nInjected: yes"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
     }
   ]
 }
