@@ -218,7 +218,13 @@
     },
     {
       "id": "yaml-1.2.2",
-      "family": "shared",
+      "families": [
+        "openapi-3.1",
+        "openapi-3.2",
+        "openapi-2.0",
+        "openapi-3.0",
+        "asyncapi"
+      ],
       "name": "YAML Ain't Markup Language, version 1.2.2",
       "edition": "1.2.2",
       "kind": "url",
@@ -230,6 +236,7 @@
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md"
       ],
@@ -739,10 +746,8 @@
     {
       "id": "rfc1866",
       "families": [
-        "openapi-2.0",
         "openapi-3.0",
-        "openapi-3.1",
-        "openapi-3.2"
+        "openapi-3.1"
       ],
       "name": "RFC 1866: Hypertext Markup Language - 2.0",
       "kind": "url",
