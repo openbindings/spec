@@ -423,7 +423,7 @@
         "OAPI31-P-04"
       ],
       "section": "10",
-      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default. A missing selection is missing consumer configuration (ruled 2026-08-13, R1+R5): the invocation challenges CONTEXT_REQUIRED (config.value, point server) through the retryable context negotiation — the same lane as a missing request-media selection — and nothing dispatches.",
+      "description": "Several effective servers require explicit selection; array order does not create an OpenBindings default. A missing selection is missing consumer configuration (ruled 2026-08-13, R1+R5): the invocation challenges CONTEXT_REQUIRED (config.value, point server) through the retryable context negotiation \u2014 the same lane as a missing request-media selection \u2014 and nothing dispatches.",
       "given": {
         "source": {
           "content": {
@@ -3228,7 +3228,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A single-non-null-branch choice part carries its branch's serialization. This scenario also asserted, until 2026-08-17, that an unconstrained part beside it takes its OAS per-type default from the value's JSON application type — at `openapi: 3.1.2`, whose Encoding Object default table states application/octet-stream for a part whose `type` is absent. That half was wrong and moved to OAPI30-PS-56 and OAPI31-PS-57, which carry the type-absent cell per line. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A single-non-null-branch choice part carries its branch's serialization. This scenario also asserted, until 2026-08-17, that an unconstrained part beside it takes its OAS per-type default from the value's JSON application type \u2014 at `openapi: 3.1.2`, whose Encoding Object default table states application/octet-stream for a part whose `type` is absent. That half was wrong and moved to OAPI30-PS-56 and OAPI31-PS-57, which carry the type-absent cell per line. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -3605,7 +3605,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "An array-valued multipart property takes its per-part default Content-Type from its ITEMS schema, never from the array. Every accepted OAS edition states this, in one of two ways. The Encoding Object's contentType default says \"for array – the default is defined based on the inner type\" (3.0.0–3.0.3, 3.1.0), \"according to the type and format of the items schema\" (3.0.4), \"according to the type of the items schema\" (3.1.1, 3.1.2). Independently, the multipart guidance in 3.0.0–3.0.3 and 3.1.0 says \"If the property is a primitive, or an array of primitive values, the default Content-Type is text/plain\". A string items schema with no contentEncoding therefore reaches text/plain on every edition, and each element takes its own part. An engine that keyed the default on the array itself would emit ONE part carrying the whole JSON array, which is what the per-element body assertions below exclude. The per-part Content-Type header is deliberately NOT asserted: [RFC7578] Section 4.4, which 3.1.1 incorporates, says \"Each part MAY have an (optional) 'Content-Type' header field, which defaults to 'text/plain'\", so emitting it and omitting it are both inside the permitted set and requiring either would invent a preference the authority does not state. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "An array-valued multipart property takes its per-part default Content-Type from its ITEMS schema, never from the array. Every accepted OAS edition states this, in one of two ways. The Encoding Object's contentType default says \"for array \u2013 the default is defined based on the inner type\" (3.0.0\u20133.0.3, 3.1.0), \"according to the type and format of the items schema\" (3.0.4), \"according to the type of the items schema\" (3.1.1, 3.1.2). Independently, the multipart guidance in 3.0.0\u20133.0.3 and 3.1.0 says \"If the property is a primitive, or an array of primitive values, the default Content-Type is text/plain\". A string items schema with no contentEncoding therefore reaches text/plain on every edition, and each element takes its own part. An engine that keyed the default on the array itself would emit ONE part carrying the whole JSON array, which is what the per-element body assertions below exclude. The per-part Content-Type header is deliberately NOT asserted: [RFC7578] Section 4.4, which 3.1.1 incorporates, says \"Each part MAY have an (optional) 'Content-Type' header field, which defaults to 'text/plain'\", so emitting it and omitting it are both inside the permitted set and requiring either would invent a preference the authority does not state. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -3708,7 +3708,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "Every accepted OAS 3.1 edition states application/octet-stream as the default contentType for a part whose `type` is absent — 3.1.1 and 3.1.2 in the first row of the Encoding Object's own default table, 3.1.0 through the total catch-all that closes its prose enumeration. The authority therefore routes the part to octets, and openbindings.openapi-3.1@1 carries them across the JSON seam with the canonical Base64 boundary it already defines for every other byte lane: the part is emitted under that default content type with the decoded octets as its body. This scenario pinned a pre-dispatch refusal until 2026-08-20, on the ground that no JSON-to-octet part boundary existed; the boundary did exist, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred, applying an existing boundary to a cell the authority had already routed. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "Every accepted OAS 3.1 edition states application/octet-stream as the default contentType for a part whose `type` is absent \u2014 3.1.1 and 3.1.2 in the first row of the Encoding Object's own default table, 3.1.0 through the total catch-all that closes its prose enumeration. The authority therefore routes the part to octets, and openbindings.openapi-3.1@1 carries them across the JSON seam with the canonical Base64 boundary it already defines for every other byte lane: the part is emitted under that default content type with the decoded octets as its body. This scenario pinned a pre-dispatch refusal until 2026-08-20, on the ground that no JSON-to-octet part boundary existed; the boundary did exist, and the revision-is-not-a-roadmap ruling directed the gap filled rather than deferred, applying an existing boundary to a cell the authority had already routed. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -3801,7 +3801,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A multipart property declared as an array, supplied a value that is not an array, refuses before dispatch. §9.2 says of the form-serialization lanes that \"An invalid value or a member for which the resolved schema leaves no faithful form carriage refuses before dispatch.\" The declaration is what decides this part's carriage — an array property rides as one part per element, which OAPI31-PS-55 pins — so a value carrying no elements has no faithful form carriage at all. The failure mode this excludes is silent: a processor that falls back to the WHOLE-property schema serializes the invalid value into one application/json part, the artifact's own declaration never described that part, and the caller is told nothing. Refusing is also the only outcome that keeps the two lanes agreeing, since the same processor refuses the declaration outright when the declared schema leaves no carriage. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A multipart property declared as an array, supplied a value that is not an array, refuses before dispatch. \u00a79.2 says of the form-serialization lanes that \"An invalid value or a member for which the resolved schema leaves no faithful form carriage refuses before dispatch.\" The declaration is what decides this part's carriage \u2014 an array property rides as one part per element, which OAPI31-PS-55 pins \u2014 so a value carrying no elements has no faithful form carriage at all. The failure mode this excludes is silent: a processor that falls back to the WHOLE-property schema serializes the invalid value into one application/json part, the artifact's own declaration never described that part, and the caller is told nothing. Refusing is also the only outcome that keeps the two lanes agreeing, since the same processor refuses the declaration outright when the declared schema leaves no carriage. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -3881,7 +3881,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A multipart part whose resolved Schema Object declares a non-string type and also carries `contentEncoding` keeps its own per-type default row. Every accepted 3.1 edition keys the application/octet-stream row on a declared string — 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present — while the `number, integer, or boolean` row holds `n/a` in the contentEncoding column, which that table's own note defines as \"the presence or value of contentEncoding is irrelevant\". The incorporated dialect says the same independently: JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\" and conditions both `contentEncoding` and `contentMediaType` on the instance being a string. So an integer part carrying `contentEncoding` rides as text/plain carrying the value's own text, and does not take the encoded-string row, an octet boundary this revision does not define, or a refusal no edition states. The `sample` part's own Content-Type header is deliberately not asserted: a text/plain part may carry the header explicitly or omit it, and [RFC7578] Section 4.4 makes both the same wire fact — the reason OAPI31-PS-55 declines the same assertion. What IS asserted is that the part carries the value's own text rather than an encoded-string or octet body, and that the sibling `note` part, which declares `type: string` with the same `contentEncoding`, still takes the encoded-string row and remains artifact-encoded text while emitting no Content-Transfer-Encoding field. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A multipart part whose resolved Schema Object declares a non-string type and also carries `contentEncoding` keeps its own per-type default row. Every accepted 3.1 edition keys the application/octet-stream row on a declared string \u2014 3.1.0 as \"a `type: string` with a `contentEncoding`\", 3.1.1 and 3.1.2 as the Encoding Object default table's `string` row with contentEncoding present \u2014 while the `number, integer, or boolean` row holds `n/a` in the contentEncoding column, which that table's own note defines as \"the presence or value of contentEncoding is irrelevant\". The incorporated dialect says the same independently: JSON Schema 2020-12 makes the Content vocabulary annotations that \"do not function as validation assertions\" and conditions both `contentEncoding` and `contentMediaType` on the instance being a string. So an integer part carrying `contentEncoding` rides as text/plain carrying the value's own text, and does not take the encoded-string row, an octet boundary this revision does not define, or a refusal no edition states. The `sample` part's own Content-Type header is deliberately not asserted: a text/plain part may carry the header explicitly or omit it, and [RFC7578] Section 4.4 makes both the same wire fact \u2014 the reason OAPI31-PS-55 declines the same assertion. What IS asserted is that the part carries the value's own text rather than an encoded-string or octet body, and that the sibling `note` part, which declares `type: string` with the same `contentEncoding`, still takes the encoded-string row and remains artifact-encoded text while emitting no Content-Transfer-Encoding field. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -3984,7 +3984,7 @@
         "OAPI31-P-02"
       ],
       "section": "7",
-      "description": "Absent input with a required non-path parameter DISPATCHES: exactly two conditions refuse before dispatch — a required request body with no value to carry and an unsupplied path parameter — and each applies to absent and supplied-but-incomplete input alike. A required query parameter is neither condition, so the request rides with the declaration unsupplied and the server's validation remains authoritative; refusing here would treat two wire-identical requests (absent input and a supplied empty object) differently. This scenario pins the removal of the superseded any-required-parameter refusal (minimality-audit M9).",
+      "description": "Absent input with a required non-path parameter DISPATCHES: exactly two conditions refuse before dispatch \u2014 a required request body with no value to carry and an unsupplied path parameter \u2014 and each applies to absent and supplied-but-incomplete input alike. A required query parameter is neither condition, so the request rides with the declaration unsupplied and the server's validation remains authoritative; refusing here would treat two wire-identical requests (absent input and a supplied empty object) differently. This scenario pins the removal of the superseded any-required-parameter refusal (minimality-audit M9).",
       "given": {
         "source": {
           "content": {
@@ -4060,7 +4060,7 @@
         "OAPI31-P-03"
       ],
       "section": "7",
-      "description": "A supplied empty caller envelope that has no body member where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and §9.1 applies it to absent and supplied-but-incomplete input alike. The twin of OAPI30-PS-31 on the supplied side of the one rule. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A supplied empty caller envelope that has no body member where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and \u00a79.1 applies it to absent and supplied-but-incomplete input alike. The twin of OAPI30-PS-31 on the supplied side of the one rule. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -6771,6 +6771,101 @@
             {
               "path": "/dispatch/body",
               "equals": "note="
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-106",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The usable-set election floor: after the normalized collision makes both application/json spellings unusable, application/vnd.safe+json is the map's exactly-one USABLE concrete alternative and self-selects with no requestMedia configuration, per the amended sole-concrete gloss (exactly one usable entry self-selects; supplied values never elect). [Pins the ratified usable-set election ruling.]",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.0",
+            "info": {
+              "title": "Normalized collision confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "Application/JSON;charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.safe+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/vnd.safe+json"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.safe+json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
             },
             {
               "path": "/outputs",
