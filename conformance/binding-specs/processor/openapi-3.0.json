@@ -785,7 +785,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi-3.0@1 authors no row for that residue. The single missing fact is one media type, so the part's content type is the required `partMedia` configuration point, keyed by the part's property name: a required body carrying such a part challenges CONTEXT_REQUIRED (config.value, point partMedia, path /profile) before input consumption and dispatches nothing. This scenario pinned the specification's own value-keyed convention until 2026-08-20 (the supplied value's JSON type chose the part default), then a flat pre-dispatch refusal after escalation M2 deleted that convention; the revision-is-not-a-roadmap ruling replaced the refusal with the rung-3 answer the deference order ranks above it, since the authority is genuinely silent here rather than answering. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "On the 3.0 line no accepted edition states a default contentType row that reaches a part declaring no `type` — 3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all, and 3.0.4 tabulates the same cases keyed on a declared type — and openbindings.openapi-3.0@1 authors no row for that residue. The single missing fact is one media type, so the part's content type is the required `propertyMedia` configuration point, keyed by the part's property name: a required body carrying such a part challenges CONTEXT_REQUIRED (config.value, point propertyMedia, path /profile) before input consumption and dispatches nothing. This scenario pinned the specification's own value-keyed convention until 2026-08-20 (the supplied value's JSON type chose the part default), then a flat pre-dispatch refusal after escalation M2 deleted that convention; the revision-is-not-a-roadmap ruling replaced the refusal with the rung-3 answer the deference order ranks above it, since the authority is genuinely silent here rather than answering. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -856,7 +856,7 @@
             },
             {
               "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "partMedia"
+              "equals": "propertyMedia"
             },
             {
               "path": "/context/alternatives/0/requirements/0/path",
@@ -2095,39 +2095,926 @@
     },
     {
       "id": "OAPI30-PS-82",
-      "rules": ["OAPI30-P-02"],
+      "rules": [
+        "OAPI30-P-02"
+      ],
       "section": "8",
       "description": "A deepObject member value containing its structural ampersand delimiter refuses instead of percent-encoding the ambiguity.",
       "given": {
-        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Structural delimiter", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "filter", "in": "query", "style": "deepObject", "explode": true, "schema": {"type": "object", "properties": {"kind": {"type": "string"}}}}], "responses": {"204": {"description": "ok"}}}}}}},
-        "binding": {"selector": "#/paths/~1x/get"},
-        "invocation": {"inputPresent": true, "input": {"parameters": {"filter": {"kind": "a&b"}}}}
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Structural delimiter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "filter",
+                      "in": "query",
+                      "style": "deepObject",
+                      "explode": true,
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "filter": {
+                "kind": "a&b"
+              }
+            }
+          }
+        }
       },
-      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI30-PS-83",
-      "rules": ["OAPI30-P-02"],
+      "rules": [
+        "OAPI30-P-02"
+      ],
       "section": "8",
       "description": "The unified resolved-declaration proof follows $ref and allOf and excludes a form-style object member that declares only an object compound shape.",
       "given": {
-        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Resolved compound member", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "filter", "in": "query", "style": "form", "explode": false, "schema": {"type": "object", "properties": {"where": {"$ref": "#/components/schemas/Nested"}}}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"schemas": {"Nested": {"allOf": [{"type": "object"}]}}}}},
-        "binding": {"selector": "#/paths/~1x/get"},
-        "invocation": {"inputPresent": false}
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Resolved compound member",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "filter",
+                      "in": "query",
+                      "style": "form",
+                      "explode": false,
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "where": {
+                            "$ref": "#/components/schemas/Nested"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "schemas": {
+                "Nested": {
+                  "allOf": [
+                    {
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
-      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI30-PS-84",
-      "rules": ["OAPI30-P-02"],
+      "rules": [
+        "OAPI30-P-02"
+      ],
       "section": "8",
       "description": "A schema-form Header Parameter value containing CR/LF refuses before an HTTP field is constructed.",
       "given": {
-        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Header field bytes", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "X-Note", "in": "header", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
-        "binding": {"selector": "#/paths/~1x/get"},
-        "invocation": {"inputPresent": true, "input": {"parameters": {"X-Note": "safe\r\nInjected: yes"}}}
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Header field bytes",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Note",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Note": "safe\r\nInjected: yes"
+            }
+          }
+        }
       },
-      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-85",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A caller-selected request Content-Encoding is governed by the effective Header Parameter, but an unsupported coding token refuses before dispatch rather than being skipped or sniffed.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Unsupported request coding",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "Content-Encoding",
+                      "in": "header",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "br"
+                        ]
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "Content-Encoding": "br"
+            },
+            "body": "payload"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-86",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "An actual response Content-Encoding with no governing Header Object is a response protocol error even when the response media declaration otherwise matches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Ungoverned response coding",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain",
+            "Content-Encoding": "gzip"
+          },
+          "body": "coded"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-87",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A governing non-Content-Type response Header Object declaring required true makes the actual header mandatory; absence is a loud response protocol error even for an empty body.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Required response header",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok",
+                      "headers": {
+                        "X-Trace": {
+                          "required": true,
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-88",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A non-empty response without Content-Type assumes application/octet-stream before ordinary declaration matching and crosses the raw boundary as canonical Base64.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Absent response Content-Type",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/octet-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "bodyBase64": "YWJj"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "YWJj"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-89",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A non-empty actual response with no governing Response Object is a loud protocol error; another status declaration cannot govern it.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Undeclared non-empty response",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "empty"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": "unexpected"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-90",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A text/event-stream response remains unary under this binding: one HTTP body produces one application string rather than a predecessor streaming sequence.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Unary event stream",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/event-stream": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/event-stream"
+          },
+          "body": "data: one\n\ndata: two\n\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "data: one\n\ndata: two\n\n"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-91",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The identity content-coding is governed but needs no configured codec: request and response stacks preserve the representation bytes unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Identity coding",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "Content-Encoding",
+                      "in": "header",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "identity"
+                        ]
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": {
+                        "Content-Encoding": {
+                          "required": true,
+                          "schema": {
+                            "type": "string",
+                            "enum": [
+                              "identity"
+                            ]
+                          }
+                        }
+                      },
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "Content-Encoding": "identity"
+            },
+            "body": "request"
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain",
+            "Content-Encoding": "identity"
+          },
+          "body": "response"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "equals": "request"
+            },
+            {
+              "path": "/dispatch/headers/Content-Encoding",
+              "equals": "identity"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "response"
+              ]
+            },
+            {
+              "path": "/dispatch/headers/Accept",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-92",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "Two concrete request-media entries preserve both declared alternatives, but the sole-concrete rule requires configuration.requestMedia before a required body can consume input; examples and supplied value shape select neither.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Media",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "application/vnd.example+json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "done"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "A"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "requestMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-93",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "readOnly and writeOnly are application annotations: the binding preserves both supplied JSON members on the request wire instead of deleting either one.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Directional annotations",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "server": {
+                              "type": "string",
+                              "readOnly": true
+                            },
+                            "client": {
+                              "type": "string",
+                              "writeOnly": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "server": "s",
+              "client": "c"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "server": "s",
+                "client": "c"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
