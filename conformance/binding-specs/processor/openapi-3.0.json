@@ -3072,9 +3072,6 @@
         "binding": {
           "selector": "#/paths/~1items/post"
         },
-        "configuration": {
-          "requestMedia": "application/vnd.safe+json"
-        },
         "invocation": {
           "inputPresent": true,
           "input": {
