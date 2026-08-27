@@ -1918,7 +1918,7 @@
     },
     {
       "id": "OAPI31-SS-22",
-      "description": "Whether a declared server URL denotes a target address at all decides whether the server configuration point is a runtime prerequisite of the represented target. A sole entry selects itself and, when it resolves, requires nothing. A sole entry whose URL template variable has no Server Variable Object never reduces to a URL -- the OAS substitutes only variables the Server Object declares, and braces appear in no RFC 3986 production -- while a declared variable's REQUIRED default always reduces. A sole entry whose http authority carries no host names no origin server, because RFC 9110 requires a recipient to reject such a URI as invalid. Each of those leaves the target address undetermined, and so does a multi-entry list with no selection, so all three raise configuration.server. Neither answer may be decided by a host language's URL parser: Go's net/url and the WHATWG parser disagree about exactly these two shapes, in opposite directions.",
+      "description": "Whether a declared server URL denotes a target address at all decides whether the server configuration point is a runtime prerequisite of the represented target. A sole entry selects itself and, when it resolves, requires nothing. A sole entry whose URL template variable has no Server Variable Object is excluded because the unresolved variable is a declaration defect, while a declared variable's default reduces normally. A hostless HTTP authority remains a configurable target-base prerequisite, and a multi-entry list requires selection. Neither answer may be decided by a host language's URL parser.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -2019,7 +2019,6 @@
         "operations": [
           "listUsable",
           "listSubstituted",
-          "listTemplated",
           "listHostless",
           "listAlternatives"
         ],
@@ -2033,10 +2032,6 @@
             "bindingSelector": "#/paths/~1substituted/get"
           },
           {
-            "operationKey": "listTemplated",
-            "bindingSelector": "#/paths/~1templated/get"
-          },
-          {
             "operationKey": "listHostless",
             "bindingSelector": "#/paths/~1hostless/get"
           },
@@ -2047,7 +2042,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": true,
+          "fullyRepresented": false,
           "entries": [
             {
               "sourceIndex": 0,
@@ -2084,12 +2079,10 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1templated/get",
               "scope": "target",
-              "status": "represented",
-              "operationKey": "listTemplated",
-              "bindingSelector": "#/paths/~1templated/get",
-              "requirements": [
-                "configuration.server"
-              ]
+              "status": "excluded",
+              "reasonCode": "openapi.server_url_excluded",
+              "rule": "OAPI31-P-04",
+              "requirements": []
             },
             {
               "sourceIndex": 0,
