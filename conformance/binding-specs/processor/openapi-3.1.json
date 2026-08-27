@@ -1670,7 +1670,7 @@
         "OAPI31-P-04"
       ],
       "section": "11",
-      "description": "Security Requirement Objects are alternatives: when two complete alternatives are available, invocation selects exactly one and never unions their credentials onto the wire.",
+      "description": "Security Requirement Objects are alternatives: when two complete alternatives are available, an explicit security choice selects exactly one and never unions their credentials onto the wire.",
       "given": {
         "source": {
           "content": {
@@ -1719,9 +1719,14 @@
             }
           }
         },
-        "binding": {
-          "selector": "#/paths/~1x/get"
-        },
+      "binding": {
+        "selector": "#/paths/~1x/get"
+      },
+      "configuration": {
+        "security": {
+          "index": 0
+        }
+      },
         "invocation": {
           "inputPresent": false
         },
@@ -1755,26 +1760,7 @@
               "equals": []
             }
           ]
-        },
-        {
-          "disposition": "complete",
-          "phase": "completion",
-          "description": "query alternative selected",
-          "assertions": [
-            {
-              "path": "/dispatch/headers/X-Key",
-              "absent": true
-            },
-            {
-              "path": "/dispatch/url",
-              "equals": "https://api.example/x?api_key=query-secret"
-            },
-            {
-              "path": "/outputs",
-              "equals": []
-            }
-          ]
-        }
+      }
       ]
     },
     {
@@ -6871,6 +6857,126 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI31-PS-107",
+      "rules": ["OAPI31-P-04"],
+      "section": "10",
+      "description": "A consumer-supplied Server Variable value outside the declaration's nonempty enum refuses before dispatch; a complete configured URL is the distinct replacement lane, not permission to weaken the selected Server Object.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Server enum", "version": "1"}, "servers": [{"url": "https://{env}.example", "variables": {"env": {"default": "prod", "enum": ["prod"]}}}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "configuration": {"server": {"variables": {"env": "stage"}}},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI31-PS-108",
+      "rules": ["OAPI31-P-04"],
+      "section": "10",
+      "description": "A query-bearing Server URL excludes the selected target before dispatch because Section 10 defines verbatim path append but no Server-query concatenation cell.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Server query", "version": "1"}, "servers": [{"url": "https://api.example/base?fixed=1"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI31-PS-109",
+      "rules": ["OAPI31-P-04"],
+      "section": "10",
+      "description": "A fragment-bearing Server URL excludes the selected target before dispatch; a fragment never survives as an inferred target-base suffix.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Server fragment", "version": "1"}, "servers": [{"url": "https://api.example/base#fragment"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI31-PS-110",
+      "rules": ["OAPI31-P-04"],
+      "section": "10",
+      "description": "A complete configured URL replaces only the resolved server base: the authored trailing slash and operation's leading path slash remain a double slash, while path substitution and query construction remain unchanged.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Configured server", "version": "1"}, "servers": [{"url": "https://artifact.example/base"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "q", "in": "query", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "configuration": {"server": {"baseUrl": "https://configured.example/root/"}},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42", "q": "yes"}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/method", "equals": "GET"}, {"path": "/dispatch/url", "equals": "https://configured.example/root//items/42?q=yes"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI31-PS-111",
+      "rules": ["OAPI31-P-04"],
+      "section": "11",
+      "description": "Two complete security alternatives require an explicit configuration.security choice even when runtime credentials could satisfy both; artifact order creates no preference and nothing dispatches.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Security election", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"security": [{"first": []}, {"second": []}], "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"securitySchemes": {"first": {"type": "apiKey", "in": "header", "name": "X-First"}, "second": {"type": "apiKey", "in": "header", "name": "X-Second"}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}},
+        "runtime": {"credentials": {"first": "one", "second": "two"}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI31-PS-112",
+      "rules": ["OAPI31-P-04"],
+      "section": "11",
+      "description": "An effective empty security array is a complete no-security alternative: it self-selects, dispatches, and never volunteers unrelated runtime credential material.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Anonymous", "version": "1"}, "servers": [{"url": "https://api.example"}], "security": [{"unused": []}], "paths": {"/items/{id}": {"get": {"security": [], "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"securitySchemes": {"unused": {"type": "apiKey", "in": "header", "name": "X-Unused"}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}},
+        "runtime": {"credentials": {"unused": "secret"}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Unused", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI31-PS-113",
+      "rules": ["OAPI31-P-04"],
+      "section": "11",
+      "description": "A query apiKey comes only from runtime credential context, never the caller envelope, and every reserved, space, and non-ASCII UTF-8 byte is percent-encoded under Section 8.2.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Query key", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"security": [{"key": []}], "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"securitySchemes": {"key": {"type": "apiKey", "in": "query", "name": "api_key"}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}},
+        "runtime": {"credentials": {"key": "a/b? c&d=é"}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/items/42?api_key=a%2Fb%3F%20c%26d%3D%C3%A9"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI31-PS-114",
+      "rules": ["OAPI31-P-04"],
+      "section": "11",
+      "description": "An apiKey cookie value containing a semicolon is not an RFC 6265 cookie-value; it refuses before dispatch and is never percent-encoded into an invented recovery.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Cookie key", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"security": [{"key": []}], "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"securitySchemes": {"key": {"type": "apiKey", "in": "cookie", "name": "session"}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}},
+        "runtime": {"credentials": {"key": "bad;value"}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI31-PS-115",
+      "rules": ["OAPI31-P-04"],
+      "section": "11",
+      "description": "A credential/header-parameter collision makes only that security alternative unusable; explicitly selecting the non-colliding alternative emits only its credential and dispatches.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Collision confinement", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"security": [{"colliding": []}, {"safe": []}], "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "X-Key", "in": "header", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}, "components": {"securitySchemes": {"colliding": {"type": "apiKey", "in": "header", "name": "X-Key"}, "safe": {"type": "apiKey", "in": "header", "name": "X-Safe"}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "configuration": {"security": {"index": 1}},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42"}}},
+        "runtime": {"credentials": {"colliding": "bad", "safe": "good"}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Key", "absent": true}, {"path": "/dispatch/headers/X-Safe", "equals": "good"}, {"path": "/outputs", "equals": []}]}]
     }
   ]
 }
