@@ -31,7 +31,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-SS-[0-9]{2}$"
+            "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-SS-[0-9]{2,}$"
           },
           "description": { "type": "string", "minLength": 1 },
           "source": {
