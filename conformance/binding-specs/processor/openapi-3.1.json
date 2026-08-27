@@ -6977,6 +6977,31 @@
         "peer": {"status": 204, "body": ""}
       },
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Key", "absent": true}, {"path": "/dispatch/headers/X-Safe", "equals": "good"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI31-PS-116",
+      "rules": ["OAPI31-P-02"],
+      "section": "8",
+      "description": "Raw-Cookie and structured-cookie declarations alone exclude nothing: when the invocation supplies only the structured cookie parameter, the operation completes and emits that cookie.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Cookie declaration parity", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/cookies": {"get": {"parameters": [{"name": "Cookie", "in": "header", "schema": {"type": "string"}}, {"name": "session", "in": "cookie", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1cookies/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"session": "structured"}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/Cookie", "equals": "session=structured"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI31-PS-117",
+      "rules": ["OAPI31-P-02"],
+      "section": "8",
+      "description": "With the same raw-Cookie and structured-cookie declarations, supplying both values refuses before dispatch rather than parsing or merging the raw Cookie string.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "Cookie invocation collision", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/cookies": {"get": {"parameters": [{"name": "Cookie", "in": "header", "schema": {"type": "string"}}, {"name": "session", "in": "cookie", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1cookies/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"Cookie": "raw=1", "session": "structured"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
     }
   ]
 }

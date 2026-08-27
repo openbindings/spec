@@ -240,7 +240,7 @@
 
 **[B — convention]** A supplied header value containing CR, LF, or another field-invalid byte refuses before dispatch at the affected Parameter ([RFC 9110 §§5.1, 5.5](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
-**[B — convention]** An effective Header Parameter named `Cookie` supplies one raw Cookie field only when no effective cookie-location Parameter and no selected cookie credential contributes; the binding does not parse or merge the raw string, and a raw/structured collision refuses the target or makes the selected credential alternative unusable.
+**[B — convention]** Raw-Cookie and structured-cookie declarations alone exclude nothing. An invocation in which a supplied raw `Cookie` Header Parameter value and any structured cookie contribution—an effective cookie Parameter or selected cookie credential—would both be emitted refuses before dispatch; the binding does not parse or merge the raw string.
 
 **[B — exclusion]** An effective Header Parameter named `Host` or `Content-Length` excludes the target because those fields are processor-owned and cannot be replaced by caller input; the exclusion reopens only if an incorporated HTTP authority defines caller control that preserves the processor's framing and routing obligations.
 
@@ -428,7 +428,7 @@
 
 **[B — convention]** Credentials and credential-acquisition state MUST NOT be embedded in an OBI document.
 
-**[B — convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, binding/processor-owned `Host`, `Content-Length`, `Content-Type`, or `Accept`, or a raw `Cookie` field makes only the selected security alternative unusable; another complete non-colliding alternative may still be selected, while §8.3 governs parameter-only processor-owned and raw/structured collisions.
+**[B — convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, or binding/processor-owned `Host`, `Content-Length`, `Content-Type`, or `Accept` makes only the selected security alternative unusable; another complete non-colliding alternative may still be selected, while §8.3 governs parameter-only processor-owned and invocation-time raw/structured cookie collisions.
 
 **[B — convention]** API-key header destinations compare ASCII case-insensitively, while query and cookie destinations compare exact names. An API-key query value uses §8.2's query percent-encoding; an API-key cookie value is carried as an RFC 6265 `cookie-value` with no percent-encoding and refuses before dispatch when it cannot be so carried. Credential values never enter the caller envelope or operation contract; structured cookie contributions preserve membership and join as `name=value` separated by `; `, with no portable cookie order ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [RFC 6265 §4.2.1](https://httpwg.org/specs/rfc6265.html#sane-cookie), [OAS 3.0.4 Appendix D](https://spec.openapis.org/oas/v3.0.4.html#appendix-d-serializing-headers-and-cookies)).
 
