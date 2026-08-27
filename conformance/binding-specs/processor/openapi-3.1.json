@@ -824,7 +824,7 @@
         "OAPI31-P-03"
       ],
       "section": "7",
-      "description": "A parameter name and a body-property name occupy disjoint envelope members; the supplied body matches the safe media candidate without losing the independently supplied header parameter. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A parameter name and a body-property name occupy disjoint envelope members; the explicit requestMedia choice selects the safe media candidate without losing the independently supplied header parameter, and the supplied body does not elect. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -887,6 +887,9 @@
         },
         "binding": {
           "selector": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/vnd.safe+json"
         },
         "invocation": {
           "inputPresent": true,
@@ -1008,7 +1011,7 @@
         "OAPI31-P-02"
       ],
       "section": "7",
-      "description": "Two OAS-distinct header parameters that differ only by case collide on HTTP's case-insensitive field channel and remain unresolvable. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "Two OAS-distinct header parameters that differ only by case collide on HTTP's case-insensitive field channel, exclude the selected target, and refuse before dispatch. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1067,7 +1070,7 @@
       "expected": [
         {
           "disposition": "refusal",
-          "phase": "resolution",
+          "phase": "pre-dispatch",
           "assertions": [
             {
               "path": "/dispatch",
@@ -1083,7 +1086,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "Two content-map keys that differ textually but denote the same parsed media type are a normalized collision, never first-key selection. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "Two content-map keys that differ textually but denote the same parsed media type are a normalized collision; with no usable sibling, request selection refuses before dispatch rather than selecting the first key. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1140,7 +1143,7 @@
       "expected": [
         {
           "disposition": "refusal",
-          "phase": "resolution",
+          "phase": "pre-dispatch",
           "assertions": [
             {
               "path": "/dispatch",
@@ -4057,7 +4060,7 @@
         "OAPI31-P-03"
       ],
       "section": "7",
-      "description": "A supplied input that yields NO request body where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and §9.1 applies it to absent and supplied-but-incomplete input alike — a supplied empty object routes nothing to the body, leaves no value to carry, and is wire-identical to no input at all. The twin of OAPI30-PS-31 on the supplied side of the one rule. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "A supplied empty caller envelope that has no body member where requestBody.required is true refuses before dispatch exactly like absent input: the required-body refusal's ground is the artifact's own requestBody.required, and §9.1 applies it to absent and supplied-but-incomplete input alike. The twin of OAPI30-PS-31 on the supplied side of the one rule. [CO31-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -4104,9 +4107,7 @@
         },
         "invocation": {
           "inputPresent": true,
-          "input": {
-            "body": {}
-          }
+          "input": {}
         }
       },
       "expected": [

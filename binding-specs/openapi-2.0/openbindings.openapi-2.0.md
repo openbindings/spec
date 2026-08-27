@@ -286,7 +286,7 @@
 
 **[B — convention]** A no-payload invocation bypasses request-media selection and emits neither a body nor `Content-Type`; absence of every optional body or `formData` value is not a supplied empty payload ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
-**[B — configuration point]** A payload-emitting invocation preserves every admissible effective `consumes` alternative: a sole concrete candidate selects itself; multiple candidates or a range-only candidate require one concrete `requestMedia` choice, which MUST match under §9.1 and never substitutes another lane's schema or form rules.
+**[B — configuration point]** A payload-emitting invocation preserves every admissible effective `consumes` alternative: exactly one usable concrete candidate — one not excluded by this specification's confinement rules — selects itself; every other effective set, including two or more usable candidates, a range-only candidate, or a concrete candidate alongside a usable range, requires one concrete `requestMedia` choice before input consumption; the choice MUST match under §9.1 and never substitutes another lane's schema or form rules, and supplied values never elect.
 
 **[B — exclusion]** A supplied body Parameter with an empty effective `consumes` set refuses only that body lane because OAS supplies no body-media default; the exclusion reopens only if incorporated OAS 2.0 authority defines such a default.
 
