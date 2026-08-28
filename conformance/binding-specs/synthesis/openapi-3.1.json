@@ -3592,6 +3592,57 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI31-SS-45",
+      "description": "A reusable Callback Object resolves into a targetless dependency at its parent declaration slot while retaining the callback operation's authored request and response contracts [OAPI31-S-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {"title": "Referenced callback dependency", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/jobs": {
+              "post": {
+                "operationId": "createJob",
+                "callbacks": {"done": {"$ref": "#/components/callbacks/Done"}},
+                "responses": {"202": {"description": "queued"}}
+              }
+            }
+          },
+          "components": {
+            "callbacks": {
+              "Done": {
+                "{$request.body#/url}": {
+                  "post": {
+                    "operationId": "receiveDone",
+                    "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}}}},
+                    "responses": {"200": {"description": "accepted", "content": {"application/json": {"schema": {"type": "boolean"}}}}}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["createJob"],
+        "bindings": [{"operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post"}],
+        "assertions": [
+          {"path": "/operations/receiveDone/input/properties/id/type", "equals": "string"},
+          {"path": "/operations/receiveDone/output/type", "equals": "boolean"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/callbacks/done/{$request.body#~1url}/post", "scope": "dependency", "status": "represented", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }
