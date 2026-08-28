@@ -85,6 +85,134 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-02",
+      "description": "Synthesis keeps the operation contract protocol-neutral, emits an inputTransform for the request envelope, and accounts for server and security election as configuration requirements instead of input properties [OAPI32-S-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Configuration boundary", "version": "1"},
+          "servers": [{"url": "https://a.example"}, {"url": "https://b.example"}],
+          "components": {
+            "securitySchemes": {
+              "first": {"type": "apiKey", "in": "header", "name": "X-First"},
+              "second": {"type": "apiKey", "in": "query", "name": "second_key"}
+            }
+          },
+          "paths": {
+            "/items": {
+              "post": {
+                "operationId": "createItem",
+                "parameters": [{"name": "trace", "in": "header", "schema": {"type": "string"}}],
+                "security": [{"first": []}, {"second": []}],
+                "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "properties": {"name": {"type": "string"}}}}}},
+                "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["createItem"],
+        "bindings": [{"operationKey": "createItem", "bindingSelector": "#/paths/~1items/post"}],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1items/post", "scope": "target", "status": "represented", "operationKey": "createItem", "bindingSelector": "#/paths/~1items/post", "requirements": ["configuration.server", "configuration.security"]},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "createItem", "bindingSelector": "#/paths/~1items/post", "requirements": []}
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-03",
+      "description": "Malformed server and security members are confined to alternative coverage while their valid siblings preserve the represented target [OAPI32-S-01, OAPI32-P-04].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Alternative confinement", "version": "1"},
+          "servers": [{"url": "https://bad.example/base?fixed=1"}, {"url": "https://safe.example"}],
+          "components": {
+            "securitySchemes": {
+              "broken": {"type": "apiKey", "in": "nowhere"},
+              "safe": {"type": "apiKey", "in": "header", "name": "X-Safe"}
+            }
+          },
+          "paths": {
+            "/x": {
+              "query": {
+                "operationId": "querySafe",
+                "security": [{"broken": []}, {"safe": []}],
+                "responses": {"204": {"description": "ok"}}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["querySafe"],
+        "bindings": [{"operationKey": "querySafe", "bindingSelector": "#/paths/~1x/query"}],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/query", "scope": "target", "status": "represented", "operationKey": "querySafe", "bindingSelector": "#/paths/~1x/query", "requirements": ["configuration.security"]},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/query/security/0", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.security_alternative_unusable", "rule": "OAPI32-P-04", "operationKey": "querySafe", "bindingSelector": "#/paths/~1x/query", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/servers/0", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.server_url_excluded", "rule": "OAPI32-P-04", "operationKey": "querySafe", "bindingSelector": "#/paths/~1x/query", "requirements": []}
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-04",
+      "description": "Edition-aware exhaustive coverage retains an excluded QUERY position while emitting a case-exact additional operation and its request transform [OAPI32-S-01, OAPI32-P-02].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Inventory confinement", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/x": {
+              "query": {
+                "operationId": "excludedQuery",
+                "parameters": [
+                  {"name": "whole", "in": "querystring", "schema": {"type": "object"}},
+                  {"name": "q", "in": "query", "schema": {"type": "string"}}
+                ],
+                "responses": {"204": {"description": "ok"}}
+              },
+              "additionalOperations": {
+                "MiXeD": {
+                  "operationId": "mixedBody",
+                  "requestBody": {"required": true, "content": {"text/plain": {"schema": {"type": "string"}}}},
+                  "responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["mixedBody"],
+        "bindings": [{"operationKey": "mixedBody", "bindingSelector": "#/paths/~1x/additionalOperations/MiXeD"}],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/query", "scope": "target", "status": "excluded", "reasonCode": "openapi.target_excluded", "rule": "OAPI32-P-01", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/additionalOperations/MiXeD", "scope": "target", "status": "represented", "operationKey": "mixedBody", "bindingSelector": "#/paths/~1x/additionalOperations/MiXeD", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/additionalOperations/MiXeD/requestBody/content/text~1plain", "scope": "alternative", "status": "represented", "operationKey": "mixedBody", "bindingSelector": "#/paths/~1x/additionalOperations/MiXeD", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }

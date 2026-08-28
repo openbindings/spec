@@ -7509,6 +7509,174 @@
       ]
     },
     {
+      "id": "OAPI32-PS-111",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "Empty operation and Path Item server arrays supply no local alternative, so resolution falls through to the root Server Object.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Server inheritance", "version": "1"}, "servers": [{"url": "https://root.example/base"}], "paths": {"/x": {"servers": [], "query": {"servers": [], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/query"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://root.example/base/x"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-112",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "Several effective Server Objects require the typed server configuration point; authored order supplies no preference.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Server choice", "version": "1"}, "servers": [{"url": "https://a.example"}, {"url": "https://b.example"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}},
+      "expected": [{"disposition": "context-required", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/context/alternatives/0/requirements/0/type", "equals": "config.value"}, {"path": "/context/alternatives/0/requirements/0/point", "equals": "server"}]}]
+    },
+    {
+      "id": "OAPI32-PS-113",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "A selected Server Object receives exact supplied variable values, and those values satisfy the declaration's nonempty enum.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Server variables", "version": "1"}, "servers": [{"url": "https://{env}.example", "variables": {"env": {"default": "prod", "enum": ["prod", "stage"]}}}, {"url": "https://other.example"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "configuration": {"server": {"index": 0, "variables": {"env": "stage"}}}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://stage.example/x"}]}]
+    },
+    {
+      "id": "OAPI32-PS-114",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "A repeated Server Variable excludes only its Server alternative; the sole surviving sibling self-selects.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Repeated server variable", "version": "1"}, "servers": [{"url": "https://{env}.{env}.example", "variables": {"env": {"default": "prod"}}}, {"url": "https://safe.example"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://safe.example/x"}]}]
+    },
+    {
+      "id": "OAPI32-PS-115",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "A supplied Server Variable value outside its declared enum refuses before dispatch.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Server enum", "version": "1"}, "servers": [{"url": "https://{env}.example", "variables": {"env": {"default": "prod", "enum": ["prod"]}}}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "configuration": {"server": {"variables": {"env": "stage"}}}, "invocation": {"inputPresent": false}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-116",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "Embedded content with no location cannot resolve a relative Server URL even when root $self is absolute, because $self is not the API URL base.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "$self": "https://identity.example/root.yaml", "info": {"title": "Self is not server base", "version": "1"}, "servers": [{"url": "./api"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}},
+      "expected": [{"disposition": "context-required", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/context/alternatives/0/requirements/0/point", "equals": "server"}]}]
+    },
+    {
+      "id": "OAPI32-PS-117",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "With a co-present retrieval location, a relative root Server URL resolves against retrieval rather than the different absolute $self identity.",
+      "given": {"source": {"location": "https://retrieval.example/descriptions/root.yaml", "content": {"openapi": "3.2.0", "$self": "https://identity.example/elsewhere/root.yaml", "info": {"title": "Retrieval server base", "version": "1"}, "servers": [{"url": "./api"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://retrieval.example/descriptions/api/x"}]}]
+    },
+    {
+      "id": "OAPI32-PS-118",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "A query-bearing Server URL excludes only that alternative; its valid sibling remains the sole usable server.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Server alternative confinement", "version": "1"}, "servers": [{"url": "https://bad.example/base?fixed=1"}, {"url": "https://safe.example/base"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://safe.example/base/x"}]}]
+    },
+    {
+      "id": "OAPI32-PS-119",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "Path append is verbatim: a trailing Server slash and leading operation slash remain a double slash.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Verbatim append", "version": "1"}, "servers": [{"url": "https://api.example/base/"}], "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/base//x"}]}]
+    },
+    {
+      "id": "OAPI32-PS-120",
+      "rules": ["OAPI32-P-04"],
+      "section": "10",
+      "description": "A complete configured URL replaces only the server base while path substitution and query serialization remain artifact-governed.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Configured base", "version": "1"}, "servers": [{"url": "https://artifact.example/base"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "q", "in": "query", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1items~1{id}/get"}, "configuration": {"server": {"baseUrl": "https://configured.example/root/"}}, "invocation": {"inputPresent": true, "input": {"parameters": {"id": "42", "q": "yes"}}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://configured.example/root//items/42?q=yes"}]}]
+    },
+    {
+      "id": "OAPI32-PS-121",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "Two complete security alternatives require explicit security selection even when runtime credentials satisfy both.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Security election", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"first": {"type": "apiKey", "in": "header", "name": "X-First"}, "second": {"type": "apiKey", "in": "header", "name": "X-Second"}}}, "paths": {"/x": {"get": {"security": [{"first": []}, {"second": []}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"first": "one", "second": "two"}}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-122",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "An operation-level empty security array overrides root security and never volunteers unrelated credentials.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Anonymous override", "version": "1"}, "servers": [{"url": "https://api.example"}], "security": [{"unused": []}], "components": {"securitySchemes": {"unused": {"type": "apiKey", "in": "header", "name": "X-Unused"}}}, "paths": {"/x": {"get": {"security": [], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"unused": "secret"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Unused", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-123",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "An apiKey query credential uses the exact destination and Section 8.2 percent encoding.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Query credential", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"key": {"type": "apiKey", "in": "query", "name": "api_key"}}}, "paths": {"/x": {"get": {"security": [{"key": []}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"key": "a/b? c&d=é"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/x?api_key=a%2Fb%3F%20c%26d%3D%C3%A9"}]}]
+    },
+    {
+      "id": "OAPI32-PS-124",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "An apiKey cookie containing a semicolon cannot be carried as an RFC 6265 cookie-value and refuses without percent-encoding recovery.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Cookie credential", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"key": {"type": "apiKey", "in": "cookie", "name": "session"}}}, "paths": {"/x": {"get": {"security": [{"key": []}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"key": "bad;value"}}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-125",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "A credential collision excludes only its complete alternative; explicitly selecting a non-colliding sibling emits only that sibling's credential.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Credential collision", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"colliding": {"type": "apiKey", "in": "header", "name": "X-Key"}, "safe": {"type": "apiKey", "in": "header", "name": "X-Safe"}}}, "paths": {"/x": {"get": {"security": [{"colliding": []}, {"safe": []}], "parameters": [{"name": "X-Key", "in": "header", "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "configuration": {"security": {"index": 1}}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"colliding": "bad", "safe": "good"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Key", "absent": true}, {"path": "/dispatch/headers/X-Safe", "equals": "good"}]}]
+    },
+    {
+      "id": "OAPI32-PS-126",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "A malformed Security Scheme Object excludes only alternatives requiring it; a selected valid sibling remains dispatchable.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Malformed security confinement", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"broken": {"type": "apiKey", "in": "nowhere"}, "safe": {"type": "apiKey", "in": "header", "name": "X-Safe"}}}, "paths": {"/x": {"get": {"security": [{"broken": []}, {"safe": []}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "configuration": {"security": {"index": 1}}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"safe": "good"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/X-Safe", "equals": "good"}]}]
+    },
+    {
+      "id": "OAPI32-PS-127",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "A Security Requirement URI identifies its Security Scheme Object and retains the exact URI spelling as the runtime credential identity.",
+      "given": {"source": {"location": "https://identity.example/root.yaml", "content": {"openapi": "3.2.0", "info": {"title": "URI security", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"securitySchemes": {"Key": {"type": "apiKey", "in": "header", "name": "X-URI-Key"}}}, "paths": {"/x": {"get": {"security": [{"https://identity.example/root.yaml#/components/securitySchemes/Key": ["operator"]}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"https://identity.example/root.yaml#/components/securitySchemes/Key": "secret"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/x-uri-key", "equals": "secret"}]}]
+    },
+    {
+      "id": "OAPI32-PS-128",
+      "rules": ["OAPI32-P-04"],
+      "section": "11",
+      "description": "A ./-disambiguated relative Security Requirement URI is loaded as an artifact resource and bypasses component-name scope selection.",
+      "given": {"source": {"location": "https://identity.example/root.yaml", "content": {"openapi": "3.2.0", "info": {"title": "Relative URI security", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"security": [{"./security.yaml#/Key": []}], "responses": {"204": {"description": "ok"}}}}}}}, "resources": {"https://identity.example/security.yaml": {"Key": {"type": "apiKey", "in": "query", "name": "access_key"}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"./security.yaml#/Key": "secret"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/x?access_key=secret"}]}]
+    },
+    {
+      "id": "OAPI32-PS-129",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A declared request Content-Encoding value fixes the configured encoder stack; the encoder transforms the complete representation and the field remains on the wire.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Request coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"post": {"parameters": [{"name": "Content-Encoding", "in": "header", "required": true, "schema": {"type": "string", "enum": ["reverse"]}}], "requestBody": {"required": true, "content": {"text/plain": {"schema": {"type": "string"}}}}, "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/post"}, "invocation": {"inputPresent": true, "input": {"parameters": {"Content-Encoding": "reverse"}, "body": "abc"}}, "runtime": {"requestContentCodings": {"reverse": "reverse"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/Content-Encoding", "equals": "reverse"}, {"path": "/dispatch/body", "equals": "cba"}]}]
+    },
+    {
+      "id": "OAPI32-PS-130",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The explicit 3.1-equivalence bridge round-trips one non-sequential exact-status JSON response as one unary operation value.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unary response bridge", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"ok": true}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-131",
+      "rules": ["OAPI32-P-01", "OAPI32-P-04"],
+      "section": "5",
+      "description": "Reference closure follows a Reference Object reached through a Security Requirement URI while preserving the authored requirement spelling as credential identity.",
+      "given": {"source": {"location": "https://identity.example/root.yaml", "content": {"openapi": "3.2.0", "info": {"title": "Security URI reference closure", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"security": [{"./security.yaml#/Key": []}], "responses": {"204": {"description": "ok"}}}}}}}, "resources": {"https://identity.example/security.yaml": {"Key": {"$ref": "./actual.yaml#/Actual"}}, "https://identity.example/actual.yaml": {"Actual": {"type": "apiKey", "in": "header", "name": "X-Nested-Key"}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"credentials": {"./security.yaml#/Key": "secret"}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/x-nested-key", "equals": "secret"}]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"
