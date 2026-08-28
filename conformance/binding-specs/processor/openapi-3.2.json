@@ -7677,6 +7677,14 @@
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/x-nested-key", "equals": "secret"}]}]
     },
     {
+      "id": "OAPI32-PS-132",
+      "rules": ["OAPI32-P-02"],
+      "section": "8",
+      "description": "Cookie style defaults omitted explode to true, so an array emits repeated RFC 6265 pairs joined by the semicolon-space separator.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Cookie explode default", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "parts", "in": "cookie", "style": "cookie", "schema": {"type": "array", "items": {"type": "string"}}}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": true, "input": {"parameters": {"parts": ["a", "b"]}}}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/Cookie", "equals": "parts=a; parts=b"}]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"
