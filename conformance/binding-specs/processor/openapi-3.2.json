@@ -10,7 +10,7 @@
         "OAPI32-P-01"
       ],
       "section": "3",
-      "description": "The exact 3.2.0 edition is admitted, an operation with omitted responses remains addressable, and the plain empty unary response uses the explicit 3.1-equivalence bridge.",
+      "description": "The exact 3.2.0 edition is admitted, an operation with omitted responses remains addressable, and a plain empty unary response completes without an output value.",
       "given": {
         "source": {
           "content": {
@@ -7664,8 +7664,8 @@
       "id": "OAPI32-PS-130",
       "rules": ["OAPI32-P-03"],
       "section": "9",
-      "description": "The explicit 3.1-equivalence bridge round-trips one non-sequential exact-status JSON response as one unary operation value.",
-      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unary response bridge", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
+      "description": "The native 3.2 response lane round-trips one non-sequential exact-status JSON response as one unary operation value.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Native unary response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"ok": true}]}]}]
     },
     {
@@ -7683,6 +7683,110 @@
       "description": "Cookie style defaults omitted explode to true, so an array emits repeated RFC 6265 pairs joined by the semicolon-space separator.",
       "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Cookie explode default", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "parts", "in": "cookie", "style": "cookie", "schema": {"type": "array", "items": {"type": "string"}}}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": true, "input": {"parameters": {"parts": ["a", "b"]}}}, "peer": {"status": 204, "body": ""}},
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/Cookie", "equals": "parts=a; parts=b"}]}]
+    },
+    {
+      "id": "OAPI32-PS-133",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An exact final-status response overrides its matching class range and default; the 3.2 Response Object needs no description field to govern.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Exact response precedence", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"206": {"content": {"application/json": {"schema": {"type": "object"}}}}, "2XX": {"content": {"text/plain": {"schema": {"type": "string"}}}}, "default": {"content": {"application/octet-stream": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 206, "headers": {"Content-Type": "application/json"}, "body": "{\"winner\":\"exact\"}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"winner": "exact"}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-134",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The single matching response-key range governs ahead of default while native final-status classification remains successful for an unlisted 2xx code.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Range response precedence", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"2XX": {"content": {"text/plain": {"schema": {"type": "string"}}}}, "default": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 207, "headers": {"Content-Type": "text/plain"}, "body": "range"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["range"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-135",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A lowercase response range is outside the closed exact/range/default/extension key set and excludes the selected target before dispatch.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Invalid lowercase range", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"2xx": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-136",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An exact response key outside the five admitted HTTP status classes excludes the selected target before any actual response is inspected.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Invalid exact response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"600": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-137",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A governing non-Content-Type Header Object declaring required true makes the actual header mandatory even when the successful response body is empty.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Required response header", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"headers": {"X-Trace": {"required": true, "schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-138",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response Header Object named Content-Type is ignored even when it declares required true, so its absence cannot fail an empty response.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Ignored response Content-Type header", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"headers": {"Content-Type": {"required": true, "schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-139",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A normalized response-media collision is confined to that identity; a clean sibling declaration still governs decoding.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response collision confinement", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}, "application/json; charset=utf-8": {}, "Application/JSON;charset=\"UTF-8\"": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain; charset=utf-8"}, "body": "clean"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["clean"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-140",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An actual response selecting a normalized-colliding media identity is a loud protocol error; map order cannot choose a winner.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response collision refusal", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}, "application/json; charset=utf-8": {}, "Application/JSON;charset=\"UTF-8\"": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json; charset=UTF-8"}, "body": "{\"id\":1}"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-141",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-empty response without Content-Type assumes application/octet-stream before matching and emits the exact octets through the canonical Base64 value boundary.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Absent response Content-Type", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/octet-stream": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "bodyBase64": "AAEC"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["AAEC"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-142",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A zero-octet successful response emits no output value even when its governing declaration names JSON; it never manufactures null or an empty string.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Empty response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"type": ["object", "null"]}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-143",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-empty actual response with no governing exact, range, or default Response Object is a loud protocol error.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Undeclared non-empty response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "body": "unexpected"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-144",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response to HEAD is empty by definition even if a scripted peer supplies payload octets; no operation output value is emitted.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "HEAD response boundary", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"head": {"responses": {"200": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/head"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ignored\":true}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-145",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A default-governed non-2xx final response remains unsuccessful while its JSON body is preserved as opaque application-authored failure data rather than an operation output.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Failure response data", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"default": {"content": {"application/problem+json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 404, "headers": {"Content-Type": "application/problem+json"}, "body": "{\"code\":\"missing\"}"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}, {"path": "/error/data", "equals": {"code": "missing"}}]}]
     },
     {
       "id": "OAPI32-PS-01",
