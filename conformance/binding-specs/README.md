@@ -119,9 +119,9 @@ siblings and carries their exact binding-specification identifiers. The
 exchange shape is otherwise unchanged. Revision-1 files for the other
 families remain valid and are not rewritten merely to advance a version.
 
-The current corpus contains 265 scenarios covering every P-rule of usage,
+The current corpus contains 270 scenarios covering every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
-3.0/3.1 scenarios and authority-derived 2.0/3.2 seeds (52 distinct rules). It includes
+3.0/3.1 scenarios and authority-derived 2.0/3.2 scenarios (53 distinct rules). It includes
 artifact-permitted alternatives, required configuration, pre-dispatch refusal,
 late streaming failure, lossless result preservation, and reserved-protocol
 collision cases. Independent adapters in `openbindings-go` and
