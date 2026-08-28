@@ -5,6 +5,313 @@
   "description": "Portable processor scenarios for the OpenAPI 3.2 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
   "scenarios": [
     {
+      "id": "OAPI32-PS-02",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "The exact 3.2.0 edition is admitted, an operation with omitted responses remains addressable, and the plain empty unary response uses the explicit 3.1-equivalence bridge.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "exact edition", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/health": {"get": {}}}}},
+        "binding": {"selector": "#/paths/~1health/get"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "GET"},
+        {"path": "/dispatch/url", "equals": "https://api.example/health"},
+        {"path": "/outputs", "equals": []}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-03",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "A later patch-looking 3.2 edition is refused at the exact pre-resolution edition gate.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.1", "info": {"title": "future", "version": "1"}, "paths": {"/x": {"$ref": "https://resources.example/path-item.yaml"}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://resources.example/path-item.yaml": "get: {}"}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-04",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "The 3.2 family token does not infer acceptance of a 3.1 artifact.",
+      "given": {
+        "source": {"content": {"openapi": "3.1.2", "info": {"title": "sibling", "version": "1"}, "paths": {"/x": {"get": {"responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-05",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "Selector evaluation never percent-decodes an RFC 6901 path segment.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "pointer", "version": "1"}, "paths": {"/pets/{petId}": {"get": {}}}}},
+        "binding": {"selector": "#/paths/~1pets~1%7BpetId%7D/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "resolution", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-06",
+      "rules": ["OAPI32-P-01"],
+      "section": "4",
+      "description": "Root $self establishes the OpenAPI-description base used by a relative selected Path Item reference.",
+      "given": {
+        "source": {"location": "https://retrieval.example/root.yaml", "content": {"openapi": "3.2.0", "$self": "https://identity.example/descriptions/root.yaml", "info": {"title": "self base", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"$ref": "library.yaml#/paths/~1target"}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://identity.example/descriptions/library.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/descriptions/library.yaml", "info": {"title": "library", "version": "1"}, "paths": {"/target": {"get": {}}}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/url", "equals": "https://api.example/x"},
+        {"path": "/outputs", "equals": []}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-07",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A selected reference that uses a retrieval alias despite the target document's declared $self identity is excluded before dispatch.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "alias", "version": "1"}, "paths": {"/x": {"$ref": "https://retrieval.example/library.yaml#/paths/~1target"}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://retrieval.example/library.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/library.yaml", "info": {"title": "library", "version": "1"}, "paths": {"/target": {"get": {}}}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-08",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A Path Item $ref collision on the selected method excludes that target.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "selected collision", "version": "1"}, "components": {"pathItems": {"Shared": {"get": {}}}}, "paths": {"/x": {"$ref": "#/components/pathItems/Shared", "get": {}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-09",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A collision confined to an unused Path Item method does not exclude the selected operation.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "unused collision", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"pathItems": {"Shared": {"get": {}, "post": {}}}}, "paths": {"/x": {"$ref": "#/components/pathItems/Shared", "post": {}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "GET"},
+        {"path": "/dispatch/url", "equals": "https://api.example/x"}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-10",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "Omitting components, paths, and webhooks leaves no possible target position and refuses the whole source after the closed load gates without becoming a fifth load gate.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "no surfaces", "version": "1"}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-11",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A root jsonSchemaDialect outside the incorporated base dialect excludes the whole source, including a schema-free target.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema", "info": {"title": "dialect", "version": "1"}, "paths": {"/x": {"get": {}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-12",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "A present empty Responses Object excludes the selected target while omission remains addressable.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "empty responses", "version": "1"}, "paths": {"/x": {"get": {"responses": {}}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-13",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "Reference identity applies through the selected request closure: a Request Body reference using a retrieval alias instead of the target document's $self identity is excluded.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "request alias", "version": "1"}, "paths": {"/x": {"post": {"requestBody": {"$ref": "https://retrieval.example/library.yaml#/components/requestBodies/Payload"}}}}}},
+        "binding": {"selector": "#/paths/~1x/post"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://retrieval.example/library.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/library.yaml", "info": {"title": "library", "version": "1"}, "components": {"requestBodies": {"Payload": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-14",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A selected Schema Object reference cannot cross a nearer $id resource boundary using the containing OpenAPI document plus a deep pointer.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "schema identity", "version": "1"}, "components": {"schemas": {"Resource": {"$id": "https://schemas.example/resource", "type": "object", "properties": {"name": {"type": "string"}}}}}, "paths": {"/x": {"post": {"requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resource/properties/name"}}}}}}}}},
+        "binding": {"selector": "#/paths/~1x/post"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-15",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A response-only reference-identity divergence does not leak into M5's request gate; the empty unary response remains on the explicit equivalence bridge and the divergent response cell is deferred to M6.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "response seam", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"$ref": "https://retrieval.example/responses.yaml#/components/responses/Empty"}}}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://retrieval.example/responses.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/responses.yaml", "info": {"title": "responses", "version": "1"}, "components": {"responses": {"Empty": {"description": "ok"}}}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/url", "equals": "https://api.example/x"},
+        {"path": "/outputs", "equals": []}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-16",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "An unsupported $schema at a selected schema-resource root excludes the selected operation while the source itself remains admitted.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "schema dialect", "version": "1"}, "paths": {"/x": {"post": {"requestBody": {"content": {"application/json": {"schema": {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object"}}}}}}}}},
+        "binding": {"selector": "#/paths/~1x/post"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-17",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "A duplicate YAML mapping key refuses at the accepted-representation grammar gate.",
+      "given": {
+        "source": {"content": "openapi: 3.2.0\nopenapi: 3.2.0\npaths: {}\n"},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-18",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "A multi-document YAML stream refuses because exactly one document is admitted.",
+      "given": {
+        "source": {"content": "openapi: 3.2.0\npaths: {}\n---\nopenapi: 3.2.0\npaths: {}\n"},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-19",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "A YAML value with no JSON data-model image refuses at the compatibility gate.",
+      "given": {
+        "source": {"content": "openapi: 3.2.0\npaths: {}\nx-bad:\n  ? [a, b]\n  : value\n"},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-20",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "A non-object root refuses at the closed root-shape load gate.",
+      "given": {
+        "source": {"content": ["openapi", "3.2.0"]},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-21",
+      "rules": ["OAPI32-P-01"],
+      "section": "3",
+      "description": "An object root without the required string openapi field refuses at edition discrimination.",
+      "given": {
+        "source": {"content": {"paths": {}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "load", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-22",
+      "rules": ["OAPI32-P-01"],
+      "section": "4",
+      "description": "An unusable root $self does not fall back semantically to the retrieval URI for a selected relative reference.",
+      "given": {
+        "source": {"location": "https://retrieval.example/openapi.yaml", "content": {"openapi": "3.2.0", "$self": 42, "info": {"title": "invalid self", "version": "1"}, "paths": {"/x": {"$ref": "path-item.yaml"}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": false},
+        "resources": {"https://retrieval.example/path-item.yaml": {"get": {}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-23",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "An unresolvable reference confined to an unused sibling operation does not destroy the selected target.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "reference confinement", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/good": {"get": {}}, "/broken": {"post": {"requestBody": {"$ref": "#/components/requestBodies/Missing"}}}}}},
+        "binding": {"selector": "#/paths/~1good/get"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/url", "equals": "https://api.example/good"},
+        {"path": "/outputs", "equals": []}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-24",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A resolvable cyclic Schema Object graph terminates reference traversal and remains usable.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "reference cycle", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"schemas": {"Node": {"type": "object", "properties": {"next": {"$ref": "#/components/schemas/Node"}}}}}, "paths": {"/nodes": {"post": {"requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Node"}}}}}}}}},
+        "binding": {"selector": "#/paths/~1nodes/post"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/url", "equals": "https://api.example/nodes"},
+        {"path": "/outputs", "equals": []}
+      ]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"
