@@ -61,6 +61,237 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI20-SS-02",
+      "description": "A required query Parameter and required body Parameter synthesize as one flat protocol-neutral input contract. The body Parameter name remains documentary; the adapter-owned transform constructs the exact parameters/body invocation envelope, while the sole concrete consumes alternative self-selects (OAPI20-S-01, OAPI20-P-02, OAPI20-P-03).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {"title": "Create", "version": "1"},
+          "host": "api.example",
+          "schemes": ["https"],
+          "consumes": ["application/json"],
+          "paths": {
+            "/pets": {
+              "post": {
+                "operationId": "createPet",
+                "parameters": [
+                  {"name": "id", "in": "query", "required": true, "type": "string"},
+                  {"name": "payload", "in": "body", "required": true, "schema": {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"]}}
+                ],
+                "responses": {"204": {"description": "stored"}}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["createPet"],
+        "bindings": [{"operationKey": "createPet", "bindingSelector": "#/paths/~1pets/post"}],
+        "assertions": [
+          {"path": "/operations/createPet/input/type", "equals": "object"},
+          {"path": "/operations/createPet/input/properties/id/type", "equals": "string"},
+          {"path": "/operations/createPet/input/properties/body/properties/name/type", "equals": "string"},
+          {"path": "/operations/createPet/input/required", "setEquals": ["body", "id"]}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1pets/post", "scope": "target", "status": "represented", "operationKey": "createPet", "bindingSelector": "#/paths/~1pets/post", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/consumes/0", "scope": "alternative", "status": "represented", "operationKey": "createPet", "bindingSelector": "#/paths/~1pets/post", "requirements": []}
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI20-SS-03",
+      "description": "Same-named Parameters in different locations preserve both identities by selecting qualified caller keys for the entire non-body parameter set; RFC 6901 escaping remains part of the key convention rather than HTTP routing (OAPI20-S-01, OAPI20-P-02).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Qualified", "version": "1"}, "host": "api.example", "schemes": ["https"],
+          "paths": {"/pets/{id}": {"get": {"operationId": "lookupPet", "parameters": [
+            {"name": "id", "in": "path", "required": true, "type": "string"},
+            {"name": "id", "in": "query", "type": "string"},
+            {"name": "X~Ready", "in": "header", "type": "boolean"}
+          ], "responses": {"204": {"description": "ok"}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["lookupPet"],
+        "bindings": [{"operationKey": "lookupPet", "bindingSelector": "#/paths/~1pets~1{id}/get"}],
+        "assertions": [
+          {"path": "/operations/lookupPet/input/properties/path~1id/type", "equals": "string"},
+          {"path": "/operations/lookupPet/input/properties/query~1id/type", "equals": "string"},
+          {"path": "/operations/lookupPet/input/properties/header~1X~00Ready/type", "equals": "boolean"}
+        ],
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1pets~1{id}/get", "scope": "target", "status": "represented", "operationKey": "lookupPet", "bindingSelector": "#/paths/~1pets~1{id}/get", "requirements": ["configuration.parameterConversion"]}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-04",
+      "description": "Two usable concrete consumes declarations preserve two represented alternatives. Because the payload is required, requestMedia is discoverable on the target and on both alternatives without entering the operation input contract (OAPI20-S-01, OAPI20-P-03).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Media", "version": "1"}, "host": "api.example", "schemes": ["https"],
+          "consumes": ["application/json", "application/vnd.example+json"],
+          "paths": {"/x": {"post": {"operationId": "writeValue", "parameters": [{"name": "payload", "in": "body", "required": true, "schema": {"type": "object"}}], "responses": {"204": {"description": "ok"}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["writeValue"],
+        "bindings": [{"operationKey": "writeValue", "bindingSelector": "#/paths/~1x/post"}],
+        "assertions": [{"path": "/operations/writeValue/input/properties/requestMedia", "absent": true}],
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/post", "scope": "target", "status": "represented", "operationKey": "writeValue", "bindingSelector": "#/paths/~1x/post", "requirements": ["configuration.requestMedia"]},
+          {"sourceIndex": 0, "sourceRef": "#/consumes/0", "scope": "alternative", "status": "represented", "operationKey": "writeValue", "bindingSelector": "#/paths/~1x/post", "requirements": ["configuration.requestMedia"]},
+          {"sourceIndex": 0, "sourceRef": "#/consumes/1", "scope": "alternative", "status": "represented", "operationKey": "writeValue", "bindingSelector": "#/paths/~1x/post", "requirements": ["configuration.requestMedia"]}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-05",
+      "description": "A usable https scheme and safe security sibling keep the target representable, while the wss scheme and credential destination colliding with an effective Parameter remain visible as smallest-owner excluded alternatives. Multiple complete security alternatives retain the security selection requirement (OAPI20-S-01, OAPI20-P-04).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Confined alternatives", "version": "1"}, "host": "api.example", "schemes": ["https", "wss"],
+          "securityDefinitions": {"bad": {"type": "apiKey", "in": "query", "name": "id"}, "good": {"type": "apiKey", "in": "header", "name": "X-Key"}},
+          "security": [{"bad": []}, {"good": []}],
+          "paths": {"/x": {"get": {"operationId": "readValue", "parameters": [{"name": "id", "in": "query", "type": "string"}], "responses": {"204": {"description": "ok"}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["readValue"],
+        "bindings": [{"operationKey": "readValue", "bindingSelector": "#/paths/~1x/get"}],
+        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readValue", "bindingSelector": "#/paths/~1x/get", "requirements": ["configuration.security"]},
+          {"sourceIndex": 0, "sourceRef": "#/schemes/1", "scope": "alternative", "status": "excluded", "reasonCode": "openapi20.server_excluded", "rule": "OAPI20-P-04", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/security/0", "scope": "alternative", "status": "excluded", "reasonCode": "openapi20.security_alternative_excluded", "rule": "OAPI20-P-04", "requirements": []}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-06",
+      "description": "Successful exact and default response schemas are projected as alternative whole-body output contracts. Response Header declarations do not create output members, and synthesis invents no status/header context binding (OAPI20-S-01, OAPI20-P-03).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Response union", "version": "1"}, "host": "api.example", "schemes": ["https"], "produces": ["application/json"],
+          "paths": {"/x": {"get": {"operationId": "fetchValue", "responses": {
+            "200": {"description": "object", "headers": {"Location": {"type": "string"}}, "schema": {"type": "object", "properties": {"id": {"type": "string"}}}},
+            "default": {"description": "fallback", "schema": {"type": "string"}}
+          }}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["fetchValue"],
+        "bindings": [{"operationKey": "fetchValue", "bindingSelector": "#/paths/~1x/get"}],
+        "assertions": [
+          {"path": "/operations/fetchValue/output/anyOf/0/type", "equals": "object"},
+          {"path": "/operations/fetchValue/output/anyOf/1/type", "equals": "string"},
+          {"path": "/operations/fetchValue/output/properties/Location", "absent": true}
+        ],
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "fetchValue", "bindingSelector": "#/paths/~1x/get", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/200/headers/Location", "scope": "projection", "status": "represented", "operationKey": "fetchValue", "bindingSelector": "#/paths/~1x/get", "requirements": []}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-07",
+      "description": "Request projection removes an optional readOnly property, while response projection preserves that property. Draft-04 boolean exclusiveMinimum is translated to the equivalent numeric JSON Schema 2020-12 assertion without weakening it (OAPI20-S-01, OAPI20-P-01).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Dialect projection", "version": "1"}, "host": "api.example", "schemes": ["https"], "consumes": ["application/json"], "produces": ["application/json"],
+          "paths": {"/x": {"put": {"operationId": "updateRecord", "parameters": [{"name": "payload", "in": "body", "required": true, "schema": {"type": "object", "properties": {"write": {"type": "number", "minimum": 0, "exclusiveMinimum": true}, "serverOnly": {"type": "string", "readOnly": true}}, "required": ["write"]}}], "responses": {"200": {"description": "record", "schema": {"type": "object", "properties": {"write": {"type": "number", "minimum": 0, "exclusiveMinimum": true}, "serverOnly": {"type": "string", "readOnly": true}}, "required": ["write"]}}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["updateRecord"],
+        "bindings": [{"operationKey": "updateRecord", "bindingSelector": "#/paths/~1x/put"}],
+        "assertions": [
+          {"path": "/operations/updateRecord/input/properties/body/properties/serverOnly", "absent": true},
+          {"path": "/operations/updateRecord/input/properties/body/properties/write/exclusiveMinimum", "equals": 0},
+          {"path": "/operations/updateRecord/output/properties/serverOnly/type", "equals": "string"}
+        ],
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/put", "scope": "target", "status": "represented", "operationKey": "updateRecord", "bindingSelector": "#/paths/~1x/put", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/consumes/0", "scope": "alternative", "status": "represented", "operationKey": "updateRecord", "bindingSelector": "#/paths/~1x/put", "requirements": []}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-08",
+      "description": "A range response key excludes only its owning operation. Tolerant synthesis retains an unrelated valid sibling and accounts both addressable targets exhaustively rather than refusing the whole source (OAPI20-S-01, OAPI20-P-03).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Confined response defect", "version": "1"}, "host": "api.example", "schemes": ["https"],
+          "paths": {
+            "/bad": {"get": {"operationId": "badResponse", "responses": {"2XX": {"description": "inadmissible"}}}},
+            "/good": {"get": {"operationId": "goodResponse", "responses": {"204": {"description": "ok"}}}}
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["goodResponse"],
+        "bindings": [{"operationKey": "goodResponse", "bindingSelector": "#/paths/~1good/get"}],
+        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1bad/get", "scope": "target", "status": "excluded", "reasonCode": "openapi20.target_excluded", "rule": "OAPI20-P-03", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1good/get", "scope": "target", "status": "represented", "operationKey": "goodResponse", "bindingSelector": "#/paths/~1good/get", "requirements": []}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-09",
+      "description": "A discriminator annotation has no equivalent Core JSON Schema assertion under the synthesis policy. The operation remains callable, while a lossy projection entry makes the omission durable instead of silently claiming full representation (OAPI20-S-01).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Discriminator accounting", "version": "1"}, "host": "api.example", "schemes": ["https"], "consumes": ["application/json"],
+          "paths": {"/x": {"post": {"operationId": "writeChoice", "parameters": [{"name": "payload", "in": "body", "required": true, "schema": {"type": "object", "discriminator": "kind", "properties": {"kind": {"type": "string"}}}}], "responses": {"204": {"description": "ok"}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["writeChoice"],
+        "bindings": [{"operationKey": "writeChoice", "bindingSelector": "#/paths/~1x/post"}],
+        "assertions": [{"path": "/operations/writeChoice/input/properties/body/discriminator", "absent": true}],
+        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/post", "scope": "target", "status": "represented", "operationKey": "writeChoice", "bindingSelector": "#/paths/~1x/post", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/consumes/0", "scope": "alternative", "status": "represented", "operationKey": "writeChoice", "bindingSelector": "#/paths/~1x/post", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/post/body/schema/discriminator", "scope": "projection", "status": "lossy", "operationKey": "writeChoice", "bindingSelector": "#/paths/~1x/post", "reasonCode": "openapi20.discriminator_projection_loss", "rule": "OAPI20-P-01", "requirements": []}
+        ]}
+      }
+    },
+    {
+      "id": "OAPI20-SS-10",
+      "description": "A response Header Object array cannot use collectionFormat multi. The header declaration is excluded at its own projection position, while the operation remains represented because response headers create no output member under this binding (OAPI20-S-01, OAPI20-P-03).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0", "info": {"title": "Header coverage", "version": "1"}, "host": "api.example", "schemes": ["https"],
+          "paths": {"/x": {"get": {"operationId": "readHeaders", "responses": {"204": {"description": "ok", "headers": {"X-Ids": {"type": "array", "items": {"type": "string"}, "collectionFormat": "multi"}}}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": ["readHeaders"],
+        "bindings": [{"operationKey": "readHeaders", "bindingSelector": "#/paths/~1x/get"}],
+        "assertions": [{"path": "/operations/readHeaders/output", "absent": true}],
+        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readHeaders", "bindingSelector": "#/paths/~1x/get", "requirements": []},
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/204/headers/X-Ids", "scope": "projection", "status": "excluded", "reasonCode": "openapi20.response_header_excluded", "rule": "OAPI20-P-03", "requirements": []}
+        ]}
+      }
     }
   ]
 }

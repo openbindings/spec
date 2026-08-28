@@ -965,6 +965,60 @@
       "description":"Without a configured URL, omitting target defaults in a self-contained document leaves the target unresolved before dispatch.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unresolved target","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
       "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-84","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An exact status Response governs before default: the exact 200 declaration admits the actual identity Content-Encoding header, so the response succeeds where selecting default would have produced a protocol error.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Exact response precedence","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"exact","headers":{"Content-Encoding":{"type":"string","enum":["identity"]}},"schema":{"type":"object"}},"default":{"description":"fallback","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json","Content-Encoding":"identity"},"body":"{\"exact\":true}"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"exact":true}]}]}]
+    },
+    {
+      "id":"OAPI20-PS-85","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An exact failure Response also governs before default. Because the exact 404 declaration has no schema, its actual nonempty body is a protocol error rather than data decoded through default.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Exact failure precedence","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"404":{"description":"empty failure"},"default":{"description":"fallback","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":404,"headers":{"Content-Type":"text/plain"},"body":"not decoded"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-86","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty successful response with neither an exact nor default governing Response is a loud protocol error after dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Ungoverned nonempty response","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"200":{"description":"only 200","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":201,"headers":{"Content-Type":"text/plain"},"body":"created"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-87","rules":["OAPI20-P-03"],"section":"9",
+      "description":"The Swagger 2.0 Responses Object has no range-key form, so 2XX excludes the selected target before dispatch even though it resembles a later-edition response key.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No response ranges","version":"1"},"paths":{"/x":{"get":{"responses":{"2XX":{"description":"inadmissible"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-88","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Every Operation requires a nonempty Responses Object, so omission excludes the selected target before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Missing responses","version":"1"},"paths":{"/x":{"get":{}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-89","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response to HEAD is empty by definition; received message-body bytes are not decoded or emitted, even when the governing Response has no schema.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"HEAD is empty","version":"1"},"paths":{"/x":{"head":{"responses":{"200":{"description":"headers only"}}}}}}},"binding":{"selector":"#/paths/~1x/head"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"body":"ignored"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/method","equals":"HEAD"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-90","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An empty successful response emits no value and needs no governing Response lookup; the nonempty-only no-governing limit is not broadened to status-only responses.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Empty unmatched success","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"declared"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-91","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A declared Location response header on 201 creates no output member; response headers remain protocol metadata outside the unary operation value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No response header output","version":"1"},"paths":{"/x":{"post":{"responses":{"201":{"description":"created","headers":{"Location":{"type":"string"}}}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":201,"headers":{"Location":"/x/7"},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-92","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A default Response governs an unmatched non-2xx status; its text lane decodes one opaque application-authored failure value, which is retained as error data and never emitted as output.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Default failure text","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"default":{"description":"failure","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":418,"headers":{"Content-Type":"text/plain; charset=utf-8"},"body":"teapot"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/error/data","equals":"teapot"},{"path":"/outputs","equals":[]}]}]
     }
   ]
 }
