@@ -59,6 +59,9 @@
         "binding": {
           "selector": "#/paths/~1pets/post"
         },
+        "configuration": {
+          "server": "https://api.example/v1"
+        },
         "invocation": {
           "inputPresent": true,
           "input": {
@@ -620,6 +623,168 @@
         "invocation": {"inputPresent":true,"input":{"parameters":{}}}
       },
       "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-27","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit requestMedia choice before input consumption, and the supplied value never elects.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Media choice","version":"1"},"consumes":["application/json","application/vnd.example+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-28","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A normalized collision excludes only that media identity; the surviving non-colliding concrete JSON alternative is the sole usable candidate and self-selects independently of list order.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Usable set","version":"1"},"consumes":["Application/JSON","application/json","application/vnd.safe+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"safe":true}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/vnd.safe+json"},{"path":"/dispatch/body","equals":{"safe":true}},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-29","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An omitted optional body is no payload: it bypasses an otherwise ambiguous consumes set and emits neither representation bytes nor Content-Type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No payload bypass","version":"1"},"consumes":["application/json","text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","absent":true},{"path":"/dispatch/bodyBase64","absent":true},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-30","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A body string with format binary is the OpenBindings raw-octet lane: canonical Base64 decodes before dispatch even for a concrete image media type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Binary request","version":"1"},"consumes":["image/png"],"paths":{"/image":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"binary"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1image/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"AAH+/w=="}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/bodyBase64","equals":"AAH+/w=="},{"path":"/dispatch/headers/Content-Type","equals":"image/png"}]}]
+    },
+    {
+      "id":"OAPI20-PS-31","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A body string with format byte is already artifact-encoded Base64 characters; it is sent as text and is never decoded a second time by the raw-octet boundary.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Byte request","version":"1"},"consumes":["application/pdf"],"paths":{"/document":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"byte"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1document/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"YWJj"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","equals":"YWJj"},{"path":"/dispatch/bodyBase64","equals":"WVdKag=="}]}]
+    },
+    {
+      "id":"OAPI20-PS-32","rules":["OAPI20-P-02","OAPI20-P-03"],"section":"9",
+      "description":"Swagger formData selected as application/x-www-form-urlencoded uses the HTML 4.01 UTF-8 algorithm, preserving multi member order, SPACE as plus, uppercase percent triplets, and the chosen name-only empty spelling.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"URL encoded form","version":"1"},"consumes":["application/x-www-form-urlencoded"],"paths":{"/form":{"post":{"parameters":[{"name":"tag","in":"formData","type":"array","collectionFormat":"multi","items":{"type":"string"}},{"name":"note","in":"formData","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example","emptyValueForm":"name-only"},"invocation":{"inputPresent":true,"input":{"parameters":{"tag":["a b","é"],"note":""}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/x-www-form-urlencoded"},{"path":"/dispatch/body","contains":"note"},{"path":"/dispatch/body","contains":"tag=a+b&tag=%C3%A9"}]}]
+    },
+    {
+      "id":"OAPI20-PS-33","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A formData file parameter makes application/x-www-form-urlencoded unusable because that lane cannot carry file bytes; the required payload refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"File in URL encoded form","version":"1"},"consumes":["application/x-www-form-urlencoded"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"YWJj"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-34","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Multipart emits one exact-name file part with raw decoded octets and its concrete propertyMedia Content-Type, while inventing neither filename nor Content-Transfer-Encoding.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Multipart file","version":"1"},"consumes":["multipart/form-data"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example","propertyMedia":{"upload":"image/png"}},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"AFBORw=="}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","contains":"multipart/form-data; boundary="},{"path":"/dispatch/body","contains":"name=\"upload\""},{"path":"/dispatch/body","contains":"Content-Type: image/png"}]}]
+    },
+    {
+      "id":"OAPI20-PS-35","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A present multipart file needs one concrete propertyMedia choice keyed by the file parameter name; absence refuses before any request is dispatched.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Missing file media","version":"1"},"consumes":["multipart/form-data"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"YWJj"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-36","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty success response selects its concrete Content-Type through effective produces and strict JSON-decodes the governing response schema as the one operation value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"JSON response","version":"1"},"produces":["application/json"],"paths":{"/pets":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1pets/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"bodyBase64":"eyJuYW1lIjoiQWRhIn0="}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"name":"Ada"}]}]}]
+    },
+    {
+      "id":"OAPI20-PS-37","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response schema with format binary carries exact response octets across the OpenBindings boundary as canonical Base64.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Binary response","version":"1"},"produces":["image/png"],"paths":{"/image":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string","format":"binary"}}}}}}}},"binding":{"selector":"#/paths/~1image/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"image/png"},"bodyBase64":"AAH+/w=="}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["AAH+/w=="]}]}]
+    },
+    {
+      "id":"OAPI20-PS-38","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty response without Content-Type assumes application/octet-stream before ordinary produces matching, then uses the schema-selected raw-octet lane.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Absent response media","version":"1"},"produces":["application/octet-stream"],"paths":{"/blob":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"file"}}}}}}}},"binding":{"selector":"#/paths/~1blob/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"bodyBase64":"YWJj"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["YWJj"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-39","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A governing Response Object without schema declares no response content, so an actual nonempty body is a loud protocol error after dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unexpected response body","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"empty"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"body":"unexpected"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-40","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty response whose Content-Type matches no effective produces declaration is a loud protocol error; body bytes never invent a fallback lane.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unmatched response media","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"text/plain"},"body":"text"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-41","rules":["OAPI20-P-03"],"section":"9",
+      "description":"text/json is outside the JSON lane and uses character data only when the response declaration admits string as its sole non-null type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Text JSON response","version":"1"},"produces":["text/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"text/json; charset=utf-8"},"body":"not-json"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["not-json"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-42","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Identity is a governed request and response content-coding but needs no configured codec; both representation byte sequences remain unchanged.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Identity coding","version":"1"},"consumes":["text/plain"],"produces":["text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"Content-Encoding","in":"header","required":true,"type":"string","enum":["identity"]},{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"ok","headers":{"Content-Encoding":{"type":"string","enum":["identity"]}},"schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"Content-Encoding":"identity"},"body":"request"}},"peer":{"status":200,"headers":{"Content-Type":"text/plain","Content-Encoding":"identity"},"body":"response"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","equals":"request"},{"path":"/dispatch/headers/Content-Encoding","equals":"identity"},{"path":"/outputs","equals":["response"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-43","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An artifact-governed request Content-Encoding token without a configured encoder refuses before dispatch rather than being skipped.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unsupported request coding","version":"1"},"consumes":["text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"Content-Encoding","in":"header","required":true,"type":"string","enum":["br"]},{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"Content-Encoding":"br"},"body":"request"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-44","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A supplied body payload on GET is excluded before dispatch even when its schema and consumes media would otherwise define bytes; the same operation remains usable without that optional payload.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"GET payload","version":"1"},"consumes":["application/json"],"paths":{"/x":{"get":{"parameters":[{"name":"payload","in":"body","schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-45","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A present empty Operation consumes list replaces a usable root default; a required body therefore has no admitted media lane and refuses before input consumption.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Cleared consumes","version":"1"},"consumes":["application/json"],"paths":{"/x":{"post":{"consumes":[],"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-46","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A concrete requestMedia choice preserves two declared alternatives, matches the vendor JSON alternative exactly, and supplies the emitted Content-Type without consulting the body value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Configured request media","version":"1"},"consumes":["application/json","application/vnd.example+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example","requestMedia":"application/vnd.example+json"},"invocation":{"inputPresent":true,"input":{"body":{"chosen":true}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/vnd.example+json"},{"path":"/dispatch/body","equals":{"chosen":true}}]}]
+    },
+    {
+      "id":"OAPI20-PS-47","rules":["OAPI20-P-03"],"section":"9",
+      "description":"application/xml does not manufacture an object-to-XML mapping: an object body declaration makes that selected media cell unusable and refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Object XML exclusion","version":"1"},"consumes":["application/xml"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"x":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-48","rules":["OAPI20-P-03"],"section":"9",
+      "description":"application/xml is in the closed character-data set when the body declaration admits only string; absent charset defaults to UTF-8 and the supplied text rides unchanged.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"String XML carriage","version":"1"},"consumes":["application/xml"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"<x>é</x>"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/xml"},{"path":"/dispatch/body","equals":"<x>é</x>"}]}]
+    },
+    {
+      "id":"OAPI20-PS-49","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A raw-octet request rejects a padded Base64 spelling with nonzero unused pad bits; decodability alone is weaker than the canonical OpenBindings boundary.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Canonical raw boundary","version":"1"},"consumes":["application/octet-stream"],"paths":{"/x":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"binary"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"AB=="}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-50","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response string with format byte remains the artifact's Base64-character value and is not re-encoded as an OpenBindings raw-octet value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Byte response","version":"1"},"produces":["application/pdf"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string","format":"byte"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/pdf"},"body":"YWJj"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["YWJj"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-51","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A non-2xx final status remains the native failure even when default governs it; the JSON body uses the same media lane and is retained as opaque application failure data, never emitted as output.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Failure body","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"default":{"description":"failure","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":422,"headers":{"Content-Type":"application/json"},"bodyBase64":"eyJtZXNzYWdlIjoiYmFkIn0="}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/outputs","equals":[]},{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/error/data","equals":{"message":"bad"}}]}]
+    },
+    {
+      "id":"OAPI20-PS-52","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Distinct produces entries that normalize to the same media identity make selection through that identity unusable, so a matching response refuses without list-order preference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Response media collision","version":"1"},"produces":["Application/JSON","application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"bodyBase64":"e30="}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-53","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Every non-file multipart formData contribution is one exact-name part with fixed text/plain UTF-8 media, without a filename or transfer-encoding invention.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Multipart text","version":"1"},"consumes":["multipart/form-data"],"paths":{"/x":{"post":{"parameters":[{"name":"note","in":"formData","required":true,"type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"note":"hello"}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","contains":"name=\"note\""},{"path":"/dispatch/body","contains":"Content-Type: text/plain; charset=utf-8"},{"path":"/dispatch/body","contains":"hello"}]}]
     }
   ]
 }
