@@ -7789,6 +7789,62 @@
       "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}, {"path": "/error/data", "equals": {"code": "missing"}}]}]
     },
     {
+      "id": "OAPI32-PS-146",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The actual governed response Content-Encoding value fixes the decoder stack, which runs in reverse wire order before the selected media lane.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response coding stack", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["first, second"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"first": "unwrap", "second": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "first, second"}, "body": "second(first(payload))"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["payload"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-147",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response content-coding token admitted by the governing Header Object but unsupported by runtime capability fails loudly rather than being skipped.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unsupported response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["zip"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-148",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A configured response decoder supplies capability but cannot declare a Content-Encoding value omitted by the governing Response Object.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Undeclared response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"zip": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "zip(payload)"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-149",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A configured response decoder cannot admit an actual coding value excluded by the governing Header Object schema.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unadmitted response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["gzip"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"zip": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "zip(payload)"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-150",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The governed identity response coding requires no configured decoder and preserves the representation for the selected media lane.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Identity response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["identity"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "identity"}, "body": "payload"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["payload"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-151",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The responseContentCodings capability map matches content-coding tokens case-insensitively.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Case-insensitive response coding capability", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["reverse"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"ReVeRsE": "reverse"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "reverse"}, "body": "cba"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["abc"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-152",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "Case-insensitive duplicate response Content-Encoding Header Object declarations are ambiguous and fail loudly.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Ambiguous response coding declaration", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string"}}, "content-encoding": {"schema": {"type": "string"}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "identity"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"
