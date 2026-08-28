@@ -785,6 +785,186 @@
       "description":"Every non-file multipart formData contribution is one exact-name part with fixed text/plain UTF-8 media, without a filename or transfer-encoding invention.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Multipart text","version":"1"},"consumes":["multipart/form-data"],"paths":{"/x":{"post":{"parameters":[{"name":"note","in":"formData","required":true,"type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"note":"hello"}}},"peer":{"status":204,"headers":{},"body":""}},
       "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","contains":"name=\"note\""},{"path":"/dispatch/body","contains":"Content-Type: text/plain; charset=utf-8"},{"path":"/dispatch/body","contains":"hello"}]}]
+    },
+    {
+      "id":"OAPI20-PS-54","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A sole root HTTP scheme combines exactly with the authored host including port, basePath, and Paths key.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Target assembly","version":"1"},"schemes":["http"],"host":"api.example:8080","basePath":"/v1","paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1pets/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"http://api.example:8080/v1/pets"}]}]
+    },
+    {
+      "id":"OAPI20-PS-55","rules":["OAPI20-P-04"],"section":"10",
+      "description":"An Operation schemes array replaces rather than merges the root schemes array.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Operation schemes","version":"1"},"schemes":["http"],"host":"api.example","basePath":"/v1","paths":{"/x":{"get":{"schemes":["https"],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v1/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-56","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Two usable HTTP schemes require an explicit server choice and list order supplies no preference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Scheme choice","version":"1"},"schemes":["https","http"],"host":"api.example","basePath":"/","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-57","rules":["OAPI20-P-04"],"section":"10",
+      "description":"The server configuration selects the authored effective scheme by zero-based index without rewriting host or basePath.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected scheme","version":"1"},"schemes":["http","https"],"host":"api.example","basePath":"/v2","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":{"index":1}},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v2/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-58","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Absent schemes and host inherit the retrieval scheme and complete authority including port; absent basePath is the exact slash default.",
+      "given":{"source":{"location":"https://docs.example:8443/swagger.json","content":{"swagger":"2.0","info":{"title":"Retrieval inheritance","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://docs.example:8443//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-59","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A WebSocket scheme is unusable, leaving the sole HTTPS alternative to self-select without list-order inference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"WebSocket exclusion","version":"1"},"schemes":["ws","https"],"host":"api.example","basePath":"/","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-60","rules":["OAPI20-P-04"],"section":"10",
+      "description":"An effective list containing only ws and wss has no usable target under the HTTP binding.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Only WebSocket","version":"1"},"schemes":["ws","wss"],"host":"api.example","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-61","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A complete configured URL recovers an otherwise unresolved empty-schemes and absent-host target while preserving the operation path.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Configured recovery","version":"1"},"schemes":[],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example/root"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/root/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-62","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Target construction preserves an authored trailing server slash and leading Paths slash as a double slash without normalization.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No slash repair","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":{"baseUrl":"https://peer.example/root/"}},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/root//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-63","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A sole apiKey security requirement self-selects and carries its runtime value at the exact header destination.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Header API key","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Api-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Api-Key","equals":"secret"}]}]
+    },
+    {
+      "id":"OAPI20-PS-64","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A query apiKey value uses the same uppercase RFC 3986 percent encoding as query Parameters.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Query API key","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"query","name":"api key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"a/b? c&d=é"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?api%20key=a%2Fb%3F%20c%26d%3D%C3%A9"}]}]
+    },
+    {
+      "id":"OAPI20-PS-65","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Basic security constructs the RFC 7617 Authorization value from the named runtime user-id and password.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Basic security","version":"1"},"securityDefinitions":{"login":{"type":"basic"}},"security":[{"login":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Authorization","equals":"Basic dXNlcjpwYXNz"}]}]
+    },
+    {
+      "id":"OAPI20-PS-66","rules":["OAPI20-P-04"],"section":"11",
+      "description":"OAuth2 wire carriage requires a Bearer access token whose runtime scope set satisfies every required declared scope.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"OAuth2 security","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"accessCode","authorizationUrl":"https://auth.example/authorize","tokenUrl":"https://auth.example/token","scopes":{"read":"Read","write":"Write"}}},"security":[{"oauth":["read","write"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["write","read","extra"]}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Authorization","equals":"Bearer abc123"}]}]
+    },
+    {
+      "id":"OAPI20-PS-67","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An OAuth2 credential missing one required scope refuses before dispatch even when it supplies a valid access token.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"OAuth2 scope refusal","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"implicit","authorizationUrl":"https://auth.example/authorize","scopes":{"read":"Read","write":"Write"}}},"security":[{"oauth":["read","write"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["read"]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-68","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Multiple security alternatives require an explicit selection even when runtime credentials happen to satisfy one of them.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Security choice","version":"1"},"securityDefinitions":{"first":{"type":"apiKey","in":"header","name":"X-First"},"second":{"type":"apiKey","in":"header","name":"X-Second"}},"security":[{"first":[]},{"second":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"second":"two"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-69","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Selecting a safe security alternative ignores a different alternative whose query destination collides with an effective Parameter.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Confined collision","version":"1"},"securityDefinitions":{"bad":{"type":"apiKey","in":"query","name":"id"},"good":{"type":"apiKey","in":"header","name":"X-Good"}},"security":[{"bad":[]},{"good":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"id","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":1}},"invocation":{"inputPresent":true,"input":{"parameters":{"id":"42"}}},"runtime":{"credentials":{"bad":"bad","good":"good"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?id=42"},{"path":"/dispatch/headers/X-Good","equals":"good"}]}]
+    },
+    {
+      "id":"OAPI20-PS-70","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Selecting a credential alternative whose destination collides with an effective Parameter refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected collision","version":"1"},"securityDefinitions":{"bad":{"type":"apiKey","in":"header","name":"X-Key"},"good":{"type":"apiKey","in":"header","name":"X-Good"}},"security":[{"bad":[]},{"good":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"x-key","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":0}},"invocation":{"inputPresent":false},"runtime":{"credentials":{"bad":"bad"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-71","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An Operation security empty array clears the root requirement and unrelated runtime credentials never volunteer onto the wire.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Cleared security","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"security":[],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"unused"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Key","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-72","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require selection.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Optional security","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]},{}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-73","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Explicitly selecting the anonymous alternative dispatches without a credential even when another alternative is credentialed.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected anonymous","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]},{}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":1}},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"unused"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Key","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-74","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Every scheme in one Security Requirement Object is an AND obligation and non-colliding header and query credentials are both carried.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Security AND","version":"1"},"securityDefinitions":{"header":{"type":"apiKey","in":"header","name":"X-Key"},"query":{"type":"apiKey","in":"query","name":"token"}},"security":[{"header":[],"query":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"header":"one","query":"two"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?token=two"},{"path":"/dispatch/headers/X-Key","equals":"one"}]}]
+    },
+    {
+      "id":"OAPI20-PS-75","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Operation security replaces the root requirement, so only the operation-selected scheme contributes a credential.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Operation security","version":"1"},"securityDefinitions":{"root":{"type":"apiKey","in":"header","name":"X-Root"},"operation":{"type":"apiKey","in":"header","name":"X-Operation"}},"security":[{"root":[]}],"paths":{"/x":{"get":{"security":[{"operation":[]}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"root":"unused","operation":"used"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Root","absent":true},{"path":"/dispatch/headers/X-Operation","equals":"used"}]}]
+    },
+    {
+      "id":"OAPI20-PS-76","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A nonempty requirement array for basic makes that selected alternative unusable before credentials can dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Basic scopes defect","version":"1"},"securityDefinitions":{"login":{"type":"basic"}},"security":[{"login":["not-a-scope"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-77","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An unknown security-scheme name makes only its selected alternative unusable and never activates an extension-like declaration.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unknown security","version":"1"},"securityDefinitions":{},"security":[{"missing":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-78","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An OAuth2 implicit definition without its required authorizationUrl makes the selected alternative unusable.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Malformed OAuth2","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"implicit","scopes":{"read":"Read"}}},"security":[{"oauth":["read"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["read"]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-79","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An apiKey targeting processor-owned Content-Type makes the selected security alternative unusable before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Owned header collision","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"Content-Type"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-80","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Basic and OAuth2 schemes in one AND requirement collide at Authorization, making that selected alternative unusable.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Credential collision","version":"1"},"securityDefinitions":{"login":{"type":"basic"},"oauth":{"type":"oauth2","flow":"password","tokenUrl":"https://auth.example/token","scopes":{}}},"security":[{"login":[],"oauth":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"},"oauth":{"accessToken":"abc123","scopes":[]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-81","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Accept remains an ordinary Header Parameter destination, so a credential targeting it collides only when that effective Parameter exists.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Accept collision","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"Accept"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"accept","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-82","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A header apiKey credential containing CR or LF refuses before dispatch instead of reaching the HTTP stack.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Credential field bytes","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"bad\r\nvalue"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-83","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Without a configured URL, omitting target defaults in a self-contained document leaves the target unresolved before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unresolved target","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
     }
   ]
 }
