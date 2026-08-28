@@ -258,6 +258,58 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-06",
+      "description": "A noncanonical response Schema reference excludes only its smallest media owner; synthesis retains the sibling response contract and reports the unavailable alternative [OAPI32-S-01, OAPI32-P-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Response identity confinement", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "components": {
+            "schemas": {
+              "Resource": {
+                "$id": "https://schemas.example/resource",
+                "type": "object",
+                "properties": {"name": {"type": "string"}}
+              }
+            }
+          },
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "readValue",
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {"schema": {"$ref": "#/components/schemas/Resource/properties/name"}},
+                      "text/plain": {"schema": {"type": "string"}}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["readValue"],
+        "bindings": [{"operationKey": "readValue", "bindingSelector": "#/paths/~1x/get"}],
+        "assertions": [
+          {"path": "/operations/readValue/output/type", "equals": "string"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readValue", "bindingSelector": "#/paths/~1x/get", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/200/content/application~1json", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.response_media_excluded", "rule": "OAPI32-P-01", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }
