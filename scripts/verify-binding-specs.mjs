@@ -18,13 +18,13 @@
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
-//      `violates` entry resolves to a rule the family specs or the core spec
-//      actually define. Positive tests carry no `violates`.
+//      `violates` entry resolves to a rule its family spec or the core spec
+//      actually defines. Positive tests carry no `violates`.
 //   6. Every fixture has at least one positive and one negative test unless
 //      marked `coverage: "positive-only"`.
-//   7. Portable processor and synthesis scenarios cite only rules owned by
-//      their family (or the core), and their normalized identities and
-//      coverage evidence are internally consistent.
+//   7. Portable processor, synthesis, and fidelity scenarios cite only rules
+//      owned by their family (or the core), and their normalized identities
+//      and coverage evidence are internally consistent.
 //   8. Adjudications resolve to live synthesis scenarios and keep core and
 //      family authority in their declared lanes.
 //   9. The abstraction-fidelity alignment ledger validates against its schema.
@@ -126,15 +126,6 @@ const FAMILIES = {
   },
 };
 
-// N8 partitions only conformance/binding-specs/. The stronger fidelity profile
-// remains on the superseded unified candidate until its own graph node migrates
-// it, so keep that read-only identity isolated from the active corpus families.
-const LEGACY_OPENAPI_FIDELITY = {
-  bindingSpec: "openbindings.openapi@1",
-  prefix: "OAPI",
-  spec: join(SPEC_ROOT, "binding-specs", "openapi", "openbindings.openapi.md"),
-};
-
 const errors = [];
 const tmp = mkdtempSync(join(tmpdir(), "bs-verify-"));
 let counter = 0;
@@ -167,11 +158,11 @@ function extractFamilyRules(md, prefix) {
   return rules;
 }
 
-// Extracts every rule identifier a family spec defines (D- and P-rules),
-// for resolving `violates` references.
+// Extracts every rule identifier a family spec defines (D-, P-, and S-rules),
+// for resolving corpus citations against their owning specification.
 function extractAllRuleIds(md, prefix) {
   const ids = new Set();
-  const re = new RegExp(`\\*\\*(${prefix}-[DP]-\\d+)\\*\\*`, "g");
+  const re = new RegExp(`\\*\\*(${prefix}-[DPS]-\\d+)\\*\\*`, "g");
   let m;
   while ((m = re.exec(md)) !== null) ids.add(m[1]);
   return ids;
@@ -205,9 +196,9 @@ function extractDeferredRules(readme) {
 
 function sectionExists(specMd, section) {
   // The `section` field cites a family-spec section like "4" or "9.2";
-  // check a heading numbered with it exists (e.g. `## 4.` / `### 9.2.`).
+  // accept the catalog's top-level `## 4.` and sibling `### 9.2` styles.
   const esc = section.replace(/\./g, "\\.");
-  return new RegExp(`^#{2,4}\\s+${esc}\\.\\s`, "m").test(specMd);
+  return new RegExp(`^#{2,4}\\s+${esc}\\.?\\s`, "m").test(specMd);
 }
 
 const readme = readFileSync(README, "utf8");
@@ -215,6 +206,7 @@ const coreRules = extractCoreRules(readFileSync(CORE_SPEC_MD, "utf8"));
 const deferred = extractDeferredRules(readme);
 
 const specTexts = {};
+const familyRuleIds = {};
 const definedDRules = new Map(); // family-dir + rule id → { ruleId, dir }
 const allRuleIds = new Set(coreRules);
 for (const [dir, fam] of Object.entries(FAMILIES)) {
@@ -223,19 +215,8 @@ for (const [dir, fam] of Object.entries(FAMILIES)) {
   for (const id of extractFamilyRules(md, fam.prefix)) {
     definedDRules.set(`${dir}\0${id}`, { ruleId: id, dir });
   }
-  for (const id of extractAllRuleIds(md, fam.prefix)) allRuleIds.add(id);
-}
-// The superseded unified candidate was deleted (retire-legacy-openapi-candidate);
-// until its invocation-fidelity profile migrates to the family identities (N10),
-// legacy OAPI-* citations validate by pattern only, against git history.
-const legacyOpenapiDocPresent = existsSync(LEGACY_OPENAPI_FIDELITY.spec);
-const legacyOpenapiFidelityText = legacyOpenapiDocPresent
-  ? readFileSync(LEGACY_OPENAPI_FIDELITY.spec, "utf8")
-  : null;
-if (legacyOpenapiDocPresent) {
-  for (const id of extractAllRuleIds(legacyOpenapiFidelityText, LEGACY_OPENAPI_FIDELITY.prefix)) {
-    allRuleIds.add(id);
-  }
+  familyRuleIds[dir] = extractAllRuleIds(md, fam.prefix);
+  for (const id of familyRuleIds[dir]) allRuleIds.add(id);
 }
 
 const fixtureRules = new Map(); // family-dir + rule id → relPath
@@ -319,9 +300,9 @@ for (const [dir, fam] of Object.entries(FAMILIES)) {
           errors.push(`${relPath}.tests[${i}]: negative test carries no 'violates'`);
         } else {
           for (const v of t.violates) {
-            if (!allRuleIds.has(v)) {
+            if (!coreRules.has(v) && !familyRuleIds[dir].has(v)) {
               errors.push(
-                `${relPath}.tests[${i}].violates: rule '${v}' is not defined in any family spec or the core spec`
+                `${relPath}.tests[${i}].violates: rule '${v}' is not defined by the core or the ${dir} family`
               );
             }
           }
@@ -415,7 +396,7 @@ for (const dir of processorTargets) {
     if (!sectionExists(specTexts[dir], scenario.section))
       errors.push(`processor/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
     for (const rule of scenario.rules) {
-      if (!rule.startsWith(`${fam.prefix}-P-`) || !allRuleIds.has(rule))
+      if (!rule.startsWith(`${fam.prefix}-P-`) || !familyRuleIds[dir].has(rule))
         errors.push(`processor/${dir}.json.scenarios[${i}]: rule '${rule}' is not a defined ${dir} P-rule`);
       if (!processorRuleCoverage.has(rule)) processorRuleCoverage.set(rule, []);
       processorRuleCoverage.get(rule).push(scenario.id);
@@ -432,21 +413,26 @@ for (const dir of processorTargets) {
   }
 }
 for (const [rule, dirs] of processorPRules) {
-  const isOpenapiSeed = dirs.every((dir) => dir.startsWith("openapi-"));
-  if (!isOpenapiSeed && !processorRuleCoverage.has(rule))
+  if (!processorRuleCoverage.has(rule))
     errors.push(`Processor rule ${rule} (${dirs.join(", ")}) has no portable processor scenario`);
 }
 
 // The stronger invocation-fidelity profile is kept separate from published
 // family conformance. It reuses the semantic harness but may also cite the
 // core binding-specification completeness floor.
-const fidelityTargets = ["openapi", "asyncapi", "grpc", "connect", "graphql", "mcp", "usage"];
+const fidelityTargets = [
+  "openapi-3.0",
+  "openapi-3.1",
+  "asyncapi",
+  "grpc",
+  "connect",
+  "graphql",
+  "mcp",
+  "usage",
+];
 let fidelityScenarios = 0;
 for (const dir of fidelityTargets) {
-  const fam = dir === "openapi" ? LEGACY_OPENAPI_FIDELITY : FAMILIES[dir];
-  const fidelitySpecText = dir === "openapi"
-    ? legacyOpenapiFidelityText // null once the superseded candidate is deleted
-    : specTexts[dir];
+  const fam = FAMILIES[dir];
   const path = join(FIDELITY_DIR, `${dir}.json`);
   if (!existsSync(path)) {
     errors.push(`invocation-fidelity/${dir}.json: missing fidelity scenario file`);
@@ -472,13 +458,10 @@ for (const dir of fidelityTargets) {
     fidelityScenarios++;
     if (!scenario.id.startsWith(`${fam.prefix}-FI-`))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
-    if (fidelitySpecText !== null && !sectionExists(fidelitySpecText, scenario.section))
+    if (!sectionExists(specTexts[dir], scenario.section))
       errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
     for (const rule of scenario.rules) {
-      if (fidelitySpecText === null) {
-        if (!/^(OBI|OAPI)-[A-Z]+-\d+$/.test(rule))
-          errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: rule '${rule}' is not a recognizable legacy or core rule id`);
-      } else if (!allRuleIds.has(rule))
+      if (!coreRules.has(rule) && !familyRuleIds[dir].has(rule))
         errors.push(`invocation-fidelity/${dir}.json.scenarios[${i}]: rule '${rule}' is not defined by core or the family specification`);
     }
   }
@@ -526,7 +509,7 @@ for (const dir of processorTargets) {
       errors.push(`${at}: source bindingSpec '${scenario.source.bindingSpec}' is not '${fam.bindingSpec}'`);
     if (scenario.expected.outcome === "refused") {
       for (const rule of scenario.expected.rules) {
-        if (!coreRules.has(rule) && (!rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(rule)))
+        if (!coreRules.has(rule) && !familyRuleIds[dir].has(rule))
           errors.push(`${at}: refusal rule '${rule}' is not defined by the core or the ${dir} family`);
       }
       continue;
@@ -553,7 +536,7 @@ for (const dir of processorTargets) {
       } else if (
         entry.rule
         && !coreRules.has(entry.rule)
-        && (!entry.rule.startsWith(`${fam.prefix}-`) || !allRuleIds.has(entry.rule))
+        && !familyRuleIds[dir].has(entry.rule)
       ) {
         errors.push(`${entryAt}: rule '${entry.rule}' is not defined by the core or the ${dir} family`);
       }

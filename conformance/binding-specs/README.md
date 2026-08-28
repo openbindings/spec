@@ -412,12 +412,14 @@ fixtured here or listed as deferred in this README; every negative test
 carries `violates`, and every `violates` entry names a rule the family spec
 or the core spec actually defines. Processor scenario files validate against
 their own schema; family, identifier, section, scenario ids, and every
-referenced P-rule are cross-checked. The verifier requires complete P-rule
-coverage for the six non-OpenAPI rule-prefix families; the four new OpenAPI
-files are intentionally partitioned seeds and report their partial rule
-coverage honestly. Synthesis scenario files are likewise checked for all ten
-specifications, including target/disposition consistency. It asserts
-this README's three scenario counts against the corpus, and probes the
+referenced P-rule are cross-checked verbatim against the owning family
+specification. The verifier requires complete P-rule coverage for all ten
+standalone specifications, including every OpenAPI sibling. Synthesis and
+invocation-fidelity scenario citations must likewise exist verbatim in their
+owning family specification or, for an OBI citation, in Core; no legacy-token
+or pattern-only fallback is accepted. Synthesis scenario files are also
+checked for all ten specifications, including target/disposition consistency.
+It asserts this README's three scenario counts against the corpus, and probes the
 synthesis schema with a source declaring neither `location` nor `content` to
 prove the adopted contract constraint is still enforced. It does not judge D
 verdicts or execute processor/synthesis scenarios — those are the jobs of
