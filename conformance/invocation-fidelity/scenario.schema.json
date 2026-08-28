@@ -44,7 +44,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[A-Z]+-FI-[0-9]{2}$"
+            "pattern": "^[A-Z][A-Z0-9]*-FI-[0-9]{2}$"
           },
           "rules": {
             "type": "array",
