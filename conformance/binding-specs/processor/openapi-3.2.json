@@ -10,7 +10,7 @@
         "OAPI32-P-01"
       ],
       "section": "3",
-      "description": "The exact 3.2.0 edition is admitted, an operation with omitted responses remains addressable, and the plain empty unary response uses the explicit 3.1-equivalence bridge.",
+      "description": "The exact 3.2.0 edition is admitted, an operation with omitted responses remains addressable, and a plain empty unary response completes without an output value.",
       "given": {
         "source": {
           "content": {
@@ -705,7 +705,7 @@
         "OAPI32-P-01"
       ],
       "section": "5",
-      "description": "A response-only reference-identity divergence does not leak into M5's request gate; the empty unary response remains on the explicit equivalence bridge and the divergent response cell is deferred to M6.",
+      "description": "A selected Response Object reference using a retrieval alias instead of the target document's declared $self identity is unresolvable and refuses before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -762,16 +762,12 @@
       },
       "expected": [
         {
-          "disposition": "complete",
-          "phase": "completion",
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
           "assertions": [
             {
-              "path": "/dispatch/url",
-              "equals": "https://api.example/x"
-            },
-            {
-              "path": "/outputs",
-              "equals": []
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }
@@ -7664,8 +7660,8 @@
       "id": "OAPI32-PS-130",
       "rules": ["OAPI32-P-03"],
       "section": "9",
-      "description": "The explicit 3.1-equivalence bridge round-trips one non-sequential exact-status JSON response as one unary operation value.",
-      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unary response bridge", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
+      "description": "The native 3.2 response lane round-trips one non-sequential exact-status JSON response as one unary operation value.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Native unary response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"description": "ok", "content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"ok": true}]}]}]
     },
     {
@@ -7683,6 +7679,342 @@
       "description": "Cookie style defaults omitted explode to true, so an array emits repeated RFC 6265 pairs joined by the semicolon-space separator.",
       "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Cookie explode default", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "parts", "in": "cookie", "style": "cookie", "schema": {"type": "array", "items": {"type": "string"}}}], "responses": {"204": {"description": "ok"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": true, "input": {"parameters": {"parts": ["a", "b"]}}}, "peer": {"status": 204, "body": ""}},
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/headers/Cookie", "equals": "parts=a; parts=b"}]}]
+    },
+    {
+      "id": "OAPI32-PS-133",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An exact final-status response overrides its matching class range and default; the 3.2 Response Object needs no description field to govern.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Exact response precedence", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"206": {"content": {"application/json": {"schema": {"type": "object"}}}}, "2XX": {"content": {"text/plain": {"schema": {"type": "string"}}}}, "default": {"content": {"application/octet-stream": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 206, "headers": {"Content-Type": "application/json"}, "body": "{\"winner\":\"exact\"}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"winner": "exact"}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-134",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The single matching response-key range governs ahead of default while native final-status classification remains successful for an unlisted 2xx code.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Range response precedence", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"2XX": {"content": {"text/plain": {"schema": {"type": "string"}}}}, "default": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 207, "headers": {"Content-Type": "text/plain"}, "body": "range"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["range"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-135",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A lowercase response range is outside the closed exact/range/default/extension key set and excludes the selected target before dispatch.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Invalid lowercase range", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"2xx": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-136",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An exact response key outside the five admitted HTTP status classes excludes the selected target before any actual response is inspected.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Invalid exact response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"600": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-137",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A governing non-Content-Type Header Object declaring required true makes the actual header mandatory even when the successful response body is empty.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Required response header", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"headers": {"X-Trace": {"required": true, "schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-138",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response Header Object named Content-Type is ignored even when it declares required true, so its absence cannot fail an empty response.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Ignored response Content-Type header", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"headers": {"Content-Type": {"required": true, "schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-139",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A normalized response-media collision is confined to that identity; a clean sibling declaration still governs decoding.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response collision confinement", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}, "application/json; charset=utf-8": {}, "Application/JSON;charset=\"UTF-8\"": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain; charset=utf-8"}, "body": "clean"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["clean"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-140",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An actual response selecting a normalized-colliding media identity is a loud protocol error; map order cannot choose a winner.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response collision refusal", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}, "application/json; charset=utf-8": {}, "Application/JSON;charset=\"UTF-8\"": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json; charset=UTF-8"}, "body": "{\"id\":1}"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-141",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-empty response without Content-Type assumes application/octet-stream before matching and emits the exact octets through the canonical Base64 value boundary.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Absent response Content-Type", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/octet-stream": {}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "bodyBase64": "AAEC"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["AAEC"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-142",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A zero-octet successful response emits no output value even when its governing declaration names JSON; it never manufactures null or an empty string.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Empty response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"type": ["object", "null"]}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-143",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-empty actual response with no governing exact, range, or default Response Object is a loud protocol error.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Undeclared non-empty response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "body": "unexpected"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-144",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response to HEAD is empty by definition even if a scripted peer supplies payload octets; no operation output value is emitted.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "HEAD response boundary", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"head": {"responses": {"200": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/head"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ignored\":true}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-145",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A default-governed non-2xx final response remains unsuccessful while its JSON body is preserved as opaque application-authored failure data rather than an operation output.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Failure response data", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"default": {"content": {"application/problem+json": {"schema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 404, "headers": {"Content-Type": "application/problem+json"}, "body": "{\"code\":\"missing\"}"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}, {"path": "/error/data", "equals": {"code": "missing"}}]}]
+    },
+    {
+      "id": "OAPI32-PS-146",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The actual governed response Content-Encoding value fixes the decoder stack, which runs in reverse wire order before the selected media lane.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response coding stack", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["first, second"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"first": "unwrap", "second": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "first, second"}, "body": "second(first(payload))"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["payload"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-147",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A response content-coding token admitted by the governing Header Object but unsupported by runtime capability fails loudly rather than being skipped.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unsupported response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["zip"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-148",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A configured response decoder supplies capability but cannot declare a Content-Encoding value omitted by the governing Response Object.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Undeclared response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"zip": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "zip(payload)"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-149",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A configured response decoder cannot admit an actual coding value excluded by the governing Header Object schema.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unadmitted response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["gzip"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"zip": "unwrap"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "zip"}, "body": "zip(payload)"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-150",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The governed identity response coding requires no configured decoder and preserves the representation for the selected media lane.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Identity response coding", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["identity"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "identity"}, "body": "payload"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["payload"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-151",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The responseContentCodings capability map matches content-coding tokens case-insensitively.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Case-insensitive response coding capability", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string", "enum": ["reverse"]}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"responseContentCodings": {"ReVeRsE": "reverse"}}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "reverse"}, "body": "cba"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["abc"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-152",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "Case-insensitive duplicate response Content-Encoding Header Object declarations are ambiguous and fail loudly.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Ambiguous response coding declaration", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"Content-Encoding": {"schema": {"type": "string"}}, "content-encoding": {"schema": {"type": "string"}}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "Content-Encoding": "identity"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-153",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An application/jsonl success response emits one parsed JSON operation value per line in wire order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "JSON Lines response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"schema": {"type": "array"}, "itemSchema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"n\":1}\n{\"n\":2}\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, {"n": 2}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-154",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The application/x-ndjson spelling uses the same ordered newline-delimited JSON item boundary.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "NDJSON response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/x-ndjson": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/x-ndjson"}, "body": "true\n12\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [true, 12]}]}]
+    },
+    {
+      "id": "OAPI32-PS-155",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An application/json-seq response uses RS framing and emits each parsed JSON text in order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "JSON text sequence response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json-seq": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json-seq"}, "body": "\u001e{\"n\":1}\n\u001e2\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, 2]}]}]
+    },
+    {
+      "id": "OAPI32-PS-156",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A +json-seq structured-suffix response uses the incorporated JSON text sequence framing without media sniffing.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Suffixed JSON text sequence response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/problem+json-seq": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/problem+json-seq"}, "body": "\u001efalse\n\u001enull\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [false, null]}]}]
+    },
+    {
+      "id": "OAPI32-PS-157",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A positional multipart success response emits one decoded part value per item in part order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Positional multipart response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"multipart/mixed": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "multipart/mixed; boundary=b"}, "body": "--b\r\nContent-Type: application/json\r\n\r\n{\"n\":1}\r\n--b\r\nContent-Type: text/plain\r\n\r\nsecond\r\n--b--\r\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, "second"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-158",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A malformed later JSON Lines item is not emitted and ends the interaction unsuccessfully while an earlier valid item remains a successful value.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Partial sequential success", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"ok\":1}\nnot-json\n{\"never\":3}\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": [{"ok": 1}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-159",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "itemSchema on a media type with no incorporated item framing makes that selected response alternative unavailable rather than authorizing sniffing.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unknown sequential framing", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/x-private": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/x-private"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-160",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-successful final status keeps a sequential response body in failure data and emits no successful item values.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Sequential failure response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"default": {"content": {"application/jsonl": {"itemSchema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 400, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"error\":1}\n{\"error\":2}\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-161",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-sequential application/json response remains unary even when its complete-response schema is an array.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unary JSON array response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"type": "array", "items": {"type": "number"}}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "[1,2]"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [[1, 2]]}]}]
+    },
+    {
+      "id": "OAPI32-PS-162",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The consumer delivery bound applies independently to each sequential item; an oversized later item fails after an earlier bounded item was emitted.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Sequential item bound", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"maxDeliveryUnitBytes": 8}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "1\n\"0123456789\"\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": [1]}]}]
+    },
+    {
+      "id": "OAPI32-PS-163",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "A selected external Response Object addressed through its declared $self identity composes its response content into the target.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Canonical response identity", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"$ref": "https://identity.example/responses.yaml#/components/responses/Value"}}}}}}}, "resources": {"https://identity.example/responses.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/responses.yaml", "info": {"title": "Responses", "version": "1"}, "components": {"responses": {"Value": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"ok\":true}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"ok": true}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-164",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "A 3.2 Media Type Object Reference addressed through the external document's canonical $self identity is loaded as part of the selected response closure.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Canonical response media identity", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"$ref": "https://identity.example/media.yaml#/components/mediaTypes/Value"}}}}}}}}}, "resources": {"https://identity.example/media.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/media.yaml", "info": {"title": "Media", "version": "1"}, "components": {"mediaTypes": {"Value": {"schema": {"type": "object"}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"value\":1}"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"value": 1}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-165",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "A Media Type Object reference using a retrieval alias makes only that response media unavailable; a sibling media alternative remains usable.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Confined response media alias", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"$ref": "https://retrieval.example/media.yaml#/components/mediaTypes/Value"}, "text/plain": {"schema": {"type": "string"}}}}}}}}}}, "resources": {"https://retrieval.example/media.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/media.yaml", "info": {"title": "Media", "version": "1"}, "components": {"mediaTypes": {"Value": {"schema": {"type": "object"}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain"}, "body": "survives"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["survives"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-166",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "An actual response selecting the unavailable retrieval-alias Media Type alternative fails loudly without falling back to its sibling.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Selected unavailable response media", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"$ref": "https://retrieval.example/media.yaml#/components/mediaTypes/Value"}, "text/plain": {"schema": {"type": "string"}}}}}}}}}}, "resources": {"https://retrieval.example/media.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/media.yaml", "info": {"title": "Media", "version": "1"}, "components": {"mediaTypes": {"Value": {"schema": {"type": "object"}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "{\"value\":1}"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-167",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "A response Schema Object reference crossing a nearer $id boundary noncanonically makes only its media alternative unavailable, leaving a sibling response media usable.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Confined response schema identity", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"schemas": {"Resource": {"$id": "https://schemas.example/resource", "type": "object", "properties": {"name": {"type": "string"}}}}}, "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resource/properties/name"}}, "text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain"}, "body": "survives"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["survives"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-168",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "An actual response selecting a media alternative whose Schema reference crosses a nearer $id boundary fails loudly without choosing a sibling declaration.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Selected unavailable response schema", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"schemas": {"Resource": {"$id": "https://schemas.example/resource", "type": "object", "properties": {"name": {"type": "string"}}}}}, "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Resource/properties/name"}}, "text/plain": {"schema": {"type": "string"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "\"value\""}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-169",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "Fields added beside a Response Reference Object are ignored and do not extend the selected response closure.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Ignored response reference siblings", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"responses": {"Empty": {}}}, "paths": {"/x": {"get": {"responses": {"204": {"$ref": "#/components/responses/Empty", "content": {"application/json": {"schema": {"$ref": "https://unused.example/schema"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-170",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A cyclic but resolvable selected Response Reference graph terminates and remains legitimate.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response reference cycle", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"responses": {"A": {"$ref": "#/components/responses/B"}, "B": {"$ref": "#/components/responses/A"}}}, "paths": {"/x": {"get": {"responses": {"204": {"$ref": "#/components/responses/A"}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-171",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "An unresolvable response reference outside the selected target-plus-reachable closure does not affect the selected operation.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unrelated response defect", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"responses": {"Unused": {"$ref": "https://missing.example/response"}}}, "paths": {"/x": {"get": {"responses": {"204": {}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 204, "body": ""}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-172",
+      "rules": ["OAPI32-P-01", "OAPI32-P-03"],
+      "section": "5",
+      "description": "A canonical external Header Object reference is part of the selected response closure and governs the actual required response header.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "External response header", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"headers": {"X-Required": {"$ref": "https://identity.example/headers.yaml#/components/headers/Required"}}, "content": {"text/plain": {"schema": {"type": "string"}}}}}}}}}}, "resources": {"https://identity.example/headers.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/headers.yaml", "info": {"title": "Headers", "version": "1"}, "components": {"headers": {"Required": {"required": true, "schema": {"type": "string"}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "text/plain", "X-Required": "present"}, "body": "value"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": ["value"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-173",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A response Header Object reference using a retrieval alias instead of its document's declared $self identity makes the selected response closure unresolvable before dispatch.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response header alias", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"headers": {"X-Trace": {"$ref": "https://retrieval.example/library.yaml#/components/headers/Target"}}}}}}}}}, "resources": {"https://retrieval.example/library.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/library.yaml", "info": {"title": "Header library", "version": "1"}, "components": {"headers": {"Target": {"required": true, "schema": {"type": "string"}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-174",
+      "rules": ["OAPI32-P-01"],
+      "section": "5",
+      "description": "A response Link Object reference is part of the response closure even though Link carriage is outside the operation value; using a retrieval alias makes the target unresolvable.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Response link alias", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"204": {"links": {"next": {"$ref": "https://retrieval.example/library.yaml#/components/links/Target"}}}}}}}}}, "resources": {"https://retrieval.example/library.yaml": {"openapi": "3.2.0", "$self": "https://identity.example/library.yaml", "info": {"title": "Link library", "version": "1"}, "components": {"links": {"Target": {"operationId": "next"}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}},
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
     },
     {
       "id": "OAPI32-PS-01",

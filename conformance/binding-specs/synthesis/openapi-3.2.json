@@ -213,6 +213,157 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-05",
+      "description": "A sequential response publishes itemSchema as the per-value OpenBindings output contract; the co-present complete-sequence schema remains an aggregate artifact constraint [OAPI32-S-01, OAPI32-P-03].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Sequential response synthesis", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/events": {
+              "get": {
+                "operationId": "watchEvents",
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/jsonl": {
+                        "schema": {"type": "array"},
+                        "itemSchema": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["watchEvents"],
+        "bindings": [{"operationKey": "watchEvents", "bindingSelector": "#/paths/~1events/get"}],
+        "assertions": [
+          {"path": "/operations/watchEvents/output/type", "equals": "object"},
+          {"path": "/operations/watchEvents/output/properties/id/type", "equals": "string"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1events/get", "scope": "target", "status": "represented", "operationKey": "watchEvents", "bindingSelector": "#/paths/~1events/get", "requirements": []}
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-06",
+      "description": "A noncanonical response Schema reference excludes only its smallest media owner; synthesis retains the sibling response contract and reports the unavailable alternative [OAPI32-S-01, OAPI32-P-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Response identity confinement", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "components": {
+            "schemas": {
+              "Resource": {
+                "$id": "https://schemas.example/resource",
+                "type": "object",
+                "properties": {"name": {"type": "string"}}
+              }
+            }
+          },
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "readValue",
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {"schema": {"$ref": "#/components/schemas/Resource/properties/name"}},
+                      "text/plain": {"schema": {"type": "string"}}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["readValue"],
+        "bindings": [{"operationKey": "readValue", "bindingSelector": "#/paths/~1x/get"}],
+        "assertions": [
+          {"path": "/operations/readValue/output/type", "equals": "string"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readValue", "bindingSelector": "#/paths/~1x/get", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/200/content/application~1json", "scope": "alternative", "status": "excluded", "reasonCode": "openapi.response_media_excluded", "rule": "OAPI32-P-01", "requirements": []}
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-07",
+      "description": "Callback and webhook Path Items expose fixed QUERY and case-exact additional operations as separate targetless dependencies; the callback runtime expression remains only a service-selected destination and no dependency acquires a binding-family constraint [OAPI32-S-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Inbound dependency inventory", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/jobs": {
+              "post": {
+                "operationId": "createJob",
+                "callbacks": {
+                  "done": {
+                    "{$request.body#/url}": {
+                      "post": {
+                        "operationId": "receiveDone",
+                        "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}}}},
+                        "responses": {"200": {"content": {"application/json": {"schema": {"type": "string"}}}}}
+                      },
+                      "additionalOperations": {"REPORT": {"operationId": "reportDone", "responses": {"204": {}}}}
+                    }
+                  }
+                },
+                "responses": {"202": {}}
+              }
+            }
+          },
+          "webhooks": {"changed": {"query": {"operationId": "queryChange", "responses": {"200": {}}}}}
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["createJob"],
+        "bindings": [{"operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post"}],
+        "assertions": [
+          {"path": "/operations/receiveDone/input/properties/id/type", "equals": "string"},
+          {"path": "/operations/receiveDone/output/type", "equals": "string"},
+          {"path": "/operations/reportDone", "equals": {}},
+          {"path": "/operations/queryChange", "equals": {}}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/callbacks/done/{$request.body#~1url}/post", "scope": "dependency", "status": "represented", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/callbacks/done/{$request.body#~1url}/additionalOperations/REPORT", "scope": "dependency", "status": "represented", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/webhooks/changed/query", "scope": "dependency", "status": "represented", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }
