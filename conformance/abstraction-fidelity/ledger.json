@@ -88,7 +88,8 @@
       "evidence": [
         "../invocation-fidelity/README.md",
         "../invocation-fidelity/STATUS.md",
-        "../invocation-fidelity/openapi.json",
+        "../invocation-fidelity/openapi-3.0.json",
+        "../invocation-fidelity/openapi-3.1.json",
         "../invocation-fidelity/grpc.json",
         "../invocation-fidelity/connect.json",
         "../invocation-fidelity/graphql.json",

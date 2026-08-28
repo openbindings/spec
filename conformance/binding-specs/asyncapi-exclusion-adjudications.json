@@ -105,7 +105,7 @@
     {
       "reasonCode": "asyncapi.payload_carriage_unsupported",
       "classification": "resolved-widened",
-      "note": "RESOLVED 2026-08-13 (codec-seam ruling, same day as opened): the reason code no longer exists. Declared binary media now carries through the artifact-authorized byte rule (canonical RFC 4648 \u00a74 Base64 boundary, mirroring openbindings.openapi@1's raw-byte lane): the direction is invocable with the boundary schema {type: string, contentEncoding: base64}, and consumer Encode/Decode codec hooks enrich to logical values at invocation. Where a declared contract is not the boundary schema the direction accounts lossy under the new asyncapi.payload_byte_carriage code. The MC2 implementation-unsupported class this entry guarded is empty.",
+      "note": "RESOLVED 2026-08-13 (codec-seam ruling, same day as opened): the reason code no longer exists. Declared binary media now carries through the artifact-authorized byte rule (canonical RFC 4648 \u00a74 Base64 boundary, mirroring the OpenAPI siblings' raw-byte lane): the direction is invocable with the boundary schema {type: string, contentEncoding: base64}, and consumer Encode/Decode codec hooks enrich to logical values at invocation. Where a declared contract is not the boundary schema the direction accounts lossy under the new asyncapi.payload_byte_carriage code. The MC2 implementation-unsupported class this entry guarded is empty.",
       "status": "RESOLVED 2026-08-13 (byte-boundary floor + codec hooks; ASYNC-SS-06/SS-19 pin the cells)",
       "measured": {
         "coverageEntries": 15,

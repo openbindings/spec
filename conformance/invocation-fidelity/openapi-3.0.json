@@ -1,0 +1,300 @@
+{
+  "format": "openbindings.invocation-fidelity-scenarios@1",
+  "bindingSpec": "openbindings.openapi-3.0@1",
+  "family": "openapi-3.0",
+  "description": "OpenAPI 3.0 fidelity scenarios with separate abstract and lower-layer assertions. Application values and completion behavior form the operation proof; native HTTP responses and OpenAPI declaration matches are lower-layer binding evidence and never operation outputs.",
+  "scenarios": [
+    {
+      "id": "OAPI30-FI-06",
+      "rules": [
+        "OBI-B-02",
+        "OAPI30-P-03",
+        "OAPI30-S-01"
+      ],
+      "section": "9.2",
+      "description": "A synthesized generic binary operation accepts a protocol-independent Base64 string field while concrete binding evidence proves byte-exact image upload.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Binary abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "operationId": "fidelityUploadImage",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {
+                        "schema": {
+                          "type": "string",
+                          "format": "binary"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w=="
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "image/png"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-FI-10",
+      "rules": [
+        "OBI-B-02",
+        "OAPI30-P-02",
+        "OAPI30-P-03",
+        "OAPI30-P-04",
+        "OAPI30-S-01"
+      ],
+      "section": "9.3",
+      "description": "Joined synthesis keeps an explicitly dynamic body as one protocol-neutral application object while private routing preserves an independent same-named query value and exact form carriage.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Dynamic abstraction",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "operationId": "fidelityDynamicItem",
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "fixed": {
+                              "type": "string"
+                            }
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "query-value",
+            "payload": {
+              "id": "body-value",
+              "extra": "a b",
+              "fixed": "yes"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items?id=query-value"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "extra=a+b&fixed=yes&id=body-value"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-FI-12",
+      "rules": [
+        "OBI-B-02",
+        "OAPI30-P-03",
+        "OAPI30-S-01"
+      ],
+      "section": "9.2",
+      "description": "Joined synthesis exposes one protocol-independent Base64 value while an exact schema-omitted OAS 3.0 declaration preserves request and response bytes.",
+      "given": {
+        "source": {
+          "location": "https://api.example/openapi.json",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Schema-omitted byte fidelity",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/archive": {
+                "post": {
+                  "operationId": "fidelityStoreArchive",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {}
+                    }
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "archive",
+                      "content": {
+                        "application/octet-stream": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1archive/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AAH+/w=="
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/octet-stream"
+          },
+          "bodyBase64": "3q2+7w=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/error",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/octet-stream"
+            },
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "AAH+/w=="
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "3q2+7w=="
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

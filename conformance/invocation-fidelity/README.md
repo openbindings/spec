@@ -47,6 +47,11 @@ lower artifact runtimes, protocol harnesses, or out-of-band tooling. The
 abstract assertions are application values, ordering, partial outputs, and
 completion behavior.
 
+The current corpus contains 30 scenarios in eight binding-specification
+slices: separate OpenAPI 3.0 and 3.1 files plus the six other standalone
+family files. Those eight files still represent the seven candidate families
+listed above; partitioning the OpenAPI family does not create another family.
+
 The project also publishes `openbindings.operation-graph@1`. It is an
 invocation-only composition binding, not an eighth standalone synthesis
 source: a graph names operations in its containing OBI and deliberately does
