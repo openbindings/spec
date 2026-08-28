@@ -312,6 +312,263 @@
       ]}]
     },
     {
+      "id": "OAPI32-PS-25",
+      "rules": ["OAPI32-P-01", "OAPI32-P-02"],
+      "section": "6",
+      "description": "The fixed query field dispatches the uppercase QUERY method, and QUERY carries its declared request content as the query operation rather than deleting it as GET-like content.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "QUERY", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/search": {"query": {"requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object"}}}}, "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1search/query"},
+        "invocation": {"inputPresent": true, "input": {"body": {"term": "fox"}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "QUERY"},
+        {"path": "/dispatch/url", "equals": "https://api.example/search"},
+        {"path": "/dispatch/body", "equals": {"term": "fox"}},
+        {"path": "/dispatch/headers/content-type", "equals": "application/json"}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-26",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "An additionalOperations key retains its exact authored capitalization in both selector identity and the HTTP method sent on the wire.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "custom method", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/custom": {"additionalOperations": {"MiXeD": {"responses": {"204": {"description": "ok"}}}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/MiXeD"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "MiXeD"},
+        {"path": "/dispatch/url", "equals": "https://api.example/custom"}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-27",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "Additional-operation lookup is byte-exact, so a case-changed selector names no operation and never dispatches.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "exact custom method", "version": "1"}, "paths": {"/custom": {"additionalOperations": {"MiXeD": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/MIXED"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "resolution", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-28",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "An additionalOperations map key containing a slash is not an HTTP token even when the selector escapes that map-key segment exactly.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "invalid custom method", "version": "1"}, "paths": {"/custom": {"additionalOperations": {"BAD/METHOD": {}}}, "/good": {"get": {}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/BAD~1METHOD"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "resolution", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-29",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "An additionalOperations key comparing ASCII-case-insensitively equal to the fixed query field is excluded as its own entry.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "fixed collision", "version": "1"}, "paths": {"/custom": {"query": {}, "additionalOperations": {"QuErY": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/QuErY"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-30",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "A colliding additional-operation entry does not exclude the distinct fixed QUERY operation on the same Path Item.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "fixed survives", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/custom": {"query": {}, "additionalOperations": {"QuErY": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/query"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "QUERY"},
+        {"path": "/dispatch/url", "equals": "https://api.example/custom"}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-31",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "RFC 6901 escaping applies once to an additional method key, so F~0O selects and dispatches the exact F~O HTTP token.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "escaped custom method", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/custom": {"additionalOperations": {"F~O": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/F~0O"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/method", "equals": "F~O"}]}]
+    },
+    {
+      "id": "OAPI32-PS-32",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "Selector evaluation resolves a referenced Path Item before reading an additionalOperations entry and composes a non-colliding adjacent entry.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "referenced additional", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"pathItems": {"Shared": {"additionalOperations": {"MiXeD": {}}}}}, "paths": {"/custom": {"$ref": "#/components/pathItems/Shared", "additionalOperations": {"OTHER": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/MiXeD"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "MiXeD"},
+        {"path": "/dispatch/url", "equals": "https://api.example/custom"}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-33",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "The same additional-operation key in a referenced and adjacent Path Item is an undefined selected-field collision and excludes that target.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "selected custom collision", "version": "1"}, "components": {"pathItems": {"Shared": {"additionalOperations": {"MiXeD": {}}}}}, "paths": {"/custom": {"$ref": "#/components/pathItems/Shared", "additionalOperations": {"MiXeD": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/MiXeD"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-34",
+      "rules": ["OAPI32-P-01"],
+      "section": "6",
+      "description": "A Path Item $ref collision confined to an unused additional-operation key does not exclude a different selected additional operation.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "unused custom collision", "version": "1"}, "servers": [{"url": "https://api.example"}], "components": {"pathItems": {"Shared": {"additionalOperations": {"MiXeD": {}, "OTHER": {}}}}}, "paths": {"/custom": {"$ref": "#/components/pathItems/Shared", "additionalOperations": {"MiXeD": {}}}}}},
+        "binding": {"selector": "#/paths/~1custom/additionalOperations/OTHER"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/method", "equals": "OTHER"}]}]
+    },
+    {
+      "id": "OAPI32-PS-35",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "A TRACE requestBody declaration creates no required caller body and a body-free invocation dispatches TRACE without content.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "TRACE body omission", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/trace": {"trace": {"requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object"}}}}, "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1trace/trace"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/method", "equals": "TRACE"},
+        {"path": "/dispatch/body", "absent": true}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-36",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "A supplied caller body on TRACE is unroutable and refuses before dispatch even when the artifact declares requestBody.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "TRACE body refusal", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/trace": {"trace": {"requestBody": {"content": {"application/json": {"schema": {"type": "object"}}}}}}}}},
+        "binding": {"selector": "#/paths/~1trace/trace"},
+        "invocation": {"inputPresent": true, "input": {"body": {"forbidden": true}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-37",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "The caller correspondence is closed to parameters and body, so an unknown top-level key refuses before dispatch.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "closed envelope", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"post": {}}}}},
+        "binding": {"selector": "#/paths/~1x/post"},
+        "invocation": {"inputPresent": true, "input": {"headers": {"X-Test": "value"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-38",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "A present caller-envelope parameters member must be an object and refuses before dispatch otherwise.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "parameter envelope", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": "q=value"}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-39",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "Cross-location same-name parameters activate qualified mode for every parameter and remain independently writable through location/RFC6901-name keys.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "qualified parameters", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "id", "in": "query", "schema": {"type": "string"}}]}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"path/id": "path-value", "query/id": "query-value"}}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/items/path-value?id=query-value"}]}]
+    },
+    {
+      "id": "OAPI32-PS-40",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "Once cross-location duplication activates qualified mode, the bare parameter name is unknown and refuses before dispatch.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "qualified parameter refusal", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/items/{id}": {"get": {"parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}, {"name": "id", "in": "query", "schema": {"type": "string"}}]}}}}},
+        "binding": {"selector": "#/paths/~1items~1{id}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"id": "ambiguous"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-41",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "A present body member carrying JSON null is supplied rather than absent and crosses the correspondence boundary as the one JSON null body value.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "null body", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/null": {"post": {"requestBody": {"required": true, "content": {"application/json": {"schema": {"type": ["object", "null"]}}}}, "responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1null/post"},
+        "invocation": {"inputPresent": true, "input": {"body": null}},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [
+        {"path": "/dispatch/body", "equals": null},
+        {"path": "/dispatch/byteLength", "equals": 4}
+      ]}]
+    },
+    {
+      "id": "OAPI32-PS-42",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "Omission of a required request body remains distinct from supplied null and refuses before dispatch.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "missing body", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/required": {"post": {"requestBody": {"required": true, "content": {"application/json": {"schema": {"type": ["object", "null"]}}}}}}}}},
+        "binding": {"selector": "#/paths/~1required/post"},
+        "invocation": {"inputPresent": false}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id": "OAPI32-PS-43",
+      "rules": ["OAPI32-P-02"],
+      "section": "7",
+      "description": "An unknown key inside the parameters object refuses before dispatch; no unmatched-field passthrough exists even without a body.",
+      "given": {
+        "source": {"content": {"openapi": "3.2.0", "info": {"title": "unknown parameter", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"parameters": [{"name": "q", "in": "query", "schema": {"type": "string"}}]}}}}},
+        "binding": {"selector": "#/paths/~1x/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"other": "value"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"
