@@ -59,6 +59,9 @@
         "binding": {
           "selector": "#/paths/~1pets/post"
         },
+        "configuration": {
+          "server": "https://api.example/v1"
+        },
         "invocation": {
           "inputPresent": true,
           "input": {
@@ -103,6 +106,919 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-02",
+      "rules": [
+        "OAPI20-P-01"
+      ],
+      "section": "3",
+      "description": "The exact binding token owns the Swagger 2.0 gate: a compatible-looking swagger value refuses at load even when a valid-looking OpenAPI 3.x discriminator is also present, and the processor never falls through to the sibling lane.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0.1",
+            "openapi": "3.0.4",
+            "info": {
+              "title": "No cross-lane fallback",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_SOURCE_LOAD_FAILED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-03",
+      "rules": [
+        "OAPI20-P-01"
+      ],
+      "section": "3",
+      "description": "Once swagger is exactly 2.0, a co-present OpenAPI 3.x discriminator is only an unknown Swagger field: it does not steal the source into another lane or destroy an otherwise resolvable source, so the absent selected method refuses at resolution rather than load.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Owning gate",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "post": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_SELECTOR_NOT_FOUND"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-04",
+      "rules": [
+        "OAPI20-P-01"
+      ],
+      "section": "3",
+      "description": "A YAML stream containing a second document refuses at the closed accepted-representation grammar gate; the first document is never silently selected.",
+      "given": {
+        "source": {
+          "content": "swagger: \"2.0\"\ninfo: {title: Multiple documents, version: \"1\"}\npaths: {}\n---\n{}\n"
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_SOURCE_LOAD_FAILED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-05",
+      "rules": [
+        "OAPI20-P-01"
+      ],
+      "section": "6",
+      "description": "Selector evaluation never percent-decodes its RFC 6901 path token: a percent-encoded rendering remains a distinct, unresolvable target.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Verbatim selector",
+              "version": "1"
+            },
+            "paths": {
+              "/pets/{petId}": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets~1%7BpetId%7D/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_SELECTOR_NOT_FOUND"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-06",
+      "rules": [
+        "OAPI20-P-01"
+      ],
+      "section": "5",
+      "description": "A selected external Path Item reference resolves relative to the co-present source location, follows the target resource's fragment graph, detects its alternating cycle without resource exhaustion, and refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://description.example/root/swagger.yaml",
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "External cycle",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "$ref": "parts/path.yaml#/a"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://description.example/root/parts/path.yaml": {
+            "a": {
+              "$ref": "#/b"
+            },
+            "b": {
+              "$ref": "#/a"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-07",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A cross-location name collision selects qualified mode for every non-body caller key; path and query values use uppercase UTF-8 percent encoding, the qualified header name uses RFC 6901 escaping only in the envelope, and configured boolean conversion supplies its exact header value.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Qualified parameters","version":"1"},"paths":{"/pets/{id}":{"get":{"parameters":[{"name":"id","in":"path","required":true,"type":"string"},{"name":"id","in":"query","type":"string"},{"name":"X~Ready","in":"header","type":"boolean"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets~1{id}/get"},
+        "configuration": {"server":"https://peer.example/root","parameterConversion":{"true":"ready"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"path/id":"a/b","query/id":"two words","header/X~0Ready":true}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/method","equals":"GET"},{"path":"/dispatch/url","equals":"https://peer.example/root/pets/a%2Fb?id=two%20words"},{"path":"/dispatch/headers/x~ready","equals":"ready"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id": "OAPI20-PS-08",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "Query collectionFormat multi emits one contribution per member, preserves member order, and percent-encodes each member without changing the repeated structural pairs.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Multi query","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"tags","in":"query","type":"array","items":{"type":"string"},"collectionFormat":"multi"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"tags":["a/b","c d"]}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?tags=a%2Fb&tags=c%20d"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id": "OAPI20-PS-09",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A pipes array preserves the structural pipe while percent-encoding member data independently.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Pipes query","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"modes","in":"query","type":"array","items":{"type":"string"},"collectionFormat":"pipes"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"modes":["a/b","c d"]}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?modes=a%2Fb|c%20d"}]}]
+    },
+    {
+      "id": "OAPI20-PS-10",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A converted csv member containing the structural comma is ambiguous and refuses before dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Delimiter refusal","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"tags","in":"query","type":"array","items":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"tags":["safe","a,b"]}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-11",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "An admitted empty query string with emptyValueForm name-only emits the exact parameter name without an equals sign.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Name-only empty","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example","emptyValueForm":"name-only"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?flag"}]}]
+    },
+    {
+      "id": "OAPI20-PS-12",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "The sibling admitted empty spelling is selected explicitly as a present empty value and emits the equals sign.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Equals empty","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example","emptyValueForm":"empty"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?flag="}]}]
+    },
+    {
+      "id": "OAPI20-PS-13",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without emptyValueForm refuses before dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Missing empty choice","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-14",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A caller header value containing CR and LF refuses before the peer can observe request splitting bytes.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Header bytes","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"X-Note","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"X-Note":"safe\r\nInjected: yes"}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-15",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An unknown caller parameter key is never passed through, even when the selected operation declares no parameters.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Unknown key","version":"1"},"paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"ghost":"value"}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-16",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "The upstream-illegal coexistence of effective body and formData parameters excludes the selected operation independently of input.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Body form exclusion","version":"1"},"paths":{"/pets":{"post":{"parameters":[{"name":"payload","in":"body","schema":{}},{"name":"label","in":"formData","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/post"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-17",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "A required caller parameter remains missing when only an artifact default exists; the processor never inserts that default.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"No default insertion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"limit","in":"query","required":true,"type":"integer","default":10}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-18",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A path expression without the exact effective path parameter excludes the target before caller input is inspected.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Path bijection","version":"1"},"paths":{"/pets/{id}":{"get":{"parameters":[{"name":"other","in":"path","required":true,"type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets~1{id}/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-19",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "The draft-04 integer pin is lexical: a caller JSON number written 1.0 does not satisfy integer even when conversion is configured.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Literal integer","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"count","in":"query","type":"integer"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"1.0":"one"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"count":1.0}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-20",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "JSON null is present rather than omission and becomes usable only through the deterministic parameterConversion result.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Null conversion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"marker","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"null":"nil"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"marker":null}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/pets?marker=nil"}]}]
+    },
+    {
+      "id": "OAPI20-PS-21",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A supplied boolean without a configured conversion result refuses before dispatch rather than acquiring an implementation-defined spelling.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Missing conversion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"ready","in":"query","type":"boolean"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"ready":true}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-22",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An Operation parameter overrides a Path Item parameter only at its exact name-plus-location identity; the optional string replacement therefore permits omission of the required integer declaration it replaced.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Parameter override","version":"1"},"paths":{"/pets":{"parameters":[{"name":"q","in":"query","required":true,"type":"integer"}],"get":{"parameters":[{"name":"q","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/pets"}]}]
+    },
+    {
+      "id": "OAPI20-PS-23",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "Two effective header names differing only by ASCII case exclude the target because their distinct declarations collapse onto one HTTP field identity.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Header collision","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"X-ID","in":"header","type":"string"},{"name":"x-id","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-24",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An envelope top-level member outside parameters and body refuses before dispatch even for a parameter-free target.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Unknown envelope member","version":"1"},"paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"extra":true}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-25",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "Inline non-body assertions remain active before serialization, so an integer below minimum refuses before conversion or dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Inline assertion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"count","in":"query","type":"integer","minimum":2}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"1":"one"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"count":1}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-26",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "A required body Parameter is supplied only by presence of the envelope body member; its documentary Parameter name cannot satisfy omission and no parameters-map key substitutes for it.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Required body presence","version":"1"},"paths":{"/pets":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/post"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-27","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit requestMedia choice before input consumption, and the supplied value never elects.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Media choice","version":"1"},"consumes":["application/json","application/vnd.example+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-28","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A normalized collision excludes only that media identity; the surviving non-colliding concrete JSON alternative is the sole usable candidate and self-selects independently of list order.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Usable set","version":"1"},"consumes":["Application/JSON","application/json","application/vnd.safe+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"safe":true}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/vnd.safe+json"},{"path":"/dispatch/body","equals":{"safe":true}},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-29","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An omitted optional body is no payload: it bypasses an otherwise ambiguous consumes set and emits neither representation bytes nor Content-Type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No payload bypass","version":"1"},"consumes":["application/json","text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","absent":true},{"path":"/dispatch/bodyBase64","absent":true},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-30","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A body string with format binary is the OpenBindings raw-octet lane: canonical Base64 decodes before dispatch even for a concrete image media type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Binary request","version":"1"},"consumes":["image/png"],"paths":{"/image":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"binary"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1image/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"AAH+/w=="}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/bodyBase64","equals":"AAH+/w=="},{"path":"/dispatch/headers/Content-Type","equals":"image/png"}]}]
+    },
+    {
+      "id":"OAPI20-PS-31","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A body string with format byte is already artifact-encoded Base64 characters; it is sent as text and is never decoded a second time by the raw-octet boundary.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Byte request","version":"1"},"consumes":["application/pdf"],"paths":{"/document":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"byte"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1document/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"YWJj"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","equals":"YWJj"},{"path":"/dispatch/bodyBase64","equals":"WVdKag=="}]}]
+    },
+    {
+      "id":"OAPI20-PS-32","rules":["OAPI20-P-02","OAPI20-P-03"],"section":"9",
+      "description":"Swagger formData selected as application/x-www-form-urlencoded uses the HTML 4.01 UTF-8 algorithm, preserving multi member order, SPACE as plus, uppercase percent triplets, and the chosen name-only empty spelling.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"URL encoded form","version":"1"},"consumes":["application/x-www-form-urlencoded"],"paths":{"/form":{"post":{"parameters":[{"name":"tag","in":"formData","type":"array","collectionFormat":"multi","items":{"type":"string"}},{"name":"note","in":"formData","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example","emptyValueForm":"name-only"},"invocation":{"inputPresent":true,"input":{"parameters":{"tag":["a b","é"],"note":""}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/x-www-form-urlencoded"},{"path":"/dispatch/body","contains":"note"},{"path":"/dispatch/body","contains":"tag=a+b&tag=%C3%A9"}]}]
+    },
+    {
+      "id":"OAPI20-PS-33","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A formData file parameter makes application/x-www-form-urlencoded unusable because that lane cannot carry file bytes; the required payload refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"File in URL encoded form","version":"1"},"consumes":["application/x-www-form-urlencoded"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"YWJj"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-34","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Multipart emits one exact-name file part with raw decoded octets and its concrete propertyMedia Content-Type, while inventing neither filename nor Content-Transfer-Encoding.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Multipart file","version":"1"},"consumes":["multipart/form-data"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example","propertyMedia":{"upload":"image/png"}},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"AFBORw=="}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","contains":"multipart/form-data; boundary="},{"path":"/dispatch/body","contains":"name=\"upload\""},{"path":"/dispatch/body","contains":"Content-Type: image/png"}]}]
+    },
+    {
+      "id":"OAPI20-PS-35","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A present multipart file needs one concrete propertyMedia choice keyed by the file parameter name; absence refuses before any request is dispatched.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Missing file media","version":"1"},"consumes":["multipart/form-data"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"YWJj"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-36","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty success response selects its concrete Content-Type through effective produces and strict JSON-decodes the governing response schema as the one operation value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"JSON response","version":"1"},"produces":["application/json"],"paths":{"/pets":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1pets/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"bodyBase64":"eyJuYW1lIjoiQWRhIn0="}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"name":"Ada"}]}]}]
+    },
+    {
+      "id":"OAPI20-PS-37","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response schema with format binary carries exact response octets across the OpenBindings boundary as canonical Base64.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Binary response","version":"1"},"produces":["image/png"],"paths":{"/image":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string","format":"binary"}}}}}}}},"binding":{"selector":"#/paths/~1image/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"image/png"},"bodyBase64":"AAH+/w=="}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["AAH+/w=="]}]}]
+    },
+    {
+      "id":"OAPI20-PS-38","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty response without Content-Type assumes application/octet-stream before ordinary produces matching, then uses the schema-selected raw-octet lane.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Absent response media","version":"1"},"produces":["application/octet-stream"],"paths":{"/blob":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"file"}}}}}}}},"binding":{"selector":"#/paths/~1blob/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"bodyBase64":"YWJj"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["YWJj"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-39","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A governing Response Object without schema declares no response content, so an actual nonempty body is a loud protocol error after dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unexpected response body","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"empty"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"body":"unexpected"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-40","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty response whose Content-Type matches no effective produces declaration is a loud protocol error; body bytes never invent a fallback lane.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unmatched response media","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"text/plain"},"body":"text"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-41","rules":["OAPI20-P-03"],"section":"9",
+      "description":"text/json is outside the JSON lane and uses character data only when the response declaration admits string as its sole non-null type.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Text JSON response","version":"1"},"produces":["text/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"text/json; charset=utf-8"},"body":"not-json"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["not-json"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-42","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Identity is a governed request and response content-coding but needs no configured codec; both representation byte sequences remain unchanged.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Identity coding","version":"1"},"consumes":["text/plain"],"produces":["text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"Content-Encoding","in":"header","required":true,"type":"string","enum":["identity"]},{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"ok","headers":{"Content-Encoding":{"type":"string","enum":["identity"]}},"schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"Content-Encoding":"identity"},"body":"request"}},"peer":{"status":200,"headers":{"Content-Type":"text/plain","Content-Encoding":"identity"},"body":"response"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","equals":"request"},{"path":"/dispatch/headers/Content-Encoding","equals":"identity"},{"path":"/outputs","equals":["response"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-43","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An artifact-governed request Content-Encoding token without a configured encoder refuses before dispatch rather than being skipped.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unsupported request coding","version":"1"},"consumes":["text/plain"],"paths":{"/x":{"post":{"parameters":[{"name":"Content-Encoding","in":"header","required":true,"type":"string","enum":["br"]},{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"Content-Encoding":"br"},"body":"request"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-44","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A supplied body payload on GET is excluded before dispatch even when its schema and consumes media would otherwise define bytes; the same operation remains usable without that optional payload.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"GET payload","version":"1"},"consumes":["application/json"],"paths":{"/x":{"get":{"parameters":[{"name":"payload","in":"body","schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-45","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A present empty Operation consumes list replaces a usable root default; a required body therefore has no admitted media lane and refuses before input consumption.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Cleared consumes","version":"1"},"consumes":["application/json"],"paths":{"/x":{"post":{"consumes":[],"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-46","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A concrete requestMedia choice preserves two declared alternatives, matches the vendor JSON alternative exactly, and supplies the emitted Content-Type without consulting the body value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Configured request media","version":"1"},"consumes":["application/json","application/vnd.example+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example","requestMedia":"application/vnd.example+json"},"invocation":{"inputPresent":true,"input":{"body":{"chosen":true}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/vnd.example+json"},{"path":"/dispatch/body","equals":{"chosen":true}}]}]
+    },
+    {
+      "id":"OAPI20-PS-47","rules":["OAPI20-P-03"],"section":"9",
+      "description":"application/xml does not manufacture an object-to-XML mapping: an object body declaration makes that selected media cell unusable and refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Object XML exclusion","version":"1"},"consumes":["application/xml"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"x":1}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-48","rules":["OAPI20-P-03"],"section":"9",
+      "description":"application/xml is in the closed character-data set when the body declaration admits only string; absent charset defaults to UTF-8 and the supplied text rides unchanged.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"String XML carriage","version":"1"},"consumes":["application/xml"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"<x>é</x>"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Content-Type","equals":"application/xml"},{"path":"/dispatch/body","equals":"<x>é</x>"}]}]
+    },
+    {
+      "id":"OAPI20-PS-49","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A raw-octet request rejects a padded Base64 spelling with nonzero unused pad bits; decodability alone is weaker than the canonical OpenBindings boundary.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Canonical raw boundary","version":"1"},"consumes":["application/octet-stream"],"paths":{"/x":{"put":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"string","format":"binary"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/put"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":"AB=="}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-50","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response string with format byte remains the artifact's Base64-character value and is not re-encoded as an OpenBindings raw-octet value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Byte response","version":"1"},"produces":["application/pdf"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string","format":"byte"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/pdf"},"body":"YWJj"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":["YWJj"]}]}]
+    },
+    {
+      "id":"OAPI20-PS-51","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A non-2xx final status remains the native failure even when default governs it; the JSON body uses the same media lane and is retained as opaque application failure data, never emitted as output.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Failure body","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"default":{"description":"failure","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":422,"headers":{"Content-Type":"application/json"},"bodyBase64":"eyJtZXNzYWdlIjoiYmFkIn0="}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/outputs","equals":[]},{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/error/data","equals":{"message":"bad"}}]}]
+    },
+    {
+      "id":"OAPI20-PS-52","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Distinct produces entries that normalize to the same media identity make selection through that identity unusable, so a matching response refuses without list-order preference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Response media collision","version":"1"},"produces":["Application/JSON","application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"bodyBase64":"e30="}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+    },
+    {
+      "id":"OAPI20-PS-53","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Every non-file multipart formData contribution is one exact-name part with fixed text/plain UTF-8 media, without a filename or transfer-encoding invention.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Multipart text","version":"1"},"consumes":["multipart/form-data"],"paths":{"/x":{"post":{"parameters":[{"name":"note","in":"formData","required":true,"type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"note":"hello"}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/body","contains":"name=\"note\""},{"path":"/dispatch/body","contains":"Content-Type: text/plain; charset=utf-8"},{"path":"/dispatch/body","contains":"hello"}]}]
+    },
+    {
+      "id":"OAPI20-PS-54","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A sole root HTTP scheme combines exactly with the authored host including port, basePath, and Paths key.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Target assembly","version":"1"},"schemes":["http"],"host":"api.example:8080","basePath":"/v1","paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1pets/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"http://api.example:8080/v1/pets"}]}]
+    },
+    {
+      "id":"OAPI20-PS-55","rules":["OAPI20-P-04"],"section":"10",
+      "description":"An Operation schemes array replaces rather than merges the root schemes array.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Operation schemes","version":"1"},"schemes":["http"],"host":"api.example","basePath":"/v1","paths":{"/x":{"get":{"schemes":["https"],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v1/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-56","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Two usable HTTP schemes require an explicit server choice and list order supplies no preference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Scheme choice","version":"1"},"schemes":["https","http"],"host":"api.example","basePath":"/","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-57","rules":["OAPI20-P-04"],"section":"10",
+      "description":"The server configuration selects the authored effective scheme by zero-based index without rewriting host or basePath.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected scheme","version":"1"},"schemes":["http","https"],"host":"api.example","basePath":"/v2","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":{"index":1}},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v2/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-58","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Absent schemes and host inherit the retrieval scheme and complete authority including port; absent basePath is the exact slash default.",
+      "given":{"source":{"location":"https://docs.example:8443/swagger.json","content":{"swagger":"2.0","info":{"title":"Retrieval inheritance","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://docs.example:8443//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-59","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A WebSocket scheme is unusable, leaving the sole HTTPS alternative to self-select without list-order inference.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"WebSocket exclusion","version":"1"},"schemes":["ws","https"],"host":"api.example","basePath":"/","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-60","rules":["OAPI20-P-04"],"section":"10",
+      "description":"An effective list containing only ws and wss has no usable target under the HTTP binding.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Only WebSocket","version":"1"},"schemes":["ws","wss"],"host":"api.example","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-61","rules":["OAPI20-P-04"],"section":"10",
+      "description":"A complete configured URL recovers an otherwise unresolved empty-schemes and absent-host target while preserving the operation path.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Configured recovery","version":"1"},"schemes":[],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example/root"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/root/x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-62","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Target construction preserves an authored trailing server slash and leading Paths slash as a double slash without normalization.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No slash repair","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":{"baseUrl":"https://peer.example/root/"}},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/root//x"}]}]
+    },
+    {
+      "id":"OAPI20-PS-63","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A sole apiKey security requirement self-selects and carries its runtime value at the exact header destination.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Header API key","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Api-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Api-Key","equals":"secret"}]}]
+    },
+    {
+      "id":"OAPI20-PS-64","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A query apiKey value uses the same uppercase RFC 3986 percent encoding as query Parameters.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Query API key","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"query","name":"api key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"a/b? c&d=é"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?api%20key=a%2Fb%3F%20c%26d%3D%C3%A9"}]}]
+    },
+    {
+      "id":"OAPI20-PS-65","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Basic security constructs the RFC 7617 Authorization value from the named runtime user-id and password.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Basic security","version":"1"},"securityDefinitions":{"login":{"type":"basic"}},"security":[{"login":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Authorization","equals":"Basic dXNlcjpwYXNz"}]}]
+    },
+    {
+      "id":"OAPI20-PS-66","rules":["OAPI20-P-04"],"section":"11",
+      "description":"OAuth2 wire carriage requires a Bearer access token whose runtime scope set satisfies every required declared scope.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"OAuth2 security","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"accessCode","authorizationUrl":"https://auth.example/authorize","tokenUrl":"https://auth.example/token","scopes":{"read":"Read","write":"Write"}}},"security":[{"oauth":["read","write"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["write","read","extra"]}}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/Authorization","equals":"Bearer abc123"}]}]
+    },
+    {
+      "id":"OAPI20-PS-67","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An OAuth2 credential missing one required scope refuses before dispatch even when it supplies a valid access token.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"OAuth2 scope refusal","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"implicit","authorizationUrl":"https://auth.example/authorize","scopes":{"read":"Read","write":"Write"}}},"security":[{"oauth":["read","write"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["read"]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-68","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Multiple security alternatives require an explicit selection even when runtime credentials happen to satisfy one of them.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Security choice","version":"1"},"securityDefinitions":{"first":{"type":"apiKey","in":"header","name":"X-First"},"second":{"type":"apiKey","in":"header","name":"X-Second"}},"security":[{"first":[]},{"second":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"second":"two"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-69","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Selecting a safe security alternative ignores a different alternative whose query destination collides with an effective Parameter.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Confined collision","version":"1"},"securityDefinitions":{"bad":{"type":"apiKey","in":"query","name":"id"},"good":{"type":"apiKey","in":"header","name":"X-Good"}},"security":[{"bad":[]},{"good":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"id","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":1}},"invocation":{"inputPresent":true,"input":{"parameters":{"id":"42"}}},"runtime":{"credentials":{"bad":"bad","good":"good"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?id=42"},{"path":"/dispatch/headers/X-Good","equals":"good"}]}]
+    },
+    {
+      "id":"OAPI20-PS-70","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Selecting a credential alternative whose destination collides with an effective Parameter refuses before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected collision","version":"1"},"securityDefinitions":{"bad":{"type":"apiKey","in":"header","name":"X-Key"},"good":{"type":"apiKey","in":"header","name":"X-Good"}},"security":[{"bad":[]},{"good":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"x-key","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":0}},"invocation":{"inputPresent":false},"runtime":{"credentials":{"bad":"bad"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-71","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An Operation security empty array clears the root requirement and unrelated runtime credentials never volunteer onto the wire.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Cleared security","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"security":[],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"unused"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Key","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-72","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require selection.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Optional security","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]},{}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-73","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Explicitly selecting the anonymous alternative dispatches without a credential even when another alternative is credentialed.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Selected anonymous","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]},{}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example","security":{"index":1}},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"unused"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Key","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-74","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Every scheme in one Security Requirement Object is an AND obligation and non-colliding header and query credentials are both carried.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Security AND","version":"1"},"securityDefinitions":{"header":{"type":"apiKey","in":"header","name":"X-Key"},"query":{"type":"apiKey","in":"query","name":"token"}},"security":[{"header":[],"query":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"header":"one","query":"two"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/x?token=two"},{"path":"/dispatch/headers/X-Key","equals":"one"}]}]
+    },
+    {
+      "id":"OAPI20-PS-75","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Operation security replaces the root requirement, so only the operation-selected scheme contributes a credential.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Operation security","version":"1"},"securityDefinitions":{"root":{"type":"apiKey","in":"header","name":"X-Root"},"operation":{"type":"apiKey","in":"header","name":"X-Operation"}},"security":[{"root":[]}],"paths":{"/x":{"get":{"security":[{"operation":[]}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"root":"unused","operation":"used"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Root","absent":true},{"path":"/dispatch/headers/X-Operation","equals":"used"}]}]
+    },
+    {
+      "id":"OAPI20-PS-76","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A nonempty requirement array for basic makes that selected alternative unusable before credentials can dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Basic scopes defect","version":"1"},"securityDefinitions":{"login":{"type":"basic"}},"security":[{"login":["not-a-scope"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-77","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An unknown security-scheme name makes only its selected alternative unusable and never activates an extension-like declaration.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unknown security","version":"1"},"securityDefinitions":{},"security":[{"missing":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-78","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An OAuth2 implicit definition without its required authorizationUrl makes the selected alternative unusable.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Malformed OAuth2","version":"1"},"securityDefinitions":{"oauth":{"type":"oauth2","flow":"implicit","scopes":{"read":"Read"}}},"security":[{"oauth":["read"]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"oauth":{"accessToken":"abc123","scopes":["read"]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-79","rules":["OAPI20-P-04"],"section":"11",
+      "description":"An apiKey targeting processor-owned Content-Type makes the selected security alternative unusable before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Owned header collision","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"Content-Type"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-80","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Basic and OAuth2 schemes in one AND requirement collide at Authorization, making that selected alternative unusable.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Credential collision","version":"1"},"securityDefinitions":{"login":{"type":"basic"},"oauth":{"type":"oauth2","flow":"password","tokenUrl":"https://auth.example/token","scopes":{}}},"security":[{"login":[],"oauth":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"user","password":"pass"},"oauth":{"accessToken":"abc123","scopes":[]}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-81","rules":["OAPI20-P-04"],"section":"11",
+      "description":"Accept remains an ordinary Header Parameter destination, so a credential targeting it collides only when that effective Parameter exists.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Accept collision","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"Accept"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"parameters":[{"name":"accept","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"secret"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-82","rules":["OAPI20-P-04"],"section":"11",
+      "description":"A header apiKey credential containing CR or LF refuses before dispatch instead of reaching the HTTP stack.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Credential field bytes","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"key":"bad\r\nvalue"}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-83","rules":["OAPI20-P-04"],"section":"10",
+      "description":"Without a configured URL, omitting target defaults in a self-contained document leaves the target unresolved before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unresolved target","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI20-PS-84","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An exact status Response governs before default: the exact 200 declaration admits the actual identity Content-Encoding header, so the response succeeds where selecting default would have produced a protocol error.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Exact response precedence","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"exact","headers":{"Content-Encoding":{"type":"string","enum":["identity"]}},"schema":{"type":"object"}},"default":{"description":"fallback","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json","Content-Encoding":"identity"},"body":"{\"exact\":true}"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"exact":true}]}]}]
+    },
+    {
+      "id":"OAPI20-PS-85","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An exact failure Response also governs before default. Because the exact 404 declaration has no schema, its actual nonempty body is a protocol error rather than data decoded through default.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Exact failure precedence","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"404":{"description":"empty failure"},"default":{"description":"fallback","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":404,"headers":{"Content-Type":"text/plain"},"body":"not decoded"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-86","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A nonempty successful response with neither an exact nor default governing Response is a loud protocol error after dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Ungoverned nonempty response","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"200":{"description":"only 200","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":201,"headers":{"Content-Type":"text/plain"},"body":"created"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-87","rules":["OAPI20-P-03"],"section":"9",
+      "description":"The Swagger 2.0 Responses Object has no range-key form, so 2XX excludes the selected target before dispatch even though it resembles a later-edition response key.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No response ranges","version":"1"},"paths":{"/x":{"get":{"responses":{"2XX":{"description":"inadmissible"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-88","rules":["OAPI20-P-03"],"section":"9",
+      "description":"Every Operation requires a nonempty Responses Object, so omission excludes the selected target before dispatch.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Missing responses","version":"1"},"paths":{"/x":{"get":{}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id":"OAPI20-PS-89","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A response to HEAD is empty by definition; received message-body bytes are not decoded or emitted, even when the governing Response has no schema.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"HEAD is empty","version":"1"},"paths":{"/x":{"head":{"responses":{"200":{"description":"headers only"}}}}}}},"binding":{"selector":"#/paths/~1x/head"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"body":"ignored"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/method","equals":"HEAD"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-90","rules":["OAPI20-P-03"],"section":"9",
+      "description":"An empty successful response emits no value and needs no governing Response lookup; the nonempty-only no-governing limit is not broadened to status-only responses.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Empty unmatched success","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"declared"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-91","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A declared Location response header on 201 creates no output member; response headers remain protocol metadata outside the unary operation value.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"No response header output","version":"1"},"paths":{"/x":{"post":{"responses":{"201":{"description":"created","headers":{"Location":{"type":"string"}}}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":201,"headers":{"Location":"/x/7"},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-92","rules":["OAPI20-P-03"],"section":"9",
+      "description":"A default Response governs an unmatched non-2xx status; its text lane decodes one opaque application-authored failure value, which is retained as error data and never emitted as output.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Default failure text","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"default":{"description":"failure","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":418,"headers":{"Content-Type":"text/plain; charset=utf-8"},"body":"teapot"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/error/data","equals":"teapot"},{"path":"/outputs","equals":[]}]}]
     }
   ]
 }
