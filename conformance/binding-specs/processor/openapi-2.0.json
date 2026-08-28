@@ -353,6 +353,273 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-07",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A cross-location name collision selects qualified mode for every non-body caller key; path and query values use uppercase UTF-8 percent encoding, the qualified header name uses RFC 6901 escaping only in the envelope, and configured boolean conversion supplies its exact header value.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Qualified parameters","version":"1"},"paths":{"/pets/{id}":{"get":{"parameters":[{"name":"id","in":"path","required":true,"type":"string"},{"name":"id","in":"query","type":"string"},{"name":"X~Ready","in":"header","type":"boolean"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets~1{id}/get"},
+        "configuration": {"server":"https://peer.example/root","parameterConversion":{"true":"ready"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"path/id":"a/b","query/id":"two words","header/X~0Ready":true}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/method","equals":"GET"},{"path":"/dispatch/url","equals":"https://peer.example/root/pets/a%2Fb?id=two%20words"},{"path":"/dispatch/headers/x~ready","equals":"ready"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id": "OAPI20-PS-08",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "Query collectionFormat multi emits one contribution per member, preserves member order, and percent-encodes each member without changing the repeated structural pairs.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Multi query","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"tags","in":"query","type":"array","items":{"type":"string"},"collectionFormat":"multi"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"tags":["a/b","c d"]}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?tags=a%2Fb&tags=c%20d"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id": "OAPI20-PS-09",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A pipes array preserves the structural pipe while percent-encoding member data independently.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Pipes query","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"modes","in":"query","type":"array","items":{"type":"string"},"collectionFormat":"pipes"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"modes":["a/b","c d"]}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?modes=a%2Fb|c%20d"}]}]
+    },
+    {
+      "id": "OAPI20-PS-10",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A converted csv member containing the structural comma is ambiguous and refuses before dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Delimiter refusal","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"tags","in":"query","type":"array","items":{"type":"string"}}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"tags":["safe","a,b"]}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-11",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "An admitted empty query string with emptyValueForm name-only emits the exact parameter name without an equals sign.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Name-only empty","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example","emptyValueForm":"name-only"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?flag"}]}]
+    },
+    {
+      "id": "OAPI20-PS-12",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "The sibling admitted empty spelling is selected explicitly as a present empty value and emits the equals sign.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Equals empty","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example","emptyValueForm":"empty"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/search?flag="}]}]
+    },
+    {
+      "id": "OAPI20-PS-13",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without emptyValueForm refuses before dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Missing empty choice","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1search/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-14",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A caller header value containing CR and LF refuses before the peer can observe request splitting bytes.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Header bytes","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"X-Note","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"X-Note":"safe\r\nInjected: yes"}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-15",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An unknown caller parameter key is never passed through, even when the selected operation declares no parameters.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Unknown key","version":"1"},"paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"ghost":"value"}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-16",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "The upstream-illegal coexistence of effective body and formData parameters excludes the selected operation independently of input.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Body form exclusion","version":"1"},"paths":{"/pets":{"post":{"parameters":[{"name":"payload","in":"body","schema":{}},{"name":"label","in":"formData","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/post"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-17",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "A required caller parameter remains missing when only an artifact default exists; the processor never inserts that default.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"No default insertion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"limit","in":"query","required":true,"type":"integer","default":10}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-18",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A path expression without the exact effective path parameter excludes the target before caller input is inspected.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Path bijection","version":"1"},"paths":{"/pets/{id}":{"get":{"parameters":[{"name":"other","in":"path","required":true,"type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets~1{id}/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-19",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "The draft-04 integer pin is lexical: a caller JSON number written 1.0 does not satisfy integer even when conversion is configured.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Literal integer","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"count","in":"query","type":"integer"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"1.0":"one"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"count":1.0}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-20",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "JSON null is present rather than omission and becomes usable only through the deterministic parameterConversion result.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Null conversion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"marker","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"null":"nil"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"marker":null}}},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/pets?marker=nil"}]}]
+    },
+    {
+      "id": "OAPI20-PS-21",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "A supplied boolean without a configured conversion result refuses before dispatch rather than acquiring an implementation-defined spelling.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Missing conversion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"ready","in":"query","type":"boolean"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"ready":true}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-22",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An Operation parameter overrides a Path Item parameter only at its exact name-plus-location identity; the optional string replacement therefore permits omission of the required integer declaration it replaced.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Parameter override","version":"1"},"paths":{"/pets":{"parameters":[{"name":"q","in":"query","required":true,"type":"integer"}],"get":{"parameters":[{"name":"q","in":"query","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false},
+        "peer": {"status":204,"headers":{},"body":""}
+      },
+      "expected": [{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://peer.example/pets"}]}]
+    },
+    {
+      "id": "OAPI20-PS-23",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "Two effective header names differing only by ASCII case exclude the target because their distinct declarations collapse onto one HTTP field identity.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Header collision","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"X-ID","in":"header","type":"string"},{"name":"x-id","in":"header","type":"string"}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":false}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-24",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "An envelope top-level member outside parameters and body refuses before dispatch even for a parameter-free target.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Unknown envelope member","version":"1"},"paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"extra":true}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-25",
+      "rules": ["OAPI20-P-02"],
+      "section": "8",
+      "description": "Inline non-body assertions remain active before serialization, so an integer below minimum refuses before conversion or dispatch.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Inline assertion","version":"1"},"paths":{"/pets":{"get":{"parameters":[{"name":"count","in":"query","type":"integer","minimum":2}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/get"},
+        "configuration": {"server":"https://peer.example","parameterConversion":{"1":"one"}},
+        "invocation": {"inputPresent":true,"input":{"parameters":{"count":1}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI20-PS-26",
+      "rules": ["OAPI20-P-02"],
+      "section": "7",
+      "description": "A required body Parameter is supplied only by presence of the envelope body member; its documentary Parameter name cannot satisfy omission and no parameters-map key substitutes for it.",
+      "given": {
+        "source": {"content": {"swagger":"2.0","info":{"title":"Required body presence","version":"1"},"paths":{"/pets":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},
+        "binding": {"selector":"#/paths/~1pets/post"},
+        "configuration": {"server":"https://peer.example"},
+        "invocation": {"inputPresent":true,"input":{"parameters":{}}}
+      },
+      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
     }
   ]
 }
