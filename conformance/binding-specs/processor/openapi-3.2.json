@@ -7845,6 +7845,86 @@
       "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
     },
     {
+      "id": "OAPI32-PS-153",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An application/jsonl success response emits one parsed JSON operation value per line in wire order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "JSON Lines response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"schema": {"type": "array"}, "itemSchema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"n\":1}\n{\"n\":2}\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, {"n": 2}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-154",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The application/x-ndjson spelling uses the same ordered newline-delimited JSON item boundary.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "NDJSON response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/x-ndjson": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/x-ndjson"}, "body": "true\n12\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [true, 12]}]}]
+    },
+    {
+      "id": "OAPI32-PS-155",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "An application/json-seq response uses RS framing and emits each parsed JSON text in order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "JSON text sequence response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json-seq": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json-seq"}, "body": "\u001e{\"n\":1}\n\u001e2\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, 2]}]}]
+    },
+    {
+      "id": "OAPI32-PS-156",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A +json-seq structured-suffix response uses the incorporated JSON text sequence framing without media sniffing.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Suffixed JSON text sequence response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/problem+json-seq": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/problem+json-seq"}, "body": "\u001efalse\n\u001enull\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [false, null]}]}]
+    },
+    {
+      "id": "OAPI32-PS-157",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A positional multipart success response emits one decoded part value per item in part order.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Positional multipart response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"multipart/mixed": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "multipart/mixed; boundary=b"}, "body": "--b\r\nContent-Type: application/json\r\n\r\n{\"n\":1}\r\n--b\r\nContent-Type: text/plain\r\n\r\nsecond\r\n--b--\r\n"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [{"n": 1}, "second"]}]}]
+    },
+    {
+      "id": "OAPI32-PS-158",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A malformed later JSON Lines item is not emitted and ends the interaction unsuccessfully while an earlier valid item remains a successful value.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Partial sequential success", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"ok\":1}\nnot-json\n{\"never\":3}\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": [{"ok": 1}]}]}]
+    },
+    {
+      "id": "OAPI32-PS-159",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "itemSchema on a media type with no incorporated item framing makes that selected response alternative unavailable rather than authorizing sniffing.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unknown sequential framing", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/x-private": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/x-private"}, "body": "payload"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-160",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-successful final status keeps a sequential response body in failure data and emits no successful item values.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Sequential failure response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"default": {"content": {"application/jsonl": {"itemSchema": {"type": "object"}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 400, "headers": {"Content-Type": "application/jsonl"}, "body": "{\"error\":1}\n{\"error\":2}\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI32-PS-161",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "A non-sequential application/json response remains unary even when its complete-response schema is an array.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Unary JSON array response", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"type": "array", "items": {"type": "number"}}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "peer": {"status": 200, "headers": {"Content-Type": "application/json"}, "body": "[1,2]"}},
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/outputs", "equals": [[1, 2]]}]}]
+    },
+    {
+      "id": "OAPI32-PS-162",
+      "rules": ["OAPI32-P-03"],
+      "section": "9",
+      "description": "The consumer delivery bound applies independently to each sequential item; an oversized later item fails after an earlier bounded item was emitted.",
+      "given": {"source": {"content": {"openapi": "3.2.0", "info": {"title": "Sequential item bound", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/x": {"get": {"responses": {"200": {"content": {"application/jsonl": {"itemSchema": {}}}}}}}}}}, "binding": {"selector": "#/paths/~1x/get"}, "invocation": {"inputPresent": false}, "runtime": {"maxDeliveryUnitBytes": 8}, "peer": {"status": 200, "headers": {"Content-Type": "application/jsonl"}, "body": "1\n\"0123456789\"\n"}},
+      "expected": [{"disposition": "error", "phase": "response", "assertions": [{"path": "/outputs", "equals": [1]}]}]
+    },
+    {
       "id": "OAPI32-PS-01",
       "rules": [
         "OAPI32-P-03"

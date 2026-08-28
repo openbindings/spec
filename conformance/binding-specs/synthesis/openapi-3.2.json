@@ -213,6 +213,51 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-05",
+      "description": "A sequential response publishes itemSchema as the per-value OpenBindings output contract; the co-present complete-sequence schema remains an aggregate artifact constraint [OAPI32-S-01, OAPI32-P-03].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Sequential response synthesis", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/events": {
+              "get": {
+                "operationId": "watchEvents",
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/jsonl": {
+                        "schema": {"type": "array"},
+                        "itemSchema": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["watchEvents"],
+        "bindings": [{"operationKey": "watchEvents", "bindingSelector": "#/paths/~1events/get"}],
+        "assertions": [
+          {"path": "/operations/watchEvents/output/type", "equals": "object"},
+          {"path": "/operations/watchEvents/output/properties/id/type", "equals": "string"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1events/get", "scope": "target", "status": "represented", "operationKey": "watchEvents", "bindingSelector": "#/paths/~1events/get", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }
