@@ -1019,6 +1019,12 @@
       "description":"A default Response governs an unmatched non-2xx status; its text lane decodes one opaque application-authored failure value, which is retained as error data and never emitted as output.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Default failure text","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"default":{"description":"failure","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":418,"headers":{"Content-Type":"text/plain; charset=utf-8"},"body":"teapot"}},
       "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/error/data","equals":"teapot"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-93","rules":["OAPI20-P-01","OAPI20-P-03"],"section":"5",
+      "description":"A Schema Object containing $ref is a JSON Reference: a conflicting non-$ref sibling, including type, is ignored and the referent alone governs carriage-lane selection.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Ref siblings","version":"1"},"host":"api.example","basePath":"/v","schemes":["https"],"consumes":["text/plain"],"definitions":{"Str":{"type":"string"}},"paths":{"/echo":{"post":{"parameters":[{"name":"b","in":"body","required":true,"schema":{"$ref":"#/definitions/Str","type":"integer","description":"ignored sibling"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1echo/post"},"invocation":{"inputPresent":true,"input":{"body":"hi"}},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v/echo"},{"path":"/dispatch/body","equals":"hi"},{"path":"/outputs","equals":[]}]}]
     }
   ]
 }

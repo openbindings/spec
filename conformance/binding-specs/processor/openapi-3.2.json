@@ -8114,6 +8114,24 @@
           ]
         }
       ]
+    },
+    {
+      "id":"OAPI32-PS-175","rules":["OAPI32-P-02"],"section":"8",
+      "description":"A supplied value whose shape exits the admitted style-table cell refuses before dispatch at that Parameter: a nested object under a typeless deepObject declaration never serializes through a private spelling.",
+      "given":{"source":{"content":{"openapi":"3.2.0","info":{"title":"Out-of-cell shape","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/s":{"get":{"parameters":[{"name":"q","in":"query","style":"deepObject","schema":{}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1s/get"},"invocation":{"inputPresent":true,"input":{"parameters":{"q":{"a":{"b":"1"}}}}}},
+      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+    },
+    {
+      "id":"OAPI32-PS-176","rules":["OAPI32-P-03"],"section":"9",
+      "description":"A JSON Lines final item ended by the end of the stream without a trailing LF is a complete item, and a trailing LF terminates the final item without creating a further item.",
+      "given":{"source":{"content":{"openapi":"3.2.0","info":{"title":"JSONL EOF framing","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/n":{"get":{"responses":{"200":{"description":"ok","content":{"application/x-ndjson":{"itemSchema":{"type":"object"}}}}}}}}}},"binding":{"selector":"#/paths/~1n/get"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/x-ndjson"},"body":"{\"n\":1}\n{\"n\":2}"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"n":1},{"n":2}]}]}]
+    },
+    {
+      "id":"OAPI32-PS-177","rules":["OAPI32-P-03"],"section":"9",
+      "description":"An empty line inside a JSON Lines response is a malformed item that ends the interaction unsuccessfully; the earlier valid item remains a successful value.",
+      "given":{"source":{"content":{"openapi":"3.2.0","info":{"title":"JSONL blank line","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/n":{"get":{"responses":{"200":{"description":"ok","content":{"application/x-ndjson":{"itemSchema":{"type":"object"}}}}}}}}}},"binding":{"selector":"#/paths/~1n/get"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/x-ndjson"},"body":"{\"n\":1}\n\n{\"n\":2}\n"}},
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/outputs","equals":[{"n":1}]}]}]
     }
   ]
 }
