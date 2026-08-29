@@ -3582,6 +3582,31 @@
         "peer": {"status": 204, "body": ""}
       },
       "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/body", "contains": "name=\"payload\""}, {"path": "/dispatch/body", "contains": "hello"}, {"path": "/outputs", "equals": []}]}]
+    },
+    {
+      "id": "OAPI30-PS-130",
+      "rules": ["OAPI30-P-02"],
+      "section": "8",
+      "description": "Two Paths keys with equivalent templated hierarchies but different template names are an OAS-forbidden declaration defect: each selected operation on a participating Path Item is excluded before any caller value is inspected, even though every other declaration on that operation is intact and a non-conflicting sibling path is declared alongside it.",
+      "given": {
+        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Equivalent path templates", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/pets/{petId}": {"get": {"parameters": [{"name": "petId", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}, "/pets/{name}": {"get": {"parameters": [{"name": "name", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}, "/other": {"get": {"responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1pets~1{petId}/get"},
+        "invocation": {"inputPresent": true, "input": {"parameters": {"petId": "7"}}}
+      },
+      "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}, {"path": "/error/code", "equals": "ERR_REFUSED"}]}]
+    },
+    {
+      "id": "OAPI30-PS-131",
+      "rules": ["OAPI30-P-02"],
+      "section": "8",
+      "description": "The equivalent-hierarchy exclusion is confined to the participating Path Items: a non-conflicting sibling path declared in the same Paths Object still resolves and dispatches, so the defect never reaches the whole source.",
+      "given": {
+        "source": {"content": {"openapi": "3.0.4", "info": {"title": "Equivalent path templates", "version": "1"}, "servers": [{"url": "https://api.example"}], "paths": {"/pets/{petId}": {"get": {"parameters": [{"name": "petId", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}, "/pets/{name}": {"get": {"parameters": [{"name": "name", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"204": {"description": "ok"}}}}, "/other": {"get": {"responses": {"204": {"description": "ok"}}}}}}},
+        "binding": {"selector": "#/paths/~1other/get"},
+        "invocation": {"inputPresent": false},
+        "peer": {"status": 204, "body": ""}
+      },
+      "expected": [{"disposition": "complete", "phase": "completion", "assertions": [{"path": "/dispatch/url", "equals": "https://api.example/other"}, {"path": "/outputs", "equals": []}]}]
     }
   ]
 }

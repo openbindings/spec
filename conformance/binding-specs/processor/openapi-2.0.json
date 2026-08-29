@@ -812,9 +812,9 @@
     },
     {
       "id":"OAPI20-PS-58","rules":["OAPI20-P-04"],"section":"10",
-      "description":"Absent schemes and host inherit the retrieval scheme and complete authority including port; absent basePath is the exact slash default.",
+      "description":"Absent schemes and host inherit the retrieval scheme and complete authority including port, and an absent basePath contributes no segment.",
       "given":{"source":{"location":"https://docs.example:8443/swagger.json","content":{"swagger":"2.0","info":{"title":"Retrieval inheritance","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
-      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://docs.example:8443//x"}]}]
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://docs.example:8443/x"}]}]
     },
     {
       "id":"OAPI20-PS-59","rules":["OAPI20-P-04"],"section":"10",
@@ -1025,6 +1025,12 @@
       "description":"A Schema Object containing $ref is a JSON Reference: a conflicting non-$ref sibling, including type, is ignored and the referent alone governs carriage-lane selection.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Ref siblings","version":"1"},"host":"api.example","basePath":"/v","schemes":["https"],"consumes":["text/plain"],"definitions":{"Str":{"type":"string"}},"paths":{"/echo":{"post":{"parameters":[{"name":"b","in":"body","required":true,"schema":{"$ref":"#/definitions/Str","type":"integer","description":"ignored sibling"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1echo/post"},"invocation":{"inputPresent":true,"input":{"body":"hi"}},"peer":{"status":204,"headers":{},"body":""}},
       "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/v/echo"},{"path":"/dispatch/body","equals":"hi"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI20-PS-94","rules":["OAPI20-P-04"],"section":"10",
+      "description":"An absent basePath contributes no path segment: the exact Paths key appends directly to the effective host with no synthetic slash and no double-slash composition, unlike an authored basePath of \"/\" whose byte is preserved.",
+      "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Absent base path","version":"1"},"schemes":["https"],"host":"api.example:8443","paths":{"/pets":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1pets/get"},"invocation":{"inputPresent":false},"peer":{"status":204,"headers":{},"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example:8443/pets"},{"path":"/outputs","equals":[]}]}]
     }
   ]
 }
