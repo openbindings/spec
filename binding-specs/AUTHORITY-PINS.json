@@ -573,12 +573,12 @@
       "sha256": "b160c424aacc4116168174b90ae91b29df6a48af25be660ceac3862daef495fa",
       "bytes": 7892171,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "24c5e48bf66ea61bc199ec6338c81258275ba9c6"
-      ],
-      "status": "reference-only",
-      "reason": "Was the withdrawn unified candidate's SSE authority; the openapi-3.2 sibling incorporates OAS 3.2's own event-stream processing instead. Retained as verified bytes until a family text cites WHATWG directly."
+      ]
     },
     {
       "id": "rfc4648",
@@ -634,6 +634,34 @@
       "matchTokens": [
         "rfc6838",
         "RFC 6838"
+      ]
+    },
+    {
+      "id": "rfc6839",
+      "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
+      "name": "RFC 6839: Additional Media Type Structured Syntax Suffixes",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6839.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6839"
+      ],
+      "sha256": "f754a5e85371359a1b6609427ab9a759dc012af7f656a8741fdac4942abf8c13",
+      "bytes": 26071,
+      "retrievedAt": "2026-08-29T21:40:00Z",
+      "citedBy": [
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+      ],
+      "matchTokens": [
+        "rfc6839",
+        "RFC 6839"
       ]
     },
     {
@@ -1173,6 +1201,7 @@
     {
       "id": "rfc6749",
       "families": [
+        "openapi-3.1",
         "openapi-3.2"
       ],
       "name": "RFC 6749: The OAuth 2.0 Authorization Framework",
@@ -1184,9 +1213,9 @@
       "sha256": "f204fc8661d6c92d2ec6e0b54808f961a9ad26e792f57f312d9528335519bd71",
       "bytes": 163498,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 normative citation set for OAuth 2.0 security flows and scope semantics.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+      ],
       "matchTokens": [
         "rfc6749",
         "RFC 6749"
@@ -1386,7 +1415,7 @@
         "openapi-3.2"
       ],
       "name": "WHATWG URL Standard Review Draft, 18 August 2026",
-      "edition": "Review Draft — 18 August 2026",
+      "edition": "Review Draft \u2014 18 August 2026",
       "kind": "url",
       "url": "https://url.spec.whatwg.org/review-drafts/2026-08/",
       "citedUrls": [],

@@ -7002,6 +7002,19 @@
         "invocation": {"inputPresent": true, "input": {"parameters": {"Cookie": "raw=1", "session": "structured"}}}
       },
       "expected": [{"disposition": "refusal", "phase": "pre-dispatch", "assertions": [{"path": "/dispatch", "absent": true}]}]
+    },
+    {
+      "id":"OAPI31-PS-118","rules":["OAPI31-P-03"],"section":"9",
+      "description":"Strict-JSON response parsing resolves duplicate object member names by taking the lexically last member, inside RFC 8259 Section 4's permitted receiver set.",
+      "given":{"source":{"content":{"openapi":"3.1.2","info":{"title":"Duplicate names","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","content":{"application/json":{"schema":{}}}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"body":"{\"x\":1,\"x\":2}"}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/outputs","equals":[{"x":2}]}]}]
+    },
+    
+    {
+      "id":"OAPI31-PS-120","rules":["OAPI31-P-04"],"section":"11",
+      "description":"Basic user-id and password octets are pinned to printable US-ASCII; a non-ASCII credential is not a usable credential, so the invocation completes context-required instead of electing an RFC 7617-undefined encoding.",
+      "given":{"source":{"content":{"openapi":"3.1.2","info":{"title":"Basic ASCII pin","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/x":{"get":{"security":[{"login":[]}],"responses":{"204":{"description":"ok"}}}}},"components":{"securitySchemes":{"login":{"type":"http","scheme":"basic"}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"login":{"userId":"us\u00e9r","password":"pass"}}}},
+      "expected":[{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
     }
   ]
 }
