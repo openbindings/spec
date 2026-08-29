@@ -7032,6 +7032,18 @@
       "description":"A lone surrogate escape in a JSON response body yields no value: it is a loud protocol error after a 2xx final status, because neither silent replacement of the escape nor invalid-Unicode passthrough preserves the supplied text. No partial unary value is emitted.",
       "given":{"source":{"content":{"openapi":"3.1.2","info":{"title":"Lone surrogate","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","content":{"application/json":{"schema":{}}}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"body":"{\"s\":\"\\ud800\"}"}},
       "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI31-PS-123","rules":["OAPI31-P-02"],"section":"8",
+      "description":"Compound-capable style admission reads the resolved declaration: in an anyOf whose only branch not declaring solely null is an array of strings, that branch is the single resolved member declaration, so spaceDelimited stays admitted and the query carries the OAS Style Examples bytes.",
+      "given":{"source":{"content":{"openapi":"3.1.2","info":{"title":"Resolved style admission","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/search":{"get":{"parameters":[{"name":"q","in":"query","style":"spaceDelimited","explode":false,"schema":{"anyOf":[{"type":"array","items":{"type":"string"}},{"type":"null"}]}}],"responses":{"200":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1search/get"},"invocation":{"inputPresent":true,"input":{"parameters":{"q":["a","b"]}}},"peer":{"status":200,"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/url","equals":"https://api.example/search?q=a%20b"},{"path":"/outputs","equals":[]}]}]
+    },
+    {
+      "id":"OAPI31-PS-124","rules":["OAPI31-P-02"],"section":"8",
+      "description":"A supplied header parameter value is carried as UTF-8 octets: U+00E9 goes on the wire as C3 A9, not as the single Latin-1 octet E9.",
+      "given":{"source":{"content":{"openapi":"3.1.2","info":{"title":"Header octets","version":"1"},"servers":[{"url":"https://api.example"}],"paths":{"/notes":{"get":{"parameters":[{"name":"X-Note","in":"header","schema":{"type":"string"}}],"responses":{"200":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1notes/get"},"invocation":{"inputPresent":true,"input":{"parameters":{"X-Note":"caf\u00e9"}}},"peer":{"status":200,"body":""}},
+      "expected":[{"disposition":"complete","phase":"completion","assertions":[{"path":"/dispatch/headers/X-Note","equals":"caf\u00e9"},{"path":"/outputs","equals":[]}]}]
     }
   ]
 }
