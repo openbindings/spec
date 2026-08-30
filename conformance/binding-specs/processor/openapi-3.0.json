@@ -6427,6 +6427,80 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-135",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The upstream-invalid Response Object exclusion reaches the Response Object GOVERNING a successful response. A defect in a declaration that can never govern a 2xx — here an exact 404 — destroys no representation, because a failure body is opaque application-authored data, so the target whose success path is intact still resolves and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok"
+                    },
+                    "404": {
+                      "description": "ok",
+                      "headers": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
