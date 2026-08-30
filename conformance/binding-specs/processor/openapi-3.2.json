@@ -12690,6 +12690,552 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI32-PS-180",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-181",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "An upstream-invalid governing Response Object — a `content` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": "application/json"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-182",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "An upstream-invalid governing Response Object — a `links` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "links": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-183",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": {
+                        "X-Thing": "nope"
+                      }
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-184",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "The upstream-invalid Response Object exclusion is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1intact/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/intact"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-185",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "The exclusion reaches the Response Object GOVERNING a successful response. A defect in a declaration that can never govern a 2xx — here an exact 404 — destroys no representation, because a failure body is opaque application-authored data, so the target whose success path is intact still resolves and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok"
+                    },
+                    "404": {
+                      "description": "ok",
+                      "headers": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-186",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "`default` is a governing success declaration only when no `2XX` range key covers the success class. Where a `2XX` key is declared, `default` can never govern a 2xx, so a fixed-field defect in it destroys no representation and the target still resolves and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "2XX": {
+                      "description": "ok"
+                    },
+                    "default": {
+                      "description": "ok",
+                      "headers": "nope"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-187",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "An empty successful response has zero content octets and emits no operation output value, so it completes even when the peer stamps a `Content-Type` matching no governing content declaration: an empty body contradicts no media declaration. The governing Response Object declares no content at all here.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Upstream-invalid Response Object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/broken": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              },
+              "/intact": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1broken/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain;charset=UTF-8"
+          },
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
