@@ -304,12 +304,27 @@ its own identifier, and these candidates decline that freedom because
 duplicating or contradicting a capable authority reduces brownfield
 fidelity.
 
-Three corollaries carry most of the practical weight.
+Five corollaries carry most of the practical weight.
 
 **An implied answer is an answer.** A question is not open merely because
 no text addresses it by name. If the answer follows from rules already
 stated by an authority, adhere to it; re-deciding it privately is how two
 paragraphs of one specification come to disagree.
+
+**An authority's erratum is not an edition difference.** Where a later
+edition states that it is *correcting* earlier text, the correction
+states what the earlier text always meant, so it reaches every accepted
+edition the erratum names — including editions of an earlier line that
+a specification accepts and the correcting edition is not among. Where a
+later edition changes a rule *deliberately*, that is a genuine edition
+difference and it does not propagate: siblings pinned to different
+editions legitimately differ there, and converging them is
+over-homogenization. The test is what the authority says about its own
+change, not whether the newer reading is more convenient. OAS 3.1.2's
+Appendix D.1 is the worked example on the correcting side — it names
+3.0.4 and 3.1.1 and says the section "has been corrected" — and OAS
+3.2.0 dropping `REQUIRED` from the Response Object's `description` is
+the worked example on the other, where the siblings must stay apart.
 
 **Revision is recorded, never silent.** Discovering that an authority
 contradicts, or never required, something a candidate says is a reason to
