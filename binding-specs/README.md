@@ -709,7 +709,7 @@ family specification using coupling vocabulary without a scoping marker fails
 
 A specification whose address forms, artifact forms, or **execution model** create exposure beyond the core's threat surface — an executable address form, an artifact that names local resources, a composition engine with amplification or recursion surface — adds a **security consideration** with a normative floor where the exposure is of the specification's own making; `openbindings.usage@1`'s default-deny exec-address rule and `openbindings.operation-graph@1`'s security-considerations section are the patterns.
 
-Draft pages in this directory use the conventions-era tier tags; promotion maps them onto the template as follows: **[format-spec]** answers restate under _incorporated authorities_; **[convention]** answers become normative rules of the specification; **[assumption]** answers become normative defaults at named configuration points; **[open]** items must be resolved before promotion — as a rule, a configuration point, or an explicit exclusion.
+Where a specification labels the provenance of each normative paragraph, this project's publications use one shared scheme: **`incorporated`** for a rule the cited source states, the citation naming that source; and **`pin`**, **`convention`**, **`configuration point`**, **`exclusion`**, and **`limit`** for the specification's own decisions, each naming what kind of decision it makes. The scheme is house style rather than a conformance requirement, and it is what makes the label audit possible: every `incorporated` rule is enumerable and checkable against its cited text, and a `convention` makes the checkable claim that no authority speaks.
 
 ### Promotion
 
