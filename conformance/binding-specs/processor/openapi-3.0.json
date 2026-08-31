@@ -7641,7 +7641,7 @@
         "OAPI30-P-01"
       ],
       "section": "3",
-      "description": "OAS states normatively that keys used in YAML maps MUST be limited to a scalar string as defined by the YAML Failsafe schema ruleset, and section 3.1 now follows it: under Failsafe every plain scalar key resolves to a string, so an unquoted Responses key is the string it spells and the document loads. This is the common OpenAPI YAML idiom; the earlier reading refused it.",
+      "description": "OAS states normatively that keys used in YAML maps MUST be limited to a scalar string as defined by the YAML Failsafe schema ruleset, and section 3.1 now follows it: the Failsafe ruleset's only scalar tag is tag:yaml.org,2002:str, so every scalar key satisfies the qualifier, an unquoted Responses key is the string it spells, and the document loads. This is the common OpenAPI YAML idiom; the earlier reading refused it.",
       "given": {
         "source": {
           "content": "openapi: 3.0.4\ninfo:\n  title: T\n  version: '1'\nservers:\n  - url: https://api.example\npaths:\n  /x:\n    get:\n      responses:\n        204:\n          description: ok\n"

@@ -48,6 +48,8 @@
 
 **[pin]** Plain-scalar tag resolution uses YAML 1.2.2's recommended Core schema — the resolution the preceding rule's `.inf`/`.nan` parentheticals already presuppose — and no other resolution schema is consulted ([YAML 1.2.2 §10.3.2](https://yaml.org/spec/1.2.2/#1032-tag-resolution)).
 
+**[pin]** Key resolution differs deliberately from the value resolution the preceding rule pins. The accepted edition is decisive: an OpenAPI document "is itself a JSON object, which may be represented either in JSON or YAML format", so a YAML mapping key is the representation of a JSON member name, which is a string whatever tag resolution would assign the same characters in value position. A plain scalar key therefore never refuses on its resolved type, and an unquoted `200:` Responses key is the string `200`. What refuses at the key gate is a key that is not a scalar at all — a sequence or a mapping in key position — which no representation makes a member name. The asymmetry between key and value resolution is the incorporated edition's and not this specification's; what the edition does not state is the consequence of violating the key gate, which is pinned here ([OAS 3.2.0 §3 Format](https://spec.openapis.org/oas/v3.2.0.html#format)).
+
 **[pin]** A leading byte-order mark on string content is accepted and consumed by the YAML grammar; it is never part of the document.
 
 **[incorporated]** YAML processing follows OAS 3.2's RFC 9512-based JSON-compatibility regime: YAML 1.2 with RFC 9512 constraints is RECOMMENDED, and authors SHOULD NOT rely on YAML constructs that cannot be represented in the JSON data model ([OAS 3.2.0 §§3, 3.1](https://spec.openapis.org/oas/v3.2.0.html#json-and-yaml-compatibility)).
