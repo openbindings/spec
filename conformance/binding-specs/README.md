@@ -119,7 +119,7 @@ siblings and carries their exact binding-specification identifiers. The
 exchange shape is otherwise unchanged. Revision-1 files for the other
 families remain valid and are not rewritten merely to advance a version.
 
-The current corpus contains 588 scenarios covering every P-rule of usage,
+The current corpus contains 655 scenarios covering every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -179,7 +179,7 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The 106 scenarios
+(`invalid` source units do not count as upstream-valid). The 107 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
