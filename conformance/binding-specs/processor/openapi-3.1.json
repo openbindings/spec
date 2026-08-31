@@ -8662,6 +8662,1654 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI31-PS-130",
+      "rules": [
+        "OAPI31-P-01"
+      ],
+      "section": "6",
+      "description": "A selector naming a method the Path Item does not declare reaches no addressable target: the selector does not resolve and the invocation REFUSES AT RESOLUTION, the outcome §3.2's vocabulary added for this case. Nothing reaches the wire.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Absent method",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-131",
+      "rules": [
+        "OAPI31-P-01"
+      ],
+      "section": "6",
+      "description": "A selector whose escaped path segment names no Paths Object key likewise reaches no addressable target and refuses at resolution. The Paths Object is non-empty, so this is selector non-resolution and not a source refusal.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Absent path",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1missing/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-132",
+      "rules": [
+        "OAPI31-P-01",
+        "OAPI31-P-02"
+      ],
+      "section": "3",
+      "description": "The negative control for the two scenarios above, and the discrimination §3.2's new vocabulary entry creates: a selector naming an EXCLUDED target still resolves. The Parameter Object omits its required `name`, which §8.1 makes a declaration defect excluding the selected target; §3.2's excluded-unit rule then says the selector naming it still resolves and the invocation refuses BEFORE DISPATCH. Same absent dispatch, different phase from OAPI31-PS-130 and OAPI31-PS-131.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Excluded target still resolves",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-133",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "A Schema Object `default` is never inserted by this binding: an unsupplied optional query parameter carrying one is omitted before serialization exactly as one carrying none, so the completed URL carries only the supplied parameter. The governing text draws the distinction while defining the Server Variable Object's own `default` — \"Note that this behavior is different from the Schema Object's `default` keyword, which documents the receiver's behavior rather than inserting the value into the data\" — and an engine that inserted it would emit flavor=vanilla beside size=large.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Schema default is not inserted",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "flavor",
+                      "in": "query",
+                      "schema": {
+                        "type": "string",
+                        "default": "vanilla"
+                      }
+                    },
+                    {
+                      "name": "size",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "size": "large"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/items?size=large"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-134",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "The same rule on the header channel: an unsupplied optional header parameter carrying a Schema Object `default` emits no field at all. Asserted as an absent header rather than an empty one, because the rule omits the parameter before serialization rather than serializing the default.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Header default is not inserted",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Flavor",
+                      "in": "header",
+                      "schema": {
+                        "type": "string",
+                        "default": "vanilla"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Flavor",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/x-flavor",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-135",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "A body-emitting invocation emits a request `Content-Type` carrying the elected media type in its PARSED form: type, subtype, and parameter name lowercased, and the parameter value in the characters the declaration supplied after unquoting. The sole declaration key is spelled `Application/JSON;Charset=\"UTF-8\"`, so an engine echoing the key would emit the uppercase spelling and an engine normalizing the VALUE too would emit charset=utf-8. The delimiter between type and parameter is deliberately not asserted: §9.1 fixes the case of each token and the quoting of each value, and states no spelling for the separator, so `contains` pins exactly what the document fixes and no more.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Parsed-form Content-Type",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "Application/JSON;Charset=\"UTF-8\"": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "application/json"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "charset=UTF-8"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-136",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "Which spelling matched never changes the emitted bytes: a range-keyed declaration instantiated by a mixed-case `requestMedia` choice emits the choice's media type in parsed form, lowercased. The declaration key contributes no spelling of its own here, so the emitted value can only come from the choice, and only through the normalization §9.1 pins.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Choice spelling is normalized",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/*": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "Application/Vnd.Acme+JSON"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/vnd.acme+json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-137",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "§9.1's parameter-value comparison pin, charset half: a declared media-type parameter value is unquoted first, and the value of `charset` then compares ASCII case-insensitively. Two usable entries force a `requestMedia` choice; the choice spells charset=UTF-8 against a declaration spelling charset=utf-8 and MUST still match, electing the JSON lane. The emitted parameter's case is deliberately not asserted — §9.1 says the value is emitted \"in the characters the declaration or choice supplied\" and the two differ here, so the document fixes no answer.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "charset compares case-insensitively",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=utf-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/post"
+        },
+        "configuration": {
+          "requestMedia": "application/json; charset=UTF-8"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "Ada"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "Ada"
+              }
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-138",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "§9.1's parameter-value comparison pin, boundary half: every parameter value other than `charset`, `boundary` included, compares by EXACT character sequence, because RFC 2046 Section 5.1.1 constructs the multipart boundary delimiter from the value literally and an inexact boundary does not delimit. The choice spells boundary=ABC against a declaration spelling boundary=abc, matches no entry, and refuses before dispatch. OAPI31-PS-139 is the positive control proving the multipart entry is otherwise usable.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "boundary compares exactly",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data; boundary=abc": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "configuration": {
+          "requestMedia": "multipart/form-data; boundary=ABC"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "note": "hi"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-139",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The positive control for OAPI31-PS-138, and the testable half of §9.3's declared-boundary rule: a `boundary` carried by a declaration key takes part in §9.1's matching, and an exactly-spelled choice elects the multipart alternative. The emission half — that the declared token is then discarded and the processor's generated token is emitted in its place — is NOT asserted here: §9.3 declares the generated token free, and this scenario format has no negative or pattern assertion able to state that the declared token is absent.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "boundary matches exactly",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data; boundary=abc": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "configuration": {
+          "requestMedia": "multipart/form-data; boundary=abc"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "note": "hi"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"note\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\nhi\r\n--"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-140",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "A supplied request value at a raw-octet boundary that is a JSON string containing a non-alphabet character refuses before dispatch: no non-alphabet character is skipped and the decode is never partially applied. RFC 4648 Section 3.3 requires rejecting encoded data containing characters outside the base alphabet unless the referring specification states otherwise, and §9.2 states no such exception.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Non-alphabet Base64",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {}
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "AA*A"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-141",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The same boundary refuses a JSON string whose padding is missing: §9.2 requires padding and states that no repair supplies it. `QQ` is the unpadded spelling of the canonical `QQ==`, and an engine that tolerated it would dispatch a single 0x41 octet the caller never wrote in canonical form.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Unpadded Base64",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {}
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "QQ"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-142",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The same boundary refuses a JSON string with non-zero unused pad bits, the last of §9.2's four canonicality conditions. `QR==` carries one octet in two symbols, and RFC 4648 Section 3.5 requires the four unused bits of the second symbol to be zero; `R` is value 17, whose low four bits are 0001. Both `QQ==` and `QR==` decode to 0x41 under a tolerant decoder, which is exactly the non-canonicality Section 3.5 describes.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Non-zero pad bits",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {}
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "QR=="
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-143",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The first limb of the same rule: a supplied request value at a raw-octet boundary that is not a JSON string at all refuses before dispatch. Every OpenBindings raw-octet value is a JSON string, so a supplied number reaches no decode.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Non-string raw-octet value",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/image": {
+                "put": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "image/png": {}
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1image/put"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 7
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-144",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The `or part` half of the same rule: the refusal is at the affected body OR PART. The `profile` part declares no type, so §9.3 routes it to the raw-octet lane and §9.2's canonical Base64 boundary — the carriage OAPI31-PS-57 pins for a well-formed value — and a non-canonical string there refuses the whole invocation before dispatch rather than emitting a partly-decoded part.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Non-canonical Base64 in a part",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "profile": {
+                              "description": "a part declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "profile": "SGVsbG8"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-145",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "§9.3's incorporated multipart entity framing, in the two respects this format can state. Each part's `name` parameter is emitted as a quoted-string, the pinned spelling of the two RFC 9110 Section 5.6.6 calls equivalent. And each part's content is followed by CRLF and the two hyphens that open the next delimiter, which holds at both the inter-part position and the closing position; only CRLF represents a line break between body parts, so an engine emitting a bare LF anywhere in that seam fails both content assertions. Cross-property part order is declared free by §9.3, and both assertions hold under either order.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Multipart entity framing",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "alpha": {
+                              "type": "string"
+                            },
+                            "beta": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "alpha",
+                            "beta"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "alpha": "AV",
+              "beta": "BV"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"alpha\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"beta\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\nAV\r\n--"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\nBV\r\n--"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-146",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "A response whose single `Content-Type` field value is a list of media types selects NO media type. RFC 9110 Section 8.3 defines the field as a single media-type and defines no resolution for the list shape, and its application/octet-stream assumption is granted for an ABSENT field and does not reach a present one. On a successful response that is a loud protocol error, not a first-member or most-specific decode: the declaration would match application/json on either picking rule, so an engine that picked would emit a value here.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "List-valued response Content-Type",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "body": "{\"id\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-147",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "The unsuccessful half of the same rule, and the half that distinguishes it from an ordinary protocol error: on a response the classification does not admit as successful, no governing content declaration matches, so §9.5's best-effort failure-body rule yields NO failure-data value and raises no loud protocol error. The declaration would decode this body cleanly if the field named one media type — OAPI31-PS-07 is that scenario, and it carries the decoded body as failure data — so an absent failure-data value here is the whole observable difference the list-valued field makes.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "List-valued Content-Type on a failure",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "responses": {
+                    "default": {
+                      "description": "any",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 404,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "body": "{\"error\":\"missing\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-148",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "§8.2's exclusion tests the WHOLE Style Examples row. The spaceDelimited/explode:true row is n/a in all four of its columns — undefined, string, array, and object — so the combination is excluded whatever the caller supplies, and the target refuses before dispatch. The supplied array would serialize under the sibling explode:false row, which OAPI31-PS-123 pins, so an engine reading the row as merely the array cell of some other row would dispatch here.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Wholly n/a style row",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/search": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "style": "spaceDelimited",
+                      "explode": true,
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1search/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": [
+                "a",
+                "b"
+              ]
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-149",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "The other side of the whole-row test: a row carrying n/a in SOME columns and real bytes in others is a supported combination, and a value falling in a real column serializes. The spaceDelimited/explode:false row is n/a for undefined and string and real for array and object; OAPI31-PS-123 pins its array column, and this pins its object column against the shape of the OAS Style Examples cell `color=R%20100%20G%20200%20B%20150` — the object member name and its value alternate, joined by the percent-encoded delimiter. One member is supplied deliberately: neither §8.2 nor the Style Examples fixes the ORDER in which the members of one object value are written, so a multi-member assertion would pin bytes this specification does not state.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Supported column of a mixed row",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "color",
+                      "in": "query",
+                      "style": "spaceDelimited",
+                      "explode": false,
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "R": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "color": {
+                "R": "100"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?color=R%20100"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-150",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "§8.2's own named instance of the whole-row test: an omitted `explode` on `deepObject` computes to false, whose entire row the edition leaves undefined, so the parameter is excluded and the target refuses before dispatch. The supplied object would serialize under the explode:true row that OAPI31-PS-85 exercises, so the defaulting is the whole of what is under test here.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Defaulted explode on deepObject",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "filter",
+                      "in": "query",
+                      "style": "deepObject",
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "filter": {
+                "kind": "a"
+              }
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-151",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "§9.3's Encoding media-type selection governs BOTH content-based lanes, not multipart alone: the edition places `contentType` among the Encoding Object fields that \"MAY be used either with or without the RFC6570-style serialization fields\" and attaches the multipart-only restriction to `headers` instead. The `note` property is a plain string, whose default cell is text/plain and would ride as note=hello; an explicit Encoding contentType of application/json routes it through §9.2's JSON lane instead, so the field carries the JSON text \"hello\" percent-encoded. The Encoding Object declares no style, explode, or allowReserved, which is what selects the content-based path.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Encoding contentType on the form lane",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/notes": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "note": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "note"
+                          ]
+                        },
+                        "encoding": {
+                          "note": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1notes/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "note": "hello"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "note=%22hello%22"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -3600,14 +3600,29 @@
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
           "openapi": "3.1.2",
-          "info": {"title": "Referenced callback dependency", "version": "1"},
-          "servers": [{"url": "https://api.example"}],
+          "info": {
+            "title": "Referenced callback dependency",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
           "paths": {
             "/jobs": {
               "post": {
                 "operationId": "createJob",
-                "callbacks": {"done": {"$ref": "#/components/callbacks/Done"}},
-                "responses": {"202": {"description": "queued"}}
+                "callbacks": {
+                  "done": {
+                    "$ref": "#/components/callbacks/Done"
+                  }
+                },
+                "responses": {
+                  "202": {
+                    "description": "queued"
+                  }
+                }
               }
             }
           },
@@ -3617,8 +3632,36 @@
                 "{$request.body#/url}": {
                   "post": {
                     "operationId": "receiveDone",
-                    "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}}}}},
-                    "responses": {"200": {"description": "accepted", "content": {"application/json": {"schema": {"type": "boolean"}}}}}
+                    "requestBody": {
+                      "required": true,
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object",
+                            "required": [
+                              "id"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "responses": {
+                      "200": {
+                        "description": "accepted",
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -3628,20 +3671,192 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["createJob"],
-        "bindings": [{"operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post"}],
+        "operations": [
+          "createJob"
+        ],
+        "bindings": [
+          {
+            "operationKey": "createJob",
+            "bindingSelector": "#/paths/~1jobs/post"
+          }
+        ],
         "assertions": [
-          {"path": "/operations/receiveDone/input/properties/id/type", "equals": "string"},
-          {"path": "/operations/receiveDone/output/type", "equals": "boolean"}
+          {
+            "path": "/operations/receiveDone/input/properties/id/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/receiveDone/output/type",
+            "equals": "boolean"
+          }
         ],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": true,
           "entries": [
-            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post", "scope": "target", "status": "represented", "operationKey": "createJob", "bindingSelector": "#/paths/~1jobs/post", "requirements": []},
-            {"sourceIndex": 0, "sourceRef": "#/paths/~1jobs/post/callbacks/done/{$request.body#~1url}/post", "scope": "dependency", "status": "represented", "requirements": []}
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1jobs/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "createJob",
+              "bindingSelector": "#/paths/~1jobs/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1jobs/post/callbacks/done/{$request.body#~1url}/post",
+              "scope": "dependency",
+              "status": "represented",
+              "requirements": []
+            }
           ]
         }
+      }
+    },
+    {
+      "id": "OAPI31-SS-46",
+      "description": "The synthesis face of §8.2's whole-row test, which the chain-trace program restated from a per-CELL test to a per-ROW one. The test decides whether a target is published at all, so the three operations here are the discrimination itself. spaceExplode carries spaceDelimited with explode true, whose Style Examples row is n/a in ALL FOUR of its columns — undefined, string, array, object — so no value it could ever be supplied has a defined expansion and its TARGET is excluded before any caller value exists; a parameter has no sibling alternative to fall back to, so the unit owning the defect is the operation. deepDefaulted is the instance §8.2 names by name: an omitted explode on deepObject computes to false, whose row the edition itself calls undefined, so the defaulting alone excludes it. spaceCollapsed is the control the restatement is for: the same style with explode false is a MIXED row — n/a for undefined and string, real bytes for array and object — and under the superseded per-cell reading its n/a undefined cell would have excluded it too. It stays represented, and its published input is what the assertion pins. OAPI31-PS-148, -149 and -150 are the invocation-side halves of the same three cells. A DISAGREEMENT is recorded here rather than resolved: the two reference implementations agree on every substantive member of this observation — which target is published, which are excluded, the scope, the status, the rule, and the exhaustive and fullyRepresented verdicts — and disagree only on the reasonCode spelling for the two exclusions, openbindings-go emitting openapi.parameter_content_excluded and openbindings-ts emitting openapi.parameter_serialization_excluded, while the 3.0 lane spells its own composite-member exclusion openapi.parameter_style_expansion_excluded. No rule of this specification states a reason code, so neither spelling is derivable from the prose. The go spelling is carried here only so the disagreement surfaces as one failing engine instead of two, and this entry must not be read as ratifying it; the N11 scenario round reported it for a ruling.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Whole-row style admission",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/wide": {
+              "get": {
+                "operationId": "spaceExplode",
+                "parameters": [
+                  {
+                    "name": "q",
+                    "in": "query",
+                    "style": "spaceDelimited",
+                    "explode": true,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/narrow": {
+              "get": {
+                "operationId": "spaceCollapsed",
+                "parameters": [
+                  {
+                    "name": "q",
+                    "in": "query",
+                    "style": "spaceDelimited",
+                    "explode": false,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/deep": {
+              "get": {
+                "operationId": "deepDefaulted",
+                "parameters": [
+                  {
+                    "name": "filter",
+                    "in": "query",
+                    "style": "deepObject",
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "spaceCollapsed"
+        ],
+        "bindings": [
+          {
+            "operationKey": "spaceCollapsed",
+            "bindingSelector": "#/paths/~1narrow/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1wide/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.parameter_content_excluded",
+              "rule": "OAPI31-P-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1narrow/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "spaceCollapsed",
+              "bindingSelector": "#/paths/~1narrow/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1deep/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.parameter_content_excluded",
+              "rule": "OAPI31-P-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/spaceCollapsed/input/properties/q/type",
+            "equals": "array"
+          }
+        ]
       }
     }
   ]
