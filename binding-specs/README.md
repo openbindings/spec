@@ -489,10 +489,23 @@ seven items and a fixed observable. To fill one, ask in order:
    Where the corpus is inconsistent, rung 1 does not answer: say so and
    continue down the ladder, and record the inconsistency, because a
    corpus that disagrees with itself is a finding in its own right.
-2. **Does the core specification answer it?**
+2. **Does the core specification answer it?** Sweep the WHOLE core
+   document and record the search terms you used. Do not grep one named
+   section and stop: this project spent six readers on a gap because an
+   instruction named §5.4, and Core §10.5 answered half of it in
+   matching words — an unavailable external resource makes rule-level
+   evidence `unverified` and is "not evidence of violation". Naming
+   where to look is not the same as saying what to establish.
 3. **Does the incorporated upstream authority answer it — in the edition
    this document actually accepts?** Not the newest edition, and not the
-   one that happens to be open.
+   one that happens to be open. **First check the authority is
+   incorporated by THIS document at all.** An authority that settles a
+   question for three siblings may be one the fourth never names, and
+   reaching for it there does not transcribe a rule — it silently widens
+   that identifier's authority set, which is a change to what the
+   identifier means. Where a sibling's authority is unavailable, the
+   question continues down the ladder for that document alone, and the
+   documents legitimately reach the same outcome by different routes.
 4. **What do the sibling specifications already do?** Free, objective,
    and it buys uniformity at no cost.
 5. **Which option carries the fewest new commitments?** Every commitment
