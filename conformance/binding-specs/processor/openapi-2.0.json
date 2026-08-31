@@ -1674,6 +1674,1494 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-105",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "7",
+      "description": "An unsupplied OPTIONAL parameter carrying an artifact default is omitted before serialization exactly as one carrying none: default documents what the receiver assumes and is never inserted by the binding.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Optional default",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "limit",
+                      "in": "query",
+                      "type": "integer",
+                      "default": 10
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/pets"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-106",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "A supplied zero-member array is an empty value under a join collectionFormat rather than an omission: at a query parameter declaring allowEmptyValue, emptyValueForm name-only emits the exact parameter name without an equals sign.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty array name-only",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "tags",
+                      "in": "query",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "csv",
+                      "allowEmptyValue": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "emptyValueForm": "name-only"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "tags": []
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/pets?tags"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-107",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "collectionFormat multi is not exempt: a supplied zero-member array contributes one instance carrying no value, and emptyValueForm empty selects the present-empty spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty array multi",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "tags",
+                      "in": "query",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "multi",
+                      "allowEmptyValue": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "emptyValueForm": "empty"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "tags": []
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/pets?tags="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-108",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "Because a supplied zero-member array is an empty value and not an omission, a query declaration without allowEmptyValue does not admit it and the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty array unadmitted",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "tags",
+                      "in": "query",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "csv"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "tags": []
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-109",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "At a path parameter the allowEmptyValue flag is inapplicable, so a supplied zero-member array substitutes as zero characters rather than refusing.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty array path",
+              "version": "1"
+            },
+            "paths": {
+              "/tags/{ids}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "ids",
+                      "in": "path",
+                      "required": true,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "csv"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1tags~1{ids}/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "ids": []
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/tags/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-110",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "The same inapplicable-flag rule at a header parameter: a supplied zero-member array is carried as the empty field value RFC 9110 admits.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty array header",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Tags",
+                      "in": "header",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "csv"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Tags": []
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Tags",
+              "equals": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-111",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "8",
+      "description": "Multipart entity framing: only CRLF represents a line break between body parts, a blank CRLF line terminates each part's headers, and the delimiter that follows a part is preceded by a CRLF that is not part of the content.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Multipart framing",
+              "version": "1"
+            },
+            "consumes": [
+              "multipart/form-data"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "alpha",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    },
+                    {
+                      "name": "beta",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "alpha": "one",
+              "beta": "two"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\nContent-Disposition: form-data"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\none\r\n--"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\ntwo\r\n--"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-112",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "8",
+      "description": "The multipart name parameter is emitted as a quoted-string, which is what carries a form parameter name the token production does not admit.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Multipart quoted name",
+              "version": "1"
+            },
+            "consumes": [
+              "multipart/form-data"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "note name",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "note name": "hello"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"note name\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "hello"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-113",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A boundary parameter carried by an effective consumes entry takes part in declaration matching: a requestMedia choice that omits it presents no equal value for a declared parameter and matches nothing, so the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Declared boundary matching",
+              "version": "1"
+            },
+            "consumes": [
+              "multipart/form-data; boundary=abc",
+              "application/x-www-form-urlencoded"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "note",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "requestMedia": "multipart/form-data"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "note": "hello"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-114",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The matching half of the same rule: a requestMedia choice presenting the declared boundary value matches, and the entity is emitted with a boundary parameter on the request media type.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Declared boundary matched",
+              "version": "1"
+            },
+            "consumes": [
+              "multipart/form-data; boundary=abc",
+              "application/x-www-form-urlencoded"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "note",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "requestMedia": "multipart/form-data; boundary=abc"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "note": "hello"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"note\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-115",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "boundary is not charset: its value compares by exact character sequence, so a choice differing only by ASCII case matches no declaration and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Boundary compares exactly",
+              "version": "1"
+            },
+            "consumes": [
+              "multipart/form-data; boundary=AbC",
+              "application/x-www-form-urlencoded"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "note",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "requestMedia": "multipart/form-data; boundary=abc"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "note": "hello"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-116",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "charset is the one media-type parameter whose value compares ASCII case-insensitively, so a requestMedia choice spelling it in lower case matches a declaration spelling it in upper case and the request dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "charset compares case-insensitively",
+              "version": "1"
+            },
+            "consumes": [
+              "text/plain; charset=UTF-8",
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example",
+          "requestMedia": "text/plain; charset=utf-8"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "hello"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "text/plain"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "charset="
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "hello"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-117",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The request Content-Type field carries the elected concrete media type in its parsed form: a mixed-case declaration elects itself and is emitted with type and subtype in lower case.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Parsed-form emission",
+              "version": "1"
+            },
+            "consumes": [
+              "Application/JSON"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "a": 1
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "a": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-118",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The rest of the same parsed form: a media-type parameter name is emitted in lower case, and a declared quoted-string value the token production admits is emitted unquoted.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Parsed-form parameter",
+              "version": "1"
+            },
+            "consumes": [
+              "application/json; Profile=\"abc\""
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "a": 1
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "application/json"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "profile=abc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-119",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A caller-supplied request value on the raw-octet lane that is not a JSON string at all does not decode, and the invocation refuses before dispatch: no wire fact exists yet, so the loud-protocol-error outcome is unavailable to it.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Raw octet non-string",
+              "version": "1"
+            },
+            "consumes": [
+              "application/octet-stream"
+            ],
+            "paths": {
+              "/x": {
+                "put": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/put"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 42
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-120",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The same rule on the other non-canonical spelling: required RFC 4648 padding is omitted, so the string is outside the canonical form, no spelling is repaired, and the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Raw octet unpadded",
+              "version": "1"
+            },
+            "consumes": [
+              "application/octet-stream"
+            ],
+            "paths": {
+              "/x": {
+                "put": {
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string",
+                        "format": "binary"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/put"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "QQ"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-121",
+      "rules": [
+        "OAPI20-P-04"
+      ],
+      "section": "11",
+      "description": "A Security Scheme Object whose type is outside the closed basic/apiKey/oauth2 set is not a Security Scheme Object: it excludes every alternative naming it before any runtime credential is inspected, leaving this sole-alternative target with none.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Unlisted scheme type",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "tok": {
+                "type": "bearer",
+                "in": "header",
+                "name": "Authorization"
+              }
+            },
+            "security": [
+              {
+                "tok": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "tok": "secret"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-122",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A successful response whose single Content-Type field value is a list of media types selects no media type at all; the binding does not pick a member, and the interaction is a loud protocol error.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Listed response media",
+              "version": "1"
+            },
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "bodyBase64": "eyJhIjoxfQ=="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_RESPONSE_ERROR"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-123",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The unsuccessful half of the same shape is not a protocol error: the listed Content-Type is an unmatched media type under the best-effort failure-body rule, so the interaction completes unsuccessfully with the native failure and carries no failure-data value.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Listed failure media",
+              "version": "1"
+            },
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "default": {
+                      "description": "failure",
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 422,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "bodyBase64": "eyJtZXNzYWdlIjoiYmFkIn0="
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-124",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "The effective produces a response reads is the operation-level set: a Response Object declares no produces of its own, so a produces member written inside one contributes nothing and the actual media type it names still matches no declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Response Object produces",
+              "version": "1"
+            },
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "produces": [
+                        "text/plain"
+                      ],
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "hello"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_RESPONSE_ERROR"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
