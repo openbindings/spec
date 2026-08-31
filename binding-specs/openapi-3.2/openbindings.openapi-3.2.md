@@ -374,8 +374,6 @@
 
 **[incorporated]** Invoking this binding does not trigger validation of any application value, including a mixed binary instance, against its governing Schema Object, and this binding elects no binary-validation technique; only a tool that separately claims validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
-**[incorporated]** A tool that does claim such mixed binary-instance validation may use either technique OAS licenses—substituting a placeholder value, with the stated conditional-schema hazards, or decomposing through `properties`, `prefixItems`, and related subschemas ([OAS 3.2.0 §4.24.4.3.1](https://spec.openapis.org/oas/v3.2.0.html#schema-evaluation-and-binary-data)).
-
 **[incorporated]** A resolved declaration that admits `string` as its sole non-null type with `contentEncoding` carries the caller's artifact-encoded string as text and does not trigger OpenBindings Base64 decoding; `contentMediaType` is ignored when it contradicts the governing Media Type or Encoding Object, and schema encoding is distinct from HTTP `Content-Encoding` ([OAS 3.2.0 §4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#working-with-binary-data)).
 
 **[convention]** A concrete selection in that same closed character-data set whose resolved declaration is neither sole-string nor typeless is also a character-data selection and is not excluded by §9.2's catch-all: the lane admits it, and the type determination below fixes which lexical form the lane carries. The sole-string rule above is the case where that determination is already settled by the declaration alone.
@@ -637,8 +635,6 @@
 **[pin]** OAuth 2.0 and OpenID Connect flows consume a runtime-supplied access token and use the `Bearer` authorization scheme under [RFC 6750 §2.1](https://www.rfc-editor.org/rfc/rfc6750#section-2.1); another token type has no wire carriage under this identifier.
 
 **[limit]** Any other declared HTTP authentication scheme remains visible as a consumer prerequisite, but this binding synthesizes no credential bytes for it; an alternative requiring it is unusable unless the runtime satisfies it as a complete prerequisite.
-
-**[convention]** Credentials and credential-acquisition state MUST NOT be embedded in an OBI document.
 
 **[convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, or binding/processor-owned `Host`, `Content-Length`, or `Content-Type` makes only the selected security alternative unusable; `Accept` is not in that set, because §9.1 emits no `Accept` field for a credential to collide with and §8.1 already ignores an `Accept` Header parameter without excluding for it; another complete non-colliding alternative may still be selected, while §8.3 governs parameter-only processor-owned and invocation-time raw/structured cookie collisions.
 
