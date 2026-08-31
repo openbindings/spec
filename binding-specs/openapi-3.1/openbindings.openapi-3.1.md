@@ -40,6 +40,8 @@
 | 6 — how the binding target and its interaction are identified | §3.2, §4, §5.1, §5.2, §6.1, §6.2, §7, §8.1, §8.2, §8.3, §9.5, §10, §11, §12.1, §12.3 | None. |
 | 7 — how caller-facing input and successful output values correspond to the source interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §3.2, §4, §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §9.5, §11, §12.1, §12.2 | An actual response carrying more than one `Content-Type` field. §9.5 fixes the field's absence and its use in selection, and §9.1 fixes how one field's value is parsed and compared, but no rule here says which value governs when the field is repeated, or that the repetition is itself a loud protocol error. The context-bindings clause is reached by exactly one rule, in §12.2. |
 
+**[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
+
 **OBI-B-02 is a floor, not a partition, and this document carries content above it.** A rule no item above reaches is not thereby surplus. §11's credential-construction rules — the authentication-scheme token comparison, the `basic` `Authorization` construction, `apiKey` emission at its declared destination, `mutualTLS` as a transport prerequisite, the Bearer carriage rule and its non-Bearer runtime counterpart, and the other-scheme prerequisite limit — fix observables this specification is answerable for, from emitted credential bytes to whether a selected alternative is usable, while serving no item: item 7 reaches caller-facing input and output values, and §11 itself states that credential values never become either, while item 6's verb reaches which requirement governs and no further. They are recorded here as content above the floor rather than as a gap, and §12.4 indexes the freedoms and limits among them.
 
 ## 3. Source carriage and refusal architecture
@@ -703,8 +705,6 @@ This section collects the points at which two implementations conforming to `ope
 | §10 unresolvable relative Server URL | embedded content with no document location leaves it unresolved and refuses before dispatch; the complete configured URL remains the recovery |
 | §11 other HTTP authentication schemes | remain visible as a consumer prerequisite; no credential bytes are synthesized for them |
 | §12.2 input restructuring | synthesis emits flat contracts plus an `inputTransform`; no other input-restructuring apparatus exists under this identifier |
-
-Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
 
 ## 13. Normative references
 

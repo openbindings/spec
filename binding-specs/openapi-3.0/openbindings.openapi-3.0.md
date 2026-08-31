@@ -39,6 +39,8 @@ The table below indexes this specification against the seven things Core [OBI-B-
 | 7 — how caller-facing input and successful output values correspond to the source interaction, which outcomes are successes, how values emitted before an unsuccessful completion are treated, and any context bindings at transform positions | §3.2, §5.1, §5.2, §6.1, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §9.5, §10, §12.1, §12.2 (the context-bindings rule) | The multipart entity's framing bytes, which no authority in §13 defines; a response carrying more than one `Content-Type` field; a schema `default` on a parameter; and whether a declared media type's parameters ride on the emitted request `Content-Type`. |
 | above the floor | §11's credential-construction rules: the `Basic` construction, `apiKey` emission, `Bearer` carriage, destination collisions, and the cookie join | These fix real wire bytes while serving none of the seven items, because a credential is neither a caller-facing input value nor a successful output value. They are content this specification carries above OBI-B-02's floor, not an omission from it. |
 
+**[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
+
 ## 3. Source carriage and refusal architecture
 
 ### 3.1 Accepted representations
@@ -664,8 +666,6 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | §11 | a nonempty requirement array for a scheme type other than OAuth 2.0 or OpenID Connect makes only that alternative unusable |
 | §11 | any other declared HTTP authentication scheme synthesizes no credential bytes, and its alternative is unusable unless the runtime satisfies it as a complete prerequisite |
 | §12.2 | the envelope is the binding-boundary value and never the emitted operation contract; no input-restructuring apparatus beyond §12.2's licensed synthesis outputs exists |
-
-Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
 
 ## 13. Normative references
 
