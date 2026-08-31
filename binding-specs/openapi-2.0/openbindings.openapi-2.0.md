@@ -38,7 +38,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | 4 — how `location` and `content` compose, including whether `location` supplies a reference base for embedded content | §3.1, §4, §5.1 | — |
 | 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5.1, §6, §12.3 | — |
 | 6 — how the binding target and its interaction are identified | §3.2, §5.1, §6, §7, §8.1, §8.2, §9.1, §9.4, §10, §11, §12.1, §12.3 | the outcome of a Security Scheme Object that does not satisfy §11's incorporated `type` and per-type field constraints, and which unit owns that defect; §3.2's smallest-owner rule is the only rule that reaches it |
-| 7 — how caller-facing input values and successful output values correspond to the interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §10, §12.1, §12.2 | the bytes a supplied zero-member array produces under §8.2's `collectionFormat` table; the multipart boundary token and the entity framing §8.3 and §9.1 presuppose; whether the media-type parameters of an elected declaration appear in the emitted request `Content-Type` field |
+| 7 — how caller-facing input values and successful output values correspond to the interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §10, §12.1, §12.2 | the multipart boundary token and the entity framing §8.3 and §9.1 presuppose; whether the media-type parameters of an elected declaration appear in the emitted request `Content-Type` field |
 
 **[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
 
@@ -218,7 +218,9 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** An envelope top-level key other than `parameters` or `body`, a present non-object `parameters` member, or any unknown parameter key refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
 
-**[incorporated]** A missing required parameter refuses before dispatch; every path parameter is required, while a non-path parameter defaults to optional, and an artifact `default` describes server behavior rather than a value the binding may insert ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
+**[incorporated]** A missing required parameter refuses before dispatch; every path parameter is required, while a non-path parameter defaults to optional ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
+
+**[incorporated]** A Parameter, Items, or Header Object `default` documents what the receiver assumes when a value is not provided; it is never inserted by this binding. An unsupplied optional parameter carrying a `default` is omitted before serialization, exactly as one carrying none. Each of the three objects states this in its own words — the value "the server will use if none is provided" for a parameter, an item, and a header respectively — and each adds that `default` has no meaning for a required one ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6), [Items Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-7), [Header Object](https://spec.openapis.org/oas/v2.0.html#header-object)).
 
 **[incorporated]** Every selected effective parameter requires `name` and an `in` value from `query`, `header`, `path`, `formData`, or `body`; an `in: body` parameter requires `schema`, every other parameter requires `type`, and `type: array` requires `items` ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
 
@@ -269,6 +271,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | **[incorporated]** `multi` | one repeated contribution per converted member; `query` and `formData` only |
 
 **[convention]** Array-member order is preserved.
+
+**[convention]** A supplied array with zero members is an **empty value** under every `collectionFormat`, `multi` included: the four join formats join over no members and `multi` contributes one instance carrying no value, so a supplied zero-member array never becomes indistinguishable from absence. That empty value is the one §8.1 governs: at a `query` or `formData` parameter it refuses before dispatch unless the declaration carries `allowEmptyValue: true`, in which case `emptyValueForm` selects between `name-only` and `empty` exactly as for a supplied empty string; at a `path` or `header` parameter, where the flag is inapplicable, it substitutes as zero characters.
 
 **[convention]** A supplied array whose converted member contains its selected structural delimiter refuses that invocation before dispatch because OAS defines no escaping that preserves the array boundary; the parameter remains usable for other caller values.
 
