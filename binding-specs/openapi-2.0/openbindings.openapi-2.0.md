@@ -37,7 +37,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | 3 — the accepted values and meaning of `content`, including any source mode in which `content` is forbidden | §3.1, §4 | — |
 | 4 — how `location` and `content` compose, including whether `location` supplies a reference base for embedded content | §3.1, §4, §5.1 | — |
 | 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5.1, §6, §12.3 | — |
-| 6 — how the binding target and its interaction are identified | §3.2, §5.1, §6, §7, §8.1, §8.2, §9.1, §9.4, §10, §11, §12.1, §12.3 | the outcome of a Security Scheme Object that does not satisfy §11's incorporated `type` and per-type field constraints, and which unit owns that defect; §3.2's smallest-owner rule is the only rule that reaches it |
+| 6 — how the binding target and its interaction are identified | §3.2, §5.1, §6, §7, §8.1, §8.2, §9.1, §9.4, §10, §11, §12.1, §12.3 | — |
 | 7 — how caller-facing input values and successful output values correspond to the interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §10, §12.1, §12.2 | — |
 
 **[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
@@ -546,6 +546,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** A Security Scheme has exactly type `basic`, `apiKey`, or `oauth2`; an API key uses its declared `query` or `header` name, and OAuth2 uses exactly the `implicit`, `password`, `application`, or `accessCode` flow with its required authorization/token URLs and declared scopes ([OAS 2.0 Security Scheme Object](https://spec.openapis.org/oas/v2.0.html#security-scheme-object)).
 
+**[exclusion]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — excludes every security alternative naming it, before any runtime credential is inspected, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The exclusion reopens only if an incorporated OAS 2.0 authority admits the exact declaration ([OAS 2.0 Security Scheme Object](https://spec.openapis.org/oas/v2.0.html#security-scheme-object)).
+
 **[incorporated]** An OAuth2 Security Requirement array contains every scope required for execution, while the array for a `basic` or `apiKey` requirement MUST be empty ([OAS 2.0 Security Requirement Object](https://spec.openapis.org/oas/v2.0.html#security-requirement-object)).
 
 **[limit]** A nonempty requirement array for `basic` or `apiKey` makes only that security alternative unusable; the defect is confined and reported loudly, and another complete alternative may still be selected. An OAuth2 alternative is complete only when runtime credential context satisfies every required scope.
@@ -555,6 +557,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 **[pin]** A selected `apiKey` scheme consumes a runtime-supplied key value and emits it at the declaration's exact query or header destination.
 
 **[pin]** A selected OAuth2 scheme consumes a runtime-supplied access token satisfying the artifact's required scopes and uses the `Bearer` authorization scheme under [RFC 6750 §2.1](https://www.rfc-editor.org/rfc/rfc6750#section-2.1); token acquisition and every non-Bearer token type have no wire carriage under this identifier.
+
+**[convention]** The runtime half is separate and is a prerequisite, not an exclusion: a runtime whose supplied token is not Bearer-typed leaves the selected alternative unusable, and the invocation refuses before dispatch, exactly as a Basic credential outside the pinned octet range does under §11. Token type is a runtime fact and never a declaration fact, so it can reach no coverage entry.
 
 **[convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, or binding/processor-owned `Host`, `Content-Length`, or `Content-Type` makes only the selected security alternative unusable; another complete non-colliding alternative may still be selected. `Accept` is an ordinary effective parameter destination and collides under that ordinary parameter rule.
 
@@ -665,6 +669,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | a target carrying an upstream-invalid Response Object that can govern a successful response | §9.4 | an incorporated OAS 2.0 authority admits the exact declaration |
 | an effective `ws` or `wss` scheme | §10 | incorporated authority defines the handshake, subprotocol, direction, message, framing, and close correspondence |
 | the operations governed by a `host`, `basePath`, or Paths key that violates the incorporated concatenation constraints | §10 | an incorporated OAS 2.0 authority defines the repair |
+| every security alternative naming a Security Scheme Object that violates the incorporated `type` set or a field its `type` makes REQUIRED | §11 | an incorporated OAS 2.0 authority admits the exact declaration |
 
 **[convention]** This register collects every statement in this document of something it does not cover, whatever provenance label that statement carries. Most carry `limit`, and that label marks two kinds of paragraph: a rule that confines a defect or an outcome to a stated scope, which is an ordinary rule and does not belong here, and a statement of something this specification does not cover, which bounds what a consumer may expect of it and does. Two further kinds meet the same test although they carry `pin` rather than `limit`, and belong here: a disclosed departure from an incorporated authority that leaves something unobtainable or unrestorable under this identifier, and a declined delegation — a route an incorporated authority offers, or a mutable registry it reaches, that this specification does not follow. The statements are the following.
 
