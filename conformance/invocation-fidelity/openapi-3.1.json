@@ -218,7 +218,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_PROTOCOL"
+              "equals": "ERR_EXECUTION_FAILED"
             },
             {
               "path": "/error/data",

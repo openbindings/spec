@@ -170,7 +170,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_RESPONSE_ERROR"
+              "equals": "ERR_EXECUTION_FAILED"
             },
             {
               "path": "/error/data",

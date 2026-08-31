@@ -154,7 +154,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_SOURCE_LOAD_FAILED"
+              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -207,7 +207,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_SELECTOR_NOT_FOUND"
+              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -242,7 +242,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_SOURCE_LOAD_FAILED"
+              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -294,7 +294,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_SELECTOR_NOT_FOUND"
+              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -700,13 +700,13 @@
       "id":"OAPI20-PS-39","rules":["OAPI20-P-03"],"section":"9",
       "description":"A governing Response Object without schema declares no response content, so an actual nonempty body is a loud protocol error after dispatch.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unexpected response body","version":"1"},"paths":{"/x":{"get":{"responses":{"200":{"description":"empty"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{},"body":"unexpected"}},
-      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"}]}]
     },
     {
       "id":"OAPI20-PS-40","rules":["OAPI20-P-03"],"section":"9",
       "description":"A nonempty response whose Content-Type matches no effective produces declaration is a loud protocol error; body bytes never invent a fallback lane.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unmatched response media","version":"1"},"produces":["application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"text/plain"},"body":"text"}},
-      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"}]}]
     },
     {
       "id":"OAPI20-PS-41","rules":["OAPI20-P-03"],"section":"9",
@@ -778,7 +778,7 @@
       "id":"OAPI20-PS-52","rules":["OAPI20-P-03"],"section":"9",
       "description":"Distinct produces entries that normalize to the same media identity make selection through that identity unusable, so a matching response refuses without list-order preference.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Response media collision","version":"1"},"produces":["Application/JSON","application/json"],"paths":{"/x":{"get":{"responses":{"200":{"description":"ok","schema":{"type":"object"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":200,"headers":{"Content-Type":"application/json"},"bodyBase64":"e30="}},
-      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"}]}]
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"}]}]
     },
     {
       "id":"OAPI20-PS-53","rules":["OAPI20-P-03"],"section":"9",
@@ -976,13 +976,13 @@
       "id":"OAPI20-PS-85","rules":["OAPI20-P-03"],"section":"9",
       "description":"An exact failure Response also governs before default. Because the exact 404 declaration has no schema, its actual nonempty body is a protocol error rather than data decoded through default.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Exact failure precedence","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"404":{"description":"empty failure"},"default":{"description":"fallback","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":404,"headers":{"Content-Type":"text/plain"},"body":"not decoded"}},
-      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/outputs","equals":[]}]}]
     },
     {
       "id":"OAPI20-PS-86","rules":["OAPI20-P-03"],"section":"9",
       "description":"A nonempty successful response with neither an exact nor default governing Response is a loud protocol error after dispatch.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Ungoverned nonempty response","version":"1"},"produces":["text/plain"],"paths":{"/x":{"get":{"responses":{"200":{"description":"only 200","schema":{"type":"string"}}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"peer":{"status":201,"headers":{"Content-Type":"text/plain"},"body":"created"}},
-      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_RESPONSE_ERROR"},{"path":"/outputs","equals":[]}]}]
+      "expected":[{"disposition":"error","phase":"response","assertions":[{"path":"/error/code","equals":"ERR_EXECUTION_FAILED"},{"path":"/outputs","equals":[]}]}]
     },
     {
       "id":"OAPI20-PS-87","rules":["OAPI20-P-03"],"section":"9",
@@ -3014,7 +3014,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_RESPONSE_ERROR"
+              "equals": "ERR_EXECUTION_FAILED"
             }
           ]
         }
@@ -3157,7 +3157,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_RESPONSE_ERROR"
+              "equals": "ERR_EXECUTION_FAILED"
             }
           ]
         }
