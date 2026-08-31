@@ -6905,7 +6905,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "A successful response whose single Content-Type field value is a LIST of media types selects no media type and is a loud protocol error. RFC 9110 §8.3 defines Content-Type as a single media-type and defines no resolution for the list shape, and the application/octet-stream assumption is granted only for an ABSENT field (§9.5's repeated/list-valued Content-Type rule). The corpus spelling for this line's loud protocol error is ERR_PROTOCOL, as pre-existing OAPI30-PS-89 exercises for the undeclared-non-empty-response error the same section calls by that name.",
+      "description": "A successful response whose single Content-Type field value is a LIST of media types selects no media type and is a loud protocol error. RFC 9110 §8.3 defines Content-Type as a single media-type and defines no resolution for the list shape, and the application/octet-stream assumption is granted only for an ABSENT field (§9.5's repeated/list-valued Content-Type rule). The loud protocol error surfaces portably as generic unsuccessful completion, ERR_EXECUTION_FAILED: no more specific code is owned by a governing rule (error-code ownership ruling, 2026-08-31).",
       "given": {
         "source": {
           "content": {
@@ -6966,7 +6966,7 @@
           "assertions": [
             {
               "path": "/error/code",
-              "equals": "ERR_PROTOCOL"
+              "equals": "ERR_EXECUTION_FAILED"
             },
             {
               "path": "/outputs",
@@ -7855,7 +7855,7 @@
             },
             {
               "path": "/error/code",
-              "equals": "ERR_SELECTOR_NOT_FOUND"
+              "equals": "ERR_REFUSED"
             }
           ]
         }
