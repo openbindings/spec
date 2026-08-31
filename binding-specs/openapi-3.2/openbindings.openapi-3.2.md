@@ -22,9 +22,7 @@
 
 **[incorporated]** This document defines portable binding meaning, not an invocation API: request objects, retry and redirect APIs, cancellation, credential acquisition, receiver deployment, and dependency composition remain runtime or application concerns under Core [§1.2](../../openbindings.md#12-out-of-scope).
 
-### Where OBI-B-02's items are discharged
-
-Informative. Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) states seven items a binding specification defines for the sources and bindings it governs. This document is organised by subject matter rather than by those items, so the table below says where each one is discharged and what this specification leaves uncovered at it. No row carries a provenance label, because no row states a rule: each summarises rules stated elsewhere, and where this table and a rule differ the rule is the one to read.
+**Where Core's completeness items are discharged.** Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) states seven items a binding specification defines for the sources and bindings it governs. This document is organised by subject matter rather than by those items, so the table below says where each one is discharged and what this specification leaves uncovered at it. No row carries a provenance label, because no row states a rule: each summarises rules stated elsewhere, and where this table and a rule differ the rule is the one to read.
 
 | item | discharged in | what this specification does not cover there |
 | --- | --- | --- |
@@ -684,9 +682,27 @@ Informative. Core [OBI-B-02](../../openbindings.md#104-binding-specification-rul
 
 **[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.6](../../openbindings.md#56-dependencies)).
 
-### Permitted variation and stated limits
+### 12.3 Conformance rules
 
-Informative. This index gathers the points at which this specification does not fix one behavior, together with the boundaries it draws around what it does fix. Every entry summarises a rule stated elsewhere in this document, shortened and stripped of its citations; the rule governs, and where this index and a rule differ the rule is the one to read. No entry carries a provenance label, because no entry states a rule, and nothing here is a claim about this document as a whole.
+**[convention]** A document conforms to **OAPI32-D-01** when its `content`, if present, satisfies §§3–5 and its `location`, if present, satisfies §4.
+
+**[convention]** A binding conforms to **OAPI32-D-02** when it names §1's exact binding-specification identifier, carries one literal selector form from §6.1, and identifies a source that passes the exact edition gate. That verdict is decided over the interpreted artifact, never over the binding's text alone: for a location-only source it follows §4's required dereference, so conformance to this rule is not a property of the OBI document in isolation.
+
+**[convention]** A processor conforms to **OAPI32-P-01** when it implements the closed load gates, smallest-owner confinement, the source-refusal rule and §5.2's dialect rules, reference closure, and selector semantics of §§3–6.
+
+**[convention]** A processor conforms to **OAPI32-P-02** when it accepts only §7's envelope, applies §8's effective-parameter, collision, conversion, closed-style, undefined-value, content, querystring, header, cookie, and path rules, and refuses every unknown or unroutable input before dispatch.
+
+**[convention]** A processor conforms to **OAPI32-P-03** when it preserves media alternatives and applies §9's matching, request election, carriage, form, multipart, Encoding, content-coding, sequential/SSE, response lookup, classification, and value-boundary rules without sniffing or undeclared fallback.
+
+**[convention]** A processor conforms to **OAPI32-P-04** when it resolves servers and complete target URLs under §10 and security alternatives, credentials, prerequisites, and channel collisions under §11.
+
+**[convention]** A synthesizer conforms to **OAPI32-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
+
+**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.2@1`, belongs to the smallest owner stated beside it, and reopens only on its stated incorporated-authority trigger; no exclusion promises later work.
+
+### 12.4 Permitted variation and stated limits
+
+This index gathers the points at which this specification does not fix one behavior, together with the boundaries it draws around what it does fix. Every entry summarises a rule stated elsewhere in this document, shortened and stripped of its citations; the rule governs, and where this index and a rule differ the rule is the one to read. No entry carries a provenance label, because no entry states a rule, and nothing here is a claim about this document as a whole.
 
 Two implementations that both conform to this specification may still differ at the following points. Each row names what is free and what a consumer may rely on across every implementation that is free there:
 
@@ -780,24 +796,6 @@ Everything removed from the accepted domain, with the owner each removal confine
 | §10 | a Server URL containing a query or fragment | each target that would use that Server alternative | an incorporated OAS edition defines the exact cell |
 | §10 | a completed target whose scheme is neither `http` nor `https` | that invocation, which refuses before dispatch | an incorporated authority defines that scheme's HTTP-semantics mapping |
 | §11 | a malformed Security Scheme Object | every complete alternative requiring it | an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
-
-### 12.3 Conformance rules
-
-**[convention]** A document conforms to **OAPI32-D-01** when its `content`, if present, satisfies §§3–5 and its `location`, if present, satisfies §4.
-
-**[convention]** A binding conforms to **OAPI32-D-02** when it names §1's exact binding-specification identifier, carries one literal selector form from §6.1, and identifies a source that passes the exact edition gate. That verdict is decided over the interpreted artifact, never over the binding's text alone: for a location-only source it follows §4's required dereference, so conformance to this rule is not a property of the OBI document in isolation.
-
-**[convention]** A processor conforms to **OAPI32-P-01** when it implements the closed load gates, smallest-owner confinement, the source-refusal rule and §5.2's dialect rules, reference closure, and selector semantics of §§3–6.
-
-**[convention]** A processor conforms to **OAPI32-P-02** when it accepts only §7's envelope, applies §8's effective-parameter, collision, conversion, closed-style, undefined-value, content, querystring, header, cookie, and path rules, and refuses every unknown or unroutable input before dispatch.
-
-**[convention]** A processor conforms to **OAPI32-P-03** when it preserves media alternatives and applies §9's matching, request election, carriage, form, multipart, Encoding, content-coding, sequential/SSE, response lookup, classification, and value-boundary rules without sniffing or undeclared fallback.
-
-**[convention]** A processor conforms to **OAPI32-P-04** when it resolves servers and complete target URLs under §10 and security alternatives, credentials, prerequisites, and channel collisions under §11.
-
-**[convention]** A synthesizer conforms to **OAPI32-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
-
-**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.2@1`, belongs to the smallest owner stated beside it, and reopens only on its stated incorporated-authority trigger; no exclusion promises later work.
 
 ## 13. Normative references
 
