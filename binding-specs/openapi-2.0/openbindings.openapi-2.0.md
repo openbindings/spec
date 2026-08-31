@@ -556,7 +556,7 @@
 
 **[convention]** A document conforms to **OAPI20-D-01** when its `content`, if present, satisfies §§3–5 and its `location`, if present, satisfies §4.
 
-**[convention]** A binding conforms to **OAPI20-D-02** when it names `openbindings.openapi-2.0@1`, carries the literal selector of §6, and identifies a source that passes the `swagger` load gate.
+**[convention]** A binding conforms to **OAPI20-D-02** when it names `openbindings.openapi-2.0@1`, carries the literal selector of §6, and identifies a source that passes the `swagger` load gate. That verdict is decided over the interpreted artifact, never over the binding's text alone: for a location-only source it follows §4's required retrieval, so conformance to this rule is not a property of the OBI document in isolation.
 
 **[convention]** A processor conforms to **OAPI20-P-01** when it implements the closed load gates, smallest-owner confinement, reference closure, Schema Object dialect, and selector semantics of §§3–6.
 

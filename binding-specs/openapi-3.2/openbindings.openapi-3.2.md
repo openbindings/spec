@@ -672,7 +672,7 @@
 
 **[convention]** A document conforms to **OAPI32-D-01** when its `content`, if present, satisfies §§3–5 and its `location`, if present, satisfies §4.
 
-**[convention]** A binding conforms to **OAPI32-D-02** when it names §1's exact binding-specification identifier, carries one literal selector form from §6.1, and identifies a source that passes the exact edition gate.
+**[convention]** A binding conforms to **OAPI32-D-02** when it names §1's exact binding-specification identifier, carries one literal selector form from §6.1, and identifies a source that passes the exact edition gate. That verdict is decided over the interpreted artifact, never over the binding's text alone: for a location-only source it follows §4's required dereference, so conformance to this rule is not a property of the OBI document in isolation.
 
 **[convention]** A processor conforms to **OAPI32-P-01** when it implements the closed load gates, smallest-owner confinement, the source-refusal rule and §5.2's dialect rules, reference closure, and selector semantics of §§3–6.
 
