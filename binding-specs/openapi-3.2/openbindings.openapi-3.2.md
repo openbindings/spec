@@ -654,7 +654,7 @@
 
 **[incorporated]** A Security Scheme Object's `type` is closed to `apiKey`, `http`, `mutualTLS`, `oauth2`, and `openIdConnect`; `apiKey` additionally requires `name` and an admissible `in`, `http` requires `scheme`, `oauth2` requires `flows`, and `openIdConnect` requires `openIdConnectUrl` ([OAS 3.2.0 §4.27.1](https://spec.openapis.org/oas/v3.2.0.html#security-scheme-object)).
 
-**[exclusion]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—makes every complete security alternative requiring it unusable; other OR alternatives remain selectable. The alternative-level exclusion reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
+**[exclusion]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—excludes every complete security alternative requiring it; other OR alternatives remain selectable. The alternative-level exclusion reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
 
 **[configuration point]** For a component-name requirement occurring in a referenced non-entry document, `implicitConnectionScope` selects `entry` or `referring` resolution and defaults to `entry`, preserving OAS's implementation-defined multi-document choice while following its recommendation; URI-identified requirements bypass this point ([OAS 3.2.0 §§4.1.2.3, Appendix G.3](https://spec.openapis.org/oas/v3.2.0.html#resolving-implicit-connections)).
 
@@ -664,15 +664,17 @@
 
 **[pin]** A selected `basic` scheme consumes a runtime-supplied user-id and password and constructs `Authorization: Basic base64(user-id ":" password)` under [RFC 7617 §2](https://www.rfc-editor.org/rfc/rfc7617#section-2), including its user-id, password, and Base64 constraints. Because RFC 7617 §2 deliberately leaves the default character encoding undefined, the user-id and password octets are pinned to printable US-ASCII (0x20–0x7E); a credential containing any other character leaves the selected alternative unusable, and the invocation refuses before dispatch. This pin reopens only if an incorporated authority defines a charset-parameter declaration surface for the scheme.
 
-**[convention]** `mutualTLS` is a transport prerequisite rather than a header credential; a selected alternative requiring it is complete only when the runtime has established the declared client-certificate condition.
+**[convention]** `mutualTLS` is a transport prerequisite rather than a header credential, and this binding synthesizes no bytes for it: OAS declares only its `type` and a free-prose `description`, so no condition is declared in machine-readable form. A selected alternative requiring it is complete only when the runtime has established the client-certificate transport it names; establishment and its verification are runtime concerns under Core [§1.2](../../openbindings.md#12-out-of-scope).
 
 **[pin]** A selected `apiKey` scheme consumes a runtime-supplied key value and emits it at the declaration's exact query, header, or cookie destination.
 
-**[pin]** OAuth 2.0 and OpenID Connect flows consume a runtime-supplied access token and use the `Bearer` authorization scheme under [RFC 6750 §2.1](https://www.rfc-editor.org/rfc/rfc6750#section-2.1); another token type has no wire carriage under this identifier.
+**[exclusion]** OAuth 2.0 and OpenID Connect flows consume a runtime-supplied access token and use the `Bearer` authorization scheme under [RFC 6750 §2.1](https://www.rfc-editor.org/rfc/rfc6750#section-2.1). [RFC 6749 §7.1](https://www.rfc-editor.org/rfc/rfc6749#section-7.1) defines access-token types as extensible, and every token type other than Bearer is excluded from wire carriage under this identifier: no rule of this specification constructs a field for one. That exclusion is a statement about this specification's carriage surface, not about any artifact declaration, so it removes no alternative from synthesis and appears in no coverage entry — an `oauth2` alternative remains represented and its Bearer carriage remains complete. The exclusion reopens only if an incorporated authority defines another token type's carriage.
+
+**[convention]** The runtime half is separate and is a prerequisite, not an exclusion: a runtime whose supplied token is not Bearer-typed leaves the selected alternative unusable, and the invocation refuses before dispatch, exactly as the other-scheme sentence below provides. Token type is a runtime fact and never a declaration fact, so it can reach no coverage entry.
 
 **[limit]** Any other declared HTTP authentication scheme remains visible as a consumer prerequisite, but this binding synthesizes no credential bytes for it; an alternative requiring it is unusable unless the runtime satisfies it as a complete prerequisite.
 
-**[convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, or binding/processor-owned `Host`, `Content-Length`, or `Content-Type` makes only the selected security alternative unusable; `Accept` is not in that set, because §9.1 emits no `Accept` field for a credential to collide with and §8.1 already ignores an `Accept` Header parameter without excluding for it; another complete non-colliding alternative may still be selected, while §8.3 governs parameter-only processor-owned and invocation-time raw/structured cookie collisions.
+**[convention]** A credential destination that collides with an effective parameter, another credential in the same AND requirement, or binding/processor-owned `Host`, `Content-Length`, `Content-Type`, or `Accept` makes only the selected security alternative unusable. `Accept` belongs on that list although §9.1 emits none: emitting no `Accept` is this specification's decision about response-media negotiation, not a free field, and a credential placed there would make a security choice decide a negotiation question the binding has closed. Another complete non-colliding alternative may still be selected, while §8.3 governs parameter-only processor-owned and invocation-time raw/structured cookie collisions.
 
 **[convention]** API-key header destinations compare ASCII case-insensitively, while query and cookie destinations compare exact names. An API-key query value uses §8.3's content-form percent-encoding pin — RFC 3986 unreserved bytes literal, `~` among them, and every other UTF-8 byte as uppercase `%HH` — rather than §8.2's RFC 6570 or manual-construction paths, which govern declared parameters only; an API-key cookie value is carried as an RFC 6265 `cookie-value` with no percent-encoding and refuses before dispatch when it cannot be so carried. Credential values never enter the caller envelope or operation contract; structured cookie contributions preserve membership and join as `name=value` separated by `; `, with no portable cookie order ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [RFC 6265 §4.2.1](https://httpwg.org/specs/rfc6265.html#sane-cookie), [OAS 3.2.0 §4.12.3](https://spec.openapis.org/oas/v3.2.0.html#style-values)).
 
@@ -735,10 +737,10 @@ Two implementations that both conform to this specification may still differ at 
 | cross-property pair order in form-urlencoded and name-based multipart bodies | §9.3 | every declared property's own name and value bytes, and, for an array property, its items in order under one repeated name |
 | the multipart boundary token, and the optional quoting the incorporated grammar permits for it on the media-type field | §9.3 | the entity framing itself — opening, inter-part, and closing delimiters — and that the token appears inside no encapsulated part |
 | cookie-pair order among structured cookie contributions | §11 | each contribution's exact name and value, joined `name=value` and separated by `; ` |
-| whether a redirect is followed, and transport content negotiation including a runtime-advertised `Accept-Encoding` | §9.6 | classification is by the final status; a redirect followed with the bound method and complete body preserved remains this interaction, and a method-rewriting redirect ends it |
-| which content codings a runtime can encode and decode | §§9.4, 12.1 | an absent codec is reported — refusing before dispatch on the request side, loudly on the response side — and never silently changes a value |
 | a JSON-lane number outside binary64: preserved as the supplied mathematical value, or reduced to the nearest binary64 value | §9.2 | the permitted set has exactly these two members; no other deviation from the supplied value is permitted, and a conformant implementation never fails or refuses for range or precision alone |
 | whether a runtime bounds the size of one delivered sequential item, and at what size | §9.5 | no bound is declared by the artifact or configured through §12.1; a rejected item is not emitted and the interaction completes unsuccessfully, and every value already emitted stands |
+| whether a redirect is followed, and transport content negotiation including a runtime-advertised `Accept-Encoding` | §9.6 | classification is by the final status; a redirect followed with the bound method and complete body preserved remains this interaction, and a method-rewriting redirect ends it |
+| which content codings a runtime can encode and decode | §§9.4, 12.1 | an absent codec is reported — refusing before dispatch on the request side, loudly on the response side — and never silently changes a value |
 | which character decodings a runtime supports beyond UTF-8 | §§9.2, 12.1 | UTF-8 decoding is required of every implementation, and an absent decoding refuses loudly rather than being sniffed or substituted |
 | the spelling of a callback or webhook dependency key, and the shape of its dependency contract | §§6.2, 12.2 | the key is a deterministic function of the declaration slot, and the contract's input is the request the service sends while its output is the response the service expects |
 | operation and dependency key spelling, flattening, output-schema choice, and Schema Object translation | §12.2 | the caller-boundary envelope §7 fixes, and that a lossy or non-equivalent translation is accounted as coverage loss at its owning position |
@@ -818,6 +820,7 @@ Everything removed from the accepted domain, with the owner each removal confine
 | §10 | a Server URL containing a query or fragment | each target that would use that Server alternative | an incorporated OAS edition defines the exact cell |
 | §10 | a completed target whose scheme is neither `http` nor `https` | that invocation, which refuses before dispatch | an incorporated authority defines that scheme's HTTP-semantics mapping |
 | §11 | a malformed Security Scheme Object | every complete alternative requiring it | an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
+| §11 | access-token types other than Bearer | wire carriage under this identifier only; no artifact declaration is removed, so this exclusion reaches no synthesis or coverage entry | an incorporated authority defines another token type's carriage |
 
 ## 13. Normative references
 
@@ -833,6 +836,7 @@ Everything removed from the accepted domain, with the owner each removal confine
 - [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648)
 - [RFC 6265](https://httpwg.org/specs/rfc6265.html)
 - [RFC 6570](https://www.rfc-editor.org/rfc/rfc6570)
+- [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749)
 - [RFC 6750](https://www.rfc-editor.org/rfc/rfc6750)
 - [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838)
 - [RFC 6839](https://www.rfc-editor.org/rfc/rfc6839)
