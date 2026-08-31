@@ -799,6 +799,8 @@ Everything removed from the accepted domain, with the owner each removal confine
 | §10 | a completed target whose scheme is neither `http` nor `https` | that invocation, which refuses before dispatch | an incorporated authority defines that scheme's HTTP-semantics mapping |
 | §11 | a malformed Security Scheme Object | every complete alternative requiring it | an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
 
+Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
+
 ## 13. Normative references
 
 - [OpenAPI Specification 3.2.0](https://spec.openapis.org/oas/v3.2.0.html)
