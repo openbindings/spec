@@ -480,9 +480,15 @@ themselves.
 A gap is a missing link between one of [OBI-B-02](../openbindings.md#104-binding-specification-rules)'s
 seven items and a fixed observable. To fill one, ask in order:
 
-1. **Does the conformance corpus already pin the behavior?** If it does,
-   the question was decided and the prose merely failed to say so. This
-   is transcription, not decision.
+1. **Does the conformance corpus already pin the behavior, and pin it
+   CONSISTENTLY?** If it does, the question was decided and the prose
+   merely failed to say so — that is transcription, not decision. But a
+   corpus can hit a question and contradict itself doing so, across
+   siblings or within one document, and an agent that greps once then
+   transcribes a coin flip has made the ladder worse than no ladder.
+   Where the corpus is inconsistent, rung 1 does not answer: say so and
+   continue down the ladder, and record the inconsistency, because a
+   corpus that disagrees with itself is a finding in its own right.
 2. **Does the core specification answer it?**
 3. **Does the incorporated upstream authority answer it — in the edition
    this document actually accepts?** Not the newest edition, and not the
