@@ -517,6 +517,27 @@ permits alternatives, preserve them as a declared set rather than
 inventing a preference — that is step 2 of the deference order, and it
 is not a failure to decide.
 
+**When two siblings conflict, that is not a gap and the ladder runs
+differently.** A gap is a chain that stops short. A conflict is two
+chains that both complete and disagree, and it is resolved in this
+order:
+
+1. **Establish whether the authorities actually differ**, per accepted
+   edition, quoted on both sides. If they do, the divergence is
+   legitimate, both documents are right, and the difference is marked
+   with its citations so the next reader does not "fix" it. A prior
+   ruling in this project was reversed for skipping exactly this step.
+2. **If the authority text is identical, exactly one sibling is wrong.**
+   Run the remaining rungs to decide which, and revise the loser. Do not
+   split the difference and do not preserve the disagreement as a
+   permitted set: nothing licensed it.
+3. **Where the corpus pins the losing side, the authority still wins.**
+   A binding specification that conflicts with its incorporated
+   authority is what gets revised, and coverage never buys drift. But
+   the corpus and both engines move with it, so this is a STOP: report
+   the cost and let the author decide when to pay it, rather than
+   quietly conforming the prose to a scenario the authority contradicts.
+
 **A silence claim counts only when it quotes the text it read.** Every
 error this project has made at this step was a mistake about what an
 authority says, never about what to choose: an edition-scoping charge
