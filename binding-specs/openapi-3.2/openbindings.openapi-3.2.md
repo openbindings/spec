@@ -238,7 +238,9 @@
 
 **[incorporated]** The `undefined` column is RFC 6570 §2.3's undefined set, which OAS states covers values *including but not limited to* null; the empty string is expressly not undefined. RFC 6570 §2.3 counts as undefined a variable with no value, a list with zero members, and an associative array with zero members ([OAS 3.2.0 §4.12.6](https://spec.openapis.org/oas/v3.2.0.html#style-examples), [RFC 6570 §2.3](https://www.rfc-editor.org/rfc/rfc6570#section-2.3)).
 
-**[pin]** Mapped onto this binding's supplied JSON values, that set is exactly three and no more: JSON null, an array with zero members, and an object with zero members. A supplied value is never absent — §7's envelope makes absence mean not supplied, which omits the parameter before serialization — so RFC 6570's no-value case has no third JSON image here, and no other value joins the set.
+**[pin]** Mapped onto this binding's supplied JSON values, that set is exactly three and no more: JSON null, an array with zero members, and an object with zero members. A supplied value is never absent — §7's envelope makes absence mean not supplied, which omits the parameter before serialization under the rule below — so RFC 6570's no-value case has no third JSON image here, and no other value joins the set.
+
+**[incorporated]** A Schema Object `default` documents what the receiver assumes when a value is not provided; it is never inserted by this binding. An unsupplied optional parameter carrying a `default` is omitted before serialization, exactly as one carrying none. OAS states the distinction where it defines the one `default` that IS substituted, the Server Variable Object's: "this behavior is different from the Schema Object's `default` keyword, which documents the receiver's behavior rather than inserting the value into the data" ([OAS 3.2.0 §4.6.1](https://spec.openapis.org/oas/v3.2.0.html#server-variable-object)).
 
 **[convention]** For every admitted `style`/`explode` cell whose `undefined` entry states a serialization, each of those three supplied values serializes exactly as that entry. Where the entry is `n/a` the authority defines no serialization at all, and §8.2's `n/a` rule governs instead; the entry is never read as a byte string.
 
@@ -246,7 +248,7 @@
 
 ### 8.2 Closed `style`, `explode`, and undefined-value table
 
-**[incorporated]** The following table reproduces the complete authority-defined `schema`-form matrix row for row, including the rows whose every cell is `n/a`; OAS states the closure itself — combinations not represented in its table are not permitted. `operator / source` states the RFC 6570 mapping or other OAS byte source, and each `undefined` entry is the authority's result for any of §8.1's three undefined values. For `deepObject`, any explicit `explode` is ignored because the field has no effect ([OAS 3.2.0 §§4.12.2.2, 4.12.3, 4.12.6, Appendix C.1](https://spec.openapis.org/oas/v3.2.0.html#style-values)):
+**[incorporated]** The following table reproduces the complete authority-defined `schema`-form matrix row for row, including the rows whose every cell is `n/a`; OAS states the closure itself — combinations not represented in its table are not permitted. `operator / source` states the RFC 6570 mapping or other OAS byte source, and each `undefined` entry is the authority's result for any of §8.1's three undefined values. For `deepObject`, any explicit `explode` is ignored because the field has no effect ([OAS 3.2.0 §§4.12.2.2, 4.12.3, 4.12.6, Appendix C.1](https://spec.openapis.org/oas/v3.2.0.html#style-values), [Appendix C.3](https://spec.openapis.org/oas/v3.2.0.html#non-rfc6570-field-values-and-combinations)):
 
 | style | location | admitted shapes | explode | operator / source | undefined serialization |
 | --- | --- | --- | --- | --- | --- |
@@ -256,8 +258,8 @@
 | **[incorporated]** `label` | path | primitive, array, object | `true` | `.` plus `*` | `.` |
 | **[incorporated]** `simple` | path, header | primitive, array, object | `false` | none | empty serialization |
 | **[incorporated]** `simple` | path, header | primitive, array, object | `true` | `*` | empty serialization |
-| **[incorporated]** `form` | query, cookie | primitive, array, object | `false` | `?` (`+` when `allowReserved: true`) | `name=` |
-| **[incorporated]** `form` | query, cookie | primitive, array, object | `true` | `?` plus `*` (`+` manually when reserved) | `name=` |
+| **[incorporated]** `form` | query, cookie | primitive, array, object | `false` | `?`; `allowReserved: true` corresponds separately to `+` and does not combine with it — the authority lists that pair among the configurations with no RFC 6570 equivalent, "because only one prefix operator can be used at a time", and the manual-construction rule below governs it | `name=` |
+| **[incorporated]** `form` | query, cookie | primitive, array, object | `true` | `?` plus `*`; `allowReserved: true` corresponds separately to `+` and does not combine with it — the authority lists that pair among the configurations with no RFC 6570 equivalent, "because only one prefix operator can be used at a time", and the manual-construction rule below governs it | `name=` |
 | **[incorporated]** `spaceDelimited` | query | array, object | `false` | OAS bytes | `n/a` |
 | **[incorporated]** `spaceDelimited` | query | none — every cell `n/a` | `true` | `n/a` | `n/a` |
 | **[incorporated]** `pipeDelimited` | query | array, object | `false` | OAS bytes | `n/a` |
