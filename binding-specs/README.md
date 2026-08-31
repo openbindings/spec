@@ -467,6 +467,74 @@ A binding specification is free to define a different relationship to an existin
 4. **Refuse or exclude** behavior OpenBindings cannot represent faithfully. A loud, pre-dispatch refusal is more conformant than silently identifying distinct artifact values, discarding required information, or approximating an interaction the artifact did not declare.
 5. **Define a default only as a last resort**, where the artifact is silent, actionable meaning still needs an answer, and neither an exposed choice nor a narrower supported subset is adequate. The text labels that answer as this binding specification's convention and gives it a named configuration point where consumer choice is meaningful.
 
+### Filling a gap: the routing ladder
+
+**Ratified 2026-08-31.** The deference order says what kind of rule to
+write. This says **who decides**, and it exists because filling a gap is
+a routing problem rather than a design problem: the question goes to
+whichever authority owns it, and reaches the specification's author only
+when none does. An author of these specifications is the expert on
+OpenBindings; the incorporated authorities are the experts on
+themselves.
+
+A gap is a missing link between one of [OBI-B-02](../openbindings.md#104-binding-specification-rules)'s
+seven items and a fixed observable. To fill one, ask in order:
+
+1. **Does the conformance corpus already pin the behavior?** If it does,
+   the question was decided and the prose merely failed to say so. This
+   is transcription, not decision.
+2. **Does the core specification answer it?**
+3. **Does the incorporated upstream authority answer it — in the edition
+   this document actually accepts?** Not the newest edition, and not the
+   one that happens to be open.
+4. **What do the sibling specifications already do?** Free, objective,
+   and it buys uniformity at no cost.
+5. **Which option carries the fewest new commitments?** Every commitment
+   is something a later revision may have to break, and _A revision is
+   not a roadmap_ makes breaking expensive.
+
+Where an authority speaks, transcribe it. Where an authority explicitly
+permits alternatives, preserve them as a declared set rather than
+inventing a preference — that is step 2 of the deference order, and it
+is not a failure to decide.
+
+**A silence claim counts only when it quotes the text it read.** Every
+error this project has made at this step was a mistake about what an
+authority says, never about what to choose: an edition-scoping charge
+refuted by a patch pin the claimant had not read, a "no corpus scenario"
+claim refuted by the scenario, a gap declared closed by an informative
+README that does not close it, and a pin asserting that RFC 2046 groups
+`boundary` with `charset` when its actual words mark `charset` as the
+exception. An unquoted silence is not evidence and does not advance the
+ladder.
+
+**Arbitrary closure is not an escape hatch.** Where nothing favors
+either option, that is itself evidence the choice carries no portable
+meaning, so **declare the freedom rather than closing it** — unless the
+divergence would be visible to a peer on the wire, in which case close
+it and say plainly that the closure was arbitrary.
+
+But reaching that point is a finding requiring evidence, not a default
+to fall back on when the checking gets tiresome, and it is expected to
+be **rare**. Before any text may call a closure arbitrary, all five
+rungs must be discharged on the record, each with the text that was
+read: the corpus grep, the core passage, the upstream passage in every
+accepted edition, what each sibling does, and the commitment comparison.
+This project's own experience is that questions which looked like open
+choices repeatedly turned out to be answered — a schema `default` on a
+parameter, a media-type parameter comparison, and a request
+`Content-Type` emission all looked like author decisions and were all
+settled by text somebody had not yet read. Treat "nothing favors either
+option" as a claim that is usually wrong.
+
+Two kinds of question survive this ladder and belong to the
+specification's author: **two incorporated authorities that conflict
+with no precedence between them**, and **questions about what
+OpenBindings itself means**. Whether a redirect's final status is the
+one that classifies success is the second kind — it is a question about
+what success denotes at the operation boundary, not a question about
+OpenAPI.
+
 ### Current candidate design decisions
 
 The adversarial review resolved the former lower-confidence questions below. These are recorded so a later implementation does not reopen them privately; changing one requires another specification-level compatibility review against the incorporated artifact.
