@@ -364,6 +364,45 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-08",
+      "description": "The Bearer-only carriage exclusion is a statement about this specification's wire surface and not about any artifact declaration: an oauth2 alternative stays represented, reaches no coverage entry of its own, and leaves the source fully represented alongside its apiKey sibling.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Token carriage exclusion", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "components": {
+            "securitySchemes": {
+              "oauth": {"type": "oauth2", "flows": {"clientCredentials": {"tokenUrl": "https://api.example/token", "scopes": {"read": "read access"}}}},
+              "key": {"type": "apiKey", "in": "header", "name": "X-Key"}
+            }
+          },
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "readX",
+                "security": [{"oauth": ["read"]}, {"key": []}],
+                "responses": {"204": {"description": "ok"}}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["readX"],
+        "bindings": [{"operationKey": "readX", "bindingSelector": "#/paths/~1x/get"}],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readX", "bindingSelector": "#/paths/~1x/get", "requirements": ["configuration.security"]}
+          ]
+        }
+      }
     }
   ]
 }

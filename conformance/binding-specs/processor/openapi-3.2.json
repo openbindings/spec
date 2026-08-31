@@ -13236,6 +13236,1213 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI32-PS-188",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A content-map key spelled with an uppercase type and subtype selects the same JSON lane and emits the elected media type normalized to lowercase on the request Content-Type.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Emitted media spelling",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "APPLICATION/JSON": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "x": 1
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "x": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-189",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A charset parameter value compares ASCII case-insensitively, so a requestMedia choice differing from the declared key only in charset case matches that declaration and elects its lane.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Charset parameter comparison",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json; charset=UTF-8": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "requestMedia": "application/json; charset=utf-8"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "x": 1
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "x": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-190",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "Every media-type parameter value other than charset compares by exact character sequence, so a requestMedia choice differing from the declared key only in boundary case matches no declaration and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Boundary parameter comparison",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data; boundary=AbC": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "tag": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "requestMedia": "multipart/form-data; boundary=abc"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "tag": "v"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-191",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A multipart election carries a boundary parameter on the emitted request Content-Type alongside the elected concrete media type.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart request Content-Type",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "tag": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "tag": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "boundary="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-192",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "Every emitted name-based part carries a Content-Disposition field whose disposition type is form-data and whose name parameter holds the property name as a quoted-string.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Part content disposition",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "tag": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "tag": "alpha"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"tag\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-193",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A property name containing CR and LF cannot be represented as the multipart name parameter and excludes that multipart alternative, leaving the body-emitting invocation with no admissible candidate.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Unrepresentable part name",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "a\r\nb": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "a\r\nb": "v"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-194",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A boundary delimiter line followed by linear whitespace still delimits on the receive side: the comparison takes the boundary at the beginning of the line and does not require an exact match of the entire candidate line.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart receive framing",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "multipart/mixed": {
+                          "itemSchema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "multipart/mixed; boundary=b"
+          },
+          "body": "--b \r\nContent-Type: application/json\r\n\r\n{\"n\":1}\r\n--b  \r\nContent-Type: text/plain\r\n\r\nsecond\r\n--b--\r\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "n": 1
+                },
+                "second"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-195",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "Anything before the first boundary delimiter line or after the last one is ignored on the receive side, so a preamble and an epilogue contribute no operation value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart receive framing",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "multipart/mixed": {
+                          "itemSchema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "multipart/mixed; boundary=b"
+          },
+          "body": "preamble a non-MIME reader would show\r\n--b\r\nContent-Type: application/json\r\n\r\n{\"n\":1}\r\n--b--\r\nepilogue text\r\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "n": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-196",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "8",
+      "description": "A Schema Object default documents the receiver's assumption and is never inserted: an unsupplied optional parameter carrying a default is omitted before serialization exactly as one carrying none, while a supplied sibling still contributes its pair.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Schema default is not inserted",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": false,
+                      "schema": {
+                        "type": "string",
+                        "default": "fallback"
+                      }
+                    },
+                    {
+                      "name": "r",
+                      "in": "query",
+                      "required": false,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "r": "given"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?r=given"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-197",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A supplied raw-octet value that is not a JSON string refuses before dispatch: the lane's canonical Base64 boundary admits no other JSON type and no repair is applied.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Raw octet value type",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/octet-stream": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 123
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-198",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A successful response whose single Content-Type field value is a list of media types selects no media type and is a loud protocol error; no member is picked and the octet-stream assumption does not reach a present field.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "List-valued response media",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        },
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "body": "{\"n\":1}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_PROTOCOL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-199",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "On an unsuccessful response the same list-valued Content-Type matches no governing content declaration, so the best-effort failure-body rule yields no failure-data value and raises no protocol error.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "List-valued failure media",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "500": {
+                      "description": "boom",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 500,
+          "headers": {
+            "Content-Type": "application/json, text/plain"
+          },
+          "body": "{\"code\":\"missing\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_EXECUTION_FAILED"
+            },
+            {
+              "path": "/error/data",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-200",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A sequential operation value already emitted stands when a later loud protocol error arises in the lane chain rather than in the framing: a later well-framed JSON Lines item carrying a lone surrogate escape yields no value and ends the interaction unsuccessfully.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Sequential lane failure",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "application/jsonl": {
+                          "itemSchema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/jsonl"
+          },
+          "body": "1\n\"\\ud800\"\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-201",
+      "rules": [
+        "OAPI32-P-04"
+      ],
+      "section": "11",
+      "description": "An API-key credential targeting the processor-owned Accept destination makes the selected security alternative unusable and refuses before dispatch, because a credential there would decide a response-media negotiation question this binding has closed.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Accept credential collision",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "components": {
+              "securitySchemes": {
+                "key": {
+                  "type": "apiKey",
+                  "in": "header",
+                  "name": "Accept"
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [
+                    {
+                      "key": []
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "key": "credential"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-202",
+      "rules": [
+        "OAPI32-P-04"
+      ],
+      "section": "11",
+      "description": "That Accept collision compares ASCII case-insensitively like every other API-key header destination, so a lowercase accept destination is the same collision.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Accept credential collision case",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "components": {
+              "securitySchemes": {
+                "key": {
+                  "type": "apiKey",
+                  "in": "header",
+                  "name": "accept"
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [
+                    {
+                      "key": []
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "key": "credential"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-203",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "4",
+      "description": "On a content-carrying source an elective retrieval from the co-present location is never observable: the retrieved artifact does not replace content, and the completed target comes from the interpreted artifact the document itself carries.",
+      "given": {
+        "source": {
+          "location": "https://retrieval.example/root.json",
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Content is the interpreted artifact",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://content.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://retrieval.example/root.json": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Retrieved and ignored",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://retrieved.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://content.example/x"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
