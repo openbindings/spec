@@ -7649,6 +7649,10 @@
         "binding": {
           "selector": "#/paths/~1x/get"
         },
+        "peer": {
+          "status": 204,
+          "body": ""
+        },
         "invocation": {
           "inputPresent": true,
           "input": {}
@@ -8276,6 +8280,76 @@
         {
           "disposition": "refusal",
           "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-161",
+      "rules": [
+        "OAPI30-P-01"
+      ],
+      "section": "3",
+      "description": "A plain scalar key never refuses on its resolved type, whichever Core-schema tag that resolution assigns: an unquoted true in key position is the member name it spells, and the document loads.",
+      "given": {
+        "source": {
+          "content": "openapi: 3.0.4\ninfo:\n  title: T\n  version: '1'\nservers:\n  - url: https://api.example\nx-vendor:\n  true: 1\npaths:\n  /x:\n    get:\n      responses:\n        '204':\n          description: ok\n"
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-162",
+      "rules": [
+        "OAPI30-P-01"
+      ],
+      "section": "3",
+      "description": "What refuses at the key gate is a key that is no scalar at all. A sequence in key position is no representation of a JSON member name and refuses at load.",
+      "given": {
+        "source": {
+          "content": "openapi: 3.0.4\npaths: {}\nx-bad:\n  ? [a, b]\n  : value\n"
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
           "assertions": [
             {
               "path": "/dispatch",

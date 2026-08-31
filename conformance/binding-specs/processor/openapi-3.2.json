@@ -14443,6 +14443,84 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI32-PS-204",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "3",
+      "description": "An unquoted numeric Responses key loads and the operation completes. YAML's Core schema resolves the plain scalar 200 to tag:yaml.org,2002:int, but an OpenAPI document is itself a JSON object that YAML merely represents, so the key is the JSON member name it spells. This is the ordinary OpenAPI YAML idiom.",
+      "given": {
+        "source": {
+          "content": "openapi: 3.2.0\ninfo:\n  title: T\n  version: '1'\nservers:\n  - url: https://api.example\npaths:\n  /x:\n    get:\n      responses:\n        204:\n          description: ok\n"
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-205",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "3",
+      "description": "A plain scalar key never refuses on its resolved type, whichever Core-schema tag that resolution assigns: an unquoted true in key position is the member name it spells, and the document loads.",
+      "given": {
+        "source": {
+          "content": "openapi: 3.2.0\ninfo:\n  title: T\n  version: '1'\nservers:\n  - url: https://api.example\nx-vendor:\n  true: 1\npaths:\n  /x:\n    get:\n      responses:\n        '204':\n          description: ok\n"
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
