@@ -22,6 +22,22 @@
 
 **[incorporated]** This document defines portable binding meaning, not an invocation API: request objects, retry and redirect APIs, cancellation, credential acquisition, receiver deployment, and dependency composition remain runtime or application concerns under Core [§1.2](../../openbindings.md#12-out-of-scope).
 
+### Where OBI-B-02's items are discharged
+
+Informative. Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) states seven items a binding specification defines for the sources and bindings it governs. This document is organised by subject matter rather than by those items, so the table below says where each one is discharged and what this specification leaves uncovered at it. No row carries a provenance label, because no row states a rule: each summarises rules stated elsewhere, and where this table and a rule differ the rule is the one to read.
+
+| item | discharged in | what this specification does not cover there |
+| --- | --- | --- |
+| 1 — accepted artifact and its representations | §2 (the one accepted edition), §3.1 (the two accepted representations and their discrimination by JSON type), §3.2 (the closed load gates, source refusal, and unknown-field confinement), §4 (which JSON values are accepted, completing that discrimination), §5.1 (the UTF-8 decode and grammar gate every retrieved document passes), §5.2 (a root dialect that refuses the source) | a required `location` dereference that yields no representation at all — one that fails, is unreachable, or returns nothing. §3.2's load gates are closed to four conditions and none of them is that one, and §3.2's outcome vocabulary names no member for it. |
+| 2 — `location` | §4 (absolute-URI syntax, the dereference obligation, and the base chain), §3.1 (the retrieval URI is never an OpenAPI base), §5.1 (retrieved documents' decode), §10 (that same retrieval URI as the base for a relative Server URL, and the consequence when there is none) | the dereference-failure outcome named in item 1's row. `location` has exactly two roles here — the artifact's retrieval address, and the base against which relative resolution proceeds — and §10's use is that same base role, cited there, so the meaning is not stated in one place and consumed silently in another. |
+| 3 — `content` | §3.1 (the two accepted representations and their meaning), §4 (a present `content` MUST be one of them and no other JSON type is accepted) | Core's forbidden-`content` clause is answered in neither direction: no governed source mode is named as forbidding `content`, and the negative is nowhere stated. §4's unconditional rule entails the empty enumeration without asserting it. |
+| 4 — composition | §3.1 (content primacy, and a co-present `location` supplying the retrieval URI), §4 (the base chain through `$self`, the reference base a `location` supplies for embedded content, and the self-containment requirement when there is none), §10 (what a relative Server URL yields when embedded content has no `location`) | nothing recorded. |
+| 5 — `selector` | §6.1 (the two literal spellings, RFC 6901 evaluation, the `additionalOperations` key rules, and the non-resolution disposition), §5.1 (effective Path Item resolution before the method field is read, and the `$ref` collision that turns on the selected map key), §3.2 (a selector naming an excluded target still resolves), §12.3 (`OAPI32-D-02`, which decides the absent and malformed cases and is decided over the interpreted artifact) | §3.2's vocabulary names no member for a selector that does not resolve; §6.1 states that disposition in the words §3.2 binds to an addressable target that is unusable. |
+| 6 — target and interaction identification | §3.2 (smallest-owner confinement, source refusal, and what an excluded unit is), §5.1 (the effective Path Item and reference confinement), §5.2 (dialect scope and the resolved declaration), §6.1 (selector to operation), §6.2 (callbacks and webhooks are not invocable through the addressed operation), §7 (what an addressed operation denotes), §8.2 (path-template correspondence), §9.6 (which Response Object governs an actual response), §10 (server resolution and the completed target URL), §11 (which security requirement governs, which alternative is selected, requirement-name resolution, and Security Scheme Object well-formedness), §12.1 (`server`, `security`, `implicitConnectionScope`), §12.3 (`OAPI32-D-02`, `OAPI32-P-01`, `OAPI32-P-04`) | nothing recorded. |
+| 7 — caller-facing input and successful output correspondence | §7 (the envelope and its keys), §8 (parameter serialization end to end), §9 (media identity and election, carriage lanes, form and multipart bodies, content codings, sequential media and server-sent events, response classification and decoding), §3.2 (the outcome vocabulary), §5.2 (the resolved declaration every lane reads), §10 (the completed target's well-formedness check), §12.1 (what a consumer supplies and what it never reaches), §12.2 (the one rule fixing context bindings at transform positions), §12.3 (`OAPI32-P-02`, `OAPI32-P-03`) | how a declared media-type parameter's value is compared for equality under §9.1, and whether such parameters ride on the emitted request `Content-Type`; whether a schema `default` on a parameter is inserted or the parameter omitted; and an actual response carrying two `Content-Type` fields. |
+
+§11 additionally states how a selected credential becomes wire bytes: Basic construction, `apiKey` emission at its declared destination, Bearer carriage, destination collisions, and the structured-cookie join. Those rules fix bytes this binding puts on the wire, and no item above reaches them, because a credential is neither a caller-facing input value nor a successful output value — this specification says so itself in §11. They stand above the floor OBI-B-02 sets rather than inside it, and the table records no gap for them.
+
 ## 3. Source carriage and refusal architecture
 
 ### 3.1 Accepted representations
@@ -667,6 +683,103 @@
 **[convention]** Every binding-specific configuration requirement remains in coverage accounting and invocation context, assigned to its represented target or declared alternative, and MUST NOT enter the operation input schema.
 
 **[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.6](../../openbindings.md#56-dependencies)).
+
+### Permitted variation and stated limits
+
+Informative. This index gathers the points at which this specification does not fix one behavior, together with the boundaries it draws around what it does fix. Every entry summarises a rule stated elsewhere in this document, shortened and stripped of its citations; the rule governs, and where this index and a rule differ the rule is the one to read. No entry carries a provenance label, because no entry states a rule, and nothing here is a claim about this document as a whole.
+
+Two implementations that both conform to this specification may still differ at the following points. Each row names what is free and what a consumer may rely on across every implementation that is free there:
+
+| what may differ | stated in | what holds across implementations |
+| --- | --- | --- |
+| whether a processor retrieves from a `location` co-present with `content` | §4 | `content` remains the interpreted artifact either way, the co-present `location` supplies the retrieval URI from its own value rather than from any retrieval, and no result this specification defines changes |
+| query-contribution order across distinct effective parameters, on both the RFC 6570 path and the manual path | §8.2 | each effective parameter's own contribution and its exact bytes, one leading `?`, and `&` between contributions |
+| cross-property pair order in form-urlencoded and name-based multipart bodies | §9.3 | every declared property's own name and value bytes, and, for an array property, its items in order under one repeated name |
+| the multipart boundary token, and the optional quoting the incorporated grammar permits for it on the media-type field | §9.3 | the entity framing itself — opening, inter-part, and closing delimiters — and that the token appears inside no encapsulated part |
+| cookie-pair order among structured cookie contributions | §11 | each contribution's exact name and value, joined `name=value` and separated by `; ` |
+| whether a redirect is followed, and transport content negotiation including a runtime-advertised `Accept-Encoding` | §9.6 | classification is by the final status; a redirect followed with the bound method and complete body preserved remains this interaction, and a method-rewriting redirect ends it |
+| which content codings a runtime can encode and decode | §§9.4, 12.1 | an absent codec is reported — refusing before dispatch on the request side, loudly on the response side — and never silently changes a value |
+| which character decodings a runtime supports beyond UTF-8 | §§9.2, 12.1 | UTF-8 decoding is required of every implementation, and an absent decoding refuses loudly rather than being sniffed or substituted |
+| the spelling of a callback or webhook dependency key, and the shape of its dependency contract | §§6.2, 12.2 | the key is a deterministic function of the declaration slot, and the contract's input is the request the service sends while its output is the response the service expects |
+| operation and dependency key spelling, flattening, output-schema choice, and Schema Object translation | §12.2 | the caller-boundary envelope §7 fixes, and that a lossy or non-equivalent translation is accounted as coverage loss at its owning position |
+
+Every configuration point this specification names, with the boundary a supplied choice must satisfy, who supplies it, and the consequence when a required choice is not supplied. §12.1 states this vocabulary and its closure, and no configuration member appears in the caller envelope or operation contract:
+
+| point | boundary a choice must satisfy | who chooses | when no choice is supplied |
+| --- | --- | --- | --- |
+| `requestMedia` | one concrete media type matching a declared entry under §9.1; it never substitutes another declaration's schema, and supplied values never elect | the consumer, before input consumption | required unless exactly one usable concrete entry selects itself; a missing, unmatched, or ambiguous choice refuses before dispatch |
+| `server` | one effective Server alternative plus exact variable values, or one complete consumer-configured URL under the same scheme and no-query/no-fragment constraints | the consumer, before dispatch | required when more than one effective member exists; no member, optional `name`, or variable preference is inferred, and an unresolved variable refuses before dispatch |
+| `security` | one complete alternative, never fragments combined from different alternatives | the consumer | required when more than one alternative exists; an invocation with no selection where one is required refuses before dispatch |
+| `parameterConversion` | a deterministic conversion from each supplied JSON boolean or number to a string, applied recursively to array members and object values; strings pass identically and null never enters it | the consumer | no partial canonicalization default is defined; any supplied boolean or number without a configured conversion refuses before dispatch |
+| `implicitConnectionScope` | `entry` or `referring`, for a component-name requirement occurring in a referenced non-entry document; URI-identified requirements bypass it | the consumer | defaults to `entry`; this is the one point whose unsupplied case is a default rather than a refusal |
+| `requestContentCodings` | a finite map from case-insensitive content-coding tokens to deterministic encoders; two keys colliding after ASCII case-folding are not a usable configuration | the consumer | the caller-supplied effective `Content-Encoding` value fixes the stack; an unsupported token refuses before dispatch, and no configuration narrows the declared surface |
+| `responseContentCodings` | the same map shape, to deterministic decoders | the consumer | the actual value governed by the Response Header Object fixes the stack; an unsupported token is a loud protocol error |
+| `propertyMedia` | one concrete media type per affected property, satisfying one declared member under §9.1 | the consumer | required only for a wildcard or comma-separated multi-valued Encoding `contentType` on a content-based property; an absent, unmatched, or ambiguous choice refuses before dispatch |
+
+One seam in that enumeration is recorded here rather than closed. §12.1 states the vocabulary above as complete and admits no further implementation latitude inside the decode chain; a consumer-supplied bound on the size of a single delivered sequential item would be such latitude, and this specification names no point for one. This index supplies none either.
+
+Boundaries this specification states around what it covers:
+
+| stated in | not covered |
+| --- | --- |
+| §3.2 | no source-scope filtering surface: no source member or addressable target is filtered merely by its position in the source |
+| §3.2 | unknown non-extension fields, and `x-` specification extensions, create no binding behavior and none is supplied for them |
+| §6.2 | dependencies add no invocation behavior; receiver deployment and dependency composition are permanently outside this operation boundary |
+| §7 | on a content-forbidding method a `required: true` request body creates no caller-body requirement, and the declaration is reported as coverage loss |
+| §8.1 | an ignored Header parameter creates no effective parameter, caller-envelope key, or emitted field |
+| §9.1 | Examples create no operation input or output member and select no declaration, lane, or media type |
+| §9.1 | the live OpenAPI Media Type Registry does not widen this identifier; only media behavior defined by incorporated pinned authority is available |
+| §9.2 | JSON-lane numeric precision or range beyond RFC 8259 §6's binary64 expectation is not preserved, and that reduction is the only permitted deviation from the supplied value |
+| §9.2 | only UTF-8 decoding is required; every further charset is an implementation capability |
+| §9.3 | an elided null on an optional content-based form property identifies `{}` and `{"x": null}` on the wire |
+| §9.3 | non-ignored Encoding `headers` produce no caller channel: only an artifact-fixed value and the `contentEncoding`-declared equivalent `Content-Transfer-Encoding` are emitted |
+| §9.5 | `retry` crosses the operation-value boundary because the incorporated authority places it in the event data model; no other transport directive does |
+| §9.5 | non-sequential media remain unary: one HTTP response body produces at most one operation value |
+| §9.6 | redirect following and transport content negotiation are runtime policy, and the resulting classification variance is the permitted set named in the first table above |
+| §9.6 | no response-header or Link carriage exists in an operation value, so even a declared `Location` header on a `201` reaches none |
+| §11 | no credential bytes are synthesized for any HTTP authentication scheme beyond those §11 constructs; such an alternative is a consumer prerequisite the runtime must satisfy whole |
+| §12.1 | `requestMedia` and `parameterConversion` are preflightable only as possible requirements, because their applicability turns on supplied values |
+| §12.2 | no context bindings are defined at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented |
+| §12.2 | no input-restructuring apparatus exists beyond the licensed transforms and the synthesis policy named there |
+
+Everything removed from the accepted domain, with the owner each removal confines to and the incorporated-authority condition that would reopen it. §12.3 states that every one of these is permanent under this identifier and promises no later work:
+
+| stated in | what is outside the accepted domain | confined to | reopens when |
+| --- | --- | --- | --- |
+| §5.1 | a selected reference reaching a document with neither admitted root, using a retrieval alias despite a declared `$self`, or crossing a nearer `$id` boundary noncanonically | the unit named beside each condition in §5.1's table | incorporated authority admits the exact root or reference form |
+| §5.1 | a Path Item `$ref` collision on a fixed field the selected target uses | the selected target | an incorporated OAS edition defines the collision |
+| §5.2 | a root `jsonSchemaDialect` naming any other URI | the source | that exact dialect becomes incorporated authority |
+| §5.2 | a schema-resource-root `$schema` naming any other URI | each selected unit whose closure enters that resource | that exact dialect becomes incorporated authority |
+| §6.1 | an `additionalOperations` key ASCII-case-insensitively equal to a fixed Operation field name | that additional-operation entry | incorporated authority admits the collision and defines its operation mapping |
+| §6.1 | a present empty Responses Object | the selected target | an incorporated OAS edition admits it |
+| §7 | duplicate effective parameters at one name-plus-location identity | the smallest owning operation | an incorporated OAS edition admits them |
+| §7 | two effective header parameters whose names differ only by ASCII case | the selected target | an incorporated authority defines a case-preserving wire mapping |
+| §8.1 | an effective Parameter Object violating §8.1's closed declaration list | the selected target | an incorporated OAS edition removes the constraint or defines the malformed form's wire meaning |
+| §8.2 | a style, location, shape, or explicit `explode` outside §8.2's table, its two shape-less rows included | the selected target, or the selected media alternative on §9.3's Encoding path | incorporated authority defines the exact missing cell |
+| §8.2 | a compound-capable style whose resolved declaration proves an unsupported compound member | the selected target, or the selected media alternative | incorporated authority defines that cell |
+| §8.2 | path-key ambiguity, or either direction of a path-expression/parameter mismatch | the selected target | incorporated authority admits the declaration or defines its unique target mapping |
+| §8.3 | more than one effective `querystring` parameter, or one coexisting with an ordinary query parameter | the selected target | an incorporated OAS edition admits it and defines the query construction |
+| §8.3 | a `querystring` media entry whose format has no serialization incorporated here | that parameter lane | a pinned authority incorporated here defines the mapping |
+| §8.3 | a `querystring` media entry selecting a sequential form | that parameter lane | incorporated authority defines sequential query-component serialization and interaction semantics |
+| §8.3 | an effective header parameter named `Host` or `Content-Length` | the selected target | an incorporated HTTP authority defines caller control preserving the processor's framing and routing obligations |
+| §8.3 | a form-style cookie declaration whose `explode` and resolved declaration prove multi-value production | the selected target | an incorporated OAS edition defines a correct multi-value mapping |
+| §9.1 | a Request Body Object declaring `required: true` with an empty `content` map | the selected target | an incorporated OAS edition defines that behavior |
+| §9.2 | XML generated from an object model | the selected media alternative | incorporated authority defines node order, null serialization, and adjacent text nodes |
+| §9.2 | a concrete request or response selection admitted by none of §9.2's lanes | the smallest media owner | an incorporated authority defines that media/data-form cell |
+| §9.3 | a property name not safely representable as the multipart `name` parameter, any name containing CR or LF included | that multipart media alternative | an incorporated authority defines an unambiguous encoding |
+| §9.3 | a response selection of name-based form or multipart carriage | the smallest media owner | an incorporated authority defines that decoding |
+| §9.3 | an Encoding-style serialization generating one wire name from two declared sources | that media alternative | an incorporated authority defines the collision's unique decoding |
+| §9.3 | an explicit Encoding header whose part's resolved declaration disallows its value | that multipart field | incorporated authority defines both serialization and parsing for the contradiction |
+| §9.3 | a selected media alternative requiring more than one nested Encoding level | that alternative | an incorporated authority requires the deeper level |
+| §9.4 | two governing response Header Object keys differing only by ASCII case that both govern binding behavior | the smallest owning response alternative | an incorporated authority defines a case-preserving wire mapping |
+| §9.5 | a purported sequential media type whose item framing no pinned incorporated authority defines | that selected alternative | incorporated authority defines the missing framing |
+| §9.5 | a `text/event-stream` request-body alternative | that alternative | incorporated authority defines the missing object-to-event write mapping |
+| §9.6 | a Responses key outside the closed admitted set | the selected target | an incorporated OAS 3.2 edition admits that exact key form |
+| §9.6 | an upstream-invalid governing Response Object that could govern a successful response | the selected target | an incorporated OAS 3.2 edition admits the exact declaration |
+| §10 | a Server URL template repeating a variable | that Server alternative | an incorporated OAS edition defines repeated-variable substitution |
+| §10 | a Server URL containing a query or fragment | each target that would use that Server alternative | an incorporated OAS edition defines the exact cell |
+| §10 | a completed target whose scheme is neither `http` nor `https` | that invocation, which refuses before dispatch | an incorporated authority defines that scheme's HTTP-semantics mapping |
+| §11 | a malformed Security Scheme Object | every complete alternative requiring it | an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
 
 ### 12.3 Conformance rules
 
