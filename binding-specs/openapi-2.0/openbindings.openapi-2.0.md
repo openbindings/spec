@@ -50,7 +50,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 ### 3.1 Accepted representations
 
-**[convention]** `content` is either the parsed Swagger document object or string content; `location` is an absolute URI for that document; content has primacy, a co-present location supplies its base URI, and the OBI retrieval URI is never that base (Core [§5.4](../../openbindings.md#54-sources), [§7](../../openbindings.md#7-reference-resolution)).
+**[convention]** `content` is either the parsed Swagger document object or string content; `location` is an absolute URI for that document, stated as a rule in §4; content has primacy, a co-present location supplies its base URI, and the OBI retrieval URI is never that base (Core [§5.4](../../openbindings.md#54-sources), [§7](../../openbindings.md#7-reference-resolution)).
 
 **[incorporated]** The edition represents the artifact as a JSON object conforming to the JSON standards, admits YAML as a superset of JSON for that same representation, and makes every field name case-sensitive ([OAS 2.0 §6.1 Format](https://spec.openapis.org/oas/v2.0.html#format)). The YAML edition it normatively cites is [YAML 1.2, 1 October 2009](https://yaml.org/spec/1.2-old/spec.html) ([OAS 2.0 A.1 Normative references, `[YAML]`](https://spec.openapis.org/oas/v2.0.html#a-1-normative-references)). §6.2 File Structure states no part of this rule and is not cited for it.
 
