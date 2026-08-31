@@ -24,6 +24,8 @@
 
 **[pin]** RFC 9110 obsoletes RFC 7231 and governs wherever the two overlap; RFC 7231 is not incorporated under this identifier and no rule below cites it ([RFC 9110 §19.1](https://www.rfc-editor.org/rfc/rfc9110#section-19.1)).
 
+**[pin]** The pinned OAS 2.0 page's Reference Object prose links inline to JSON Reference draft-02 while its bibliography names draft-03; draft-03 governs every OAS JSON Reference use under this identifier, the inline draft-02 link is treated as an upstream citation defect, and the differences between the two drafts are immaterial to draft-03 §§3–4 as used here.
+
 **[incorporated]** This document defines portable binding meaning, not an invocation API: request objects, retry and redirect APIs, cancellation, credential acquisition, and receiver deployment remain runtime or application concerns under Core [§1.2](../../openbindings.md#12-out-of-scope).
 
 ## 3. Source carriage and refusal architecture
@@ -95,8 +97,6 @@
 **[incorporated]** A Reference Object contains one required `$ref`; non-`$ref` siblings have no effect, the value is a URI, relative values use the referring-document base, and fragment resolution uses RFC 6901 JSON Pointer under canonical dereferencing ([OAS 2.0 Reference Object](https://spec.openapis.org/oas/v2.0.html#reference-object), [JSON Reference draft-03 §§3–4](https://datatracker.ietf.org/doc/html/draft-pbryan-zyp-json-ref-03), [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).
 
 **[convention]** A Schema Object containing `$ref` is such a JSON Reference: every non-`$ref` sibling, including a sibling `allOf`, is ignored, and §5.2's resolved-declaration conjunction reaches only the referenced schema's own branches, never siblings of a `$ref`.
-
-**[pin]** The pinned OAS 2.0 page's Reference Object prose links inline to JSON Reference draft-02 while its bibliography names draft-03; draft-03 governs every OAS JSON Reference use under this identifier, the inline draft-02 link is treated as an upstream citation defect, and the differences between the two drafts are immaterial to draft-03 §§3–4 as used here.
 
 **[convention]** A reference composes its target plus the transitive closure of references reachable from that target, not unrelated material in the same retrieved document. No accepted edition states that composition rule; this specification adopts it so that a selected target's closure is decidable ([OAS 2.0 Reference Object](https://spec.openapis.org/oas/v2.0.html#reference-object)).
 
