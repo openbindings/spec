@@ -3716,7 +3716,7 @@
     },
     {
       "id": "OAPI31-SS-46",
-      "description": "The synthesis face of §8.2's whole-row test, which the chain-trace program restated from a per-CELL test to a per-ROW one. The test decides whether a target is published at all, so the three operations here are the discrimination itself. spaceExplode carries spaceDelimited with explode true, whose Style Examples row is n/a in ALL FOUR of its columns — undefined, string, array, object — so no value it could ever be supplied has a defined expansion and its TARGET is excluded before any caller value exists; a parameter has no sibling alternative to fall back to, so the unit owning the defect is the operation. deepDefaulted is the instance §8.2 names by name: an omitted explode on deepObject computes to false, whose row the edition itself calls undefined, so the defaulting alone excludes it. spaceCollapsed is the control the restatement is for: the same style with explode false is a MIXED row — n/a for undefined and string, real bytes for array and object — and under the superseded per-cell reading its n/a undefined cell would have excluded it too. It stays represented, and its published input is what the assertion pins. OAPI31-PS-148, -149 and -150 are the invocation-side halves of the same three cells. A DISAGREEMENT is recorded here rather than resolved: the two reference implementations agree on every substantive member of this observation — which target is published, which are excluded, the scope, the status, the rule, and the exhaustive and fullyRepresented verdicts — and disagree only on the reasonCode spelling for the two exclusions, openbindings-go emitting openapi.parameter_content_excluded and openbindings-ts emitting openapi.parameter_serialization_excluded, while the 3.0 lane spells its own composite-member exclusion openapi.parameter_style_expansion_excluded. No rule of this specification states a reason code, so neither spelling is derivable from the prose. The go spelling is carried here only so the disagreement surfaces as one failing engine instead of two, and this entry must not be read as ratifying it; the N11 scenario round reported it for a ruling.",
+      "description": "The synthesis face of §8.2's whole-row test, which the chain-trace program restated from a per-CELL test to a per-ROW one. The test decides whether a target is published at all, so the three operations here are the discrimination itself. spaceExplode carries spaceDelimited with explode true, whose Style Examples row is n/a in ALL FOUR of its columns — undefined, string, array, object — so no value it could ever be supplied has a defined expansion and its TARGET is excluded before any caller value exists; a parameter has no sibling alternative to fall back to, so the unit owning the defect is the operation. deepDefaulted is the instance §8.2 names by name: an omitted explode on deepObject computes to false, whose row the edition itself calls undefined, so the defaulting alone excludes it. spaceCollapsed is the control the restatement is for: the same style with explode false is a MIXED row — n/a for undefined and string, real bytes for array and object — and under the superseded per-cell reading its n/a undefined cell would have excluded it too. It stays represented, and its published input is what the assertion pins. OAPI31-PS-148, -149 and -150 are the invocation-side halves of the same three cells. The reasonCode spelling recorded a disagreement until 2026-08-31: openbindings-go emitted openapi.parameter_content_excluded here because its serialization-validity check ran inside its content-parameter check and inherited that bucket's code and message — false evidence, since these parameters declare no content — while openbindings-ts ran the same check at its own site as openapi.parameter_serialization_excluded, which truthfully names the check that fires. The convergence keeps the TS spelling: the interface-synthesizer contract requires a stable family-namespaced reason code, no binding-specification rule states one, and the spelling that names its own evidence wins over the one that borrowed a neighbouring bucket's. The composite-MEMBER case keeps its distinct shared spelling openapi.parameter_style_expansion_excluded in both engines.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -3827,7 +3827,7 @@
               "sourceRef": "#/paths/~1wide/get",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.parameter_content_excluded",
+              "reasonCode": "openapi.parameter_serialization_excluded",
               "rule": "OAPI31-P-02",
               "requirements": []
             },
@@ -3845,7 +3845,7 @@
               "sourceRef": "#/paths/~1deep/get",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.parameter_content_excluded",
+              "reasonCode": "openapi.parameter_serialization_excluded",
               "rule": "OAPI31-P-02",
               "requirements": []
             }
