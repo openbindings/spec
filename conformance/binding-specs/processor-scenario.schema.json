@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/processor-scenario.schema.json",
   "title": "OpenBindings binding-specification processor scenarios",
-  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid.",
+  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -10,7 +10,7 @@
     "format": {
       "enum": [
         "openbindings.binding-spec-processor-scenarios@1",
-        "openbindings.binding-spec-processor-scenarios@2"
+        "openbindings.binding-spec-processor-scenarios@3"
       ]
     },
     "bindingSpec": {
@@ -137,14 +137,16 @@
                       "absent": { "const": true },
                       "oneOf": { "type": "array", "minItems": 1 },
                       "setEquals": { "type": "array", "uniqueItems": true },
-                      "contains": {}
+                      "contains": {},
+                      "notContains": {}
                     },
                     "oneOf": [
                       { "required": ["equals"] },
                       { "required": ["absent"] },
                       { "required": ["oneOf"] },
                       { "required": ["setEquals"] },
-                      { "required": ["contains"] }
+                      { "required": ["contains"] },
+                      { "required": ["notContains"] }
                     ]
                   }
                 }
@@ -167,7 +169,7 @@
       },
       "then": {
         "properties": {
-          "format": { "const": "openbindings.binding-spec-processor-scenarios@2" }
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@3" }
         }
       },
       "else": {

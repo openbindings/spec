@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "format": "openbindings.binding-spec-processor-scenarios@3",
   "bindingSpec": "openbindings.openapi-3.1@1",
   "family": "openapi-3.1",
   "description": "Portable processor scenarios for the OpenAPI 3.1 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -3970,7 +3970,7 @@
         "OAPI31-P-02"
       ],
       "section": "7",
-      "description": "Absent input with a required non-path parameter DISPATCHES: exactly two conditions refuse before dispatch — a required request body with no value to carry and an unsupplied path parameter — and each applies to absent and supplied-but-incomplete input alike. A required query parameter is neither condition, so the request rides with the declaration unsupplied and the server's validation remains authoritative; refusing here would treat two wire-identical requests (absent input and a supplied empty object) differently. This scenario pins the removal of the superseded any-required-parameter refusal (minimality-audit M9).",
+      "description": "Absent input with a required non-path parameter REFUSES before dispatch: OAS makes `required` mean the parameter is mandatory, and every document of this family incorporates that reading — an invocation omitting a mandatory parameter is not an invocation of the operation the artifact describes. Minimality-audit M9 briefly removed this refusal on implementation grounds; the removal was reversed as drift on 2026-09-01 (ruling R2), the specification authorities prevailing over shipped behavior.",
       "given": {
         "source": {
           "content": {
@@ -4020,20 +4020,12 @@
       },
       "expected": [
         {
-          "disposition": "complete",
-          "phase": "completion",
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
           "assertions": [
             {
-              "path": "/dispatch/url",
-              "equals": "https://api.example/search"
-            },
-            {
-              "path": "/dispatch/body",
+              "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/outputs",
-              "equals": []
             }
           ]
         }

@@ -707,13 +707,13 @@ For the project's artifact-backed specifications, the usual governing
 relationship is **binding specification + incorporated artifact + effective
 choices = complete binding interpretation**.
 
-A binding specification answers three recurring **interaction questions** per operation — from its accepted artifacts, by its own definition, or through a declared interpretation point:
+A binding specification answers three recurring **interaction questions** per operation — from its accepted artifacts, by its own definition, or through a declared configuration point:
 
 1. **Routing** — which transport channel does each input field ride (path/query/header/body; argv/stdin/file)?
 2. **Decode** — how do the returned bytes become the output value?
 3. **Classify** — which completion outcomes (HTTP statuses, exit codes) are success?
 
-Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The binding specification exposes the gap as a named interpretation point, never by authoring missing coverage into the artifact and never by making the OBI absorb format conventions.** An effective consumer choice completes that point when one is required. The OBI stays abstract; the artifact stays pristine.
+Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The binding specification exposes the gap as a named configuration point, never by authoring missing coverage into the artifact and never by making the OBI absorb format conventions.** An effective consumer choice completes that point when one is required. The OBI stays abstract; the artifact stays pristine.
 
 Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would misstate source intent; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. An undefined choice does not prevent the specification from existing or an implementation from completing it locally, but it means the specification has not satisfied OBI-B-02 for that boundary. A required choice or an explicitly unsupported aspect is a portable definition, not a gap.
 
@@ -788,7 +788,7 @@ Apply the [deference order](#the-deference-order) to every answer in the templat
 6. **Composition** (item 4) — the role of a co-present `location`, including whether it supplies a reference base for embedded content, within the content-primacy floor of core [§5.4](../openbindings.md#54-sources). Service-addressed families additionally define their pin's **staleness** posture (dispatch proceeds against the pin; the live server's own error is a failure outcome) — a drift question artifact-located families do not have.
 7. **`selector`** (item 5) — syntax, resolution into an artifact or live surface, and the absent-`selector` case.
 8. **Target and interaction** (item 6) — how the bound target and its interaction pattern are identified.
-9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named interpretation points for anything incorporated authorities do not answer (see _Portable actionability_).
+9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named configuration points for anything incorporated authorities do not answer (see _Portable actionability_).
 10. **Conformance** (recommended) — stable rule identifiers for the specification's own requirements, and fixtures. Diagnostic and provenance-stamp names are implementation surface (reference-tool documentation), not specification content.
 11. **References.**
 
