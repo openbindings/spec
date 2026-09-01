@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "format": "openbindings.binding-spec-processor-scenarios@3",
   "bindingSpec": "openbindings.openapi-3.2@1",
   "family": "openapi-3.2",
   "description": "Portable processor scenarios for the OpenAPI 3.2 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -5547,7 +5547,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A string part with contentEncoding remains artifact text and emits the equivalent Content-Transfer-Encoding header.",
+      "description": "A string part with contentEncoding remains artifact text and emits NO Content-Transfer-Encoding header: OAS 3.2.0's equivalence sentence describes what the declaration means, and the section's own note plus RFC 7578 section 4.7 (senders SHOULD NOT generate the field) settle non-emission (ruling R5, 2026-09-01).",
       "given": {
         "source": {
           "content": {
@@ -5613,7 +5613,7 @@
           "assertions": [
             {
               "path": "/dispatch/body",
-              "contains": "Content-Transfer-Encoding: base64"
+              "notContains": "Content-Transfer-Encoding"
             },
             {
               "path": "/dispatch/body",

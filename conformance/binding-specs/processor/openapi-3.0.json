@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@2",
+  "format": "openbindings.binding-spec-processor-scenarios@3",
   "bindingSpec": "openbindings.openapi-3.0@1",
   "family": "openapi-3.0",
   "description": "Portable processor scenarios for the OpenAPI 3.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
