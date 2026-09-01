@@ -504,7 +504,7 @@
 
 **[convention]** A part-header value is fixed completely by the artifact only when its resolved declaration admits exactly one value through `const` or a single-member `enum`; `default` and examples do not fix a value.
 
-**[limit]** Non-ignored Encoding `headers` are descriptive at this operation boundary and produce no caller channel: the binding emits only such an artifact-fixed header value, plus §9.3's `contentEncoding`-declared equivalent `Content-Transfer-Encoding`, and never emits any other undeclared header; a positional form-data name or other required part header without that exact-value proof leaves the selected alternative unavailable.
+**[limit]** Non-ignored Encoding `headers` are descriptive at this operation boundary and produce no caller channel: the binding emits only such an artifact-fixed header value, and never emits any other undeclared header; a positional form-data name or other required part header without that exact-value proof leaves the selected alternative unavailable.
 
 **[incorporated]** An Encoding Object's nested `encoding`, `prefixEncoding`, and `itemEncoding` fields apply recursively, and every processor MUST support one level of nesting ([OAS 3.2.0 §4.15.2](https://spec.openapis.org/oas/v3.2.0.html#nested-encoding)).
 
