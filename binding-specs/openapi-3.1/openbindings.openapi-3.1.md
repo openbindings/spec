@@ -176,7 +176,7 @@
 
 **[incorporated]** When `responses` is present, its Responses Object MUST contain at least one response code; a present empty object is upstream-invalid, distinct from valid omission ([OAS 3.1.2 §4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object)).
 
-**[exclusion]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The exclusion reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object.
+**[limit]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The confinement reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object.
 
 ### 6.2 Callbacks and webhooks
 
@@ -208,7 +208,7 @@
 
 **[incorporated]** Effective parameter identity is exact name plus location; duplicate effective parameters at the same identity are upstream-invalid, while the same name in different locations denotes distinct parameters ([OAS 3.1.2 §§4.8.10.1, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#operation-parameters)).
 
-**[exclusion]** Duplicate effective parameters at the same identity exclude their smallest owning operation; this exclusion reopens only if an incorporated OAS edition admits such duplicates.
+**[limit]** Duplicate effective parameters at the same identity exclude their smallest owning operation; this confinement reopens only if an incorporated OAS edition admits such duplicates.
 
 **[convention]** Legal cross-location duplicates remain independently supplied through the qualified mode above.
 
@@ -230,7 +230,7 @@
 
 **[incorporated]** Operation parameters override Path Item parameters only at the same exact name-plus-location identity, and every remaining effective `path`, `query`, `header`, or `cookie` Parameter Object governs its own contribution ([OAS 3.1.2 §§4.8.9.1, 4.8.10.1, 4.8.12.1](https://spec.openapis.org/oas/v3.1.2.html#parameter-locations)).
 
-**[exclusion]** A selected effective Parameter Object missing required `name`, using an `in` outside `path`, `query`, `header`, or `cookie`, failing to use exactly one of `schema` or `content`, declaring a non-required path parameter, or giving a content map other than exactly one entry is a declaration defect that excludes the selected target before caller values are inspected. The exclusion reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning ([OAS 3.1.2 §§4.8.12.1–4.8.12.2.3](https://spec.openapis.org/oas/v3.1.2.html#parameter-object)).
+**[limit]** A selected effective Parameter Object missing required `name`, using an `in` outside `path`, `query`, `header`, or `cookie`, failing to use exactly one of `schema` or `content`, declaring a non-required path parameter, or giving a content map other than exactly one entry is a declaration defect that excludes the selected target before caller values are inspected. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning ([OAS 3.1.2 §§4.8.12.1–4.8.12.2.3](https://spec.openapis.org/oas/v3.1.2.html#parameter-object)).
 
 **[incorporated]** A Header parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored and creates no effective parameter, caller-envelope key, or emitted field ([OAS 3.1.2 §§3.8, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
@@ -309,6 +309,8 @@
 **[pin]** Percent-encoding a content-form parameter leaves RFC 3986 unreserved bytes literal and encodes every other UTF-8 byte as uppercase `%HH`; the exact caller-envelope key remains unchanged.
 
 **[incorporated]** For a query parameter with `allowEmptyValue: true`, a supplied empty string emits a present zero-length value; absence still means omitted, and this binding infers no schema-validity consequence because OAS leaves that interaction implementation-defined ([OAS 3.1.2 §4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#parameter-allow-empty-value)).
+
+**[incorporated]** A supplied empty string is an ordinary value and serializes as the governing effective `style`/`explode` row's `empty` cell — `name=` for `form`, an empty representation for `simple`, `;name` for `matrix`, `.` for `label`, and `n/a` for the remaining styles — whatever `allowEmptyValue` declares: the edition states that the `empty` column is unrelated to that field and that the empty string is not undefined ([OAS 3.1.2 §4.8.12.6](https://spec.openapis.org/oas/v3.1.2.html#style-examples)).
 
 **[incorporated]** Header `schema` serialization performs no URI percent-encoding and adds no automatic quotes: the governing text requires that URI percent-encoding MUST NOT be applied to header values and that they pass through unchanged, a correction 3.1.2 states expressly — "this section has been corrected to apply only to cookies". Of the accepted editions only 3.1.1 gave the earlier advice and 3.1.0 carries no Appendix D, so §2's unconditional pin carries the corrected rule to all three ([OAS 3.1.2 §4.8.12.2.2](https://spec.openapis.org/oas/v3.1.2.html#fixed-fields-for-use-with-schema), [Appendix D.1](https://spec.openapis.org/oas/v3.1.2.html#appendix-d-serializing-headers-and-cookies)).
 
@@ -400,7 +402,7 @@
 
 **[incorporated]** `application/x-www-form-urlencoded` and `multipart/form-data` serialize object properties under the governing Schema and Encoding Objects, and a `schema` is REQUIRED to define the input parameters when using multipart content ([OAS 3.1.2 §§4.8.15.2, 4.8.15.3](https://spec.openapis.org/oas/v3.1.2.html#encoding-the-x-www-form-urlencoded-media-type)).
 
-**[exclusion]** A `multipart/form-data` alternative declaring no `schema` is excluded at its smallest media owner, because the edition's REQUIRED marker leaves the part set undetermined and this specification derives no part from an absent declaration; a schema-omitted non-multipart binary declaration is expressly permitted and takes §9.2's raw-octet lane. The exclusion reopens only if an incorporated OAS edition removes that requirement, as the 3.2 line does.
+**[limit]** A `multipart/form-data` alternative declaring no `schema` is excluded at its smallest media owner, because the edition's REQUIRED marker leaves the part set undetermined and this specification derives no part from an absent declaration; a schema-omitted non-multipart binary declaration is expressly permitted and takes §9.2's raw-octet lane. The confinement reopens only if an incorporated OAS edition removes that requirement, as the 3.2 line does.
 
 **[exclusion]** The form and multipart lanes are request-only: the incorporated authority's form and multipart sections are request-scoped by their own headings and supply no reverse mapping from those bytes to an application value, so a response selection of either lane is excluded at its smallest media owner. The exclusion reopens only if an incorporated authority defines that decoding.
 
@@ -486,9 +488,9 @@
 
 **[incorporated]** Response keys are closed to exact three-digit status codes `100` through `599`, the five ranges `1XX` through `5XX`, `default`, and specification extensions; an exact key overrides its matching range ([OAS 3.1.2 §§3.7, 4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object), [RFC 9110 §15](https://www.rfc-editor.org/rfc/rfc9110#section-15)).
 
-**[exclusion]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the exclusion reopens only if an incorporated OAS 3.1 edition admits that exact key form.
+**[limit]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the confinement reopens only if an incorporated OAS 3.1 edition admits that exact key form.
 
-**[exclusion]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the exclusion reopens only if an incorporated OAS 3.1 edition admits the exact declaration ([OAS 3.1.2 §4.8.17.1](https://spec.openapis.org/oas/v3.1.2.html#response-object)).
+**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration ([OAS 3.1.2 §4.8.17.1](https://spec.openapis.org/oas/v3.1.2.html#response-object)).
 
 **[limit]** The exclusion above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, the `2XX` range key, or `default` when no `2XX` range key is declared, a `2XX` key covering the whole success class. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not exclude, and the same reasoning carves out the `description` omission below ([OAS 3.1.2 §4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object)).
 
@@ -546,7 +548,7 @@
 
 **[pin]** "Appended" is pinned here to *verbatim*: no slash normalization and no path repair either. The edition forbids only relative resolution, so this is an entailment stated as this specification's own, with its consequence: a Server URL ending in `/` and a Paths key beginning with `/`, the default server `/` included, produce a doubled slash in the completed target, and this rule forbids repairing it, because a processor that silently rewrites the constructed path can address a resource the artifact did not declare.
 
-**[exclusion]** A Server URL containing a query or fragment excludes each target that would use that Server alternative; the exclusion reopens only if an incorporated OAS edition defines the exact cell.
+**[limit]** A Server URL containing a query or fragment excludes each target that would use that Server alternative; the confinement reopens only if an incorporated OAS edition defines the exact cell.
 
 **[limit]** When embedded content has no document location to supply that base, a relative Server URL leaves the target unresolved and refuses before dispatch; the complete configured URL below remains the available recovery.
 
@@ -576,7 +578,7 @@
 
 **[incorporated]** A Security Scheme Object declares a REQUIRED `type` from the closed set `apiKey`, `http`, `mutualTLS`, `oauth2`, `openIdConnect`, and each type carries its own REQUIRED fields: `apiKey` requires `name` and `in` from `query`, `header`, or `cookie`; `http` requires `scheme`; `oauth2` requires `flows`; `openIdConnect` requires `openIdConnectUrl`. `apiKey` credentials use their declared name and location, and HTTP `basic` and `bearer` credentials use the `Authorization` field ([OAS 3.1.2 §4.8.27.1](https://spec.openapis.org/oas/v3.1.2.html#security-scheme-object), [RFC 9110 §11.6.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.6.2)).
 
-**[exclusion]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — excludes every security alternative naming it, before any runtime credential is inspected, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The exclusion reopens only if an incorporated OAS 3.1 edition admits the exact declaration.
+**[limit]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — excludes every security alternative naming it, before any runtime credential is inspected, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration.
 
 **[pin]** A selected `basic` scheme consumes a runtime-supplied user-id and password and constructs `Authorization: Basic base64(user-id ":" password)` under [RFC 7617 §2](https://www.rfc-editor.org/rfc/rfc7617#section-2), including its user-id, password, and Base64 constraints. Because RFC 7617 §2 deliberately leaves the default character encoding undefined, the user-id and password octets are pinned to printable US-ASCII (0x20–0x7E); a credential containing any other character leaves the selected alternative unusable, and the invocation refuses before dispatch. This pin reopens only if an incorporated authority defines a charset-parameter declaration surface for the scheme.
 
@@ -680,10 +682,7 @@ This section collects the points at which two implementations conforming to `ope
 | §5.1 Path Item `$ref` collision | the selected target, where a field it uses is declared both in the referenced Path Item and adjacent to the `$ref` | an incorporated OAS edition defines the collision |
 | §5.2 root `jsonSchemaDialect` | the whole source, which **refuses as a source**, the default having no smaller owner | that exact dialect becomes incorporated authority |
 | §5.2 schema-resource-root `$schema` | each selected unit whose reachable closure enters that resource | that exact dialect becomes incorporated authority |
-| §6.1 present empty Responses Object | the selected target, before any response or caller value is inspected | an incorporated OAS 3.1 edition admits a present empty Responses Object |
-| §7 duplicate effective parameters | the smallest owning operation | an incorporated OAS edition admits such duplicates |
 | §7 case-distinct header parameters | the selected target, under either of the two readings §7 discloses | an incorporated authority defines a wire mapping preserving such declarations |
-| §8.1 malformed Parameter Object | the selected target, before caller values are inspected | an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning |
 | §8.2 wholly `n/a` style row | that parameter; the test is the whole row and never a single cell | an incorporated authority defines that exact combination |
 | §8.2 unsupported compound member | the owning unit, and only where the resolved declaration proves the member | an incorporated authority defines that exact cell |
 | §8.2 path-template mismatch | the selected target, for path-key ambiguity, either mismatch direction, or a duplicate expression; non-conflicting targets survive | incorporated authority admits the declaration or defines its unique target mapping |
@@ -691,18 +690,13 @@ This section collects the points at which two implementations conforming to `ope
 | §8.3 multi-value form-style cookie | that declaration, and only where `explode` and the resolved declaration prove multi-value production | an incorporated OAS edition defines a correct multi-value mapping |
 | §9.2 XML from an object model | the selected media alternative; string and raw-octet XML carriage remain admitted | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
 | §9.2 selection matching no defined lane | that selection, at its smallest media owner | an incorporated authority defines that media/data-form cell |
-| §9.3 schemaless `multipart/form-data` | that alternative, at its smallest media owner; a schemaless non-multipart binary declaration is unaffected and takes the raw-octet lane | an incorporated OAS edition removes the requirement, as the 3.2 line does |
 | §9.3 form or multipart on a response | that response selection, at its smallest media owner | an incorporated authority defines that decoding |
 | §9.3 unrepresentable multipart `name` | that multipart alternative, CR or LF in a property name included | an incorporated authority defines an unambiguous encoding |
 | §9.3 required part header fixing no value | that multipart alternative; an ignored entry, `Content-Type` included, never triggers it | an incorporated authority defines caller part-header carriage |
 | §9.3 `contentEncoding` against a surviving `Content-Transfer-Encoding` | that multipart alternative, rather than choosing between two declared encodings | an incorporated OAS edition defines that conflict's outcome |
 | §9.3 multipart other than `form-data` | that media alternative, no property-to-part correlation being defined | an incorporated OAS edition defines that correlation |
 | §9.4 case-distinct response header keys | the smallest owning response alternative, where both govern binding behavior | an incorporated authority defines a wire mapping preserving such declarations |
-| §9.5 Responses key outside the admitted set | the selected target, before any actual response is inspected | an incorporated OAS 3.1 edition admits that exact key form |
-| §9.5 upstream-invalid Response Object | the selected target, and only for a declaration that can govern a successful response | an incorporated OAS 3.1 edition admits the exact declaration |
-| §10 Server URL with query or fragment | each target that would use that Server alternative | an incorporated OAS edition defines the exact cell |
 | §10 non-`http`/`https` Server scheme | each target that would use that Server alternative, as a declaration fact only; a scheme reached at invocation refuses before dispatch instead | an incorporated authority defines that scheme's HTTP-semantics mapping |
-| §11 invalid Security Scheme Object | every security alternative naming it; a target left with no complete alternative is itself excluded | an incorporated OAS 3.1 edition admits the exact declaration |
 | §11 access-token types other than Bearer | wire carriage under this identifier only; no artifact declaration is removed, so this exclusion reaches no synthesis or coverage entry | an incorporated authority defines another token type's carriage |
 | §5.1 retrieval encoding | a retrieved document encoded in UTF-16 or UTF-32, which YAML 1.2.2 §5.2 obliges a processor to support | an incorporated authority defines a declaration surface stating a retrieved document's character encoding without inspecting its bytes |
 
@@ -738,6 +732,14 @@ This section collects the points at which two implementations conforming to `ope
 | §10 unresolvable relative Server URL | embedded content with no document location leaves it unresolved and refuses before dispatch; the complete configured URL remains the recovery |
 | §11 other HTTP authentication schemes | remain visible as a consumer prerequisite; no credential bytes are synthesized for them |
 | §12.2 input restructuring | synthesis emits flat contracts plus an `inputTransform`; no other input-restructuring apparatus exists under this identifier |
+| §6.1 present empty Responses Object | an upstream-invalid declaration confined to the selected target, before any response or caller value is inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object |
+| §7 duplicate effective parameters | an upstream-invalid declaration confined to the smallest owning operation, accounted invalid; reopens only if an incorporated OAS edition admits such duplicates |
+| §8.1 malformed Parameter Object | an upstream-invalid declaration confined to the selected target, before caller values are inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning |
+| §9.3 schemaless `multipart/form-data` | an upstream-invalid declaration confined to that alternative, at its smallest media owner; a schemaless non-multipart binary declaration is unaffected and takes the raw-octet lane, accounted invalid; reopens only if an incorporated OAS edition removes the requirement, as the 3.2 line does |
+| §9.5 Responses key outside the admitted set | an upstream-invalid declaration confined to the selected target, before any actual response is inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits that exact key form |
+| §9.5 upstream-invalid Response Object | an upstream-invalid declaration confined to the selected target, and only for a declaration that can govern a successful response, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact declaration |
+| §10 Server URL with query or fragment | an upstream-invalid declaration confined to each target that would use that Server alternative, accounted invalid; reopens only if an incorporated OAS edition defines the exact cell |
+| §11 invalid Security Scheme Object | an upstream-invalid declaration confined to every security alternative naming it; a target left with no complete alternative is itself excluded, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact declaration |
 
 ## 13. Normative references
 
