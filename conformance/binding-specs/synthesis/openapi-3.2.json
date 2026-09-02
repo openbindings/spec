@@ -403,6 +403,44 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-09",
+      "description": "§6.1's byte-exact key identity through the inventory: an additionalOperations key byte-equal to the token the post fixed field sends is excluded as its own entry, while the case-distinct post key spells a method no fixed field defines and is represented beside the fixed field itself. A key that resolves also enumerates, and the excluded one enumerates as a position carrying no operation [OAPI32-S-01, OAPI32-P-01].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {"title": "Byte-exact additional keys", "version": "1"},
+          "servers": [{"url": "https://api.example"}],
+          "paths": {
+            "/t": {
+              "post": {"operationId": "fixedPost", "responses": {"204": {"description": "ok"}}},
+              "additionalOperations": {
+                "POST": {"operationId": "collidingPost", "responses": {"204": {"description": "ok"}}},
+                "post": {"operationId": "lowercasePost", "responses": {"204": {"description": "ok"}}}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["fixedPost", "lowercasePost"],
+        "bindings": [
+          {"operationKey": "fixedPost", "bindingSelector": "#/paths/~1t/post"},
+          {"operationKey": "lowercasePost", "bindingSelector": "#/paths/~1t/additionalOperations/post"}
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1t/post", "scope": "target", "status": "represented", "operationKey": "fixedPost", "bindingSelector": "#/paths/~1t/post", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1t/additionalOperations/POST", "scope": "target", "status": "excluded", "reasonCode": "openapi.target_excluded", "rule": "OAPI32-P-01", "requirements": []},
+            {"sourceIndex": 0, "sourceRef": "#/paths/~1t/additionalOperations/post", "scope": "target", "status": "represented", "operationKey": "lowercasePost", "bindingSelector": "#/paths/~1t/additionalOperations/post", "requirements": []}
+          ]
+        }
+      }
     }
   ]
 }
