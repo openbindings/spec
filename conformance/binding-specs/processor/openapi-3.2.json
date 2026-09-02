@@ -1421,7 +1421,7 @@
         "OAPI32-P-01"
       ],
       "section": "6",
-      "description": "An additionalOperations key comparing ASCII-case-insensitively equal to the fixed query field is excluded as its own entry.",
+      "description": "An additionalOperations key byte-equal to the token the fixed query field sends is the declaration defect OAS forbids and is excluded as its own entry.",
       "given": {
         "source": {
           "content": {
@@ -1434,14 +1434,14 @@
               "/custom": {
                 "query": {},
                 "additionalOperations": {
-                  "QuErY": {}
+                  "QUERY": {}
                 }
               }
             }
           }
         },
         "binding": {
-          "selector": "#/paths/~1custom/additionalOperations/QuErY"
+          "selector": "#/paths/~1custom/additionalOperations/QUERY"
         },
         "invocation": {
           "inputPresent": false
@@ -1484,7 +1484,7 @@
               "/custom": {
                 "query": {},
                 "additionalOperations": {
-                  "QuErY": {}
+                  "QUERY": {}
                 }
               }
             }
@@ -14517,6 +14517,184 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-206",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "6",
+      "description": "A lowercase additionalOperations key spells a method token no fixed Operation field sends, so it is admitted and dispatched in its authored capitalization beside the fixed post field.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "case-distinct additional method",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/t": {
+                "post": {
+                  "operationId": "fixedPost"
+                },
+                "additionalOperations": {
+                  "post": {
+                    "operationId": "lowercasePost"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1t/additionalOperations/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "post"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/t"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-207",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "6",
+      "description": "The fixed post field on that same Path Item remains a distinct target and still sends the uppercase POST token.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "fixed field beside its case-distinct sibling",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/t": {
+                "post": {
+                  "operationId": "fixedPost"
+                },
+                "additionalOperations": {
+                  "post": {
+                    "operationId": "lowercasePost"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1t/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/t"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-208",
+      "rules": [
+        "OAPI32-P-01"
+      ],
+      "section": "6",
+      "description": "An additionalOperations key byte-equal to POST is an entry for the method the post fixed field defines, so it is excluded and never dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "byte-exact additional collision",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/t": {
+                "post": {
+                  "operationId": "fixedPost"
+                },
+                "additionalOperations": {
+                  "POST": {
+                    "operationId": "collidingPost"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1t/additionalOperations/POST"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }
