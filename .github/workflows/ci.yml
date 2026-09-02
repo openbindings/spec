@@ -162,8 +162,10 @@ jobs:
         include:
           - family: OpenAPI
             module: formats/openapi
+            client: openapi-client
           - family: AsyncAPI
             module: formats/asyncapi
+            client: asyncapi-client
           - family: GraphQL
             module: formats/graphql
           - family: gRPC
@@ -181,12 +183,15 @@ jobs:
           repository: openbindings/openbindings-go
           ref: release/0.2
           path: openbindings-go
+      # A family whose module depends on a standalone client needs that client
+      # checked out and `replace`d: the client repos are unreleased, so the
+      # version in go.mod resolves to no tag and the module fetch fails.
       - uses: actions/checkout@v7
-        if: matrix.family == 'OpenAPI'
+        if: matrix.client != ''
         with:
-          repository: openbindings/openapi-client
+          repository: openbindings/${{ matrix.client }}
           ref: main
-          path: openapi-client
+          path: ${{ matrix.client }}
       - uses: actions/setup-go@v7
         with:
           go-version-file: openbindings-go/${{ matrix.module }}/go.mod
@@ -194,15 +199,19 @@ jobs:
       - name: Resolve the reference SDK core from its checkout
         working-directory: openbindings-go
         run: |
-          if [ "${{ matrix.family }}" = "OpenAPI" ]; then
-            go work init . ${{ matrix.module }} ../openapi-client/go
+          client="${{ matrix.client }}"
+          if [ -n "$client" ]; then
+            go work init . ${{ matrix.module }} "../$client/go"
           else
             go work init . ${{ matrix.module }}
           fi
           ver=$(awk '/github.com\/openbindings\/openbindings-go v/ {print $NF}' ${{ matrix.module }}/go.mod)
           go work edit -replace "github.com/openbindings/openbindings-go@${ver}=."
-          if [ "${{ matrix.family }}" = "OpenAPI" ]; then
-            go work edit -replace "github.com/openbindings/openapi-client/go@v0.1.0=../openapi-client/go"
+          if [ -n "$client" ]; then
+            # Pin the replace to whatever the module actually requires, so a
+            # version bump in go.mod cannot silently fall back to the network.
+            cver=$(awk -v c="github.com/openbindings/$client/go" '$1==c {print $2}' ${{ matrix.module }}/go.mod)
+            go work edit -replace "github.com/openbindings/$client/go@${cver}=../$client/go"
           fi
       - name: Execute shared processor and synthesis scenarios
         working-directory: openbindings-go/${{ matrix.module }}
@@ -226,6 +235,11 @@ jobs:
           repository: openbindings/openapi-client
           ref: main
           path: openapi-client
+      - uses: actions/checkout@v7
+        with:
+          repository: openbindings/asyncapi-client
+          ref: main
+          path: asyncapi-client
       - uses: pnpm/action-setup@v6
         with:
           version: 10.15.0
@@ -234,6 +248,15 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: openbindings-ts/pnpm-lock.yaml
+      # openbindings-ts links both standalone clients by relative path
+      # (pnpm-lock.yaml: link:../../../<client>/typescript), so each has to be
+      # installed and built before the workspace build can resolve its dist.
+      - name: Build standalone artifact clients
+        run: |
+          pnpm --dir openapi-client install --frozen-lockfile
+          pnpm --dir openapi-client build
+          pnpm --dir asyncapi-client install --frozen-lockfile
+          pnpm --dir asyncapi-client build
       - run: pnpm install --frozen-lockfile
         working-directory: openbindings-ts
       - run: pnpm run build
