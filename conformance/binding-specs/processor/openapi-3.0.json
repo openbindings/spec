@@ -8358,6 +8358,92 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-163",
+      "description": "The invoke half of the unsatisfiable-property accounting: the part `bad` admits no instance, so it is not a routed field, and a value supplied for it fails every admission test and refuses before dispatch at that part (Section 5.2). No request is emitted. A processor that dropped the value silently and dispatched the remaining parts would be sending a request the caller did not describe; one that excluded the target at synthesis would have removed an operation on a defect nothing reaches (the companion synthesis scenario pins that half).",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Unsatisfiable part",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/sole-required": {
+                "post": {
+                  "operationId": "soleRequired",
+                  "requestBody": {
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "string"
+                            },
+                            "bad": {
+                              "allOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "200": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1sole-required/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ok": "fine",
+              "bad": "anything"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "description": "No request is emitted: the supplied `bad` value reaches a part no value can satisfy.",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
