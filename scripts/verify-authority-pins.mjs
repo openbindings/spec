@@ -25,7 +25,14 @@
 //      citation is NAMED-UNPINNED.
 //   5. Pin completeness, pinned -> cited: every manifest entry's citedBy files
 //      exist and contain at least one of its match tokens. A dangling entry is
-//      PINNED-UNUSED.
+//      PINNED-UNUSED. The converse also holds: a specification text that
+//      carries an entry's match token while absent from its citedBy is an
+//      UNLISTED-CITER. Without that direction a document can cite a pinned
+//      authority and stay invisible to the manifest, which is how
+//      openapi-3.1 cited RFC 7231 in an [incorporated] rule while appearing
+//      in neither its families nor its citedBy. A mention that is not a
+//      citation — prose *about* an authority rather than an appeal to it —
+//      is declared per file in notCitedBy, which requires a stated reason.
 //      An entry carrying "status": "reference-only" pins bytes deliberately
 //      cited by nothing. Its completeness check is INVERTED rather than
 //      skipped: its match tokens must appear in NO spec text, so the moment a
@@ -38,8 +45,8 @@
 //
 // Exits 0 when every entry is OK and both completeness directions hold;
 // 1 on any MOVED, TAG-MOVED, NAMED-UNPINNED, PINNED-UNUSED,
-// REFERENCE-ONLY-CITED, or manifest defect; 3 when the only failures are
-// UNREACHABLE (network); 2 on usage/IO error.
+// REFERENCE-ONLY-CITED, UNLISTED-CITER, or manifest defect; 3 when the only
+// failures are UNREACHABLE (network); 2 on usage/IO error.
 //
 // Usage: node scripts/verify-authority-pins.mjs
 
@@ -116,6 +123,20 @@ for (const e of entries) {
 
   if (e.status !== undefined && !isReferenceOnly(e))
     problem("manifest", `${where}: unknown status ${JSON.stringify(e.status)}`);
+
+  if (e.notCitedBy !== undefined) {
+    if (typeof e.notCitedBy !== "object" || e.notCitedBy === null || Array.isArray(e.notCitedBy)) {
+      problem("manifest", `${where}: notCitedBy must map a spec text to the reason its mention is not a citation`);
+    } else {
+      for (const [rel, reason] of Object.entries(e.notCitedBy)) {
+        if (typeof reason !== "string" || reason.trim() === "")
+          problem("manifest", `${where}: notCitedBy[${JSON.stringify(rel)}] needs a non-empty reason`);
+        if ((e.citedBy ?? []).includes(rel))
+          problem("manifest", `${where}: ${rel} is in both citedBy and notCitedBy`);
+      }
+    }
+  }
+
   if (isReferenceOnly(e)) {
     if (typeof e.reason !== "string" || e.reason.trim() === "")
       problem("manifest", `${where}: ${REFERENCE_ONLY} entry needs a non-empty reason`);
@@ -360,6 +381,26 @@ for (const e of entries) {
     }
     if (!e.matchTokens.some((t) => text.includes(t))) {
       problem("completeness", `PINNED-UNUSED: ${e.id} is not cited by ${rel} (no match token found)`);
+    }
+  }
+
+  // The reverse direction. Deliberately scanned over EVERY spec text rather
+  // than the entry's own families: an entry that under-declares its families
+  // is exactly the defect this catches, so trusting families here would make
+  // the check blind to its own subject.
+  const cited = new Set(e.citedBy ?? []);
+  const exempt = e.notCitedBy ?? {};
+  for (const rel of SPEC_TEXTS) {
+    if (cited.has(rel) || rel in exempt) continue;
+    const text = specText(rel);
+    if (text === null) continue;
+    const hit = e.matchTokens.find((t) => text.includes(t));
+    if (hit !== undefined) {
+      problem(
+        "completeness",
+        `UNLISTED-CITER: ${rel} carries ${e.id}'s match token ${JSON.stringify(hit)} but is not in its citedBy — ` +
+          `add the file (and its family) to the entry, or declare it in notCitedBy with a reason`,
+      );
     }
   }
 }
