@@ -8,7 +8,7 @@
 <h1 align="center">OpenBindings</h1>
 
 <p align="center">
-  One interface. Any binding. Describe what a component provides and what it depends on.
+  One interface. Any binding. Describe what a service does separately from how you access it.
 </p>
 
 <p align="center">
