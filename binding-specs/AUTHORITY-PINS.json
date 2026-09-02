@@ -581,6 +581,28 @@
       ]
     },
     {
+      "id": "rfc9512",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 9512: YAML Media Type",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9512.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc9512"
+      ],
+      "sha256": "9e73f0fdfcd0f6467afc3771b2258336f649efc16f9c21c21dbdd3ef326037cb",
+      "bytes": 23745,
+      "retrievedAt": "2026-09-02T15:59:51Z",
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
+      "matchTokens": [
+        "rfc9512",
+        "RFC 9512"
+      ]
+    },
+    {
       "id": "rfc4648",
       "families": [
         "openapi-2.0",
@@ -798,10 +820,7 @@
     {
       "id": "rfc1738",
       "families": [
-        "openapi-2.0",
-        "openapi-3.0",
-        "openapi-3.1",
-        "openapi-3.2"
+        "openapi-3.0"
       ],
       "name": "RFC 1738: Uniform Resource Locators (URL)",
       "kind": "url",
@@ -812,13 +831,14 @@
       "sha256": "2622f97a21c8b28558e860c2ad53a6f3114ac0cf905eb51aefa38e0629d76b2d",
       "bytes": 51348,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+      ],
       "matchTokens": [
         "rfc1738",
         "RFC 1738"
       ],
-      "status": "reference-only",
-      "reason": "Was the withdrawn unified candidate's form-encoding supplement; openapi-2.0 cites HTML 4.01 directly and the 3.x siblings cite RFC 1866. Retained as verified bytes until a family text cites it."
+      "reason": "Was the withdrawn unified candidate's form-encoding supplement. openapi-3.0 Section 8.3 now cites it directly: the pinned RFC 3986 unreserved set is disclosed there as a deliberate departure from the safe set OAS 3.0.4 Appendix E.3 assigns that path. The 2.0 sibling cites HTML 4.01 and the other 3.x siblings cite RFC 1866 instead."
     },
     {
       "id": "rfc6750",
@@ -982,8 +1002,8 @@
     {
       "id": "rfc7231",
       "families": [
-        "openapi-2.0",
-        "openapi-3.0"
+        "openapi-3.0",
+        "openapi-3.1"
       ],
       "name": "RFC 7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content",
       "kind": "url",
@@ -995,8 +1015,8 @@
       "bytes": 235053,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "www.rfc-editor.org/rfc/rfc7231"
