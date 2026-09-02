@@ -179,7 +179,7 @@ binding specification follows its errata/revision discipline.
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The 108 scenarios
+(`invalid` source units do not count as upstream-valid). The 112 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
