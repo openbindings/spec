@@ -1661,6 +1661,145 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI30-SS-46",
+      "description": "A request-body Schema Object whose `allOf` branches intersect emptily is a WELL-FORMED upstream declaration that admits no instance, and the JSON-lane position it governs is accounted `represented` with `fullyRepresented: true`. The governing dialect's validity condition for `allOf` is structural only — a non-empty array whose elements are valid schemas — and neither that dialect nor any accepted OAS edition gives satisfiability any role, so nothing about `allOf: [{type: string}, {type: object}]` is upstream-invalid; Core OBI-D-17 says the same from the other side, requiring no proof of satisfiability for a schema to be well-formed. §12.2 admits `invalid` only where the declaration is upstream-invalid, and §3.2 keeps `invalid` and `excluded` apart on exactly that line, so this position is neither: the emitted OBI carries the declaration as written, nothing is projected away, and coverage stays fully represented. The `application/json` lane is selected by media type rather than by the resolved declaration, which is why no admission test gates this position; the intersecting sibling is the control that keeps the scenario about the empty intersection rather than about `allOf`. Where the resolved declaration DOES select carriage — the character-data and raw-octet lanes, a multipart part, a urlencoded property — §9.1's stated no-admissible-candidate rule excludes the alternative instead, which is a different rule with a different status and is not asserted here.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Disjoint allOf",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example/v1"
+            }
+          ],
+          "paths": {
+            "/disjoint": {
+              "post": {
+                "operationId": "disjointBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "allOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            },
+            "/intersecting": {
+              "post": {
+                "operationId": "intersectingBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "allOf": [
+                          {
+                            "type": "object"
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "stored"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "disjointBody",
+          "intersectingBody"
+        ],
+        "bindings": [
+          {
+            "operationKey": "disjointBody",
+            "bindingSelector": "#/paths/~1disjoint/post"
+          },
+          {
+            "operationKey": "intersectingBody",
+            "bindingSelector": "#/paths/~1intersecting/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1disjoint/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "disjointBody",
+              "bindingSelector": "#/paths/~1disjoint/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1disjoint/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "disjointBody",
+              "bindingSelector": "#/paths/~1disjoint/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1intersecting/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "intersectingBody",
+              "bindingSelector": "#/paths/~1intersecting/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1intersecting/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "intersectingBody",
+              "bindingSelector": "#/paths/~1intersecting/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
