@@ -166,7 +166,7 @@
 
 **[pin]** OAS's link text reads draft-08 while its hyperlink target is draft-11; this specification follows the linked target. OAS incorporates QUERY as "the most recent IETF draft … or its RFC successor", a moving incorporation, which this specification pins to that one draft-11 revision; a later draft or its RFC successor does not alter this identifier ([OAS 3.2.0 §4.9.1](https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-6)).
 
-**[exclusion]** `additionalOperations` keys compare byte-exactly for map identity and selector resolution. A key that byte-equals one of the nine tokens the fixed Operation fields send — `GET`, `PUT`, `POST`, `DELETE`, `OPTIONS`, `HEAD`, `PATCH`, `TRACE`, `QUERY` — is the declaration defect the preceding rule's prohibition names, and it excludes only that additional-operation entry. A key differing from one of those only in case, such as `post` or `GeT`, spells a different method token under the same rule, is therefore not an entry for a method a fixed Operation field defines, and is admitted and sent in its authored capitalization. The exclusion reopens only if incorporated authority admits the collision and defines its unique operation mapping.
+**[limit]** `additionalOperations` keys compare byte-exactly for map identity and selector resolution. A key that byte-equals one of the nine tokens the fixed Operation fields send — `GET`, `PUT`, `POST`, `DELETE`, `OPTIONS`, `HEAD`, `PATCH`, `TRACE`, `QUERY` — is the declaration defect the preceding rule's prohibition names, and it excludes only that additional-operation entry. A key differing from one of those only in case, such as `post` or `GeT`, spells a different method token under the same rule, is therefore not an entry for a method a fixed Operation field defines, and is admitted and sent in its authored capitalization. The confinement reopens only if incorporated authority admits the collision and defines its unique operation mapping.
 
 **[pin]** The selector's leading `#` is a literal sentinel: what follows is RFC 6901 §3's string representation of the JSON Pointer, carried literally, escaped once with `~0`/`~1`, and never percent-decoded; the §6 URI-fragment representation is not used. Evaluation follows RFC 6901 §§3–4; when the selected operation is absent the selector does not resolve and the invocation refuses at resolution ([RFC 6901 §§3–4, 6](https://www.rfc-editor.org/rfc/rfc6901#section-3), [OAS 3.2.0 §§4.8, 4.9](https://spec.openapis.org/oas/v3.2.0.html#path-item-object)).
 
@@ -176,7 +176,7 @@
 
 **[incorporated]** When `responses` is present, its Responses Object MUST contain at least one response code; a present empty object is upstream-invalid, distinct from valid omission ([OAS 3.2.0 §4.16](https://spec.openapis.org/oas/v3.2.0.html#responses-object)).
 
-**[exclusion]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The exclusion reopens only if an incorporated OAS edition admits a present empty Responses Object.
+**[limit]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The confinement reopens only if an incorporated OAS edition admits a present empty Responses Object.
 
 ### 6.2 Callbacks and webhooks
 
@@ -206,7 +206,7 @@
 
 **[incorporated]** Effective parameter identity is exact name plus location; duplicate effective parameters at the same identity are upstream-invalid, while the same name in different locations denotes distinct parameters ([OAS 3.2.0 §§4.9.1, 4.10.1, 4.12](https://spec.openapis.org/oas/v3.2.0.html#operation-parameters)).
 
-**[exclusion]** Duplicate effective parameters at the same identity exclude their smallest owning operation. The exclusion reopens only if an incorporated OAS edition admits duplicate effective parameters at one identity.
+**[limit]** Duplicate effective parameters at the same identity exclude their smallest owning operation. The confinement reopens only if an incorporated OAS edition admits duplicate effective parameters at one identity.
 
 **[convention]** Legal cross-location duplicates remain independently supplied through the qualified mode above.
 
@@ -232,7 +232,7 @@
 
 **[incorporated]** Every effective Parameter Object MUST declare `name` and one of the five admissible `in` values, and MUST use exactly one of `schema` or `content`; a `path` parameter MUST declare `required: true`, a `querystring` parameter MUST use `content` and none of the schema-form fields, and a content-form map MUST contain exactly one entry ([OAS 3.2.0 §§4.12.1–4.12.2.3](https://spec.openapis.org/oas/v3.2.0.html#parameter-object)).
 
-**[exclusion]** A selected effective Parameter Object violating any constraint in that closed declaration list is a declaration defect that excludes the selected target before caller values are inspected; sibling targets survive. The exclusion reopens only if an incorporated OAS edition removes the violated constraint or defines the malformed form's wire meaning.
+**[limit]** A selected effective Parameter Object violating any constraint in that closed declaration list is a declaration defect that excludes the selected target before caller values are inspected; sibling targets survive. The confinement reopens only if an incorporated OAS edition removes the violated constraint or defines the malformed form's wire meaning.
 
 **[incorporated]** A Header parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored ([OAS 3.2.0 §§3.2, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#parameter-name), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
@@ -320,7 +320,7 @@
 
 **[incorporated]** One effective `querystring` parameter is permitted and it is mutually exclusive with every ordinary query parameter on the operation and Path Item; it MUST use `content`, its declared `name` is not serialized, and its selected media representation supplies the entire query string. For `application/x-www-form-urlencoded`, Encoding Objects apply in the same way as with request bodies of that media type, and because that media type is suitable for use in query strings by definition the resulting representation receives no further encoding or escaping ([OAS 3.2.0 §§4.12.1, 4.12.2.1](https://spec.openapis.org/oas/v3.2.0.html#parameter-locations), [§4.12.8](https://spec.openapis.org/oas/v3.2.0.html#parameter-object-examples)).
 
-**[exclusion]** More than one effective `querystring` parameter, or coexistence of one with any ordinary query parameter on the selected operation or Path Item, is a declaration defect that excludes the selected target before caller values are inspected. The exclusion reopens only if an incorporated OAS edition admits the declaration and defines its unique query construction.
+**[limit]** More than one effective `querystring` parameter, or coexistence of one with any ordinary query parameter on the selected operation or Path Item, is a declaration defect that excludes the selected target before caller values are inspected. The confinement reopens only if an incorporated OAS edition admits the declaration and defines its unique query construction.
 
 **[pin]** For every admitted non-urlencoded `querystring` media lane, the incorporated serialization's bytes are percent-encoded into the query component under the preceding uppercase `%HH` rule; raw insertion is not permitted.
 
@@ -329,6 +329,8 @@
 **[exclusion]** A `querystring` media entry selecting a sequential form is excluded because a stream as a query component has no defined use; the exclusion reopens only if incorporated authority defines sequential query-component serialization and interaction semantics.
 
 **[incorporated]** For a query parameter with `allowEmptyValue: true`, a supplied empty string emits a present zero-length value; absence still means omitted, the empty string remains distinct from §8.2's undefined null, and this binding infers no schema-validity consequence because OAS leaves that interaction implementation-defined ([OAS 3.2.0 §§4.12.2.1, 4.12.6](https://spec.openapis.org/oas/v3.2.0.html#parameter-allow-empty-value)).
+
+**[incorporated]** A supplied empty string is an ordinary value and serializes as the governing effective `style`/`explode` row's `empty` cell — `name=` for `form` and `cookie`, an empty representation for `simple`, `;name` for `matrix`, `.` for `label`, and `n/a` for the remaining styles — whatever `allowEmptyValue` declares: the edition states that the `empty` column is unrelated to that field and that the empty string is not undefined ([OAS 3.2.0 §4.12.6](https://spec.openapis.org/oas/v3.2.0.html#style-examples)).
 
 **[incorporated]** Header `schema` serialization performs no URI percent-encoding and adds no automatic quotes; header and `style: cookie` parsing does not decode apparent percent encodings ([OAS 3.2.0 §4.12.2.2](https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-for-use-with-schema)).
 
@@ -576,9 +578,9 @@
 
 **[incorporated]** Response keys are closed to exact HTTP status codes, the five uppercase ranges `1XX` through `5XX`, `default`, and specification extensions; an exact key overrides its matching range. An HTTP status code is a three-digit integer whose first digit selects one of five classes, so the exact-key form is bounded to `100` through `599` and no key outside that bound is an HTTP status code ([OAS 3.2.0 §§4.16.1–4.16.3](https://spec.openapis.org/oas/v3.2.0.html#responses-object), [RFC 9110 §15](https://www.rfc-editor.org/rfc/rfc9110#section-15)).
 
-**[exclusion]** A Responses key outside that closed admitted set — a lowercase range, a non-three-digit key, or a three-digit key outside `100`–`599` among them — is a declaration defect that excludes the selected target before any actual response is inspected; the exclusion reopens only if an incorporated OAS 3.2 edition admits that exact key form.
+**[limit]** A Responses key outside that closed admitted set — a lowercase range, a non-three-digit key, or a three-digit key outside `100`–`599` among them — is a declaration defect that excludes the selected target before any actual response is inspected; the confinement reopens only if an incorporated OAS 3.2 edition admits that exact key form.
 
-**[exclusion]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the exclusion reopens only if an incorporated OAS 3.2 edition admits the exact declaration ([OAS 3.2.0 §§4.16, 4.17](https://spec.openapis.org/oas/v3.2.0.html#response-object)).
+**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the confinement reopens only if an incorporated OAS 3.2 edition admits the exact declaration ([OAS 3.2.0 §§4.16, 4.17](https://spec.openapis.org/oas/v3.2.0.html#response-object)).
 
 **[limit]** The exclusion above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, the `2XX` range key, or `default` when no `2XX` range key is declared, a `2XX` key covering the whole success class. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not exclude, and a target whose success declarations are intact stays represented ([OAS 3.2.0 §4.16](https://spec.openapis.org/oas/v3.2.0.html#responses-object)).
 
@@ -628,13 +630,13 @@
 
 **[incorporated]** Server variables substitute their declared value, use `default` when no consumer value is supplied, MUST satisfy a nonempty declared `enum`, and each variable MUST occur no more than once in its Server URL template; an unresolved variable refuses before dispatch ([OAS 3.2.0 §§4.5.1, 4.6.1](https://spec.openapis.org/oas/v3.2.0.html#server-variable-object), with the once-per-template rule in [§4.6](https://spec.openapis.org/oas/v3.2.0.html#server-variable-object)'s introduction rather than its fixed-field table).
 
-**[exclusion]** A Server URL template repeating a variable is a declaration defect that excludes only that Server alternative; no private repeated-substitution convention is applied and sibling alternatives survive. The exclusion reopens only if an incorporated OAS edition defines repeated-variable substitution.
+**[limit]** A Server URL template repeating a variable is a declaration defect that excludes only that Server alternative; no private repeated-substitution convention is applied and sibling alternatives survive. The confinement reopens only if an incorporated OAS edition defines repeated-variable substitution.
 
 **[incorporated]** Server URLs satisfy the 3.2 Server URL field rules, may be relative to the retrieval location of the document containing the Server Object, and MUST contain neither query nor fragment ([OAS 3.2.0 §§4.5.1, 4.5.2](https://spec.openapis.org/oas/v3.2.0.html#relative-references-in-api-urls)).
 
 **[pin]** The root `$self` identifies the OpenAPI document and never replaces that retrieval-URI base for API URLs. OAS 3.2.0 §4.5.2 states normatively only that RFC 3986's base URI rules for the OpenAPI document do not apply to the API, while the sentence naming `$self` — "For API URLs the `$self` field, which identifies the OpenAPI document, is ignored and the retrieval URI is used instead" — sits inside §4.5.2.1's worked examples and is descriptive; this specification pins that reading so the API base is determinate for a document carrying both ([OAS 3.2.0 §§4.5.2, 4.5.2.1](https://spec.openapis.org/oas/v3.2.0.html#relative-references-in-api-urls)).
 
-**[exclusion]** A Server URL containing a query or fragment excludes each target that would use that Server alternative; the exclusion reopens only if an incorporated OAS edition defines the exact cell.
+**[limit]** A Server URL containing a query or fragment excludes each target that would use that Server alternative; the confinement reopens only if an incorporated OAS edition defines the exact cell.
 
 **[incorporated]** After resolving and expanding the selected Server URL, the operation path is appended to it with no relative URL resolution, which the edition states in those words ([OAS 3.2.0 §4.8.1](https://spec.openapis.org/oas/v3.2.0.html#paths-path)).
 
@@ -664,7 +666,7 @@
 
 **[incorporated]** A Security Scheme Object's `type` is closed to `apiKey`, `http`, `mutualTLS`, `oauth2`, and `openIdConnect`; `apiKey` additionally requires `name` and an admissible `in`, `http` requires `scheme`, `oauth2` requires `flows`, and `openIdConnect` requires `openIdConnectUrl` ([OAS 3.2.0 §4.27.1](https://spec.openapis.org/oas/v3.2.0.html#security-scheme-object)).
 
-**[exclusion]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—excludes every complete security alternative requiring it; other OR alternatives remain selectable. The alternative-level exclusion reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
+**[limit]** A malformed Security Scheme Object—an unlisted `type`, inadmissible `apiKey.in`, or absent conditionally required field—excludes every complete security alternative requiring it; other OR alternatives remain selectable. The alternative-level confinement reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage.
 
 **[configuration point]** For a component-name requirement occurring in a referenced non-entry document, `implicitConnectionScope` selects `entry` or `referring` resolution and defaults to `entry`, preserving OAS's implementation-defined multi-document choice while following its recommendation; URI-identified requirements bypass this point ([OAS 3.2.0 §§4.1.2.3, Appendix G.3](https://spec.openapis.org/oas/v3.2.0.html#resolving-implicit-connections)).
 
@@ -792,6 +794,16 @@ Boundaries this specification states around what it covers:
 | §12.1 | `requestMedia` and `parameterConversion` are preflightable only as possible requirements, because their applicability turns on supplied values |
 | §12.2 | no context bindings are defined at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented |
 | §12.2 | no input-restructuring apparatus exists beyond the licensed transforms and the synthesis policy named there |
+| §6.1 | an `additionalOperations` key byte-equal to one of the nine tokens the fixed Operation fields send (`GET`, `PUT`, `POST`, `DELETE`, `OPTIONS`, `HEAD`, `PATCH`, `TRACE`, `QUERY`): an upstream-invalid declaration confined to that additional-operation entry and accounted invalid; reopens only if incorporated authority admits the collision and defines its operation mapping |
+| §6.1 | a present empty Responses Object: an upstream-invalid declaration confined to the selected target and accounted invalid; reopens only if an incorporated OAS edition admits it |
+| §7 | duplicate effective parameters at one name-plus-location identity: an upstream-invalid declaration confined to the smallest owning operation and accounted invalid; reopens only if an incorporated OAS edition admits them |
+| §8.1 | an effective Parameter Object violating §8.1's closed declaration list: an upstream-invalid declaration confined to the selected target and accounted invalid; reopens only if an incorporated OAS edition removes the constraint or defines the malformed form's wire meaning |
+| §8.3 | more than one effective `querystring` parameter, or one coexisting with an ordinary query parameter: an upstream-invalid declaration confined to the selected target and accounted invalid; reopens only if an incorporated OAS edition admits it and defines the query construction |
+| §9.6 | a Responses key outside the closed admitted set: an upstream-invalid declaration confined to the selected target and accounted invalid; reopens only if an incorporated OAS 3.2 edition admits that exact key form |
+| §9.6 | an upstream-invalid governing Response Object that could govern a successful response: an upstream-invalid declaration confined to the selected target and accounted invalid; reopens only if an incorporated OAS 3.2 edition admits the exact declaration |
+| §10 | a Server URL template repeating a variable: an upstream-invalid declaration confined to that Server alternative and accounted invalid; reopens only if an incorporated OAS edition defines repeated-variable substitution |
+| §10 | a Server URL containing a query or fragment: an upstream-invalid declaration confined to each target that would use that Server alternative and accounted invalid; reopens only if an incorporated OAS edition defines the exact cell |
+| §11 | a malformed Security Scheme Object: an upstream-invalid declaration confined to every complete alternative requiring it and accounted invalid; reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
 
 Everything removed from the accepted domain, with the owner each removal confines to and the incorporated-authority condition that would reopen it. §12.3 states that every one of these is permanent under this identifier and promises no later work:
 
@@ -801,15 +813,10 @@ Everything removed from the accepted domain, with the owner each removal confine
 | §5.1 | a Path Item `$ref` collision on a fixed field the selected target uses | the selected target | an incorporated OAS edition defines the collision |
 | §5.2 | a root `jsonSchemaDialect` naming any other URI | the source | that exact dialect becomes incorporated authority |
 | §5.2 | a schema-resource-root `$schema` naming any other URI | each selected unit whose closure enters that resource | that exact dialect becomes incorporated authority |
-| §6.1 | an `additionalOperations` key byte-equal to one of the nine tokens the fixed Operation fields send (`GET`, `PUT`, `POST`, `DELETE`, `OPTIONS`, `HEAD`, `PATCH`, `TRACE`, `QUERY`) | that additional-operation entry | incorporated authority admits the collision and defines its operation mapping |
-| §6.1 | a present empty Responses Object | the selected target | an incorporated OAS edition admits it |
-| §7 | duplicate effective parameters at one name-plus-location identity | the smallest owning operation | an incorporated OAS edition admits them |
 | §7 | two effective header parameters whose names differ only by ASCII case | the selected target | an incorporated authority defines a case-preserving wire mapping |
-| §8.1 | an effective Parameter Object violating §8.1's closed declaration list | the selected target | an incorporated OAS edition removes the constraint or defines the malformed form's wire meaning |
 | §8.2 | a style, location, shape, or explicit `explode` outside §8.2's table, its two shape-less rows included | the selected target, or the selected media alternative on §9.3's Encoding path | incorporated authority defines the exact missing cell |
 | §8.2 | a compound-capable style whose resolved declaration proves an unsupported compound member | the selected target, or the selected media alternative | incorporated authority defines that cell |
 | §8.2 | path-key ambiguity, or either direction of a path-expression/parameter mismatch | the selected target | incorporated authority admits the declaration or defines its unique target mapping |
-| §8.3 | more than one effective `querystring` parameter, or one coexisting with an ordinary query parameter | the selected target | an incorporated OAS edition admits it and defines the query construction |
 | §8.3 | a `querystring` media entry whose format has no serialization incorporated here | that parameter lane | a pinned authority incorporated here defines the mapping |
 | §8.3 | a `querystring` media entry selecting a sequential form | that parameter lane | incorporated authority defines sequential query-component serialization and interaction semantics |
 | §8.3 | an effective header parameter named `Host` or `Content-Length` | the selected target | an incorporated HTTP authority defines caller control preserving the processor's framing and routing obligations |
@@ -825,12 +832,7 @@ Everything removed from the accepted domain, with the owner each removal confine
 | §9.4 | two governing response Header Object keys differing only by ASCII case that both govern binding behavior | the smallest owning response alternative | an incorporated authority defines a case-preserving wire mapping |
 | §9.5 | a purported sequential media type whose item framing no pinned incorporated authority defines | that selected alternative | incorporated authority defines the missing framing |
 | §9.5 | a `text/event-stream` request-body alternative | that alternative | incorporated authority defines the missing object-to-event write mapping |
-| §9.6 | a Responses key outside the closed admitted set | the selected target | an incorporated OAS 3.2 edition admits that exact key form |
-| §9.6 | an upstream-invalid governing Response Object that could govern a successful response | the selected target | an incorporated OAS 3.2 edition admits the exact declaration |
-| §10 | a Server URL template repeating a variable | that Server alternative | an incorporated OAS edition defines repeated-variable substitution |
-| §10 | a Server URL containing a query or fragment | each target that would use that Server alternative | an incorporated OAS edition defines the exact cell |
 | §10 | a completed target whose scheme is neither `http` nor `https` | that invocation, which refuses before dispatch | an incorporated authority defines that scheme's HTTP-semantics mapping |
-| §11 | a malformed Security Scheme Object | every complete alternative requiring it | an incorporated OAS edition admits the exact scheme form or supplies its missing carriage |
 | §11 | access-token types other than Bearer | wire carriage under this identifier only; no artifact declaration is removed, so this exclusion reaches no synthesis or coverage entry | an incorporated authority defines another token type's carriage |
 | §5.1 | a retrieved document encoded in UTF-16 or UTF-32, which YAML 1.2.2 §5.2 obliges a processor to support | the whole source where the entry artifact is so encoded; the referring selection alone where a secondarily retrieved document is | an incorporated authority defines a declaration surface stating a retrieved document's character encoding without inspecting its bytes |
 
