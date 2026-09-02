@@ -444,14 +444,14 @@
       "id": "OAPI20-PS-13",
       "rules": ["OAPI20-P-02"],
       "section": "8",
-      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without emptyValueForm refuses before dispatch.",
+      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without emptyValueForm refuses before dispatch. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given": {
         "source": {"content": {"swagger":"2.0","info":{"title":"Missing empty choice","version":"1"},"paths":{"/search":{"get":{"parameters":[{"name":"flag","in":"query","type":"string","allowEmptyValue":true}],"responses":{"204":{"description":"ok"}}}}}}},
         "binding": {"selector":"#/paths/~1search/get"},
         "configuration": {"server":"https://peer.example"},
         "invocation": {"inputPresent":true,"input":{"parameters":{"flag":""}}}
       },
-      "expected": [{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"emptyValueForm"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id": "OAPI20-PS-14",
@@ -626,9 +626,9 @@
     },
     {
       "id":"OAPI20-PS-27","rules":["OAPI20-P-03"],"section":"9",
-      "description":"Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit requestMedia choice before input consumption, and the supplied value never elects.",
+      "description": "Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit requestMedia choice before input consumption, and the supplied value never elects. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Media choice","version":"1"},"consumes":["application/json","application/vnd.example+json"],"paths":{"/x":{"post":{"parameters":[{"name":"payload","in":"body","required":true,"schema":{"type":"object"}}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"body":{"a":1}}}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"requestMedia"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-28","rules":["OAPI20-P-03"],"section":"9",
@@ -674,9 +674,9 @@
     },
     {
       "id":"OAPI20-PS-35","rules":["OAPI20-P-03"],"section":"9",
-      "description":"A present multipart file needs one concrete propertyMedia choice keyed by the file parameter name; absence refuses before any request is dispatched.",
+      "description": "A present multipart file needs one concrete propertyMedia choice keyed by the file parameter name; absence refuses before any request is dispatched. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Missing file media","version":"1"},"consumes":["multipart/form-data"],"paths":{"/form":{"post":{"parameters":[{"name":"upload","in":"formData","required":true,"type":"file"}],"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1form/post"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":true,"input":{"parameters":{"upload":"YWJj"}}}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"propertyMedia"},{"path":"/context/alternatives/0/requirements/0/path","equals":"/upload"}]}]
     },
     {
       "id":"OAPI20-PS-36","rules":["OAPI20-P-03"],"section":"9",
@@ -800,9 +800,9 @@
     },
     {
       "id":"OAPI20-PS-56","rules":["OAPI20-P-04"],"section":"10",
-      "description":"Two usable HTTP schemes require an explicit server choice and list order supplies no preference.",
+      "description": "Two usable HTTP schemes require an explicit server choice and list order supplies no preference. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Scheme choice","version":"1"},"schemes":["https","http"],"host":"api.example","basePath":"/","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/error/code","equals":"ERR_REFUSED"}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"server"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-57","rules":["OAPI20-P-04"],"section":"10",
@@ -824,9 +824,9 @@
     },
     {
       "id":"OAPI20-PS-60","rules":["OAPI20-P-04"],"section":"10",
-      "description":"An effective list containing only ws and wss has no usable target under the HTTP binding.",
+      "description": "An effective list containing only ws and wss has no usable target under the HTTP binding. The unusable-scheme exclusion leaves the effective list empty, and §10 states in its own words that “a complete configured URL below remains the available recovery”. A refusal with a stated recovery through a named point is §3.2's context-required species, not its plain one.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Only WebSocket","version":"1"},"schemes":["ws","wss"],"host":"api.example","paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"server"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-61","rules":["OAPI20-P-04"],"section":"10",
@@ -872,9 +872,9 @@
     },
     {
       "id":"OAPI20-PS-68","rules":["OAPI20-P-04"],"section":"11",
-      "description":"Multiple security alternatives require an explicit selection even when runtime credentials happen to satisfy one of them.",
+      "description": "Multiple security alternatives require an explicit selection even when runtime credentials happen to satisfy one of them. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Security choice","version":"1"},"securityDefinitions":{"first":{"type":"apiKey","in":"header","name":"X-First"},"second":{"type":"apiKey","in":"header","name":"X-Second"}},"security":[{"first":[]},{"second":[]}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false},"runtime":{"credentials":{"second":"two"}}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"security"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-69","rules":["OAPI20-P-04"],"section":"11",
@@ -896,9 +896,9 @@
     },
     {
       "id":"OAPI20-PS-72","rules":["OAPI20-P-04"],"section":"11",
-      "description":"An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require selection.",
+      "description": "An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require selection. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Optional security","version":"1"},"securityDefinitions":{"key":{"type":"apiKey","in":"header","name":"X-Key"}},"security":[{"key":[]},{}],"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"configuration":{"server":"https://peer.example"},"invocation":{"inputPresent":false}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"security"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-73","rules":["OAPI20-P-04"],"section":"11",
@@ -962,9 +962,9 @@
     },
     {
       "id":"OAPI20-PS-83","rules":["OAPI20-P-04"],"section":"10",
-      "description":"Without a configured URL, omitting target defaults in a self-contained document leaves the target unresolved before dispatch.",
+      "description": "Without a configured URL, omitting target defaults in a self-contained document leaves the target unresolved before dispatch. §10 names the recovery for an unresolved target: “a complete configured URL below remains the available recovery”. The refusal therefore names `server` under §12.1 rather than ending the attempt with nothing to act on.",
       "given":{"source":{"content":{"swagger":"2.0","info":{"title":"Unresolved target","version":"1"},"paths":{"/x":{"get":{"responses":{"204":{"description":"ok"}}}}}}},"binding":{"selector":"#/paths/~1x/get"},"invocation":{"inputPresent":false}},
-      "expected":[{"disposition":"refusal","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true}]}]
+      "expected": [{"disposition":"context-required","phase":"pre-dispatch","assertions":[{"path":"/dispatch","absent":true},{"path":"/context/alternatives/0/requirements/0/type","equals":"config.value"},{"path":"/context/alternatives/0/requirements/0/point","equals":"server"},{"path":"/context/alternatives/0/requirements/0/path","equals":""}]}]
     },
     {
       "id":"OAPI20-PS-84","rules":["OAPI20-P-03"],"section":"9",
@@ -3267,6 +3267,623 @@
             {
               "path": "/dispatch",
               "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-128",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "3.2",
+      "description": "A supplied empty string at a `query` parameter declaring `allowEmptyValue: true` reaches the point where the two admitted empty spellings produce distinct bytes and no binding default prefers one. §8.1 makes `emptyValueForm` a required choice there, so §3.2's refusal is the context-required species: it names the point under §12.1 and carries its closed admissible set, and supplying either member makes the same invocation proceed. Nothing reaches the wire either way.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "string",
+                      "allowEmptyValue": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": ""
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "emptyValueForm"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/schema/enum",
+              "equals": [
+                "name-only",
+                "empty"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-129",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8.1",
+      "description": "The same declaration with a non-empty supplied value never reaches the point where the two empty spellings differ, so `emptyValueForm` is not awaited and the invocation dispatches with the ordinary value. The choice's applicability is fixed by the declaration, but the refusal it repairs is reached only by a supplied empty value; naming the point on every invocation at such a parameter would refuse what §8.1 admits.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "string",
+                      "allowEmptyValue": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": "x"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/p?q=x"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-130",
+      "rules": [
+        "OAPI20-P-04"
+      ],
+      "section": "3.2",
+      "description": "One usable non-anonymous security alternative with no supplied credential awaits a declared credential, which §3.2 names as the context-required species alongside a named configuration point. The challenge carries the scheme's own requirement family and the artifact's declared scheme name; §12.1 lists no configuration point for a credential, so this is an auth requirement and not `config.value`.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "securityDefinitions": {
+              "k": {
+                "type": "apiKey",
+                "name": "X-Key",
+                "in": "header"
+              }
+            },
+            "security": [
+              {
+                "k": []
+              }
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "auth.apiKey"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/name",
+              "equals": "k"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-131",
+      "rules": [
+        "OAPI20-P-04"
+      ],
+      "section": "12.1",
+      "description": "Two declared security alternatives require one complete selection before dispatch, and no list-order preference is inferred. The refusal names `security` under §12.1 and carries the point's own boundary: an object selecting one alternative by index. Credentials are not volunteered here, because which alternative's credentials are needed is exactly what the missing choice decides.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "securityDefinitions": {
+              "k": {
+                "type": "apiKey",
+                "name": "X-Key",
+                "in": "header"
+              },
+              "b": {
+                "type": "basic"
+              }
+            },
+            "security": [
+              {
+                "k": []
+              },
+              {
+                "b": []
+              }
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "security"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-132",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9.1",
+      "description": "Two usable concrete `consumes` alternatives over a required body preserve both declarations and elect neither; §9.1 requires one concrete `requestMedia` choice before input consumption. The refusal is therefore the context-required species and names the point before any supplied value is read, which is also why it precedes every value-conditional point on the same document.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "consumes": [
+              "application/json",
+              "text/plain"
+            ],
+            "paths": {
+              "/p": {
+                "post": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "b",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "hello"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "requestMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-133",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "12.1",
+      "description": "A required `file` form parameter carried as a multipart part needs one concrete media type for that part, and §12.1 makes it the conditional `propertyMedia` point keyed by the parameter's own name. The refusal names the point and addresses the exact parameter through the JSON Pointer the contract fixes, so a resolver knows which value it is being asked for.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "consumes": [
+              "multipart/form-data"
+            ],
+            "paths": {
+              "/p": {
+                "post": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "f",
+                      "in": "formData",
+                      "required": true,
+                      "type": "file"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "f": "QUFBQQ=="
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "propertyMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": "/f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-134",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "3.2",
+      "description": "A supplied `emptyValueForm` outside the point's closed admissible set is the caller's own value, not an awaited one, so §3.2's other species applies: no supplied context could change the answer while that value stands. The refusal is plain and carries no resolution path, which is what keeps a challenge from looking satisfiable when the runtime has already been given an answer it cannot use.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "string",
+                      "allowEmptyValue": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "configuration": {
+          "emptyValueForm": "sometimes"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": ""
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-135",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "3.2",
+      "description": "A supplied empty string at a `query` parameter with `allowEmptyValue` absent refuses because the declaration does not admit an empty value at all. No configuration point and no credential repairs that, so §3.2's plain species applies and the refusal names nothing. This is the boundary the context-required species must not cross: the same empty value, one declaration apart, and only one of the two is awaiting anything.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Refusal species",
+              "version": "1"
+            },
+            "host": "api.example",
+            "schemes": [
+              "https"
+            ],
+            "paths": {
+              "/p": {
+                "get": {
+                  "operationId": "op",
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": ""
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/error/code",
+              "equals": "ERR_REFUSED"
             }
           ]
         }
