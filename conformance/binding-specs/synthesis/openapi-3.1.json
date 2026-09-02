@@ -3997,6 +3997,119 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI31-SS-48",
+      "description": "A REQUIRED text/plain body whose Schema Object `allOf` branches intersect emptily is a WELL-FORMED declaration that admits no instance, and on the character-data lane that fact selects no carriage: Section 9.2 admits a character-data selection only for a resolved declaration that admits `string` as its sole non-null type, an empty intersection admits none, so the candidate is inadmissible and Section 9.1's rule for a body-emitting invocation with no admissible candidate applies. With text/plain as the ONLY declared request media and the body required, no invocable form remains, and the target is excluded: one entry, on the target, and the operation is not synthesized. This is the character-data half of OAPI31-SS-47's JSON-lane cell, where the same declaration is because that lane is selected by media type alone and consults no resolved declaration. The control operation carries an ordinary on the same lane and is represented with its alternative. This scenario exists because the two reference engines agreed the target is excluded and disagreed on the reason code, and the corpus was silent. The 2026-08-15 request-side string-carriage ruling decides it: the character-data lane is selected BY the declaration, so a declaration that does not resolve to string selects no lane at all rather than selecting one and then failing a schema test. That is openapi.unresolvable_request_body — no declared media type selects a request carriage lane — and not openapi.media_schema_mismatch, which names a degenerate combination on a lane the media type DID select (a non-object multipart body, a form property with no single faithful carriage, OAPI30-SS-35). It asserts nothing about a multipart part or a content-form property whose declaration intersects emptily; that accounting is not pinned here.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Disjoint text",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/note": {
+              "post": {
+                "operationId": "noteText",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/disjoint": {
+              "post": {
+                "operationId": "disjointText",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "text/plain": {
+                      "schema": {
+                        "allOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "noteText"
+        ],
+        "bindings": [
+          {
+            "operationKey": "noteText",
+            "bindingSelector": "#/paths/~1note/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1disjoint/post",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi.unresolvable_request_body",
+              "rule": "OAPI31-P-03",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1note/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "noteText",
+              "bindingSelector": "#/paths/~1note/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1note/post/requestBody/content/text~1plain",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "noteText",
+              "bindingSelector": "#/paths/~1note/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
