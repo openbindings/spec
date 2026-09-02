@@ -4110,6 +4110,308 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI31-SS-49",
+      "description": "A content-form property or multipart part whose Schema Object `allOf` branches intersect emptily is a WELL-FORMED declaration that admits no instance, and it is an UNREACHABLE defect under Section 3.2's smallest-owner rule: no value can ever reach it, so it destroys neither its media alternative nor its target, both are accounted represented, and the declaration is carried into the synthesized contract as written. This is the same accounting both content-based lanes already apply to a boolean `false` property, of which the empty intersection is the resolved form; it is NOT the accounting for a property with no single faithful carriage (OAPI30-SS-35), where conforming values exist and the lane cannot carry them, nor the style lane's statically-refused member (OAPI30-SS-36), where every conforming value is refused — here there is no conforming value at all, and exclusion would remove a target on a defect nothing reaches. Three requestBody shapes are pinned so the accounting cannot depend on them: a required multipart body whose only alternative carries the property, the same alternative beside an application/json sibling, and an optional urlencoded body. The invoke half — a value supplied for the property refuses before dispatch at that part, Section 5.2's consequence — is pinned by the companion processor scenario on this line. This scenario exists because the two reference engines disagreed here (one excluded the target, one represented it) while agreeing on the boolean false, and the corpus was silent.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Unsatisfiable form properties",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/sole-required": {
+              "post": {
+                "operationId": "soleRequired",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "ok": {
+                            "type": "string"
+                          },
+                          "bad": {
+                            "allOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/with-json-sibling": {
+              "post": {
+                "operationId": "withJSONSibling",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    },
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "ok": {
+                            "type": "string"
+                          },
+                          "bad": {
+                            "allOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/optional-form": {
+              "post": {
+                "operationId": "optionalForm",
+                "requestBody": {
+                  "content": {
+                    "application/x-www-form-urlencoded": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "ok": {
+                            "type": "string"
+                          },
+                          "bad": {
+                            "allOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/literal-false": {
+              "post": {
+                "operationId": "literalFalse",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "ok": {
+                            "type": "string"
+                          },
+                          "impossible": false
+                        }
+                      }
+                    }
+                  },
+                  "required": true
+                },
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "literalFalse",
+          "optionalForm",
+          "soleRequired",
+          "withJSONSibling"
+        ],
+        "bindings": [
+          {
+            "operationKey": "literalFalse",
+            "bindingSelector": "#/paths/~1literal-false/post"
+          },
+          {
+            "operationKey": "optionalForm",
+            "bindingSelector": "#/paths/~1optional-form/post"
+          },
+          {
+            "operationKey": "soleRequired",
+            "bindingSelector": "#/paths/~1sole-required/post"
+          },
+          {
+            "operationKey": "withJSONSibling",
+            "bindingSelector": "#/paths/~1with-json-sibling/post"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/soleRequired/input/properties/bad",
+            "equals": {
+              "allOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          {
+            "path": "/operations/optionalForm/input/properties/bad",
+            "equals": {
+              "allOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          {
+            "path": "/operations/literalFalse/input/properties/impossible",
+            "equals": false
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1sole-required/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "soleRequired",
+              "bindingSelector": "#/paths/~1sole-required/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1sole-required/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "soleRequired",
+              "bindingSelector": "#/paths/~1sole-required/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1with-json-sibling/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "withJSONSibling",
+              "bindingSelector": "#/paths/~1with-json-sibling/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1with-json-sibling/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "withJSONSibling",
+              "bindingSelector": "#/paths/~1with-json-sibling/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1with-json-sibling/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "withJSONSibling",
+              "bindingSelector": "#/paths/~1with-json-sibling/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-form/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalForm",
+              "bindingSelector": "#/paths/~1optional-form/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-form/post/requestBody/content/application~1x-www-form-urlencoded",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "optionalForm",
+              "bindingSelector": "#/paths/~1optional-form/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1literal-false/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "literalFalse",
+              "bindingSelector": "#/paths/~1literal-false/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1literal-false/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "literalFalse",
+              "bindingSelector": "#/paths/~1literal-false/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
