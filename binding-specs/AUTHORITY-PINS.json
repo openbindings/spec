@@ -153,10 +153,11 @@
       "bytes": 141811,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/connect/openbindings.connect.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
       "matchTokens": [
@@ -305,7 +306,9 @@
       "bytes": 64328,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
       "matchTokens": [
@@ -329,6 +332,7 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
       "matchTokens": [
@@ -339,7 +343,9 @@
     {
       "id": "oas-2.0",
       "families": [
-        "openapi-2.0"
+        "openapi-2.0",
+        "openapi-3.1",
+        "openapi-3.2"
       ],
       "name": "OpenAPI Specification 2.0",
       "edition": "2.0",
@@ -350,7 +356,9 @@
       "bytes": 256976,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/v2.0.html"
@@ -439,7 +447,9 @@
     {
       "id": "oas-3.0.4",
       "families": [
-        "openapi-3.0"
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
       ],
       "name": "OpenAPI Specification 3.0.4",
       "edition": "3.0.4",
@@ -450,7 +460,9 @@
       "bytes": 537214,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/v3.0.4.html"
@@ -499,7 +511,10 @@
     {
       "id": "oas-3.1.2",
       "families": [
-        "openapi-3.1"
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
       ],
       "name": "OpenAPI Specification 3.1.2",
       "edition": "3.1.2",
@@ -510,7 +525,10 @@
       "bytes": 593002,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/v3.1.2.html"
@@ -543,6 +561,9 @@
     {
       "id": "oas-3.2.0",
       "families": [
+        "openapi-2.0",
+        "openapi-3.0",
+        "openapi-3.1",
         "openapi-3.2"
       ],
       "name": "OpenAPI Specification 3.2.0",
@@ -554,6 +575,9 @@
       "bytes": 672716,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
@@ -605,6 +629,7 @@
     {
       "id": "rfc4648",
       "families": [
+        "asyncapi",
         "openapi-2.0",
         "openapi-3.0",
         "openapi-3.1",
@@ -620,10 +645,11 @@
       "bytes": 35491,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "rfc4648",
@@ -712,7 +738,10 @@
       "matchTokens": [
         "rfc2046",
         "RFC 2046"
-      ]
+      ],
+      "notCitedBy": {
+        "binding-specs/README.md": "The family README narrates a past review error about what RFC 2046 says (grouping `boundary` with `charset`); it appeals to no rule and pins nothing."
+      }
     },
     {
       "id": "rfc7303",
@@ -1221,6 +1250,7 @@
     {
       "id": "rfc6749",
       "families": [
+        "openapi-3.0",
         "openapi-3.1",
         "openapi-3.2"
       ],
@@ -1234,7 +1264,9 @@
       "bytes": 163498,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "rfc6749",
@@ -1244,6 +1276,7 @@
     {
       "id": "rfc7578",
       "families": [
+        "openapi-3.1",
         "openapi-3.2"
       ],
       "name": "RFC 7578: Returning Values from Forms: multipart/form-data",
@@ -1256,6 +1289,7 @@
       "bytes": 30240,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
