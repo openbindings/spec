@@ -13,16 +13,6 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
-- **Two portable synthesis scenarios for an inherited root-level alternative
-  at more than one operation** (`OAPI20-SS-12`, `OAPI32-SS-12`). The
-  interface-synthesizer contract's interaction unit is an alternative "whose
-  omission would remove a source-permitted invocation path", so a root-level
-  `consumes` member inherited by two body operations (2.0), or the malformed
-  root-level server of `OAPI32-SS-03` inherited by two operations (3.2), is one
-  unit per operation with its own disposition, each entry naming the same
-  source unit. Both reference SDKs previously failed the whole coverage call on
-  these documents as a duplicate entry.
-
 - **Named operation dependencies in the Core document model.** The optional
   `dependencies` map declares named consumption points that reference operation
   keys and may carry a nonempty, unique, unordered `bindingSpecs` any-of list of
