@@ -9542,6 +9542,1097 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-136",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "A `collectionFormat: multi` declaration on a header parameter is a declaration defect that excludes the selected target before caller values are inspected (§8.2; OAS 2.0 Parameter Object: multi is valid for parameters in query or formData only), so the selector resolves and the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "multi on header",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Tags",
+                      "in": "header",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "multi"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-137",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "A `collectionFormat: multi` declaration on a path parameter is a declaration defect that excludes the selected target before caller values are inspected (§8.2; OAS 2.0 Parameter Object: multi is valid for parameters in query or formData only), so the selector resolves and the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "multi on path",
+              "version": "1"
+            },
+            "paths": {
+              "/x/{ids}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "ids",
+                      "in": "path",
+                      "required": true,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "collectionFormat": "multi"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x~1{ids}/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-138",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "A non-body array whose Items declaration declares only `array` is excluded, because OAS 2.0 defines no unambiguous composition of the inner and outer `collectionFormat` delimiters (§8.2's nested-array exclusion; OAS 2.0 Items Object); the selected target refuses before dispatch before caller values are inspected.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "nested array",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "grid",
+                      "in": "query",
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-139",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "An effective path parameter whose name has no corresponding expression in the Paths key excludes the selected target before caller input is inspected (§8.2; OAS 2.0 Path Templating and Parameter Object: every path parameter name MUST correspond to a template expression). Ported from OAPI30-PS-113 with this line's Parameter Object spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Reverse path correspondence",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-140",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "An effective header parameter whose name compares ASCII case-insensitively to Host cannot replace processor-owned target resolution: the target is excluded and refuses before dispatch even when the caller omits the value (§8.2's processor-owned Host/Content-Length/Content-Type exclusion). Ported from OAPI31-PS-26 with this line's Parameter Object spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Host ownership",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "host",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-141",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "An effective header parameter whose name compares ASCII case-insensitively to Content-Type cannot replace the binding-owned selected-body media: the target is excluded and refuses before dispatch even when the caller omits the value (§8.2's processor-owned Host/Content-Length/Content-Type exclusion, which on this line names Content-Type because §9.1's media election owns that field).",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Content-Type ownership",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Content-Type",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-142",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "8",
+      "description": "Effective formData is usable only when the effective consumes set includes application/x-www-form-urlencoded or multipart/form-data (§8.3; OAS 2.0 Parameter Object). With consumes naming only application/json the formData declaration is unusable, and §3.2 makes an addressable but unusable target refuse before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "formData without form consumes",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "note",
+                      "in": "formData",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "note": "hello"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-143",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "8",
+      "description": "A formData parameter name containing CR or LF cannot be represented safely as the multipart `name` parameter and excludes that multipart media alternative (§8.3's multipart-name exclusion); with multipart/form-data as the sole consumes entry the required form payload has no admitted lane and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "multipart name bytes",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "consumes": [
+                    "multipart/form-data"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "safe\r\nInjected",
+                      "in": "formData",
+                      "type": "string",
+                      "required": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "safe\r\nInjected": "v"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-144",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "An operation whose effective produces set is empty while its success Response Object declares a schema can match no actual Content-Type under §9.1, so every non-empty successful response to it is the loud protocol error §9.4 states; the target stays addressable and the interaction completes unsuccessfully after dispatch (§9.1's mirror response case).",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "empty produces",
+              "version": "1"
+            },
+            "produces": [
+              "text/plain"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "produces": [],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "x"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-145",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "Strict-JSON response parsing resolves duplicate object member names by taking the last member in document order, inside RFC 8259 §4's permitted receiver set (§9.2's strict-JSON pin). Ported from OAPI31-PS-118 with this line's produces/schema spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Duplicate names",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "produces": [
+                    "application/json"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"x\":1,\"x\":2}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "x": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-146",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "Absent a charset parameter, a text/* response representation decodes as UTF-8 (§9.2's pin of RFC 6838 §4.2.1's default), so a text/plain body carrying the UTF-8 octets of a non-ASCII character emits exactly that character as the one application string.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "text charset default",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "produces": [
+                    "text/plain"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "café"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "café"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-147",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "7",
+      "description": "A selected effective non-body parameter missing its wire-critical `type` is a declaration defect that excludes the selected target regardless of caller input (§7; OAS 2.0 Parameter Object fixed fields require type for every non-body parameter), so the selector resolves and the invocation refuses before dispatch. Ported from OAPI30-PS-112 in spirit, with this line's own malformation.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Malformed parameter",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-148",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "An Items Object whose internal `type` is outside the closed string/number/integer/boolean/array domain — here `file` — is a malformed Items Object, a declaration defect that excludes the selected target independently of caller values (§8.1; OAS 2.0 Items Object fixed fields), so the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Malformed items",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "uploads",
+                      "in": "query",
+                      "type": "array",
+                      "items": {
+                        "type": "file"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-149",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "Every supplied non-null parameter value MUST satisfy its declared type before serialization, and a value that fails it refuses before dispatch (§8.1's type-assertion rules; OAS 2.0 Parameter Object fixed fields): a string supplied for an `integer` query parameter never reaches the wire.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Type assertion",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "limit",
+                      "in": "query",
+                      "type": "integer"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "limit": "abc"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-150",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A non-empty response with no governing exact or `default` Response Object is a loud protocol error (§9.4): the Responses Object declares only 204, the peer answers 200 with a JSON body, and the interaction completes unsuccessfully after dispatch with no output value.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Ungoverned response",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "produces": [
+                    "application/json"
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-151",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "7",
+      "description": "Two effective parameters at one exact name-plus-location identity are upstream-invalid (OAS 2.0 Operation Object: the list MUST NOT include duplicated parameters; a unique parameter is defined by a combination of a name and location) and exclude their smallest owning operation, so the selector resolves and the invocation refuses before dispatch before any caller value is inspected (§7's duplicate-identity rule).",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Duplicate identity",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "string"
+                    },
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "type": "integer"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-152",
+      "rules": [
+        "OAPI20-P-02",
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "Examples create no operation input or output member (§9.1): a Schema Object `example` on an optional body parameter is not supplied by that example, so a body-free invocation dispatches with neither body nor Content-Type, and a 204 completes with no output. §7's envelope rule — absence means not supplied — is what an example cannot override.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Example is not input",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "payload",
+                      "in": "body",
+                      "schema": {
+                        "type": "object",
+                        "example": {
+                          "sample": true
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

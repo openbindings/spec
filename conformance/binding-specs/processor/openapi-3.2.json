@@ -15130,6 +15130,804 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI32-PS-214",
+      "rules": [
+        "OAPI32-P-04"
+      ],
+      "section": "11",
+      "description": "A selected basic scheme consumes the runtime-supplied user-id and password and constructs `Authorization: Basic base64(user-id \":\" password)` under RFC 7617 §2 (§11's basic pin; OAS 3.2.0 §4.27.1 declares the http scheme with scheme basic). Ported from OAPI20-PS-65 with this line's Security Scheme spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Basic security",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "login": {
+                  "type": "http",
+                  "scheme": "basic"
+                }
+              }
+            },
+            "security": [
+              {
+                "login": []
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "login": {
+              "userId": "user",
+              "password": "pass"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Authorization",
+              "equals": "Basic dXNlcjpwYXNz"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-215",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "7",
+      "description": "Two OAS-distinct header parameters that differ only by ASCII case collide on HTTP's case-insensitive field channel (OAS 3.2.0 §3.2 case sensitivity against RFC 9110 §5.1), exclude the selected target, and refuse before dispatch (§7's header-case exclusion). Ported from OAPI31-PS-15 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Header case collision",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "x-key",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Key": "one",
+              "x-key": "two"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-216",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "7",
+      "description": "A missing required query parameter refuses before dispatch (§7; OAS 3.2.0 §4.12.2.1 `required`): the supplied envelope names no `q`, absence means not supplied, and no artifact default is inserted.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Missing required parameter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {}
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-217",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "7",
+      "description": "A missing `required: true` request body refuses before dispatch (§7; OAS 3.2.0 §4.13.1 `required`): the supplied envelope carries the query parameter but no `body` member, and absence means not supplied.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Missing required body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": "1"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-218",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "8",
+      "description": "A schema-form Header Parameter value containing CR/LF refuses before an HTTP field is constructed (§8.3's field-invalid-byte rule under RFC 9110 §§5.1, 5.5). Ported from OAPI30-PS-84 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Header field bytes",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Note",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Note": "safe\r\nInjected: yes"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-219",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "8",
+      "description": "An effective Host header parameter cannot replace processor-owned target resolution: the target is excluded and refuses before dispatch even when the caller omits the value (§8.3's processor-owned Host/Content-Length exclusion). Ported from OAPI31-PS-26 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Host ownership",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Host",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-220",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "8",
+      "description": "An effective Content-Length header parameter cannot replace processor-owned body framing: the target is excluded and refuses before dispatch even when the caller omits the value (§8.3's processor-owned Host/Content-Length exclusion). Ported from OAPI31-PS-27 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Length ownership",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Content-Length",
+                      "in": "header",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-221",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "7",
+      "description": "Two effective parameters at one exact name-plus-location identity are upstream-invalid (OAS 3.2.0 §4.10.1: the list MUST NOT include duplicated parameters; a unique parameter is defined by a combination of a name and location) and exclude their smallest owning operation, so the selector resolves and the invocation refuses before dispatch before any caller value is inspected (§7's duplicate-identity rules).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Duplicate identity",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-222",
+      "rules": [
+        "OAPI32-P-02",
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "Examples create no operation input or output member (§9.1; OAS 3.2.0 §4.19): a query Parameter carrying an `example` is not supplied by that example, so a body-free, parameter-free invocation dispatches with no query component, and a 204 completes with no output. §7's envelope rule — absence means not supplied — is what an example cannot override.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Example is not input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "sample"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-223",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "Absent a charset parameter, a text/* response representation decodes as UTF-8 (§9.2's pin of RFC 6838 §4.2.1's default), so a text/plain body carrying the UTF-8 octets of a non-ASCII character emits exactly that character as the one application string.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "text charset default",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "café"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "café"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-224",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "5",
+      "description": "A referenced document need not itself be a conforming OpenAPI Document: a request-body Schema Object reference whose target document has a Schema Object at its root resolves (§5.1; OAS 3.2.0 §§4.1.1–4.1.2 assume an OpenAPI Object or Schema Object root), and the operation dispatches the supplied JSON body under that resolved declaration.",
+      "given": {
+        "source": {
+          "location": "https://description.example/openapi.json",
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Schema root reference",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "https://description.example/item.json"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "resources": {
+          "https://description.example/item.json": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "name": "widget"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "name": "widget"
+              }
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
