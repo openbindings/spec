@@ -8593,6 +8593,97 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-166",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A required request body whose content map holds two usable concrete string-typed entries (`application/json`, `text/plain`) elects nothing under Section 9.1, so a body-emitting invocation with no `requestMedia` choice challenges CONTEXT_REQUIRED before input consumption and dispatches nothing. This scenario pins the CHALLENGE PAYLOAD, not only the point: the requirement is `config.value` at the whole `requestMedia` point (empty path); it is `durable`, because a request media choice is made once per binding and reused, which is the same amortization claim the context/input discriminator states for every configuration point (binding-invoker contract: `durable: true` permits a runtime to persist the resolved value keyed from `target`); and the challenge's `target` is the concrete destination the invoker is about to use, which for this document's single absolute server is `https://api.example` (the binding-invoker contract: a CONTEXT_REQUIRED challenge reports the concrete destination or context scope the invoker is about to use; the requestMedia decision is taken after server resolution, so that scope exists). Before 2026-09-03 the TypeScript adapter re-minted this payload with an empty target and no durable flag while the Go engine carried both; a runtime keying context by target could name the point but not say where the choice applied. The same payload is pinned on every 3.x sibling (OAPI31-PS-158, OAPI32-PS-212); the 2.0 lane pins its own two surfaces in the SDK suites.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Request media challenge payload",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/p": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "hello"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/target",
+              "equals": "https://api.example"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "requestMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": ""
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/durable",
+              "equals": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
