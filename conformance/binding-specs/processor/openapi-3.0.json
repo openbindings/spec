@@ -8684,6 +8684,213 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-167",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A 3.0 content-based form property whose propertyMedia choice selects application/json carries the supplied array as its JSON image, and a configured parameterConversion is never consulted: Section 8.1 names the converter only where a form/part property must convert a JSON scalar to a string, and Section 9.3 routes the property's serialization through Section 9.2's lane for the selected media type, whose JSON pin serializes the supplied value as strict JSON.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Content-lane conversion scope",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "propertyMedia": {
+            "ids": "application/json"
+          },
+          "parameterConversion": {
+            "1": "converted-1",
+            "2": "converted-2",
+            "7": "converted-7",
+            "true": "converted-true"
+          }
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ids": [
+                1,
+                2
+              ]
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "ids=%5B1%2C2%5D"
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "converted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-168",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A 3.0 content-based form property whose explicit single concrete Encoding contentType is application/json carries a supplied integer and boolean as their JSON images with a configured parameterConversion never consulted; only a property routed through the text/plain lane must convert a JSON scalar to a string under Section 8.1, and Section 9.3 routes the property's serialization through Section 9.2's lane for the selected media type.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Content-lane conversion scope",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "flag": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "encoding": {
+                          "count": {
+                            "contentType": "application/json"
+                          },
+                          "flag": {
+                            "contentType": "application/json"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "parameterConversion": {
+            "1": "converted-1",
+            "2": "converted-2",
+            "7": "converted-7",
+            "true": "converted-true"
+          }
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "count": 7,
+              "flag": true
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": "count=7&flag=true"
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "converted"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
