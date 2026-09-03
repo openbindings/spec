@@ -1399,6 +1399,113 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-12",
+      "description": "The root-level servers array of OAPI32-SS-03 inherited by two operations: the malformed server member is confined to alternative coverage once per operation, because the inherited alternative is a distinct interaction unit at each operation whose omission would remove that operation's invocation path. Both entries name the same source unit #/servers/0 and differ only in the operation they are about; the valid sibling server preserves both represented targets [OAPI32-S-01, OAPI32-P-04].",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Inherited alternative confinement",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://bad.example/base?fixed=1"
+            },
+            {
+              "url": "https://safe.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "query": {
+                "operationId": "queryX",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/y": {
+              "query": {
+                "operationId": "queryY",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "queryX",
+          "queryY"
+        ],
+        "bindings": [
+          {
+            "operationKey": "queryX",
+            "bindingSelector": "#/paths/~1x/query"
+          },
+          {
+            "operationKey": "queryY",
+            "bindingSelector": "#/paths/~1y/query"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/query",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "queryX",
+              "bindingSelector": "#/paths/~1x/query",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/servers/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.server_url_excluded",
+              "rule": "OAPI32-P-04",
+              "operationKey": "queryX",
+              "bindingSelector": "#/paths/~1x/query",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1y/query",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "queryY",
+              "bindingSelector": "#/paths/~1y/query",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/servers/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "reasonCode": "openapi.server_url_excluded",
+              "rule": "OAPI32-P-04",
+              "operationKey": "queryY",
+              "bindingSelector": "#/paths/~1y/query",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
