@@ -7954,7 +7954,7 @@
         "OAPI31-P-04"
       ],
       "section": "11",
-      "description": "Basic user-id and password octets are pinned to printable US-ASCII; a non-ASCII credential is not a usable credential, so the invocation completes context-required instead of electing an RFC 7617-undefined encoding.",
+      "description": "Basic user-id and password octets are pinned to printable US-ASCII; a non-ASCII credential is not a usable credential, so the selected alternative is unusable and the invocation is refused pre-dispatch instead of electing an RFC 7617-undefined encoding (§11's basic pin states that outcome directly: the alternative becomes unusable and the refusal is pre-dispatch). The refusal is the plain species, as the corpus pins for every other unusable supplied credential value (OAPI31-PS-114, OAPI30-PS-102, OAPI32-PS-124): a different credential is not a resolution path this refusal carries. Until the harness adapters delivered 3.x named credentials (2026-09-03) this scenario passed vacuously, the engines never having seen the credential.",
       "given": {
         "source": {
           "content": {
@@ -8011,7 +8011,7 @@
       },
       "expected": [
         {
-          "disposition": "context-required",
+          "disposition": "refusal",
           "phase": "pre-dispatch",
           "assertions": [
             {
@@ -11015,6 +11015,1214 @@
             {
               "path": "/dispatch/headers/content-type",
               "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-162",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "11",
+      "description": "configuration.implicitConnectionScope=referring resolves a Security Requirement name in the external document containing the selected operation rather than the entry document (§11's implicitConnectionScope configuration point, which defaults to entry and preserves the explicit alternative; OAS 3.1.2 §4.3.3 makes multi-document resolution implementation-defined and RECOMMENDS the entry document). Ported from OAPI30-PS-125 with this line's edition.",
+      "given": {
+        "source": {
+          "location": "https://description.example/openapi.json",
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Entry security",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "$ref": "https://description.example/path-item.json#/item"
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "key": {
+                  "type": "apiKey",
+                  "in": "header",
+                  "name": "X-Entry"
+                }
+              }
+            }
+          }
+        },
+        "resources": {
+          "https://description.example/path-item.json": {
+            "item": {
+              "get": {
+                "security": [
+                  {
+                    "key": []
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "key": {
+                  "type": "apiKey",
+                  "in": "header",
+                  "name": "X-Referring"
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "configuration": {
+          "implicitConnectionScope": "referring"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "key": "credential"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Entry",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/X-Referring",
+              "equals": "credential"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-163",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "11",
+      "description": "A Security Scheme Object that is not one — here an apiKey declaration missing the REQUIRED name its type demands (OAS 3.1.2 §4.8.27.1) — excludes every security alternative naming it BEFORE any runtime credential is inspected. Every remaining complete alternative survives, so the sibling alternative is left sole and selects itself (§11's Security Scheme Object required-field exclusion). Ported from OAPI30-PS-156 with this line's edition and the body-free invocation shape of its 3.2 twin OAPI32-PS-126; the exclusion is declaration-keyed and does not read the envelope.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "N11",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [
+                    {
+                      "broken": []
+                    },
+                    {
+                      "good": []
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "broken": {
+                  "type": "apiKey",
+                  "in": "header"
+                },
+                "good": {
+                  "type": "apiKey",
+                  "in": "header",
+                  "name": "X-Good"
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        },
+        "runtime": {
+          "credentials": {
+            "broken": "b",
+            "good": "g"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Good",
+              "equals": "g"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-164",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "11",
+      "description": "A target left with no complete alternative after that exclusion is itself excluded under §3.2's smallest-owner rule, and a selector naming an excluded target still resolves while the invocation refuses before dispatch (§11's Security Scheme Object required-field exclusion against §3.2's exclusion rule). Ported from OAPI30-PS-157 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "N11",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [
+                    {
+                      "broken": []
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "broken": {
+                  "type": "apiKey",
+                  "in": "header"
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
+        "runtime": {
+          "credentials": {
+            "broken": "b"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-165",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "7",
+      "description": "A supplied caller body on TRACE is unroutable and refuses before dispatch even when the artifact declares requestBody: §7 emits no body on trace because a TRACE client MUST NOT send content (RFC 9110 §9.3.8), and a supplied `body` on `trace` refuses as unroutable. Ported from OAPI32-PS-36 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "TRACE body refusal",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/trace": {
+                "trace": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1trace/trace"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "forbidden": true
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-166",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "7",
+      "description": "On a permitted-but-undefined method the binding preserves a supplied declared body rather than deleting it: a GET whose Operation declares an optional JSON requestBody dispatches the supplied body with its elected Content-Type. §7: OAS 3.1.2 §4.8.10.1 says requestBody on GET 'is permitted but does not have well-defined semantics and SHOULD be avoided if possible' — advice to authors, not a consumer instruction to drop content. This is a deliberate edition difference from the 3.0 line, whose OAS 3.0.4 §4.7.10.1 text reads 'requestBody SHALL be ignored by consumers' and whose OAPI30-PS-107 therefore refuses the same input; the two siblings legitimately differ here.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Preserved GET body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "note": "kept"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "note": "kept"
+              }
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-167",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "A supplied empty string for a query Parameter with allowEmptyValue true emits a present zero-length q value; absence and empty remain distinct (§8.3, OAS 3.1.2 §4.8.12.2.1: clients MAY pass a zero-length string value in place of parameters that would otherwise be omitted). Ported from OAPI30-PS-114 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Empty query",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "allowEmptyValue": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": ""
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?q="
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-168",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "A JSON content-form query Parameter serializes its application value under its single media-type entry first and then percent-encodes that entire representation as one parameter value (§8.3; OAS 3.1.2 §4.8.12.2.3: the content map MUST only contain one entry; §4.8.12.4: percent-encoding is performed by the Parameter Object when incorporating a value serialized with a Media Type Object). Ported from OAPI32-PS-65 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "content parameter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": {
+                "a": "b"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?q=%7B%22a%22%3A%22b%22%7D"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-169",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "8",
+      "description": "A null member of a supplied array Parameter on the RFC 6570 style path has no member-level undefined representation (RFC 6570 §2.3 defines undefined values, not undefined list members) and refuses before dispatch at the affected parameter (§8.1's null-member rule). Ported from OAPI30-PS-111 with this line's type-array spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Null member",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "style": "form",
+                      "explode": false,
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": [
+                "a",
+                null
+              ]
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-170",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "A zero-octet successful response emits no output value even when its governing declaration names JSON; it never manufactures null or an empty string (§9.5: an empty response has zero content octets after decoding, and empty responses emit no output value). Ported from OAPI32-PS-142 with this line's edition and the REQUIRED Response Object description.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Empty response",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": [
+                              "object",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-171",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "11",
+      "description": "An oauth2 alternative consumes the runtime-supplied access token and carries it as `Authorization: Bearer <token>` under RFC 6750 §2.1 (§11's OAuth 2.0 carriage rule); a credential naming fewer scopes than the operation declares still dispatches, because §11 states that whether a credential satisfies a required scope is the counterparty's own determination and is never evaluated by this binding. Ported from OAPI20-PS-67 with this line's Security Scheme spelling (type oauth2 with an implicit flow under `flows`, OAS 3.1.2 §4.8.27.1).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "OAuth2 scope carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "oauth": {
+                  "type": "oauth2",
+                  "flows": {
+                    "implicit": {
+                      "authorizationUrl": "https://auth.example/authorize",
+                      "scopes": {
+                        "read": "Read",
+                        "write": "Write"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "oauth": [
+                  "read",
+                  "write"
+                ]
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "oauth": {
+              "accessToken": "abc123",
+              "scopes": [
+                "read"
+              ]
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Authorization",
+              "equals": "Bearer abc123"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-172",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "7",
+      "description": "Two effective parameters at one exact name-plus-location identity are upstream-invalid (OAS 3.1.2 §4.8.10.1: the list MUST NOT include duplicated parameters; a unique parameter is defined by a combination of a name and location) and exclude their smallest owning operation, so the selector resolves and the invocation refuses before dispatch before any caller value is inspected (§7's duplicate-identity rules).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Duplicate identity",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-173",
+      "rules": [
+        "OAPI31-P-02",
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "Examples create no operation input or output member (§9.1): a query Parameter carrying an `example` is not supplied by that example, so a body-free, parameter-free invocation dispatches with no query component, and a 204 completes with no output. §7's envelope rule — absence means not supplied — is what an example cannot override.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Example is not input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "sample"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-174",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "Absent a charset parameter, a text/* response representation decodes as UTF-8 (§9.2's pin of RFC 6838 §4.2.1's default), so a text/plain body carrying the UTF-8 octets of a non-ASCII character emits exactly that character as the one application string.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "text charset default",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "café"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "café"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-175",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "10",
+      "description": "Embedded content with no document location cannot resolve a relative Server URL: §10 leaves the target unresolved and refuses before dispatch, and says in its own words that the complete configured URL remains the available recovery — a refusal with a stated recovery through the named `server` point is §3.2's context-required species. Ported from OAPI32-PS-116 without that line's $self.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Relative server without base",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "./api"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "server"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-176",
+      "rules": [
+        "OAPI31-P-04"
+      ],
+      "section": "10",
+      "description": "A Server Object whose URL declares a scheme other than http or https excludes each target that would use that Server alternative, before any caller value is inspected, because no incorporated authority defines that scheme's HTTP-semantics mapping (§10); with that Server as the sole alternative the selected target is excluded and the invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "ftp server",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "ftp://files.example/api"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI31-PS-177",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "7",
+      "description": "A parameters key present with null is a supplied JSON null: it satisfies the always-required path parameter and serializes under §8.1's undefined-value rule, whose simple-style `undefined` cell is the empty serialization, so a null simple path parameter expands to an empty segment and the completed target is dispatched with it (§7's absent-versus-supplied rule; OAS 3.1.2 §4.8.12.6 Style Examples). Ported from OAPI32-PS-51 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "simple null",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x/{id}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "path",
+                      "required": true,
+                      "style": "simple",
+                      "schema": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x~1{id}/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": null
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x/"
             }
           ]
         }

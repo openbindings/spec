@@ -8966,6 +8966,1200 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-170",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "11",
+      "description": "An oauth2 alternative consumes the runtime-supplied access token and carries it as `Authorization: Bearer <token>` under RFC 6750 §2.1 (§11's OAuth 2.0 carriage rule); a credential naming fewer scopes than the operation declares still dispatches, because §11 states that whether a credential satisfies a required scope is the counterparty's own determination and is never evaluated by this binding. Ported from OAPI20-PS-67 with this line's Security Scheme spelling (type oauth2 with an implicit flow under `flows`, OAS 3.0.4 §4.7.27.1).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "OAuth2 scope carriage",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "securitySchemes": {
+                "oauth": {
+                  "type": "oauth2",
+                  "flows": {
+                    "implicit": {
+                      "authorizationUrl": "https://auth.example/authorize",
+                      "scopes": {
+                        "read": "Read",
+                        "write": "Write"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "security": [
+              {
+                "oauth": [
+                  "read",
+                  "write"
+                ]
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "oauth": {
+              "accessToken": "abc123",
+              "scopes": [
+                "read"
+              ]
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Authorization",
+              "equals": "Bearer abc123"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-171",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "Two OAS-distinct header parameters that differ only by ASCII case collide on HTTP's case-insensitive field channel (OAS 3.0.4 §3.8 case sensitivity against RFC 9110 §5.1), exclude the selected target, and refuse before dispatch (§7's header-case exclusion). Ported from OAPI31-PS-15 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Header case collision",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/items": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "x-key",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1items/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Key": "one",
+              "x-key": "two"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-172",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "A missing required query parameter refuses before dispatch (§7; OAS 3.0.4 §4.7.12.2.1 `required`): the supplied envelope names no `q`, absence means not supplied, and no artifact default is inserted.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Missing required parameter",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {}
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-173",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "A missing `required: true` effective request body refuses before dispatch (§7; OAS 3.0.4 §4.7.13.1 `required`): the supplied envelope carries the query parameter but no `body` member, and absence means not supplied.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Missing required body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": "1"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-174",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "8",
+      "description": "A query mixing regular form expansion with `allowReserved: true` is constructed manually per parameter (§8.2's Appendix C.3 pin): the reserved-permitting value rides through reserved expansion with `[`, `]`, `#`, `&`, `=`, and `+` percent-encoded as OAS 3.0.4 Appendix C.4.2 requires, while the ordinary parameter takes form expansion. Ported from OAPI32-PS-56 with this line's edition and a second, ordinary parameter so both construction paths appear in one query.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "allow reserved",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "allowReserved": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "plain",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": "a/b?c#d&e=f+g[h]",
+              "plain": "x/y"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?q=a/b?c%23d%26e%3Df%2Bg%5Bh%5D&plain=x%2Fy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-175",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "8",
+      "description": "A path-template expression with no corresponding effective path Parameter excludes the selected target before caller input is inspected (§8.2; OAS 3.0.4 §3.5: each template expression MUST correspond to a path parameter). Ported from OAPI31-PS-93 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Path bijection",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/pets/{id}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "other",
+                      "in": "path",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets~1{id}/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-176",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "8",
+      "description": "An effective Host header parameter cannot replace processor-owned target resolution: the target is excluded and refuses before dispatch even when the caller omits the value (§8.3's processor-owned Host/Content-Length exclusion). Ported from OAPI31-PS-26 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Host ownership",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Host",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-177",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "8",
+      "description": "An effective Content-Length header parameter cannot replace processor-owned body framing: the target is excluded and refuses before dispatch even when the caller omits the value (§8.3's processor-owned Host/Content-Length exclusion). Ported from OAPI31-PS-27 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Length ownership",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Content-Length",
+                      "in": "header",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-178",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "10",
+      "description": "Empty Operation and Path Item `servers` arrays supply no local alternative, so resolution falls through to the root Server Object (§10's empty-array pin against OAS 3.0.4 §§4.7.9.1, 4.7.10.1). Ported from OAPI32-PS-111 with this line's edition and a fixed `get` field.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Server inheritance",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://root.example/base"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "servers": [],
+                "get": {
+                  "servers": [],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://root.example/base/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-179",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "10",
+      "description": "Several effective Server Objects require one consumer `server` choice before dispatch, and authored order supplies no preference (§10's server configuration point): the refusal is the context-required species naming the `server` point. Ported from OAPI32-PS-112 with this line's edition.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Server choice",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://a.example"
+              },
+              {
+                "url": "https://b.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "server"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-180",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "10",
+      "description": "The `server` configuration point selects one effective Server Object by zero-based index, and the operation path appends verbatim to the selected URL (§10's server configuration point). Ported from OAPI20-PS-57 with this line's Server Object spelling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Selected server",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://a.example"
+              },
+              {
+                "url": "https://b.example/v2"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": {
+            "index": 1
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://b.example/v2/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-181",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "10",
+      "description": "Embedded content with no document location cannot resolve a relative Server URL: §10 leaves the target unresolved and refuses before dispatch, and says in its own words that the complete configured URL remains the available recovery — a refusal with a stated recovery through the named `server` point is §3.2's context-required species. Ported from OAPI32-PS-116 without that line's $self.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Relative server without base",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "./api"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "server"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-182",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "Two effective parameters at one exact name-plus-location identity are upstream-invalid (OAS 3.0.4 §4.7.10.1: the list MUST NOT include duplicated parameters; a unique parameter is defined by a combination of a name and location) and exclude their smallest owning operation, so the selector resolves and the invocation refuses before dispatch before any caller value is inspected (§7's duplicate-identity rules).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Duplicate identity",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-183",
+      "rules": [
+        "OAPI30-P-02",
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "Examples create no operation input or output member (§9.1): a query Parameter carrying an `example` is not supplied by that example, so a body-free, parameter-free invocation dispatches with no query component, and a 204 completes with no output. §7's envelope rule — absence means not supplied — is what an example cannot override.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Example is not input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      },
+                      "example": "sample"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-184",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "Absent a charset parameter, a text/* response representation decodes as UTF-8 (§9.2's pin of RFC 6838 §4.2.1's default), so a text/plain body carrying the UTF-8 octets of a non-ASCII character emits exactly that character as the one application string.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "text charset default",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "café"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "café"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-185",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A zero-octet successful response emits no output value even when its governing declaration names JSON; it never manufactures null or an empty string (§9.5: an empty response has zero content octets after decoding, and empty responses emit no output value). Ported from OAPI32-PS-142 with this line's `nullable` spelling and the REQUIRED Response Object description.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Empty response",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-186",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A no-body invocation bypasses request-body media selection and emits neither a body nor Content-Type, because an absent optional effective Request Body contributes no HTTP content (§9.1; OAS 3.0.4 §4.7.13.1 `required` defaults to false).",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Optional body omitted",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
