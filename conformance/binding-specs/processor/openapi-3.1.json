@@ -4929,7 +4929,7 @@
         "OAPI31-P-02"
       ],
       "section": "8",
-      "description": "An effective Parameter Object declaring both schema and content is excluded before caller values are inspected.",
+      "description": "An effective Parameter Object declaring both schema and content is upstream-invalid and removes the target before caller values are inspected.",
       "given": {
         "source": {
           "content": {
@@ -5376,7 +5376,7 @@
         "OAPI31-P-02"
       ],
       "section": "8",
-      "description": "An effective path Parameter with no corresponding template expression excludes the selected target.",
+      "description": "An effective path Parameter with no corresponding template expression is upstream-invalid and removes the selected target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -5439,7 +5439,7 @@
         "OAPI31-P-02"
       ],
       "section": "8",
-      "description": "Two templated path keys with the same static hierarchy are ambiguous and exclude either selected target.",
+      "description": "Two templated path keys with the same static hierarchy are upstream-invalid and remove either selected target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -5807,7 +5807,7 @@
         "OAPI31-P-02"
       ],
       "section": "8",
-      "description": "A path-template expression with no corresponding effective path Parameter excludes the selected target.",
+      "description": "A path-template expression with no corresponding effective path Parameter is upstream-invalid and removes the selected target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -5860,7 +5860,7 @@
         "OAPI31-P-02"
       ],
       "section": "8",
-      "description": "A path-template expression occurring more than once violates one-to-one correspondence and excludes the selected target.",
+      "description": "OAS 3.1 does not forbid a path-template expression from occurring more than once. Its one effective path Parameter supplies the same value at every occurrence.",
       "given": {
         "source": {
           "content": {
@@ -5901,17 +5901,30 @@
           "selector": "#/paths/~1{id}~1{id}/get"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "same"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/same/same"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }
@@ -6946,7 +6959,7 @@
         "OAPI31-P-04"
       ],
       "section": "10",
-      "description": "A query-bearing Server URL excludes the selected target before dispatch because Section 10 defines the server/path boundary join but no Server-query concatenation cell.",
+      "description": "A query-bearing Server URL is upstream-invalid and removes the selected target as invalid before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -7014,7 +7027,7 @@
         "OAPI31-P-04"
       ],
       "section": "10",
-      "description": "A fragment-bearing Server URL excludes the selected target before dispatch; a fragment never survives as an inferred target-base suffix.",
+      "description": "A fragment-bearing Server URL is upstream-invalid and removes the selected target as invalid before dispatch; a fragment never survives as an inferred target-base suffix.",
       "given": {
         "source": {
           "content": {
@@ -7895,7 +7908,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — here one missing its required description — is a declaration defect whose smallest owner is the selected target: it excludes that target before any actual response is inspected and never refuses the whole source, so no dispatch occurs.",
+      "description": "An upstream-invalid governing Response Object — here one missing its required description while declaring content — has the selected target as its smallest owner: it removes that target as invalid before any actual response is inspected and never refuses the whole source, so no dispatch occurs.",
       "given": {
         "source": {
           "content": {
@@ -8335,7 +8348,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A Responses member that is not a Response Object at all — here a string where the Response Object goes — is an upstream-invalid governing Response Object: it excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "A Responses member that is not a Response Object at all — here a string where the Response Object goes — is an upstream-invalid governing Response Object: it removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -8395,7 +8408,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A governing Response Object whose `headers` fixed field carries a value that is not a map violates the Response Object's fixed-field constraints and excludes the selected target before dispatch, exactly as a missing `description` does.",
+      "description": "A governing Response Object whose `headers` fixed field carries a value that is not a map violates the Response Object's fixed-field constraints and removes the selected target as invalid before dispatch, exactly as a missing `description` with declared content does.",
       "given": {
         "source": {
           "content": {
@@ -8458,7 +8471,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "A governing Response Object whose `headers` member is not a Header Object violates the Response Object's fixed-field constraints and excludes the selected target before dispatch; the defect is read at the member, not at the map.",
+      "description": "A governing Response Object whose `headers` member is not a Header Object violates the Response Object's fixed-field constraints and removes the selected target as invalid before dispatch; the defect is read at the member, not at the map.",
       "given": {
         "source": {
           "content": {
@@ -8523,7 +8536,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object exclusion is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches, so a Response Object the typed loader cannot represent never reaches the whole source.",
+      "description": "The upstream-invalid Response Object removal is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches, so a Response Object the typed loader cannot represent never reaches the whole source.",
       "given": {
         "source": {
           "content": {
@@ -8594,7 +8607,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object exclusion reaches the Response Object GOVERNING a successful response. A defect in a declaration that can never govern a 2xx — here an exact 404 — destroys no representation, because a failure body is opaque application-authored data, so the target whose success path is intact still resolves and dispatches.",
+      "description": "The upstream-invalid Response Object removal reaches the Response Object GOVERNING a successful response. A defect in a declaration that can never govern a 2xx — here an exact 404 — destroys no representation, because a failure body is opaque application-authored data, so the target whose success path is intact still resolves and dispatches.",
       "given": {
         "source": {
           "content": {
@@ -8775,7 +8788,7 @@
         "OAPI31-P-02"
       ],
       "section": "3",
-      "description": "The negative control for the two scenarios above, and the discrimination §3.2's new vocabulary entry creates: a selector naming an EXCLUDED target still resolves. The Parameter Object omits its required `name`, which §8.1 makes a declaration defect excluding the selected target; §3.2's excluded-unit rule then says the selector naming it still resolves and the invocation refuses BEFORE DISPATCH. Same absent dispatch, different phase from OAPI31-PS-130 and OAPI31-PS-131.",
+      "description": "The negative control for the two scenarios above, and the discrimination §3.2's vocabulary creates: a selector naming a target removed as INVALID still resolves. The Parameter Object omits its required `name`, which §8.1 makes an upstream-invalid declaration removing the selected target; §3.2's removed-unit rule then says the selector naming it still resolves and the invocation refuses BEFORE DISPATCH. Same absent dispatch, different phase from OAPI31-PS-130 and OAPI31-PS-131.",
       "given": {
         "source": {
           "content": {

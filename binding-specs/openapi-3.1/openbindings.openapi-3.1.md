@@ -176,7 +176,7 @@
 
 **[incorporated]** When `responses` is present, its Responses Object MUST contain at least one response code; a present empty object is upstream-invalid, distinct from valid omission ([OAS 3.1.2 §4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object)).
 
-**[limit]** A present empty Responses Object is a declaration defect that excludes only the selected target, before any response or caller value is inspected; omission remains addressable under the preceding rule. The confinement reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object.
+**[limit]** A present empty Responses Object is upstream-invalid and removes only the selected target before any response or caller value is inspected, accounted `invalid`; omission remains addressable under the preceding rule. The confinement reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object.
 
 ### 6.2 Callbacks and webhooks
 
@@ -208,7 +208,7 @@
 
 **[incorporated]** Effective parameter identity is exact name plus location; duplicate effective parameters at the same identity are upstream-invalid, while the same name in different locations denotes distinct parameters ([OAS 3.1.2 §§4.8.10.1, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#operation-parameters)).
 
-**[limit]** Duplicate effective parameters at the same identity exclude their smallest owning operation; this confinement reopens only if an incorporated OAS edition admits such duplicates.
+**[limit]** Duplicate effective parameters at the same identity are upstream-invalid and remove their smallest owning operation, accounted `invalid`; this confinement reopens only if an incorporated OAS edition admits such duplicates.
 
 **[convention]** Legal cross-location duplicates remain independently supplied through the qualified mode above.
 
@@ -232,7 +232,7 @@
 
 **[incorporated]** Operation parameters override Path Item parameters only at the same exact name-plus-location identity, and every remaining effective `path`, `query`, `header`, or `cookie` Parameter Object governs its own contribution ([OAS 3.1.2 §§4.8.9.1, 4.8.10.1, 4.8.12.1](https://spec.openapis.org/oas/v3.1.2.html#parameter-locations)).
 
-**[limit]** A selected effective Parameter Object missing required `name`, using an `in` outside `path`, `query`, `header`, or `cookie`, failing to use exactly one of `schema` or `content`, declaring a non-required path parameter, or giving a content map other than exactly one entry is a declaration defect that excludes the selected target before caller values are inspected. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning ([OAS 3.1.2 §§4.8.12.1–4.8.12.2.3](https://spec.openapis.org/oas/v3.1.2.html#parameter-object)).
+**[limit]** A selected effective Parameter Object missing required `name`, using an `in` outside `path`, `query`, `header`, or `cookie`, failing to use exactly one of `schema` or `content`, declaring a non-required path parameter, or giving a content map other than exactly one entry is upstream-invalid and removes the selected target before caller values are inspected, accounted `invalid`. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning ([OAS 3.1.2 §§4.8.12.1–4.8.12.2.3](https://spec.openapis.org/oas/v3.1.2.html#parameter-object)).
 
 **[incorporated]** A Header parameter whose name ASCII-case-insensitively denotes `Accept`, `Content-Type`, or `Authorization` MUST be ignored and creates no effective parameter, caller-envelope key, or emitted field ([OAS 3.1.2 §§3.8, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
@@ -296,9 +296,9 @@
 
 **[incorporated]** The Paths Object MUST NOT contain two templated path keys with equivalent hierarchies but different template names. Within one selected target, every path-template expression MUST have a corresponding effective `path` parameter, and every effective `path` parameter MUST correspond to a template expression ([OAS 3.1.2 §§3.5, 4.8.8.1, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#path-templating)).
 
-**[convention]** The two authority-grounded correspondence directions are one-to-one under this binding, so a template expression occurring more than once is a declaration defect; 3.1.2 does not itself state that duplicate-expression consequence.
+**[convention]** When one path-template expression occurs more than once, its single effective `path` parameter supplies the value substituted at every occurrence. OAS 3.1.2 requires correspondence in both directions but does not forbid repetition, and repeating the same substitution introduces no ambiguity.
 
-**[exclusion]** Equivalent-hierarchy path-key ambiguity, either direction of a path-expression/parameter mismatch, or a duplicate expression is a declaration defect that excludes the selected target before any caller value is inspected; non-conflicting targets survive. The exclusion reopens only if incorporated authority admits the declaration or defines its unique target mapping.
+**[limit]** Equivalent-hierarchy path-key ambiguity or either direction of a path-expression/parameter mismatch is upstream-invalid and removes the selected target before any caller value is inspected, accounted `invalid`; non-conflicting targets survive. The confinement reopens only if incorporated authority admits the declaration or defines its unique target mapping.
 
 **[incorporated]** An expanded path value containing unescaped `/`, `?`, or `#` refuses before dispatch ([OAS 3.1.2 §§3.5, 4.8.12.4](https://spec.openapis.org/oas/v3.1.2.html#path-templating)).
 
@@ -404,13 +404,13 @@
 
 **[incorporated]** `application/x-www-form-urlencoded` and `multipart/form-data` serialize object properties under the governing Schema and Encoding Objects, and a `schema` is REQUIRED to define the input parameters when using multipart content ([OAS 3.1.2 §§4.8.15.2, 4.8.15.3](https://spec.openapis.org/oas/v3.1.2.html#encoding-the-x-www-form-urlencoded-media-type)).
 
-**[limit]** A `multipart/form-data` alternative declaring no `schema` is excluded at its smallest media owner, because the edition's REQUIRED marker leaves the part set undetermined and this specification derives no part from an absent declaration; a schema-omitted non-multipart binary declaration is expressly permitted and takes §9.2's raw-octet lane. The confinement reopens only if an incorporated OAS edition removes that requirement, as the 3.2 line does.
+**[limit]** A `multipart/form-data` alternative declaring no `schema` is upstream-invalid and is removed at its smallest media owner, accounted `invalid`, because the edition's REQUIRED marker leaves the part set undetermined and this specification derives no part from an absent declaration; a schema-omitted non-multipart binary declaration is expressly permitted and takes §9.2's raw-octet lane. The confinement reopens only if an incorporated OAS edition removes that requirement, as the 3.2 line does.
 
 **[exclusion]** The form and multipart lanes are request-only: the incorporated authority's form and multipart sections are request-scoped by their own headings and supply no reverse mapping from those bytes to an application value, so a response selection of either lane is excluded at its smallest media owner. The exclusion reopens only if an incorporated authority defines that decoding.
 
 **[convention]** A supplied `body: null` against a form or multipart object declaration refuses before dispatch: these lanes serialize the **members** of an object, and a null body supplies no member set at all, so there is nothing to elide and nothing to write, whereas a null property is a present, empty member the rule below elides.
 
-**[limit]** A non-object declaration excludes the form lane at its smallest owning unit under §3.2's smallest-owner rule.
+**[limit]** A non-object declaration is upstream-invalid for the form lane and removes that lane at its smallest owning unit under §3.2's smallest-owner rule, accounted `invalid`.
 
 **[incorporated]** For a dynamic object member, the resolved property declaration conjoins an exact `properties` schema and every matching `patternProperties` schema, or uses `additionalProperties` when no exact or pattern schema matches; applicable `allOf` constraints remain in force ([JSON Schema Core §10.3.2](https://json-schema.org/draft/2020-12/json-schema-core.html#section-10.3.2)).
 
@@ -492,13 +492,13 @@
 
 **[incorporated]** Response keys are closed to exact three-digit status codes `100` through `599`, the five ranges `1XX` through `5XX`, `default`, and specification extensions; an exact key overrides its matching range ([OAS 3.1.2 §§3.7, 4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object), [RFC 9110 §15](https://www.rfc-editor.org/rfc/rfc9110#section-15)).
 
-**[limit]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the confinement reopens only if an incorporated OAS 3.1 edition admits that exact key form.
+**[limit]** A Responses key outside that closed admitted set is upstream-invalid and removes the selected target before any actual response is inspected, accounted `invalid`; the confinement reopens only if an incorporated OAS 3.1 edition admits that exact key form.
 
-**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration ([OAS 3.1.2 §4.8.17.1](https://spec.openapis.org/oas/v3.1.2.html#response-object)).
+**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `content`, `headers`, or `links` value that is not a map, or a `headers` member that is not a Header Object — removes the selected target before any actual response is inspected, accounted `invalid`, because response governance is target-level; the confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration ([OAS 3.1.2 §4.8.17.1](https://spec.openapis.org/oas/v3.1.2.html#response-object)).
 
-**[limit]** The exclusion above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, the `2XX` range key, or `default` when no `2XX` range key is declared, a `2XX` key covering the whole success class. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not exclude, and the same reasoning carves out the `description` omission below ([OAS 3.1.2 §4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object)).
+**[limit]** The invalid-removal rule above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, the `2XX` range key, or `default` when no `2XX` range key is declared, a `2XX` key covering the whole success class. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not remove the target, and the same reasoning carves out the `description` omission below ([OAS 3.1.2 §4.8.16](https://spec.openapis.org/oas/v3.1.2.html#responses-object)).
 
-**[limit]** One violation is carved out and does not exclude: a governing Response Object that omits its REQUIRED `description` while declaring no content incurs no coverage loss — nothing it states about a response body is misdeclared — and the selected target remains represented. The same omission WITH declared content excludes as above, and a `description` that is present with a non-string value is a fixed-field violation rather than an omission and excludes as above.
+**[limit]** One violation is carved out and does not remove the target: a governing Response Object that omits its REQUIRED `description` while declaring no content incurs no coverage loss — nothing it states about a response body is misdeclared — and the selected target remains represented. The same omission WITH declared content removes the target as above, and a `description` that is present with a non-string value is a fixed-field violation rather than an omission and removes the target as above.
 
 **[limit]** That carve-out reads a REQUIRED marker OAS 3.0.4 and OAS 3.1.2 both carry on the Response Object's `description`; OAS 3.2.0 drops the marker and adds a `summary` field, so on the 3.2 line the omission is not a violation and there is nothing to carve out — an edition difference, never sibling drift ([OAS 3.1.2 §4.8.17.1](https://spec.openapis.org/oas/v3.1.2.html#response-object) and [OAS 3.0.4 §4.7.17.1](https://spec.openapis.org/oas/v3.0.4.html#response-object) against [OAS 3.2.0 §4.17.1](https://spec.openapis.org/oas/v3.2.0.html#response-object)).
 
@@ -552,7 +552,7 @@
 
 **[pin]** "Appended" is pinned here to one and only one seam repair: if the resolved and expanded Server URL ends in `/` and the exact Paths key begins with `/`, exactly one slash — the Server URL's trailing slash — is removed before the Paths key is appended; otherwise both operands are unchanged. No other slash normalization, path repair, dot-segment rewrite, query merge, or relative-reference resolution occurs. Thus the implied server `/` plus `/pets` yields `/pets`, while a Paths key beginning `//` or an additional trailing Server URL slash remains observable because the rule removes only the one redundant seam slash.
 
-**[limit]** A Server URL containing a query or fragment excludes each target that would use that Server alternative; the confinement reopens only if an incorporated OAS edition defines the exact cell.
+**[limit]** A Server URL containing a query or fragment is upstream-invalid and removes each target that would use that Server alternative, accounted `invalid`; the confinement reopens only if an incorporated OAS edition defines the exact cell.
 
 **[limit]** When embedded content has no document location to supply that base, a relative Server URL leaves the target unresolved and refuses before dispatch; the complete configured URL below remains the available recovery.
 
@@ -582,7 +582,7 @@
 
 **[incorporated]** A Security Scheme Object declares a REQUIRED `type` from the closed set `apiKey`, `http`, `mutualTLS`, `oauth2`, `openIdConnect`, and each type carries its own REQUIRED fields: `apiKey` requires `name` and `in` from `query`, `header`, or `cookie`; `http` requires `scheme`; `oauth2` requires `flows`; `openIdConnect` requires `openIdConnectUrl`. `apiKey` credentials use their declared name and location, and HTTP `basic` and `bearer` credentials use the `Authorization` field ([OAS 3.1.2 §4.8.27.1](https://spec.openapis.org/oas/v3.1.2.html#security-scheme-object), [RFC 9110 §11.6.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.6.2)).
 
-**[limit]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — excludes every security alternative naming it, before any runtime credential is inspected, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration.
+**[limit]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — is upstream-invalid and removes every security alternative naming it before any runtime credential is inspected, each accounted `invalid`, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 3.1 edition admits the exact declaration.
 
 **[pin]** A selected `basic` scheme consumes a runtime-supplied user-id and password and constructs `Authorization: Basic base64(user-id ":" password)` under [RFC 7617 §2](https://www.rfc-editor.org/rfc/rfc7617#section-2), including its user-id, password, and Base64 constraints. Because RFC 7617 §2 deliberately leaves the default character encoding undefined, the user-id and password octets are pinned to printable US-ASCII (0x20–0x7E); a credential containing any other character leaves the selected alternative unusable, and the invocation refuses before dispatch. This pin reopens only if an incorporated authority defines a charset-parameter declaration surface for the scheme.
 
@@ -688,7 +688,6 @@ This section collects the points at which two implementations conforming to `ope
 | §7 case-distinct header parameters | the selected target, under either of the two readings §7 discloses | an incorporated authority defines a wire mapping preserving such declarations |
 | §8.2 wholly `n/a` style row | that parameter; the test is the whole row and never a single cell | an incorporated authority defines that exact combination |
 | §8.2 unsupported compound member | the owning unit, and only where the resolved declaration proves the member | an incorporated authority defines that exact cell |
-| §8.2 path-template mismatch | the selected target, for path-key ambiguity, either mismatch direction, or a duplicate expression; non-conflicting targets survive | incorporated authority admits the declaration or defines its unique target mapping |
 | §8.3 `Host` or `Content-Length` header parameter | the target, those fields being processor-owned | an incorporated HTTP authority defines caller control preserving the processor's framing and routing obligations |
 | §8.3 multi-value form-style cookie | that declaration, and only where `explode` and the resolved declaration prove multi-value production | an incorporated OAS edition defines a correct multi-value mapping |
 | §9.2 XML from an object model | the selected media alternative; string and raw-octet XML carriage remain admitted | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
@@ -723,11 +722,11 @@ This section collects the points at which two implementations conforming to `ope
 | §9.1 examples | create no operation input or output member and never select a declaration, carriage lane, or media type |
 | §9.2 JSON-lane numbers | interoperable within RFC 8259 §6's binary64 expectation, over the two-member permitted set indexed above |
 | §9.2 character decodings | UTF-8 MUST be supported; any further charset is an implementation capability whose absence refuses loudly |
-| §9.3 non-object form declarations | exclude the form lane at their smallest owning unit |
+| §9.3 non-object form declarations | are upstream-invalid and removed at their smallest owning unit, accounted invalid |
 | §9.3 null-property elision | identifies `{}` and `{"x": null}` on the wire; the distinction between an absent optional member and an explicit null does not survive this lane |
 | §9.3 surviving part headers | are descriptive at this boundary: none is emitted from a Header Object schema, and no `Content-Transfer-Encoding` is emitted |
-| §9.5 success-scoped exclusion | the Response Object exclusion reaches only a declaration that can govern a successful response |
-| §9.5 `description` carve-out | an omitted REQUIRED `description` with no declared content does not exclude; the same omission with declared content does |
+| §9.5 success-scoped invalid removal | the Response Object invalid-removal rule reaches only a declaration that can govern a successful response |
+| §9.5 `description` carve-out | an omitted REQUIRED `description` with no declared content does not remove the target; the same omission with declared content does |
 | §9.5 edition difference | the carve-out's reasoning is identical across the sibling lines while the authority it reads is not, OAS 3.2.0 having dropped the REQUIRED marker |
 | §9.5 redirect and negotiation | classification depends on the final status; redirect following and transport content negotiation are runtime policy under Core §1.2 |
 | §9.5 required response headers | a missing declared required header is a loud protocol error, and header carriage remains outside the operation-value boundary |
@@ -739,6 +738,8 @@ This section collects the points at which two implementations conforming to `ope
 | §6.1 present empty Responses Object | an upstream-invalid declaration confined to the selected target, before any response or caller value is inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits a present empty Responses Object |
 | §7 duplicate effective parameters | an upstream-invalid declaration confined to the smallest owning operation, accounted invalid; reopens only if an incorporated OAS edition admits such duplicates |
 | §8.1 malformed Parameter Object | an upstream-invalid declaration confined to the selected target, before caller values are inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning |
+| §8.2 path-key ambiguity or path-expression/parameter mismatch | an upstream-invalid declaration confined to the selected target, before caller values are inspected, accounted invalid; repeated use of one expression remains admitted and reuses its one effective parameter; reopens only if incorporated authority admits the declaration or defines its unique target mapping |
+| §9.3 non-object form declaration | an upstream-invalid declaration confined to its smallest media owner, accounted invalid; reopens only if an incorporated OAS edition permits the form without an object model or defines its wire mapping |
 | §9.3 schemaless `multipart/form-data` | an upstream-invalid declaration confined to that alternative, at its smallest media owner; a schemaless non-multipart binary declaration is unaffected and takes the raw-octet lane, accounted invalid; reopens only if an incorporated OAS edition removes the requirement, as the 3.2 line does |
 | §9.5 Responses key outside the admitted set | an upstream-invalid declaration confined to the selected target, before any actual response is inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits that exact key form |
 | §9.5 upstream-invalid Response Object | an upstream-invalid declaration confined to the selected target, and only for a declaration that can govern a successful response, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact declaration |

@@ -84,7 +84,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[limit]** An **excluded** unit, and equally a unit removed as **invalid**, is removed from synthesis and from the effective declarations of every rule in this document, §7's caller-envelope key derivation and §8's path-template correspondence included: no rule reads an excluded unit's declarations. A selector naming an excluded target still resolves — exclusion is not unresolvability — and the invocation refuses before dispatch. A target whose remaining effective declarations no longer satisfy §8's path-template correspondence is itself excluded.
 
-**[limit]** This specification states which unit a defect confines to, not a taxonomy of defects: a conformant processor reports that a target is excluded and identifies the responsible declaration position, and is not required to classify the defect into a named class, cite a per-class authority, or emit a per-defect coverage entry. Coverage loss is reported at the unit.
+**[limit]** This specification states which unit a defect confines to, not a taxonomy of defects: a conformant processor reports the target's refusal and identifies the responsible declaration position, and is not required to classify the defect into a named class, cite a per-class authority, or emit a per-defect coverage entry. Synthesis still reports coverage at the unit with §3.2's distinct `invalid` or `excluded` status.
 
 **[incorporated]** The root `paths` field is required, while a present Paths Object and each Path Item Object may be empty, including when documentation is filtered by access control; a present empty Paths Object is upstream-valid and synthesizes zero operations ([OAS 2.0 Swagger, Paths, and Path Item Objects](https://spec.openapis.org/oas/v2.0.html#paths-object)).
 
@@ -216,7 +216,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** Operation parameters override Path Item parameters only at the same exact name-plus-location identity; duplicate effective parameters in one location are upstream-invalid, while same-name parameters in different locations are distinct ([OAS 2.0 Path Item, Operation, and Parameter Objects](https://spec.openapis.org/oas/v2.0.html#fixed-fields-4)).
 
-**[limit]** Duplicate effective parameters in one location exclude their smallest owning operation; this confinement reopens only if an incorporated OAS 2.0 authority admits such duplicates.
+**[limit]** Duplicate effective parameters in one location are upstream-invalid and remove their smallest owning operation from selection and synthesis, accounted `invalid`; this confinement reopens only if an incorporated OAS 2.0 authority admits such duplicates.
 
 **[convention]** Legal cross-location duplicates remain independently supplied through the qualified mode above.
 
@@ -230,11 +230,11 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** Every selected effective parameter requires `name` and an `in` value from `query`, `header`, `path`, `formData`, or `body`; an `in: body` parameter requires `schema`, every other parameter requires `type`, and `type: array` requires `items` ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
 
-**[limit]** A selected effective parameter missing one of those wire-critical fields or carrying an inadmissible `in` is a declaration defect that excludes the selected target. The disposition is declaration-keyed and never changes with the presence, absence, or value of caller input.
+**[limit]** A selected effective parameter missing one of those wire-critical fields or carrying an inadmissible `in` is upstream-invalid and removes the selected target from selection and synthesis, accounted `invalid`. The disposition is declaration-keyed and never changes with the presence, absence, or value of caller input.
 
 **[incorporated]** The effective parameter set MUST NOT contain both an `in: body` parameter and any `in: formData` parameter, and it contains at most one body parameter ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
-**[limit]** Violating either upstream constraint excludes the selected operation under §3.2's smallest-owner rule.
+**[limit]** Violating either upstream constraint is upstream-invalid and removes the selected operation under §3.2's smallest-owner rule, accounted `invalid`.
 
 ## 8. Non-body Parameters and form payloads
 
@@ -244,7 +244,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** An Items Object requires its own internal `type`, whose closed domain is `string`, `number`, `integer`, `boolean`, or `array`; files and models are inadmissible, and an internal `type: array` requires a nested `items` ([OAS 2.0 Items Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-7)).
 
-**[limit]** A malformed selected Items Object is a declaration defect that excludes the selected target at its smallest owner independently of caller or response values.
+**[limit]** A malformed selected Items Object is upstream-invalid and removes the selected target at its smallest owner independently of caller or response values, accounted `invalid`.
 
 **[convention]** Every supplied non-null parameter value MUST satisfy its declared type and inline assertions before serialization; `allowEmptyValue` changes only empty-value carriage and does not erase another assertion ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
 
@@ -282,7 +282,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A supplied array whose converted member contains its selected structural delimiter refuses that invocation before dispatch because OAS defines no escaping that preserves the array boundary; the parameter remains usable for other caller values.
 
-**[limit]** A `multi` declaration on a `path` or `header` parameter is a declaration defect that excludes the selected target before caller values are inspected; the confinement reopens only if an incorporated OAS 2.0 authority admits `multi` at that location or defines its wire meaning.
+**[limit]** A `multi` declaration on a `path` or `header` parameter is upstream-invalid and removes the selected target before caller values are inspected, accounted `invalid`; the confinement reopens only if an incorporated OAS 2.0 authority admits `multi` at that location or defines its wire meaning.
 
 **[exclusion]** A non-body array whose resolved Items declaration declares only `array` is excluded because OAS defines no unambiguous composition of the inner and outer `collectionFormat` delimiters; the exclusion reopens only if incorporated authority defines nested-array serialization ([OAS 2.0 Items Object](https://spec.openapis.org/oas/v2.0.html#items-object)).
 
@@ -296,7 +296,11 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** Every path-template expression MUST have one corresponding effective path parameter because an unfillable expression cannot dispatch; path substitution cannot alter the host, base path, query boundary, or fragment.
 
-**[limit]** A missing, extra, or mismatched effective path parameter is a declaration defect that excludes the selected target independently of caller values.
+**[convention]** When one path-template expression occurs more than once, its single effective `path` parameter supplies the value substituted at every occurrence. OAS 2.0 requires every effective path parameter to correspond to an expression but does not forbid repetition, and repeating the same substitution introduces no ambiguity.
+
+**[limit]** An effective `path` parameter with no corresponding path-template expression — the extra or mismatched-parameter cases — is upstream-invalid and removes the selected target independently of caller values, accounted `invalid`.
+
+**[exclusion]** A path-template expression with no corresponding effective `path` parameter excludes the selected target because the expression cannot be filled for dispatch; the exclusion reopens only if incorporated authority defines the missing value's wire meaning.
 
 **[convention]** Query contributions use one leading `?`, exact percent-encoded names, `=` before a present value, repeated pairs for `multi`, and `&` between contributions; map or parameter-array order is not portable meaning.
 
@@ -454,19 +458,19 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[pin]** OAS's "at least one response code" names the Responses Object's patterned status-code fields, not its `default` fixed field, so a Responses Object carrying `default` alone violates that MUST upstream. This specification pins the permissive reading: at least one exact status Response **or** `default` satisfies the requirement here, because `default` governs every status not covered individually and a Responses Object carrying it governs something; the upstream invalidity is not allowed to destroy a target this specification can address ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
 
-**[limit]** Omitting the required Responses Object or providing one with no exact status or `default` Response is a declaration defect that excludes the selected operation under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration.
+**[limit]** Omitting the required Responses Object or providing one with no exact status or `default` Response is upstream-invalid and removes the selected operation under §3.2's smallest-owner rule, accounted `invalid`. The confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration.
 
 **[incorporated]** A Responses Object is closed to exact HTTP status-code keys, `default`, and specification extensions, with no range-key form ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
 
 **[pin]** "Exact HTTP status-code key" is pinned as a grammar, not delegated to a registry: an admitted status key is exactly three ASCII digits whose first digit is `1` through `5` — no sign, no whitespace, no leading-zero or four-digit variant, no reason phrase — and `default` and `x-` prefixed keys are the only other admitted members. Registration status is irrelevant: `299` and `599` are admitted whether or not IANA has registered them, and `0`, `99`, `600`, `20`, `0200`, and `200 OK` are not. OAS 2.0 reaches the mutable IANA registry through its own §5.3, and this specification does not follow it there, because a mutable authority must not decide an exclusion ([OAS 2.0 §5.3 HTTP Status Codes](https://spec.openapis.org/oas/v2.0.html#http-status-codes), [RFC 9110 §15](https://www.rfc-editor.org/rfc/rfc9110#section-15)).
 
-**[limit]** A Responses key outside that closed admitted set is a declaration defect that excludes the selected target before any actual response is inspected; the confinement reopens only if an incorporated OAS 2.0 authority admits that exact key form.
+**[limit]** A Responses key outside that closed admitted set is upstream-invalid and removes the selected target before any actual response is inspected, accounted `invalid`; the confinement reopens only if an incorporated OAS 2.0 authority admits that exact key form.
 
-**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `schema` that is not a Schema Object, a `headers` or `examples` value that is not a map, or a `headers` member that is not a Header Object — is a declaration defect that excludes the selected target before any actual response is inspected, because response governance is target-level; the confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration ([OAS 2.0 Response Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-9)).
+**[limit]** An upstream-invalid governing Response Object — one that is not a Response Object at all, or one violating the Response Object's fixed-field constraints: a `description` that is not a string, a `schema` that is not a Schema Object, a `headers` or `examples` value that is not a map, or a `headers` member that is not a Header Object — removes the selected target before any actual response is inspected, accounted `invalid`, because response governance is target-level; the confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration ([OAS 2.0 Response Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-9)).
 
-**[limit]** The exclusion above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, or `default`, which counts as a potential governing success declaration in every artifact — a stated rule, so that a target's existence never turns on an exhaustiveness computation over a hundred enumerated keys. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not exclude, and the same reasoning carves out the `description` omission below ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
+**[limit]** The invalid-removal rule above reaches only a Response Object that can govern a SUCCESSFUL response: an exact 2xx status key, or `default`, which counts as a potential governing success declaration in every artifact — a stated rule, so that a target's existence never turns on an exhaustiveness computation over a hundred enumerated keys. A fixed-field violation in a declaration that can never govern a 2xx status incurs no coverage loss, because a failure body is decoded best-effort under this same section and the defect can only leave failure data undecoded, never misstate a value this contract carries; it therefore does not remove the target, and the same reasoning carves out the `description` omission below ([OAS 2.0 Responses Object](https://spec.openapis.org/oas/v2.0.html#responses-object)).
 
-**[limit]** One violation is carved out and does not exclude: a governing Response Object that omits its REQUIRED `description` while declaring no `schema` incurs no coverage loss — nothing it states about a response body is misdeclared — and the selected target remains represented. The same omission WITH a declared `schema` excludes as above, and a `description` that is present with a non-string value is a fixed-field violation rather than an omission and excludes as above.
+**[limit]** One violation is carved out and does not remove the target: a governing Response Object that omits its REQUIRED `description` while declaring no `schema` incurs no coverage loss — nothing it states about a response body is misdeclared — and the selected target remains represented. The same omission WITH a declared `schema` removes the target as `invalid` under the rule above, and a `description` that is present with a non-string value is a fixed-field violation rather than an omission and has that same `invalid` disposition.
 
 **[convention]** The governing Response Object lookup order is exact status, then `default`; declarations never reclassify the native status.
 
@@ -526,7 +530,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** `host` contains neither scheme nor sub-path, `basePath` begins with `/`, and each Paths key begins with `/` and is appended to `basePath` ([OAS 2.0 Swagger and Paths Objects](https://spec.openapis.org/oas/v2.0.html#paths-object)).
 
-**[limit]** Those constraints carry a stated consequence, because concatenation without them silently dispatches somewhere the artifact never named. A root `host` containing a scheme, sub-path, userinfo, query, or fragment, an effective `basePath` not beginning with `/` or carrying a query or fragment, or a Paths key not beginning with `/`, is a declaration defect: a defective `host` or `basePath` excludes every operation the Swagger Object governs, and a defective Paths key excludes only the operations under it. The check is on the declaration, before caller values and before §10's RFC 3986 well-formedness check, which does not catch these cases — `basePath: "v1"` onto `api.example.com` parses cleanly as the authority `api.example.comv1`. The confinement reopens only if an incorporated OAS 2.0 authority defines the repair ([OAS 2.0 Swagger Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields), [Paths Object](https://spec.openapis.org/oas/v2.0.html#paths-object)).
+**[limit]** Those constraints carry a stated consequence, because concatenation without them silently dispatches somewhere the artifact never named. A root `host` containing a scheme, sub-path, userinfo, query, or fragment, an effective `basePath` not beginning with `/` or carrying a query or fragment, or a Paths key not beginning with `/`, is upstream-invalid: a defective `host` or `basePath` removes every operation the Swagger Object governs, and a defective Paths key removes only the operations under it, each accounted `invalid`. The check is on the declaration, before caller values and before §10's RFC 3986 well-formedness check, which does not catch these cases — `basePath: "v1"` onto `api.example.com` parses cleanly as the authority `api.example.comv1`. The confinement reopens only if an incorporated OAS 2.0 authority defines the repair ([OAS 2.0 Swagger Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields), [Paths Object](https://spec.openapis.org/oas/v2.0.html#paths-object)).
 
 **[limit]** The resolved target base therefore carries no query component and no fragment, and this is the constraint the `server` configuration point below requires a complete configured URL to satisfy.
 
@@ -554,7 +558,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** A Security Scheme has exactly type `basic`, `apiKey`, or `oauth2`; an API key uses its declared `query` or `header` name, and OAuth2 uses exactly the `implicit`, `password`, `application`, or `accessCode` flow with its required authorization/token URLs and declared scopes ([OAS 2.0 Security Scheme Object](https://spec.openapis.org/oas/v2.0.html#security-scheme-object)).
 
-**[limit]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — excludes every security alternative naming it, before any runtime credential is inspected, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration ([OAS 2.0 Security Scheme Object](https://spec.openapis.org/oas/v2.0.html#security-scheme-object)).
+**[limit]** A Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED — is upstream-invalid and removes every security alternative naming it before any runtime credential is inspected, each accounted `invalid`, because the declaration fixes neither what to send nor where. Every remaining complete alternative survives, and a target left with no complete alternative is itself excluded under §3.2's smallest-owner rule. The confinement reopens only if an incorporated OAS 2.0 authority admits the exact declaration ([OAS 2.0 Security Scheme Object](https://spec.openapis.org/oas/v2.0.html#security-scheme-object)).
 
 **[incorporated]** An OAuth2 Security Requirement array contains every scope required for execution, while the array for a `basic` or `apiKey` requirement MUST be empty ([OAS 2.0 Security Requirement Object](https://spec.openapis.org/oas/v2.0.html#security-requirement-object)).
 
@@ -661,6 +665,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | a request lane whose resolved declaration both requires a property and marks it `readOnly: true` | §5.2 | incorporated authority defines a reconciliation |
 | a target carrying two effective header parameters whose names differ only by ASCII case | §7 | an incorporated authority defines a wire mapping preserving such case-distinct declarations |
 | a non-body array whose resolved Items declaration declares only `array` | §8.2 | incorporated authority defines nested-array serialization |
+| a target whose path-template expression has no corresponding effective `path` parameter | §8.2 | incorporated authority defines the missing value's wire meaning |
 | a target carrying an effective header parameter named `Host`, `Content-Length`, or `Content-Type` | §8.2 | an incorporated HTTP authority defines caller control preserving the processor's framing, routing, and selected-body-media obligations |
 | a `file` parameter selected through `application/x-www-form-urlencoded` | §8.3 | incorporated authority defines that cell |
 | the HTML-permitted transfer-encoded part: no `Content-Transfer-Encoding` is emitted | §8.3 | an incorporated authority defines its interaction with exact-octet part carriage |
@@ -697,6 +702,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | any input-restructuring apparatus beyond the `inputTransform` and `outputTransform` §12.2 licenses | §12.2 |
 | an operation carrying duplicate effective parameters in one location: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits such duplicates | §7 |
 | a target declaring `collectionFormat: multi` on a `path` or `header` parameter: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits `multi` at that location or defines its wire meaning | §8.2 |
+| a target carrying an effective `path` parameter with no corresponding path-template expression: an upstream-invalid declaration confined to the target and accounted invalid | §8.2 |
 | an operation omitting the required Responses Object, or providing one with no exact status or `default` Response: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits the exact declaration | §9.4 |
 | a target carrying a Responses key outside the closed admitted set: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits that exact key form | §9.4 |
 | a target carrying an upstream-invalid Response Object that can govern a successful response: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits the exact declaration | §9.4 |

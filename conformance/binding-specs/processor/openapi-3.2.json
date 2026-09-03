@@ -527,7 +527,7 @@
         "OAPI32-P-01"
       ],
       "section": "6",
-      "description": "A present empty Responses Object excludes the selected target while omission remains addressable.",
+      "description": "A present empty Responses Object is upstream-invalid and removes the selected target as invalid, while omission remains addressable.",
       "given": {
         "source": {
           "content": {
@@ -1421,7 +1421,7 @@
         "OAPI32-P-01"
       ],
       "section": "6",
-      "description": "An additionalOperations key byte-equal to the token the fixed query field sends is the declaration defect OAS forbids and is excluded as its own entry.",
+      "description": "An additionalOperations key byte-equal to the token the fixed query field sends is upstream-invalid and is removed as its own invalid entry.",
       "given": {
         "source": {
           "content": {
@@ -1466,7 +1466,7 @@
         "OAPI32-P-01"
       ],
       "section": "6",
-      "description": "A colliding additional-operation entry does not exclude the distinct fixed QUERY operation on the same Path Item.",
+      "description": "A colliding upstream-invalid additional-operation entry does not remove the distinct fixed QUERY operation on the same Path Item.",
       "given": {
         "source": {
           "content": {
@@ -2506,7 +2506,7 @@
         "OAPI32-P-02"
       ],
       "section": "8",
-      "description": "An operation-level querystring Parameter colliding with an ordinary query Parameter inherited from its Path Item excludes the target before input inspection.",
+      "description": "An operation-level querystring Parameter colliding with an ordinary query Parameter inherited from its Path Item is upstream-invalid and removes the target before input inspection.",
       "given": {
         "source": {
           "content": {
@@ -2581,7 +2581,7 @@
         "OAPI32-P-02"
       ],
       "section": "8",
-      "description": "More than one effective querystring Parameter across Path Item and Operation owners excludes the selected target.",
+      "description": "More than one effective querystring Parameter across Path Item and Operation owners is upstream-invalid and removes the selected target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -3712,7 +3712,7 @@
         "OAPI32-P-02"
       ],
       "section": "8",
-      "description": "An effective path Parameter without a matching template expression excludes the target under exact one-to-one correspondence.",
+      "description": "An effective path Parameter without a matching template expression is upstream-invalid and removes the target under exact one-to-one correspondence.",
       "given": {
         "source": {
           "content": {
@@ -3775,7 +3775,7 @@
         "OAPI32-P-02"
       ],
       "section": "8",
-      "description": "A path-template expression appearing more than once violates exact one-to-one correspondence and excludes the target.",
+      "description": "A path-template expression appearing more than once violates OAS 3.2's exact one-to-one correspondence and removes the target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -3838,7 +3838,7 @@
         "OAPI32-P-02"
       ],
       "section": "8",
-      "description": "Two templated path keys with an equivalent static hierarchy are ambiguous and exclude either selected target.",
+      "description": "Two templated path keys with an equivalent static hierarchy are upstream-invalid and remove either selected target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -7714,7 +7714,7 @@
         "OAPI32-P-04"
       ],
       "section": "10",
-      "description": "A repeated Server Variable excludes only its Server alternative; the sole surviving sibling self-selects.",
+      "description": "A repeated Server Variable is upstream-invalid and removes only its Server alternative as invalid; the sole surviving sibling self-selects.",
       "given": {
         "source": {
           "content": {
@@ -7964,7 +7964,7 @@
         "OAPI32-P-04"
       ],
       "section": "10",
-      "description": "A query-bearing Server URL excludes only that alternative; its valid sibling remains the sole usable server.",
+      "description": "A query-bearing Server URL is upstream-invalid and removes only that alternative as invalid; its valid sibling remains the sole usable server.",
       "given": {
         "source": {
           "content": {
@@ -8579,7 +8579,7 @@
         "OAPI32-P-04"
       ],
       "section": "11",
-      "description": "A malformed Security Scheme Object excludes only alternatives requiring it; a selected valid sibling remains dispatchable.",
+      "description": "A malformed Security Scheme Object is upstream-invalid and removes only alternatives requiring it as invalid; a selected valid sibling remains dispatchable.",
       "given": {
         "source": {
           "content": {
@@ -9311,7 +9311,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A lowercase response range is outside the closed exact/range/default/extension key set and excludes the selected target before dispatch.",
+      "description": "A lowercase response range is outside the closed exact/range/default/extension key set and removes the selected target as invalid before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -9370,7 +9370,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "An exact response key outside the five admitted HTTP status classes excludes the selected target before any actual response is inspected.",
+      "description": "An exact response key outside the five admitted HTTP status classes removes the selected target as invalid before any actual response is inspected.",
       "given": {
         "source": {
           "content": {
@@ -12553,7 +12553,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A governing Response Object whose `description` is PRESENT with a non-string value violates the Response Object's fixed-field constraints and excludes the selected target before dispatch. OAS 3.2.0 dropped the REQUIRED marker its predecessors carry on `description`, so an OMITTED `description` is conformant on this line and excludes nothing; the field's declared `string` type is what remains, and this pins that the kind constraint still bites.",
+      "description": "A governing Response Object whose `description` is PRESENT with a non-string value violates the Response Object's fixed-field constraints and removes the selected target as invalid before dispatch. OAS 3.2.0 dropped the REQUIRED marker its predecessors carry on `description`, so an OMITTED `description` is conformant on this line and removes nothing; the field's declared `string` type is what remains, and this pins that the kind constraint still bites.",
       "given": {
         "source": {
           "content": {
@@ -12622,7 +12622,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object exclusion is confined to the target that owns it on the 3.2 line as well: a sibling operation declared in the same Paths Object still resolves and dispatches while the non-string `description` excludes only its own target.",
+      "description": "The upstream-invalid Response Object removal is confined to the target that owns it on the 3.2 line as well: a sibling operation declared in the same Paths Object still resolves and dispatches while the non-string `description` removes only its own target as invalid.",
       "given": {
         "source": {
           "content": {
@@ -12699,7 +12699,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — removes the selected target as invalid before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
       "given": {
         "source": {
           "content": {
@@ -12762,7 +12762,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `content` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "description": "An upstream-invalid governing Response Object — a `content` value that is not a map — removes the selected target as invalid before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
       "given": {
         "source": {
           "content": {
@@ -12825,7 +12825,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `links` value that is not a map — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "description": "An upstream-invalid governing Response Object — a `links` value that is not a map — removes the selected target as invalid before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
       "given": {
         "source": {
           "content": {
@@ -12888,7 +12888,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — excludes the selected target before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
+      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — removes the selected target as invalid before any actual response is inspected. The outcome now follows from the stated fixed-field rule rather than from the typed loader's inability to represent the value.",
       "given": {
         "source": {
           "content": {
@@ -12953,7 +12953,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object exclusion is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches.",
+      "description": "The upstream-invalid Response Object removal is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches.",
       "given": {
         "source": {
           "content": {
@@ -14654,7 +14654,7 @@
         "OAPI32-P-01"
       ],
       "section": "6",
-      "description": "An additionalOperations key byte-equal to POST is an entry for the method the post fixed field defines, so it is excluded and never dispatches.",
+      "description": "An additionalOperations key byte-equal to POST is an upstream-invalid entry for the method the post fixed field defines, so it is removed as invalid and never dispatches.",
       "given": {
         "source": {
           "content": {

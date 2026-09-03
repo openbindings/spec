@@ -1918,7 +1918,7 @@
     },
     {
       "id": "OAPI31-SS-22",
-      "description": "Whether a declared server URL denotes a target address at all decides whether the server configuration point is a runtime prerequisite of the represented target. A sole entry selects itself and, when it resolves, requires nothing. A sole entry whose URL template variable has no Server Variable Object is excluded because the unresolved variable is a declaration defect, while a declared variable's default reduces normally. A hostless HTTP authority remains a configurable target-base prerequisite, and a multi-entry list requires selection. Neither answer may be decided by a host language's URL parser.",
+      "description": "Whether a declared server URL denotes a target address at all decides whether the server configuration point is a runtime prerequisite of the represented target. A sole entry selects itself and, when it resolves, requires nothing. A sole entry whose URL template variable has no Server Variable Object remains represented but requires configuration.server, because a complete configured URL can discharge the invocation; a declared variable's default reduces normally. A hostless HTTP authority remains the same configurable target-base prerequisite, and a multi-entry list requires selection. In contrast, a Server URL containing a query is upstream-invalid and its owning target is accounted invalid rather than excluded. Neither answer may be decided by a host language's URL parser.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -2010,6 +2010,21 @@
                   }
                 }
               }
+            },
+            "/query": {
+              "get": {
+                "operationId": "listQuery",
+                "servers": [
+                  {
+                    "url": "https://api.example.test/v1?fixed=1"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok"
+                  }
+                }
+              }
             }
           }
         }
@@ -2019,6 +2034,7 @@
         "operations": [
           "listUsable",
           "listSubstituted",
+          "listTemplated",
           "listHostless",
           "listAlternatives"
         ],
@@ -2032,6 +2048,10 @@
             "bindingSelector": "#/paths/~1substituted/get"
           },
           {
+            "operationKey": "listTemplated",
+            "bindingSelector": "#/paths/~1templated/get"
+          },
+          {
             "operationKey": "listHostless",
             "bindingSelector": "#/paths/~1hostless/get"
           },
@@ -2042,7 +2062,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -2068,6 +2088,14 @@
             },
             {
               "sourceIndex": 0,
+              "sourceRef": "#/paths/~1query/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
               "sourceRef": "#/paths/~1substituted/get",
               "scope": "target",
               "status": "represented",
@@ -2079,10 +2107,12 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1templated/get",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.server_url_excluded",
-              "rule": "OAPI31-P-04",
-              "requirements": []
+              "status": "represented",
+              "operationKey": "listTemplated",
+              "bindingSelector": "#/paths/~1templated/get",
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -4407,6 +4437,92 @@
               "status": "represented",
               "operationKey": "literalFalse",
               "bindingSelector": "#/paths/~1literal-false/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI31-SS-50",
+      "description": "Path-template synthesis preserves the 3.1 authority boundary. A repeated expression is upstream-valid and remains represented, with one effective path Parameter supplying every occurrence; an expression with no corresponding effective path Parameter is upstream-invalid and is accounted invalid rather than excluded (OAPI31-S-01, OAPI31-P-02).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Path correspondence accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/repeat/{id}/{id}": {
+              "get": {
+                "operationId": "repeatValue",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/missing/{id}": {
+              "get": {
+                "operationId": "missingPathParameter",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "repeatValue"
+        ],
+        "bindings": [
+          {
+            "operationKey": "repeatValue",
+            "bindingSelector": "#/paths/~1repeat~1{id}~1{id}/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1missing~1{id}/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1repeat~1{id}~1{id}/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "repeatValue",
+              "bindingSelector": "#/paths/~1repeat~1{id}~1{id}/get",
               "requirements": []
             }
           ]

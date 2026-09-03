@@ -1029,7 +1029,7 @@
         "OAPI20-P-02"
       ],
       "section": "7",
-      "description": "The upstream-illegal coexistence of effective body and formData parameters excludes the selected operation independently of input.",
+      "description": "The upstream-illegal coexistence of effective body and formData parameters removes the selected operation as invalid independently of input.",
       "given": {
         "source": {
           "content": {
@@ -1172,14 +1172,6 @@
             "paths": {
               "/pets/{id}": {
                 "get": {
-                  "parameters": [
-                    {
-                      "name": "other",
-                      "in": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  ],
                   "responses": {
                     "204": {
                       "description": "ok"
@@ -3072,7 +3064,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "A supplied body payload on GET is excluded before dispatch even when its schema and consumes media would otherwise define bytes; the same operation remains usable without that optional payload.",
+      "description": "A supplied body payload on GET is refused before dispatch even when its schema and consumes media would otherwise define bytes; the same operation remains usable without that optional payload.",
       "given": {
         "source": {
           "content": {
@@ -6194,7 +6186,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "The Swagger 2.0 Responses Object has no range-key form, so 2XX excludes the selected target before dispatch even though it resembles a later-edition response key.",
+      "description": "The Swagger 2.0 Responses Object has no range-key form, so 2XX is upstream-invalid and removes the selected target before dispatch even though it resembles a later-edition response key.",
       "given": {
         "source": {
           "content": {
@@ -6249,7 +6241,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "Every Operation requires a nonempty Responses Object, so omission excludes the selected target before dispatch.",
+      "description": "Every Operation requires a nonempty Responses Object, so omission is upstream-invalid and removes the selected target before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -6700,7 +6692,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a Responses member that is not a Response Object at all — here a string where the Response Object goes — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — a Responses member that is not a Response Object at all — here a string where the Response Object goes — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -6759,7 +6751,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `description` that is present and is not a string — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — a `description` that is present and is not a string — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -6820,7 +6812,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -6882,7 +6874,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `schema` that is not a Schema Object — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — a `schema` that is not a Schema Object — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -6944,7 +6936,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — an `examples` value that is not a map — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — an `examples` value that is not a map — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -7006,7 +6998,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — excludes the selected target before any actual response is inspected, and never refuses the whole source.",
+      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
       "given": {
         "source": {
           "content": {
@@ -7070,7 +7062,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "A governing Response Object that omits its REQUIRED `description` WHILE declaring a `schema` misdeclares the response body it does declare, so it excludes the selected target. This is the half of the rule the `{}` carve-out does not reach.",
+      "description": "A governing Response Object that omits its REQUIRED `description` WHILE declaring a `schema` misdeclares the response body it does declare, so the upstream-invalid declaration removes the selected target as invalid. This is the half of the rule the `{}` carve-out does not reach.",
       "given": {
         "source": {
           "content": {
@@ -7133,7 +7125,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object exclusion is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches, so a Response Object one target misdeclares never reaches the whole source.",
+      "description": "The upstream-invalid Response Object removal is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches, so a Response Object one target misdeclares never reaches the whole source.",
       "given": {
         "source": {
           "content": {
@@ -8552,7 +8544,7 @@
         "OAPI20-P-04"
       ],
       "section": "11",
-      "description": "A Security Scheme Object whose type is outside the closed basic/apiKey/oauth2 set is not a Security Scheme Object: it excludes every alternative naming it before any runtime credential is inspected, leaving this sole-alternative target with none.",
+      "description": "A Security Scheme Object whose type is outside the closed basic/apiKey/oauth2 set is upstream-invalid: it removes every alternative naming it as invalid before any runtime credential is inspected, leaving this sole-alternative target with none.",
       "given": {
         "source": {
           "content": {
@@ -9883,6 +9875,137 @@
               "equals": [
                 "payload"
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-142",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "OAS 2.0 does not forbid a path-template expression from occurring more than once. Its one effective path parameter supplies the same value at every occurrence.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Repeated path expression",
+              "version": "1"
+            },
+            "paths": {
+              "/{id}/{id}": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1{id}~1{id}/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "same"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/same/same"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-143",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "8",
+      "description": "An effective path parameter with no corresponding path-template expression is upstream-invalid and removes the selected target as invalid.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Reverse path correspondence",
+              "version": "1"
+            },
+            "paths": {
+              "/pets": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "id",
+                      "in": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1pets/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }

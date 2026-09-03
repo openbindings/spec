@@ -232,7 +232,7 @@
     },
     {
       "id": "OAPI20-SS-08",
-      "description": "A range response key excludes only its owning operation. Tolerant synthesis retains an unrelated valid sibling and accounts both addressable targets exhaustively rather than refusing the whole source (OAPI20-S-01, OAPI20-P-03).",
+      "description": "A range response key is upstream-invalid on the 2.0 line and removes only its owning operation, accounted invalid. Tolerant synthesis retains an unrelated valid sibling and accounts both positions exhaustively rather than refusing the whole source (OAPI20-S-01, OAPI20-P-03).",
       "source": {
         "bindingSpec": "openbindings.openapi-2.0@1",
         "content": {
@@ -246,8 +246,8 @@
       "expected": {
         "outcome": "synthesized", "operations": ["goodResponse"],
         "bindings": [{"operationKey": "goodResponse", "bindingSelector": "#/paths/~1good/get"}],
-        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
-          {"sourceIndex": 0, "sourceRef": "#/paths/~1bad/get", "scope": "target", "status": "excluded", "reasonCode": "openapi20.target_excluded", "rule": "OAPI20-P-03", "requirements": []},
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1bad/get", "scope": "target", "status": "invalid", "reasonCode": "openapi.invalid_unit", "requirements": []},
           {"sourceIndex": 0, "sourceRef": "#/paths/~1good/get", "scope": "target", "status": "represented", "operationKey": "goodResponse", "bindingSelector": "#/paths/~1good/get", "requirements": []}
         ]}
       }
@@ -275,7 +275,7 @@
     },
     {
       "id": "OAPI20-SS-10",
-      "description": "A response Header Object array cannot use collectionFormat multi. The header declaration is excluded at its own projection position, while the operation remains represented because response headers create no output member under this binding (OAPI20-S-01, OAPI20-P-03).",
+      "description": "A response Header Object array cannot use collectionFormat multi. The upstream-invalid header declaration is accounted invalid at its own projection position, while the operation remains represented because response headers create no output member under this binding (OAPI20-S-01, OAPI20-P-03).",
       "source": {
         "bindingSpec": "openbindings.openapi-2.0@1",
         "content": {
@@ -287,9 +287,9 @@
         "outcome": "synthesized", "operations": ["readHeaders"],
         "bindings": [{"operationKey": "readHeaders", "bindingSelector": "#/paths/~1x/get"}],
         "assertions": [{"path": "/operations/readHeaders/output", "absent": true}],
-        "coverage": {"exhaustive": true, "fullyRepresented": false, "entries": [
+        "coverage": {"exhaustive": true, "fullyRepresented": true, "entries": [
           {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get", "scope": "target", "status": "represented", "operationKey": "readHeaders", "bindingSelector": "#/paths/~1x/get", "requirements": []},
-          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/204/headers/X-Ids", "scope": "projection", "status": "excluded", "reasonCode": "openapi20.response_header_excluded", "rule": "OAPI20-P-03", "requirements": []}
+          {"sourceIndex": 0, "sourceRef": "#/paths/~1x/get/responses/204/headers/X-Ids", "scope": "projection", "status": "invalid", "reasonCode": "openapi.invalid_unit", "requirements": []}
         ]}
       }
     },
@@ -432,6 +432,108 @@
               "status": "represented",
               "operationKey": "intersectingBody",
               "bindingSelector": "#/paths/~1intersecting/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI20-SS-12",
+      "description": "Path correspondence preserves the upstream-validity boundary on the 2.0 line. A template expression with no effective path parameter is a binding exclusion because OAS 2.0 does not forbid it, while an effective path parameter with no expression is upstream-invalid. The unrelated valid operation remains represented, and fullyRepresented is false only because the excluded upstream-valid target counts against it.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Path correspondence accounting",
+            "version": "1"
+          },
+          "host": "api.example",
+          "schemes": [
+            "https"
+          ],
+          "paths": {
+            "/missing/{id}": {
+              "get": {
+                "operationId": "missingPathParameter",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/extra": {
+              "get": {
+                "operationId": "extraPathParameter",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/good": {
+              "get": {
+                "operationId": "goodPath",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "goodPath"
+        ],
+        "bindings": [
+          {
+            "operationKey": "goodPath",
+            "bindingSelector": "#/paths/~1good/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1extra/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1good/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "goodPath",
+              "bindingSelector": "#/paths/~1good/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1missing~1{id}/get",
+              "scope": "target",
+              "status": "excluded",
+              "reasonCode": "openapi20.path_template_excluded",
+              "rule": "OAPI20-P-02",
               "requirements": []
             }
           ]

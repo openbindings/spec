@@ -2115,6 +2115,92 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI30-SS-48",
+      "description": "Path-template synthesis preserves the 3.0 authority boundary. A repeated expression is upstream-valid and remains represented, with one effective path Parameter supplying every occurrence; an expression with no corresponding effective path Parameter is upstream-invalid and is accounted invalid rather than excluded (OAPI30-S-01, OAPI30-P-02).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Path correspondence accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/repeat/{id}/{id}": {
+              "get": {
+                "operationId": "repeatValue",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/missing/{id}": {
+              "get": {
+                "operationId": "missingPathParameter",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "repeatValue"
+        ],
+        "bindings": [
+          {
+            "operationKey": "repeatValue",
+            "bindingSelector": "#/paths/~1repeat~1{id}~1{id}/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1missing~1{id}/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1repeat~1{id}~1{id}/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "repeatValue",
+              "bindingSelector": "#/paths/~1repeat~1{id}~1{id}/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

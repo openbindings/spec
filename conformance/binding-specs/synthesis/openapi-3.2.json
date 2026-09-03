@@ -214,7 +214,7 @@
     },
     {
       "id": "OAPI32-SS-03",
-      "description": "Malformed server and security members are confined to alternative coverage while their valid siblings preserve the represented target [OAPI32-S-01, OAPI32-P-04].",
+      "description": "Upstream-invalid server and security members are accounted invalid at their alternative positions while their valid siblings preserve the fully represented target [OAPI32-S-01, OAPI32-P-04].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
@@ -279,7 +279,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -296,9 +296,8 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1x/query/security/0",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "openapi.security_alternative_unusable",
-              "rule": "OAPI32-P-04",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
               "operationKey": "querySafe",
               "bindingSelector": "#/paths/~1x/query",
               "requirements": []
@@ -307,9 +306,8 @@
               "sourceIndex": 0,
               "sourceRef": "#/servers/0",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "openapi.server_url_excluded",
-              "rule": "OAPI32-P-04",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
               "operationKey": "querySafe",
               "bindingSelector": "#/paths/~1x/query",
               "requirements": []
@@ -320,7 +318,7 @@
     },
     {
       "id": "OAPI32-SS-04",
-      "description": "Edition-aware exhaustive coverage retains an excluded QUERY position while emitting a case-exact additional operation and its request transform [OAPI32-S-01, OAPI32-P-02].",
+      "description": "Edition-aware exhaustive coverage accounts the upstream-invalid QUERY position while emitting a case-exact additional operation and its request transform [OAPI32-S-01, OAPI32-P-02].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
@@ -404,15 +402,14 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1x/query",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.target_excluded",
-              "rule": "OAPI32-P-01",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -862,7 +859,7 @@
     },
     {
       "id": "OAPI32-SS-09",
-      "description": "§6.1's byte-exact key identity through the inventory: an additionalOperations key byte-equal to the token the post fixed field sends is excluded as its own entry, while the case-distinct post key spells a method no fixed field defines and is represented beside the fixed field itself. A key that resolves also enumerates, and the excluded one enumerates as a position carrying no operation [OAPI32-S-01, OAPI32-P-01].",
+      "description": "§6.1's byte-exact key identity through the inventory: an additionalOperations key byte-equal to the token the post fixed field sends is upstream-invalid and accounted invalid as its own entry, while the case-distinct post key spells a method no fixed field defines and is represented beside the fixed field itself. A key that resolves also enumerates, and the invalid one enumerates as a position carrying no operation [OAPI32-S-01, OAPI32-P-01].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
@@ -926,7 +923,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -941,9 +938,8 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1t/additionalOperations/POST",
               "scope": "target",
-              "status": "excluded",
-              "reasonCode": "openapi.target_excluded",
-              "rule": "OAPI32-P-01",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -1394,6 +1390,102 @@
               "status": "represented",
               "operationKey": "literalFalse",
               "bindingSelector": "#/paths/~1literal-false/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-12",
+      "description": "Path-template synthesis exposes the 3.2 edition change. Repeating an expression is upstream-invalid and is accounted invalid, while a corresponding single-use expression remains represented (OAPI32-S-01, OAPI32-P-02).",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Path repetition accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example.test"
+            }
+          ],
+          "paths": {
+            "/repeat/{id}/{id}": {
+              "get": {
+                "operationId": "repeatValue",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/single/{id}": {
+              "get": {
+                "operationId": "singleValue",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "singleValue"
+        ],
+        "bindings": [
+          {
+            "operationKey": "singleValue",
+            "bindingSelector": "#/paths/~1single~1{id}/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1repeat~1{id}~1{id}/get",
+              "scope": "target",
+              "status": "invalid",
+              "reasonCode": "openapi.invalid_unit",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1single~1{id}/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "singleValue",
+              "bindingSelector": "#/paths/~1single~1{id}/get",
               "requirements": []
             }
           ]
