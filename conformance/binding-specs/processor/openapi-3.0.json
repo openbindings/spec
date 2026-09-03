@@ -8593,6 +8593,177 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-166",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The urlencoded twin of OAPI30-PS-56. On the 3.0 line no accepted edition states a default `contentType` row that reaches a declaration carrying no `type` (3.0.0 through 3.0.3 enumerate a string with format binary, other primitive types, object, and array without a catch-all; 3.0.4 tabulates the same cases keyed on a declared `type`), and openbindings.openapi-3.0@1 Section 9.3 requires `propertyMedia` for such a declaration \"on the content-based form-urlencoded path and for a multipart part alike\". Both engines had honoured that sentence on multipart only (PS-56) and refused the urlencoded twin plainly, one of them even naming the missing point in its message. A required body carrying a typeless urlencoded field challenges CONTEXT_REQUIRED (config.value, point propertyMedia, path /v) before input consumption and dispatches nothing.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "no-default property media",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/p": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "v": {
+                              "description": "a field declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "v": "x"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "context-required",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/type",
+              "equals": "config.value"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/point",
+              "equals": "propertyMedia"
+            },
+            {
+              "path": "/context/alternatives/0/requirements/0/path",
+              "equals": "/v"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-167",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "The companion of OAPI30-PS-166: with `propertyMedia` supplying `application/json` for the typeless urlencoded field, the value rides Section 9.2's JSON lane and the resulting characters are percent-encoded as one field value under Section 9.3's content-path form-urlencoded pin (the double quotes as %22). No default was consulted; the chosen media type is the only media fact the field has.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.3",
+            "info": {
+              "title": "no-default property media",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/p": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "v": {
+                              "description": "a field declaring no type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1p/post"
+        },
+        "configuration": {
+          "propertyMedia": {
+            "v": "application/json"
+          }
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "v": "x"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "equals": "v=%22x%22"
+            },
+            {
+              "path": "/dispatch/headers/content-type",
+              "equals": "application/x-www-form-urlencoded"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

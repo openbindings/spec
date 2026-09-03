@@ -1665,7 +1665,7 @@
     },
     {
       "id": "OAPI31-SS-20",
-      "description": "JSON Schema 2020-12 defines an array-valued type as a union, so a form part typed [\"string\", \"null\"] declares exactly what the collapsing anyOf spelling declares and takes the same carriage: the part is represented, its sibling keywords still apply, and a supplied JSON null elides the optional part. A part typed [\"string\", \"object\"] declares two non-null alternatives, leaves no single faithful form carriage, and is an excluded alternative -- the same answer a choice with more than one non-null branch gets. Under the OAS 3.0 line, whose Schema Object requires type to be a string and does not support multiple types via an array, the same union spelling is not a union declaration and its multipart alternative is excluded there too.",
+      "description": "JSON Schema 2020-12 defines an array-valued type as a union, so a form part typed [\"string\", \"null\"] declares exactly what the collapsing anyOf spelling declares and takes the same carriage: the part is represented, its sibling keywords still apply, and a supplied JSON null elides the optional part. A part typed [\"string\", \"object\"] declares two non-null alternatives, which every row of the OAS 3.1.2 default `contentType` table (each keyed on ONE `type`) fails to reach, so it determines no default part media type; openbindings.openapi-3.1@1 Section 9.3 states that a multi-type resolved set determines no default and that the `propertyMedia` requirement extends to it. The alternative is therefore REPRESENTED and carries the configuration.propertyMedia requirement, exactly as OAPI30-SS-14 accounts a typeless 3.0 part; its target needs nothing, because the JSON sibling is a usable candidate. REVISED 2026-09-03 (OA-F8): until then this scenario pinned the multipart alternative as excluded under openapi.request_media_excluded, a reading that stopped at the refusal rung of the deference order although no rule of the 3.1 document stated the exclusion and the interface-synthesizer contract requires an `excluded` entry to name one; the 3.2 sibling already answered with the configuration point, the 3.1.2 and 3.2.0 tables are identical on this point, and the exposed choice ranks above a refusal. Under the OAS 3.0 line, whose Schema Object requires type to be a string and does not support multiple types via an array, the same union spelling is not a union declaration and its multipart alternative is excluded there too.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -1783,7 +1783,7 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
             {
               "sourceIndex": 0,
@@ -1807,10 +1807,12 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
-              "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
-              "rule": "OAPI31-P-03",
-              "requirements": []
+              "status": "represented",
+              "operationKey": "createNote",
+              "bindingSelector": "#/paths/~1notes/post",
+              "requirements": [
+                "configuration.propertyMedia"
+              ]
             },
             {
               "sourceIndex": 0,
