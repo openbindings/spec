@@ -224,6 +224,8 @@
 
 **[convention]** On the permitted-but-undefined methods the binding preserves a supplied declared body rather than deleting it, since the edition's own disposition is advice to authors (`SHOULD be avoided`) and not a consumer instruction to drop content; a supplied `body` on `trace` refuses as unroutable before dispatch.
 
+**[limit]** On such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it. The target is therefore invocable, not permanently unusable; the declaration is reported as coverage loss at the Request Body position ([RFC 9110 §9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.8)).
+
 ## 8. Parameter serialization
 
 ### 8.1 Effective declarations and scalar conversion
@@ -715,6 +717,7 @@ This section collects the points at which two implementations conforming to `ope
 | §5.1 defects outside the closure | a defect outside the target-plus-reachable closure has no effect on that target |
 | §5.1 confinement consequences | the three conditions confine to exactly the three consequences stated in table order |
 | §6.2 dependencies | add no invocation behavior; receiver deployment and dependency composition are permanently outside this operation boundary |
+| §7 required body on a content-forbidding method | creates no caller-body requirement: a body-free invocation dispatches, and the declaration is reported as coverage loss |
 | §9.1 normalized media collisions | a colliding identity supports no selection through it: a request selection refuses before dispatch, a response selection on a successful response is a loud protocol error (the failure side follows the best-effort failure-body rule), and map order never breaks the tie |
 | §9.1 examples | create no operation input or output member and never select a declaration, carriage lane, or media type |
 | §9.2 JSON-lane numbers | interoperable within RFC 8259 §6's binary64 expectation, over the two-member permitted set indexed above |
