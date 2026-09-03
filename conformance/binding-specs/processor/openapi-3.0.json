@@ -5700,7 +5700,7 @@
         "OAPI30-P-04"
       ],
       "section": "11",
-      "description": "A nonempty requirement array for a 3.0 non-OAuth scheme makes only that security alternative unusable, so an explicitly selected empty-array alternative still dispatches.",
+      "description": "A nonempty requirement array for a 3.0 non-OAuth scheme is an upstream-invalid declaration that removes that security alternative from selection before any runtime credential is inspected; every remaining complete alternative survives, so an explicitly selected empty-array alternative still dispatches.",
       "given": {
         "source": {
           "content": {
@@ -8887,6 +8887,81 @@
             {
               "path": "/dispatch/body",
               "notContains": "converted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-169",
+      "rules": [
+        "OAPI30-P-02"
+      ],
+      "section": "7",
+      "description": "A body-free invocation of a `trace` target whose Operation declares a `required: true` requestBody dispatches with method TRACE, no body, and no Content-Type field, the required-declaration companion of OAPI30-PS-165. Section 7: on such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it; the target is therefore invocable, not permanently unusable. The ground is RFC 7231 Section 4.3.8: a client MUST NOT send a message body in a TRACE request, so no declaration can oblige the caller to supply one. OAPI32-PS-35 pins the same cell on 3.2. The declaration is reported as coverage loss at the Request Body position, a synthesis observation outside this processor scenario's assertions. Whether a runtime's platform HTTP API can send TRACE at all is a host limit outside this specification: a runtime that cannot refuses before dispatch, and never dispatches another method in its place.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "TRACE with a required body declaration",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/t": {
+                "trace": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1t/trace"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "TRACE"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/content-type",
+              "absent": true
             }
           ]
         }

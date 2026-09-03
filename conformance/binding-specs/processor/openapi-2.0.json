@@ -5392,7 +5392,7 @@
         "OAPI20-P-04"
       ],
       "section": "11",
-      "description": "A nonempty requirement array for basic makes that selected alternative unusable before credentials can dispatch.",
+      "description": "A nonempty requirement array for basic is an upstream-invalid declaration that removes that security alternative from selection before any runtime credential is inspected; with no remaining complete alternative the selected target refuses before credentials can dispatch.",
       "given": {
         "source": {
           "content": {

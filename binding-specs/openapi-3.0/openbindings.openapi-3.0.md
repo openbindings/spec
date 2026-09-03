@@ -207,6 +207,8 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A supplied `body` on `get`, `head`, `delete`, `options`, or `trace` refuses as unroutable before dispatch.
 
+**[limit]** On such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it. The target is therefore invocable, not permanently unusable; the declaration is reported as coverage loss at the Request Body position ([RFC 7231 §4.3.8](https://www.rfc-editor.org/rfc/rfc7231#section-4.3.8)).
+
 ## 8. Parameter serialization
 
 ### 8.1 Effective declarations and scalar conversion
@@ -537,7 +539,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** Whether a supplied credential satisfies a required scope is the counterparty's own determination and is never evaluated by this binding: a scope string is surfaced exactly as declared, in the alternative's requirement data and in any context challenge, and no incorporated authority defines a way for a client to read a token's grants without invoking an endpoint, which this binding never does. An OAuth 2.0 or OpenID Connect alternative is complete when its scheme's runtime access token is supplied; a token the counterparty finds insufficient produces that counterparty's own response, classified under §9's ordinary response rules like any other outcome.
 
-**[limit]** A nonempty requirement array for any other scheme type makes only that security alternative unusable; the defect is confined and reported loudly, and another complete alternative may still be selected.
+**[limit]** A nonempty requirement array for any other scheme type is an upstream-invalid declaration that removes that security alternative from selection before any runtime credential is inspected, accounted invalid under §12.2; every remaining complete alternative survives.
 
 **[configuration point]** `implicitConnectionScope` selects `entry` or `referring` document resolution for Security Requirement names and defaults to `entry`, following OAS's recommended entry-document scope while preserving the explicit alternative ([OAS 3.0.4 §4.3.2](https://spec.openapis.org/oas/v3.0.4.html#resolving-implicit-connections)).
 
@@ -682,13 +684,14 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | §5.1 | a defect outside the target-plus-reachable closure has no effect on that target |
 | §5.1 | the three confinement conditions confine as §5.1's table order states |
 | §6.2 | dependencies add no invocation behavior; receiver deployment and dependency composition are permanently outside this operation boundary |
+| §7 | on a content-forbidding method a `required: true` request body creates no caller-body requirement, and the declaration is reported as coverage loss |
 | §9.1 | content-map keys that normalize to one media identity support no selection through that identity |
 | §9.1 | examples create no operation input or output member and never select a declaration, lane, or media type |
 | §9.2 | JSON-lane numbers are interoperable within RFC 8259 §6's binary64 expectation, over the two-member permitted set indexed above |
 | §9.2 | a charset beyond UTF-8 is an implementation capability rather than a requirement, and its absence refuses loudly |
 | §9.3 | a non-object declaration excludes the form lane, and a multipart alternative without its required schema is unavailable |
 | §9.3 | `{}` and `{"x": null}` are identified on the form and multipart wire: the absent-versus-explicit-null distinction does not survive that lane |
-| §9.3 | Encoding `headers` are descriptive, and no caller channel for part headers exists under this identifier |
+| §9.3 | Encoding `headers` are descriptive except the artifact-declared `Content-Transfer-Encoding: base64` case; no caller channel for part headers exists under this identifier |
 | §9.5 | the upstream-invalid Response Object exclusion reaches only a declaration that can govern a successful response |
 | §9.5 | a governing Response Object that omits `description` while declaring no content does not exclude |
 | §9.5 | redirect and negotiation variance is the stated permitted set, and the binding emits no negotiation field beyond those it pins |
@@ -696,7 +699,7 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | §9.5 | a non-empty response with no governing Response Object is a loud protocol error, and Response Header and Link Objects create no output members, so even a declared `Location` on a `201` reaches no operation value |
 | §9.5 | one HTTP response body produces at most one operation value, `text/event-stream` included |
 | §10 | embedded content with no document location leaves a relative Server URL unresolved; the complete configured URL is the available recovery |
-| §11 | a nonempty requirement array for a scheme type other than OAuth 2.0 or OpenID Connect makes only that alternative unusable |
+| §11 | a nonempty requirement array for a scheme type other than OAuth 2.0 or OpenID Connect is an upstream-invalid declaration that removes only that alternative from selection, accounted invalid under §12.2 |
 | §11 | any other declared HTTP authentication scheme synthesizes no credential bytes, and its alternative is unusable unless the runtime satisfies it as a complete prerequisite |
 | §12.2 | the envelope is the binding-boundary value and never the emitted operation contract; no input-restructuring apparatus beyond §12.2's licensed synthesis outputs exists |
 | §6.1 | a selected operation omitting `responses`, or carrying a present empty Responses Object: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 3.0 edition admits the exact declaration |
