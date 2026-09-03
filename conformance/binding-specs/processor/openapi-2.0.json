@@ -2399,6 +2399,14 @@
             {
               "path": "/dispatch/body",
               "contains": "Content-Type: image/png"
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "filename="
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "Content-Transfer-Encoding"
             }
           ]
         }
@@ -3772,6 +3780,14 @@
             {
               "path": "/dispatch/body",
               "contains": "hello"
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "filename="
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "Content-Transfer-Encoding"
             }
           ]
         }
