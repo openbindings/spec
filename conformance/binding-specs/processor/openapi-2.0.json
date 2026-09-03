@@ -2882,7 +2882,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "Identity is a governed request and response content-coding but needs no configured codec; both representation byte sequences remain unchanged.",
+      "description": "The actual request and response Content-Encoding fields both name identity, which is a no-op requiring no runtime codec; both representation byte sequences remain unchanged.",
       "given": {
         "source": {
           "content": {
@@ -2993,7 +2993,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An artifact-governed request Content-Encoding token without a configured encoder refuses before dispatch rather than being skipped.",
+      "description": "A caller-supplied request Content-Encoding token admitted by its Header Parameter but unsupported by runtime encoder capability is never skipped or sniffed: a request-side condition refuses before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -4149,7 +4149,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example//x"
+              "equals": "https://api.example/x"
             }
           ]
         }
@@ -4226,7 +4226,7 @@
         "OAPI20-P-04"
       ],
       "section": "10",
-      "description": "A complete configured URL recovers an otherwise unresolved empty-schemes and absent-host target while preserving the operation path.",
+      "description": "A complete consumer-configured URL replaces the resolved server base, and the operation's path bytes join to it under the preceding boundary rule; the artifact's path template, path substitution, query construction, method, parameters, payload, response, and security semantics remain unchanged.",
       "given": {
         "source": {
           "content": {
@@ -4283,7 +4283,7 @@
         "OAPI20-P-04"
       ],
       "section": "10",
-      "description": "Target construction preserves an authored trailing server slash and leading Paths slash as a double slash without normalization.",
+      "description": "Target construction removes exactly the redundant slash at the configured-server/Paths-key seam: a trailing server slash and the operation's leading slash produce one slash, not two.",
       "given": {
         "source": {
           "content": {
@@ -4329,7 +4329,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://peer.example/root//x"
+              "equals": "https://peer.example/root/x"
             }
           ]
         }
@@ -5964,7 +5964,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "An exact status Response governs before default: the exact 200 declaration admits the actual identity Content-Encoding header, so the response succeeds where selecting default would have produced a protocol error.",
+      "description": "An exact status Response governs before default: the exact 200 declaration admits the actual identity Content-Encoding field, while the default declaration constrains that field to gzip and would produce a protocol error if selected.",
       "given": {
         "source": {
           "content": {
@@ -5996,6 +5996,14 @@
                     },
                     "default": {
                       "description": "fallback",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "gzip"
+                          ]
+                        }
+                      },
                       "schema": {
                         "type": "object"
                       }
@@ -9745,6 +9753,136 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-140",
+      "rules": [
+        "OAPI20-P-04"
+      ],
+      "section": "10",
+      "description": "Target construction performs one and only one seam repair: it removes the trailing base slash paired with the first leading Paths-key slash. An authored basePath of / and a Paths key beginning // therefore retain the key's intentional doubled slash.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Narrow slash join",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "basePath": "/",
+            "paths": {
+              "//x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example//x"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-141",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "Content-coding implementations are runtime capabilities, not binding configuration points. The actual Content-Encoding field fixes the coding stack even when the governing Response declares no Header Object for it. An absent declaration therefore imposes no content-coding constraint and does not declare identity; the runtime decoder removes the coding before the selected media lane.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Actual response coding",
+              "version": "1"
+            },
+            "produces": [
+              "text/plain"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "zip": "unwrap"
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain",
+            "Content-Encoding": "zip"
+          },
+          "body": "zip(payload)"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "payload"
+              ]
             }
           ]
         }

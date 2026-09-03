@@ -8024,7 +8024,7 @@
         "OAPI32-P-04"
       ],
       "section": "10",
-      "description": "Path append is verbatim: a trailing Server slash and leading operation slash remain a double slash.",
+      "description": "Path append removes exactly the redundant seam slash: a trailing Server slash and leading operation slash produce one slash, not two.",
       "given": {
         "source": {
           "content": {
@@ -8069,7 +8069,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example/base//x"
+              "equals": "https://api.example/base/x"
             }
           ]
         }
@@ -8081,7 +8081,7 @@
         "OAPI32-P-04"
       ],
       "section": "10",
-      "description": "A complete configured URL replaces only the server base while path substitution and query serialization remain artifact-governed.",
+      "description": "A complete consumer-configured URL replaces the resolved server base, and the operation's path bytes join to it under the preceding boundary rule; the artifact's path template, path substitution, query construction, method, parameters, body, response, and security semantics remain unchanged.",
       "given": {
         "source": {
           "content": {
@@ -8154,7 +8154,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://configured.example/root//items/42?q=yes"
+              "equals": "https://configured.example/root/items/42?q=yes"
             }
           ]
         }
@@ -8823,7 +8823,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A declared request Content-Encoding value fixes the configured encoder stack; the encoder transforms the complete representation and the field remains on the wire.",
+      "description": "The serialized actual request Content-Encoding field fixes the runtime encoder stack; the encoder transforms the complete representation and the field remains on the wire.",
       "given": {
         "source": {
           "content": {
@@ -10018,7 +10018,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "The actual governed response Content-Encoding value fixes the decoder stack, which runs in reverse wire order before the selected media lane.",
+      "description": "The actual response Content-Encoding value fixes the decoder stack, which runs in reverse wire order before the selected media lane; its governing Header Object constrains the field but does not authorize decoding.",
       "given": {
         "source": {
           "content": {
@@ -10103,7 +10103,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A response content-coding token admitted by the governing Header Object but unsupported by runtime capability fails loudly rather than being skipped.",
+      "description": "A response content-coding token admitted by the governing Header Object is unsupported by runtime capability. The condition is never skipped or sniffed, and the response-side condition is a loud protocol error.",
       "given": {
         "source": {
           "content": {
@@ -10180,7 +10180,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A configured response decoder supplies capability but cannot declare a Content-Encoding value omitted by the governing Response Object.",
+      "description": "Content-coding implementations are runtime capabilities, not binding configuration points. The actual Content-Encoding field fixes the coding stack even though the governing Response Object omits a Header Object for that field; an absent declaration therefore imposes no content-coding constraint and does not declare identity.",
       "given": {
         "source": {
           "content": {
@@ -10235,12 +10235,14 @@
       },
       "expected": [
         {
-          "disposition": "error",
-          "phase": "response",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
               "path": "/outputs",
-              "equals": []
+              "equals": [
+                "payload"
+              ]
             }
           ]
         }
@@ -10252,7 +10254,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "A configured response decoder cannot admit an actual coding value excluded by the governing Header Object schema.",
+      "description": "A runtime response decoder supplies capability but cannot make an actual coding value satisfy a conflicting governing Header Object constraint.",
       "given": {
         "source": {
           "content": {
@@ -10334,7 +10336,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "The governed identity response coding requires no configured decoder and preserves the representation for the selected media lane.",
+      "description": "The actual identity response coding is admitted by the governing Header Object, requires no runtime decoder, and preserves the representation for the selected media lane.",
       "given": {
         "source": {
           "content": {
@@ -10413,7 +10415,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "The responseContentCodings capability map matches content-coding tokens case-insensitively.",
+      "description": "The runtime responseContentCodings capability map matches actual content-coding tokens case-insensitively.",
       "given": {
         "source": {
           "content": {
@@ -15126,6 +15128,60 @@
             {
               "path": "/dispatch/body",
               "notContains": "converted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-214",
+      "rules": [
+        "OAPI32-P-04"
+      ],
+      "section": "10",
+      "description": "Appended is pinned here to one and only one seam repair: the implied root server and the Paths key are joined by removing only their redundant seam slash. A Paths key beginning // therefore retains its intentional doubled slash, distinguishing the narrow join from both verbatim concatenation and broad slash normalization.",
+      "given": {
+        "source": {
+          "location": "https://api.example/descriptions/openapi.yaml",
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Narrow slash join",
+              "version": "1"
+            },
+            "paths": {
+              "//x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example//x"
             }
           ]
         }

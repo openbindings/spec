@@ -2322,7 +2322,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "A caller-selected request Content-Encoding is governed by the effective Header Parameter, but an unsupported coding token refuses before dispatch rather than being skipped or sniffed.",
+      "description": "A caller-supplied request Content-Encoding is admitted by the effective Header Parameter, but runtime encoder capability does not support its token. The condition is never skipped or sniffed: a request-side condition refuses before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -2404,13 +2404,13 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "An actual response Content-Encoding with no governing Header Object is a response protocol error even when the response media declaration otherwise matches.",
+      "description": "Content-coding implementations are runtime capabilities, not binding configuration points. The actual Content-Encoding field fixes the coding stack even when the governing Response Object declares no Header Object for it. An absent declaration therefore imposes no content-coding constraint and does not declare identity; the runtime decoder removes the coding before the selected media lane.",
       "given": {
         "source": {
           "content": {
             "openapi": "3.0.4",
             "info": {
-              "title": "Ungoverned response coding",
+              "title": "Actual response coding",
               "version": "1"
             },
             "servers": [
@@ -2444,23 +2444,30 @@
         "invocation": {
           "inputPresent": false
         },
+        "runtime": {
+          "responseContentCodings": {
+            "zip": "unwrap"
+          }
+        },
         "peer": {
           "status": 200,
           "headers": {
             "Content-Type": "text/plain",
-            "Content-Encoding": "gzip"
+            "Content-Encoding": "zip"
           },
-          "body": "coded"
+          "body": "zip(payload)"
         }
       },
       "expected": [
         {
-          "disposition": "error",
-          "phase": "response",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
               "path": "/outputs",
-              "equals": []
+              "equals": [
+                "payload"
+              ]
             }
           ]
         }
@@ -2725,7 +2732,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The identity content-coding is governed but needs no configured codec: request and response stacks preserve the representation bytes unchanged.",
+      "description": "The actual request and response Content-Encoding fields name identity, which needs no runtime codec: both stacks preserve the representation bytes unchanged.",
       "given": {
         "source": {
           "content": {
@@ -3197,7 +3204,7 @@
         "OAPI30-P-04"
       ],
       "section": "10",
-      "description": "A query-bearing Server URL excludes the selected target before dispatch because Section 10 defines verbatim path append but no Server-query concatenation cell.",
+      "description": "A query-bearing Server URL excludes the selected target before dispatch because Section 10 defines the server/path boundary join but no Server-query concatenation cell.",
       "given": {
         "source": {
           "content": {
@@ -3333,7 +3340,7 @@
         "OAPI30-P-04"
       ],
       "section": "10",
-      "description": "A complete configured URL replaces only the resolved server base: the authored trailing slash and operation's leading path slash remain a double slash, while path substitution and query construction remain unchanged.",
+      "description": "A complete consumer-configured URL replaces the resolved server base, and the operation's path bytes join to it under the preceding boundary rule; the artifact's path template, path substitution, query construction, method, parameters, body, response, and security semantics remain unchanged.",
       "given": {
         "source": {
           "content": {
@@ -3410,7 +3417,7 @@
             },
             {
               "path": "/dispatch/url",
-              "equals": "https://configured.example/root//items/42?q=yes"
+              "equals": "https://configured.example/root/items/42?q=yes"
             },
             {
               "path": "/outputs",
@@ -5527,7 +5534,7 @@
         "OAPI30-P-04"
       ],
       "section": "10",
-      "description": "A relative Server URL declared in an external Path Item resolves against that containing document before the operation path is appended verbatim.",
+      "description": "A relative Server URL declared in an external Path Item resolves against that containing document before the operation path is joined at the server/path boundary.",
       "given": {
         "source": {
           "location": "https://description.example/root/openapi.json",
@@ -5580,7 +5587,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://description.example/api//items"
+              "equals": "https://description.example/api/items"
             },
             {
               "path": "/outputs",
@@ -7867,7 +7874,7 @@
         "OAPI30-P-04"
       ],
       "section": "10",
-      "description": "The operation's path bytes append VERBATIM to the expanded Server URL, with no relative URL resolution, no slash normalization and no path repair: a Server URL ending in a slash and a path key beginning with one produce two adjacent slashes in the completed target (§10's verbatim-append pin).",
+      "description": "The operation path joins the expanded Server URL by removing exactly the redundant seam slash, with no relative URL resolution or other slash normalization: a trailing Server slash and leading Paths-key slash produce one slash.",
       "given": {
         "source": {
           "content": {
@@ -7913,7 +7920,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example/base//x"
+              "equals": "https://api.example/base/x"
             },
             {
               "path": "/outputs",
@@ -9160,6 +9167,60 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-173",
+      "rules": [
+        "OAPI30-P-04"
+      ],
+      "section": "10",
+      "description": "Appended is pinned here to one and only one seam repair: the implied root server and the Paths key are joined by removing only their redundant seam slash. A Paths key beginning // therefore retains its intentional doubled slash, distinguishing the narrow join from both verbatim concatenation and broad slash normalization.",
+      "given": {
+        "source": {
+          "location": "https://api.example/descriptions/openapi.yaml",
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Narrow slash join",
+              "version": "1"
+            },
+            "paths": {
+              "//x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example//x"
             }
           ]
         }
