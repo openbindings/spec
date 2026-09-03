@@ -10572,6 +10572,80 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI31-PS-157",
+      "rules": [
+        "OAPI31-P-02"
+      ],
+      "section": "7",
+      "description": "A body-free invocation of a `trace` target whose Operation declares an optional `requestBody` dispatches with method TRACE, no body, and no Content-Type field. Section 7: the binding emits no body on `trace`, because a TRACE client MUST NOT send content (RFC 9110 Section 9.3.8), and Content-Type indicates the media type of the associated representation (RFC 9110 Section 8.3), so a request carrying no representation carries no such field. The same wire fact is pinned on every 3.x sibling. Whether a runtime's platform HTTP API can send TRACE at all is a host limit outside this specification: a runtime that cannot refuses before dispatch, and never dispatches another method in its place.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "TRACE without content",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/t": {
+                "trace": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1t/trace"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "TRACE"
+            },
+            {
+              "path": "/dispatch/body",
+              "absent": true
+            },
+            {
+              "path": "/dispatch/headers/content-type",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
