@@ -14934,6 +14934,189 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI32-PS-212",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "A supplied value at a multipart part whose declaration is a choice with two candidates refuses before dispatch, and no request is emitted. The part `choice` declares `anyOf: [{}, {not: {}}]`. Under Section 5.2, for an anyOf or oneOf choice a branch whose resolved declaration declares only `null` is skipped, every other branch (a typeless branch included) is a candidate, `not` never participates in resolution, and the choice supplies a single resolved member declaration only when exactly one candidate remains. `{}` is typeless and `{not: {}}` resolves typeless because `not` does not participate, so neither declares only `null`, two candidates remain, and no single member declaration results. Section 9.3 keys the Encoding default on the resolved declaration, so no default row reaches this part and no part carriage is defined: the alternative takes the accounting of every other choice with more than one non-null branch, and the supplied `choice` value fails every admission test and refuses before dispatch as the plain species (no supplied context repairs a declaration that resolves to no member). OAPI32-PS-213 is the control: the same shape with `anyOf: [{type: \"null\"}, {type: \"string\"}]` collapses to its one non-null candidate and dispatches. A processor that read the structure as the always-true schema would instead route the part to the typeless application/octet-stream default and send bytes the declaration does not select; the structure is not a boolean literal, and only a literal `true` written in the source is the always-true schema.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Ambiguous choice part",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "string"
+                            },
+                            "choice": {
+                              "anyOf": [
+                                {},
+                                {
+                                  "not": {}
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ok": "fine",
+              "choice": "eA=="
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "description": "No request is emitted: the supplied `choice` value reaches a part whose choice supplies no single resolved member declaration.",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-213",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9",
+      "description": "The control for the ambiguous-choice cell: a choice whose other branch declares only `null` collapses to its single remaining candidate and the part dispatches. The part `choice` declares `anyOf: [{type: \"null\"}, {type: \"string\"}]`; under Section 5.2 the null-only branch is skipped, exactly one candidate remains, and the choice supplies that branch's resolved member declaration, a plain string, which Section 9.3's Encoding default table carries as a text/plain part. The same document with `anyOf: [{}, {not: {}}]` at `choice` refuses before dispatch (the companion scenario), because there both branches are candidates.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Nullable choice part control",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "string"
+                            },
+                            "choice": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ok": "fine",
+              "choice": "id-1"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"choice\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "id-1"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

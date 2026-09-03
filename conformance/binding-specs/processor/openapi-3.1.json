@@ -10646,6 +10646,89 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI31-PS-158",
+      "rules": [
+        "OAPI31-P-03"
+      ],
+      "section": "9",
+      "description": "A supplied value at a multipart part whose declaration is a choice with two candidates refuses before dispatch, and no request is emitted. The part `choice` declares `anyOf: [{}, {not: {}}]`. Under Section 5.2, for an anyOf or oneOf choice a branch whose resolved declaration declares only `null` is skipped, every other branch (a typeless branch included) is a candidate, `not` never participates in resolution, and the choice supplies a single resolved member declaration only when exactly one candidate remains. `{}` is typeless and `{not: {}}` resolves typeless because `not` does not participate, so neither declares only `null`, two candidates remain, and no single member declaration results. Section 9.3 keys the Encoding default on the resolved declaration, so no default row reaches this part and no part carriage is defined: the alternative takes the accounting of every other choice with more than one non-null branch, and the supplied `choice` value fails every admission test and refuses before dispatch as the plain species (no supplied context repairs a declaration that resolves to no member). OAPI31-PS-50 is the control: the same shape with `anyOf: [{type: \"string\"}, {type: \"null\"}]` collapses to its one non-null candidate and dispatches. A processor that read the structure as the always-true schema would instead route the part to the typeless application/octet-stream default and send bytes the declaration does not select; the structure is not a boolean literal, and only a literal `true` written in the source is the always-true schema.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.1.2",
+            "info": {
+              "title": "Ambiguous choice part",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "ok": {
+                              "type": "string"
+                            },
+                            "choice": {
+                              "anyOf": [
+                                {},
+                                {
+                                  "not": {}
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "stored"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ok": "fine",
+              "choice": "eA=="
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "description": "No request is emitted: the supplied `choice` value reaches a part whose choice supplies no single resolved member declaration.",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
