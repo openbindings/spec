@@ -8966,6 +8966,204 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-170",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "Strict-JSON response parsing resolves duplicate object member names by taking the lexically last member, inside RFC 8259 Section 4's permitted receiver set. The 3.0-line twin of OAPI31-PS-118: §9.2's strict-JSON pin is identical on both lines, so the same wire fact is asserted here rather than left to the sibling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Duplicate names",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"x\":1,\"x\":2}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "x": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-171",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A leading byte-order mark on a JSON response body is ignored under RFC 8259 Section 8.1's parser latitude and is never part of the value: the body parses to exactly the value that follows the mark. The 3.0-line twin of OAPI31-PS-121.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Response BOM",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "﻿{\"ok\":true,\"mark\":\"a\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true,
+                  "mark": "a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI30-PS-172",
+      "rules": [
+        "OAPI30-P-03"
+      ],
+      "section": "9",
+      "description": "A lone surrogate escape in a JSON response body yields no value: it is a loud protocol error after a 2xx final status, because neither silent replacement of the escape nor invalid-Unicode passthrough preserves the supplied text. The 3.0-line twin of OAPI31-PS-122.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": {
+              "title": "Lone surrogate",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"s\":\"\\ud800\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
