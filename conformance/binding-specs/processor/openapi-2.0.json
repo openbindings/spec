@@ -9542,6 +9542,213 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-137",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "Strict-JSON response parsing resolves duplicate object member names by taking the last member in document order — the last one the parse encounters, never an ordering of the names themselves — inside RFC 8259 Section 4's permitted receiver set. The 2.0-line twin of OAPI31-PS-118, asserted with a body whose duplicated names are in descending lexical order so that document order and lexical order cannot both be satisfied.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Duplicate names",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"x\":1,\"x\":2}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "x": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-138",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A leading byte-order mark on a JSON response body is ignored under RFC 8259 Section 8.1's parser latitude and is never part of the value. The 2.0-line twin of OAPI31-PS-121.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Response BOM",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "﻿{\"ok\":true,\"mark\":\"a\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true,
+                  "mark": "a"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-139",
+      "rules": [
+        "OAPI20-P-03"
+      ],
+      "section": "9",
+      "description": "A lone surrogate escape in a JSON response body yields no value: it is a loud protocol error after a 2xx final status. This asserts the response half of 2.0 §9.2's pin only; that pin's request half — a caller-supplied request value carrying a lone surrogate refuses before dispatch — is unasserted here because expressing a lone surrogate as caller input requires it to survive the scenario file's own JSON, which is a corpus-format question rather than a binding one.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Lone surrogate",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "produces": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"s\":\"\\ud800\"}"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
