@@ -371,9 +371,9 @@ a namespace. A reader who has learned one should be able to predict where a
 second states its refusals, its coverage accounting, its configuration points,
 and its gaps.
 
-This is normative for **this project's own binding specifications only**. It
-says nothing about the core specification, and nothing about the artifacts we
-incorporate.
+This is publisher policy for **this project's own binding specifications only**.
+It carries no independent conformance weight, says nothing about the core
+specification, and says nothing about the artifacts we incorporate.
 
 **It is subordinate to fidelity, and the subordination is not close.** The
 families are genuinely different — a CLI descriptor and an event-driven
@@ -480,23 +480,14 @@ themselves.
 A gap is a missing link between one of [OBI-B-02](../openbindings.md#104-binding-specification-rules)'s
 seven items and a fixed observable. To fill one, ask in order:
 
-1. **Does the conformance corpus already pin the behavior, and pin it
-   CONSISTENTLY?** If it does, the question was decided and the prose
-   merely failed to say so — that is transcription, not decision. But a
-   corpus can hit a question and contradict itself doing so, across
-   siblings or within one document, and an agent that greps once then
-   transcribes a coin flip has made the ladder worse than no ladder.
-   Where the corpus is inconsistent, rung 1 does not answer: say so and
-   continue down the ladder, and record the inconsistency, because a
-   corpus that disagrees with itself is a finding in its own right.
-2. **Does the core specification answer it?** Sweep the WHOLE core
+1. **Does the core specification answer it?** Sweep the WHOLE core
    document and record the search terms you used. Do not grep one named
    section and stop: this project spent six readers on a gap because an
    instruction named §5.4, and Core §10.5 answered half of it in
    matching words — an unavailable external resource makes rule-level
    evidence `unverified` and is "not evidence of violation". Naming
    where to look is not the same as saying what to establish.
-3. **Does the incorporated upstream authority answer it — in the edition
+2. **Does the incorporated upstream authority answer it — in the edition
    this document actually accepts?** Not the newest edition, and not the
    one that happens to be open. **First check the authority is
    incorporated by THIS document at all.** An authority that settles a
@@ -506,6 +497,14 @@ seven items and a fixed observable. To fill one, ask in order:
    identifier means. Where a sibling's authority is unavailable, the
    question continues down the ladder for that document alone, and the
    documents legitimately reach the same outcome by different routes.
+3. **What does the conformance corpus already assert?** The corpus is
+   evidence of this specification's intended reading, never an authority
+   over Core or an incorporated upstream source. If it is consistent with
+   the two authorities above, use it to detect prose that failed to state
+   the intended result. If it conflicts with either authority, revise the
+   corpus and prose together; if it contradicts itself, record the
+   inconsistency and continue. A single matching scenario cannot decide a
+   semantic question by itself.
 4. **What do the sibling specifications already do?** Free, objective,
    and it buys uniformity at no cost.
 5. **Which option carries the fewest new commitments?** Every commitment

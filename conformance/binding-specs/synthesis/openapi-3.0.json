@@ -615,7 +615,6 @@
               "sourceRef": "#/paths/~1warninglists~1toggle/post/requestBody/content/application~1x-www-form-urlencoded",
               "scope": "alternative",
               "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
               "rule": "OAPI30-P-03",
               "requirements": []
             },
@@ -633,7 +632,6 @@
               "sourceRef": "#/paths/~1warninglists~1toggle-only/post",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.media_schema_mismatch",
               "rule": "OAPI30-P-03",
               "requirements": []
             },
@@ -651,7 +649,6 @@
               "sourceRef": "#/paths/~1warninglists~1toggle-optional/post/requestBody/content/application~1x-www-form-urlencoded",
               "scope": "alternative",
               "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
               "rule": "OAPI30-P-03",
               "requirements": []
             },
@@ -834,7 +831,6 @@
               "sourceRef": "#/paths/~1records/get",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.parameter_style_expansion_excluded",
               "rule": "OAPI30-P-02",
               "requirements": []
             },
@@ -870,7 +866,6 @@
               "sourceRef": "#/paths/~1upload/post/requestBody/content/application~1x-www-form-urlencoded",
               "scope": "alternative",
               "status": "excluded",
-              "reasonCode": "openapi.request_media_excluded",
               "rule": "OAPI30-P-03",
               "requirements": []
             }
@@ -1107,7 +1102,6 @@
               "sourceRef": "#/paths/~1plain/post",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.unresolvable_request_body",
               "rule": "OAPI30-P-03",
               "requirements": []
             }
@@ -1209,7 +1203,6 @@
               "sourceRef": "#/paths/~1avatars/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
               "status": "invalid",
-              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -1226,7 +1219,6 @@
               "sourceRef": "#/paths/~1uploads/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
               "status": "invalid",
-              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -1234,7 +1226,6 @@
               "sourceRef": "#/paths/~1avatars/post",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.media_schema_mismatch",
               "rule": "OAPI30-P-03",
               "requirements": []
             },
@@ -1590,7 +1581,6 @@
               "sourceRef": "#/paths/~1containers/get",
               "scope": "target",
               "status": "invalid",
-              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -1598,7 +1588,6 @@
               "sourceRef": "#/paths/~1searches/post",
               "scope": "target",
               "status": "excluded",
-              "reasonCode": "openapi.unresolvable_request_body",
               "rule": "OAPI30-P-03",
               "requirements": []
             },
@@ -1607,7 +1596,6 @@
               "sourceRef": "#/paths/~1searches/post/requestBody/content/application~1json",
               "scope": "alternative",
               "status": "invalid",
-              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             }
           ]
@@ -2179,14 +2167,13 @@
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": true,
+          "fullyRepresented": false,
           "entries": [
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1missing~1{id}/get",
               "scope": "target",
               "status": "invalid",
-              "reasonCode": "openapi.invalid_unit",
               "requirements": []
             },
             {
@@ -2197,6 +2184,1695 @@
               "operationKey": "repeatValue",
               "bindingSelector": "#/paths/~1repeat~1{id}~1{id}/get",
               "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-49",
+      "rules": [
+        "OAPI30-P-05",
+        "OAPI30-S-01",
+        "OAPI30-S-02"
+      ],
+      "description": "A source whose sole addressable operation is upstream-invalid is still accepted and synthesized; the target is accounted invalid rather than being reclassified as a whole-source refusal.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "All-invalid inventory",
+            "version": "1"
+          },
+          "paths": {
+            "/bad": {
+              "get": {
+                "operationId": "bad",
+                "responses": {}
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [],
+        "bindings": [],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1bad/get",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "OAPI30-P-05",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-50",
+      "rules": [
+        "OAPI30-S-03",
+        "OAPI30-S-07"
+      ],
+      "description": "A failure-only Response defect and an impossible 204 body declaration are subordinate coverage loss: both operations remain represented while the exact Response projections are accounted invalid and excluded.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Response projection accounting",
+            "version": "1"
+          },
+          "paths": {
+            "/failure": {
+              "get": {
+                "operationId": "failureProjection",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  },
+                  "400": {}
+                }
+              }
+            },
+            "/no-content": {
+              "get": {
+                "operationId": "noContentProjection",
+                "responses": {
+                  "204": {
+                    "description": "none",
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "failureProjection",
+          "noContentProjection"
+        ],
+        "bindings": [
+          {
+            "operationKey": "failureProjection",
+            "bindingSelector": "#/paths/~1failure/get"
+          },
+          {
+            "operationKey": "noContentProjection",
+            "bindingSelector": "#/paths/~1no-content/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1failure/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "failureProjection",
+              "bindingSelector": "#/paths/~1failure/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1failure/get/responses/400",
+              "scope": "projection",
+              "status": "invalid",
+              "rule": "OAPI30-P-10",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1no-content/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "noContentProjection",
+              "bindingSelector": "#/paths/~1no-content/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1no-content/get/responses/204/content",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI30-S-03",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-51",
+      "rules": [
+        "OAPI30-P-14",
+        "OAPI30-P-16",
+        "OAPI30-P-17"
+      ],
+      "description": "Header-name synthesis confines a non-token optional name to one excluded projection, propagates a non-token required name to its target, and excludes a processor-owned Transfer-Encoding target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Header projection confinement",
+            "version": "1"
+          },
+          "paths": {
+            "/optional": {
+              "get": {
+                "operationId": "optionalInvalidHeader",
+                "parameters": [
+                  {
+                    "name": "Bad Header",
+                    "in": "header",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/required": {
+              "get": {
+                "operationId": "requiredInvalidHeader",
+                "parameters": [
+                  {
+                    "name": "Bad Header",
+                    "in": "header",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/reserved": {
+              "get": {
+                "operationId": "reservedTransferEncoding",
+                "parameters": [
+                  {
+                    "name": "Transfer-Encoding",
+                    "in": "header",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "optionalInvalidHeader"
+        ],
+        "bindings": [
+          {
+            "operationKey": "optionalInvalidHeader",
+            "bindingSelector": "#/paths/~1optional/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalInvalidHeader",
+              "bindingSelector": "#/paths/~1optional/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional/get/parameters/0",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI30-P-14",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required/get",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI30-P-16",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1reserved/get",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI30-P-17",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-52",
+      "rules": [
+        "OAPI30-P-19",
+        "OAPI30-S-09"
+      ],
+      "description": "A non-HTTP artifact Server leaves the operation represented and records the server configuration requirement needed to obtain a dispatchable completed target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Recoverable server scheme",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "ftp://artifact.example/base"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "recoverableServer",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "recoverableServer"
+        ],
+        "bindings": [
+          {
+            "operationKey": "recoverableServer",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "recoverableServer",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-53",
+      "rules": [
+        "OAPI30-S-04"
+      ],
+      "description": "Non-token cookie parameters and response Header Object keys are accounted at their smallest projections, with required cookie and response-header forms propagated only to their load-bearing owners.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Cookie and response-header synthesis",
+            "version": "1"
+          },
+          "paths": {
+            "/optional-cookie": {
+              "get": {
+                "operationId": "optionalCookie",
+                "parameters": [
+                  {
+                    "name": "Bad Cookie",
+                    "in": "cookie",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/required-cookie": {
+              "get": {
+                "operationId": "requiredCookie",
+                "parameters": [
+                  {
+                    "name": "Bad Cookie",
+                    "in": "cookie",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/optional-response": {
+              "get": {
+                "operationId": "optionalResponseHeader",
+                "responses": {
+                  "204": {
+                    "description": "ok",
+                    "headers": {
+                      "Bad Header": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "/required-response": {
+              "get": {
+                "operationId": "requiredResponseHeader",
+                "responses": {
+                  "204": {
+                    "description": "ok",
+                    "headers": {
+                      "Bad Header": {
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "optionalCookie",
+          "optionalResponseHeader",
+          "requiredResponseHeader"
+        ],
+        "bindings": [
+          {
+            "operationKey": "optionalCookie",
+            "bindingSelector": "#/paths/~1optional-cookie/get"
+          },
+          {
+            "operationKey": "optionalResponseHeader",
+            "bindingSelector": "#/paths/~1optional-response/get"
+          },
+          {
+            "operationKey": "requiredResponseHeader",
+            "bindingSelector": "#/paths/~1required-response/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-cookie/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalCookie",
+              "bindingSelector": "#/paths/~1optional-cookie/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-cookie/get/parameters/0",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI30-S-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required-cookie/get",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI30-S-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-response/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalResponseHeader",
+              "bindingSelector": "#/paths/~1optional-response/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional-response/get/responses/204/headers/Bad Header",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI30-S-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required-response/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "requiredResponseHeader",
+              "bindingSelector": "#/paths/~1required-response/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required-response/get/responses/204",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-S-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-54",
+      "rules": [
+        "OAPI30-S-05"
+      ],
+      "description": "A default-only Responses Object is valid; the operation and its fallback Response projection remain fully represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Default-only responses",
+            "version": "1"
+          },
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "defaultOnly",
+                "responses": {
+                  "default": {
+                    "description": "fallback",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "servers": [
+            {
+              "url": "https://peer.example"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "defaultOnly"
+        ],
+        "bindings": [
+          {
+            "operationKey": "defaultOnly",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "defaultOnly",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/responses/default/content/application~1json/schema",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "defaultOnly",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-55",
+      "rules": [
+        "OAPI30-S-06"
+      ],
+      "description": "A required structured-cookie parameter makes the raw-Cookie credential alternative unusable, but the non-colliding OR alternative preserves the target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Cookie source ownership",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "cookieCollision",
+                "security": [
+                  {
+                    "raw": []
+                  },
+                  {
+                    "safe": []
+                  }
+                ],
+                "parameters": [
+                  {
+                    "name": "session",
+                    "in": "cookie",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "securitySchemes": {
+              "raw": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Cookie"
+              },
+              "safe": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Safe"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "cookieCollision"
+        ],
+        "bindings": [
+          {
+            "operationKey": "cookieCollision",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "cookieCollision",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/security/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-28",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-56",
+      "rules": [
+        "OAPI30-S-08"
+      ],
+      "description": "A required fixed-destination collision excludes only its credential alternative and preserves a safe OR sibling; the same collision with an optional parameter is not a static exclusion.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Credential collision ownership",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/required": {
+              "get": {
+                "operationId": "requiredCollision",
+                "security": [
+                  {
+                    "bad": []
+                  },
+                  {
+                    "safe": []
+                  }
+                ],
+                "parameters": [
+                  {
+                    "name": "X-Key",
+                    "in": "header",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/optional": {
+              "get": {
+                "operationId": "optionalCollision",
+                "security": [
+                  {
+                    "bad": []
+                  }
+                ],
+                "parameters": [
+                  {
+                    "name": "X-Key",
+                    "in": "header",
+                    "required": false,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "securitySchemes": {
+              "bad": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Key"
+              },
+              "safe": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Safe"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "requiredCollision",
+          "optionalCollision"
+        ],
+        "bindings": [
+          {
+            "operationKey": "requiredCollision",
+            "bindingSelector": "#/paths/~1required/get"
+          },
+          {
+            "operationKey": "optionalCollision",
+            "bindingSelector": "#/paths/~1optional/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "requiredCollision",
+              "bindingSelector": "#/paths/~1required/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required/get/security/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-32",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalCollision",
+              "bindingSelector": "#/paths/~1optional/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-57",
+      "rules": [
+        "OAPI30-S-10"
+      ],
+      "description": "TRACE excludes each credential-emitting security alternative, preserves an anonymous sibling when present, and excludes only the target left with no safe alternative.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "TRACE credential accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/safe": {
+              "trace": {
+                "operationId": "safeTrace",
+                "security": [
+                  {
+                    "key": []
+                  },
+                  {}
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/unsafe": {
+              "trace": {
+                "operationId": "unsafeTrace",
+                "security": [
+                  {
+                    "key": []
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          },
+          "components": {
+            "securitySchemes": {
+              "key": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Secret"
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "safeTrace"
+        ],
+        "bindings": [
+          {
+            "operationKey": "safeTrace",
+            "bindingSelector": "#/paths/~1safe/trace"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1safe/trace",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "safeTrace",
+              "bindingSelector": "#/paths/~1safe/trace",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1safe/trace/security/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-38",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsafe/trace",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI30-P-38",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-58",
+      "rules": [
+        "OAPI30-S-11"
+      ],
+      "description": "A coherent case-folded response Header group remains represented, while a mandatory Content-Encoding group with an empty finite-domain intersection is excluded only at its response alternative.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Response Header groups",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "responseGroups",
+                "responses": {
+                  "200": {
+                    "description": "conflict",
+                    "headers": {
+                      "Content-Encoding": {
+                        "required": true,
+                        "schema": {
+                          "type": "string",
+                          "enum": [
+                            "gzip"
+                          ]
+                        }
+                      },
+                      "content-encoding": {
+                        "required": true,
+                        "schema": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    },
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "201": {
+                    "description": "coherent",
+                    "headers": {
+                      "X-Proof": {
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      },
+                      "x-proof": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "responseGroups"
+        ],
+        "bindings": [
+          {
+            "operationKey": "responseGroups",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "responseGroups",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/responses/200",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-30",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/responses/201",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "responseGroups",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-59",
+      "rules": [
+        "OAPI30-S-12"
+      ],
+      "description": "A conflicting case-folded Encoding Header group is excluded at the multipart media alternative while a coherent JSON sibling preserves the required-body target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Encoding Header groups",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "post": {
+                "operationId": "encodingGroups",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "encoding": {
+                        "x": {
+                          "headers": {
+                            "X-Mode": {
+                              "required": true,
+                              "schema": {
+                                "type": "string",
+                                "enum": [
+                                  "a"
+                                ]
+                              }
+                            },
+                            "x-mode": {
+                              "required": true,
+                              "schema": {
+                                "type": "string",
+                                "enum": [
+                                  "b"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "encodingGroups"
+        ],
+        "bindings": [
+          {
+            "operationKey": "encodingGroups",
+            "bindingSelector": "#/paths/~1x/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "encodingGroups",
+              "bindingSelector": "#/paths/~1x/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-31",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "encodingGroups",
+              "bindingSelector": "#/paths/~1x/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-60",
+      "rules": [
+        "OAPI30-S-13"
+      ],
+      "description": "An unrepresentable multipart property name is accounted at its media-alternative owner while the target and an unrelated operation remain represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Multipart name accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/unsafe": {
+              "post": {
+                "operationId": "unsafeName",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "a\r\nb": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/safe": {
+              "get": {
+                "operationId": "safeOperation",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "unsafeName",
+          "safeOperation"
+        ],
+        "bindings": [
+          {
+            "operationKey": "unsafeName",
+            "bindingSelector": "#/paths/~1unsafe/post"
+          },
+          {
+            "operationKey": "safeOperation",
+            "bindingSelector": "#/paths/~1safe/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsafe/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "unsafeName",
+              "bindingSelector": "#/paths/~1unsafe/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsafe/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-39",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsafe/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "unsafeName",
+              "bindingSelector": "#/paths/~1unsafe/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1safe/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "safeOperation",
+              "bindingSelector": "#/paths/~1safe/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-61",
+      "rules": [
+        "OAPI30-S-14"
+      ],
+      "description": "A required request Content-Encoding parameter on a target with no surviving request lane excludes only that target; an unrelated operation remains represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Bodyless request coding",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/unsafe": {
+              "get": {
+                "operationId": "bodylessCoding",
+                "parameters": [
+                  {
+                    "name": "Content-Encoding",
+                    "in": "header",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/safe": {
+              "get": {
+                "operationId": "safeOperation",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "safeOperation"
+        ],
+        "bindings": [
+          {
+            "operationKey": "safeOperation",
+            "bindingSelector": "#/paths/~1safe/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1unsafe/get",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI30-P-41",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1safe/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "safeOperation",
+              "bindingSelector": "#/paths/~1safe/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-62",
+      "rules": [
+        "OAPI30-S-15"
+      ],
+      "description": "Every malformed Server Variable form on this edition is invalid at its Server-alternative owner (absent required default, wrong-typed required default); the operation remains represented with the configuration.server recovery requirement.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Invalid Server Variable forms",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://{host}.example",
+              "variables": {
+                "host": {
+                  "description": "missing required default"
+                }
+              }
+            },
+            {
+              "url": "https://{host}.example",
+              "variables": {
+                "host": {
+                  "default": 7
+                }
+              }
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "recoverInvalidServerVariables",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "recoverInvalidServerVariables"
+        ],
+        "bindings": [
+          {
+            "operationKey": "recoverInvalidServerVariables",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "recoverInvalidServerVariables",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/servers/0",
+              "scope": "alternative",
+              "status": "invalid",
+              "rule": "OAPI30-P-46",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/servers/1",
+              "scope": "alternative",
+              "status": "invalid",
+              "rule": "OAPI30-P-46",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-63",
+      "rules": [
+        "OAPI30-S-16"
+      ],
+      "description": "Empty-enum and out-of-enum-default Server declarations are upstream-valid 3.0 narrowings, so each is excluded only at its Server alternative while both operations remain represented with configuration.server recovery.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Excluded Server Variable declarations",
+            "version": "1"
+          },
+          "paths": {
+            "/empty": {
+              "get": {
+                "operationId": "emptyVariableEnum",
+                "servers": [
+                  {
+                    "url": "https://{host}.example",
+                    "variables": {
+                      "host": {
+                        "default": "api",
+                        "enum": []
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/outside": {
+              "get": {
+                "operationId": "outsideVariableDefault",
+                "servers": [
+                  {
+                    "url": "https://{host}.example",
+                    "variables": {
+                      "host": {
+                        "default": "api",
+                        "enum": [
+                          "prod"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "emptyVariableEnum",
+          "outsideVariableDefault"
+        ],
+        "bindings": [
+          {
+            "operationKey": "emptyVariableEnum",
+            "bindingSelector": "#/paths/~1empty/get"
+          },
+          {
+            "operationKey": "outsideVariableDefault",
+            "bindingSelector": "#/paths/~1outside/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1empty/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "emptyVariableEnum",
+              "bindingSelector": "#/paths/~1empty/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1empty/get/servers/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-47",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1outside/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "outsideVariableDefault",
+              "bindingSelector": "#/paths/~1outside/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1outside/get/servers/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI30-P-47",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI30-SS-64",
+      "rules": [
+        "OAPI30-S-17"
+      ],
+      "description": "A URL expression without a matching Server Variable declaration remains a represented Server alternative and operation; synthesis records configuration.server because an exact consumer substitution can complete it.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Configurable undeclared Server expression",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://{host}.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "configureServerExpression",
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "configureServerExpression"
+        ],
+        "bindings": [
+          {
+            "operationKey": "configureServerExpression",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "configureServerExpression",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": [
+                "configuration.server"
+              ]
             }
           ]
         }

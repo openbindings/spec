@@ -78,7 +78,14 @@
               },
               "runtime": {
                 "type": "object",
-                "description": "Named runtime facts such as an implemented usage version or supplied credentials."
+                "description": "Named runtime facts such as an implemented usage version, supplied credentials, or a portable codec capability map. In requestCharacterEncodings, responseCharacterEncodings, requestContentCodings, and responseContentCodings, keys compare case-insensitively and values name deterministic harness actions. The reserved action unavailable makes that direction's capability absent even when an adapter has a built-in codec; fail makes the capability raise if invoked; identity copies the exact test bytes or code points unchanged. Other nonempty action names select scenario-defined deterministic codecs such as unwrap or reverse.",
+                "properties": {
+                  "requestCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                  "responseCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                  "requestContentCodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                  "responseContentCodings": { "$ref": "#/$defs/codecCapabilityMap" }
+                },
+                "additionalProperties": true
               },
               "resources": {
                 "type": "object",
@@ -122,7 +129,7 @@
                 "description": { "type": "string" },
                 "assertions": {
                   "type": "array",
-                  "minItems": 1,
+                  "description": "Optional facts about the normalized observation beyond disposition and phase. Portable scenarios assert only wire dispatch or operation-value facts fixed by the governing binding specification; diagnostic error objects and concrete context-challenge record shapes are outside this format's comparison boundary.",
                   "items": {
                     "type": "object",
                     "required": ["path"],
@@ -155,6 +162,14 @@
           }
         }
       }
+    }
+  },
+  "$defs": {
+    "codecCapabilityMap": {
+      "type": "object",
+      "description": "Case-insensitive codec name to a deterministic harness action. unavailable forces absence in this direction; fail raises if invoked; identity copies the exact test bytes or code points unchanged.",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "additionalProperties": { "type": "string", "minLength": 1 }
     }
   },
   "allOf": [

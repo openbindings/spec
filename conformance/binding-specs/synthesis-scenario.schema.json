@@ -33,9 +33,19 @@
             "type": "string",
             "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-SS-[0-9]{2,}$"
           },
+          "rules": {
+            "description": "Atomic processor or synthesizer rules exercised by this scenario. Optional for legacy scenarios; the verifier requires complete S-rule coverage for the OpenAPI family.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-[PS]-[0-9]+$"
+            }
+          },
           "description": { "type": "string", "minLength": 1 },
           "source": {
-            "description": "One binding source, shaped by the published interface-synthesizer 0.2 contract's SynthesizeInterfaceSource schema. Its `anyOf` is adopted verbatim: a source the contract forbids cannot be declared here, so no scenario can require behavior from an input no conformant synthesizer accepts.",
+            "description": "One Core binding source. It must carry `location` or `content`, so every scenario describes a source admitted by the OpenBindings document model without depending on any project interface contract.",
             "type": "object",
             "required": ["bindingSpec"],
             "anyOf": [
@@ -99,7 +109,7 @@
                 }
               },
               "assertions": {
-                "description": "Optional pointer-addressed assertions evaluated against the emitted OBI document, reusing processor-scenario.schema.json's assertion object verbatim. Addressing rule: a path may traverse names an authority defines (the core document model, a binding specification, a published project interface, the JSON Schema dialect) and names the artifact itself supplies (an operation identifier, a declared property name). It MUST NOT traverse a name an implementation mints, such as a generated or qualified `$defs` cut-point key, because requiring a third-party implementation to reproduce a name no authority states makes conformance mean 'matches what we built'. Author an assertion only for a fact a finding is about; an assertion with no finding behind it is a golden file arriving by another route.",
+                "description": "Optional pointer-addressed assertions evaluated against the emitted OBI document, reusing processor-scenario.schema.json's assertion object verbatim. Addressing rule: a path may traverse names Core, the binding specification, or an incorporated authority defines, plus names the artifact itself supplies (an operation identifier or declared property name). It MUST NOT traverse a name an implementation or a separately versioned project interface mints, such as a generated or qualified `$defs` cut-point key, because requiring a third-party implementation to reproduce a name no governing authority states makes conformance mean 'matches what we built'. Author an assertion only for a fact a finding is about; an assertion with no finding behind it is a golden file arriving by another route.",
                 "type": "array",
                 "minItems": 1,
                 "items": {
@@ -198,7 +208,7 @@
       "properties": {
         "sourceIndex": { "type": "integer", "minimum": 0 },
         "sourceRef": { "type": "string", "minLength": 1 },
-        "scope": { "enum": ["target", "alternative", "projection", "dependency"] },
+        "scope": { "enum": ["source", "target", "alternative", "projection", "dependency"] },
         "status": {
           "enum": [
             "represented",
@@ -211,6 +221,7 @@
         "operationKey": { "type": "string", "minLength": 1 },
         "bindingSelector": { "type": "string" },
         "reasonCode": {
+          "description": "Optional diagnostic annotation retained for local triage. It is not part of portable comparison semantics and a conforming adapter MUST ignore its presence, absence, and spelling.",
           "type": "string",
           "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)+$"
         },
@@ -247,7 +258,6 @@
             ]
           },
           "else": {
-            "required": ["reasonCode"],
             "not": { "properties": { "scope": { "const": "dependency" } } }
           }
         }

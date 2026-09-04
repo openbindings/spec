@@ -7,10 +7,10 @@ ten standalone brownfield synthesis binding specifications, keyed to each specif
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
-| openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..04 |
-| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..04 |
-| openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..04 |
-| openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..04 |
+| openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..31 |
+| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..49 |
+| openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..48 |
+| openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..52 |
 | mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
@@ -106,6 +106,14 @@ dispatch, outputs, and terminal disposition. The scenario passes when the
 normalized observation satisfies every assertion in any one `expected`
 alternative.
 
+`disposition` and `phase` carry refusal and failure semantics directly. Extra
+assertions are limited to wire dispatch and operation-value facts fixed by the
+governing binding specification. Portable scenarios do not compare diagnostic
+error codes, error payloads, or the record shape through which an invocation
+interface presents a context requirement; those belong to that interface's
+own conformance suite. An empty assertion list is therefore meaningful when
+the expected disposition and phase completely state the governed result.
+
 Several alternatives are a feature: they preserve an artifact-permitted set
 without giving array order preference semantics. `OAPI31-PS-04` permits either
 declared JSON request media, and `USAGE-PS-07` permits either artifact-allowed
@@ -113,13 +121,25 @@ optional-delimiter spelling. Configuration objects name specification points
 (`server`, `message`, `protocolFields`, `target`, `route`) but deliberately do
 not prescribe an SDK's concrete configuration type.
 
+Portable codec facts live under `given.runtime`. The four directional maps are
+`requestCharacterEncodings`, `responseCharacterEncodings`,
+`requestContentCodings`, and `responseContentCodings`; their keys compare
+case-insensitively. The reserved action `unavailable` makes that exact
+directional capability absent even when an adapter has a built-in codec, while
+`fail` installs a sentinel capability that raises if invoked, and `identity`
+copies the exact test bytes or code points unchanged. Other nonempty action
+names select deterministic corpus codecs, including `unwrap` and `reverse`.
+These are harness facts rather than binding configuration points:
+they exist so a scenario can distinguish directionality, absence, failure, and
+the requirement not to invoke a decoder on a no-content response.
+
 Processor-scenario revision 2 re-keys the former unified `openapi` family as
 the exact `openapi-2.0`, `openapi-3.0`, `openapi-3.1`, and `openapi-3.2`
 siblings and carries their exact binding-specification identifiers. The
 exchange shape is otherwise unchanged. Revision-1 files for the other
 families remain valid and are not rewritten merely to advance a version.
 
-The current corpus contains 710 scenarios covering every P-rule of usage,
+The current corpus contains 921 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -127,8 +147,12 @@ sequential-response, and response-reference-identity batches, the
 hostile-pass fix-round and Go engine-round batches, the Round R
 upstream-invalid Response Object batch, and the Round R2 batch that carries
 that rule onto the 2.0 and 3.2 lanes and pins its success scope on all four
-(57 distinct rules). It
-includes artifact-permitted alternatives, required configuration, pre-dispatch
+(221 distinct rules). A complete citation set is a structural guarantee: it
+means no defined P-rule lacks a scenario, not that one scenario exercises every
+clause collected by a legacy umbrella rule. New semantic-closure rules use one
+stable P-rule identifier per observable claim so the corresponding scenario is
+directly traceable without relying on an umbrella citation. The corpus includes
+artifact-permitted alternatives, required configuration, pre-dispatch
 refusal, late streaming failure, lossless result preservation, and
 reserved-protocol collision cases. Independent adapters in `openbindings-go` and
 `openbindings-ts` execute every scenario for every family. The corpus is
@@ -154,12 +178,15 @@ usable after the source or peer changes.
 ## Portable synthesis scenarios
 
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json) defines the
-artifact-to-OBI proof boundary. Its version-4 exchange distinguishes two
+artifact-to-OBI proof boundary. Its version-5 OpenAPI exchange (with version 4
+retained for families that have not adopted dependency coverage) distinguishes two
 outcomes. A `synthesized` scenario contains one native source and expects the
 exact operation-key set, the exact `(operationKey, bindingSelector)` target
 identities, and an exhaustive coverage ledger normalized to stable semantic
-fields (`sourceRef`, scope, status, rule/reason identity, and runtime
-requirements). A `refused` scenario proves creation-time soundness: when an
+fields (`sourceRef`, scope, status, governing rule, and runtime requirements).
+A `reasonCode`, where retained for local triage, is a diagnostic annotation:
+portable adapters ignore its presence, absence, and spelling. A `refused`
+scenario proves creation-time soundness: when an
 upstream-valid target cannot be represented faithfully and no independent
 artifact alternative preserves it, synthesis fails as a whole rather than
 returning a statically unbindable partial interface. Refusal scenarios cite
@@ -178,8 +205,9 @@ binding specification follows its errata/revision discipline.
 `message` and family-specific `details` are intentionally absent from expected
 entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
-`fullyRepresented` is true only when every upstream-valid entry is represented
-(`invalid` source units do not count as upstream-valid). The 120 scenarios
+`fullyRepresented` is true only when every coverage entry is represented;
+`invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
+coverage loss. The 177 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
@@ -229,12 +257,10 @@ key nor a binding selector. This keeps dependency-key spelling outside the
 portable comparison surface, as the OpenAPI family requires. Revision-4 files
 for families with no dependency scenarios remain valid and unchanged.
 
-A scenario's `source` is shaped by the published
-[`interface-synthesizer`](https://openbindings.com/interfaces/interface-synthesizer)
-0.2 contract's `SynthesizeInterfaceSource`, whose `anyOf` this schema adopts
-verbatim: a source declares `location`, `content`, or both. A scenario
-therefore cannot demand behavior from an input shape no conformant synthesizer
-accepts.
+A scenario's `source` is shaped directly by Core's binding-source model: it
+declares `location`, `content`, or both. The corpus therefore remains usable by
+any synthesis surface and does not borrow its admissible inputs from a
+separately versioned project interface.
 
 The three scenario counts stated in this file are derived, not maintained by
 hand. `node scripts/count-binding-spec-scenarios.mjs` prints them per family
@@ -244,36 +270,31 @@ corpus disagree; a count worth publishing is worth failing on.
 ### What a synthesis scenario may pin
 
 The compared surface stops where it does for a reason, and the reason is worth
-stating so a later widening is argued rather than assumed. **A scenario may
-require what an authority defines — the core specification, a binding
-specification, or a published project interface — and must not require what
-every authority delegates to an implementation.**
+stating so a later widening is argued rather than assumed. **A portable
+binding-specification scenario may require what Core, the governing binding
+specification, or one of its incorporated authorities defines, and must not
+require a project interface's record shape or what every authority delegates
+to an implementation.** Interface-specific expectations belong in that
+interface's own conformance suite.
 
-Both halves need one fact that is easy to misread. A family specification's
-statement that generation is "outside this specification" is a **handoff, not an
-exclusion**: the OpenAPI siblings' synthesis boundary sends operation-key derivation,
-output-schema selection and schema translation to "the project's
-interface-synthesizer and reference-tool documentation", and the published
-contract accepts the handoff — "Derivation is this contract's domain … per-family
-derivation detail belongs to each implementation's own reference documentation."
-So generation splits in two. Cross-family derivation principles are contract-
-defined and therefore comparable: an operation key derived from a source-level
-identifier, `$ref` resolution to a self-contained OBI, cycle protection, and
-creation-time soundness. Per-family detail is not: what a synthesized definition
-is *named*, which member of a reference cycle is cut. That is why the expected
-surface is operation-key and target identity plus an exhaustive coverage ledger,
-all of it contract-defined, and why emitted schema content is compared only where
-a defect in it makes the emitted document core-non-conformant.
+The OpenAPI family specifications now define their synthesis semantics locally:
+target identity, operation-key stability, reference closure, coverage status,
+and creation-time soundness are portable because Core or the governing family
+specification fixes them. Presentation choices that those authorities leave
+free remain nonportable—for example, the name of a generated definition or
+which member of a reference cycle is chosen as a cut point. That is why the
+expected surface is operation-key and target identity plus an exhaustive
+coverage ledger, and why emitted schema content is compared only where a
+governing authority fixes the value being asserted.
 
 Requiring a name no authority fixes would make conformance mean "matches what we
 built" rather than "matches what the authorities say" — the inversion the
 [binding-specs authoring doctrine](../../binding-specs/README.md) names in its
 authority precedence — and it would fail an implementation that has broken no
-rule. Recording agreement is different from requiring conformance: where an
-authority requires a fact to exist but fixes no vocabulary for it (the contract
-requires a "stable family-namespaced reason code" without naming the codes), the
-corpus may record what the implementations agree on, which is what reference
-material is for under `openbindings.md` §10.1.
+rule. Recording agreement is different from requiring conformance: a retained
+`reasonCode` can help local triage, but because no governing authority fixes its
+spelling, portable adapters MUST ignore it. The portable verdict is carried by
+the status, source position, governing rule, and required configuration facts.
 
 #### The addressing rule for assertions
 
@@ -283,9 +304,9 @@ authority defines and names the artifact itself supplies. It MUST NOT traverse
 a name an implementation mints.**
 
 - Authority-defined: the core document model's members (`operations`, `input`,
-  `output`, `bindings`), a published project interface's members, and the
-  JSON Schema dialect's keywords (`properties`, `items`, `allOf`, `$defs`,
-  `example`).
+  `output`, `bindings`), members the governing binding specification defines,
+  and the JSON Schema dialect's keywords (`properties`, `items`, `allOf`,
+  `$defs`, `example`).
 - Artifact-supplied: an operation identifier the artifact declares, a property
   or parameter name it declares, a media type it declares.
 - Minted, and therefore out of bounds: a generated or qualified `$defs`
@@ -417,7 +438,7 @@ carries `violates`, and every `violates` entry names a rule the family spec
 or the core spec actually defines. Processor scenario files validate against
 their own schema; family, identifier, section, scenario ids, and every
 referenced P-rule are cross-checked verbatim against the owning family
-specification. The verifier requires complete P-rule coverage for all ten
+specification. The verifier requires complete P-rule citation coverage for all ten
 standalone specifications, including every OpenAPI sibling. Synthesis and
 invocation-fidelity scenario citations must likewise exist verbatim in their
 owning family specification or, for an OBI citation, in Core; no legacy-token
@@ -426,8 +447,9 @@ checked for all ten specifications, including target/disposition consistency.
 It asserts this README's three scenario counts against the corpus, and probes the
 synthesis schema with a source declaring neither `location` nor `content` to
 prove the adopted contract constraint is still enforced. It does not judge D
-verdicts or execute processor/synthesis scenarios — those are the jobs of
-family processors and adapters.
+verdicts, prove every clause collected by an umbrella rule, or execute
+processor/synthesis scenarios — those are the jobs of family processors,
+adapters, and semantic acceptance review.
 
 The spec repository's CI also checks out both reference SDKs and executes every
 portable processor and synthesis scenario against each family implementation.

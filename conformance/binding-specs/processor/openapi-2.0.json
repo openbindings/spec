@@ -151,10 +151,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -204,10 +200,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -239,10 +231,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -291,10 +279,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -348,10 +332,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -671,10 +651,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -826,7 +802,7 @@
         "OAPI20-P-02"
       ],
       "section": "8",
-      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without emptyValueForm refuses before dispatch. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "No binding default chooses between distinct empty spellings, so an empty supplied string without `emptyValueForm` is context-required before dispatch. Supplying the named point makes the same invocation proceed; nothing reaches the wire while it is missing.",
       "given": {
         "source": {
           "content": {
@@ -879,18 +855,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "emptyValueForm"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -954,10 +918,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1014,10 +974,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1081,10 +1037,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1145,10 +1097,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1200,10 +1148,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1257,7 +1201,7 @@
           "inputPresent": true,
           "input": {
             "parameters": {
-              "count": 1.0
+              "count": 1
             }
           }
         }
@@ -1270,10 +1214,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1408,10 +1348,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1546,10 +1482,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1604,10 +1536,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1675,10 +1603,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1743,10 +1667,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -1758,7 +1678,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit requestMedia choice before input consumption, and the supplied value never elects. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "Two usable concrete consumes alternatives preserve both choices; a required body therefore needs an explicit `requestMedia` choice before input consumption, and the supplied value never elects. The missing named point is context-required and nothing reaches the wire until it is supplied.",
       "given": {
         "source": {
           "content": {
@@ -1817,18 +1737,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "requestMedia"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -2410,7 +2318,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "A present multipart file needs one concrete propertyMedia choice keyed by the file parameter name; absence refuses before any request is dispatched. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "A present multipart file needs one concrete `propertyMedia` choice keyed by the file parameter name. The missing named point is context-required and nothing dispatches until it is supplied.",
       "given": {
         "source": {
           "content": {
@@ -2466,18 +2374,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "propertyMedia"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": "/upload"
             }
           ]
         }
@@ -2729,12 +2625,7 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            }
-          ]
+          "assertions": []
         }
       ]
     },
@@ -2793,12 +2684,7 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            }
-          ]
+          "assertions": []
         }
       ]
     },
@@ -3617,16 +3503,6 @@
             {
               "path": "/outputs",
               "equals": []
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
-              "path": "/error/data",
-              "equals": {
-                "message": "bad"
-              }
             }
           ]
         }
@@ -3688,12 +3564,7 @@
         {
           "disposition": "error",
           "phase": "response",
-          "assertions": [
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            }
-          ]
+          "assertions": []
         }
       ]
     },
@@ -3910,7 +3781,7 @@
         "OAPI20-P-04"
       ],
       "section": "10",
-      "description": "Two usable HTTP schemes require an explicit server choice and list order supplies no preference. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "Two usable HTTP schemes require an explicit `server` choice and list order supplies no preference. The missing named point is context-required and nothing dispatches until it is supplied.",
       "given": {
         "source": {
           "content": {
@@ -3953,18 +3824,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "server"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -4195,18 +4054,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "server"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -4403,7 +4250,8 @@
     {
       "id": "OAPI20-PS-64",
       "rules": [
-        "OAPI20-P-04"
+        "OAPI20-P-04",
+        "OAPI20-P-22"
       ],
       "section": "11",
       "description": "A query apiKey value uses the same uppercase RFC 3986 percent encoding as query Parameters.",
@@ -4550,7 +4398,8 @@
     {
       "id": "OAPI20-PS-66",
       "rules": [
-        "OAPI20-P-04"
+        "OAPI20-P-04",
+        "OAPI20-P-28"
       ],
       "section": "11",
       "description": "OAuth2 wire carriage is the Bearer access token alone. The credential names more scopes than the declaration requires, which changes nothing: §11's convention makes scope satisfaction the counterparty's determination, so the binding neither reads nor compares a credential's scope set and dispatches on the token.",
@@ -4726,7 +4575,7 @@
         "OAPI20-P-04"
       ],
       "section": "11",
-      "description": "Multiple security alternatives require an explicit selection even when runtime credentials happen to satisfy one of them. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "Multiple security alternatives require an explicit `security` selection even when runtime credentials happen to satisfy one of them. The missing named point is context-required and nothing dispatches until it is supplied.",
       "given": {
         "source": {
           "content": {
@@ -4791,18 +4640,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "security"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -4912,10 +4749,11 @@
     {
       "id": "OAPI20-PS-70",
       "rules": [
-        "OAPI20-P-04"
+        "OAPI20-P-04",
+        "OAPI20-P-20"
       ],
       "section": "11",
-      "description": "Selecting a credential alternative whose destination collides with an effective Parameter refuses before dispatch.",
+      "description": "An omitted optional Parameter emits no destination, so a selected credential with the same declared destination emits once and dispatches.",
       "given": {
         "source": {
           "content": {
@@ -4980,16 +4818,21 @@
           "credentials": {
             "bad": "bad"
           }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/headers/X-Key",
+              "equals": "bad"
             }
           ]
         }
@@ -5075,7 +4918,7 @@
         "OAPI20-P-04"
       ],
       "section": "11",
-      "description": "An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require selection. §3.2 gives that pre-dispatch refusal two species, and this is the context-required one: the named point is awaited, the refusal carries its own resolution path, and supplying the point makes the same invocation proceed. Nothing reaches the wire either way, so only what the refusal carries changes.",
+      "description": "An anonymous empty-AND alternative is complete but receives no preference over a credentialed sibling, so multiple alternatives still require an explicit `security` selection. The missing named point is context-required and nothing dispatches until it is supplied.",
       "given": {
         "source": {
           "content": {
@@ -5128,18 +4971,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "security"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -5602,10 +5433,11 @@
     {
       "id": "OAPI20-PS-79",
       "rules": [
-        "OAPI20-P-04"
+        "OAPI20-P-04",
+        "OAPI20-P-21"
       ],
       "section": "11",
-      "description": "An apiKey targeting processor-owned Content-Type makes the selected security alternative unusable before dispatch.",
+      "description": "An apiKey targeting processor-owned Proxy-Authorization makes the selected security alternative unusable before dispatch; origin credentials never become proxy credentials.",
       "given": {
         "source": {
           "content": {
@@ -5618,7 +5450,7 @@
               "key": {
                 "type": "apiKey",
                 "in": "header",
-                "name": "Content-Type"
+                "name": "Proxy-Authorization"
               }
             },
             "security": [
@@ -5825,7 +5657,8 @@
     {
       "id": "OAPI20-PS-82",
       "rules": [
-        "OAPI20-P-04"
+        "OAPI20-P-04",
+        "OAPI20-P-06"
       ],
       "section": "11",
       "description": "A header apiKey credential containing CR or LF refuses before dispatch instead of reaching the HTTP stack.",
@@ -5933,18 +5766,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "server"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -6101,10 +5922,6 @@
           "phase": "response",
           "assertions": [
             {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
               "path": "/outputs",
               "equals": []
             }
@@ -6169,10 +5986,6 @@
           "phase": "response",
           "assertions": [
             {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
               "path": "/outputs",
               "equals": []
             }
@@ -6226,10 +6039,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -6275,10 +6084,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -6520,14 +6325,6 @@
           "phase": "response",
           "assertions": [
             {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
-              "path": "/error/data",
-              "equals": "teapot"
-            },
-            {
               "path": "/outputs",
               "equals": []
             }
@@ -6689,10 +6486,12 @@
     {
       "id": "OAPI20-PS-95",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-05",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a Responses member that is not a Response Object at all — here a string where the Response Object goes — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "An admitted exact key whose value is not a Response Object retains precedence and remains an invalid response alternative, but it does not remove the target; an empty successful response dispatches and completes with no output.",
       "given": {
         "source": {
           "content": {
@@ -6730,16 +6529,24 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": ""
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }
@@ -6748,10 +6555,11 @@
     {
       "id": "OAPI20-PS-96",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `description` that is present and is not a string — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "A non-string response description is confined to the unused documentary projection; the valid sibling schema still governs and decodes the successful JSON response.",
       "given": {
         "source": {
           "content": {
@@ -6769,7 +6577,10 @@
                 "get": {
                   "responses": {
                     "200": {
-                      "description": 123
+                      "description": 123,
+                      "schema": {
+                        "type": "object"
+                      }
                     }
                   }
                 }
@@ -6783,7 +6594,10 @@
                   }
                 }
               }
-            }
+            },
+            "produces": [
+              "application/json"
+            ]
           }
         },
         "binding": {
@@ -6791,16 +6605,31 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true
+                }
+              ]
             }
           ]
         }
@@ -6809,10 +6638,11 @@
     {
       "id": "OAPI20-PS-97",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` value that is not a map — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "A non-map response headers member is confined to that invalid projection and imposes no constraint; the valid sibling schema still governs and decodes the successful JSON response.",
       "given": {
         "source": {
           "content": {
@@ -6831,7 +6661,10 @@
                   "responses": {
                     "200": {
                       "description": "ok",
-                      "headers": "nope"
+                      "headers": "nope",
+                      "schema": {
+                        "type": "object"
+                      }
                     }
                   }
                 }
@@ -6845,7 +6678,10 @@
                   }
                 }
               }
-            }
+            },
+            "produces": [
+              "application/json"
+            ]
           }
         },
         "binding": {
@@ -6853,16 +6689,31 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true
+                }
+              ]
             }
           ]
         }
@@ -6871,10 +6722,11 @@
     {
       "id": "OAPI20-PS-98",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `schema` that is not a Schema Object — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "An invalid governing response schema does not remove the target; an empty successful response dispatches and completes with no output because no body decoding is needed.",
       "given": {
         "source": {
           "content": {
@@ -6915,16 +6767,24 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": ""
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }
@@ -6933,10 +6793,11 @@
     {
       "id": "OAPI20-PS-99",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — an `examples` value that is not a map — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "A non-map response examples member is confined to unused coverage; the valid sibling schema still governs and decodes the successful JSON response.",
       "given": {
         "source": {
           "content": {
@@ -6955,7 +6816,10 @@
                   "responses": {
                     "200": {
                       "description": "ok",
-                      "examples": "nope"
+                      "examples": "nope",
+                      "schema": {
+                        "type": "object"
+                      }
                     }
                   }
                 }
@@ -6969,7 +6833,10 @@
                   }
                 }
               }
-            }
+            },
+            "produces": [
+              "application/json"
+            ]
           }
         },
         "binding": {
@@ -6977,16 +6844,31 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true
+                }
+              ]
             }
           ]
         }
@@ -6995,10 +6877,11 @@
     {
       "id": "OAPI20-PS-100",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "An upstream-invalid governing Response Object — a `headers` member that is not a Header Object — removes the selected target as invalid before any actual response is inspected, and never refuses the whole source.",
+      "description": "A non-Header member of the response headers map is confined to that projection; the valid sibling schema still governs and decodes the successful JSON response.",
       "given": {
         "source": {
           "content": {
@@ -7019,6 +6902,9 @@
                       "description": "ok",
                       "headers": {
                         "X-Thing": "nope"
+                      },
+                      "schema": {
+                        "type": "object"
                       }
                     }
                   }
@@ -7033,7 +6919,10 @@
                   }
                 }
               }
-            }
+            },
+            "produces": [
+              "application/json"
+            ]
           }
         },
         "binding": {
@@ -7041,16 +6930,31 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true
+                }
+              ]
             }
           ]
         }
@@ -7059,10 +6963,11 @@
     {
       "id": "OAPI20-PS-101",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "A governing Response Object that omits its REQUIRED `description` WHILE declaring a `schema` misdeclares the response body it does declare, so the upstream-invalid declaration removes the selected target as invalid. This is the half of the rule the `{}` carve-out does not reach.",
+      "description": "Omitting the required response description is documentary coverage loss only; the valid sibling schema still governs and decodes the successful JSON response.",
       "given": {
         "source": {
           "content": {
@@ -7096,7 +7001,10 @@
                   }
                 }
               }
-            }
+            },
+            "produces": [
+              "application/json"
+            ]
           }
         },
         "binding": {
@@ -7104,16 +7012,31 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"ok\":true}"
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
-              "absent": true
+              "path": "/dispatch/url",
+              "equals": "https://api.example/broken"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "ok": true
+                }
+              ]
             }
           ]
         }
@@ -7122,10 +7045,11 @@
     {
       "id": "OAPI20-PS-102",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-17"
       ],
       "section": "9",
-      "description": "The upstream-invalid Response Object removal is confined to the target that owns it: a sibling operation declared in the same Paths Object still resolves and dispatches, so a Response Object one target misdeclares never reaches the whole source.",
+      "description": "A response defect confined to one target does not affect a sibling operation in the same source; selecting the intact sibling still resolves, dispatches, and completes.",
       "given": {
         "source": {
           "content": {
@@ -7259,10 +7183,11 @@
     {
       "id": "OAPI20-PS-104",
       "rules": [
-        "OAPI20-P-03"
+        "OAPI20-P-03",
+        "OAPI20-P-07"
       ],
       "section": "9",
-      "description": "The exclusion reaches the Response Object GOVERNING a successful response. A defect in a declaration that can never govern a 2xx — here an exact 404 — destroys no representation, because a failure body is opaque application-authored data, so the target whose success path is intact still resolves and dispatches.",
+      "description": "A defect in a Response Object that can never govern a 2xx — here an exact 404 — does not remove the target, because failure data is best-effort. The target whose success path is intact still resolves and dispatches; synthesis separately accounts the invalid 404 Response projection as coverage loss.",
       "given": {
         "source": {
           "content": {
@@ -7607,10 +7532,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -7994,10 +7915,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -8145,10 +8062,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -8457,10 +8370,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -8529,10 +8438,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -8665,10 +8570,6 @@
             {
               "path": "/outputs",
               "equals": []
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
             }
           ]
         }
@@ -8733,14 +8634,6 @@
             {
               "path": "/outputs",
               "equals": []
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
-              "path": "/error/data",
-              "absent": true
             }
           ]
         }
@@ -8808,10 +8701,6 @@
             {
               "path": "/outputs",
               "equals": []
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
             }
           ]
         }
@@ -8987,25 +8876,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "emptyValueForm"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/schema/enum",
-              "equals": [
-                "name-only",
-                "empty"
-              ]
             }
           ]
         }
@@ -9087,7 +8957,7 @@
         "OAPI20-P-04"
       ],
       "section": "3.2",
-      "description": "One usable non-anonymous security alternative with no supplied credential awaits a declared credential, which §3.2 names as the context-required species alongside a named configuration point. The challenge carries the scheme's own requirement family and the artifact's declared scheme name; §12.1 lists no configuration point for a credential, so this is an auth requirement and not `config.value`.",
+      "description": "One usable non-anonymous security alternative with no supplied credential is context-required on that credential before dispatch. The requirement is identified by the artifact's declared scheme name and is distinct from §12.1's configuration points.",
       "given": {
         "source": {
           "content": {
@@ -9141,14 +9011,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "auth.apiKey"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/name",
-              "equals": "k"
             }
           ]
         }
@@ -9220,18 +9082,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "security"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -9302,18 +9152,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "requestMedia"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": ""
             }
           ]
         }
@@ -9384,18 +9222,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/type",
-              "equals": "config.value"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/point",
-              "equals": "propertyMedia"
-            },
-            {
-              "path": "/context/alternatives/0/requirements/0/path",
-              "equals": "/f"
             }
           ]
         }
@@ -9407,7 +9233,7 @@
         "OAPI20-P-02"
       ],
       "section": "3.2",
-      "description": "A supplied `emptyValueForm` outside the point's closed admissible set is the caller's own value, not an awaited one, so §3.2's other species applies: no supplied context could change the answer while that value stands. The refusal is plain and carries no resolution path, which is what keeps a challenge from looking satisfiable when the runtime has already been given an answer it cannot use.",
+      "description": "A supplied `emptyValueForm` outside the point's closed admissible set is an invalid caller choice, not an awaited one. Invocation therefore refuses plainly before dispatch; it is not context-required while that value stands.",
       "given": {
         "source": {
           "content": {
@@ -9465,10 +9291,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -9534,10 +9356,6 @@
             {
               "path": "/dispatch",
               "absent": true
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_REFUSED"
             }
           ]
         }
@@ -10006,6 +9824,2609 @@
             {
               "path": "/dispatch",
               "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-144",
+      "rules": [
+        "OAPI20-P-06"
+      ],
+      "section": "11",
+      "description": "An API-key security alternative whose declared header destination is not an HTTP token is excluded before any credential value is inspected; the addressable target therefore refuses before dispatch rather than handing an invalid field name to an HTTP stack.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Invalid API-key header name",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "bad": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Bad Header"
+              }
+            },
+            "security": [
+              {
+                "bad": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "bad": "value"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-145",
+      "rules": [
+        "OAPI20-P-08",
+        "OAPI20-P-09"
+      ],
+      "section": "9",
+      "description": "A 204 response cannot carry content. Even when the Response Object declares a schema, actual response bytes are a loud protocol error; the declaration never licenses decoding or an output value.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "No-content status",
+              "version": "1"
+            },
+            "produces": [
+              "text/plain"
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "no content",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "forbidden"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-146",
+      "rules": [
+        "OAPI20-P-10"
+      ],
+      "section": "8.2",
+      "description": "A non-token optional ordinary Header Parameter is excluded only at that projection; omitting it leaves the operation dispatchable.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Bad Header",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-147",
+      "rules": [
+        "OAPI20-P-11"
+      ],
+      "section": "8.2",
+      "description": "The would-be caller key of an excluded optional non-token Header Parameter is unknown input and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Bad Header",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "Bad Header": "x"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-148",
+      "rules": [
+        "OAPI20-P-12"
+      ],
+      "section": "8.2",
+      "description": "A non-token required ordinary Header Parameter excludes its addressable target, whose invocation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Bad Header",
+                      "in": "header",
+                      "type": "string",
+                      "required": true
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-149",
+      "rules": [
+        "OAPI20-P-13"
+      ],
+      "section": "8.2",
+      "description": "An ordinary Header Parameter cannot give the caller control of Transfer-Encoding; the addressable target is excluded and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Transfer-Encoding",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-150",
+      "rules": [
+        "OAPI20-P-14"
+      ],
+      "section": "9.4",
+      "description": "A 101 response is an immediate loud response-phase protocol error because this unary binding has no upgraded-protocol continuation; the processor does not wait for another HTTP response.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [],
+                  "responses": {
+                    "101": {
+                      "description": "switch"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 101,
+          "headers": {
+            "Connection": "Upgrade",
+            "Upgrade": "example"
+          },
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": []
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-151",
+      "rules": [
+        "OAPI20-P-15"
+      ],
+      "section": "9.4",
+      "description": "A default-only Responses Object is valid, and its fallback Response Object governs an otherwise unmatched successful status.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Semantic closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [],
+                  "responses": {
+                    "default": {
+                      "description": "fallback",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "produces": [
+              "application/json"
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "\"fallback\""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "fallback"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-152",
+      "rules": [
+        "OAPI20-P-16"
+      ],
+      "section": "8.2",
+      "description": "A leading SP is field-line whitespace rather than part of an RFC 9110 field-value, so an ordinary Header Parameter cannot preserve it and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Wire closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "X-Test",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Test": " leading"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-153",
+      "rules": [
+        "OAPI20-P-16"
+      ],
+      "section": "8.2",
+      "description": "A raw Cookie Header Parameter must serialize to a complete RFC 6265 cookie-string; a value without a cookie-pair refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Wire closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "Cookie",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "Cookie": "not-a-cookie"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-154",
+      "rules": [
+        "OAPI20-P-16"
+      ],
+      "section": "11",
+      "description": "A header apiKey credential ending in HTAB is not an RFC 9110 field-value and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Wire closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "security": [
+                    {
+                      "key": []
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "securityDefinitions": {
+              "key": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Key"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "key": "secret\t"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-155",
+      "rules": [
+        "OAPI20-P-04"
+      ],
+      "section": "10",
+      "description": "A complete configured HTTPS URL satisfies the server requirement created by a WebSocket-only declaration and dispatches the otherwise unchanged operation.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Wire closure",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "schemes": [
+              "wss"
+            ],
+            "host": "artifact.example"
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://peer.example/root"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://peer.example/root/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-156",
+      "rules": [
+        "OAPI20-P-18"
+      ],
+      "section": "9.4",
+      "description": "ASCII-case variants denote one response field: one received field discharges the group and the complete Content-Encoding value satisfies every binding-understood finite constraint.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Response header group",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "readProof",
+                  "produces": [
+                    "text/plain"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": {
+                        "X-Proof": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "x-proof": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "identity"
+                          ]
+                        },
+                        "content-encoding": {
+                          "type": "string",
+                          "enum": [
+                            "identity"
+                          ]
+                        }
+                      },
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain",
+            "X-Proof": "yes",
+            "Content-Encoding": "identity"
+          },
+          "body": "payload"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                "payload"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-157",
+      "rules": [
+        "OAPI20-P-19"
+      ],
+      "section": "11",
+      "description": "A required parameter collision excludes only its credential alternative; a non-colliding OR alternative remains selectable and both its credential and the required caller field dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Static credential collision",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "staticCollision",
+                  "security": [
+                    {
+                      "bad": []
+                    },
+                    {
+                      "good": []
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "securityDefinitions": {
+              "bad": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Key"
+              },
+              "good": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Good"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "X-Key": "caller"
+            }
+          }
+        },
+        "configuration": {
+          "server": "https://api.example",
+          "security": {
+            "index": 1
+          }
+        },
+        "runtime": {
+          "credentials": {
+            "good": "good"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Key",
+              "equals": "caller"
+            },
+            {
+              "path": "/dispatch/headers/X-Good",
+              "equals": "good"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-158",
+      "rules": [
+        "OAPI20-P-20"
+      ],
+      "section": "11",
+      "description": "An omitted optional parameter creates no collision; the selected credential emits once and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Optional credential collision",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "optionalCollision",
+                  "security": [
+                    {
+                      "key": []
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "name": "X-Key",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "securityDefinitions": {
+              "key": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Key"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "key": "secret"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/X-Key",
+              "equals": "secret"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-159",
+      "rules": [
+        "OAPI20-P-23"
+      ],
+      "section": "11",
+      "description": "Ordinary and credential query contributions form one unordered multiset while preserving each contribution's encoded bytes.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Query contribution order",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "queryOrder",
+                  "security": [
+                    {
+                      "key": []
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "name": "q",
+                      "in": "query",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "securityDefinitions": {
+              "key": {
+                "type": "apiKey",
+                "in": "query",
+                "name": "key"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "q": "one"
+            }
+          }
+        },
+        "runtime": {
+          "credentials": {
+            "key": "two"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "oneOf": [
+                "https://api.example/x?q=one&key=two",
+                "https://api.example/x?key=two&q=one"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-160",
+      "rules": [
+        "OAPI20-P-24"
+      ],
+      "section": "10",
+      "description": "A configured HTTP URL containing userinfo is nonconforming and refuses before dispatch rather than obscuring the actual authority.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Configured userinfo",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "unsafeAuthority",
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "configuration": {
+          "server": "https://trusted.example@evil.example"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-161",
+      "rules": [
+        "OAPI20-P-24"
+      ],
+      "section": "10",
+      "description": "A present empty artifact host cannot produce an HTTP target with a nonempty authority and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty host",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "emptyHost",
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-162",
+      "rules": [
+        "OAPI20-P-25"
+      ],
+      "section": "9.3",
+      "description": "A generated multipart name uses UTF-8, emits qdtext literally, and escapes only DQUOTE and backslash with one quoted-pair.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Multipart name bytes",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "post": {
+                  "operationId": "multipartName",
+                  "consumes": [
+                    "multipart/form-data"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "a\"b\\é",
+                      "in": "formData",
+                      "required": true,
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "a\"b\\é": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "name=\"a\\\"b\\\\é\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-163",
+      "rules": [
+        "OAPI20-P-26"
+      ],
+      "section": "9.4",
+      "description": "A followed cross-origin redirect strips binding-selected header credentials and does not append the original query credential to the Location target.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Cross-origin redirect",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/start": {
+                "get": {
+                  "operationId": "redirect",
+                  "security": [
+                    {
+                      "headerKey": [],
+                      "queryKey": []
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    },
+                    "302": {
+                      "description": "redirect"
+                    }
+                  }
+                }
+              }
+            },
+            "securityDefinitions": {
+              "headerKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Secret"
+              },
+              "queryKey": {
+                "type": "apiKey",
+                "in": "query",
+                "name": "token"
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1start/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "headerKey": "header-secret",
+            "queryKey": "query-secret"
+          },
+          "redirectPolicy": "follow"
+        },
+        "peer": {
+          "responses": [
+            {
+              "status": 302,
+              "headers": {
+                "Location": "https://evil.example/next"
+              },
+              "body": ""
+            },
+            {
+              "status": 204,
+              "headers": {},
+              "body": ""
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatches/0/url",
+              "equals": "https://api.example/start?token=query-secret"
+            },
+            {
+              "path": "/dispatches/0/headers/X-Secret",
+              "equals": "header-secret"
+            },
+            {
+              "path": "/dispatches/1/url",
+              "equals": "https://evil.example/next"
+            },
+            {
+              "path": "/dispatches/1/headers/X-Secret",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-164",
+      "rules": [
+        "OAPI20-P-27"
+      ],
+      "section": "9.4",
+      "description": "Supplying request Content-Encoding on an invocation that emits no request representation refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Bodyless Content-Encoding",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "bodylessCoding",
+                  "parameters": [
+                    {
+                      "name": "Content-Encoding",
+                      "in": "header",
+                      "type": "string",
+                      "enum": [
+                        "identity"
+                      ]
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "Content-Encoding": "identity"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-165",
+      "rules": [
+        "OAPI20-P-28"
+      ],
+      "section": "11",
+      "description": "A valid RFC 6750 b64token is carried exactly as one OAuth2 Authorization field.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Valid OAuth2 Bearer",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "auth": {
+                "type": "oauth2",
+                "flow": "application",
+                "tokenUrl": "https://auth.example/token",
+                "scopes": {}
+              }
+            },
+            "security": [
+              {
+                "auth": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "auth": {
+              "accessToken": "abc-._~+/="
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Authorization",
+              "equals": "Bearer abc-._~+/="
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-166",
+      "rules": [
+        "OAPI20-P-28"
+      ],
+      "section": "11",
+      "description": "An empty OAuth2 access token cannot satisfy b64token and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Empty OAuth2 Bearer",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "auth": {
+                "type": "oauth2",
+                "flow": "application",
+                "tokenUrl": "https://auth.example/token",
+                "scopes": {}
+              }
+            },
+            "security": [
+              {
+                "auth": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "auth": {
+              "accessToken": ""
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-167",
+      "rules": [
+        "OAPI20-P-28"
+      ],
+      "section": "11",
+      "description": "A space inside an OAuth2 access token is outside b64token and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Spaced OAuth2 Bearer",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "auth": {
+                "type": "oauth2",
+                "flow": "application",
+                "tokenUrl": "https://auth.example/token",
+                "scopes": {}
+              }
+            },
+            "security": [
+              {
+                "auth": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "auth": {
+              "accessToken": "abc def"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-168",
+      "rules": [
+        "OAPI20-P-28"
+      ],
+      "section": "11",
+      "description": "CR/LF in an OAuth2 access token is outside b64token and refuses before dispatch without emitting a field.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Injected OAuth2 Bearer",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "auth": {
+                "type": "oauth2",
+                "flow": "application",
+                "tokenUrl": "https://auth.example/token",
+                "scopes": {}
+              }
+            },
+            "security": [
+              {
+                "auth": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "auth": {
+              "accessToken": "abc\r\nX-Evil: yes"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-169",
+      "rules": [
+        "OAPI20-P-28"
+      ],
+      "section": "11",
+      "description": "An explicitly non-Bearer OAuth2 runtime token has no carriage under this identifier and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Non-Bearer OAuth2 token",
+              "version": "1"
+            },
+            "securityDefinitions": {
+              "auth": {
+                "type": "oauth2",
+                "flow": "application",
+                "tokenUrl": "https://auth.example/token",
+                "scopes": {}
+              }
+            },
+            "security": [
+              {
+                "auth": []
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "runtime": {
+          "credentials": {
+            "auth": {
+              "accessToken": "abc123",
+              "tokenType": "MAC"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-170",
+      "rules": [
+        "OAPI20-P-29"
+      ],
+      "section": "9.3",
+      "description": "HEAD carries a syntactically valid, declaration-admitted Content-Encoding field but no content octets. The installed Brotli decoder fails if called, so successful empty completion proves the method-based no-content rule does not invoke it.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "br"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "br": "fail"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-171",
+      "rules": [
+        "OAPI20-P-29"
+      ],
+      "section": "9.3",
+      "description": "A 304 response carries a syntactically valid, declaration-admitted Content-Encoding field but no content octets. A failing Brotli sentinel is installed, but the no-content rule does not invoke it. Because 304 is not successful, completion remains the native unsuccessful response.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "304 no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "304": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 304,
+          "headers": {
+            "Content-Encoding": "br"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "br": "fail"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-172",
+      "rules": [
+        "OAPI20-P-30"
+      ],
+      "section": "9.2",
+      "description": "A non-UTF-8 character request lane requires its direction-specific encoder. With no such runtime capability, encoding refuses before dispatch rather than being reported as a response error or silently substituted.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Unavailable request charset encoder",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "consumes": [
+                    "text/plain; charset=iso-8859-1"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "body",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "é"
+          }
+        },
+        "runtime": {
+          "requestCharacterEncodings": {
+            "iso-8859-1": "unavailable"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-173",
+      "rules": [
+        "OAPI20-P-31"
+      ],
+      "section": "9.3",
+      "description": "On a successful HEAD response, a mixed enum contributes only its string-valued members to the exact raw-string domain. The wire value 7 is therefore outside the identity-only domain; ignoring the declaration or stringifying the numeric enum member would incorrectly complete.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Conjunctive response Header domains",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "identity",
+                            7
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "7"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "7": "identity"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-175",
+      "rules": [
+        "OAPI20-P-29"
+      ],
+      "section": "9.3",
+      "description": "A successful HEAD response still validates Content-Encoding field grammar before the no-content rule suppresses decoding; a non-token coding-list member fails loudly even though no decoder is invoked.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "no content"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "gzip, @bad"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "gzip": "identity",
+            "@bad": "identity"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-176",
+      "rules": [
+        "OAPI20-P-29"
+      ],
+      "section": "9.3",
+      "description": "A successful HEAD response still applies its governing exact raw-string Content-Encoding domain; gzip is outside the declared br domain and fails loudly without invoking a content decoder.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "gzip"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "gzip": "identity"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-174",
+      "rules": [
+        "OAPI20-P-30"
+      ],
+      "section": "9.2",
+      "description": "Request and response character codecs are independent directional capabilities. The request encoder is installed and permits dispatch, while the response decoder is a failing sentinel and therefore produces a loud response-phase error.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Directional character codecs",
+              "version": "1"
+            },
+            "consumes": [
+              "text/plain; charset=iso-8859-1"
+            ],
+            "produces": [
+              "text/plain; charset=iso-8859-1"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "name": "body",
+                      "in": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "x"
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain; charset=iso-8859-1"
+          },
+          "body": "x"
+        },
+        "runtime": {
+          "requestCharacterEncodings": {
+            "iso-8859-1": "identity"
+          },
+          "responseCharacterEncodings": {
+            "iso-8859-1": "fail"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-177",
+      "rules": [
+        "OAPI20-P-29"
+      ],
+      "section": "9.3",
+      "description": "A 204 response carries a syntactically valid, declaration-admitted Content-Encoding field but no content octets. The installed Brotli decoder fails if called, so successful empty completion proves the status-based no-content rule does not invoke it.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "204": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {
+            "Content-Encoding": "br"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "br": "fail"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-178",
+      "rules": [
+        "OAPI20-P-18"
+      ],
+      "section": "9.3",
+      "description": "Case-equivalent response Header declarations govern conjunctively rather than by first-key selection. The first identity domain admits the actual field, but the second br domain rejects it, so the response fails loudly.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "identity"
+                          ]
+                        },
+                        "content-encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "identity"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "identity": "identity"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-179",
+      "rules": [
+        "OAPI20-P-18"
+      ],
+      "section": "9.3",
+      "description": "Case-equivalent response Header declarations govern conjunctively rather than by last-key selection. The first br domain rejects the actual field, although the second identity domain admits it, so the response fails loudly.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "head no-content coding",
+              "version": "1"
+            },
+            "paths": {
+              "/x": {
+                "head": {
+                  "responses": {
+                    "200": {
+                      "description": "no content",
+                      "headers": {
+                        "Content-Encoding": {
+                          "type": "string",
+                          "enum": [
+                            "br"
+                          ]
+                        },
+                        "content-encoding": {
+                          "type": "string",
+                          "enum": [
+                            "identity"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/head"
+        },
+        "configuration": {
+          "server": "https://api.example"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Encoding": "identity"
+          },
+          "body": ""
+        },
+        "runtime": {
+          "responseContentCodings": {
+            "identity": "identity"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }

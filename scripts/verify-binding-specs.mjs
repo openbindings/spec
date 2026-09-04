@@ -30,8 +30,8 @@
 //   9. The abstraction-fidelity alignment ledger validates against its schema.
 //  10. The scenario counts the subcorpus README states in prose equal the
 //      counts derived from the corpus by count-binding-spec-scenarios.mjs.
-//  11. The synthesis scenario schema still enforces the published
-//      interface-synthesizer contract's source shape (probes below).
+//  11. The synthesis scenario schema still enforces Core's binding-source
+//      presence floor without depending on a project interface contract.
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -395,6 +395,14 @@ for (const dir of processorTargets) {
       errors.push(`processor/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
     if (!sectionExists(specTexts[dir], scenario.section))
       errors.push(`processor/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
+    if (dir.startsWith("openapi-")) {
+      for (const expected of scenario.expected) {
+        for (const assertion of expected.assertions) {
+          if (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/"))
+            errors.push(`processor/${dir}.json.scenarios[${i}]: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
+        }
+      }
+    }
     for (const rule of scenario.rules) {
       if (!rule.startsWith(`${fam.prefix}-P-`) || !familyRuleIds[dir].has(rule))
         errors.push(`processor/${dir}.json.scenarios[${i}]: rule '${rule}' is not a defined ${dir} P-rule`);
@@ -470,6 +478,7 @@ for (const dir of fidelityTargets) {
 // Portable synthesis scenarios prove artifact-inventory accounting and
 // emitted target identity independently of either reference SDK's API.
 const synthesisScenarioIds = new Set();
+const synthesisRuleCoverage = new Map();
 let synthesisFiles = 0;
 let synthesisScenarios = 0;
 for (const dir of processorTargets) {
@@ -505,6 +514,12 @@ for (const dir of processorTargets) {
     synthesisScenarioIds.add(scenario.id);
     if (!scenario.id.startsWith(`${fam.prefix}-SS-`))
       errors.push(`${at}: id '${scenario.id}' has the wrong family prefix`);
+    for (const rule of scenario.rules || []) {
+      if (!familyRuleIds[dir].has(rule))
+        errors.push(`${at}: rule '${rule}' is not defined by the ${dir} family`);
+      if (!synthesisRuleCoverage.has(rule)) synthesisRuleCoverage.set(rule, []);
+      synthesisRuleCoverage.get(rule).push(scenario.id);
+    }
     if (scenario.source.bindingSpec !== fam.bindingSpec)
       errors.push(`${at}: source bindingSpec '${scenario.source.bindingSpec}' is not '${fam.bindingSpec}'`);
     if (scenario.expected.outcome === "refused") {
@@ -527,6 +542,8 @@ for (const dir of processorTargets) {
     }
     for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
       const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
+      if (dir.startsWith("openapi-") && Object.hasOwn(entry, "reasonCode"))
+        errors.push(`${entryAt}: portable OpenAPI evidence cannot pin diagnostic reasonCode spelling`);
       if (entry.status === "represented") {
         if (
           entry.scope !== "dependency"
@@ -542,10 +559,19 @@ for (const dir of processorTargets) {
       }
     }
     const derivedFull = scenario.expected.coverage.entries.every(
-      (entry) => entry.status === "represented" || entry.status === "invalid"
+      (entry) => entry.status === "represented"
     );
     if (scenario.expected.coverage.fullyRepresented !== derivedFull)
       errors.push(`${at}: fullyRepresented does not match the declared dispositions`);
+  }
+}
+
+for (const dir of ["openapi-2.0", "openapi-3.0", "openapi-3.1", "openapi-3.2"]) {
+  const fam = FAMILIES[dir];
+  for (const rule of familyRuleIds[dir]) {
+    if (!rule.startsWith(`${fam.prefix}-S-`)) continue;
+    if (!synthesisRuleCoverage.has(rule))
+      errors.push(`Synthesizer rule ${rule} (${dir}) has no portable synthesis scenario citation`);
   }
 }
 
@@ -648,13 +674,11 @@ try {
   }
 }
 
-// --- 11. The synthesis source shape still matches the published contract ----
-// synthesis-scenario.schema.json adopts interface-synthesizer 0.2's
-// SynthesizeInterfaceSource `anyOf` verbatim, so a scenario cannot declare a
-// source the published contract forbids. A constraint nothing exercises is not
-// a constraint: every live scenario satisfies it, so the corpus alone cannot
-// show the schema still carries it. These probes do — removing the `anyOf`
-// turns the third one red.
+// --- 11. The synthesis source shape still matches Core ----------------------
+// Core requires a binding source to carry location or content. A constraint
+// nothing exercises is not a constraint: every live scenario satisfies it, so
+// the corpus alone cannot show the schema still carries it. These probes do —
+// removing the `anyOf` turns the third one red.
 {
   const synthesisSchema = JSON.parse(readFileSync(SYNTHESIS_SCHEMA, "utf8"));
   const probeFile = (source) => ({
@@ -685,8 +709,8 @@ try {
     if (probe.ok === shouldValidate) continue;
     errors.push(
       shouldValidate
-        ? `synthesis-scenario.schema.json rejects a scenario source ${what}, which the interface-synthesizer contract accepts\n${probe.out}`
-        : `synthesis-scenario.schema.json accepts a scenario source ${what}; interface-synthesizer 0.2's SynthesizeInterfaceSource requires one of them (restore the 'anyOf' on the source object)`
+        ? `synthesis-scenario.schema.json rejects a scenario source ${what}, which Core admits\n${probe.out}`
+        : `synthesis-scenario.schema.json accepts a scenario source ${what}; Core requires location or content (restore the 'anyOf' on the source object)`
     );
   }
 }
@@ -759,7 +783,7 @@ console.log(
   `Tests: ${tests} (${positives} positive, ${negatives} negative)`
 );
 console.log(
-  `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, covering ${processorRuleCoverage.size}/${processorPRules.size} distinct targeted P-rules`
+  `Portable processor scenarios: ${processorScenarios} in ${processorFiles} files, citing ${processorRuleCoverage.size}/${processorPRules.size} distinct targeted P-rules`
 );
 console.log(`Invocation-fidelity scenarios: ${fidelityScenarios} across ${fidelityTargets.length} active family slice(s)`);
 console.log(
