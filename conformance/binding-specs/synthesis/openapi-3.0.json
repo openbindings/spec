@@ -4242,6 +4242,76 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI30-SS-68",
+      "rules": ["OAPI30-S-21"],
+      "description": "OAS 3.0 form-cookie array and object declarations are excluded independently of explode at the optional parameter projection, with only the required form propagating to the target.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4", "info": { "title": "Form-cookie synthesis", "version": "1" },
+          "paths": {
+            "/optional": { "get": {
+              "operationId": "optionalCookieShape",
+              "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": false, "schema": { "type": "array", "items": { "type": "string" } } }],
+              "responses": { "204": { "description": "ok" } }
+            } },
+            "/required": { "get": {
+              "operationId": "requiredCookieShape",
+              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
+              "responses": { "204": { "description": "ok" } }
+            } }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["optionalCookieShape"],
+        "bindings": [{ "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get/parameters/0", "scope": "projection", "status": "excluded", "rule": "OAPI30-S-21", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "excluded", "rule": "OAPI30-S-21", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "OAPI30-SS-69",
+      "rules": ["OAPI30-S-22"],
+      "description": "A required Request Body target is excluded only when confinement removes every request-content alternative; a valid sibling alternative preserves the target and is represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.0@1",
+        "content": {
+          "openapi": "3.0.4", "info": { "title": "Effective required body synthesis", "version": "1" },
+          "paths": {
+            "/none": { "post": {
+              "operationId": "noSurvivingBody",
+              "requestBody": { "required": true, "content": { "application/xml": { "schema": { "type": "object" } } } },
+              "responses": { "204": { "description": "ok" } }
+            } },
+            "/survivor": { "post": {
+              "operationId": "survivingBody",
+              "requestBody": { "required": true, "content": {
+                "application/xml": { "schema": { "type": "object" } },
+                "application/json": { "schema": { "type": "object" } }
+              } },
+              "responses": { "204": { "description": "ok" } }
+            } }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["survivingBody"],
+        "bindings": [{ "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1none/post", "scope": "target", "status": "excluded", "rule": "OAPI30-S-22", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post", "scope": "target", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml", "scope": "alternative", "status": "excluded", "rule": "OAPI30-S-22", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] }
+        ] }
+      }
     }
   ]
 }

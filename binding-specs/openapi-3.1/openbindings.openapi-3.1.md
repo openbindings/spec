@@ -56,7 +56,7 @@
 
 **[pin]** String content MUST parse as YAML 1.2.2, of which JSON is a subset; duplicate mapping keys, non-scalar-string mapping keys, explicit tags outside YAML's JSON-compatible tag set, resolved values with no JSON image (`.inf`, `-.inf`, `.nan`), and a multi-document YAML stream refuse at this grammar gate. Exactly one YAML document is accepted ([YAML 1.2.2 §§3.2.1, 10.2.1, 10.3.2](https://yaml.org/spec/1.2.2/)).
 
-**[pin]** Plain-scalar tag resolution uses YAML 1.2.2's recommended Core schema and no other resolution schema ([YAML 1.2.2 §10.3.2](https://yaml.org/spec/1.2.2/#1032-tag-resolution)).
+**[pin]** Plain-scalar tag resolution uses YAML 1.2.2's recommended Core schema and no other, a disclosed widening of the line's JSON-schema tag gate: the two schemas share a tag set but not a resolution, so `True`, `0x3A`, and `.5` resolve to a boolean, an integer, and a float here where JSON-schema resolution would terminate in an error. Core resolution is pinned because JSON-schema resolution rejects plain scalars widely deployed YAML readers accept; the widening admits values, never rejects them, and every admitted value must still have a JSON image under the preceding rule ([YAML 1.2.2 §§10.2.2, 10.3.2](https://yaml.org/spec/1.2.2/#1032-tag-resolution), widening [OAS 3.1.2 §4.2](https://spec.openapis.org/oas/v3.1.2.html#format)).
 
 **[pin]** A leading byte-order mark on string content is accepted and consumed by the YAML grammar; it is never part of the document.
 
@@ -82,13 +82,15 @@
 
 **[convention]** A wire fact this specification cannot represent faithfully is a **loud protocol error**; *refuses loudly*, *fails loudly*, and *reported loudly* are synonyms. An interaction that reaches the wire and whose outcome §9.5 does not admit as successful **completes unsuccessfully**; so does one that reaches an admitted final status and then fails loudly. Values already emitted before an unsuccessful streaming completion remain successful values where a streaming rule says so.
 
-**[convention]** A **lane** is one media-selected value-to-bytes serialization path—JSON, character-data, raw-octet, form, multipart, and this line's other incorporated forms—and the **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
+**[convention]** A **lane** is one media-selected value-to-bytes serialization path, and the lanes are exactly five: JSON, character-data, raw-octet, form, and multipart; a selection admitted by none of them is excluded under §9.2's lane-admission rule, never carried by an unnamed path. The **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
 
 **[convention]** A **unit** is one member of this closed lattice, from largest to smallest: the source, an addressable operation, a declared alternative, a media alternative, a lane, and a field. A defect's **smallest owning unit** is the smallest member of that lattice whose declarations the defect reaches; a **selected unit** is a unit reached by the selected target.
 
 **[limit]** The load gates are the following closed ordered set: accepted-representation grammar, scalar/tag/key resolution, JSON-object root shape, and exact edition discrimination; no condition outside this set is a load gate.
 
 **[limit]** **§3.2's smallest-owner rule**: after those gates pass, a defect confines to its smallest owning unit, and an unreachable defect destroys no target.
+
+**[limit]** How a processor names or presents a confined defect is not portable meaning of this identifier. It MUST identify the affected unit and responsible declaration position well enough to make the confinement observable, but this specification defines no defect-class taxonomy, per-class authority citation, or per-defect coverage-entry vocabulary.
 
 **[limit]** An **excluded** unit, and equally a unit removed as **invalid**, is removed from the effective declarations consumed below its owning boundary: no serialization, routing, or translation rule reads it as usable input. Removal does not erase a structurally addressable target slot. A selector naming an invalid or excluded target still resolves and invocation refuses before dispatch. A target whose remaining effective declarations no longer satisfy §8's path-template correspondence is itself excluded.
 
@@ -306,6 +308,8 @@
 
 **[convention]** A typeless resolved member proves no compound shape, a choice that supplies no single resolved member declaration under §5.2 proves no compound shape, and an object declaring no properties proves no compound member, so none triggers this exclusion; in particular, a declaration that still admits a scalar is never excluded, and candidate admission never inspects the supplied runtime value.
 
+**[convention]** Independently of that static admission, a supplied value whose runtime shape exits the admitted style-table cell refuses that invocation before dispatch at the affected parameter or Encoding property. In particular, a typeless or scalar-admitting member does not license a nested array or object for a cell whose member expansion is undefined; the binding performs no private stringification or JSON serialization to manufacture bytes for it.
+
 **[convention]** The rule applies symmetrically to every compound-capable parameter style and to §9.3's Encoding style path, where the smallest owner is the selected media alternative rather than the target.
 
 **[incorporated]** The Paths Object MUST NOT contain two templated path keys with equivalent hierarchies but different template names. Within one selected target, every path-template expression MUST have a corresponding effective `path` parameter, and every effective `path` parameter MUST correspond to a template expression ([OAS 3.1.2 §§3.5, 4.8.8.1, 4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#path-templating)).
@@ -346,7 +350,7 @@
 
 **[exclusion]** An effective header parameter whose name compares ASCII case-insensitively to `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes the target because those fields are processor-owned and cannot be replaced by caller input. The connection-specific and framing fields could otherwise change message framing, advertise a protocol switch this unary binding cannot continue, or describe hop-by-hop state the binding does not model; `Proxy-Authorization` is consumed by the first inbound proxy and therefore cannot safely carry an origin API value. The exclusion reopens only if an incorporated HTTP authority defines caller control that preserves those obligations ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [§7.6.1](https://www.rfc-editor.org/rfc/rfc9110#section-7.6.1), [§11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
 
-**[exclusion]** A form-style cookie declaration is statically excluded only when its effective `explode` and resolved declaration prove multi-value production: `explode: true` together with a declaration that declares only `array`, or one that declares only `object` with at least one declared property. A typeless or scalar-admitting declaration proves no such production; if a supplied value nevertheless would produce multiple cookie pairs, that invocation refuses before dispatch. OAS identifies RFC 6570's `&`-separated expansion as incorrect for Cookie's `; ` delimiter, so the exclusion reopens only if an incorporated OAS edition defines a correct multi-value mapping ([OAS 3.1.2 Appendix D](https://spec.openapis.org/oas/v3.1.2.html#appendix-d-serializing-headers-and-cookies)).
+**[exclusion]** A form-style cookie declaration is statically excluded when its resolved declaration proves the edition's unsupported multi-value representation: a declaration that declares only `array`, or one that declares only `object` with at least one declared property, independently of `explode`. The smallest owner is the cookie-parameter projection when optional; its would-be caller key is unknown and an invocation omitting it may dispatch. A required such parameter excludes the target because no conforming invocation can satisfy it. A typeless or scalar-admitting declaration proves no static multi-value shape; if a supplied value nevertheless would use the edition's multi-value form-cookie representation, that invocation refuses before dispatch. OAS identifies the RFC 6570 expansion as incorrect for multiple cookies whether the multiple values result from `explode: true` or not, so the exclusion reopens only if an incorporated OAS edition defines a correct multi-value mapping ([OAS 3.1.2 Appendix D](https://spec.openapis.org/oas/v3.1.2.html#appendix-d-serializing-headers-and-cookies)).
 
 ## 9. Request and response media
 
@@ -370,7 +374,7 @@
 
 **[pin]** A body-emitting invocation emits a request `Content-Type` field carrying the concrete media type elected under §9.1; no declaration key, example, or supplied body value substitutes another media type, and beyond a `multipart/form-data` election's `boundary` parameter, which the incorporated authority supplies as a parameter of that media type, this specification adds no parameter of its own. The incorporated HTTP authority only SHOULD-requires the field, excusing a sender to whom the intended media type is unknown; the election makes it known, so this specification pins that SHOULD to a requirement, and no accepted OAS edition states the emission. The edition's only statement about the request `Content-Type` field is that a Header parameter of that name is ignored, which §8.1 already carries ([RFC 9110 §8.3](https://www.rfc-editor.org/rfc/rfc9110#section-8.3), [RFC 7578 §4.1](https://www.rfc-editor.org/rfc/rfc7578#section-4.1), [OAS 3.1.2 §4.8.12.2.1](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields)).
 
-**[exclusion]** A Request Body Object declaring `required: true` with an empty `content` map excludes the selected target before caller values are inspected: the required body admits no candidate media type, and leaving the target represented would make every invocation refuse for the same declaration defect. The exclusion reopens only if an incorporated OAS edition defines that behavior ([OAS 3.1.2 §4.8.13.1](https://spec.openapis.org/oas/v3.1.2.html#request-body-object)).
+**[exclusion]** After §7 applies the method-specific request-body disposition and §3.2 removes invalid or excluded media alternatives, an effective Request Body Object declaring `required: true` with no surviving request-content alternative excludes the selected target before caller values are inspected: the required body admits no candidate media type, and leaving the target represented would make every invocation refuse for the same declaration condition. A method-ignored Request Body never reaches this test, and a surviving alternative that merely needs `requestMedia` or another configuration remains usable. The exclusion reopens only if an incorporated OAS edition defines a request representation for the otherwise empty effective set ([OAS 3.1.2 §4.8.13.1](https://spec.openapis.org/oas/v3.1.2.html#request-body-object)).
 
 **[pin]** The emitted value is the elected concrete media type in its parsed form: type, subtype, and every parameter name in lowercase, each parameter value in the characters the declaration or choice supplied after unquoting, re-quoted only where the `token` production does not admit it. A `boundary` parameter is the one exception: §9.3 discards any declared or chosen value for emission and the generated token is emitted in its place. Which spelling matched — a range-keyed declaration instantiated by a `requestMedia` choice, a concrete map key, or the choice itself — never changes the emitted bytes. RFC 9110 §8.3.1 calls the alternative spellings equivalent and the normalized one preferred, which fixes no bytes on its own; this specification pins the preferred spelling ([RFC 9110 §8.3.1](https://www.rfc-editor.org/rfc/rfc9110#section-8.3.1)).
 
@@ -378,7 +382,7 @@
 
 **[limit]** Examples create no operation input or output member and never select a declaration, carriage lane, or media type.
 
-**[pin]** The binding emits one `Accept` field containing every distinct surviving, non-colliding response-content media range whose body projection has an admitted carriage lane under §§9.2–9.5. Each range uses §9.1's parsed normalized spelling with any wildcard preserved; values are ordered by ascending UTF-8 octets of that spelling and joined with exactly comma-plus-SP, with no `q` parameter added, so every advertised range has equal preference. If the set is empty, the field is omitted. OAS ignores a Header parameter named `Accept` and does not define how a client advertises response-content alternatives; this pin preserves every declared usable alternative without inventing a preference and closes the selection and list-order behavior OAS leaves unspecified ([OAS 3.1.2 §§4.8.12.2.1, 4.8.17](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
+**[pin]** The binding emits one `Accept` field containing every distinct surviving, non-colliding response-content media range whose body projection has an admitted carriage lane under §§9.2–9.5. Each range uses §9.1's parsed normalized spelling with any wildcard preserved; values are ordered by ascending UTF-8 octets of that spelling and joined with exactly comma-plus-SP, with no `q` parameter added, so every advertised range has equal preference. If the set is empty, the field is omitted. The set intentionally spans admitted media declared under successful and unsuccessful response alternatives: `Accept` states representation preferences and never changes exact/range/default response lookup, status classification, or the rule that a failure-only media declaration cannot govern a successful response. OAS ignores a Header parameter named `Accept` and does not define how a client advertises response-content alternatives; this pin preserves every declared usable alternative without inventing a preference and closes the selection and list-order behavior OAS leaves unspecified ([OAS 3.1.2 §§4.8.12.2.1, 4.8.17](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
 
 **[exclusion]** A response-content media range containing a parameter named `q`, compared ASCII case-insensitively, is excluded at that response-media alternative before the generated `Accept` set is formed; valid siblings remain. RFC 9110 assigns `q` in `Accept` to relative weight, so copying the parameter would reinterpret declared media identity, can make the field invalid, and cannot preserve this binding's equal-preference rule, while stripping it would advertise a different range. The exclusion reopens only if incorporated HTTP authority defines an unambiguous `Accept` representation that preserves both the declared parameter and equal preference ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
 
@@ -422,7 +426,7 @@
 
 **[convention]** Because `readOnly` and `writeOnly` are annotations whose enforcement OAS leaves to the application, this binding never uses them to delete a supplied wire member or synthesize an absent one ([OAS 3.1.2 §4.8.24.3.2](https://spec.openapis.org/oas/v3.1.2.html#validating-readonly-and-writeonly)).
 
-**[exclusion]** A concrete request or response selection admitted by none of the JSON, character-data, raw-octet, string XML carriage under §9.2's XML rule, request-only form and multipart, or other explicitly incorporated lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
+**[exclusion]** A concrete request or response selection admitted by none of §3.2's five lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
 
 **[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; only a tool that separately claims validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
@@ -804,11 +808,21 @@
 
 **[convention]** A processor conforms to **OAPI31-P-50** when §7 computes caller-key uniqueness only after invalid and excluded parameter projections are removed, so a removed projection creates no key and does not activate qualified mode.
 
-**[convention]** A processor conforms to **OAPI31-P-51** when §9.1 emits the deterministic equal-preference `Accept` union of every admitted response-content media range and omits it only when that set is empty.
+**[convention]** A processor conforms to **OAPI31-P-51** when §9.1 emits the deterministic equal-preference `Accept` union of every admitted response-content media range across successful and unsuccessful response alternatives and omits it only when that set is empty.
 
 **[convention]** A processor conforms to **OAPI31-P-52** when §9.3 invents neither `filename` nor `filename*`, preserves an admissible artifact-fixed literal `filename`, and excludes a fixed `filename*` at the multipart alternative.
 
 **[convention]** A processor conforms to **OAPI31-P-53** when §9.1 excludes a response media range carrying a case-insensitive `q` parameter before `Accept` construction while preserving every valid sibling range.
+
+**[convention]** A processor conforms to **OAPI31-P-54** when §8.3 confines a statically unsupported form-cookie array or object declaration to an optional parameter projection, propagates its required form to the target, and applies that result independently of `explode`.
+
+**[convention]** A processor conforms to **OAPI31-P-55** when §8.3 keeps a typeless or scalar-admitting form-cookie declaration statically available but refuses a supplied runtime value that would require the edition's unsupported multi-value representation.
+
+**[convention]** A processor conforms to **OAPI31-P-56** when §8.2 refuses a supplied nested array or object member whose runtime shape leaves the admitted style cell, without private stringification or JSON serialization.
+
+**[convention]** A processor conforms to **OAPI31-P-57** when §9.1 applies required-body exclusion to the effective post-method, post-confinement request-content set, while preserving a method-ignored body declaration and every surviving configurable alternative.
+
+**[convention]** A processor conforms to **OAPI31-P-58** when §9.1 advertises an admitted failure-only response media range in `Accept` without allowing that range to govern an actual successful response.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
 
@@ -848,6 +862,10 @@
 
 **[convention]** A synthesizer conforms to **OAPI31-S-19** when §9.1 accounts a response media range carrying a case-insensitive `q` parameter as excluded at that alternative while preserving a valid sibling and its target.
 
+**[convention]** A synthesizer conforms to **OAPI31-S-20** when §8.3 accounts a statically unsupported form-cookie array or object at its optional parameter projection and propagates only the required form to the target.
+
+**[convention]** A synthesizer conforms to **OAPI31-S-21** when §9.1 accounts a removed request-content alternative at its own owner and propagates exclusion to a required Request Body target exactly when no alternative survives after method disposition and confinement.
+
 **[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.1@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
 ### 12.4 Permitted variation and stated limits
@@ -863,6 +881,7 @@ This section collects the points at which two implementations conforming to `ope
 | a JSON-lane number outside binary64: preserved as the supplied mathematical value, or reduced to the nearest finite binary64 value | §9.2 | the permitted set has exactly these two members; no other deviation from the supplied value is permitted, and a conformant implementation never fails or refuses for range or precision alone |
 | which character encoders or decoders beyond UTF-8 an implementation supports | §9.2 | UTF-8 MUST be supported in both directions; further directions are independent capabilities, with request absence or failure refusing before dispatch and response absence or failure reported loudly |
 | which content codings a runtime can encode and decode | §9.4 | the actual field still fixes the ordered stack; an absent capability refuses before dispatch on a request and fails loudly on a response, and no coding is skipped or inferred from an artifact declaration |
+| how a processor names or presents a confined defect | §3.2 | the affected unit and responsible declaration position remain observable; no defect-class taxonomy, per-class citation, or per-defect coverage vocabulary is portable |
 | content-based form-urlencoded bytes: SPACE written `+` or `%20`, and `~` written literally or as `%7E` | §9.3 | every member of the declared set percent-decodes, under form-urlencoded decoding, to the supplied value; every other RFC 3986 unreserved byte stays literal and every other UTF-8 byte is uppercase `%HH` |
 | multipart part order across distinct properties | §9.3 | repeated parts for one array property preserve element order, and property-to-name membership is fixed |
 | the multipart boundary token, and the optional quoting the incorporated grammar permits for it on the media-type field | §9.3 | the entity framing itself — opening, inter-part, and closing delimiters — and that the token appears inside no encapsulated part |
@@ -897,8 +916,8 @@ This section collects the points at which two implementations conforming to `ope
 | the owning unit, and only where the resolved declaration proves the member | §8.2 unsupported compound member | an incorporated authority defines that exact cell |
 | the target when its effective name is `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade`, compared ASCII case-insensitively | §8.3 processor-owned header parameter | an incorporated HTTP authority defines caller control preserving the processor's connection, framing, and routing obligations |
 | the target for required opposite-kind parameters; otherwise the owning security alternative for an unavoidable credential combination | §8.3 raw/structured Cookie collision | incorporated authority defines a coherent raw/structured Cookie merge |
-| that declaration, and only where `explode` and the resolved declaration prove multi-value production | §8.3 multi-value form-style cookie | an incorporated OAS edition defines a correct multi-value mapping |
-| the selected target | §9.1 required empty `content` | an incorporated OAS edition defines that behavior |
+| the form-style cookie parameter projection when optional, and the target when required, where the resolved declaration proves the edition's unsupported multi-value representation independently of `explode` | §8.3 multi-value form-style cookie | an incorporated OAS edition defines a correct multi-value mapping |
+| the selected target, only when a required effective Request Body has no surviving content alternative after method disposition and confinement | §9.1 effective empty request content | an incorporated OAS edition defines a request representation for the otherwise empty effective set |
 | the selected media alternative; string and raw-octet XML carriage remain admitted | §9.2 XML from an object model | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
 | that selection, at its smallest media owner | §9.2 selection matching no defined lane | an incorporated authority defines that media/data-form cell |
 | that response selection, at its smallest media owner | §9.3 form or multipart on a response | an incorporated authority defines that decoding |
@@ -925,6 +944,7 @@ This section collects the points at which two implementations conforming to `ope
 | not covered or confined | where |
 | --- | --- |
 | a closed ordered set of four conditions; no condition outside it is a load gate | §3.2 load gates |
+| no portable defect-class taxonomy, per-class authority citation, or per-defect coverage-entry vocabulary; only the affected unit and responsible declaration position are required to remain observable | §3.2 diagnostics |
 | after the gates a defect confines to its smallest owning unit, and an unreachable defect destroys no target | §3.2 smallest-owner rule |
 | an excluded unit leaves the effective declarations of every rule here; a selector naming it still resolves, and the invocation refuses before dispatch | §3.2 excluded units |
 | after the load gates, fires only for a missing or malformed required inventory surface, or inventory/reference defects that prevent every declared target slot from becoming addressable; target-confined invalidity never aggregates into it | §3.2 source refusal |

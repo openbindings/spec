@@ -4763,10 +4763,10 @@
     {
       "id": "OAPI30-PS-115",
       "rules": [
-        "OAPI30-P-02"
+        "OAPI30-P-55"
       ],
       "section": "8",
-      "description": "A 3.0 form-style exploded cookie whose resolved declaration proves an array is statically excluded because it produces multiple cookie pairs.",
+      "description": "An optional 3.0 form-style cookie array is confined to its excluded parameter projection, so omitting it still dispatches the represented target.",
       "given": {
         "source": {
           "content": {
@@ -4812,15 +4812,20 @@
         },
         "invocation": {
           "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
         }
       },
       "expected": [
         {
-          "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "disposition": "complete",
+          "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch",
+              "path": "/dispatch/headers/Cookie",
               "absent": true
             }
           ]
@@ -4830,7 +4835,7 @@
     {
       "id": "OAPI30-PS-116",
       "rules": [
-        "OAPI30-P-02"
+        "OAPI30-P-56"
       ],
       "section": "8",
       "description": "A typeless 3.0 exploded cookie survives static proof, but a supplied array that actually produces multiple pairs refuses at invocation time.",
@@ -8883,7 +8888,8 @@
     {
       "id": "OAPI30-PS-169",
       "rules": [
-        "OAPI30-P-02"
+        "OAPI30-P-02",
+        "OAPI30-P-58"
       ],
       "section": "7",
       "description": "A body-free invocation of a `trace` target whose Operation declares a `required: true` requestBody dispatches with method TRACE, no body, and no Content-Type field, the required-declaration companion of OAPI30-PS-165. Section 7: on such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it; the target is therefore invocable, not permanently unusable. The ground is RFC 7231 Section 4.3.8: a client MUST NOT send a message body in a TRACE request, so no declaration can oblige the caller to supply one. OAPI32-PS-35 pins the same cell on 3.2. The declaration is reported as coverage loss at the Request Body position, a synthesis observation outside this processor scenario's assertions. Whether a runtime's platform HTTP API can send TRACE at all is a host limit outside this specification: a runtime that cannot refuses before dispatch, and never dispatches another method in its place.",
@@ -9339,7 +9345,8 @@
     {
       "id": "OAPI30-PS-176",
       "rules": [
-        "OAPI30-P-06"
+        "OAPI30-P-06",
+        "OAPI30-P-58"
       ],
       "section": "9",
       "description": "A required Request Body Object with an empty content map leaves no candidate media type, so the addressable target is excluded and invocation refuses before caller values or dispatch.",
@@ -14366,6 +14373,207 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI30-PS-242",
+      "rules": [
+        "OAPI30-P-55"
+      ],
+      "section": "8.3",
+      "description": "The would-be caller key of an optional form-cookie array excluded at its parameter projection is unknown input and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Optional cookie projection input", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{
+                    "name": "parts", "in": "cookie", "style": "form", "explode": true,
+                    "schema": { "type": "array", "items": { "type": "string" } }
+                  }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a"] } } }
+      },
+      "expected": [{
+        "disposition": "refusal", "phase": "pre-dispatch",
+        "assertions": [{ "path": "/dispatch", "absent": true }]
+      }]
+    },
+    {
+      "id": "OAPI30-PS-243",
+      "rules": [
+        "OAPI30-P-55"
+      ],
+      "section": "8.3",
+      "description": "A required form-cookie array excludes the target even with explode false because OAS 3.0 leaves the multi-value Cookie representation incorrect independently of explode.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Required non-exploded cookie array", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{
+                    "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": false,
+                    "schema": { "type": "array", "items": { "type": "string" } }
+                  }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [{
+        "disposition": "refusal", "phase": "pre-dispatch",
+        "assertions": [{ "path": "/dispatch", "absent": true }]
+      }]
+    },
+    {
+      "id": "OAPI30-PS-244",
+      "rules": [
+        "OAPI30-P-56"
+      ],
+      "section": "8.3",
+      "description": "A typeless non-exploded form-cookie declaration survives static analysis, but a supplied array reaches OAS 3.0's unsupported multi-value Cookie representation and refuses.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Runtime non-exploded cookie array", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": false, "schema": {} }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a", "b"] } } }
+      },
+      "expected": [{
+        "disposition": "refusal", "phase": "pre-dispatch",
+        "assertions": [{ "path": "/dispatch", "absent": true }]
+      }]
+    },
+    {
+      "id": "OAPI30-PS-245",
+      "rules": [
+        "OAPI30-P-57"
+      ],
+      "section": "8.2",
+      "description": "A nested runtime object under a typeless deepObject member leaves the admitted scalar-member cell and refuses without private stringification.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Runtime compound member", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [{ "name": "q", "in": "query", "style": "deepObject", "explode": true, "schema": {} }],
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "q": { "a": { "b": "1" } } } } }
+      },
+      "expected": [{
+        "disposition": "refusal", "phase": "pre-dispatch",
+        "assertions": [{ "path": "/dispatch", "absent": true }]
+      }]
+    },
+    {
+      "id": "OAPI30-PS-246",
+      "rules": [
+        "OAPI30-P-58"
+      ],
+      "section": "9.1",
+      "description": "A required Request Body whose sole object-model XML alternative is excluded has no surviving effective request-content alternative and excludes the target.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Post-confinement required body", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": { "application/xml": { "schema": { "type": "object" } } }
+                  },
+                  "responses": { "204": { "description": "ok" } }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/post" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [{
+        "disposition": "refusal", "phase": "pre-dispatch",
+        "assertions": [{ "path": "/dispatch", "absent": true }]
+      }]
+    },
+    {
+      "id": "OAPI30-PS-247",
+      "rules": [
+        "OAPI30-P-59"
+      ],
+      "section": "9.1",
+      "description": "Accept advertises admitted media from both success and failure Responses, but a failure-only problem media type cannot govern an actual 200 response.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.0.4",
+            "info": { "title": "Failure media Accept boundary", "version": "1" },
+            "servers": [{ "url": "https://api.example" }],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } },
+                    "400": { "description": "bad", "content": { "application/problem+json": { "schema": { "type": "object" } } } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": false },
+        "peer": { "status": 200, "headers": { "Content-Type": "application/problem+json" }, "body": "{}" }
+      },
+      "expected": [{
+        "disposition": "error", "phase": "response",
+        "assertions": [
+          { "path": "/dispatch/headers/Accept", "equals": "application/json, application/problem+json" },
+          { "path": "/outputs", "equals": [] }
+        ]
+      }]
     }
   ]
 }

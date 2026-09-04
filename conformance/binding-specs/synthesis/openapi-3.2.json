@@ -3566,6 +3566,85 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-33",
+      "rules": ["OAPI32-S-20"],
+      "description": "OAS 3.2 excludes only exploded form-cookie compound declarations at the optional parameter projection, propagates the required form, and preserves non-exploded form.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0", "info": { "title": "Form-cookie synthesis", "version": "1" },
+          "paths": {
+            "/optional": { "get": {
+              "operationId": "optionalCookieShape",
+              "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
+              "responses": { "204": { "description": "ok" } }
+            } },
+            "/required": { "get": {
+              "operationId": "requiredCookieShape",
+              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
+              "responses": { "204": { "description": "ok" } }
+            } },
+            "/non-exploded": { "get": {
+              "operationId": "nonExplodedCookieShape",
+              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": false, "schema": { "type": "array", "items": { "type": "string" } } }],
+              "responses": { "204": { "description": "ok" } }
+            } }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["optionalCookieShape", "nonExplodedCookieShape"],
+        "bindings": [
+          { "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" },
+          { "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get" }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get/parameters/0", "scope": "projection", "status": "excluded", "rule": "OAPI32-S-20", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "excluded", "rule": "OAPI32-S-20", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1non-exploded/get", "scope": "target", "status": "represented", "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "OAPI32-SS-34",
+      "rules": ["OAPI32-S-21"],
+      "description": "A required Request Body target is excluded only when confinement removes every request-content alternative; a valid sibling alternative preserves the target and is represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0", "info": { "title": "Effective required body synthesis", "version": "1" },
+          "paths": {
+            "/none": { "post": {
+              "operationId": "noSurvivingBody",
+              "requestBody": { "required": true, "content": { "application/xml": { "schema": { "type": "object" } } } },
+              "responses": { "204": { "description": "ok" } }
+            } },
+            "/survivor": { "post": {
+              "operationId": "survivingBody",
+              "requestBody": { "required": true, "content": {
+                "application/xml": { "schema": { "type": "object" } },
+                "application/json": { "schema": { "type": "object" } }
+              } },
+              "responses": { "204": { "description": "ok" } }
+            } }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["survivingBody"],
+        "bindings": [{ "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1none/post", "scope": "target", "status": "excluded", "rule": "OAPI32-S-21", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post", "scope": "target", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml", "scope": "alternative", "status": "excluded", "rule": "OAPI32-S-21", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] }
+        ] }
+      }
     }
   ]
 }
