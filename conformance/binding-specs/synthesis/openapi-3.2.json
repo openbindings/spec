@@ -3205,6 +3205,277 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI32-SS-30",
+      "rules": [
+        "OAPI32-S-17"
+      ],
+      "description": "Synthesis removes an optional non-token header projection before caller-key uniqueness is computed, so the surviving same-named query parameter remains represented under its unqualified operation-input key.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Post-confinement synthesis keys",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "postConfinementKeys",
+                "parameters": [
+                  {
+                    "name": "a b",
+                    "in": "header",
+                    "schema": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "name": "a b",
+                    "in": "query",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "postConfinementKeys"
+        ],
+        "bindings": [
+          {
+            "operationKey": "postConfinementKeys",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/postConfinementKeys/input/properties/a b/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/postConfinementKeys/input/properties/query~1a b",
+            "absent": true
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "postConfinementKeys",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/parameters/0",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI32-S-17",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI32-SS-31",
+      "rules": [
+        "OAPI32-S-18"
+      ],
+      "description": "An artifact-fixed literal filename preserves its multipart alternative, while filename* on multipart/form-data excludes only its media alternative and leaves a JSON sibling and both operations represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.2@1",
+        "content": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Multipart filename accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/fixed": {
+              "post": {
+                "operationId": "fixedFilename",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "upload": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "upload"
+                        ]
+                      },
+                      "encoding": {
+                        "upload": {
+                          "headers": {
+                            "Content-Disposition": {
+                              "required": true,
+                              "schema": {
+                                "type": "string",
+                                "const": "form-data; name=\"upload\"; filename=\"declared.txt\""
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/star": {
+              "post": {
+                "operationId": "starFilename",
+                "requestBody": {
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "upload": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "upload"
+                        ]
+                      },
+                      "encoding": {
+                        "upload": {
+                          "headers": {
+                            "Content-Disposition": {
+                              "required": true,
+                              "schema": {
+                                "type": "string",
+                                "const": "form-data; name=\"upload\"; filename*=utf-8''declared.txt"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "fixedFilename",
+          "starFilename"
+        ],
+        "bindings": [
+          {
+            "operationKey": "fixedFilename",
+            "bindingSelector": "#/paths/~1fixed/post"
+          },
+          {
+            "operationKey": "starFilename",
+            "bindingSelector": "#/paths/~1star/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1fixed/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "fixedFilename",
+              "bindingSelector": "#/paths/~1fixed/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1fixed/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "fixedFilename",
+              "bindingSelector": "#/paths/~1fixed/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1star/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "starFilename",
+              "bindingSelector": "#/paths/~1star/post",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1star/post/requestBody/content/multipart~1form-data",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI32-S-18",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1star/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "starFilename",
+              "bindingSelector": "#/paths/~1star/post",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

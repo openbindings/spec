@@ -2000,6 +2000,214 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI20-SS-22",
+      "rules": [
+        "OAPI20-S-10"
+      ],
+      "description": "Synthesis removes an optional non-token header projection before caller-key uniqueness is computed, so the surviving same-named query parameter remains represented under its unqualified operation-input key.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Post-confinement synthesis keys",
+            "version": "1"
+          },
+          "schemes": [
+            "https"
+          ],
+          "host": "api.example",
+          "paths": {
+            "/x": {
+              "get": {
+                "operationId": "postConfinementKeys",
+                "parameters": [
+                  {
+                    "name": "a b",
+                    "in": "header",
+                    "type": "string"
+                  },
+                  {
+                    "name": "a b",
+                    "in": "query",
+                    "type": "string"
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "postConfinementKeys"
+        ],
+        "bindings": [
+          {
+            "operationKey": "postConfinementKeys",
+            "bindingSelector": "#/paths/~1x/get"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/postConfinementKeys/input/properties/a b/type",
+            "equals": "string"
+          },
+          {
+            "path": "/operations/postConfinementKeys/input/properties/query~1a b",
+            "absent": true
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "postConfinementKeys",
+              "bindingSelector": "#/paths/~1x/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1x/get/parameters/0",
+              "scope": "projection",
+              "status": "excluded",
+              "rule": "OAPI20-S-10",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "OAPI20-SS-23",
+      "rules": [
+        "OAPI20-S-11"
+      ],
+      "description": "Out-of-enum authored schemes are invalid only at their alternatives: a valid HTTPS sibling remains usable, while an operation with no valid artifact scheme remains represented with its complete-URL recovery requirement.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Invalid scheme accounting",
+            "version": "1"
+          },
+          "schemes": [
+            "https"
+          ],
+          "host": "api.example",
+          "paths": {
+            "/sibling": {
+              "get": {
+                "operationId": "schemeSibling",
+                "schemes": [
+                  "ftp",
+                  "https"
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/recover": {
+              "get": {
+                "operationId": "schemeRecovery",
+                "schemes": [
+                  "ftp"
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "schemeSibling",
+          "schemeRecovery"
+        ],
+        "bindings": [
+          {
+            "operationKey": "schemeSibling",
+            "bindingSelector": "#/paths/~1sibling/get"
+          },
+          {
+            "operationKey": "schemeRecovery",
+            "bindingSelector": "#/paths/~1recover/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1sibling/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "schemeSibling",
+              "bindingSelector": "#/paths/~1sibling/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1sibling/get/schemes/0",
+              "scope": "alternative",
+              "status": "invalid",
+              "rule": "OAPI20-S-11",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1sibling/get/schemes/1",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "schemeSibling",
+              "bindingSelector": "#/paths/~1sibling/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1recover/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "schemeRecovery",
+              "bindingSelector": "#/paths/~1recover/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1recover/get/schemes/0",
+              "scope": "alternative",
+              "status": "invalid",
+              "rule": "OAPI20-S-11",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

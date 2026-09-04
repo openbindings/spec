@@ -36,13 +36,13 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 | OBI-B-02 item (abbreviated) | discharged in | what this specification does not cover there |
 | --- | --- | --- |
-| 1 — whether a source mode accepts an artifact; the representations accepted; deterministic discrimination among them; the encoding for a non-JSON artifact | §2, §3.1, §3.2, §4, §5.1 | — |
-| 2 — the syntax and meaning of `location` | §3.1, §4, §10 | nothing recorded: §4's limit states the acquisition-failure disposition and defers the success condition to the address scheme.  |
-| 3 — the accepted values and meaning of `content`, including any source mode in which `content` is forbidden | §3.1, §4 | — |
-| 4 — how `location` and `content` compose, including whether `location` supplies a reference base for embedded content | §3.1, §4, §5.1 | — |
-| 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5.1, §6, §12.3 | — |
-| 6 — how the binding target and its interaction are identified | §3.2, §5.1, §6, §7, §8.1, §8.2, §9.1, §9.4, §10, §11, §12.1, §12.3 | — |
-| 7 — how caller-facing input values and successful output values correspond to the interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §10, §12.1, §12.2 | — |
+| 1 — whether a source mode accepts an artifact; the representations accepted; deterministic discrimination among them; the encoding for a non-JSON artifact | §2, §3.1, §3.2, §4, §5.1 | nothing recorded. |
+| 2 — the syntax and meaning of `location` | §3.1, §4, §10 | nothing recorded: §4's limit states the acquisition-failure disposition and defers the success condition to the address scheme. |
+| 3 — the accepted values and meaning of `content`, including any source mode in which `content` is forbidden | §3.1, §4 | nothing recorded. |
+| 4 — how `location` and `content` compose, including whether `location` supplies a reference base for embedded content | §3.1, §4, §5.1 | nothing recorded. |
+| 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5.1, §6, §12.3 | nothing recorded. |
+| 6 — how the binding target and its interaction are identified | §3.2, §5.1, §6, §7, §8.1, §8.2, §9.1, §9.4, §10, §11, §12.1, §12.3 | nothing recorded. |
+| 7 — how caller-facing input values and successful output values correspond to the interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §5.1, §5.2, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §10, §12.1, §12.2 | nothing recorded. |
 
 **[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
 
@@ -226,7 +226,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[incorporated]** A body parameter's declared `name` has documentation meaning but no wire role ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
-**[convention]** When every effective non-body parameter name is unique across locations, its caller key is the exact declared name; if any name is repeated across legal locations, the target uses qualified mode for every non-body parameter and each key is `<location>/<RFC6901-escaped-name>`, making the flat map injective without depending on map order.
+**[convention]** After §3.2 removes every invalid or excluded parameter projection, when every remaining effective non-body parameter name is unique across locations, its caller key is the exact declared name; if any remaining name is repeated across legal locations, the target uses qualified mode for every remaining non-body parameter and each key is `<location>/<RFC6901-escaped-name>`, making the flat map injective without depending on map order. A removed projection creates no caller key and does not activate qualified mode.
 
 **[incorporated]** Operation parameters override Path Item parameters only at the same exact name-plus-location identity; duplicate effective parameters in one location are upstream-invalid, while same-name parameters in different locations are distinct ([OAS 2.0 Path Item, Operation, and Parameter Objects](https://spec.openapis.org/oas/v2.0.html#fixed-fields-4)).
 
@@ -236,7 +236,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[exclusion]** Two effective header parameters whose names differ only by ASCII case exclude the selected target because OAS parameter identity is case-sensitive while HTTP field names are case-insensitive; the wire cannot preserve the distinction. This exclusion reopens only if an incorporated authority defines a wire mapping that preserves such case-distinct declarations ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6), [RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1)).
 
-**[convention]** An envelope top-level key other than `parameters` or `body`, a present non-object `parameters` member, or any unknown parameter key refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
+**[convention]** A supplied envelope that is not a JSON object refuses before dispatch, whatever JSON type it is; an envelope top-level key other than `parameters` or `body`, a present non-object `parameters` member, or any unknown parameter key likewise refuses before dispatch, regardless of whether a body exists; no unmatched-field passthrough exists.
 
 **[incorporated]** A missing required parameter refuses before dispatch; every path parameter is required, while a non-path parameter defaults to optional ([OAS 2.0 Parameter Object fixed fields](https://spec.openapis.org/oas/v2.0.html#fixed-fields-6)).
 
@@ -328,7 +328,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[exclusion]** An effective header parameter whose name compares ASCII case-insensitively to `Host`, `Content-Length`, `Content-Type`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes the target because those fields are processor- or binding-owned and cannot be replaced by caller input. The connection-specific and framing fields could otherwise change message framing, advertise a protocol switch this unary binding cannot continue, or describe hop-by-hop state the binding does not model; `Proxy-Authorization` is consumed by the first inbound proxy and therefore cannot safely carry an origin API value. The exclusion reopens only if an incorporated HTTP authority defines caller control that preserves those obligations ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [§7.6.1](https://www.rfc-editor.org/rfc/rfc9110#section-7.6.1), [§11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
 
-**[convention]** The binding emits no implicit `Accept` field; an artifact-declared header parameter named `Accept` remains an ordinary caller-supplied parameter because OAS 2.0 defines no ignored-header rule. `Accept` is therefore not on the processor-owned field list at all: a credential destined for `Accept` collides, if at all, under the ordinary parameter-collision rule ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1), [OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
+**[pin]** In the absence of an effective Header Parameter named `Accept`, the binding emits one generated `Accept` field containing every distinct surviving, non-colliding effective `produces` media range that can select at least one admitted response body lane under §9.2. Each range uses §9.1's parsed normalized spelling with any wildcard preserved; values are ordered by ascending UTF-8 octets of that spelling and joined with exactly comma-plus-SP, with no `q` parameter added, so every advertised range has equal preference. If the set is empty, the field is omitted. An effective OAS 2.0 Header Parameter named `Accept` remains an ordinary caller-supplied parameter and suppresses the generated field whether supplied or omitted; OAS 2.0 defines no ignored-header rule. This preserves every declared usable response alternative without inventing a preference and pins the selection and ordering OAS leaves unspecified ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1), [OAS 2.0 Operation Object](https://spec.openapis.org/oas/v2.0.html#operation-object), [Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
 ### 8.3 `formData` payloads
 
@@ -556,6 +556,10 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[configuration point]** One effective `http` or `https` scheme selects itself; multiple usable schemes require one consumer `server` choice before dispatch, and no list-order preference is inferred.
 
+**[incorporated]** Every authored `schemes` member MUST be exactly one of `http`, `https`, `ws`, or `wss` ([OAS 2.0 Swagger and Operation Objects](https://spec.openapis.org/oas/v2.0.html#fixed-fields-4)).
+
+**[limit]** An authored member outside that closed set is upstream-invalid at that scheme alternative and is removed before selection; valid siblings survive. If no valid dispatchable alternative remains, the target stays represented whenever §10's complete configured URL can recover it, carries an actual `configuration.server` requirement, and refuses before dispatch while awaiting that replacement. This confinement reopens only if an incorporated OAS 2.0 authority admits the exact scheme value.
+
 **[limit]** When an omitted scheme inherits a document-retrieval scheme outside `http`, `https`, `ws`, or `wss`, the target is unusable and refuses before dispatch.
 
 **[limit]** An empty effective scheme list, an omitted scheme without a document location from which its default can be obtained, or an omitted host without a document location carrying a nonempty host leaves the target unresolved and refuses before dispatch; a complete configured URL below remains the available recovery. A hostless retrieval URI such as `file:///tmp/api.yaml` therefore cannot supply the HTTP authority.
@@ -616,7 +620,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** The runtime half is separate and is a prerequisite, not an exclusion: a runtime whose supplied token is not Bearer-typed leaves the selected alternative unusable, and the invocation refuses before dispatch, exactly as a Basic credential outside the pinned octet range does under §11. Token type is a runtime fact and never a declaration fact, so it can reach no coverage entry.
 
-**[exclusion]** Two credentials in one AND requirement with the same destination, a credential colliding with a required effective parameter, or a credential targeting binding/processor-owned `Host`, `Content-Length`, `Content-Type`, `Content-Encoding`, `Accept-Encoding`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes only that security alternative; another complete non-colliding OR alternative survives, and the target is excluded only if none remains. Header destinations compare ASCII case-insensitively and query destinations compare exact decoded declaration names. `Accept` is an ordinary effective parameter destination and follows the parameter-collision rule rather than this reserved list; `Proxy-Authorization` is reserved because RFC 9110 assigns it to the first inbound proxy, not the origin ([RFC 9110 §11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
+**[exclusion]** Two credentials in one AND requirement with the same destination, a credential colliding with a required effective parameter, or a credential targeting binding/processor-owned `Host`, `Content-Length`, `Content-Type`, `Content-Encoding`, `Accept`, `Accept-Encoding`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes only that security alternative; another complete non-colliding OR alternative survives, and the target is excluded only if none remains. Header destinations compare ASCII case-insensitively and query destinations compare exact decoded declaration names. `Accept` protects §8.2's generated response-media advertisement, except that an effective OAS 2.0 Header Parameter of that name owns and suppresses generation and therefore reaches the ordinary parameter-collision rule first; `Proxy-Authorization` is reserved because RFC 9110 assigns it to the first inbound proxy, not the origin ([RFC 9110 §11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
 
 **[convention]** A selected credential colliding with an optional effective parameter is invocation-conditional: omitting that parameter emits the credential once and may dispatch, while supplying it refuses before dispatch rather than selecting one source or emitting two. A supplied ordinary Header Parameter named `Accept-Encoding` suppresses any runtime-advertised field of that name; when it is omitted, transport negotiation remains runtime policy.
 
@@ -720,6 +724,12 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A processor conforms to **OAPI20-P-32** when §9.2 refuses before dispatch a caller-supplied JSON value containing an unpaired surrogate code unit, without replacement, passthrough, or request-byte emission.
 
+**[convention]** A processor conforms to **OAPI20-P-33** when §7 computes caller-key uniqueness only after invalid and excluded parameter projections are removed, so a removed projection creates no key and does not activate qualified mode.
+
+**[convention]** A processor conforms to **OAPI20-P-34** when §8.2 emits the deterministic equal-preference `Accept` union for admitted response media, while an effective OAS 2.0 `Accept` Header Parameter suppresses generation and retains ordinary caller ownership.
+
+**[convention]** A processor conforms to **OAPI20-P-35** when §10 confines an out-of-enum authored `schemes` member to that invalid alternative, preserves valid siblings, and retains complete-URL recovery when no dispatchable artifact alternative survives.
+
 **[convention]** A synthesizer conforms to **OAPI20-S-01** when it preserves §12.2's binding/transform boundary, emits no artifact-derived inbound dependency, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete operation coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI20-S-02** when it uses §3.2's locally defined status vocabulary for targets and subordinate projections without depending on any project interface contract.
@@ -738,15 +748,19 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A synthesizer conforms to **OAPI20-S-09** when §9.3 accounts a required bodyless request `Content-Encoding` parameter at its target owner while preserving unrelated operations.
 
+**[convention]** A synthesizer conforms to **OAPI20-S-10** when §7 derives the operation input from the post-confinement effective parameter set, leaving a surviving same-named cross-location parameter unqualified when its only collision was removed.
+
+**[convention]** A synthesizer conforms to **OAPI20-S-11** when §10 accounts an out-of-enum authored `schemes` member as invalid at that alternative while retaining valid siblings or a represented target with its actual `configuration.server` recovery requirement.
+
 **[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-2.0@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
 ### 12.4 Permitted variation and stated limits
 
-**[convention]** This section is a register: it collects the variation this specification permits — the points at which two implementations conforming to `openbindings.openapi-2.0@1` may produce different bytes or outcomes and both remain conformant — with the consumer choices it defers, the exclusions bounding its accepted domain, and what it states it does not cover. It creates nothing: every entry names the section that states it, the section governs where the two differ, and the register makes no claim about this document as a whole.
+This section is a register: it collects the variation this specification permits — the points at which two implementations conforming to `openbindings.openapi-2.0@1` may produce different bytes or outcomes and both remain conformant — with the consumer choices it defers, the exclusions bounding its accepted domain, and what it states it does not cover. It creates nothing: every entry names the section that states it, the section governs where the two differ, and the register makes no claim about this document as a whole.
 
-**[convention]** These are the points at which a rule of this specification permits two conformant implementations to differ. Each row names what varies, where the rule permitting it is stated, and what holds across the permitted set.
+**Declared freedoms.** These are the points at which a rule of this specification permits two conformant implementations to differ. Each row names what varies, where the rule permitting it is stated, and what holds across the permitted set.
 
-| what varies | where | what holds across the permitted set |
+| what may differ | where | what holds across the permitted set |
 | --- | --- | --- |
 | the order in which query contributions from different parameters appear in the completed request-target | §8.2 | each contribution's own percent-encoded bytes, and array-member order within one parameter |
 | the order in which `application/x-www-form-urlencoded` pairs from different parameters appear | §8.3 | each pair's bytes, and array-member order across the repeated pairs of one `multi` parameter |
@@ -760,9 +774,9 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | how a processor names and presents a confined defect | §3.2 | the excluded target and the declaration position responsible are reported; no defect class, per-class authority citation, or per-defect coverage entry is required, and this specification defines no such classes |
 | the serialized bytes of any JSON image this specification emits — a JSON-lane request or response body: object member order, insignificant whitespace, which of `\uXXXX` or a literal the escapable characters take, and the lexical spelling of a number whose value is fixed | §9.2 | the JSON **value** is identical, which is what this specification fixes and what every rule of it is stated over; RFC 8259 constrains the grammar and not the choice among its equivalent spellings, so this latitude reaches wire bytes and reaches no value, no assertion, and no outcome |
 
-**[convention]** §12.1 states the complete configuration vocabulary and bounds each member's preflightability; lane selection, carriage, and response classification are fixed rules and are not configuration points. Each member's boundary, chooser, and unsupplied-choice consequence is stated at the rule that introduces it, and is collected here.
+**Configuration points.** §12.1 states the complete configuration vocabulary and bounds each member's preflightability; lane selection, carriage, and response classification are fixed rules and are not configuration points. Each member's boundary, chooser, and unsupplied-choice consequence is stated at the rule that introduces it, and is collected here.
 
-| configuration point | boundary | who chooses | consequence when no choice is supplied |
+| configuration point | boundary | chosen by | consequence when no choice is supplied |
 | --- | --- | --- | --- |
 | `requestMedia` (§9.1) | one concrete media type matching an admissible effective `consumes` alternative under §9.1; it never substitutes another lane's schema or form rules, and supplied values never elect | the consumer | a missing required choice, an unmatched or ambiguous choice, an unsupported selected lane, or a form selection inconsistent with effective `formData` refuses before dispatch |
 | `server` (§10) | one effective `http` or `https` scheme with the artifact's effective nonempty `host` and `basePath`, or one complete `http` or `https` URL satisfying §10's nonempty-host/no-userinfo/no-query/no-fragment constraints and replacing the resolved server base | the consumer | multiple usable schemes require a choice before dispatch, and a conforming complete URL is required whenever declarations alone supply no dispatchable `http` or `https` target but replacement can recover it; without that required recovery invocation refuses before dispatch while awaiting `configuration.server` |
@@ -773,9 +787,9 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** Two of those boundaries are constraints rather than enumerations: `parameterConversion` admits any function meeting its stated determinism conditions, and `server`'s complete-URL form admits any URL meeting the stated scheme, nonempty-host, and no-userinfo/no-query/no-fragment constraints. Two consumers that configure them differently obtain different bytes from one artifact and one invocation. That difference is the consumer's own, as §8.1 already states of a non-injective conversion; it is not variation between implementations given the same configuration.
 
-**[convention]** §12.3 states the exclusion discipline: every exclusion is permanent under this identifier, belongs to the smallest owner stated beside it, reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it, and promises no later work. The exclusions are the following, each with the condition that would reopen it.
+**Exclusions and reopen triggers.** §12.3 states the exclusion discipline: every exclusion is permanent under this identifier, belongs to the smallest owner stated beside it, reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it, and promises no later work. The exclusions are the following, each with the condition that would reopen it.
 
-| what is removed from the accepted domain | where | reopens only if |
+| what is removed and its smallest owner | where | reopens only if |
 | --- | --- | --- |
 | a selected operation whose Path Item `$ref` collides with the adjacent declaration in a fixed field that target uses | §5.1 | an incorporated OAS 2.0 authority defines the collision |
 | a request lane whose resolved declaration both requires a property and marks it `readOnly: true` | §5.2 | incorporated authority defines a reconciliation |
@@ -802,9 +816,9 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | a security alternative with two credentials sharing one destination, a credential colliding with a required fixed-destination parameter, or a credential targeting a binding/processor-owned field; the target only when no complete alternative remains | §11 | incorporated authority defines a safe, unambiguous assembly for the exact collision |
 | a retrieved document encoded in UTF-16 or UTF-32, which YAML 1.2.2 §5.2 obliges a processor to support | §3.1 | an incorporated authority defines a declaration surface stating a retrieved document's character encoding without inspecting its bytes |
 
-**[convention]** This register collects every statement in this document of something it does not cover, whatever label it carries: a `limit` that bounds what a consumer may expect (as distinct from a `limit` that confines a defect to a scope, which is an ordinary rule), a `pin` that discloses a departure leaving something unobtainable under this identifier, and a `pin` that declines a delegation an incorporated authority offers or a mutable registry it reaches. The statements are the following.
+**Stated limits.** This register collects every statement in this document of something it does not cover, whatever label it carries: a `limit` that bounds what a consumer may expect (as distinct from a `limit` that confines a defect to a scope, which is an ordinary rule), a `pin` that discloses a departure leaving something unobtainable under this identifier, and a `pin` that declines a delegation an incorporated authority offers or a mutable registry it reaches. The statements are the following.
 
-| not covered under this identifier | where |
+| not covered or confined | where |
 | --- | --- |
 | any load gate outside §3.2's closed ordered set | §3.2 |
 | a taxonomy for naming defects, a per-class authority citation, or a per-defect coverage entry | §3.2 |
@@ -829,6 +843,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 | a Responses key outside the closed admitted set: subordinate invalid coverage ignored for lookup; if no admitted response declaration survives, the enclosing target is invalid; reopens only if an incorporated OAS 2.0 authority admits that exact key form | §9.4 |
 | an admitted response key carrying an upstream-invalid Response value or fixed member: invalidity confined to the smallest response alternative or projection, without changing lookup precedence or target addressability; reopens only if an incorporated OAS 2.0 authority admits the exact declaration | §9.4 |
 | the operations governed by a `host`, `basePath`, or Paths key that violates the incorporated host, base-path, or leading-slash constraint: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority defines the repair | §10 |
+| an authored `schemes` member outside `http`, `https`, `ws`, or `wss`: an upstream-invalid scheme alternative removed before selection while valid siblings and complete-URL recovery survive; reopens only if an incorporated OAS 2.0 authority admits the exact value | §10 |
 | every security alternative naming a Security Scheme Object that violates the incorporated `type` set or a field its `type` makes REQUIRED: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 2.0 authority admits the exact declaration | §11 |
 
 ## 13. Normative references

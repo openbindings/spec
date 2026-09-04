@@ -1276,6 +1276,7 @@
     {
       "id": "rfc7578",
       "families": [
+        "openapi-3.0",
         "openapi-3.1",
         "openapi-3.2"
       ],
@@ -1289,6 +1290,7 @@
       "bytes": 30240,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],

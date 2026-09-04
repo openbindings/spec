@@ -4441,7 +4441,7 @@
         "OAPI32-P-03"
       ],
       "section": "9",
-      "description": "Exactly one usable concrete request media entry self-selects, strict JSON rides as UTF-8, and the 3.2 request lane emits no Accept header.",
+      "description": "Exactly one usable concrete request media entry self-selects and strict JSON rides as UTF-8; the only declared response body belongs to 204 and is excluded by the no-content rule, so no response-media range survives from which to generate Accept.",
       "given": {
         "source": {
           "content": {
@@ -19967,6 +19967,681 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-277",
+      "rules": [
+        "OAPI32-P-54"
+      ],
+      "section": "7",
+      "description": "An excluded optional non-token header projection sharing its declared name with a surviving query parameter is removed before caller-key uniqueness is computed; the surviving query parameter therefore uses its unqualified key and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "a b": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?a%20b=v"
+            },
+            {
+              "path": "/dispatch/headers/a b",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-278",
+      "rules": [
+        "OAPI32-P-54"
+      ],
+      "section": "7",
+      "description": "Because the removed header projection does not activate qualified mode, the would-be qualified query key is unknown input and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "query/a b": "v"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-279",
+      "rules": [
+        "OAPI32-P-55"
+      ],
+      "section": "9.1",
+      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-map order.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Deterministic Accept union",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "acceptUnion",
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "application/json": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "ok"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "equals": "application/json, text/plain"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "ok"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-280",
+      "rules": [
+        "OAPI32-P-56"
+      ],
+      "section": "9.3",
+      "description": "A generated multipart Content-Disposition carries the declared part name and invents neither filename nor filename*.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart filename disposition",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "operationId": "upload",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "upload": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "upload"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "upload": "payload"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"upload\""
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "filename"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-281",
+      "rules": [
+        "OAPI32-P-56"
+      ],
+      "section": "9.3",
+      "description": "An admissible artifact-fixed Content-Disposition may carry a literal filename and is emitted verbatim rather than replaced or derived from the supplied value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart filename disposition",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "operationId": "upload",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "upload": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "upload"
+                          ]
+                        },
+                        "encoding": {
+                          "upload": {
+                            "headers": {
+                              "Content-Disposition": {
+                                "required": true,
+                                "schema": {
+                                  "type": "string",
+                                  "const": "form-data; name=\"upload\"; filename=\"declared.txt\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "upload": "payload"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"upload\"; filename=\"declared.txt\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-282",
+      "rules": [
+        "OAPI32-P-56"
+      ],
+      "section": "9.3",
+      "description": "An artifact-fixed multipart/form-data Content-Disposition containing filename* excludes that media alternative under RFC 7578 and refuses before dispatch when it is the only required request lane.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart filename disposition",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "operationId": "upload",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "upload": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "upload"
+                          ]
+                        },
+                        "encoding": {
+                          "upload": {
+                            "headers": {
+                              "Content-Disposition": {
+                                "required": true,
+                                "schema": {
+                                  "type": "string",
+                                  "const": "form-data; name=\"upload\"; filename*=utf-8''declared.txt"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "upload": "payload"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-283",
+      "rules": [
+        "OAPI32-P-56"
+      ],
+      "section": "9.3",
+      "description": "An admissible artifact-fixed Content-Disposition on another name-based multipart subtype may carry filename* and is emitted verbatim; RFC 7578's filename* prohibition is specific to multipart/form-data.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart filename disposition",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/upload": {
+                "post": {
+                  "operationId": "upload",
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/mixed": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "upload": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "upload"
+                          ]
+                        },
+                        "encoding": {
+                          "upload": {
+                            "headers": {
+                              "Content-Disposition": {
+                                "required": true,
+                                "schema": {
+                                  "type": "string",
+                                  "const": "form-data; name=\"upload\"; filename*=UTF-8''declared.txt"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1upload/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "upload": "payload"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"upload\"; filename*=UTF-8''declared.txt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-284",
+      "rules": [
+        "OAPI32-P-02"
+      ],
+      "section": "7",
+      "description": "A present caller-envelope value that is not a JSON object is outside the closed envelope grammar and refuses before dispatch; it is never treated as a body value or parameter map.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": []
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }

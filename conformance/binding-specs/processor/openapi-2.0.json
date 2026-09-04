@@ -12508,6 +12508,500 @@
           ]
         }
       ]
+    },
+    {
+      "id": "OAPI20-PS-181",
+      "rules": [
+        "OAPI20-P-33"
+      ],
+      "section": "7",
+      "description": "An excluded optional non-token header projection sharing its declared name with a surviving query parameter is removed before caller-key uniqueness is computed; the surviving query parameter therefore uses its unqualified key and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "type": "string"
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "a b": "v"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?a%20b=v"
+            },
+            {
+              "path": "/dispatch/headers/a b",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-182",
+      "rules": [
+        "OAPI20-P-33"
+      ],
+      "section": "7",
+      "description": "Because the removed header projection does not activate qualified mode, the would-be qualified query key is unknown input and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "type": "string"
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "query/a b": "v"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-183",
+      "rules": [
+        "OAPI20-P-34"
+      ],
+      "section": "8.2",
+      "description": "Every admitted response media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-array order.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Deterministic Accept union",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/media": {
+                "get": {
+                  "operationId": "acceptUnion",
+                  "produces": [
+                    "text/plain",
+                    "application/json"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1media/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "ok"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "equals": "application/json, text/plain"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "ok"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-184",
+      "rules": [
+        "OAPI20-P-34"
+      ],
+      "section": "8.2",
+      "description": "An effective OAS 2.0 Accept Header Parameter retains ordinary ownership and suppresses generated response-media advertisement even when the optional parameter is omitted.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Caller-owned Accept",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/media": {
+                "get": {
+                  "operationId": "callerAccept",
+                  "produces": [
+                    "application/json"
+                  ],
+                  "parameters": [
+                    {
+                      "name": "Accept",
+                      "in": "header",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1media/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "\"ok\""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "absent": true
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "ok"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-185",
+      "rules": [
+        "OAPI20-P-35"
+      ],
+      "section": "10",
+      "description": "An out-of-enum authored scheme is confined to that invalid alternative, so a valid HTTPS sibling selects itself and dispatches.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Invalid scheme sibling",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "schemeSibling",
+                  "schemes": [
+                    "ftp",
+                    "https"
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-186",
+      "rules": [
+        "OAPI20-P-35"
+      ],
+      "section": "10",
+      "description": "When an out-of-enum authored scheme is the only alternative, a complete configured HTTPS URL recovers the represented target without repairing or selecting the invalid declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Invalid scheme recovery",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "schemeRecovery",
+                  "schemes": [
+                    "ftp"
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "configuration": {
+          "server": "https://override.example/base"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://override.example/base/x"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-187",
+      "rules": [
+        "OAPI20-P-02"
+      ],
+      "section": "7",
+      "description": "A present caller-envelope value that is not a JSON object is outside the closed envelope grammar and refuses before dispatch; it is never treated as a body value or parameter map.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Post-confinement caller keys",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "paths": {
+              "/x": {
+                "get": {
+                  "operationId": "postConfinementKeys",
+                  "parameters": [
+                    {
+                      "name": "a b",
+                      "in": "header",
+                      "type": "string"
+                    },
+                    {
+                      "name": "a b",
+                      "in": "query",
+                      "type": "string"
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": []
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
