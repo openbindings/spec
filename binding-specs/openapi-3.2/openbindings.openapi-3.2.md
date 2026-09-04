@@ -236,7 +236,9 @@
 
 **[incorporated]** Missing required parameters and a missing `required: true` request body refuse before dispatch; path parameters are always required ([OAS 3.2.0 §§4.12.2.1, 4.13.1](https://spec.openapis.org/oas/v3.2.0.html#parameter-required)).
 
-**[incorporated]** A request body is fully supported where HTTP explicitly defines body semantics: the fixed `post` and `put` operations under RFC 9110 and `patch` under RFC 5789. Where HTTP discourages content, including GET and DELETE, OAS permits `requestBody` but says its semantics are not well-defined and it should be avoided. TRACE alone is forbidden content: a client MUST NOT send content, so this binding emits no TRACE body under any declaration ([OAS 3.2.0 §4.10.1](https://spec.openapis.org/oas/v3.2.0.html#operation-request-body), [RFC 9110 §§9.3.3, 9.3.4, 9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.3), [RFC 5789 §2](https://www.rfc-editor.org/rfc/rfc5789#section-2)).
+**[incorporated]** A request body is fully supported where HTTP explicitly defines body semantics; where HTTP discourages content, OAS permits `requestBody` but says its semantics are not well-defined and it should be avoided. TRACE alone is forbidden content: a client MUST NOT send content ([OAS 3.2.0 §4.10.1](https://spec.openapis.org/oas/v3.2.0.html#operation-request-body), [RFC 9110 §9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.8)).
+
+**[pin]** Within the fixed-operation selector set, `requestBody` is honored on `post`, `put`, and `patch`, the last under RFC 5789; it is permitted-but-not-HTTP-defined on `get`, `head`, `delete`, and `options`; and it emits no body on `trace`. This closes OAS's open example class without changing its advice to artifact authors ([RFC 9110 §§9.3.1–9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.1), [RFC 5789 §2](https://www.rfc-editor.org/rfc/rfc5789#section-2)).
 
 **[convention]** The binding preserves any supplied declared body in those permitted cases rather than deleting it; a supplied `body` on `trace` refuses as unroutable before dispatch.
 
@@ -376,7 +378,7 @@
 
 **[exclusion]** An effective header parameter whose name compares ASCII case-insensitively to `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes the target because those fields are processor-owned and cannot be replaced by caller input. The connection-specific and framing fields could otherwise change message framing, advertise a protocol switch this unary binding cannot continue, or describe hop-by-hop state the binding does not model; `Proxy-Authorization` is consumed by the first inbound proxy and therefore cannot safely carry an origin API value. The exclusion reopens only if an incorporated HTTP authority defines caller control that preserves those obligations ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [§7.6.1](https://www.rfc-editor.org/rfc/rfc9110#section-7.6.1), [§11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
 
-**[exclusion]** A form-style cookie declaration is statically excluded only when `explode: true` and its resolved declaration proves the edition's unsupported multi-pair representation: a declaration that declares only `array`, or one that declares only `object` with at least one declared property. The smallest owner is the cookie-parameter projection when optional; its would-be caller key is unknown and an invocation omitting it may dispatch. A required such parameter excludes the target because no conforming invocation can satisfy it. A typeless or scalar-admitting declaration proves no static multi-pair shape; if a supplied value nevertheless would emit multiple pairs under `form` with `explode: true`, that invocation refuses before dispatch. Under this edition, `form` with `explode: false` remains admitted because Appendix D assigns it the automatic percent-encoding path rather than the wrong-delimiter path. The exclusion reopens only if an incorporated OAS edition defines a correct exploded multi-pair mapping ([OAS 3.2.0 Appendix D](https://spec.openapis.org/oas/v3.2.0.html#appendix-d-serializing-headers-and-cookies)).
+**[convention]** A form-style cookie declaration is not excluded merely because its resolved declaration admits `array` or `object`, whatever `required` or `explode` says: shape does not determine the supplied value's cardinality, and invocation does not validate Schema Object cardinality. Multiplicity is decided after serialization. Under `explode: true`, an expansion containing two or more `name=value` pairs refuses before dispatch because its `&` separator is wrong for Cookie; a zero- or one-pair expansion remains available but still must satisfy every emitted cookie-name and `cookie-value` rule above. Under this edition, `form` with `explode: false` remains available as Appendix D's automatic percent-encoding path, with the complete serialized value still subject to the same cookie-value check. No invocation-time multiplicity changes synthesis coverage ([OAS 3.2.0 Appendix D](https://spec.openapis.org/oas/v3.2.0.html#appendix-d-serializing-headers-and-cookies)).
 
 ## 9. Request and response media
 
@@ -916,9 +918,9 @@
 
 **[convention]** A processor conforms to **OAPI32-P-57** when §9.1 excludes a response media range carrying a case-insensitive `q` parameter before `Accept` construction while preserving every valid sibling range.
 
-**[convention]** A processor conforms to **OAPI32-P-58** when §8.3 confines a statically unsupported exploded form-cookie array or object declaration to an optional parameter projection, propagates its required form to the target, and keeps the edition's non-exploded form admitted.
+**[convention]** A processor conforms to **OAPI32-P-58** when §8.3 keeps form-cookie array and object declarations represented without shape-only exclusion, including their required and non-exploded forms.
 
-**[convention]** A processor conforms to **OAPI32-P-59** when §8.3 keeps a typeless or scalar-admitting exploded form-cookie declaration statically available but refuses a supplied runtime value that would emit multiple Cookie pairs.
+**[convention]** A processor conforms to **OAPI32-P-59** when §8.3 refuses an exploded form-cookie value only when its actual expansion emits two or more Cookie pairs, while a zero- or one-pair expansion remains available subject to ordinary cookie-name and value checks.
 
 **[convention]** A processor conforms to **OAPI32-P-60** when §9.1 applies required-body exclusion to the effective post-method, post-confinement request-content set, while preserving a method-ignored body declaration and every surviving configurable alternative.
 
@@ -964,7 +966,7 @@
 
 **[convention]** A synthesizer conforms to **OAPI32-S-19** when §9.1 accounts a response media range carrying a case-insensitive `q` parameter as excluded at that alternative while preserving a valid sibling and its target.
 
-**[convention]** A synthesizer conforms to **OAPI32-S-20** when §8.3 accounts a statically unsupported exploded form-cookie array or object at its optional parameter projection and propagates only the required form to the target, while preserving non-exploded form.
+**[convention]** A synthesizer conforms to **OAPI32-S-20** when §8.3 represents optional and required form-cookie array and object declarations, exploded or not, without shape-only coverage loss; invocation-time multiplicity creates no synthesis exclusion.
 
 **[convention]** A synthesizer conforms to **OAPI32-S-21** when §9.1 accounts a removed request-content alternative at its own owner and propagates exclusion to a required Request Body target exactly when no alternative survives after method disposition and confinement.
 
@@ -1022,7 +1024,6 @@ This index gathers the points at which this specification does not fix one behav
 | a non-token effective cookie parameter name; smallest owner: that parameter projection when optional; the selected target when required | §8.3 | incorporated cookie authority admits that exact cookie-name form |
 | an effective header parameter named `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade`; smallest owner: the selected target | §8.3 | an incorporated HTTP authority defines caller control preserving the processor's connection, framing, and routing obligations |
 | required opposite-kind raw and structured Cookie parameters, or an unavoidable credential/required-parameter Cookie mix; smallest owner: the target for the required-parameter pair; otherwise the owning security alternative | §8.3 | incorporated authority defines a coherent raw/structured Cookie merge |
-| an exploded form-style cookie declaration whose resolved declaration proves the edition's unsupported multi-pair representation; smallest owner: the parameter projection when optional, the target when required; non-exploded form remains admitted | §8.3 | an incorporated OAS edition defines a correct exploded multi-pair mapping |
 | a required effective Request Body with no surviving request-content alternative after method disposition and confinement; smallest owner: the selected target | §9.1 | an incorporated OAS edition defines a request representation for the otherwise empty effective set |
 | XML generated from an object model; smallest owner: the selected media alternative | §9.2 | incorporated authority defines node order, null serialization, and adjacent text nodes |
 | a concrete request or response selection admitted by none of §9.2's lanes; smallest owner: the smallest media owner | §9.2 | an incorporated authority defines that media/data-form cell |
@@ -1066,6 +1067,7 @@ This index gathers the points at which this specification does not fix one behav
 | non-ignored Encoding `headers` produce no caller channel: only an artifact-fixed value is emitted, and the `contentEncoding`-declared equivalent `Content-Transfer-Encoding` is declaration semantics that emits no field | §9.3 |
 | generated multipart `Content-Disposition` invents neither `filename` nor `filename*`; an admissible artifact-fixed literal `filename` is emitted verbatim, while `filename*` is excluded from `multipart/form-data` at the media alternative | §9.3 |
 | a supplied structured-cookie parameter whose serialized value is not an RFC 6265 `cookie-value` refuses before dispatch; no escaping or repair is inferred | §8.3 |
+| form-cookie array and object declarations remain represented regardless of schema shape, `required`, or `explode`; with `explode: true`, only an actual expansion carrying two or more pairs refuses before dispatch, while zero- and one-pair expansions and non-exploded carriage remain subject to the ordinary cookie checks | §8.3 |
 | `retry` crosses the operation-value boundary because the incorporated authority places it in the event data model; no other transport directive does | §9.5 |
 | non-sequential media remain unary: one HTTP response body produces at most one operation value | §9.5 |
 | redirect following and transport content negotiation are runtime policy, and the resulting classification variance is the permitted set named in the first table above | §9.6 |

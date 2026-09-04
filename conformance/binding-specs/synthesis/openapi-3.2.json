@@ -3570,7 +3570,7 @@
     {
       "id": "OAPI32-SS-33",
       "rules": ["OAPI32-S-20"],
-      "description": "OAS 3.2 excludes only exploded form-cookie compound declarations at the optional parameter projection, propagates the required form, and preserves non-exploded form.",
+      "description": "OAS 3.2 form-cookie array and object declarations remain represented regardless of required or explode; exploded multiplicity is resolved only for the supplied invocation.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
@@ -3596,15 +3596,15 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["optionalCookieShape", "nonExplodedCookieShape"],
+        "operations": ["optionalCookieShape", "requiredCookieShape", "nonExplodedCookieShape"],
         "bindings": [
           { "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" },
+          { "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get" },
           { "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get" }
         ],
-        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
           { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get/parameters/0", "scope": "projection", "status": "excluded", "rule": "OAPI32-S-20", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "excluded", "rule": "OAPI32-S-20", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "represented", "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get", "requirements": [] },
           { "sourceIndex": 0, "sourceRef": "#/paths/~1non-exploded/get", "scope": "target", "status": "represented", "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get", "requirements": [] }
         ] }
       }

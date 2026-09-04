@@ -82,7 +82,7 @@
 
 **[convention]** A wire fact this specification cannot represent faithfully is a **loud protocol error**; *refuses loudly*, *fails loudly*, and *reported loudly* are synonyms. An interaction that reaches the wire and whose outcome §9.5 does not admit as successful **completes unsuccessfully**; so does one that reaches an admitted final status and then fails loudly. Values already emitted before an unsuccessful streaming completion remain successful values where a streaming rule says so.
 
-**[convention]** A **lane** is one media-selected value-to-bytes serialization path, and the lanes are exactly five: JSON, character-data, raw-octet, form, and multipart; a selection admitted by none of them is excluded under §9.2's lane-admission rule, never carried by an unnamed path. The **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
+**[convention]** A **lane** is one media-selected value-to-bytes serialization path, and the lanes are exactly six: JSON, character-data, raw-octet, artifact-encoded-string, form, and multipart; a selection admitted by none of them is excluded under §9.2's lane-admission rule, never carried by an unnamed path. The **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
 
 **[convention]** A **unit** is one member of this closed lattice, from largest to smallest: the source, an addressable operation, a declared alternative, a media alternative, a lane, and a field. A defect's **smallest owning unit** is the smallest member of that lattice whose declarations the defect reaches; a **selected unit** is a unit reached by the selected target.
 
@@ -350,7 +350,7 @@
 
 **[exclusion]** An effective header parameter whose name compares ASCII case-insensitively to `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade` excludes the target because those fields are processor-owned and cannot be replaced by caller input. The connection-specific and framing fields could otherwise change message framing, advertise a protocol switch this unary binding cannot continue, or describe hop-by-hop state the binding does not model; `Proxy-Authorization` is consumed by the first inbound proxy and therefore cannot safely carry an origin API value. The exclusion reopens only if an incorporated HTTP authority defines caller control that preserves those obligations ([RFC 9110 §5.1](https://www.rfc-editor.org/rfc/rfc9110#section-5.1), [§7.6.1](https://www.rfc-editor.org/rfc/rfc9110#section-7.6.1), [§11.7.2](https://www.rfc-editor.org/rfc/rfc9110#section-11.7.2)).
 
-**[exclusion]** A form-style cookie declaration is statically excluded when its resolved declaration proves the edition's unsupported multi-value representation: a declaration that declares only `array`, or one that declares only `object` with at least one declared property, independently of `explode`. The smallest owner is the cookie-parameter projection when optional; its would-be caller key is unknown and an invocation omitting it may dispatch. A required such parameter excludes the target because no conforming invocation can satisfy it. A typeless or scalar-admitting declaration proves no static multi-value shape; if a supplied value nevertheless would use the edition's multi-value form-cookie representation, that invocation refuses before dispatch. OAS identifies the RFC 6570 expansion as incorrect for multiple cookies whether the multiple values result from `explode: true` or not, so the exclusion reopens only if an incorporated OAS edition defines a correct multi-value mapping ([OAS 3.1.2 Appendix D](https://spec.openapis.org/oas/v3.1.2.html#appendix-d-serializing-headers-and-cookies)).
+**[convention]** A form-style cookie declaration is not excluded merely because its resolved declaration admits `array` or `object`, whatever `required` or `explode` says: shape does not determine the supplied value's cardinality, and invocation does not validate Schema Object cardinality. Multiplicity is decided after serialization. A supplied compound value whose form expansion represents more than one logical value refuses before dispatch, independently of `explode`; in particular, an exploded expansion containing two or more `name=value` pairs cannot substitute `&` for Cookie's `; ` separator, and a non-exploded multi-member comma form is likewise not carried as one cookie value. A zero- or one-member expansion remains available but still must satisfy every cookie-name and `cookie-value` rule above. This confines OAS's incorrect-multiple-value case to the invocation that actually reaches it ([OAS 3.1.2 Appendix D](https://spec.openapis.org/oas/v3.1.2.html#appendix-d-serializing-headers-and-cookies)).
 
 ## 9. Request and response media
 
@@ -426,7 +426,7 @@
 
 **[convention]** Because `readOnly` and `writeOnly` are annotations whose enforcement OAS leaves to the application, this binding never uses them to delete a supplied wire member or synthesize an absent one ([OAS 3.1.2 §4.8.24.3.2](https://spec.openapis.org/oas/v3.1.2.html#validating-readonly-and-writeonly)).
 
-**[exclusion]** A concrete request or response selection admitted by none of §3.2's five lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
+**[exclusion]** A concrete request or response selection admitted by none of §3.2's six lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
 
 **[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; only a tool that separately claims validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
@@ -814,9 +814,9 @@
 
 **[convention]** A processor conforms to **OAPI31-P-53** when §9.1 excludes a response media range carrying a case-insensitive `q` parameter before `Accept` construction while preserving every valid sibling range.
 
-**[convention]** A processor conforms to **OAPI31-P-54** when §8.3 confines a statically unsupported form-cookie array or object declaration to an optional parameter projection, propagates its required form to the target, and applies that result independently of `explode`.
+**[convention]** A processor conforms to **OAPI31-P-54** when §8.3 keeps form-cookie array and object declarations represented without shape-only exclusion, including their required forms and both `explode` choices.
 
-**[convention]** A processor conforms to **OAPI31-P-55** when §8.3 keeps a typeless or scalar-admitting form-cookie declaration statically available but refuses a supplied runtime value that would require the edition's unsupported multi-value representation.
+**[convention]** A processor conforms to **OAPI31-P-55** when §8.3 refuses only a supplied form-cookie value whose actual expansion represents multiple logical values, while a one-pair expansion remains available subject to the ordinary cookie-name and value checks.
 
 **[convention]** A processor conforms to **OAPI31-P-56** when §8.2 refuses a supplied nested array or object member whose runtime shape leaves the admitted style cell, without private stringification or JSON serialization.
 
@@ -862,7 +862,7 @@
 
 **[convention]** A synthesizer conforms to **OAPI31-S-19** when §9.1 accounts a response media range carrying a case-insensitive `q` parameter as excluded at that alternative while preserving a valid sibling and its target.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-20** when §8.3 accounts a statically unsupported form-cookie array or object at its optional parameter projection and propagates only the required form to the target.
+**[convention]** A synthesizer conforms to **OAPI31-S-20** when §8.3 represents optional and required form-cookie array and object declarations without shape-only coverage loss; invocation-time multiplicity creates no synthesis exclusion.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-21** when §9.1 accounts a removed request-content alternative at its own owner and propagates exclusion to a required Request Body target exactly when no alternative survives after method disposition and confinement.
 
@@ -916,7 +916,6 @@ This section collects the points at which two implementations conforming to `ope
 | the owning unit, and only where the resolved declaration proves the member | §8.2 unsupported compound member | an incorporated authority defines that exact cell |
 | the target when its effective name is `Host`, `Content-Length`, `Connection`, `Keep-Alive`, `Proxy-Authorization`, `Proxy-Connection`, `TE`, `Trailer`, `Transfer-Encoding`, or `Upgrade`, compared ASCII case-insensitively | §8.3 processor-owned header parameter | an incorporated HTTP authority defines caller control preserving the processor's connection, framing, and routing obligations |
 | the target for required opposite-kind parameters; otherwise the owning security alternative for an unavoidable credential combination | §8.3 raw/structured Cookie collision | incorporated authority defines a coherent raw/structured Cookie merge |
-| the form-style cookie parameter projection when optional, and the target when required, where the resolved declaration proves the edition's unsupported multi-value representation independently of `explode` | §8.3 multi-value form-style cookie | an incorporated OAS edition defines a correct multi-value mapping |
 | the selected target, only when a required effective Request Body has no surviving content alternative after method disposition and confinement | §9.1 effective empty request content | an incorporated OAS edition defines a request representation for the otherwise empty effective set |
 | the selected media alternative; string and raw-octet XML carriage remain admitted | §9.2 XML from an object model | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
 | that selection, at its smallest media owner | §9.2 selection matching no defined lane | an incorporated authority defines that media/data-form cell |
@@ -965,6 +964,7 @@ This section collects the points at which two implementations conforming to `ope
 | artifact-fixed safe Header Object values are emitted verbatim except `Content-Transfer-Encoding`; a required nonfixed header is excluded, an optional nonfixed header remains descriptive, and no caller channel exists | §9.3 surviving part headers |
 | generated multipart `Content-Disposition` invents neither `filename` nor `filename*`; an admissible artifact-fixed literal `filename` is emitted verbatim, while `filename*` is excluded at the media alternative | §9.3 multipart filename boundary |
 | a supplied parameter whose serialized value is not an RFC 6265 `cookie-value` refuses before dispatch; no escaping or repair is inferred | §8.3 structured-cookie value |
+| form-cookie array and object declarations remain represented regardless of schema shape, `required`, or `explode`; an actual expansion carrying more than one logical value refuses before dispatch, while zero- and one-member expansions remain subject to the ordinary cookie checks | §8.3 form-cookie cardinality |
 | invalid Response values and members remain subordinate coverage loss; admitted keys retain precedence, empty successful responses emit no output, undecodable non-empty successful responses fail loudly, and failure data is best-effort | §9.5 invalid Response handling |
 | an omitted or non-string `description` is an invalid documentary projection and coverage loss only; it never changes lookup, target representation, or invocation behavior, and every valid content or header sibling still governs | §9.5 invalid `description` |
 | classification depends on the final status; redirect following and transport content negotiation are runtime policy under Core §1.2 | §9.5 redirect and negotiation |

@@ -12739,7 +12739,7 @@
         "OAPI20-P-36"
       ],
       "section": "8.2",
-  "description": "An effective OAS 2.0 Header Parameter whose name differs from Accept only by ASCII case retains ordinary ownership and suppresses generated response-media advertisement even when omitted, so a q-bearing produces range remains admitted and governs response matching rather than being excluded for an Accept field the binding will not generate.",
+      "description": "An effective OAS 2.0 Header Parameter whose name differs from Accept only by ASCII case retains ordinary ownership and suppresses generated response-media advertisement even when omitted, so a q-bearing produces range remains admitted and governs response matching rather than being excluded for an Accept field the binding will not generate.",
       "given": {
         "source": {
           "content": {
@@ -12761,7 +12761,7 @@
                   ],
                   "parameters": [
                     {
-                  "name": "aCcEpT",
+                      "name": "aCcEpT",
                       "in": "header",
                       "type": "string"
                     }

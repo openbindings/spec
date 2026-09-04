@@ -4141,7 +4141,7 @@
         "OAPI32-P-58"
       ],
       "section": "8",
-      "description": "An optional 3.2 exploded form-cookie array is confined to its excluded parameter projection, so omitting it still dispatches the represented target.",
+      "description": "An optional 3.2 exploded form-cookie array remains represented, and omitting it dispatches without a Cookie field.",
       "given": {
         "source": {
           "content": {
@@ -20663,7 +20663,7 @@
       "id": "OAPI32-PS-285",
       "rules": ["OAPI32-P-58"],
       "section": "8.3",
-      "description": "The would-be caller key of an optional exploded form-cookie array excluded at its parameter projection is unknown input and refuses before dispatch.",
+      "description": "An optional exploded form-cookie array remains represented, and a supplied one-item value emits exactly one Cookie pair.",
       "given": {
         "source": { "content": {
           "openapi": "3.2.0", "info": { "title": "Optional cookie projection input", "version": "1" },
@@ -20674,28 +20674,30 @@
           } } }
         } },
         "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a"] } } }
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a"] } } },
+        "peer": { "status": 204, "headers": {}, "body": "" }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=a" }] }]
     },
     {
       "id": "OAPI32-PS-286",
       "rules": ["OAPI32-P-58"],
       "section": "8.3",
-      "description": "A required exploded form-cookie array excludes the target because every conforming supplied value would use the edition's wrong-delimiter multi-pair representation.",
+      "description": "A required exploded form-cookie object remains represented, and a supplied one-property value emits exactly one Cookie pair under that property's name.",
       "given": {
         "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Required exploded cookie array", "version": "1" },
+          "openapi": "3.2.0", "info": { "title": "Required exploded cookie object", "version": "1" },
           "servers": [{ "url": "https://api.example" }],
           "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
+            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
             "responses": { "204": { "description": "ok" } }
           } } }
         } },
         "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": false }
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": { "a": "1" } } } },
+        "peer": { "status": 204, "headers": {}, "body": "" }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "a=1" }] }]
     },
     {
       "id": "OAPI32-PS-287",
@@ -20807,7 +20809,7 @@
         "assertions": [
           { "path": "/dispatch/method", "equals": "PATCH" },
           { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
-          { "path": "/dispatch/body", "contains": "\"ok\":true" }
+          { "path": "/dispatch/body", "equals": { "ok": true } }
         ]
       }]
     },

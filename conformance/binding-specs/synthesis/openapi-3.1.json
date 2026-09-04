@@ -6508,7 +6508,7 @@
     {
       "id": "OAPI31-SS-69",
       "rules": ["OAPI31-S-20"],
-      "description": "OAS 3.1 form-cookie array and object declarations are excluded independently of explode at the optional parameter projection, with only the required form propagating to the target.",
+      "description": "OAS 3.1 form-cookie array and object declarations remain represented regardless of required or explode; only an actual multi-value invocation is refused.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -6529,12 +6529,14 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["optionalCookieShape"],
-        "bindings": [{ "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" }],
-        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+        "operations": ["optionalCookieShape", "requiredCookieShape"],
+        "bindings": [
+          { "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" },
+          { "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get" }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
           { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get/parameters/0", "scope": "projection", "status": "excluded", "rule": "OAPI31-S-20", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "excluded", "rule": "OAPI31-S-20", "requirements": [] }
+          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "represented", "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get", "requirements": [] }
         ] }
       }
     },
