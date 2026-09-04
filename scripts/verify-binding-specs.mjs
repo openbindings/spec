@@ -446,14 +446,12 @@ for (const dir of processorTargets) {
           errors.push(`${materializationAt}: codeUnits must contain an unpaired surrogate so JSON-safe parsing cannot erase the hostile boundary`);
       }
     }
-    if (dir.startsWith("openapi-")) {
-      for (const expected of scenario.expected) {
-        for (const assertion of expected.assertions) {
-          if (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/"))
-            errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
-          if (Object.hasOwn(assertion, "semanticEquals") && fixture.format !== "openbindings.binding-spec-processor-scenarios@5")
-            errors.push(`${at}: semanticEquals requires processor-scenario format @5`);
-        }
+    for (const expected of scenario.expected) {
+      for (const assertion of expected.assertions) {
+        if (dir.startsWith("openapi-") && (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/")))
+          errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
+        if (Object.hasOwn(assertion, "semanticEquals") && fixture.format !== "openbindings.binding-spec-processor-scenarios@5")
+          errors.push(`${at}: semanticEquals requires processor-scenario format @5`);
       }
     }
     for (const rule of scenario.rules) {
@@ -766,6 +764,49 @@ try {
         : `synthesis-scenario.schema.json accepts a scenario source ${what}; Core requires location or content (restore the 'anyOf' on the source object)`
     );
   }
+}
+
+// --- 12. Revision-5 assertion syntax stays version-gated --------------------
+// A new evaluator cannot leak into a revision-1 family merely because the
+// assertion union knows its shape. This probe makes both the schema gate and
+// the verifier's family-neutral version check permanent.
+{
+  const legacySemanticAssertion = {
+    format: "openbindings.binding-spec-processor-scenarios@1",
+    bindingSpec: "openbindings.asyncapi@1",
+    family: "asyncapi",
+    description: "verifier probe; not part of the corpus",
+    scenarios: [
+      {
+        id: "ASYNC-PS-99",
+        rules: ["ASYNC-P-01"],
+        section: "1",
+        description: "verifier probe; not part of the corpus",
+        given: {
+          source: {},
+          binding: {},
+          invocation: { inputPresent: false },
+        },
+        expected: [
+          {
+            disposition: "complete",
+            phase: "completion",
+            assertions: [
+              {
+                path: "/dispatch/body",
+                semanticEquals: { as: "json-lines", value: [] },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const probe = ajvOk(PROCESSOR_SCHEMA, legacySemanticAssertion);
+  if (probe.ok)
+    errors.push(
+      "processor-scenario.schema.json accepts semanticEquals under format @1; revision-5 assertion syntax must remain version-gated"
+    );
 }
 
 rmSync(tmp, { recursive: true, force: true });

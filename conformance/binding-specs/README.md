@@ -162,31 +162,67 @@ resulting JSON value structurally:
 - `form-json-field` parses the pointed-at
   `application/x-www-form-urlencoded` body, selects exactly one field with the
   decoded `name`, parses that field's complete decoded value as JSON, and
-  compares it with `value`.
+  compares it with `value`. Parsing splits raw fields on `&` and each field on
+  its first `=`, replaces `+` with SP, decodes well-formed percent triplets to
+  UTF-8 bytes, and rejects invalid UTF-8. The raw name/value spelling must be a
+  member of the governing sibling's complete form-content permitted set: in
+  OAS 3.0, SP is `+`, every RFC 3986 unreserved byte is literal, and every
+  other UTF-8 byte is uppercase `%HH`; in OAS 3.1, SP is `+` or `%20`, `~` is
+  literal or `%7E`, every other unreserved byte is literal, and every remaining
+  UTF-8 byte is uppercase `%HH`; in OAS 3.2, ASCII alphanumerics and `*`, `-`,
+  `.`, `_` are literal, SP is `+`, and every other UTF-8 byte is uppercase
+  `%HH`. Thus the interpreter checks the complete edition-specific form wrapper
+  without choosing the JSON spelling inside it.
 - `multipart-json-part` points at the normalized `dispatch` object, parses its
   body using the boundary in its `Content-Type`, selects exactly one
-  `form-data` part with the decoded `name`, requires a JSON media type for that
-  part, parses the complete part body as JSON, and compares it with `value`.
+  `form-data` part with the decoded `name`, requires that part's media-type
+  essence to be exactly `application/json` case-insensitively with no media-type
+  parameters, parses the complete part body as JSON, and compares it with
+  `value`. MIME field names
+  compare case-insensitively; quoted-string unquoting follows the governing
+  HTTP grammar; the complete multipart body, including its closing delimiter,
+  must parse with no unconsumed bytes.
 - `query-json-parameter` parses the pointed-at URL, selects exactly one query
   contribution with the decoded `name`, parses the complete decoded value as
-  JSON, and compares it with `value`.
+  JSON, and compares it with `value`. It splits the raw query on `&` and each
+  contribution on its first `=`, then decodes uppercase `%HH` triplets as UTF-8
+  without treating `+` as SP. Re-encoding each decoded name and value with
+  exactly the RFC 3986 unreserved ASCII bytes literal and every other UTF-8
+  byte as uppercase `%HH` must reproduce that raw contribution byte-for-byte.
 - `querystring-json` parses the pointed-at URL, requires a present query
   component, percent-decodes that complete component once without interpreting
-  it as named fields, parses it as JSON, and compares it with `value`.
+  it as named fields, parses it as JSON, and compares it with `value`. Its
+  percent decoder and byte-for-byte re-encoding check are the same unreserved
+  UTF-8/uppercase-`%HH` procedure as `query-json-parameter`, applied to the
+  complete query component rather than to name/value fields.
 - `json-lines` parses the pointed-at body using the line framing pinned by the
-  OAS 3.2 binding specification; `json-sequence` parses it as RFC 7464. In both
-  cases every frame must be valid, the whole body must be consumed, and the
-  ordered array of parsed items is compared with `value`. The parse itself
-  therefore proves item count, boundaries, and order without fixing whitespace,
-  member order, escapes, or number spelling within an item.
+  OAS 3.2 binding specification. `json-sequence` applies that binding's request
+  emission form, not RFC 7464's broader accepting-parser grammar: every item is
+  exactly one frame beginning with RS and ending with LF, the bytes between
+  them are one complete JSON text, and neither delimiter may be omitted. In
+  both cases every frame must be valid, the whole body must be consumed, and
+  the ordered array of parsed items is compared with `value`. The parse itself
+  therefore proves delimiter cardinality, item count, boundaries, and order
+  without fixing whitespace, member order, escapes, or number spelling within
+  an item.
 
 The three named interpreters require `name`; the other three forbid it. A
 failed parse, missing or duplicate selected member, unconsumed wire content,
 wrong framing, or unequal JSON value fails the assertion. This is harness
 comparison behavior only: it adds no binding configuration point and no
 processor obligation beyond the wire behavior already stated by the governing
-specification. Revision-1 files outside the OpenAPI family remain valid; the
-four OpenAPI siblings use revision 5.
+specification. The schema rejects `semanticEquals` under every earlier format,
+so revision-1 files outside the OpenAPI family remain valid without silently
+acquiring a new evaluator; the four OpenAPI siblings use revision 5.
+
+For this assertion, JSON structural equality is closed as follows. Objects
+must have unique member names and compare as the same name-to-value mapping
+without member-order significance. Arrays compare by equal length and
+recursive value equality at each position. Strings, booleans, and null compare
+as their JSON values. Numbers compare by the exact mathematical value denoted
+by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
+equivalent whitespace, escaping, member order, and number spelling vary while
+preventing an adapter's host-number representation from changing a verdict.
 
 The current corpus contains 980 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI

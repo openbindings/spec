@@ -254,6 +254,35 @@
           "format": { "const": "openbindings.binding-spec-processor-scenarios@1" }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@5" }
+        },
+        "required": ["format"]
+      },
+      "else": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "expected": {
+                  "items": {
+                    "properties": {
+                      "assertions": {
+                        "items": {
+                          "not": { "required": ["semanticEquals"] }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }
