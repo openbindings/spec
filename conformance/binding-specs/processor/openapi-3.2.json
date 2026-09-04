@@ -20159,17 +20159,17 @@
                     "200": {
                       "description": "ok",
                       "content": {
-                    "text/plain": {
-                      "schema": {
-                        "type": "string"
-                      }
-                    },
-                    "text/html;Q=bogus": {
-                      "schema": {
-                        "type": "string"
-                      }
-                    },
-                    "application/json": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "text/html;Q=bogus": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        },
+                        "application/json": {
                           "schema": {
                             "type": "string"
                           }

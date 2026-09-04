@@ -167,10 +167,12 @@ directly traceable without relying on an umbrella citation. The corpus includes
 artifact-permitted alternatives, required configuration, pre-dispatch
 refusal, late streaming failure, lossless result preservation, and
 reserved-protocol collision cases. Independent adapters in `openbindings-go` and
-`openbindings-ts` execute every scenario for every family. The corpus is
-therefore cross-implementation behavioral evidence, while the family prose
-remains authoritative and the adapters remain responsible for demonstrating
-that each normalized observation came from the real family implementation.
+`openbindings-ts` are intended to execute the portable scenarios for each
+implemented family. A scenario becomes cross-implementation behavioral evidence
+only after both adapter jobs execute it successfully; until then it is a
+structurally verified semantic reference. The family prose remains authoritative,
+and each adapter remains responsible for demonstrating that a normalized
+observation came from the real family implementation.
 
 Each reference SDK also keeps authoring tests beside the family implementation.
 The shared `synthesis/` corpus makes the cross-implementation portion
@@ -219,7 +221,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 189 scenarios
+coverage loss. The 190 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
@@ -463,12 +465,15 @@ verdicts, prove every clause collected by an umbrella rule, or execute
 processor/synthesis scenarios — those are the jobs of family processors,
 adapters, and semantic acceptance review.
 
-The spec repository's CI also checks out both reference SDKs and executes every
-portable processor and synthesis scenario against each family implementation.
-The SDK repositories run the same corpus independently. This makes a corpus
-change, a Go behavior change, and a TypeScript behavior change part of one
-observable gate while preserving the authority order above: a mismatch is
-adjudicated before any layer is changed.
+The cross-implementation acceptance workflow checks out both reference SDKs and
+invokes their portable processor and synthesis adapters. A passing job is
+evidence only for scenarios the pinned adapter revision actually loads, so its
+executed counts must equal the current corpus before the result is called complete.
+The SDK repositories can run the same corpus independently. Adapter lag is
+reported as implementation work rather than hidden by the repository's structural
+verifier. Once synchronized, a corpus change, a Go behavior change, and a
+TypeScript behavior change form one observable gate while preserving the
+authority order above: a mismatch is adjudicated before any layer is changed.
 
 ## Adding fixtures
 

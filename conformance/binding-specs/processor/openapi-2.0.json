@@ -12681,11 +12681,11 @@
               "/media": {
                 "get": {
                   "operationId": "acceptUnion",
-              "produces": [
-                "text/plain",
-                "text/html;Q=bogus",
-                "application/json"
-              ],
+                  "produces": [
+                    "text/plain",
+                    "text/html;Q=bogus",
+                    "application/json"
+                  ],
                   "responses": {
                     "200": {
                       "description": "ok",
@@ -12735,10 +12735,11 @@
     {
       "id": "OAPI20-PS-184",
       "rules": [
-        "OAPI20-P-34"
+        "OAPI20-P-34",
+        "OAPI20-P-36"
       ],
       "section": "8.2",
-      "description": "An effective OAS 2.0 Accept Header Parameter retains ordinary ownership and suppresses generated response-media advertisement even when the optional parameter is omitted.",
+      "description": "An effective OAS 2.0 Accept Header Parameter retains ordinary ownership and suppresses generated response-media advertisement even when omitted, so a q-bearing produces range remains admitted and governs response matching rather than being excluded for an Accept field the binding will not generate.",
       "given": {
         "source": {
           "content": {
@@ -12756,7 +12757,7 @@
                 "get": {
                   "operationId": "callerAccept",
                   "produces": [
-                    "application/json"
+                    "text/plain;Q=bogus"
                   ],
                   "parameters": [
                     {
@@ -12787,9 +12788,9 @@
         "peer": {
           "status": 200,
           "headers": {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain;q=bogus"
           },
-          "body": "\"ok\""
+          "body": "ok"
         }
       },
       "expected": [

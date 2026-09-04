@@ -2292,6 +2292,88 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI20-SS-25",
+      "rules": [
+        "OAPI20-S-12"
+      ],
+      "description": "An effective caller-owned Accept Header Parameter suppresses generated Accept, so a q-bearing produces range and its target remain represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Caller-owned Accept preserves q media",
+            "version": "1"
+          },
+          "schemes": [
+            "https"
+          ],
+          "host": "api.example",
+          "paths": {
+            "/q": {
+              "get": {
+                "operationId": "callerQMedia",
+                "produces": [
+                  "text/plain;Q=bogus"
+                ],
+                "parameters": [
+                  {
+                    "name": "Accept",
+                    "in": "header",
+                    "type": "string"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "callerQMedia"
+        ],
+        "bindings": [
+          {
+            "operationKey": "callerQMedia",
+            "bindingSelector": "#/paths/~1q/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "callerQMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get/produces/0",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "callerQMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
