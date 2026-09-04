@@ -79,7 +79,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A wire fact this specification cannot represent faithfully is a **loud protocol error**; *refuses loudly*, *fails loudly*, and *reported loudly* are synonyms. An interaction that reaches the wire and whose outcome §9.5 does not admit as successful **completes unsuccessfully**; so does one that reaches an admitted final status and then fails loudly. Values already emitted before an unsuccessful streaming completion remain successful values where a streaming rule says so.
 
-**[convention]** A **lane** is one media-selected value-to-bytes serialization path, and the lanes are exactly five: JSON, character-data, raw-octet, form, and multipart; a selection admitted by none of them is excluded under §9.2's lane-admission rule, never carried by an unnamed path. The **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
+**[convention]** A **lane** is one media-selected value-to-bytes serialization path, and the lanes are exactly six: JSON, character-data, raw-octet, artifact-encoded-string, form, and multipart; a selection admitted by none of them is excluded under §9.2's lane-admission rule, never carried by an unnamed path. The **smallest media owner** is the narrowest declared unit that owns a defective lane. An **unavailable** alternative is an excluded alternative: the word marks this vocabulary's exclusion outcome applied to a media alternative.
 
 **[convention]** A **unit** is one member of this closed lattice, from largest to smallest: the source, an addressable operation, a declared alternative, a media alternative, a lane, and a field. A defect's **smallest owning unit** is the smallest member of that lattice whose declarations the defect reaches; a **selected unit** is a unit reached by the selected target.
 
@@ -413,7 +413,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** `readOnly` and `writeOnly` retain their OAS request/response validation meaning, but this binding never uses either annotation to delete a supplied wire member or synthesize an absent one ([OAS 3.0.4 §4.7.24.2](https://spec.openapis.org/oas/v3.0.4.html#schema-read-only)).
 
-**[exclusion]** A concrete request or response selection admitted by none of §3.2's five closed lanes — JSON, character-data including the string XML carriage under §9.2's XML rule, raw-octet, and the request-only form and multipart lanes — is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
+**[exclusion]** A concrete request or response selection admitted by none of §3.2's six closed lanes — JSON, character-data including the string XML carriage under §9.2's XML rule, raw-octet, artifact-encoded-string, and the request-only form and multipart lanes — is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
 
 **[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; only a tool that separately claims validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
@@ -799,7 +799,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A processor conforms to **OAPI30-P-55** when §8.3 keeps form-cookie array and object declarations represented without shape-only exclusion, including their required forms and both `explode` choices.
 
-**[convention]** A processor conforms to **OAPI30-P-56** when §8.3 refuses only a supplied form-cookie value whose actual expansion represents multiple logical values, while a one-pair expansion remains available subject to the ordinary cookie-name and value checks.
+**[convention]** A processor conforms to **OAPI30-P-56** when §8.3 refuses only a supplied form-cookie value whose actual expansion represents multiple logical values, while a zero- or one-pair expansion remains available subject to the ordinary cookie-name and value checks.
 
 **[convention]** A processor conforms to **OAPI30-P-57** when §8.2 refuses a supplied nested array or object member whose runtime shape leaves the admitted style cell, without private stringification or JSON serialization.
 
@@ -901,7 +901,7 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | a target with required raw and structured Cookie parameters, or a security alternative with unavoidable opposite-kind Cookie credentials/required parameters | §8.3 | incorporated authority defines a coherent raw/structured Cookie merge |
 | a required effective Request Body with no surviving request-content alternative after method disposition and confinement; smallest owner: the selected target | §9.1 | an incorporated OAS edition defines a request representation for the otherwise empty effective set |
 | generating XML from an object model, at the selected media alternative; string and raw-octet XML carriage remain admitted | §9.2 | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
-| a concrete request or response selection admitted by none of §3.2's five lanes, at its smallest media owner | §9.2 | an incorporated authority defines that media/data-form cell |
+| a concrete request or response selection admitted by none of §3.2's six lanes, at its smallest media owner | §9.2 | an incorporated authority defines that media/data-form cell |
 | a response selection of the form or multipart lane, at its smallest media owner | §9.3 | an incorporated authority defines that decoding |
 | a response media range carrying a case-insensitive `q` parameter, at that response-media alternative | §9.1 | incorporated HTTP authority defines an unambiguous `Accept` representation preserving both the declared parameter and equal preference |
 | a multipart media alternative with a property name unrepresentable as the `name` parameter, CR or LF included | §9.3 | an incorporated authority defines an unambiguous encoding |

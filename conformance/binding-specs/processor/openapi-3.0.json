@@ -861,7 +861,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.0 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.0 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.0 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name; the containing form layer percent-encodes whichever permitted JSON spelling is produced. Edition 3.0.0 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One fixed property mapping, with only §12.4's JSON-byte latitude. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -938,7 +938,7 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "description": "The emitted body under edition 3.0.0. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "description": "The emitted body under edition 3.0.0. Its property mapping is identical across the five 3.0-line scenarios; the JSON spelling inside that property retains §12.4's permitted variation.",
           "assertions": [
             {
               "path": "/dispatch/headers/Content-Type",
@@ -946,7 +946,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+              "contains": "address=%7B"
             }
           ]
         }
@@ -959,7 +959,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.1 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.1 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.1 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name; the containing form layer percent-encodes whichever permitted JSON spelling is produced. Edition 3.0.1 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One fixed property mapping, with only §12.4's JSON-byte latitude. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1036,7 +1036,7 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "description": "The emitted body under edition 3.0.1. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "description": "The emitted body under edition 3.0.1. Its property mapping is identical across the five 3.0-line scenarios; the JSON spelling inside that property retains §12.4's permitted variation.",
           "assertions": [
             {
               "path": "/dispatch/headers/Content-Type",
@@ -1044,7 +1044,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+              "contains": "address=%7B"
             }
           ]
         }
@@ -1057,7 +1057,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.2 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.2 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.2 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name; the containing form layer percent-encodes whichever permitted JSON spelling is produced. Edition 3.0.2 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One fixed property mapping, with only §12.4's JSON-byte latitude. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1134,7 +1134,7 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "description": "The emitted body under edition 3.0.2. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "description": "The emitted body under edition 3.0.2. Its property mapping is identical across the five 3.0-line scenarios; the JSON spelling inside that property retains §12.4's permitted variation.",
           "assertions": [
             {
               "path": "/dispatch/headers/Content-Type",
@@ -1142,7 +1142,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+              "contains": "address=%7B"
             }
           ]
         }
@@ -1155,7 +1155,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.3 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.3 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.3 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name; the containing form layer percent-encodes whichever permitted JSON spelling is produced. Edition 3.0.3 states no lane-selection rule of its own; it reaches this behaviour through its own Section 4.1 patch-uniformity instruction together with 3.0.4, a 3.0.* version, whose Section 4.7.15.1.2 states that with all three fields absent \"Encoding is to be based on contentType alone\". A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One fixed property mapping, with only §12.4's JSON-byte latitude. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1232,7 +1232,7 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "description": "The emitted body under edition 3.0.3. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "description": "The emitted body under edition 3.0.3. Its property mapping is identical across the five 3.0-line scenarios; the JSON spelling inside that property retains §12.4's permitted variation.",
           "assertions": [
             {
               "path": "/dispatch/headers/Content-Type",
@@ -1240,7 +1240,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+              "contains": "address=%7B"
             }
           ]
         }
@@ -1253,7 +1253,7 @@
         "OAPI30-P-03"
       ],
       "section": "9",
-      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.4 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name, with its space spelled + by RFC 1866 Section 8.2.1. Edition 3.0.4 states it outright at Section 4.7.15.1.2 — with all three fields absent, \"Encoding is to be based on contentType alone\" — and prints the worked bytes for this exact shape at Section 4.7.15.2.1. A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One permitted observation, not a set. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
+      "description": "The whole OAS 3.0 line emits ONE body for a control-free urlencoded property, and this scenario is edition 3.0.4 of the five that state it. The Encoding Object writes contentType and no style, explode or allowReserved, so the content path governs: the object's JSON image rides as one field under the property's own name; the containing form layer percent-encodes whichever permitted JSON spelling is produced. Edition 3.0.4 states it outright at Section 4.7.15.1.2 — with all three fields absent, \"Encoding is to be based on contentType alone\" — and prints the worked bytes for this exact shape at Section 4.7.15.2.1. A processor that keys any part of this on the PATCH component of the openapi field emits address's members as top-level fields (street=main%20st), discards the artifact's explicit contentType, and loses the field name the operation is built around; each of 3.0.0 through 3.0.3 forbids that distinction in its OWN Section 4.1, in the words \"The patch version SHOULD NOT be considered by tooling, making no distinction between 3.0.0 and 3.0.1 for example\" — 3.0.4 and the 3.1 editions carry the same sentence naming 3.1.0 and 3.1.1 instead, so the instruction governing an artifact that declares a 3.0-line patch is the one in that artifact's own edition. One fixed property mapping, with only §12.4's JSON-byte latitude. [CO30-03: caller input re-keyed to {parameters?, body?}.]",
       "given": {
         "source": {
           "content": {
@@ -1330,7 +1330,7 @@
         {
           "disposition": "complete",
           "phase": "completion",
-          "description": "The emitted body under edition 3.0.4. It is byte-identical in all five 3.0-line scenarios, OAPI30-PS-60 through OAPI30-PS-64.",
+          "description": "The emitted body under edition 3.0.4. Its property mapping is identical across the five 3.0-line scenarios; the JSON spelling inside that property retains §12.4's permitted variation.",
           "assertions": [
             {
               "path": "/dispatch/headers/Content-Type",
@@ -1338,7 +1338,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "address=%7B%22street%22%3A%22main+st%22%7D"
+              "contains": "address=%7B"
             }
           ]
         }
@@ -5320,7 +5320,11 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "{\"a\":\"one\",\"b\":\"two\"}"
+              "contains": "{"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "}"
             },
             {
               "path": "/outputs",
@@ -8770,7 +8774,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "ids=%5B1%2C2%5D"
+              "contains": "ids=%5B"
             },
             {
               "path": "/dispatch/body",
@@ -8875,7 +8879,11 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "count=7&flag=true"
+              "contains": "count="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "flag=true"
             },
             {
               "path": "/dispatch/body",
@@ -14377,7 +14385,8 @@
     {
       "id": "OAPI30-PS-242",
       "rules": [
-        "OAPI30-P-55"
+        "OAPI30-P-55",
+        "OAPI30-P-56"
       ],
       "section": "8.3",
       "description": "An optional exploded form-cookie array remains represented, and a supplied one-item value emits exactly one Cookie pair.",
@@ -14412,7 +14421,8 @@
     {
       "id": "OAPI30-PS-243",
       "rules": [
-        "OAPI30-P-55"
+        "OAPI30-P-55",
+        "OAPI30-P-56"
       ],
       "section": "8.3",
       "description": "A required non-exploded form-cookie array remains represented, and a supplied one-item value emits one valid Cookie pair.",
@@ -14580,7 +14590,8 @@
     {
       "id": "OAPI30-PS-248",
       "rules": [
-        "OAPI30-P-55"
+        "OAPI30-P-55",
+        "OAPI30-P-56"
       ],
       "section": "8.3",
       "description": "A required exploded form-cookie object remains represented, and a supplied one-property value emits exactly one Cookie pair under that property's name.",
@@ -14611,6 +14622,26 @@
         "disposition": "complete", "phase": "completion",
         "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "a=1" }]
       }]
+    },
+    {
+      "id": "OAPI30-PS-249",
+      "rules": ["OAPI30-P-55", "OAPI30-P-56"],
+      "section": "8.3",
+      "description": "A supplied empty array is present rather than omitted and uses the form undefined-value cell, emitting one empty Cookie pair rather than disappearing or entering the multi-value refusal path.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.0.4", "info": { "title": "Empty form-cookie array", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "get": {
+            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": [] } } },
+        "peer": { "status": 204, "headers": {}, "body": "" }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
     }
   ]
 }

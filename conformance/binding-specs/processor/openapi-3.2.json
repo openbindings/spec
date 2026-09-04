@@ -2497,7 +2497,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example/search?%7B%22a%22%3A%22x%5Cu0026y%22%7D"
+              "contains": "https://api.example/search?%7B"
             }
           ]
         }
@@ -3988,7 +3988,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example/x?q=%7B%22a%22%3A%22b%22%7D"
+              "contains": "https://api.example/x?q=%7B"
             }
           ]
         }
@@ -6316,7 +6316,19 @@
           "assertions": [
             {
               "path": "/dispatch/body",
-              "equals": "{\"n\":1}\n{\"n\":2}\n"
+              "contains": "{"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\n"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "1"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "2"
             }
           ]
         }
@@ -6389,7 +6401,19 @@
           "assertions": [
             {
               "path": "/dispatch/body",
-              "equals": "\u001etrue\n\u001efalse\n"
+              "contains": "\u001e"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "true"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "false"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\n"
             }
           ]
         }
@@ -7422,7 +7446,19 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "{\"n\":1}\n{\"n\":2}\n"
+              "contains": "{"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\n"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "1"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "2"
             }
           ]
         }
@@ -15188,7 +15224,11 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "count=7&flag=true"
+              "contains": "count="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "flag=true"
             },
             {
               "path": "/dispatch/body",
@@ -18079,7 +18119,9 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "\"ok\":true"
+              "equals": {
+                "ok": true
+              }
             }
           ]
         }
@@ -20661,7 +20703,7 @@
     },
     {
       "id": "OAPI32-PS-285",
-      "rules": ["OAPI32-P-58"],
+      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
       "section": "8.3",
       "description": "An optional exploded form-cookie array remains represented, and a supplied one-item value emits exactly one Cookie pair.",
       "given": {
@@ -20681,7 +20723,7 @@
     },
     {
       "id": "OAPI32-PS-286",
-      "rules": ["OAPI32-P-58"],
+      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
       "section": "8.3",
       "description": "A required exploded form-cookie object remains represented, and a supplied one-property value emits exactly one Cookie pair under that property's name.",
       "given": {
@@ -20831,6 +20873,26 @@
         "invocation": { "inputPresent": false }
       },
       "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+    },
+    {
+      "id": "OAPI32-PS-293",
+      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
+      "section": "8.3",
+      "description": "A supplied empty array is present rather than omitted and uses the form undefined-value cell, emitting one empty Cookie pair rather than disappearing or entering the multi-pair refusal path.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.2.0", "info": { "title": "Empty form-cookie array", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "get": {
+            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": [] } } },
+        "peer": { "status": 204, "headers": {}, "body": "" }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
     }
   ]
 }

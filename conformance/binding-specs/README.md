@@ -151,7 +151,7 @@ pass. The repository verifier requires unique, resolving paths, null
 placeholders, and an unpaired surrogate in each current materialization.
 Revision-1 files outside the OpenAPI family remain valid and unchanged.
 
-The current corpus contains 977 scenarios citing every P-rule of usage,
+The current corpus contains 980 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,

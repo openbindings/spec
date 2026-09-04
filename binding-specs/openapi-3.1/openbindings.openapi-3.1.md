@@ -816,7 +816,7 @@
 
 **[convention]** A processor conforms to **OAPI31-P-54** when §8.3 keeps form-cookie array and object declarations represented without shape-only exclusion, including their required forms and both `explode` choices.
 
-**[convention]** A processor conforms to **OAPI31-P-55** when §8.3 refuses only a supplied form-cookie value whose actual expansion represents multiple logical values, while a one-pair expansion remains available subject to the ordinary cookie-name and value checks.
+**[convention]** A processor conforms to **OAPI31-P-55** when §8.3 refuses only a supplied form-cookie value whose actual expansion represents multiple logical values, while a zero- or one-pair expansion remains available subject to the ordinary cookie-name and value checks.
 
 **[convention]** A processor conforms to **OAPI31-P-56** when §8.2 refuses a supplied nested array or object member whose runtime shape leaves the admitted style cell, without private stringification or JSON serialization.
 

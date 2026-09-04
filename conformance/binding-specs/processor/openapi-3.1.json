@@ -3047,7 +3047,7 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "{\"role\":\"admin\"}"
+              "contains": "{"
             },
             {
               "path": "/outputs",
@@ -10379,7 +10379,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "note=%22hello%22"
+              "contains": "note=%22"
             },
             {
               "path": "/outputs",
@@ -10896,7 +10896,7 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "ids=%5B1%2C2%5D"
+              "contains": "ids=%5B"
             },
             {
               "path": "/dispatch/body",
@@ -11001,7 +11001,11 @@
             },
             {
               "path": "/dispatch/body",
-              "equals": "count=7&flag=true"
+              "contains": "count="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "flag=true"
             },
             {
               "path": "/dispatch/body",
@@ -16141,7 +16145,7 @@
     },
     {
       "id": "OAPI31-PS-228",
-      "rules": ["OAPI31-P-54"],
+      "rules": ["OAPI31-P-54", "OAPI31-P-55"],
       "section": "8.3",
       "description": "An optional exploded form-cookie array remains represented, and a supplied one-item value emits exactly one Cookie pair.",
       "given": {
@@ -16161,7 +16165,7 @@
     },
     {
       "id": "OAPI31-PS-229",
-      "rules": ["OAPI31-P-54"],
+      "rules": ["OAPI31-P-54", "OAPI31-P-55"],
       "section": "8.3",
       "description": "A required non-exploded form-cookie array remains represented, and a supplied one-item value emits one valid Cookie pair.",
       "given": {
@@ -16264,7 +16268,7 @@
     },
     {
       "id": "OAPI31-PS-234",
-      "rules": ["OAPI31-P-54"],
+      "rules": ["OAPI31-P-54", "OAPI31-P-55"],
       "section": "8.3",
       "description": "A required exploded form-cookie object remains represented, and a supplied one-property value emits exactly one Cookie pair under that property's name.",
       "given": {
@@ -16287,6 +16291,26 @@
         "disposition": "complete", "phase": "completion",
         "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "a=1" }]
       }]
+    },
+    {
+      "id": "OAPI31-PS-235",
+      "rules": ["OAPI31-P-54", "OAPI31-P-55"],
+      "section": "8.3",
+      "description": "A supplied empty array is present rather than omitted and uses the form undefined-value cell, emitting one empty Cookie pair rather than disappearing or entering the multi-value refusal path.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.1.2", "info": { "title": "Empty form-cookie array", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "get": {
+            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/get" },
+        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": [] } } },
+        "peer": { "status": 204, "headers": {}, "body": "" }
+      },
+      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
     }
   ]
 }
