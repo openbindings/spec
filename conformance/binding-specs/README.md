@@ -7,10 +7,10 @@ ten standalone brownfield synthesis binding specifications, keyed to each specif
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
-| openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..31 |
-| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..49 |
-| openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..48 |
-| openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..52 |
+| openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..36 |
+| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..54 |
+| openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..53 |
+| openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..57 |
 | mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
@@ -159,7 +159,7 @@ sequential-response, and response-reference-identity batches, the
 hostile-pass fix-round and Go engine-round batches, the Round R
 upstream-invalid Response Object batch, and the Round R2 batch that carries
 that rule onto the 2.0 and 3.2 lanes and pins its success scope on all four
-(237 distinct rules). A complete citation set is a structural guarantee: it
+(241 distinct rules). A complete citation set is a structural guarantee: it
 means no defined P-rule lacks a scenario, not that one scenario exercises every
 clause collected by a legacy umbrella rule. New semantic-closure rules use one
 stable P-rule identifier per observable claim so the corresponding scenario is
@@ -219,7 +219,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 185 scenarios
+coverage loss. The 189 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow

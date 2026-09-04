@@ -5585,7 +5585,7 @@
         "OAPI20-P-04"
       ],
       "section": "11",
-      "description": "Accept remains an ordinary Header Parameter destination, so a credential targeting it collides only when that effective Parameter exists.",
+      "description": "An effective Accept Header Parameter owns and suppresses generated response-media advertisement, so a credential targeting that same field collides with the effective parameter; without such a parameter, Accept remains binding-owned.",
       "given": {
         "source": {
           "content": {
@@ -12660,10 +12660,11 @@
     {
       "id": "OAPI20-PS-183",
       "rules": [
-        "OAPI20-P-34"
+        "OAPI20-P-34",
+        "OAPI20-P-36"
       ],
       "section": "8.2",
-      "description": "Every admitted response media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-array order.",
+      "description": "Every admitted response media alternative is advertised once at equal preference in deterministic normalized order, while a case-insensitive q parameter is confined to its excluded alternative and cannot become an Accept weight.",
       "given": {
         "source": {
           "content": {
@@ -12680,10 +12681,11 @@
               "/media": {
                 "get": {
                   "operationId": "acceptUnion",
-                  "produces": [
-                    "text/plain",
-                    "application/json"
-                  ],
+              "produces": [
+                "text/plain",
+                "text/html;Q=bogus",
+                "application/json"
+              ],
                   "responses": {
                     "200": {
                       "description": "ok",

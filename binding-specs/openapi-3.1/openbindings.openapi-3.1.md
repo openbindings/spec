@@ -380,6 +380,8 @@
 
 **[pin]** The binding emits one `Accept` field containing every distinct surviving, non-colliding response-content media range whose body projection has an admitted carriage lane under §§9.2–9.5. Each range uses §9.1's parsed normalized spelling with any wildcard preserved; values are ordered by ascending UTF-8 octets of that spelling and joined with exactly comma-plus-SP, with no `q` parameter added, so every advertised range has equal preference. If the set is empty, the field is omitted. OAS ignores a Header parameter named `Accept` and does not define how a client advertises response-content alternatives; this pin preserves every declared usable alternative without inventing a preference and closes the selection and list-order behavior OAS leaves unspecified ([OAS 3.1.2 §§4.8.12.2.1, 4.8.17](https://spec.openapis.org/oas/v3.1.2.html#common-fixed-fields), [RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
 
+**[exclusion]** A response-content media range containing a parameter named `q`, compared ASCII case-insensitively, is excluded at that response-media alternative before the generated `Accept` set is formed; valid siblings remain. RFC 9110 assigns `q` in `Accept` to relative weight, so copying the parameter would reinterpret declared media identity, can make the field invalid, and cannot preserve this binding's equal-preference rule, while stripping it would advertise a different range. The exclusion reopens only if incorporated HTTP authority defines an unambiguous `Accept` representation that preserves both the declared parameter and equal preference ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
+
 ### 9.2 Common carriage lanes
 
 **[pin]** An exact `application/json` or `+json` selection serializes the supplied value as strict JSON on requests and parses strict JSON on responses; JSON text uses UTF-8 ([RFC 6839 §3.1](https://www.rfc-editor.org/rfc/rfc6839#section-3.1), [RFC 8259 §8.1](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)).
@@ -806,6 +808,8 @@
 
 **[convention]** A processor conforms to **OAPI31-P-52** when §9.3 invents neither `filename` nor `filename*`, preserves an admissible artifact-fixed literal `filename`, and excludes a fixed `filename*` at the multipart alternative.
 
+**[convention]** A processor conforms to **OAPI31-P-53** when §9.1 excludes a response media range carrying a case-insensitive `q` parameter before `Accept` construction while preserving every valid sibling range.
+
 **[convention]** A synthesizer conforms to **OAPI31-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-02** when it uses §3.2's locally defined status vocabulary for sources, targets, dependencies, and subordinate projections without depending on any project interface contract.
@@ -841,6 +845,8 @@
 **[convention]** A synthesizer conforms to **OAPI31-S-17** when §7 derives the operation input from the post-confinement effective parameter set, leaving a surviving same-named cross-location parameter unqualified when its only collision was removed.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-18** when §9.3 preserves an admissible artifact-fixed literal multipart `filename` and accounts a fixed `filename*` exclusion at its media-alternative owner.
+
+**[convention]** A synthesizer conforms to **OAPI31-S-19** when §9.1 accounts a response media range carrying a case-insensitive `q` parameter as excluded at that alternative while preserving a valid sibling and its target.
 
 **[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.1@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
@@ -896,6 +902,7 @@ This section collects the points at which two implementations conforming to `ope
 | the selected media alternative; string and raw-octet XML carriage remain admitted | §9.2 XML from an object model | an incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
 | that selection, at its smallest media owner | §9.2 selection matching no defined lane | an incorporated authority defines that media/data-form cell |
 | that response selection, at its smallest media owner | §9.3 form or multipart on a response | an incorporated authority defines that decoding |
+| that response-media alternative | §9.1 response media range carrying a case-insensitive `q` parameter | incorporated HTTP authority defines an unambiguous `Accept` representation preserving both the declared parameter and equal preference |
 | that multipart alternative, CR or LF in a property name included | §9.3 unrepresentable multipart `name` | an incorporated authority defines an unambiguous encoding |
 | that multipart alternative when the fixed field is unsafe, is not `form-data`, names a different property, or contains `filename*` | §9.3 contradictory `Content-Disposition` | an incorporated authority defines a different unambiguous property-to-part mapping, or incorporated multipart authority permits `filename*` |
 | that multipart alternative; an ignored entry, `Content-Type` included, never triggers it | §9.3 invalid, conflicting, or nonfixed required part-header group | an incorporated authority admits the field form or defines a different safe composition or caller part-header carriage |

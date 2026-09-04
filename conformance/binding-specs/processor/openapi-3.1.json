@@ -4349,7 +4349,7 @@
         "OAPI31-P-03"
       ],
       "section": "9",
-      "description": "Response-side confinement: a normalized collision between two application/json spellings does not poison the map's clean text/plain declaration, which still governs the decode. The binding emits no Accept field.",
+      "description": "Response-side confinement: a normalized collision between two application/json spellings does not poison the map's clean text/plain declaration, which still governs the decode and is advertised in Accept.",
       "given": {
         "source": {
           "content": {
@@ -15706,10 +15706,11 @@
     {
       "id": "OAPI31-PS-223",
       "rules": [
-        "OAPI31-P-51"
+        "OAPI31-P-51",
+        "OAPI31-P-53"
       ],
       "section": "9.1",
-      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-map order.",
+      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, while a case-insensitive q parameter is confined to its excluded alternative and cannot become an Accept weight.",
       "given": {
         "source": {
           "content": {
@@ -15731,12 +15732,17 @@
                     "200": {
                       "description": "ok",
                       "content": {
-                        "text/plain": {
-                          "schema": {
-                            "type": "string"
-                          }
-                        },
-                        "application/json": {
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "text/html;Q=bogus": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "application/json": {
                           "schema": {
                             "type": "string"
                           }

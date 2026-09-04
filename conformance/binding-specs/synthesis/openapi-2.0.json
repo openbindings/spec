@@ -2208,6 +2208,90 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI20-SS-24",
+      "rules": [
+        "OAPI20-S-12"
+      ],
+      "description": "A response media range carrying a case-insensitive q parameter is excluded only at that alternative, while a valid sibling and the target remain represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-2.0@1",
+        "content": {
+          "swagger": "2.0",
+          "info": {
+            "title": "Accept q-parameter accounting",
+            "version": "1"
+          },
+          "schemes": [
+            "https"
+          ],
+          "host": "api.example",
+          "paths": {
+            "/q": {
+              "get": {
+                "operationId": "qMedia",
+                "produces": [
+                  "text/plain;Q=bogus",
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "qMedia"
+        ],
+        "bindings": [
+          {
+            "operationKey": "qMedia",
+            "bindingSelector": "#/paths/~1q/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "qMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get/produces/0",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI20-S-12",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get/produces/1",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "qMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

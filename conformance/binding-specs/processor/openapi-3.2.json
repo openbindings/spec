@@ -20133,10 +20133,11 @@
     {
       "id": "OAPI32-PS-279",
       "rules": [
-        "OAPI32-P-55"
+        "OAPI32-P-55",
+        "OAPI32-P-57"
       ],
       "section": "9.1",
-      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-map order.",
+      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, while a case-insensitive q parameter is confined to its excluded alternative and cannot become an Accept weight.",
       "given": {
         "source": {
           "content": {
@@ -20158,12 +20159,17 @@
                     "200": {
                       "description": "ok",
                       "content": {
-                        "text/plain": {
-                          "schema": {
-                            "type": "string"
-                          }
-                        },
-                        "application/json": {
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "text/html;Q=bogus": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "application/json": {
                           "schema": {
                             "type": "string"
                           }

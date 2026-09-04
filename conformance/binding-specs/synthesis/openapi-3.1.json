@@ -6414,6 +6414,96 @@
           ]
         }
       }
+    },
+    {
+      "id": "OAPI31-SS-68",
+      "rules": [
+        "OAPI31-S-19"
+      ],
+      "description": "A response media range carrying a case-insensitive q parameter is excluded only at that alternative, while a valid sibling and the target remain represented.",
+      "source": {
+        "bindingSpec": "openbindings.openapi-3.1@1",
+        "content": {
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Accept q-parameter accounting",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://api.example"
+            }
+          ],
+          "paths": {
+            "/q": {
+              "get": {
+                "operationId": "qMedia",
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "text/plain;Q=bogus": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      },
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "qMedia"
+        ],
+        "bindings": [
+          {
+            "operationKey": "qMedia",
+            "bindingSelector": "#/paths/~1q/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "qMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get/responses/200/content/text~1plain;Q=bogus",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI31-S-19",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1q/get/responses/200/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "qMedia",
+              "bindingSelector": "#/paths/~1q/get",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

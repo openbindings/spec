@@ -8098,7 +8098,7 @@
         "OAPI30-P-04"
       ],
       "section": "11",
-      "description": "Accept is on the credential-collision list although §9.1 emits none: emitting no Accept is this specification's decision about response-media negotiation, not a free field, so an apiKey credential destined for it makes the selected alternative unusable and the sole-alternative invocation refuses before dispatch (§11's credential-destination collision rule).",
+      "description": "Accept is a binding-owned credential destination even when this target's generated response-media set is empty, so an apiKey credential targeting it makes the selected alternative unusable and the sole-alternative invocation refuses before dispatch.",
       "given": {
         "source": {
           "content": {
@@ -13937,10 +13937,11 @@
     {
       "id": "OAPI30-PS-237",
       "rules": [
-        "OAPI30-P-52"
+        "OAPI30-P-52",
+        "OAPI30-P-54"
       ],
       "section": "9.1",
-      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, independent of declaration-map order.",
+      "description": "Every admitted response-content media alternative is advertised once at equal preference in deterministic normalized order, while a case-insensitive q parameter is confined to its excluded alternative and cannot become an Accept weight.",
       "given": {
         "source": {
           "content": {
@@ -13962,12 +13963,17 @@
                     "200": {
                       "description": "ok",
                       "content": {
-                        "text/plain": {
-                          "schema": {
-                            "type": "string"
-                          }
-                        },
-                        "application/json": {
+                    "text/plain": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "text/html;Q=bogus": {
+                      "schema": {
+                        "type": "string"
+                      }
+                    },
+                    "application/json": {
                           "schema": {
                             "type": "string"
                           }

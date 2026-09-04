@@ -330,6 +330,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[pin]** In the absence of an effective Header Parameter named `Accept`, the binding emits one generated `Accept` field containing every distinct surviving, non-colliding effective `produces` media range that can select at least one admitted response body lane under §9.2. Each range uses §9.1's parsed normalized spelling with any wildcard preserved; values are ordered by ascending UTF-8 octets of that spelling and joined with exactly comma-plus-SP, with no `q` parameter added, so every advertised range has equal preference. If the set is empty, the field is omitted. An effective OAS 2.0 Header Parameter named `Accept` remains an ordinary caller-supplied parameter and suppresses the generated field whether supplied or omitted; OAS 2.0 defines no ignored-header rule. This preserves every declared usable response alternative without inventing a preference and pins the selection and ordering OAS leaves unspecified ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1), [OAS 2.0 Operation Object](https://spec.openapis.org/oas/v2.0.html#operation-object), [Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
 
+**[exclusion]** An effective `produces` media range containing a parameter named `q`, compared ASCII case-insensitively, is excluded at that response-media alternative before the generated `Accept` set is formed; valid siblings remain. RFC 9110 assigns `q` in `Accept` to relative weight, so copying the parameter would reinterpret declared media identity, can make the field invalid, and cannot preserve this binding's equal-preference rule, while stripping it would advertise a different range. The exclusion reopens only if incorporated HTTP authority defines an unambiguous `Accept` representation that preserves both the declared parameter and equal preference ([RFC 9110 §12.5.1](https://www.rfc-editor.org/rfc/rfc9110#section-12.5.1)).
+
 ### 8.3 `formData` payloads
 
 **[incorporated]** Effective `formData` is usable only when effective `consumes` includes `application/x-www-form-urlencoded`, `multipart/form-data`, or both; the selected request media — concrete in §9.1's sense — fixes which form encoding is used ([OAS 2.0 Parameter Object](https://spec.openapis.org/oas/v2.0.html#parameter-object)).
@@ -730,6 +732,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A processor conforms to **OAPI20-P-35** when §10 confines an out-of-enum authored `schemes` member to that invalid alternative, preserves valid siblings, and retains complete-URL recovery when no dispatchable artifact alternative survives.
 
+**[convention]** A processor conforms to **OAPI20-P-36** when §8.2 excludes a response media range carrying a case-insensitive `q` parameter before `Accept` construction while preserving every valid sibling range.
+
 **[convention]** A synthesizer conforms to **OAPI20-S-01** when it preserves §12.2's binding/transform boundary, emits no artifact-derived inbound dependency, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete operation coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI20-S-02** when it uses §3.2's locally defined status vocabulary for targets and subordinate projections without depending on any project interface contract.
@@ -751,6 +755,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 **[convention]** A synthesizer conforms to **OAPI20-S-10** when §7 derives the operation input from the post-confinement effective parameter set, leaving a surviving same-named cross-location parameter unqualified when its only collision was removed.
 
 **[convention]** A synthesizer conforms to **OAPI20-S-11** when §10 accounts an out-of-enum authored `schemes` member as invalid at that alternative while retaining valid siblings or a represented target with its actual `configuration.server` recovery requirement.
+
+**[convention]** A synthesizer conforms to **OAPI20-S-12** when §8.2 accounts a response media range carrying a case-insensitive `q` parameter as excluded at that alternative while preserving a valid sibling and its target.
 
 **[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-2.0@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
@@ -808,6 +814,7 @@ This section is a register: it collects the variation this specification permits
 | generation of XML from an object model, at the selected XML media lane | §9.2 | incorporated authority defines ordering, escaping, nulls, dynamic keys, and scalar lexical forms |
 | a selected non-JSON lane admitted by none of the character-data, artifact-encoded `byte`, raw-octet, string XML, or request-only §8.3 form lanes | §9.2 | incorporated authority defines that media/data-form cell |
 | a response selection of the form or multipart lane | §9.2 | an incorporated authority defines that decoding |
+| a response media range carrying a case-insensitive `q` parameter, confined to that response-media alternative | §8.2 | incorporated HTTP authority defines an unambiguous `Accept` representation preserving both the declared parameter and equal preference |
 | a non-token response Header Object map key, confined to that subordinate header projection | §9.3 | incorporated HTTP authority admits that exact field-name form |
 | a target with a required request `Content-Encoding` parameter after no surviving request lane can emit a representation or form entity | §9.3 | incorporated HTTP authority defines Content-Encoding on a request with no representation |
 | a response-body projection that can govern only HEAD, `1xx`, `204`, `205`, or `304` | §9.4 | incorporated HTTP authority permits content for that case |
