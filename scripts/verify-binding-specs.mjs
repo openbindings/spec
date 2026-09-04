@@ -71,6 +71,12 @@ const ABSTRACTION_FIDELITY_LEDGER = join(ABSTRACTION_FIDELITY_DIR, "ledger.json"
 const ABSTRACTION_FIDELITY_SCHEMA = join(ABSTRACTION_FIDELITY_DIR, "ledger.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
+const OPENAPI_FAMILY_DIRS = new Set([
+  "openapi-2.0",
+  "openapi-3.0",
+  "openapi-3.1",
+  "openapi-3.2",
+]);
 
 // Family directory → { exact identifier, rule prefix, spec path }.
 const FAMILIES = {
@@ -231,6 +237,62 @@ function extractCoreRules(md) {
   return rules;
 }
 
+function extractCoreSpecificationVersion(md) {
+  const matches = [
+    ...md.matchAll(
+      /^This is \*\*version (\d+\.\d+\.\d+)\*\* of the OpenBindings specification\./gm
+    ),
+  ];
+  return matches.map((match) => match[1]);
+}
+
+function verifyOpenApiCoreAuthority(md, label, expectedVersion) {
+  const declarations = [
+    ...md.matchAll(
+      /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
+    ),
+  ].map((match) => match[1]);
+  if (declarations.length !== 1) {
+    errors.push(
+      `${label}: must declare exactly one versioned OpenBindings Core authority in §2 (found ${declarations.length})`
+    );
+  } else if (expectedVersion && declarations[0] !== expectedVersion) {
+    errors.push(
+      `${label}: declares OpenBindings Core ${declarations[0]}, but openbindings.md declares ${expectedVersion}`
+    );
+  }
+
+  const sectionMatches = [...md.matchAll(/^## 13\. Normative references\s*$/gm)];
+  if (sectionMatches.length !== 1) {
+    errors.push(`${label}: must contain exactly one §13 Normative references section`);
+    return;
+  }
+  const references = md.slice(sectionMatches[0].index);
+  const coreReferences = [
+    ...references.matchAll(
+      /^- \[OpenBindings Specification (\d+\.\d+\.\d+)\]\(\.\.\/\.\.\/openbindings\.md\)$/gm
+    ),
+  ].map((match) => match[1]);
+  if (coreReferences.length !== 1) {
+    errors.push(
+      `${label}: §13 must contain exactly one versioned OpenBindings Specification reference (found ${coreReferences.length})`
+    );
+  } else if (expectedVersion && coreReferences[0] !== expectedVersion) {
+    errors.push(
+      `${label}: §13 references OpenBindings ${coreReferences[0]}, but openbindings.md declares ${expectedVersion}`
+    );
+  }
+  if (
+    declarations.length === 1 &&
+    coreReferences.length === 1 &&
+    declarations[0] !== coreReferences[0]
+  ) {
+    errors.push(
+      `${label}: §2 Core declaration and §13 Core reference name different versions`
+    );
+  }
+}
+
 // Rows like `| USAGE-D-03 | **Deferred...` in the subcorpus README mark
 // formally deferred rules.
 function extractDeferredRules(readme) {
@@ -249,7 +311,15 @@ function sectionExists(specMd, section) {
 }
 
 const readme = readFileSync(README, "utf8");
-const coreRules = extractCoreRules(readFileSync(CORE_SPEC_MD, "utf8"));
+const coreMd = readFileSync(CORE_SPEC_MD, "utf8");
+const coreVersions = extractCoreSpecificationVersion(coreMd);
+if (coreVersions.length !== 1) {
+  errors.push(
+    `openbindings.md: must declare exactly one specification version (found ${coreVersions.length})`
+  );
+}
+const coreVersion = coreVersions[0];
+const coreRules = extractCoreRules(coreMd);
 const deferred = extractDeferredRules(readme);
 
 const specTexts = {};
@@ -259,6 +329,14 @@ const allRuleIds = new Set(coreRules);
 for (const [dir, fam] of Object.entries(FAMILIES)) {
   const md = readFileSync(fam.spec, "utf8");
   specTexts[dir] = md;
+  if (OPENAPI_FAMILY_DIRS.has(dir)) {
+    // An unreleased page is a publication input and must track the companion
+    // Core text that the publisher will archive. Once published, its mutable
+    // mirror remains locked to that revision's own exact Core dependency even
+    // while work on a later Core release begins.
+    const expectedVersion = /^\*\*Status: unreleased /m.test(md) ? coreVersion : undefined;
+    verifyOpenApiCoreAuthority(md, relative(SPEC_ROOT, fam.spec), expectedVersion);
+  }
   for (const id of extractFamilyRules(md, fam.prefix)) {
     definedDRules.set(`${dir}\0${id}`, { ruleId: id, dir });
   }

@@ -16,7 +16,9 @@
 
 ## 2. Scope and incorporated authorities
 
-**[convention]** This binding specification defines how OpenAPI 3.0 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes. It builds on the OpenBindings Core specification (`../../openbindings.md`).
+**[convention]** This binding specification defines how OpenAPI 3.0 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes.
+
+**[pin]** This specification incorporates exactly version **0.2.0** of the [OpenBindings Specification](../../openbindings.md) as its Core authority. Throughout this document, **Core** means that exact version; no other Core version is incorporated.
 
 **[incorporated]** An artifact's required `openapi` string gives the exact OAS edition that the OpenAPI Document uses ([OAS 3.0.4 §§3.2, 4.7.1.1](https://spec.openapis.org/oas/v3.0.4.html#fixed-fields)).
 
@@ -974,6 +976,7 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | every security alternative naming a Security Scheme Object that is not one — a missing or unlisted `type`, or an absent or wrong-typed field its `type` makes REQUIRED; a target left with no complete alternative is itself excluded: an upstream-invalid declaration confined to its stated owner and accounted invalid; reopens only if an incorporated OAS 3.0 edition admits the exact declaration | §11 |
 ## 13. Normative references
 
+- [OpenBindings Specification 0.2.0](../../openbindings.md)
 - [OpenAPI Specification 3.0.0](https://spec.openapis.org/oas/v3.0.0.html)
 - [OpenAPI Specification 3.0.1](https://spec.openapis.org/oas/v3.0.1.html)
 - [OpenAPI Specification 3.0.2](https://spec.openapis.org/oas/v3.0.2.html)

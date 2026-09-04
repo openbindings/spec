@@ -16,7 +16,9 @@
 
 ## 2. Scope and incorporated authorities
 
-**[convention]** This binding specification defines how OpenAPI 3.2 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes. It builds on the OpenBindings Core specification (`../../openbindings.md`).
+**[convention]** This binding specification defines how OpenAPI 3.2 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes.
+
+**[pin]** This specification incorporates exactly version **0.2.0** of the [OpenBindings Specification](../../openbindings.md) as its Core authority. Throughout this document, **Core** means that exact version; no other Core version is incorporated.
 
 **[incorporated]** OpenAPI Specification (OAS) edition [`3.2.0`](https://spec.openapis.org/oas/v3.2.0.html) requires the root `openapi` field to carry the version number of the OpenAPI Specification the document uses, versioned `major.minor.patch`, where the `major.minor` portion SHALL designate the feature set ([OAS 3.2.0 §§2.1, 4.1.1](https://spec.openapis.org/oas/v3.2.0.html#oas-version)).
 
@@ -1090,6 +1092,7 @@ This index gathers the points at which this specification does not fix one behav
 | a malformed Security Scheme Object: an upstream-invalid declaration confined to every complete alternative requiring it and accounted invalid; reopens only if an incorporated OAS edition admits the exact scheme form or supplies its missing carriage | §11 |
 ## 13. Normative references
 
+- [OpenBindings Specification 0.2.0](../../openbindings.md)
 - [OpenAPI Specification 3.2.0](https://spec.openapis.org/oas/v3.2.0.html)
 - [OpenAPI 3.2 validation schema, revision 2025-11-23](https://spec.openapis.org/oas/3.2/schema/2025-11-23)
 - [OpenAPI 3.1 base dialect, revision 2024-11-10](https://spec.openapis.org/oas/3.1/dialect/2024-11-10)

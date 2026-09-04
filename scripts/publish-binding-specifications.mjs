@@ -87,6 +87,12 @@ const FAMILIES = {
     document: "binding-specs/graphql/openbindings.graphql.md",
   },
 };
+const OPENAPI_FAMILIES = new Set([
+  "openapi-2.0",
+  "openapi-3.0",
+  "openapi-3.1",
+  "openapi-3.2",
+]);
 const PUBLICATION_CATALOG_ENTRIES = new Set([
   "README.md",
   "errata.json",
@@ -120,6 +126,43 @@ function parseArgs(argv) {
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+function coreSpecificationVersions(markdown) {
+  return [
+    ...markdown.matchAll(
+      /^This is \*\*version (\d+\.\d+\.\d+)\*\* of the OpenBindings specification\./gm
+    ),
+  ].map((match) => match[1]);
+}
+
+function assertOpenApiCoreAuthority(markdown, document, expectedVersion) {
+  const declarations = [
+    ...markdown.matchAll(
+      /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
+    ),
+  ].map((match) => match[1]);
+  if (declarations.length !== 1) {
+    fail(`${document} must declare exactly one versioned OpenBindings Core authority in §2`);
+  }
+  const sectionMatches = [...markdown.matchAll(/^## 13\. Normative references\s*$/gm)];
+  if (sectionMatches.length !== 1) {
+    fail(`${document} must contain exactly one §13 Normative references section`);
+  }
+  const references = markdown.slice(sectionMatches[0].index);
+  const coreReferences = [
+    ...references.matchAll(
+      /^- \[OpenBindings Specification (\d+\.\d+\.\d+)\]\(\.\.\/\.\.\/openbindings\.md\)$/gm
+    ),
+  ].map((match) => match[1]);
+  if (coreReferences.length !== 1) {
+    fail(`${document} §13 must contain exactly one versioned OpenBindings Specification reference`);
+  }
+  if (declarations[0] !== expectedVersion || coreReferences[0] !== expectedVersion) {
+    fail(
+      `${document} Core declaration and normative reference must both name --core-release ${expectedVersion}`
+    );
+  }
 }
 
 function listFiles(root) {
@@ -174,6 +217,17 @@ if (!coreRelease || !/^\d+\.\d+\.\d+$/.test(coreRelease)) {
   fail("--core-release must be X.Y.Z");
 }
 if (requested.length === 0) fail("--families must name at least one family@revision");
+
+const coreText = readFileSync(join(ROOT, "openbindings.md"), "utf8");
+const rootCoreVersions = coreSpecificationVersions(coreText);
+if (rootCoreVersions.length !== 1) {
+  fail(`openbindings.md must declare exactly one specification version`);
+}
+if (rootCoreVersions[0] !== coreRelease) {
+  fail(
+    `--core-release ${coreRelease} does not match openbindings.md version ${rootCoreVersions[0]}`
+  );
+}
 
 // Publication is the irreversible act in this repository; it requires a
 // standing adjudication record, named explicitly, so a publication can never
@@ -240,6 +294,9 @@ for (const entry of selected) {
   const text = readFileSync(join(ROOT, entry.document), "utf8");
   if (!text.includes(entry.identifier)) {
     fail(`${entry.document} does not name ${entry.identifier}`);
+  }
+  if (OPENAPI_FAMILIES.has(entry.family)) {
+    assertOpenApiCoreAuthority(text, entry.document, coreRelease);
   }
 }
 

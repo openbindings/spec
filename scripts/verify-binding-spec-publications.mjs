@@ -40,6 +40,58 @@ function readJson(path, label) {
   }
 }
 
+function coreSpecificationVersions(markdown) {
+  return [
+    ...markdown.matchAll(
+      /^This is \*\*version (\d+\.\d+\.\d+)\*\* of the OpenBindings specification\./gm
+    ),
+  ].map((match) => match[1]);
+}
+
+function verifyOpenApiCoreAuthority(markdown, label, expectedVersion) {
+  const declarations = [
+    ...markdown.matchAll(
+      /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
+    ),
+  ].map((match) => match[1]);
+  if (declarations.length !== 1) {
+    errors.push(`${label}: must declare exactly one versioned OpenBindings Core authority in §2`);
+  }
+  const sectionMatches = [...markdown.matchAll(/^## 13\. Normative references\s*$/gm)];
+  if (sectionMatches.length !== 1) {
+    errors.push(`${label}: must contain exactly one §13 Normative references section`);
+    return;
+  }
+  const references = markdown.slice(sectionMatches[0].index);
+  const coreReferences = [
+    ...references.matchAll(
+      /^- \[OpenBindings Specification (\d+\.\d+\.\d+)\]\(\.\.\/\.\.\/openbindings\.md\)$/gm
+    ),
+  ].map((match) => match[1]);
+  if (coreReferences.length !== 1) {
+    errors.push(
+      `${label}: §13 must contain exactly one versioned OpenBindings Specification reference`
+    );
+  }
+  if (
+    expectedVersion &&
+    declarations.length === 1 &&
+    coreReferences.length === 1 &&
+    (declarations[0] !== expectedVersion || coreReferences[0] !== expectedVersion)
+  ) {
+    errors.push(
+      `${label}: Core declaration and normative reference must both name ${expectedVersion}`
+    );
+  }
+  if (
+    declarations.length === 1 &&
+    coreReferences.length === 1 &&
+    declarations[0] !== coreReferences[0]
+  ) {
+    errors.push(`${label}: §2 Core declaration and §13 Core reference name different versions`);
+  }
+}
+
 function listFiles(root) {
   const out = [];
   function visit(dir) {
@@ -116,6 +168,15 @@ if (base) {
     errors.push(`git base is not an available commit: ${base}`);
   }
 }
+
+const liveCoreMarkdown = readFileSync(join(ROOT, "openbindings.md"), "utf8");
+const liveCoreVersions = coreSpecificationVersions(liveCoreMarkdown);
+if (liveCoreVersions.length !== 1) {
+  errors.push(
+    `openbindings.md: must declare exactly one specification version (found ${liveCoreVersions.length})`
+  );
+}
+const liveCoreVersion = liveCoreVersions[0];
 
 const manifest = readJson(MANIFEST_PATH, "binding-specs/publications.json");
 const errataManifest = readJson(ERRATA_MANIFEST_PATH, "binding-specs/errata.json");
@@ -196,6 +257,15 @@ const errataEntries = Array.isArray(errataManifest.errata) ? errataManifest.erra
 for (const page of candidateSpecificationPages()) {
   const markdown = readFileSync(page, "utf8");
   const pageLabel = relative(ROOT, page);
+  if (/^binding-specs\/openapi-(?:2\.0|3\.0|3\.1|3\.2)\//.test(pageLabel)) {
+    // Published mirrors keep the Core dependency frozen in their immutable
+    // publication record; only an unreleased candidate tracks the live Core
+    // text that the publisher will place beside it.
+    const expectedVersion = /^\*\*Status: unreleased /m.test(markdown)
+      ? liveCoreVersion
+      : undefined;
+    verifyOpenApiCoreAuthority(markdown, pageLabel, expectedVersion);
+  }
   for (const match of markdown.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const href = match[1];
     if (!href.includes("#") || /^[a-z][a-z0-9+.-]*:/i.test(href)) continue;
@@ -264,8 +334,14 @@ for (const entry of publications) {
   const documentPath = join(ROOT, entry.document || "");
   if (!existsSync(documentPath)) {
     errors.push(`${entry.identifier}: missing defining document ${entry.document}`);
-  } else if (!readFileSync(documentPath, "utf8").includes(entry.identifier)) {
-    errors.push(`${entry.identifier}: defining document does not name the identifier`);
+  } else {
+    const documentMarkdown = readFileSync(documentPath, "utf8");
+    if (!documentMarkdown.includes(entry.identifier)) {
+      errors.push(`${entry.identifier}: defining document does not name the identifier`);
+    }
+    if (/^openapi-(?:2\.0|3\.0|3\.1|3\.2)$/.test(entry.family || "")) {
+      verifyOpenApiCoreAuthority(documentMarkdown, entry.document, entry.coreRelease);
+    }
   }
 
   const recordPath = join(ROOT, entry.publicationRecord || "");
@@ -418,6 +494,26 @@ for (const [publication, recordPath] of publicationRecords) {
   }
   const recordIdentifiers = Array.isArray(record.identifiers) ? record.identifiers : [];
   const recordFiles = Array.isArray(record.files) ? record.files : [];
+  const archivedCorePath = join(dirname(recordPath), "root", "openbindings.md");
+  if (!existsSync(archivedCorePath)) {
+    errors.push(`${publication}: immutable bundle is missing root/openbindings.md`);
+  } else {
+    const archivedCoreVersions = coreSpecificationVersions(
+      readFileSync(archivedCorePath, "utf8")
+    );
+    if (archivedCoreVersions.length !== 1) {
+      errors.push(
+        `${publication}: archived root/openbindings.md must declare exactly one specification version`
+      );
+    } else if (archivedCoreVersions[0] !== record.coreRelease) {
+      errors.push(
+        `${publication}: archived Core ${archivedCoreVersions[0]} does not match publication coreRelease ${record.coreRelease}`
+      );
+    }
+  }
+  if (!recordFiles.some((file) => file?.path === "root/openbindings.md")) {
+    errors.push(`${publication}: publication record does not hash root/openbindings.md`);
+  }
   const declaredIds = new Set(recordIdentifiers);
   const manifestIds = new Set(
     manifestEntries.map((entry) => entry.identifier)

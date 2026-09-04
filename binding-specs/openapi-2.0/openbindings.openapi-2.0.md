@@ -16,7 +16,9 @@
 
 ## 2. Scope and incorporated authorities
 
-**[convention]** This binding specification defines how OpenAPI 2.0 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes. It builds on the OpenBindings Core specification (`../../openbindings.md`).
+**[convention]** This binding specification defines how OpenAPI 2.0 artifacts govern OpenBindings sources: which documents are accepted and when loading refuses, how operation targets are addressed and synthesized, what an invocation's inputs and outputs mean, and which wire mechanics the artifact fixes.
+
+**[pin]** This specification incorporates exactly version **0.2.0** of the [OpenBindings Specification](../../openbindings.md) as its Core authority. Throughout this document, **Core** means that exact version; no other Core version is incorporated.
 
 **[convention]** This specification accepts exactly OpenAPI Specification (OAS) edition `2.0`; no `swagger` wildcard or compatible-looking value widens this singleton domain, and a document marked only with a 3.x-style `openapi` field refuses at the `swagger` load gate.
 
@@ -24,7 +26,7 @@
 
 **[convention]** OAS governs the artifact and every HTTP mechanic it declares, including object structure, canonical references, parameters, media declarations, target construction, responses, and security ([OAS 2.0 §6](https://spec.openapis.org/oas/v2.0.html#specification)); [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) governs the remaining HTTP semantics fixed by this binding.
 
-**[convention]** The authorities incorporated under this identifier are exactly those listed in §13, each within a stated boundary: OAS 2.0 for the artifact and its pinned validation schema where expressly cited; the authorities OAS 2.0 itself incorporates, each only where OAS routes to it — YAML 1.2 (1 October 2009) as the serialization language it names and YAML 1.2.2 as §3.1's rendering of that language, JSON Reference draft-03 and RFC 6901 for references, JSON Schema Core and Validation draft-04 for the Schema Object dialect, HTML 4.01 §17.13.4 for form and multipart payload construction, RFC 3339 for date formats, RFC 6838 for media-type spelling; RFC 9110 for HTTP semantics OAS leaves to HTTP, with RFC 3986 for URI syntax, RFC 8259 and RFC 6839 for the JSON lane, RFC 7159 for the JSON image the YAML grammar gate requires, RFC 4648 for the raw-octet boundary, RFC 2046 for character-data carriage and, where RFC 9110 §8.3.3 routes to it, multipart entity syntax, RFC 7303 for character-data carriage, RFC 6265 for Cookie field construction, and RFC 7617 and RFC 6750 for credential construction; and BCP 14 with RFC 8174 for the key words of §1. No authority outside §13 is incorporated, and no authority is consulted in a live or mutable form.
+**[convention]** The authorities incorporated under this identifier are exactly those listed in §13, each within a stated boundary: OpenBindings Specification 0.2.0 for the source, binding, completeness, and conformance rules expressly cited as Core; OAS 2.0 for the artifact and its pinned validation schema where expressly cited; the authorities OAS 2.0 itself incorporates, each only where OAS routes to it — YAML 1.2 (1 October 2009) as the serialization language it names and YAML 1.2.2 as §3.1's rendering of that language, JSON Reference draft-03 and RFC 6901 for references, JSON Schema Core and Validation draft-04 for the Schema Object dialect, HTML 4.01 §17.13.4 for form and multipart payload construction, RFC 3339 for date formats, RFC 6838 for media-type spelling; RFC 9110 for HTTP semantics OAS leaves to HTTP, with RFC 3986 for URI syntax, RFC 8259 and RFC 6839 for the JSON lane, RFC 7159 for the JSON image the YAML grammar gate requires, RFC 4648 for the raw-octet boundary, RFC 2046 for character-data carriage and, where RFC 9110 §8.3.3 routes to it, multipart entity syntax, RFC 7303 for character-data carriage, RFC 6265 for Cookie field construction, and RFC 7617 and RFC 6750 for credential construction; and BCP 14 with RFC 8174 for the key words of §1. No authority outside §13 is incorporated, and no authority is consulted in a live or mutable form.
 
 **[pin]** RFC 9110 obsoletes RFC 7231 and governs wherever the two overlap; RFC 7231 is not incorporated under this identifier and no rule below cites it ([RFC 9110 §19.1](https://www.rfc-editor.org/rfc/rfc9110#section-19.1)).
 
@@ -855,6 +857,7 @@ This section is a register: it collects the variation this specification permits
 
 ## 13. Normative references
 
+- [OpenBindings Specification 0.2.0](../../openbindings.md)
 - [OpenAPI Specification 2.0](https://spec.openapis.org/oas/v2.0.html)
 - [OpenAPI 2.0 validation schema, revision 2017-08-27](https://spec.openapis.org/oas/2.0/schema/2017-08-27)
 - [YAML 1.2, 1 October 2009](https://yaml.org/spec/1.2-old/spec.html)

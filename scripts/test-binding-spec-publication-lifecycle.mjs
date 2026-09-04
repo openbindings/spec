@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * Adversarial smoke test for the binding-specification publication lifecycle:
- * publish @1, publish @2 without changing @1, verify append-only history
- * against a git base, and prove both manifest mutation and bundle tampering
- * are rejected.
+ * prove Core-version authority closure, publish @1, publish @2 without
+ * changing @1, verify append-only history against a git base, and prove both
+ * manifest mutation and bundle tampering are rejected.
  */
 
 import {
@@ -48,6 +48,25 @@ function digest(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
 
+function openApiCandidate(revision, coreVersion = "0.2.0", includeCoreReference = true) {
+  return [
+    "# OpenAPI 3.1",
+    "",
+    `Defines \`openbindings.openapi-3.1@${revision}\`.`,
+    "",
+    "## 2. Scope and incorporated authorities",
+    "",
+    `**[pin]** This specification incorporates exactly version **${coreVersion}** of the [OpenBindings Specification](../../openbindings.md) as its Core authority. Throughout this document, **Core** means that exact version; no other Core version is incorporated.`,
+    "",
+    "## 13. Normative references",
+    "",
+    ...(includeCoreReference
+      ? [`- [OpenBindings Specification ${coreVersion}](../../openbindings.md)`]
+      : []),
+    "",
+  ].join("\n");
+}
+
 try {
   mkdirSync(join(temp, "scripts"), { recursive: true });
   for (const script of [
@@ -57,7 +76,10 @@ try {
     copyFileSync(join(SCRIPT_DIR, script), join(temp, "scripts", script));
   }
 
-  write(join(temp, "openbindings.md"), "# OpenBindings 0.2.0\n");
+  write(
+    join(temp, "openbindings.md"),
+    "# OpenBindings 0.2.0\n\nThis is **version 0.2.0** of the OpenBindings specification.\n"
+  );
   write(join(temp, "openbindings.schema.json"), "{}\n");
   write(join(temp, "EDITORS.md"), "# Editors\n");
   write(join(temp, "binding-specs", "README.md"), "# Binding specs\n");
@@ -67,7 +89,7 @@ try {
   );
   write(
     join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
-    "# OpenAPI 3.1\n\nDefines `openbindings.openapi-3.1@1`.\n"
+    openApiCandidate(1)
   );
   write(
     join(temp, "binding-specs", "errata.json"),
@@ -75,6 +97,55 @@ try {
   );
   mkdirSync(join(temp, "conformance", "binding-specs"), { recursive: true });
   mkdirSync(join(temp, "conformance", "operation-graph"), { recursive: true });
+
+  const candidatePath = join(
+    temp,
+    "binding-specs",
+    "openapi-3.1",
+    "openbindings.openapi-3.1.md"
+  );
+  writeFileSync(candidatePath, openApiCandidate(1, "0.2.0", false));
+  const missingCoreReference = run(
+    "node",
+    [
+      "scripts/publish-binding-specifications.mjs",
+      "--publication",
+      "missing-core-reference",
+      "--published-at",
+      "2026-07-23",
+      "--core-release",
+      "0.2.0",
+      "--adjudication",
+      "conformance/binding-specs/adjudication-fixture.md",
+      "--families",
+      "openapi-3.1@1",
+    ],
+    2
+  );
+  if (!missingCoreReference.includes("§13 must contain exactly one versioned OpenBindings Specification reference")) {
+    throw new Error("publisher did not reject a missing OpenAPI Core normative reference");
+  }
+  writeFileSync(candidatePath, openApiCandidate(1));
+  const mismatchedCoreFlag = run(
+    "node",
+    [
+      "scripts/publish-binding-specifications.mjs",
+      "--publication",
+      "wrong-core",
+      "--published-at",
+      "2026-07-23",
+      "--core-release",
+      "0.2.1",
+      "--adjudication",
+      "conformance/binding-specs/adjudication-fixture.md",
+      "--families",
+      "openapi-3.1@1",
+    ],
+    2
+  );
+  if (!mismatchedCoreFlag.includes("does not match openbindings.md version 0.2.0")) {
+    throw new Error("publisher did not reject a mismatched --core-release");
+  }
 
   run("node", [
     "scripts/publish-binding-specifications.mjs",
@@ -91,12 +162,14 @@ try {
   ]);
   run("node", ["scripts/verify-binding-spec-publications.mjs"]);
 
-  const candidatePath = join(
-    temp,
-    "binding-specs",
-    "openapi-3.1",
-    "openbindings.openapi-3.1.md"
-  );
+  // A published mirror remains bound to its archived Core even after the live
+  // Core begins its next release; only an unreleased candidate tracks live Core.
+  const liveCorePath = join(temp, "openbindings.md");
+  const liveCoreText = readFileSync(liveCorePath, "utf8");
+  writeFileSync(liveCorePath, liveCoreText.replaceAll("0.2.0", "0.2.1"));
+  run("node", ["scripts/verify-binding-spec-publications.mjs"]);
+  writeFileSync(liveCorePath, liveCoreText);
+
   const goodCandidate = readFileSync(candidatePath, "utf8");
   writeFileSync(
     candidatePath,
@@ -134,6 +207,37 @@ try {
     "openapi-3.1",
     "openbindings.openapi-3.1.md"
   );
+  const firstDocText = readFileSync(firstDoc, "utf8");
+  writeFileSync(firstDoc, firstDocText.replace("version **0.2.0**", "version **0.2.1**"));
+  const archivedDeclarationFailure = run(
+    "node",
+    ["scripts/verify-binding-spec-publications.mjs"],
+    1
+  );
+  if (!archivedDeclarationFailure.includes("Core declaration and normative reference must both name 0.2.0")) {
+    throw new Error("publication verification did not reject an archived Core declaration mismatch");
+  }
+  writeFileSync(firstDoc, firstDocText);
+
+  const firstCore = join(
+    temp,
+    "binding-specs",
+    "releases",
+    "first",
+    "root",
+    "openbindings.md"
+  );
+  const firstCoreText = readFileSync(firstCore, "utf8");
+  writeFileSync(firstCore, firstCoreText.replace("version 0.2.0", "version 0.2.1"));
+  const archivedCoreFailure = run(
+    "node",
+    ["scripts/verify-binding-spec-publications.mjs"],
+    1
+  );
+  if (!archivedCoreFailure.includes("archived Core 0.2.1 does not match publication coreRelease 0.2.0")) {
+    throw new Error("publication verification did not reject a mismatched archived Core version");
+  }
+  writeFileSync(firstCore, firstCoreText);
   const firstDigest = digest(firstDoc);
 
   run("git", ["init", "-q"]);
@@ -197,7 +301,7 @@ try {
 
   write(
     join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
-    "# OpenAPI\n\nDefines `openbindings.openapi-3.1@3`.\n"
+    openApiCandidate(3)
   );
   const skippedRevision = run(
     "node",
@@ -222,7 +326,7 @@ try {
 
   write(
     join(temp, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
-    "# OpenAPI\n\nDefines `openbindings.openapi-3.1@2`.\n"
+    openApiCandidate(2)
   );
   const sourceSymlink = join(temp, "binding-specs", "openapi-3.1", "linked.md");
   symlinkSync("../../openbindings.md", sourceSymlink);
@@ -298,7 +402,7 @@ try {
   }
 
   console.log(
-    "binding-spec publication lifecycle: @2 coexistence, append-only manifest, and bundle tamper rejection: OK"
+    "binding-spec publication lifecycle: Core-version closure, @2 coexistence, append-only manifest, and bundle tamper rejection: OK"
   );
 } finally {
   rmSync(temp, { recursive: true, force: true });
