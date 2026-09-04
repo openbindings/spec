@@ -3042,6 +3042,9 @@
               "semanticEquals": {
                 "as": "multipart-json-part",
                 "name": "meta_first",
+                "names": [
+                  "meta_first"
+                ],
                 "value": {
                   "role": "admin"
                 }
@@ -10380,6 +10383,9 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "note",
+                "names": [
+                  "note"
+                ],
                 "value": "hello"
               }
             },
@@ -10901,6 +10907,9 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "ids",
+                "names": [
+                  "ids"
+                ],
                 "value": [
                   1,
                   2
@@ -11013,6 +11022,10 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "count",
+                "names": [
+                  "count",
+                  "flag"
+                ],
                 "value": 7
               }
             },
@@ -11021,6 +11034,10 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "flag",
+                "names": [
+                  "count",
+                  "flag"
+                ],
                 "value": true
               }
             },

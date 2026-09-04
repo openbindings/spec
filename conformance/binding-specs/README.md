@@ -175,7 +175,11 @@ resulting JSON value structurally:
   without choosing the JSON spelling inside it.
 - `multipart-json-part` points at the normalized `dispatch` object, parses its
   body using the boundary in its `Content-Type`, selects exactly one
-  `form-data` part with the decoded `name`, requires that part's media-type
+  `form-data` part with the decoded `name`, requires its generated
+  `Content-Disposition` parameter list to contain only `name`, written with
+  exactly the governing binding's quoted `name="..."` spelling and with
+  neither `filename` nor `filename*`, requires that
+  part's media-type
   essence to be exactly `application/json` case-insensitively with no media-type
   parameters, parses the complete part body as JSON, and compares it with
   `value`. MIME field names
@@ -206,9 +210,13 @@ resulting JSON value structurally:
   without fixing whitespace, member order, escapes, or number spelling within
   an item.
 
-The three named interpreters require `name`; the other three forbid it. A
-failed parse, missing or duplicate selected member, unconsumed wire content,
-wrong framing, or unequal JSON value fails the assertion. This is harness
+The three named interpreters require both `name` and `names`; the other three
+forbid both. `names` is the exact order-insensitive multiset of every decoded
+form field, multipart part, or query-contribution name in the complete parsed
+wrapper, including duplicates. It prevents a correct selected value from
+hiding an extra flattened field, part, or query contribution. A failed parse,
+missing or duplicate selected member, unequal total-name multiset, unconsumed
+wire content, wrong framing, or unequal JSON value fails the assertion. This is harness
 comparison behavior only: it adds no binding configuration point and no
 processor obligation beyond the wire behavior already stated by the governing
 specification. The schema rejects `semanticEquals` under every earlier format,
@@ -224,7 +232,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 980 scenarios citing every P-rule of usage,
+The current corpus contains 981 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,

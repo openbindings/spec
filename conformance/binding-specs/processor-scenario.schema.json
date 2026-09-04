@@ -216,6 +216,11 @@
           ]
         },
         "name": { "type": "string", "minLength": 1 },
+        "names": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
         "value": {}
       },
       "allOf": [
@@ -228,8 +233,15 @@
             },
             "required": ["as"]
           },
-          "then": { "required": ["name"] },
-          "else": { "not": { "required": ["name"] } }
+          "then": { "required": ["name", "names"] },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["name"] },
+                { "required": ["names"] }
+              ]
+            }
+          }
         }
       ]
     }

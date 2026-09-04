@@ -2497,6 +2497,10 @@
           "assertions": [
             {
               "path": "/dispatch/url",
+              "contains": "https://api.example/search?"
+            },
+            {
+              "path": "/dispatch/url",
               "semanticEquals": {
                 "as": "querystring-json",
                 "value": {
@@ -3993,9 +3997,16 @@
           "assertions": [
             {
               "path": "/dispatch/url",
+              "contains": "https://api.example/x?q="
+            },
+            {
+              "path": "/dispatch/url",
               "semanticEquals": {
                 "as": "query-json-parameter",
                 "name": "q",
+                "names": [
+                  "q"
+                ],
                 "value": {
                   "a": "b"
                 }
@@ -15228,6 +15239,10 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "count",
+                "names": [
+                  "count",
+                  "flag"
+                ],
                 "value": 7
               }
             },
@@ -15236,6 +15251,10 @@
               "semanticEquals": {
                 "as": "form-json-field",
                 "name": "flag",
+                "names": [
+                  "count",
+                  "flag"
+                ],
                 "value": true
               }
             },
@@ -20902,6 +20921,26 @@
         "peer": { "status": 204, "headers": {}, "body": "" }
       },
       "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
+    },
+    {
+      "id": "OAPI32-PS-294",
+      "rules": ["OAPI32-P-44"],
+      "section": "7",
+      "description": "An admitted additionalOperations extension method with a required Request Body refuses before dispatch when the caller omits that body; extension status does not weaken required-body enforcement.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.2.0", "info": { "title": "Extension method required body", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "additionalOperations": { "REPORT": {
+            "operationId": "customRequiredBody",
+            "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+            "responses": { "204": { "description": "ok" } }
+          } } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/additionalOperations/REPORT" },
+        "invocation": { "inputPresent": false }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
     }
   ]
 }
