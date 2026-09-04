@@ -175,6 +175,26 @@ function hasUnpairedSurrogate(codeUnits) {
   return false;
 }
 
+function semanticAssertionFormatViolations(fixture, label) {
+  if (fixture?.format === "openbindings.binding-spec-processor-scenarios@5") return [];
+  if (!Array.isArray(fixture?.scenarios)) return [];
+  const violations = [];
+  for (const [scenarioIndex, scenario] of fixture.scenarios.entries()) {
+    if (!Array.isArray(scenario?.expected)) continue;
+    for (const [expectedIndex, expected] of scenario.expected.entries()) {
+      if (!Array.isArray(expected?.assertions)) continue;
+      for (const [assertionIndex, assertion] of expected.assertions.entries()) {
+        if (assertion && typeof assertion === "object" && Object.hasOwn(assertion, "semanticEquals")) {
+          violations.push(
+            `${label}.scenarios[${scenarioIndex}].expected[${expectedIndex}].assertions[${assertionIndex}]: semanticEquals requires processor-scenario format @5`
+          );
+        }
+      }
+    }
+  }
+  return violations;
+}
+
 // Extracts family D-rule ids from a family spec's Conformance section. Older
 // families use list items; the OpenAPI siblings use labeled paragraphs.
 function extractFamilyRules(md, prefix) {
@@ -403,6 +423,7 @@ for (const dir of processorTargets) {
     continue;
   }
   processorFiles++;
+  errors.push(...semanticAssertionFormatViolations(fixture, `processor/${dir}.json`));
   const shape = ajvOk(PROCESSOR_SCHEMA, fixture);
   if (!shape.ok) {
     errors.push(`processor/${dir}.json: does not match processor-scenario.schema.json\n${shape.out}`);
@@ -450,8 +471,6 @@ for (const dir of processorTargets) {
       for (const assertion of expected.assertions) {
         if (dir.startsWith("openapi-") && (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/")))
           errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
-        if (Object.hasOwn(assertion, "semanticEquals") && fixture.format !== "openbindings.binding-spec-processor-scenarios@5")
-          errors.push(`${at}: semanticEquals requires processor-scenario format @5`);
       }
     }
     for (const rule of scenario.rules) {
@@ -768,8 +787,8 @@ try {
 
 // --- 12. Revision-5 assertion syntax stays version-gated --------------------
 // A new evaluator cannot leak into a revision-1 family merely because the
-// assertion union knows its shape. This probe makes both the schema gate and
-// the verifier's family-neutral version check permanent.
+// assertion union knows its shape. This probe independently exercises the
+// schema gate and the family-neutral verifier check.
 {
   const legacySemanticAssertion = {
     format: "openbindings.binding-spec-processor-scenarios@1",
@@ -806,6 +825,14 @@ try {
   if (probe.ok)
     errors.push(
       "processor-scenario.schema.json accepts semanticEquals under format @1; revision-5 assertion syntax must remain version-gated"
+    );
+  const manualViolations = semanticAssertionFormatViolations(
+    legacySemanticAssertion,
+    "processor-scenario verifier probe"
+  );
+  if (manualViolations.length !== 1)
+    errors.push(
+      `semanticEquals format verifier probe expected one violation under format @1; observed ${manualViolations.length}`
     );
 }
 
