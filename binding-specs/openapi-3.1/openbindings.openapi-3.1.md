@@ -1,6 +1,6 @@
 # `openbindings.openapi-3.1` Binding Specification
 
-**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-3.1@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#promotion); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
+**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-3.1@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
 
 ## 1. Identifier and rule labels
 
@@ -174,7 +174,7 @@
 
 **[convention]** For every lane, style, shape, and member-inspection rule in this document, a **resolved declaration** is obtained by following `$ref` and conjoining every `allOf` branch: the branches' type sets intersect, since an instance must satisfy every branch ([JSON Schema 2020-12 §10.2.1.1](https://json-schema.org/draft/2020-12/json-schema-core.html#section-10.2.1.1)), a typeless branch contributes no constraint, and an empty intersection is a declaration admitting no instance, against which every supplied value fails every admission test below. That refusal lives where an admission test consults the declaration — a character-data or raw-octet selection, a multipart part, a content-form property — and the value refuses before dispatch; the JSON lane and the parameter positions select carriage by media type and by location alone, consult no resolved type set, and carry the supplied value unvalidated under §9.2's no-validation rule. For an `anyOf` or `oneOf` choice, a branch whose resolved declaration declares only `null` is skipped, every other branch — a typeless branch included — is a candidate, and the choice supplies a single resolved member declaration only when exactly one candidate remains; `not` and conditional applicators never participate in resolution. Absence of `type` leaves the declaration typeless; a `type` array contributes every listed type to the resolved type set. **Declares only X** means that the resolved type set is nonempty and every member is in X; **Admits `string` as its sole non-null type** means that the resolved type set is exactly `{string}` or `{string, null}`.
 
-**[exclusion]** `$dynamicRef` retains JSON Schema's runtime dynamic-scope semantics and is not statically followed by the preceding algorithm. When a lane, style, shape, or member-inspection rule needs a resolved declaration and its reachable schema closure encounters `$dynamicRef`, the smallest media alternative, parameter, or multipart property whose decision needs that declaration is excluded; the exclusion propagates only when its owner is required. A JSON media lane and a parameter position whose carriage rule never inspects schema type remain unaffected. This exclusion reopens only if a future binding identifier incorporates a conforming dynamic-scope evaluator ([OAS 3.1.2 §4.8.24.5](https://spec.openapis.org/oas/v3.1.2.html#schema-object), [JSON Schema Core §8.2.3.2](https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.2.3.2)).
+**[exclusion]** `$dynamicRef` retains JSON Schema's runtime dynamic-scope semantics and is not statically followed by the preceding algorithm. When a lane, style, shape, or member-inspection rule needs a resolved declaration and its reachable schema closure encounters `$dynamicRef`, the smallest media alternative, parameter, or multipart property whose decision needs that declaration is excluded; the exclusion propagates only when its owner is required. A JSON media lane and a parameter position whose carriage rule never inspects schema type remain unaffected. This exclusion reopens for design only upon demonstrated consumer need for portable binding-governed dynamic-scope evaluation; meeting that condition does not change this identifier, and any semantics-changing addition remains subject to Core OBI-B-03 ([OAS 3.1.2 §4.8.24.5](https://spec.openapis.org/oas/v3.1.2.html#schema-object), [JSON Schema Core §8.2.3.2](https://json-schema.org/draft/2020-12/json-schema-core.html#section-8.2.3.2)).
 
 ## 6. Selector and inbound dependencies
 
@@ -386,7 +386,9 @@
 
 **[pin]** [RFC 6839 §3.1](https://www.rfc-editor.org/rfc/rfc6839#section-3.1) is the incorporated `+json` suffix authority; where its registration inherits RFC 4627's UTF-16/UTF-32 latitude, [RFC 8259 §8.1](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)'s UTF-8 requirement governs this lane.
 
-**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the lexically last member, the documented common receiver behavior inside RFC 8259 §4's permitted set; a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value; and a lone surrogate escape yields no value — it is a loud protocol error, because neither silent replacement nor invalid passthrough preserves the supplied text ([RFC 8259 §§4, 8.1–8.2](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the lexically last member, the documented common receiver behavior inside RFC 8259 §4's permitted set; and a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value ([RFC 8259 §§4, 8.1](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+
+**[pin]** RFC 8259's grammar admits lone-surrogate escapes while warning that their interpretation is unpredictable. Under this profile, a caller-supplied JSON value containing an unpaired surrogate code unit refuses before dispatch, and a response JSON text containing a lone-surrogate escape yields no value and is a loud response-phase protocol error. The processor MUST NOT replace the surrogate with U+FFFD, pass it through, emit request bytes containing it, or otherwise substitute another value, because none preserves a portable JSON value ([RFC 8259 §8.2](https://www.rfc-editor.org/rfc/rfc8259#section-8.2)).
 
 **[limit]** JSON-lane numbers are interoperable within RFC 8259 §6's binary64 expectation. The permitted set is explicit and has two members: an implementation MAY preserve the supplied mathematical value exactly, and it MAY reduce it to the nearest finite binary64 value; nothing else is permitted, and no other deviation from the supplied value is. A conformant implementation therefore never fails or refuses for range or precision alone, and two conformant implementations MAY differ on a value outside binary64 — that difference is this declared set and not a defect ([RFC 8259 §6](https://www.rfc-editor.org/rfc/rfc8259#section-6)).
 
@@ -794,6 +796,8 @@
 
 **[convention]** A processor conforms to **OAPI31-P-48** when §10 permits an exact consumer substitution for an otherwise undeclared Server URL expression and reports a missing substitution as context-required on `configuration.server`.
 
+**[convention]** A processor conforms to **OAPI31-P-49** when §9.2 refuses before dispatch a caller-supplied JSON value containing an unpaired surrogate code unit, without replacement, passthrough, or request-byte emission.
+
 **[convention]** A synthesizer conforms to **OAPI31-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-02** when it uses §3.2's locally defined status vocabulary for sources, targets, dependencies, and subordinate projections without depending on any project interface contract.
@@ -826,7 +830,7 @@
 
 **[convention]** A synthesizer conforms to **OAPI31-S-16** when §10 preserves a Server URL expression without a matching Server Variable Object, represents the target, and records its actual `configuration.server` requirement rather than excluding the alternative.
 
-**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.1@1`, belongs to the smallest owner stated beside it, and reopens only on its stated incorporated-authority trigger; no exclusion promises later work.
+**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.1@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
 ### 12.4 Permitted variation and stated limits
 
@@ -867,7 +871,7 @@ This section collects the points at which two implementations conforming to `ope
 | §5.1 Path Item `$ref` collision | the selected target, where a field it uses is declared both in the referenced Path Item and adjacent to the `$ref` | an incorporated OAS edition defines the collision |
 | §5.2 root `jsonSchemaDialect` | the whole source, accounted as a source-scope exclusion rather than a defect-derived refusal | that exact dialect becomes incorporated authority |
 | §5.2 schema-resource-root `$schema` | each selected unit whose reachable closure enters that resource | that exact dialect becomes incorporated authority |
-| §5.2 `$dynamicRef` | the smallest media alternative, parameter, or multipart property whose decision requires runtime dynamic-scope evaluation; type-uninspected JSON carriage remains admitted | a future binding identifier incorporates a conforming dynamic-scope evaluator |
+| §5.2 `$dynamicRef` | the smallest media alternative, parameter, or multipart property whose decision requires runtime dynamic-scope evaluation; type-uninspected JSON carriage remains admitted | demonstrated consumer need for portable binding-governed dynamic-scope evaluation; any semantics-changing addition remains subject to OBI-B-03 |
 | §7 case-distinct header parameters | the selected target, under either of the two readings §7 discloses | an incorporated authority defines a wire mapping preserving such declarations |
 | §8.3 non-token header parameter name | that parameter projection when optional; the selected target when required | incorporated HTTP authority admits that exact field-name form |
 | §8.3 non-token cookie parameter name | that parameter projection when optional; the selected target when required | incorporated cookie authority admits that exact cookie-name form |

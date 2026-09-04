@@ -59,6 +59,37 @@ function listFiles(root) {
   return out;
 }
 
+function githubHeadingSlugs(markdown) {
+  const counts = new Map();
+  const slugs = new Set();
+  for (const line of markdown.split(/\r?\n/)) {
+    const match = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
+    if (!match) continue;
+    const base = match[1]
+      .toLowerCase()
+      .replace(/<[^>]*>/g, "")
+      .replace(/[`*_{}\[\]()#+.!,:;?"'\\/]/g, "")
+      .replace(/[^\p{L}\p{N}\s_-]/gu, "")
+      .trim()
+      .replace(/\s+/g, "-");
+    const count = counts.get(base) || 0;
+    counts.set(base, count + 1);
+    slugs.add(count === 0 ? base : `${base}-${count}`);
+  }
+  return slugs;
+}
+
+function candidateSpecificationPages() {
+  const root = join(ROOT, "binding-specs");
+  const pages = [];
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name === "releases" || entry.name === "errata") continue;
+    const page = join(root, entry.name, `openbindings.${entry.name}.md`);
+    if (existsSync(page)) pages.push(page);
+  }
+  return pages;
+}
+
 function gitShow(base, path) {
   const result = spawnSync("git", ["show", `${base}:${path}`], {
     cwd: ROOT,
@@ -157,6 +188,47 @@ if (!Array.isArray(errataManifest.errata)) {
 }
 const publications = Array.isArray(manifest.publications) ? manifest.publications : [];
 const errataEntries = Array.isArray(errataManifest.errata) ? errataManifest.errata : [];
+
+// Candidate specifications are publication inputs, so their local links and
+// exclusion triggers are release integrity rather than site polish. A revisit
+// condition names an authority change or demonstrated consumer need; naming a
+// future identifier merely schedules unfinished work and is not a condition.
+for (const page of candidateSpecificationPages()) {
+  const markdown = readFileSync(page, "utf8");
+  const pageLabel = relative(ROOT, page);
+  for (const match of markdown.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
+    const href = match[1];
+    if (!href.includes("#") || /^[a-z][a-z0-9+.-]*:/i.test(href)) continue;
+    const [filePart, encodedFragment] = href.split("#", 2);
+    const target = resolve(dirname(page), filePart || page);
+    if (!existsSync(target)) {
+      errors.push(`${pageLabel}: local Markdown link target does not exist: ${href}`);
+      continue;
+    }
+    let fragment;
+    try {
+      fragment = decodeURIComponent(encodedFragment);
+    } catch {
+      errors.push(`${pageLabel}: local Markdown fragment is not valid percent-encoding: ${href}`);
+      continue;
+    }
+    if (!githubHeadingSlugs(readFileSync(target, "utf8")).has(fragment)) {
+      errors.push(`${pageLabel}: local Markdown link names a missing heading: ${href}`);
+    }
+  }
+  let lineNumber = 0;
+  for (const line of markdown.split(/\r?\n/)) {
+    lineNumber++;
+    if (
+      /reopen/i.test(line)
+      && /(future binding identifier|later binding identifier|future revision|later revision|in `?@[1-9][0-9]*`?)/i.test(line)
+    ) {
+      errors.push(
+        `${pageLabel}:${lineNumber}: roadmap-shaped reopen trigger names future publication work instead of an authority condition or demonstrated consumer need`
+      );
+    }
+  }
+}
 
 const byIdentifier = new Map();
 const publicationRecords = new Map();

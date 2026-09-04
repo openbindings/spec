@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/processor-scenario.schema.json",
   "title": "OpenBindings binding-specification processor scenarios",
-  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized.",
+  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized. Revision 4 adds lossless caller-input materializations for hostile string code units that the corpus JSON representation cannot carry portably.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -10,7 +10,8 @@
     "format": {
       "enum": [
         "openbindings.binding-spec-processor-scenarios@1",
-        "openbindings.binding-spec-processor-scenarios@3"
+        "openbindings.binding-spec-processor-scenarios@3",
+        "openbindings.binding-spec-processor-scenarios@4"
       ]
     },
     "bindingSpec": {
@@ -68,6 +69,11 @@
                 "properties": {
                   "inputPresent": { "type": "boolean" },
                   "input": {},
+                  "inputMaterializations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/$defs/inputMaterialization" }
+                  },
                   "writes": { "type": "array" }
                 },
                 "additionalProperties": true
@@ -165,6 +171,25 @@
     }
   },
   "$defs": {
+    "inputMaterialization": {
+      "type": "object",
+      "description": "Corpus-only preprocessing of a JSON-safe caller-input template. Before invocation, the adapter replaces the null placeholder at path with one string containing exactly the listed UTF-16 code units, including at least one unpaired surrogate, without normalization or replacement; this record itself never reaches the processor.",
+      "required": ["path", "kind", "codeUnits"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "JSON Pointer into invocation.input naming a null placeholder."
+        },
+        "kind": { "const": "unpaired-utf16-code-units" },
+        "codeUnits": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 0, "maximum": 65535 }
+        }
+      }
+    },
     "codecCapabilityMap": {
       "type": "object",
       "description": "Case-insensitive codec name to a deterministic harness action. unavailable forces absence in this direction; fail raises if invoked; identity copies the exact test bytes or code points unchanged.",
@@ -184,7 +209,7 @@
       },
       "then": {
         "properties": {
-          "format": { "const": "openbindings.binding-spec-processor-scenarios@3" }
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@4" }
         }
       },
       "else": {

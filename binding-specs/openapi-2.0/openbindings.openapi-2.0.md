@@ -1,6 +1,6 @@
 # `openbindings.openapi-2.0` Binding Specification
 
-**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-2.0@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#promotion); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
+**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-2.0@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
 
 ## 1. Identifier and rule labels
 
@@ -416,7 +416,9 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[pin]** [RFC 6839 §3.1](https://www.rfc-editor.org/rfc/rfc6839#section-3.1) is the incorporated `+json` suffix authority; where its registration inherits RFC 4627's UTF-16/UTF-32 latitude, [RFC 8259 §8.1](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)'s UTF-8 requirement governs this lane.
 
-**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the last member in document order, the documented common receiver behavior inside RFC 8259 §4's permitted set; a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value; and a lone surrogate escape yields no value in either direction — a loud protocol error on a response, a refusal before dispatch on a caller-supplied request value — because neither silent replacement nor invalid passthrough preserves the supplied text ([RFC 8259 §§4, 8.1–8.2](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the last member in document order, the documented common receiver behavior inside RFC 8259 §4's permitted set; and a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value ([RFC 8259 §§4, 8.1](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+
+**[pin]** RFC 8259's grammar admits lone-surrogate escapes while warning that their interpretation is unpredictable. Under this profile, a caller-supplied JSON value containing an unpaired surrogate code unit refuses before dispatch, and a response JSON text containing a lone-surrogate escape yields no value and is a loud response-phase protocol error. The processor MUST NOT replace the surrogate with U+FFFD, pass it through, emit request bytes containing it, or otherwise substitute another value, because none preserves a portable JSON value ([RFC 8259 §8.2](https://www.rfc-editor.org/rfc/rfc8259#section-8.2)).
 
 **[limit]** JSON-lane numbers are interoperable within RFC 8259 §6's binary64 expectation, and the permitted set has exactly two members — preserving a supplied or received number's mathematical value exactly, or reducing it to the nearest finite binary64 value — and nothing else: no refusal, no silent replacement by another value, and no truncation of the surrounding document. Two conformant processors MAY differ on which value a number outside binary64 carries, while every binary64-representable number carries exactly one value; that latitude over values is distinct from the lexical latitude §12.4 declares ([RFC 8259 §6](https://www.rfc-editor.org/rfc/rfc8259#section-6)).
 
@@ -716,6 +718,8 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A processor conforms to **OAPI20-P-31** when §9.3 derives response `Content-Encoding` raw-string domains by filtering a string Header's enum to string members and applies every case-folded group's domains conjunctively at response time.
 
+**[convention]** A processor conforms to **OAPI20-P-32** when §9.2 refuses before dispatch a caller-supplied JSON value containing an unpaired surrogate code unit, without replacement, passthrough, or request-byte emission.
+
 **[convention]** A synthesizer conforms to **OAPI20-S-01** when it preserves §12.2's binding/transform boundary, emits no artifact-derived inbound dependency, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete operation coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI20-S-02** when it uses §3.2's locally defined status vocabulary for targets and subordinate projections without depending on any project interface contract.
@@ -734,7 +738,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** A synthesizer conforms to **OAPI20-S-09** when §9.3 accounts a required bodyless request `Content-Encoding` parameter at its target owner while preserving unrelated operations.
 
-**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-2.0@1`, belongs to the smallest owner stated beside it, and reopens only on its stated incorporated-authority trigger; no exclusion promises later work.
+**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-2.0@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
 ### 12.4 Permitted variation and stated limits
 
@@ -769,7 +773,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[convention]** Two of those boundaries are constraints rather than enumerations: `parameterConversion` admits any function meeting its stated determinism conditions, and `server`'s complete-URL form admits any URL meeting the stated scheme, nonempty-host, and no-userinfo/no-query/no-fragment constraints. Two consumers that configure them differently obtain different bytes from one artifact and one invocation. That difference is the consumer's own, as §8.1 already states of a non-injective conversion; it is not variation between implementations given the same configuration.
 
-**[convention]** §12.3 states the exclusion discipline: every exclusion is permanent under this identifier, belongs to the smallest owner stated beside it, reopens only on its stated incorporated-authority trigger, and promises no later work. The exclusions are the following, each with the trigger that would reopen it.
+**[convention]** §12.3 states the exclusion discipline: every exclusion is permanent under this identifier, belongs to the smallest owner stated beside it, reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it, and promises no later work. The exclusions are the following, each with the condition that would reopen it.
 
 | what is removed from the accepted domain | where | reopens only if |
 | --- | --- | --- |

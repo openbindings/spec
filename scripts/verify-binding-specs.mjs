@@ -148,6 +148,33 @@ function ajvOk(schemaPath, dataObj) {
   return { ok: r.status === 0, out: (r.stdout || "") + (r.stderr || "") };
 }
 
+function jsonPointerValue(document, pointer) {
+  let value = document;
+  for (const encoded of pointer.slice(1).split("/")) {
+    const token = encoded.replace(/~1/g, "/").replace(/~0/g, "~");
+    if (value === null || typeof value !== "object" || !Object.hasOwn(value, token))
+      return { found: false };
+    value = value[token];
+  }
+  return { found: true, value };
+}
+
+function hasUnpairedSurrogate(codeUnits) {
+  for (let i = 0; i < codeUnits.length; i++) {
+    const unit = codeUnits[i];
+    if (unit >= 0xd800 && unit <= 0xdbff) {
+      const next = codeUnits[i + 1];
+      if (next >= 0xdc00 && next <= 0xdfff) {
+        i++;
+        continue;
+      }
+      return true;
+    }
+    if (unit >= 0xdc00 && unit <= 0xdfff) return true;
+  }
+  return false;
+}
+
 // Extracts family D-rule ids from a family spec's Conformance section. Older
 // families use list items; the OpenAPI siblings use labeled paragraphs.
 function extractFamilyRules(md, prefix) {
@@ -387,25 +414,49 @@ for (const dir of processorTargets) {
     errors.push(`processor/${dir}.json: bindingSpec '${fixture.bindingSpec}' is not '${fam.bindingSpec}'`);
 
   for (const [i, scenario] of fixture.scenarios.entries()) {
+    const at = `processor/${dir}.json.scenarios[${i}]`;
     processorScenarios++;
     if (processorScenarioIds.has(scenario.id))
-      errors.push(`processor/${dir}.json.scenarios[${i}]: duplicate id '${scenario.id}'`);
+      errors.push(`${at}: duplicate id '${scenario.id}'`);
     processorScenarioIds.add(scenario.id);
     if (!scenario.id.startsWith(`${fam.prefix}-PS-`))
-      errors.push(`processor/${dir}.json.scenarios[${i}]: id '${scenario.id}' has the wrong family prefix`);
+      errors.push(`${at}: id '${scenario.id}' has the wrong family prefix`);
     if (!sectionExists(specTexts[dir], scenario.section))
-      errors.push(`processor/${dir}.json.scenarios[${i}]: section '${scenario.section}' is not a heading in the ${dir} specification`);
+      errors.push(`${at}: section '${scenario.section}' is not a heading in the ${dir} specification`);
+    const materializations = scenario.given.invocation.inputMaterializations || [];
+    if (materializations.length) {
+      if (fixture.format !== "openbindings.binding-spec-processor-scenarios@4")
+        errors.push(`${at}: inputMaterializations require processor-scenario format @4`);
+      if (!scenario.given.invocation.inputPresent)
+        errors.push(`${at}: inputMaterializations require inputPresent: true`);
+      if (!Object.hasOwn(scenario.given.invocation, "input"))
+        errors.push(`${at}: inputMaterializations require an input template`);
+      const paths = new Set();
+      for (const [materializationIndex, materialization] of materializations.entries()) {
+        const materializationAt = `${at}.given.invocation.inputMaterializations[${materializationIndex}]`;
+        if (paths.has(materialization.path))
+          errors.push(`${materializationAt}: duplicate materialization path '${materialization.path}'`);
+        paths.add(materialization.path);
+        const target = jsonPointerValue(scenario.given.invocation.input, materialization.path);
+        if (!target.found)
+          errors.push(`${materializationAt}: path '${materialization.path}' does not resolve in the input template`);
+        else if (target.value !== null)
+          errors.push(`${materializationAt}: path '${materialization.path}' must name a null placeholder`);
+        if (!hasUnpairedSurrogate(materialization.codeUnits))
+          errors.push(`${materializationAt}: codeUnits must contain an unpaired surrogate so JSON-safe parsing cannot erase the hostile boundary`);
+      }
+    }
     if (dir.startsWith("openapi-")) {
       for (const expected of scenario.expected) {
         for (const assertion of expected.assertions) {
           if (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/"))
-            errors.push(`processor/${dir}.json.scenarios[${i}]: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
+            errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
         }
       }
     }
     for (const rule of scenario.rules) {
       if (!rule.startsWith(`${fam.prefix}-P-`) || !familyRuleIds[dir].has(rule))
-        errors.push(`processor/${dir}.json.scenarios[${i}]: rule '${rule}' is not a defined ${dir} P-rule`);
+        errors.push(`${at}: rule '${rule}' is not a defined ${dir} P-rule`);
       if (!processorRuleCoverage.has(rule)) processorRuleCoverage.set(rule, []);
       processorRuleCoverage.get(rule).push(scenario.id);
     }

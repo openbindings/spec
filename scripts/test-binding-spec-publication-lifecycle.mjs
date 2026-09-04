@@ -91,6 +91,39 @@ try {
   ]);
   run("node", ["scripts/verify-binding-spec-publications.mjs"]);
 
+  const candidatePath = join(
+    temp,
+    "binding-specs",
+    "openapi-3.1",
+    "openbindings.openapi-3.1.md"
+  );
+  const goodCandidate = readFileSync(candidatePath, "utf8");
+  writeFileSync(
+    candidatePath,
+    `${goodCandidate}\n[Broken lifecycle](../README.md#missing-heading)\n`
+  );
+  const brokenHeading = run(
+    "node",
+    ["scripts/verify-binding-spec-publications.mjs"],
+    1
+  );
+  if (!brokenHeading.includes("local Markdown link names a missing heading")) {
+    throw new Error("publication verification did not reject a missing local Markdown heading");
+  }
+  writeFileSync(
+    candidatePath,
+    `${goodCandidate}\n**[exclusion]** This exclusion reopens only if a future binding identifier implements it.\n`
+  );
+  const roadmapTrigger = run(
+    "node",
+    ["scripts/verify-binding-spec-publications.mjs"],
+    1
+  );
+  if (!roadmapTrigger.includes("roadmap-shaped reopen trigger")) {
+    throw new Error("publication verification did not reject a roadmap-shaped reopen trigger");
+  }
+  writeFileSync(candidatePath, goodCandidate);
+
   const firstDoc = join(
     temp,
     "binding-specs",

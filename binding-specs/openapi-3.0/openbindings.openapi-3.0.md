@@ -1,6 +1,6 @@
 # `openbindings.openapi-3.0` Binding Specification
 
-**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-3.0@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#promotion); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
+**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-3.0@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
 
 ## 1. Identifier and rule labels
 
@@ -371,7 +371,9 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[pin]** [RFC 6839 §3.1](https://www.rfc-editor.org/rfc/rfc6839#section-3.1) is the incorporated `+json` suffix authority; where its registration inherits RFC 4627's UTF-16/UTF-32 latitude, [RFC 8259 §8.1](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)'s UTF-8 requirement governs this lane.
 
-**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the lexically last member, the documented common receiver behavior inside RFC 8259 §4's permitted set; a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value; and a lone surrogate escape yields no value — it is a loud protocol error, because neither silent replacement nor invalid passthrough preserves the supplied text ([RFC 8259 §§4, 8.1–8.2](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+**[pin]** Strict JSON is RFC 8259's grammar under this profile: parsing resolves duplicate object member names by taking the lexically last member, the documented common receiver behavior inside RFC 8259 §4's permitted set; and a leading byte-order mark on a JSON body is ignored under RFC 8259 §8.1's parser latitude and is never part of the value ([RFC 8259 §§4, 8.1](https://www.rfc-editor.org/rfc/rfc8259#section-4)).
+
+**[pin]** RFC 8259's grammar admits lone-surrogate escapes while warning that their interpretation is unpredictable. Under this profile, a caller-supplied JSON value containing an unpaired surrogate code unit refuses before dispatch, and a response JSON text containing a lone-surrogate escape yields no value and is a loud response-phase protocol error. The processor MUST NOT replace the surrogate with U+FFFD, pass it through, emit request bytes containing it, or otherwise substitute another value, because none preserves a portable JSON value ([RFC 8259 §8.2](https://www.rfc-editor.org/rfc/rfc8259#section-8.2)).
 
 **[limit]** JSON-lane numbers are interoperable within RFC 8259 §6's binary64 expectation. The permitted set is explicit and has two members: an implementation MAY preserve the supplied mathematical value exactly, and it MAY reduce it to the nearest finite binary64 value; nothing else is permitted, and no other deviation from the supplied value is. A conformant implementation therefore never fails or refuses for range or precision alone, and two conformant implementations MAY differ on a value outside binary64 — that difference is this declared set and not a defect ([RFC 8259 §6](https://www.rfc-editor.org/rfc/rfc8259#section-6)).
 
@@ -777,6 +779,8 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A processor conforms to **OAPI30-P-49** when §10 refuses a consumer substitution outside a declared nonempty variable `enum` without changing synthesis coverage or weakening the selected Server Object.
 
+**[convention]** A processor conforms to **OAPI30-P-50** when §9.2 refuses before dispatch a caller-supplied JSON value containing an unpaired surrogate code unit, without replacement, passthrough, or request-byte emission.
+
 **[convention]** A synthesizer conforms to **OAPI30-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI30-S-02** when it uses §3.2's locally defined status vocabulary for targets and subordinate projections without depending on any project interface contract.
@@ -811,7 +815,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A synthesizer conforms to **OAPI30-S-17** when §10 preserves a Server URL expression without a matching Server Variable Object, represents the target, and records its actual `configuration.server` requirement rather than excluding the alternative.
 
-**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.0@1`, belongs to the smallest owner stated beside it, and reopens only on its stated incorporated-authority trigger; no exclusion promises later work.
+**[exclusion]** Every exclusion in this document is permanent under `openbindings.openapi-3.0@1`, belongs to the smallest owner stated beside it, and reopens only upon the specific authority condition or demonstrated-consumer-need condition stated beside it; no exclusion promises later work.
 
 ### 12.4 Permitted variation and stated limits
 
@@ -880,7 +884,7 @@ Under §12.1 every requirement is typed and discoverable from declarations, but 
 | §11 | an `apiKey` security alternative whose header name is not an HTTP `token` or whose cookie name is not a cookie-name `token` | incorporated authority admits the exact destination-name form |
 | §11 | a security alternative with two credentials sharing one destination, a credential colliding with a required fixed-destination parameter, or a credential targeting a binding/processor-owned field; the target only when no complete alternative remains | incorporated authority defines a safe, unambiguous assembly for the exact collision |
 | §11 | a TRACE security alternative that emits credentials, or a TRACE target with a required Cookie parameter | incorporated HTTP authority permits sensitive fields on TRACE |
-| §12.3 | standing rule: every exclusion above is permanent under `openbindings.openapi-3.0@1`, belongs to the smallest owner stated beside it, and promises no later work | its own stated incorporated-authority trigger fires |
+| §12.3 | standing rule: every exclusion above is permanent under `openbindings.openapi-3.0@1`, belongs to the smallest owner stated beside it, and promises no later work | its own specifically stated authority or demonstrated-consumer-need condition is met |
 | §5.1 | a retrieved document encoded in UTF-16 or UTF-32, which YAML 1.2.2 §5.2 obliges a processor to support | an incorporated authority defines a declaration surface stating a retrieved document's character encoding without inspecting its bytes |
 
 **Stated limits.** Each `[limit]` rule of this document, with what it declines to cover or confines.

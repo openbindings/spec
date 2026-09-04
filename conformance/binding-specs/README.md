@@ -139,7 +139,19 @@ siblings and carries their exact binding-specification identifiers. The
 exchange shape is otherwise unchanged. Revision-1 files for the other
 families remain valid and are not rewritten merely to advance a version.
 
-The current corpus contains 921 scenarios citing every P-rule of usage,
+Processor-scenario revision 4 adds lossless caller-input materialization for
+hostile string code units that the corpus's own JSON representation cannot
+carry portably. An `inputMaterializations` entry addresses a `null` placeholder
+in the JSON-safe `input` template and replaces it, before invocation, with one
+string containing exactly the listed UTF-16 code units. The adapter MUST NOT
+normalize or replace those units, and the materialization record itself never
+reaches the processor. An adapter unable to construct the value reports the
+scenario unsupported rather than substituting another value and claiming a
+pass. The repository verifier requires unique, resolving paths, null
+placeholders, and an unpaired surrogate in each current materialization.
+Revision-1 files outside the OpenAPI family remain valid and unchanged.
+
+The current corpus contains 926 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -147,7 +159,7 @@ sequential-response, and response-reference-identity batches, the
 hostile-pass fix-round and Go engine-round batches, the Round R
 upstream-invalid Response Object batch, and the Round R2 batch that carries
 that rule onto the 2.0 and 3.2 lanes and pins its success scope on all four
-(221 distinct rules). A complete citation set is a structural guarantee: it
+(225 distinct rules). A complete citation set is a structural guarantee: it
 means no defined P-rule lacks a scenario, not that one scenario exercises every
 clause collected by a legacy umbrella rule. New semantic-closure rules use one
 stable P-rule identifier per observable claim so the corresponding scenario is

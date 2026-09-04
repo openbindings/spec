@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@3",
+  "format": "openbindings.binding-spec-processor-scenarios@4",
   "bindingSpec": "openbindings.openapi-2.0@1",
   "family": "openapi-2.0",
   "description": "Portable processor scenarios for the OpenAPI 2.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -9508,7 +9508,7 @@
         "OAPI20-P-03"
       ],
       "section": "9",
-      "description": "A lone surrogate escape in a JSON response body yields no value: it is a loud protocol error after a 2xx final status. This asserts the response half of 2.0 §9.2's pin only; that pin's request half — a caller-supplied request value carrying a lone surrogate refuses before dispatch — is unasserted here because expressing a lone surrogate as caller input requires it to survive the scenario file's own JSON, which is a corpus-format question rather than a binding one.",
+      "description": "A lone-surrogate escape in a JSON response body yields no value and is a loud response-phase protocol error after a 2xx final status. The request direction is isolated by OAPI20-PS-180 through revision 4's lossless caller-input materialization.",
       "given": {
         "source": {
           "content": {
@@ -12427,6 +12427,83 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI20-PS-180",
+      "rules": [
+        "OAPI20-P-32"
+      ],
+      "section": "9.2",
+      "description": "A caller-supplied JSON request value containing one unpaired surrogate code unit refuses before dispatch. The corpus materializes U+D800 after parsing its JSON-safe template so neither U+FFFD replacement nor an emitted lone-surrogate escape can masquerade as the supplied value.",
+      "given": {
+        "source": {
+          "content": {
+            "swagger": "2.0",
+            "info": {
+              "title": "Request lone surrogate",
+              "version": "1"
+            },
+            "schemes": [
+              "https"
+            ],
+            "host": "api.example",
+            "consumes": [
+              "application/json"
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "parameters": [
+                    {
+                      "in": "body",
+                      "name": "body",
+                      "required": true,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": null
+          },
+          "inputMaterializations": [
+            {
+              "path": "/body",
+              "kind": "unpaired-utf16-code-units",
+              "codeUnits": [
+                55296
+              ]
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }

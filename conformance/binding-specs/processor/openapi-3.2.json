@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@3",
+  "format": "openbindings.binding-spec-processor-scenarios@4",
   "bindingSpec": "openbindings.openapi-3.2@1",
   "family": "openapi-3.2",
   "description": "Portable processor scenarios for the OpenAPI 3.2 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -19817,6 +19817,146 @@
           "responseContentCodings": {
             "identity": "identity"
           }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-275",
+      "rules": [
+        "OAPI32-P-53"
+      ],
+      "section": "9.2",
+      "description": "A caller-supplied JSON request value containing one unpaired surrogate code unit refuses before dispatch. The corpus materializes U+D800 after parsing its JSON-safe template so neither U+FFFD replacement nor an emitted lone-surrogate escape can masquerade as the supplied value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Request lone surrogate",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": null
+          },
+          "inputMaterializations": [
+            {
+              "path": "/body",
+              "kind": "unpaired-utf16-code-units",
+              "codeUnits": [
+                55296
+              ]
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-276",
+      "rules": [
+        "OAPI32-P-03"
+      ],
+      "section": "9.2",
+      "description": "A lone-surrogate escape in a unary JSON response yields no value and is a loud response-phase protocol error; neither U+FFFD replacement nor invalid-Unicode passthrough preserves the received text. This isolates the JSON boundary from the sequential commit behavior exercised separately.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Response lone surrogate",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "{\"s\":\"\\ud800\"}"
         }
       },
       "expected": [
