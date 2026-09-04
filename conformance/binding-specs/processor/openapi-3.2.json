@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@4",
+  "format": "openbindings.binding-spec-processor-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.2@1",
   "family": "openapi-3.2",
   "description": "Portable processor scenarios for the OpenAPI 3.2 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -2497,7 +2497,12 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "contains": "https://api.example/search?%7B"
+              "semanticEquals": {
+                "as": "querystring-json",
+                "value": {
+                  "a": "x&y"
+                }
+              }
             }
           ]
         }
@@ -3988,7 +3993,13 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "contains": "https://api.example/x?q=%7B"
+              "semanticEquals": {
+                "as": "query-json-parameter",
+                "name": "q",
+                "value": {
+                  "a": "b"
+                }
+              }
             }
           ]
         }
@@ -6316,19 +6327,17 @@
           "assertions": [
             {
               "path": "/dispatch/body",
-              "contains": "{"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "\n"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "1"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "2"
+              "semanticEquals": {
+                "as": "json-lines",
+                "value": [
+                  {
+                    "n": 1
+                  },
+                  {
+                    "n": 2
+                  }
+                ]
+              }
             }
           ]
         }
@@ -6401,19 +6410,13 @@
           "assertions": [
             {
               "path": "/dispatch/body",
-              "contains": "\u001e"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "true"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "false"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "\n"
+              "semanticEquals": {
+                "as": "json-sequence",
+                "value": [
+                  true,
+                  false
+                ]
+              }
             }
           ]
         }
@@ -7446,19 +7449,17 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "{"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "\n"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "1"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "2"
+              "semanticEquals": {
+                "as": "json-lines",
+                "value": [
+                  {
+                    "n": 1
+                  },
+                  {
+                    "n": 2
+                  }
+                ]
+              }
             }
           ]
         }
@@ -15224,11 +15225,19 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "count="
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "count",
+                "value": 7
+              }
             },
             {
               "path": "/dispatch/body",
-              "contains": "flag=true"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "flag",
+                "value": true
+              }
             },
             {
               "path": "/dispatch/body",

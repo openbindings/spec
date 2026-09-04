@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@4",
+  "format": "openbindings.binding-spec-processor-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.1@1",
   "family": "openapi-3.1",
   "description": "Portable processor scenarios for the OpenAPI 3.1 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -3038,16 +3038,14 @@
               "contains": "multipart/form-data; boundary="
             },
             {
-              "path": "/dispatch/body",
-              "contains": "name=\"meta_first\""
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "Content-Type: application/json"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "{"
+              "path": "/dispatch",
+              "semanticEquals": {
+                "as": "multipart-json-part",
+                "name": "meta_first",
+                "value": {
+                  "role": "admin"
+                }
+              }
             },
             {
               "path": "/outputs",
@@ -10379,7 +10377,11 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "note=%22"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "note",
+                "value": "hello"
+              }
             },
             {
               "path": "/outputs",
@@ -10896,7 +10898,14 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "ids=%5B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "ids",
+                "value": [
+                  1,
+                  2
+                ]
+              }
             },
             {
               "path": "/dispatch/body",
@@ -11001,11 +11010,19 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "count="
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "count",
+                "value": 7
+              }
             },
             {
               "path": "/dispatch/body",
-              "contains": "flag=true"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "flag",
+                "value": true
+              }
             },
             {
               "path": "/dispatch/body",

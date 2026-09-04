@@ -151,6 +151,43 @@ pass. The repository verifier requires unique, resolving paths, null
 placeholders, and an unpaired surrogate in each current materialization.
 Revision-1 files outside the OpenAPI family remain valid and unchanged.
 
+Processor-scenario revision 5 adds the `semanticEquals` assertion for wire
+representations that contain JSON. It prevents a scenario from choosing one
+otherwise-equivalent JSON byte spelling merely to verify the value, and also
+prevents weak substring checks from losing field ownership, sequential item
+boundaries, or item order. The assertion first requires the complete selected
+representation to parse under the named interpreter and then compares the
+resulting JSON value structurally:
+
+- `form-json-field` parses the pointed-at
+  `application/x-www-form-urlencoded` body, selects exactly one field with the
+  decoded `name`, parses that field's complete decoded value as JSON, and
+  compares it with `value`.
+- `multipart-json-part` points at the normalized `dispatch` object, parses its
+  body using the boundary in its `Content-Type`, selects exactly one
+  `form-data` part with the decoded `name`, requires a JSON media type for that
+  part, parses the complete part body as JSON, and compares it with `value`.
+- `query-json-parameter` parses the pointed-at URL, selects exactly one query
+  contribution with the decoded `name`, parses the complete decoded value as
+  JSON, and compares it with `value`.
+- `querystring-json` parses the pointed-at URL, requires a present query
+  component, percent-decodes that complete component once without interpreting
+  it as named fields, parses it as JSON, and compares it with `value`.
+- `json-lines` parses the pointed-at body using the line framing pinned by the
+  OAS 3.2 binding specification; `json-sequence` parses it as RFC 7464. In both
+  cases every frame must be valid, the whole body must be consumed, and the
+  ordered array of parsed items is compared with `value`. The parse itself
+  therefore proves item count, boundaries, and order without fixing whitespace,
+  member order, escapes, or number spelling within an item.
+
+The three named interpreters require `name`; the other three forbid it. A
+failed parse, missing or duplicate selected member, unconsumed wire content,
+wrong framing, or unequal JSON value fails the assertion. This is harness
+comparison behavior only: it adds no binding configuration point and no
+processor obligation beyond the wire behavior already stated by the governing
+specification. Revision-1 files outside the OpenAPI family remain valid; the
+four OpenAPI siblings use revision 5.
+
 The current corpus contains 980 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2

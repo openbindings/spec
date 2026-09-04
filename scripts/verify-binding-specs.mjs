@@ -425,8 +425,8 @@ for (const dir of processorTargets) {
       errors.push(`${at}: section '${scenario.section}' is not a heading in the ${dir} specification`);
     const materializations = scenario.given.invocation.inputMaterializations || [];
     if (materializations.length) {
-      if (fixture.format !== "openbindings.binding-spec-processor-scenarios@4")
-        errors.push(`${at}: inputMaterializations require processor-scenario format @4`);
+      if (!["openbindings.binding-spec-processor-scenarios@4", "openbindings.binding-spec-processor-scenarios@5"].includes(fixture.format))
+        errors.push(`${at}: inputMaterializations require processor-scenario format @4 or later`);
       if (!scenario.given.invocation.inputPresent)
         errors.push(`${at}: inputMaterializations require inputPresent: true`);
       if (!Object.hasOwn(scenario.given.invocation, "input"))
@@ -451,6 +451,8 @@ for (const dir of processorTargets) {
         for (const assertion of expected.assertions) {
           if (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/"))
             errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
+          if (Object.hasOwn(assertion, "semanticEquals") && fixture.format !== "openbindings.binding-spec-processor-scenarios@5")
+            errors.push(`${at}: semanticEquals requires processor-scenario format @5`);
         }
       }
     }

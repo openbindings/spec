@@ -1,5 +1,5 @@
 {
-  "format": "openbindings.binding-spec-processor-scenarios@4",
+  "format": "openbindings.binding-spec-processor-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.0@1",
   "family": "openapi-3.0",
   "description": "Portable processor scenarios for the OpenAPI 3.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
@@ -946,7 +946,13 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "address=%7B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "address",
+                "value": {
+                  "street": "main st"
+                }
+              }
             }
           ]
         }
@@ -1044,7 +1050,13 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "address=%7B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "address",
+                "value": {
+                  "street": "main st"
+                }
+              }
             }
           ]
         }
@@ -1142,7 +1154,13 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "address=%7B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "address",
+                "value": {
+                  "street": "main st"
+                }
+              }
             }
           ]
         }
@@ -1240,7 +1258,13 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "address=%7B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "address",
+                "value": {
+                  "street": "main st"
+                }
+              }
             }
           ]
         }
@@ -1338,7 +1362,13 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "address=%7B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "address",
+                "value": {
+                  "street": "main st"
+                }
+              }
             }
           ]
         }
@@ -5311,20 +5341,15 @@
           "phase": "completion",
           "assertions": [
             {
-              "path": "/dispatch/body",
-              "contains": "name=\"payload\""
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "Content-Type: application/json"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "{"
-            },
-            {
-              "path": "/dispatch/body",
-              "contains": "}"
+              "path": "/dispatch",
+              "semanticEquals": {
+                "as": "multipart-json-part",
+                "name": "payload",
+                "value": {
+                  "a": "one",
+                  "b": "two"
+                }
+              }
             },
             {
               "path": "/outputs",
@@ -8774,7 +8799,14 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "ids=%5B"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "ids",
+                "value": [
+                  1,
+                  2
+                ]
+              }
             },
             {
               "path": "/dispatch/body",
@@ -8879,11 +8911,19 @@
             },
             {
               "path": "/dispatch/body",
-              "contains": "count="
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "count",
+                "value": 7
+              }
             },
             {
               "path": "/dispatch/body",
-              "contains": "flag=true"
+              "semanticEquals": {
+                "as": "form-json-field",
+                "name": "flag",
+                "value": true
+              }
             },
             {
               "path": "/dispatch/body",

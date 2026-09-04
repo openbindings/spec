@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/processor-scenario.schema.json",
   "title": "OpenBindings binding-specification processor scenarios",
-  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized. Revision 4 adds lossless caller-input materializations for hostile string code units that the corpus JSON representation cannot carry portably.",
+  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized. Revision 4 adds lossless caller-input materializations for hostile string code units that the corpus JSON representation cannot carry portably. Revision 5 adds semanticEquals so permitted JSON byte variation does not weaken value, field-ownership, or sequential-order evidence.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -11,7 +11,8 @@
       "enum": [
         "openbindings.binding-spec-processor-scenarios@1",
         "openbindings.binding-spec-processor-scenarios@3",
-        "openbindings.binding-spec-processor-scenarios@4"
+        "openbindings.binding-spec-processor-scenarios@4",
+        "openbindings.binding-spec-processor-scenarios@5"
       ]
     },
     "bindingSpec": {
@@ -151,7 +152,8 @@
                       "oneOf": { "type": "array", "minItems": 1 },
                       "setEquals": { "type": "array", "uniqueItems": true },
                       "contains": {},
-                      "notContains": {}
+                      "notContains": {},
+                      "semanticEquals": { "$ref": "#/$defs/semanticEquality" }
                     },
                     "oneOf": [
                       { "required": ["equals"] },
@@ -159,7 +161,8 @@
                       { "required": ["oneOf"] },
                       { "required": ["setEquals"] },
                       { "required": ["contains"] },
-                      { "required": ["notContains"] }
+                      { "required": ["notContains"] },
+                      { "required": ["semanticEquals"] }
                     ]
                   }
                 }
@@ -195,6 +198,40 @@
       "description": "Case-insensitive codec name to a deterministic harness action. unavailable forces absence in this direction; fail raises if invoked; identity copies the exact test bytes or code points unchanged.",
       "propertyNames": { "type": "string", "minLength": 1 },
       "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "semanticEquality": {
+      "type": "object",
+      "description": "A harness-level semantic interpretation of the value at path. The interpreter validates the complete named field, part, query contribution, or sequential framing and compares its parsed JSON value without fixing an equivalent JSON byte spelling.",
+      "required": ["as", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "as": {
+          "enum": [
+            "form-json-field",
+            "multipart-json-part",
+            "query-json-parameter",
+            "querystring-json",
+            "json-lines",
+            "json-sequence"
+          ]
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "value": {}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "as": {
+                "enum": ["form-json-field", "multipart-json-part", "query-json-parameter"]
+              }
+            },
+            "required": ["as"]
+          },
+          "then": { "required": ["name"] },
+          "else": { "not": { "required": ["name"] } }
+        }
+      ]
     }
   },
   "allOf": [
@@ -209,7 +246,7 @@
       },
       "then": {
         "properties": {
-          "format": { "const": "openbindings.binding-spec-processor-scenarios@4" }
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@5" }
         }
       },
       "else": {
