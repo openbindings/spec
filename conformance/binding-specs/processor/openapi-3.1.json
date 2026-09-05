@@ -12974,7 +12974,7 @@
             ],
             "paths": {
               "/x": {
-                "get": {
+                "post": {
                   "operationId": "upload",
                   "requestBody": {
                     "required": true,

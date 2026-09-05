@@ -16842,7 +16842,7 @@
             ],
             "paths": {
               "/x": {
-                "get": {
+                "post": {
                   "operationId": "upload",
                   "requestBody": {
                     "required": true,
@@ -17414,7 +17414,12 @@
           "selector": "#/paths/~1x/get"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "whole": "q=caller"
+            }
+          }
         },
         "configuration": {
           "security": {
@@ -17439,7 +17444,7 @@
           "assertions": [
             {
               "path": "/dispatch/url",
-              "equals": "https://api.example/x"
+              "equals": "https://api.example/x?q%3Dcaller"
             }
           ]
         }
