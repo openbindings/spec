@@ -16345,6 +16345,88 @@
         "peer": { "status": 204, "headers": {}, "body": "" }
       },
       "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
+    },
+    {
+      "id": "OAPI31-PS-236",
+      "rules": ["OAPI31-P-59"],
+      "section": "9.3",
+      "description": "Content-based form-urlencoded serialization writes number and boolean properties through the binding-fixed text/plain lexical form without consulting or requiring parameterConversion.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.1.2", "info": { "title": "Form scalar text", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "post": {
+            "requestBody": { "required": true, "content": { "application/x-www-form-urlencoded": {
+              "schema": { "type": "object", "properties": { "count": { "type": "integer" }, "flag": { "type": "boolean" } } }
+            } } },
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/post" },
+        "invocation": { "inputPresent": true, "input": { "body": { "count": 7, "flag": true } } },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [{
+        "disposition": "complete", "phase": "completion",
+        "assertions": [
+          { "path": "/dispatch/headers/Content-Type", "equals": "application/x-www-form-urlencoded" },
+          { "path": "/dispatch/body", "oneOf": ["count=7&flag=true", "flag=true&count=7"] }
+        ]
+      }]
+    },
+    {
+      "id": "OAPI31-PS-237",
+      "rules": ["OAPI31-P-59"],
+      "section": "9.3",
+      "description": "Content-based multipart serialization writes number and boolean properties through the binding-fixed text/plain lexical form without consulting or requiring parameterConversion; an omitted part Content-Type has the incorporated text/plain default.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.1.2", "info": { "title": "Multipart scalar text", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "post": {
+            "requestBody": { "required": true, "content": { "multipart/form-data": {
+              "schema": { "type": "object", "properties": { "count": { "type": "integer" }, "flag": { "type": "boolean" } } }
+            } } },
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/post" },
+        "invocation": { "inputPresent": true, "input": { "body": { "count": 7, "flag": true } } },
+        "peer": { "status": 204, "body": "" }
+      },
+      "expected": [{
+        "disposition": "complete", "phase": "completion",
+        "assertions": [
+          { "path": "/dispatch/headers/Content-Type", "contains": "multipart/form-data; boundary=" },
+          { "path": "/dispatch/body", "contains": "Content-Disposition: form-data; name=\"count\"" },
+          { "path": "/dispatch/body", "contains": "Content-Disposition: form-data; name=\"flag\"" },
+          { "path": "/dispatch/body", "contains": "\r\n\r\n7\r\n" },
+          { "path": "/dispatch/body", "contains": "\r\n\r\ntrue\r\n" },
+          { "path": "/dispatch/body", "notContains": "Content-Type: application/json" }
+        ]
+      }]
+    },
+    {
+      "id": "OAPI31-PS-238",
+      "rules": ["OAPI31-P-02", "OAPI31-P-59"],
+      "section": "9.3",
+      "description": "Explicit explode selects the RFC 6570-style Encoding path, so the same integer still requires parameterConversion and refuses before dispatch when that configuration is absent.",
+      "given": {
+        "source": { "content": {
+          "openapi": "3.1.2", "info": { "title": "Style-path scalar conversion", "version": "1" },
+          "servers": [{ "url": "https://api.example" }],
+          "paths": { "/x": { "post": {
+            "requestBody": { "required": true, "content": { "application/x-www-form-urlencoded": {
+              "schema": { "type": "object", "properties": { "count": { "type": "integer" } } },
+              "encoding": { "count": { "explode": true } }
+            } } },
+            "responses": { "204": { "description": "ok" } }
+          } } }
+        } },
+        "binding": { "selector": "#/paths/~1x/post" },
+        "invocation": { "inputPresent": true, "input": { "body": { "count": 7 } } }
+      },
+      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
     }
   ]
 }

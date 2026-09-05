@@ -105,7 +105,7 @@
               "sourceRef": "#/paths/~1jobs/post/requestBody/content/application~1x-custom",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -1150,7 +1150,7 @@
               "sourceRef": "#/paths/~1pick/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             }
           ]
@@ -1414,7 +1414,7 @@
               "sourceRef": "#/paths/~1binary/post/requestBody/content/application~1vnd.apache.arrow.stream",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -1458,7 +1458,7 @@
               "sourceRef": "#/paths/~1nonstandard/post/requestBody/content/text~1json",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -1529,7 +1529,7 @@
               "sourceRef": "#/paths/~1typed-markup/post/requestBody/content/application~1xml",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -1537,7 +1537,7 @@
               "sourceRef": "#/paths/~1typed-markup/post/requestBody/content/text~1xml",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             }
           ]
@@ -1814,7 +1814,7 @@
               "sourceRef": "#/paths/~1notes/post/requestBody/content/multipart~1form-data",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -3271,7 +3271,7 @@
     },
     {
       "id": "OAPI31-SS-39",
-      "description": "The ACCOUNTING half of section 9.2's normalized-collision confinement. Two content-map keys denoting one parsed media identity are a collision that confines to that identity: each colliding key is an accounted `excluded` alternative under the ordinary OAPI31-P-03 media-exclusion reason, while the map's non-colliding sibling stays represented and the required-body operation survives on it. Before confinement the whole candidate set was unresolvable and the operation disappeared.",
+      "description": "The ACCOUNTING half of section 9.2's normalized-collision confinement. Two content-map keys denoting one parsed media identity are a collision that confines to that identity: each colliding key is an accounted `excluded` alternative under the ordinary OAPI31-S-21 media-exclusion reason, while the map's non-colliding sibling stays represented and the required-body operation survives on it. Before confinement the whole candidate set was unresolvable and the operation disappeared.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -3348,7 +3348,7 @@
               "sourceRef": "#/paths/~1items/post/requestBody/content/application~1json; charset=utf-8",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -3356,7 +3356,7 @@
               "sourceRef": "#/paths/~1items/post/requestBody/content/Application~1JSON;charset=\"UTF-8\"",
               "scope": "alternative",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -3374,7 +3374,7 @@
     },
     {
       "id": "OAPI31-SS-43",
-      "description": "The acceptance floor's Schema Object verdict on the 3.1 line is the GOVERNING DIALECT'S, not a keyword list of ours. Absent `jsonSchemaDialect` -- and this document sets none -- every accepted 3.1 edition says in the same words that \"the OAS dialect schema id MUST be used for these Schema Objects\", and that dialect (https://spec.openapis.org/oas/3.1/dialect/base) composes the ROOT JSON Schema 2020-12 meta-schema. Two of its constraints are unreachable by anyone enumerating keywords from the vocabulary texts. `$recursiveAnchor` appears ZERO times in either pinned 2020-12 draft, yet the root meta-schema deliberately re-declares it as an anchor STRING -- \"This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use\" -- so a boolean fails a guard no vocabulary states. And `required` reaches `uniqueItems` through `$defs/stringArray`, so a DUPLICATED entry is invalid even though the array is an array. Each defect confines to the smallest unit that owns it, per Section 3's floor: `describeFilter` and `listContainers` lose their targets and every other operation is delivered. The three operations beside them are the negative controls that make the delegation's shape visible rather than its outcome: a STRING-valued `$recursiveAnchor` is legal (the meta-schema types the keyword, it does not ban it), `$recursiveRef: \"#\"` is legal (re-declared as a URI reference, which `#` satisfies), and `nullable`, a misspelled `min_items` and an arbitrary vendor keyword are legal annotations under core Section 4.3.1 and the edition's own \"or entirely arbitrary properties\". A conformant processor that refused any of those three would be narrowing what the authority admits. `searchFilters` carries the other measured consequence of the same confinement: its REQUIRED request body declares exactly one media alternative, that alternative is the invalid unit, and so the target is excluded under OAPI31-P-03's unresolvable-request-body rule rather than becoming an invalid target itself -- the ladder confining at the alternative and the operation losing its target for a different, already-stated reason.",
+      "description": "The acceptance floor's Schema Object verdict on the 3.1 line is the GOVERNING DIALECT'S, not a keyword list of ours. Absent `jsonSchemaDialect` -- and this document sets none -- every accepted 3.1 edition says in the same words that \"the OAS dialect schema id MUST be used for these Schema Objects\", and that dialect (https://spec.openapis.org/oas/3.1/dialect/base) composes the ROOT JSON Schema 2020-12 meta-schema. Two of its constraints are unreachable by anyone enumerating keywords from the vocabulary texts. `$recursiveAnchor` appears ZERO times in either pinned 2020-12 draft, yet the root meta-schema deliberately re-declares it as an anchor STRING -- \"This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use\" -- so a boolean fails a guard no vocabulary states. And `required` reaches `uniqueItems` through `$defs/stringArray`, so a DUPLICATED entry is invalid even though the array is an array. Each defect confines to the smallest unit that owns it, per Section 3's floor: `describeFilter` and `listContainers` lose their targets and every other operation is delivered. The three operations beside them are the negative controls that make the delegation's shape visible rather than its outcome: a STRING-valued `$recursiveAnchor` is legal (the meta-schema types the keyword, it does not ban it), `$recursiveRef: \"#\"` is legal (re-declared as a URI reference, which `#` satisfies), and `nullable`, a misspelled `min_items` and an arbitrary vendor keyword are legal annotations under core Section 4.3.1 and the edition's own \"or entirely arbitrary properties\". A conformant processor that refused any of those three would be narrowing what the authority admits. `searchFilters` carries the other measured consequence of the same confinement: its REQUIRED request body declares exactly one media alternative, that alternative is the invalid unit, and so the target is excluded under OAPI31-S-21's unresolvable-request-body rule rather than becoming an invalid target itself -- the ladder confining at the alternative and the operation losing its target for a different, already-stated reason.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -3569,7 +3569,9 @@
         "operations": [
           "describeAnchor",
           "describeAnnotation",
-          "describeRecursion"
+          "describeRecursion",
+          "listContainers",
+          "describeFilter"
         ],
         "bindings": [
           {
@@ -3583,6 +3585,14 @@
           {
             "operationKey": "describeRecursion",
             "bindingSelector": "#/paths/~1recursions/get"
+          },
+          {
+            "operationKey": "listContainers",
+            "bindingSelector": "#/paths/~1containers/get"
+          },
+          {
+            "operationKey": "describeFilter",
+            "bindingSelector": "#/paths/~1filters~1{filter_id}/get"
           }
         ],
         "coverage": {
@@ -3610,7 +3620,23 @@
             {
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1containers/get",
+              "scope": "projection",
+              "status": "invalid",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1containers/get",
               "scope": "target",
+              "status": "represented",
+              "operationKey": "listContainers",
+              "bindingSelector": "#/paths/~1containers/get",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1filters~1{filter_id}/get",
+              "scope": "projection",
               "status": "invalid",
               "requirements": []
             },
@@ -3618,7 +3644,9 @@
               "sourceIndex": 0,
               "sourceRef": "#/paths/~1filters~1{filter_id}/get",
               "scope": "target",
-              "status": "invalid",
+              "status": "represented",
+              "operationKey": "describeFilter",
+              "bindingSelector": "#/paths/~1filters~1{filter_id}/get",
               "requirements": []
             },
             {
@@ -3635,7 +3663,7 @@
               "sourceRef": "#/paths/~1searches/post",
               "scope": "target",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -4139,7 +4167,7 @@
               "sourceRef": "#/paths/~1disjoint/post",
               "scope": "target",
               "status": "excluded",
-              "rule": "OAPI31-P-03",
+              "rule": "OAPI31-S-21",
               "requirements": []
             },
             {
@@ -4671,7 +4699,9 @@
               "status": "represented",
               "operationKey": "failureProjection",
               "bindingSelector": "#/paths/~1failure/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -4688,7 +4718,9 @@
               "status": "represented",
               "operationKey": "noContentProjection",
               "bindingSelector": "#/paths/~1no-content/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -4802,7 +4834,9 @@
               "status": "represented",
               "operationKey": "optionalInvalidHeader",
               "bindingSelector": "#/paths/~1optional/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -5020,7 +5054,9 @@
               "status": "represented",
               "operationKey": "optionalCookie",
               "bindingSelector": "#/paths/~1optional-cookie/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -5045,7 +5081,9 @@
               "status": "represented",
               "operationKey": "optionalResponseHeader",
               "bindingSelector": "#/paths/~1optional-response/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -5062,7 +5100,9 @@
               "status": "represented",
               "operationKey": "requiredResponseHeader",
               "bindingSelector": "#/paths/~1required-response/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -6507,74 +6547,235 @@
     },
     {
       "id": "OAPI31-SS-69",
-      "rules": ["OAPI31-S-20"],
+      "rules": [
+        "OAPI31-S-20"
+      ],
       "description": "OAS 3.1 form-cookie array and object declarations remain represented regardless of required or explode; only an actual multi-value invocation is refused.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
-          "openapi": "3.1.2", "info": { "title": "Form-cookie synthesis", "version": "1" },
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Form-cookie synthesis",
+            "version": "1"
+          },
           "paths": {
-            "/optional": { "get": {
-              "operationId": "optionalCookieShape",
-              "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": false, "schema": { "type": "array", "items": { "type": "string" } } }],
-              "responses": { "204": { "description": "ok" } }
-            } },
-            "/required": { "get": {
-              "operationId": "requiredCookieShape",
-              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
-              "responses": { "204": { "description": "ok" } }
-            } }
+            "/optional": {
+              "get": {
+                "operationId": "optionalCookieShape",
+                "parameters": [
+                  {
+                    "name": "parts",
+                    "in": "cookie",
+                    "style": "form",
+                    "explode": false,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/required": {
+              "get": {
+                "operationId": "requiredCookieShape",
+                "parameters": [
+                  {
+                    "name": "parts",
+                    "in": "cookie",
+                    "required": true,
+                    "style": "form",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "a": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["optionalCookieShape", "requiredCookieShape"],
-        "bindings": [
-          { "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" },
-          { "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get" }
+        "operations": [
+          "optionalCookieShape",
+          "requiredCookieShape"
         ],
-        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "represented", "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get", "requirements": [] }
-        ] }
+        "bindings": [
+          {
+            "operationKey": "optionalCookieShape",
+            "bindingSelector": "#/paths/~1optional/get"
+          },
+          {
+            "operationKey": "requiredCookieShape",
+            "bindingSelector": "#/paths/~1required/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalCookieShape",
+              "bindingSelector": "#/paths/~1optional/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "requiredCookieShape",
+              "bindingSelector": "#/paths/~1required/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            }
+          ]
+        }
       }
     },
     {
       "id": "OAPI31-SS-70",
-      "rules": ["OAPI31-S-21"],
+      "rules": [
+        "OAPI31-S-21"
+      ],
       "description": "A required Request Body target is excluded only when confinement removes every request-content alternative; a valid sibling alternative preserves the target and is represented.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
-          "openapi": "3.1.2", "info": { "title": "Effective required body synthesis", "version": "1" },
+          "openapi": "3.1.2",
+          "info": {
+            "title": "Effective required body synthesis",
+            "version": "1"
+          },
           "paths": {
-            "/none": { "post": {
-              "operationId": "noSurvivingBody",
-              "requestBody": { "required": true, "content": { "application/xml": { "schema": { "type": "object" } } } },
-              "responses": { "204": { "description": "ok" } }
-            } },
-            "/survivor": { "post": {
-              "operationId": "survivingBody",
-              "requestBody": { "required": true, "content": {
-                "application/xml": { "schema": { "type": "object" } },
-                "application/json": { "schema": { "type": "object" } }
-              } },
-              "responses": { "204": { "description": "ok" } }
-            } }
+            "/none": {
+              "post": {
+                "operationId": "noSurvivingBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/xml": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/survivor": {
+              "post": {
+                "operationId": "survivingBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/xml": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["survivingBody"],
-        "bindings": [{ "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post" }],
-        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1none/post", "scope": "target", "status": "excluded", "rule": "OAPI31-S-21", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post", "scope": "target", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml", "scope": "alternative", "status": "excluded", "rule": "OAPI31-S-21", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] }
-        ] }
+        "operations": [
+          "survivingBody"
+        ],
+        "bindings": [
+          {
+            "operationKey": "survivingBody",
+            "bindingSelector": "#/paths/~1survivor/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1none/post",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI31-S-21",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "survivingBody",
+              "bindingSelector": "#/paths/~1survivor/post",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI31-S-21",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "survivingBody",
+              "bindingSelector": "#/paths/~1survivor/post",
+              "requirements": []
+            }
+          ]
+        }
       }
     }
   ]

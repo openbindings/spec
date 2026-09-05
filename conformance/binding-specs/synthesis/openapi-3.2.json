@@ -1689,7 +1689,9 @@
               "status": "represented",
               "operationKey": "failureProjection",
               "bindingSelector": "#/paths/~1failure/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -1706,7 +1708,9 @@
               "status": "represented",
               "operationKey": "noContentProjection",
               "bindingSelector": "#/paths/~1no-content/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -1864,7 +1868,9 @@
               "status": "represented",
               "operationKey": "optionalInvalidHeader",
               "bindingSelector": "#/paths/~1optional/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -2082,7 +2088,9 @@
               "status": "represented",
               "operationKey": "optionalCookie",
               "bindingSelector": "#/paths/~1optional-cookie/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -2107,7 +2115,9 @@
               "status": "represented",
               "operationKey": "optionalResponseHeader",
               "bindingSelector": "#/paths/~1optional-response/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -2124,7 +2134,9 @@
               "status": "represented",
               "operationKey": "requiredResponseHeader",
               "bindingSelector": "#/paths/~1required-response/get",
-              "requirements": []
+              "requirements": [
+                "configuration.server"
+              ]
             },
             {
               "sourceIndex": 0,
@@ -3569,81 +3581,276 @@
     },
     {
       "id": "OAPI32-SS-33",
-      "rules": ["OAPI32-S-20"],
+      "rules": [
+        "OAPI32-S-20"
+      ],
       "description": "OAS 3.2 form-cookie array and object declarations remain represented regardless of required or explode; exploded multiplicity is resolved only for the supplied invocation.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
-          "openapi": "3.2.0", "info": { "title": "Form-cookie synthesis", "version": "1" },
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Form-cookie synthesis",
+            "version": "1"
+          },
           "paths": {
-            "/optional": { "get": {
-              "operationId": "optionalCookieShape",
-              "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
-              "responses": { "204": { "description": "ok" } }
-            } },
-            "/required": { "get": {
-              "operationId": "requiredCookieShape",
-              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
-              "responses": { "204": { "description": "ok" } }
-            } },
-            "/non-exploded": { "get": {
-              "operationId": "nonExplodedCookieShape",
-              "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": false, "schema": { "type": "array", "items": { "type": "string" } } }],
-              "responses": { "204": { "description": "ok" } }
-            } }
+            "/optional": {
+              "get": {
+                "operationId": "optionalCookieShape",
+                "parameters": [
+                  {
+                    "name": "parts",
+                    "in": "cookie",
+                    "style": "form",
+                    "explode": true,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/required": {
+              "get": {
+                "operationId": "requiredCookieShape",
+                "parameters": [
+                  {
+                    "name": "parts",
+                    "in": "cookie",
+                    "required": true,
+                    "style": "form",
+                    "explode": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "a": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/non-exploded": {
+              "get": {
+                "operationId": "nonExplodedCookieShape",
+                "parameters": [
+                  {
+                    "name": "parts",
+                    "in": "cookie",
+                    "required": true,
+                    "style": "form",
+                    "explode": false,
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["optionalCookieShape", "requiredCookieShape", "nonExplodedCookieShape"],
-        "bindings": [
-          { "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get" },
-          { "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get" },
-          { "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get" }
+        "operations": [
+          "optionalCookieShape",
+          "requiredCookieShape",
+          "nonExplodedCookieShape"
         ],
-        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1optional/get", "scope": "target", "status": "represented", "operationKey": "optionalCookieShape", "bindingSelector": "#/paths/~1optional/get", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1required/get", "scope": "target", "status": "represented", "operationKey": "requiredCookieShape", "bindingSelector": "#/paths/~1required/get", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1non-exploded/get", "scope": "target", "status": "represented", "operationKey": "nonExplodedCookieShape", "bindingSelector": "#/paths/~1non-exploded/get", "requirements": [] }
-        ] }
+        "bindings": [
+          {
+            "operationKey": "optionalCookieShape",
+            "bindingSelector": "#/paths/~1optional/get"
+          },
+          {
+            "operationKey": "requiredCookieShape",
+            "bindingSelector": "#/paths/~1required/get"
+          },
+          {
+            "operationKey": "nonExplodedCookieShape",
+            "bindingSelector": "#/paths/~1non-exploded/get"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1optional/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "optionalCookieShape",
+              "bindingSelector": "#/paths/~1optional/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1required/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "requiredCookieShape",
+              "bindingSelector": "#/paths/~1required/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1non-exploded/get",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "nonExplodedCookieShape",
+              "bindingSelector": "#/paths/~1non-exploded/get",
+              "requirements": [
+                "configuration.server"
+              ]
+            }
+          ]
+        }
       }
     },
     {
       "id": "OAPI32-SS-34",
-      "rules": ["OAPI32-S-21"],
+      "rules": [
+        "OAPI32-S-21"
+      ],
       "description": "A required Request Body target is excluded only when confinement removes every request-content alternative; a valid sibling alternative preserves the target and is represented.",
       "source": {
         "bindingSpec": "openbindings.openapi-3.2@1",
         "content": {
-          "openapi": "3.2.0", "info": { "title": "Effective required body synthesis", "version": "1" },
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Effective required body synthesis",
+            "version": "1"
+          },
           "paths": {
-            "/none": { "post": {
-              "operationId": "noSurvivingBody",
-              "requestBody": { "required": true, "content": { "application/xml": { "schema": { "type": "object" } } } },
-              "responses": { "204": { "description": "ok" } }
-            } },
-            "/survivor": { "post": {
-              "operationId": "survivingBody",
-              "requestBody": { "required": true, "content": {
-                "application/xml": { "schema": { "type": "object" } },
-                "application/json": { "schema": { "type": "object" } }
-              } },
-              "responses": { "204": { "description": "ok" } }
-            } }
+            "/none": {
+              "post": {
+                "operationId": "noSurvivingBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/xml": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            },
+            "/survivor": {
+              "post": {
+                "operationId": "survivingBody",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/xml": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    },
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
           }
         }
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["survivingBody"],
-        "bindings": [{ "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post" }],
-        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1none/post", "scope": "target", "status": "excluded", "rule": "OAPI32-S-21", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post", "scope": "target", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml", "scope": "alternative", "status": "excluded", "rule": "OAPI32-S-21", "requirements": [] },
-          { "sourceIndex": 0, "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json", "scope": "alternative", "status": "represented", "operationKey": "survivingBody", "bindingSelector": "#/paths/~1survivor/post", "requirements": [] }
-        ] }
+        "operations": [
+          "survivingBody"
+        ],
+        "bindings": [
+          {
+            "operationKey": "survivingBody",
+            "bindingSelector": "#/paths/~1survivor/post"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1none/post",
+              "scope": "target",
+              "status": "excluded",
+              "rule": "OAPI32-S-21",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "survivingBody",
+              "bindingSelector": "#/paths/~1survivor/post",
+              "requirements": [
+                "configuration.server"
+              ]
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1xml",
+              "scope": "alternative",
+              "status": "excluded",
+              "rule": "OAPI32-S-21",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "#/paths/~1survivor/post/requestBody/content/application~1json",
+              "scope": "alternative",
+              "status": "represented",
+              "operationKey": "survivingBody",
+              "bindingSelector": "#/paths/~1survivor/post",
+              "requirements": []
+            }
+          ]
+        }
       }
     }
   ]

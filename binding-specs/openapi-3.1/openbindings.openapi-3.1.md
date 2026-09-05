@@ -826,6 +826,8 @@
 
 **[convention]** A processor conforms to **OAPI31-P-58** when §9.1 advertises an admitted failure-only response media range in `Accept` without allowing that range to govern an actual successful response.
 
+**[convention]** A processor conforms to **OAPI31-P-59** when §8.1 and §9.3 keep scalar conversion on the RFC 6570-style path separate from content-based media serialization: a number or boolean selected as content-based `text/plain` uses the binding-fixed lexical form without `parameterConversion`, while the same value on an explicitly style-selected Encoding path still requires that configuration.
+
 **[convention]** A synthesizer conforms to **OAPI31-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-02** when it uses §3.2's locally defined status vocabulary for sources, targets, dependencies, and subordinate projections without depending on any project interface contract.

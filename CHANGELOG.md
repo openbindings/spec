@@ -198,6 +198,15 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- The OpenAPI 3.0 binding no longer routes number and boolean properties on
+  content-based `text/plain` form or multipart lanes through the consumer's
+  `parameterConversion` choice. All three 3.x siblings now keep that
+  configuration point on `schema`-form and RFC 6570-style paths only, while
+  content-based media serialization uses each binding's fixed RFC 8259 lexical
+  form. This corrects an unjustified family divergence over byte behavior that
+  the applicable OAS editions leave identically implementation-defined; the
+  accepted domain and configuration vocabulary are unchanged.
+
 - The portable synthesis scenario schema adopts the published
   `interface-synthesizer` 0.2 contract's `SynthesizeInterfaceSource`
   constraint verbatim: a scenario's `source` declares `location`, `content`,
