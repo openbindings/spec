@@ -339,7 +339,7 @@
       ]
     },
     {
-      "description": "document carrying a type-system definition (§5.1.1 executable definitions)",
+      "description": "document carrying a type-system definition (§2.3: such a Document must not be executed)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
