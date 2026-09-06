@@ -8205,7 +8205,7 @@
         "OAPI32-P-04"
       ],
       "section": "11",
-      "description": "Two complete security alternatives require explicit security selection even when runtime credentials satisfy both.",
+      "description": "Two complete security alternatives require explicit security selection even when runtime credentials satisfy both. The missing named point is context-required and nothing dispatches.",
       "given": {
         "source": {
           "content": {
@@ -8269,7 +8269,7 @@
       },
       "expected": [
         {
-          "disposition": "refusal",
+          "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
             {

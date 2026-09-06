@@ -3458,7 +3458,7 @@
         "OAPI30-P-04"
       ],
       "section": "11",
-      "description": "Two complete security alternatives require an explicit configuration.security choice even when runtime credentials could satisfy both; artifact order creates no preference and nothing dispatches.",
+      "description": "Two complete security alternatives require an explicit configuration.security choice even when runtime credentials could satisfy both; artifact order creates no preference. The missing named point is context-required and nothing dispatches.",
       "given": {
         "source": {
           "content": {
@@ -3537,7 +3537,7 @@
       },
       "expected": [
         {
-          "disposition": "refusal",
+          "disposition": "context-required",
           "phase": "pre-dispatch",
           "assertions": [
             {
