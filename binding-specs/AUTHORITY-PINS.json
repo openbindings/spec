@@ -585,7 +585,8 @@
     {
       "id": "whatwg-html-sse",
       "families": [
-        "openapi-3.2"
+        "openapi-3.2",
+        "graphql"
       ],
       "name": "WHATWG HTML source snapshot (server-sent events processing model)",
       "kind": "git-file",
@@ -1227,7 +1228,8 @@
         "openapi-2.0",
         "openapi-3.0",
         "openapi-3.1",
-        "openapi-3.2"
+        "openapi-3.2",
+        "graphql"
       ],
       "name": "RFC 6265: HTTP State Management Mechanism",
       "kind": "url",
@@ -1470,7 +1472,8 @@
     {
       "id": "whatwg-url",
       "families": [
-        "openapi-3.2"
+        "openapi-3.2",
+        "graphql"
       ],
       "name": "WHATWG URL Standard Review Draft, 18 August 2026",
       "edition": "Review Draft \u2014 18 August 2026",
