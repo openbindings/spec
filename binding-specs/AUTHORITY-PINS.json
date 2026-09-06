@@ -109,7 +109,8 @@
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
-        "binding-specs/README.md"
+        "binding-specs/README.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "rfc6901",
@@ -133,7 +134,8 @@
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/operation-graph/openbindings.operation-graph.md"
+        "binding-specs/operation-graph/openbindings.operation-graph.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "rfc8259",
@@ -182,7 +184,8 @@
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/connect/openbindings.connect.md"
+        "binding-specs/connect/openbindings.connect.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "rfc9110",
@@ -1243,7 +1246,8 @@
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "rfc6265",
@@ -1475,7 +1479,7 @@
         "graphql"
       ],
       "name": "WHATWG URL Standard Review Draft, 18 August 2026",
-      "edition": "Review Draft \u2014 18 August 2026",
+      "edition": "Review Draft — 18 August 2026",
       "kind": "url",
       "url": "https://url.spec.whatwg.org/review-drafts/2026-08/",
       "citedUrls": [],
@@ -1483,7 +1487,8 @@
       "bytes": 299385,
       "retrievedAt": "2026-08-26T13:52:31Z",
       "citedBy": [
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "url.spec.whatwg.org/review-drafts/2026-08/"
@@ -2167,42 +2172,6 @@
       ]
     },
     {
-      "id": "graphql-september2025",
-      "family": "graphql",
-      "name": "GraphQL Specification, September 2025",
-      "edition": "September2025",
-      "kind": "url",
-      "url": "https://spec.graphql.org/September2025/",
-      "citedUrls": [],
-      "sha256": "39fb3aeffd9b5acebb0830ddc6dcc243c1280a9f0e977897ae59c5cc165511d6",
-      "bytes": 1112753,
-      "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/graphql/openbindings.graphql.md"
-      ],
-      "matchTokens": [
-        "spec.graphql.org/September2025"
-      ]
-    },
-    {
-      "id": "graphql-over-http",
-      "family": "graphql",
-      "name": "GraphQL-over-HTTP draft (GraphQLOverHTTP.md)",
-      "kind": "git-file",
-      "repo": "graphql/graphql-over-http",
-      "commit": "4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3",
-      "path": "spec/GraphQLOverHTTP.md",
-      "sha256": "b44b6c9581c7f892caeeef19996a1b7ed455185cbde20e75e12268b4c9042f86",
-      "bytes": 32372,
-      "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/graphql/openbindings.graphql.md"
-      ],
-      "matchTokens": [
-        "4d447e90519e2eb2f9b1dfa61bb1b6afc82decd3"
-      ]
-    },
-    {
       "id": "jsonata-2.1",
       "family": "operation-graph",
       "name": "JSONata 2.1 documentation source snapshot (jsonata-js 2.1.1 behavioral tiebreak)",
@@ -2259,12 +2228,12 @@
         "bytes": 5410
       },
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "cdf792cf3b21584cc65b353d7f5eb90e4116f707"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "graphql-spec-october2021-source",
@@ -2282,12 +2251,12 @@
         "bytes": 6358
       },
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "51337a9b820e296fa7d03ae77d534cb4b247c201"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "graphql-spec-september2025-source",
@@ -2305,12 +2274,12 @@
         "bytes": 2625
       },
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "89d93ebbe05db06787646d76a696ead8de117b2b"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "graphql-over-http-2026-09-03",
@@ -2323,12 +2292,12 @@
       "sha256": "e7ef6c6f142b0352e72b5b8da1256ec5c10a9905c394517585ccbdd718ae8562",
       "bytes": 33778,
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "d746195047ac4ae5c4bb11042b4941e6631726e8"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "graphql-ws-protocol",
@@ -2341,12 +2310,12 @@
       "sha256": "2e6fc7c378d89ed3fe759fdc1087b026a9695acac374b9e966131f56ab799ccc",
       "bytes": 11780,
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "839ca7d652004513a063dd44e9bcfe7a3301f6f0"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "graphql-sse-protocol",
@@ -2359,12 +2328,12 @@
       "sha256": "40ce389428ef58778a5f5a26526524bb11d51dc8bbbd3e420e80256d78db9573",
       "bytes": 7972,
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "0e899300dca583cd5aa5a2fa1d4f15d6e9cafb0e"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "rfc6455",
@@ -2378,13 +2347,13 @@
       "sha256": "765775326aee0ecca9b04bde3fd1f52932d498e33e34e428bd61b8a24da0fa3b",
       "bytes": 162067,
       "retrievedAt": "2026-09-06T09:40:04Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "rfc6455",
         "RFC 6455"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+      ]
     },
     {
       "id": "rfc9112",
@@ -2398,13 +2367,13 @@
       "sha256": "e4f426bac6206b67fdf9e0da826154f70588db2133a0a86b15cde4ff725d8937",
       "bytes": 109913,
       "retrievedAt": "2026-09-06T10:15:06Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "rfc9112",
         "RFC 9112"
-      ],
-      "status": "reference-only",
-      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06): Transfer-Encoding and the message-framing fields the candidate reserves are RFC 9112's. Promoted when the candidate cites it."
+      ]
     },
     {
       "id": "w3c-eventsource-2015",
@@ -2418,13 +2387,13 @@
       "sha256": "9155a7d97f554003ab479bb7ba2f80ced58fd9ce521c85370debe981bbec2631",
       "bytes": 71223,
       "retrievedAt": "2026-09-06T18:20:40Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/graphql/openbindings.graphql.md"
+      ],
       "matchTokens": [
         "REC-eventsource-20150203",
         "www.w3.org/TR/eventsource"
-      ],
-      "status": "reference-only",
-      "reason": "graphql-sse defers its event-stream interpretation to the W3C Server-Sent Events specification at www.w3.org/TR/eventsource (PROTOCOL.md lines 15, 26, 93); the dated Recommendation is the immutable form. Promoted when the openbindings.graphql@1 candidate cites it."
+      ]
     }
   ]
 }

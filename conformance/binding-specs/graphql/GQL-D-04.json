@@ -1,49 +1,50 @@
 {
-  "rule": "GQL-D-03",
+  "rule": "GQL-D-04",
   "bindingSpec": "openbindings.graphql@1",
   "section": "3.2",
-  "description": "Each such source's `document` parses as an executable document under §2 of the governing edition and contains no type-system definition or extension, and its `schema`, when present, parses as a type-system document when a string or carries an object at `data.__schema` and no `errors` entry when an object.",
+  "description": "Each such source's interpreted schema, as carried, satisfies §3.2's schema-validity gate: every referenced type is defined, every field and argument has a type, no definition repeats a field or argument name, input positions carry input types and output positions output types, and the `query` root operation type is present and is an Object type.",
+  "notes": "§3.2 gate 5. An absent mutation or subscription root is not gated (§3.3.1 makes them optional); it is a §5.2.1.1 validation failure handled by §5.",
   "tests": [
     {
-      "description": "well-formed executable document, type-system-language schema",
+      "description": "valid type-system-language schema",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "Viewer": {}
+          "Status": {}
         },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "document": "query Status { status }",
               "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
             }
           }
         },
         "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
+          "Status.api": {
+            "operation": "Status",
             "source": "api",
-            "selector": "Viewer"
+            "selector": "Status"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "well-formed executable document, introspection-result schema",
+      "description": "valid introspection-result schema",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "Viewer": {}
+          "Status": {}
         },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "document": "query Status { status }",
               "schema": {
                 "data": {
                   "__schema": {
@@ -300,75 +301,47 @@
           }
         },
         "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
+          "Status.api": {
+            "operation": "Status",
             "source": "api",
-            "selector": "Viewer"
+            "selector": "Status"
           }
         }
       },
       "valid": true
     },
     {
-      "description": "document with a syntax error",
+      "description": "schema without a query root operation type (§3.3.1)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "Viewer": {}
+          "Status": {}
         },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name }"
+              "document": "query Status { status }",
+              "schema": "type User { id: ID! name: String }\n"
             }
           }
         },
         "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
+          "Status.api": {
+            "operation": "Status",
             "source": "api",
-            "selector": "Viewer"
+            "selector": "Status"
           }
         }
       },
       "valid": false,
       "violates": [
-        "GQL-D-03"
+        "GQL-D-04"
       ]
     },
     {
-      "description": "document carrying a type-system definition (§5.1.1 executable definitions)",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "Viewer": {}
-        },
-        "sources": {
-          "api": {
-            "bindingSpec": "openbindings.graphql@1",
-            "location": "https://api.example.test/graphql",
-            "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\ntype Extra { x: Int }\n"
-            }
-          }
-        },
-        "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
-            "source": "api",
-            "selector": "Viewer"
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "GQL-D-03"
-      ]
-    },
-    {
-      "description": "type-system-language schema with a syntax error",
+      "description": "field of an undefined type",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -380,7 +353,7 @@
             "location": "https://api.example.test/graphql",
             "content": {
               "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
-              "schema": "type Query { viewer(id: ID!): User "
+              "schema": "type Query { viewer(id: ID!): Person }\n"
             }
           }
         },
@@ -394,61 +367,396 @@
       },
       "valid": false,
       "violates": [
-        "GQL-D-03"
+        "GQL-D-04"
       ]
     },
     {
-      "description": "introspection object without data.__schema",
+      "description": "repeated field name in one definition",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "Viewer": {}
+          "Status": {}
         },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "document": "query Status { status }",
+              "schema": "type Query { status: String status: Int }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Status.api": {
+            "operation": "Status",
+            "source": "api",
+            "selector": "Status"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-04"
+      ]
+    },
+    {
+      "description": "input type in an output position",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "A": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query A { a { x } }",
+              "schema": "type Query { a: In }\ninput In { x: Int }\n"
+            }
+          }
+        },
+        "bindings": {
+          "A.api": {
+            "operation": "A",
+            "source": "api",
+            "selector": "A"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-04"
+      ]
+    },
+    {
+      "description": "output type in an input position",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "A": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query A { a }",
+              "schema": "type Query { a(arg: User): String }\ntype User { id: ID! }\n"
+            }
+          }
+        },
+        "bindings": {
+          "A.api": {
+            "operation": "A",
+            "source": "api",
+            "selector": "A"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-04"
+      ]
+    },
+    {
+      "description": "introspection result whose queryType is null",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Status": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Status { status }",
               "schema": {
                 "data": {
-                  "types": []
+                  "__schema": {
+                    "queryType": null,
+                    "mutationType": {
+                      "name": "Mutation"
+                    },
+                    "subscriptionType": null,
+                    "types": [
+                      {
+                        "kind": "OBJECT",
+                        "name": "Query",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "viewer",
+                            "args": [
+                              {
+                                "name": "id",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "status",
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "find",
+                            "args": [
+                              {
+                                "name": "filter",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "Filter",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "Mutation",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "rename",
+                            "args": [
+                              {
+                                "name": "id",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              },
+                              {
+                                "name": "name",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "User",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                              }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "name",
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "INPUT_OBJECT",
+                        "name": "Filter",
+                        "specifiedByURL": null,
+                        "isOneOf": true,
+                        "fields": null,
+                        "inputFields": [
+                          {
+                            "name": "byId",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "ID",
+                              "ofType": null
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "byName",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "Boolean",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      }
+                    ],
+                    "directives": []
+                  }
                 }
               }
             }
           }
         },
         "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
+          "Status.api": {
+            "operation": "Status",
             "source": "api",
-            "selector": "Viewer"
+            "selector": "Status"
           }
         }
       },
       "valid": false,
       "violates": [
-        "GQL-D-03"
+        "GQL-D-04"
       ]
     },
     {
-      "description": "introspection object carrying an errors entry",
+      "description": "introspection result whose queryType names a scalar",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "Viewer": {}
+          "Status": {}
         },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql",
             "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "document": "query Status { status }",
               "schema": {
                 "data": {
                   "__schema": {
                     "queryType": {
-                      "name": "Query"
+                      "name": "String"
                     },
                     "mutationType": {
                       "name": "Mutation"
@@ -694,61 +1002,22 @@
                     ],
                     "directives": []
                   }
-                },
-                "errors": [
-                  {
-                    "message": "partial"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
-            "source": "api",
-            "selector": "Viewer"
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "GQL-D-03"
-      ]
-    },
-    {
-      "description": "introspection object whose __schema is null",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "Viewer": {}
-        },
-        "sources": {
-          "api": {
-            "bindingSpec": "openbindings.graphql@1",
-            "location": "https://api.example.test/graphql",
-            "content": {
-              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
-              "schema": {
-                "data": {
-                  "__schema": null
                 }
               }
             }
           }
         },
         "bindings": {
-          "Viewer.api": {
-            "operation": "Viewer",
+          "Status.api": {
+            "operation": "Status",
             "source": "api",
-            "selector": "Viewer"
+            "selector": "Status"
           }
         }
       },
       "valid": false,
       "violates": [
-        "GQL-D-03"
+        "GQL-D-04"
       ]
     }
   ]

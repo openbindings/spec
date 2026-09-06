@@ -2,7 +2,7 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "GraphQL first-revision-candidate fidelity scenarios prove root application-value projection, partial-value lifecycle preservation, and native-evidence separation below the bridge.",
+  "description": "GraphQL fidelity scenarios for the interpretation boundary: live introspection observes the schema the invocation's own request reaches, a pin is dispatched as carried, and a structural absence refuses before any wire traffic. Scenarios for the value boundary arrive with §6 to §9.",
   "scenarios": [
     {
       "id": "GQL-FI-01",
@@ -10,67 +10,458 @@
         "OBI-B-02",
         "GQL-P-03"
       ],
-      "section": "8.3",
-      "description": "A successful aliased query emits the selected root application value alone, without a GraphQL response envelope.",
+      "section": "3.3",
+      "description": "Live introspection carries the invocation's configured protocol fields on the probe, the composed query, and the operation, so the interpreted schema is the one the invocation reaches.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
           "content": {
-            "data": {
-              "__schema": {
-                "queryType": {
-                  "name": "RootQuery"
-                },
-                "mutationType": null,
-                "subscriptionType": null,
-                "types": [
-                  {
-                    "kind": "OBJECT",
-                    "name": "RootQuery",
-                    "fields": [
-                      {
-                        "name": "viewer",
-                        "args": [],
-                        "type": {
-                          "kind": "SCALAR",
-                          "name": "String",
-                          "ofType": null
-                        },
-                        "isDeprecated": false
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "SCALAR",
-                    "name": "String"
-                  }
-                ]
-              }
-            }
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
           }
         },
         "binding": {
-          "selector": "query/viewer"
+          "selector": "Viewer"
         },
         "configuration": {
-          "document": {
-            "source": "query { person: viewer }"
+          "protocolFields": {
+            "headers": {
+              "Authorization": "Bearer t-1"
+            }
           }
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
         },
         "peer": {
-          "status": 200,
-          "contentType": "application/graphql-response+json",
-          "body": {
-            "data": {
-              "person": "Ada"
+          "sequence": [
+            {
+              "status": 200,
+              "contentType": "application/graphql-response+json",
+              "body": {
+                "data": {
+                  "t": {
+                    "fields": [
+                      {
+                        "name": "kind",
+                        "args": []
+                      },
+                      {
+                        "name": "name",
+                        "args": []
+                      },
+                      {
+                        "name": "description",
+                        "args": []
+                      },
+                      {
+                        "name": "specifiedByURL",
+                        "args": []
+                      },
+                      {
+                        "name": "fields",
+                        "args": [
+                          {
+                            "name": "includeDeprecated"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "interfaces",
+                        "args": []
+                      },
+                      {
+                        "name": "possibleTypes",
+                        "args": []
+                      },
+                      {
+                        "name": "enumValues",
+                        "args": [
+                          {
+                            "name": "includeDeprecated"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "inputFields",
+                        "args": [
+                          {
+                            "name": "includeDeprecated"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "ofType",
+                        "args": []
+                      },
+                      {
+                        "name": "isOneOf",
+                        "args": []
+                      }
+                    ]
+                  },
+                  "f": {
+                    "fields": [
+                      {
+                        "name": "name",
+                        "args": []
+                      },
+                      {
+                        "name": "description",
+                        "args": []
+                      },
+                      {
+                        "name": "args",
+                        "args": [
+                          {
+                            "name": "includeDeprecated"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "type",
+                        "args": []
+                      },
+                      {
+                        "name": "isDeprecated",
+                        "args": []
+                      },
+                      {
+                        "name": "deprecationReason",
+                        "args": []
+                      }
+                    ]
+                  },
+                  "d": {
+                    "fields": [
+                      {
+                        "name": "name",
+                        "args": []
+                      },
+                      {
+                        "name": "description",
+                        "args": []
+                      },
+                      {
+                        "name": "isRepeatable",
+                        "args": []
+                      },
+                      {
+                        "name": "locations",
+                        "args": []
+                      },
+                      {
+                        "name": "args",
+                        "args": [
+                          {
+                            "name": "includeDeprecated"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "i": {
+                    "fields": [
+                      {
+                        "name": "name",
+                        "args": []
+                      },
+                      {
+                        "name": "description",
+                        "args": []
+                      },
+                      {
+                        "name": "type",
+                        "args": []
+                      },
+                      {
+                        "name": "defaultValue",
+                        "args": []
+                      },
+                      {
+                        "name": "isDeprecated",
+                        "args": []
+                      },
+                      {
+                        "name": "deprecationReason",
+                        "args": []
+                      }
+                    ]
+                  }
+                }
+              }
             },
-            "extensions": {
-              "trace": "success-native-only"
+            {
+              "status": 200,
+              "contentType": "application/graphql-response+json",
+              "body": {
+                "data": {
+                  "__schema": {
+                    "queryType": {
+                      "name": "Query"
+                    },
+                    "mutationType": {
+                      "name": "Mutation"
+                    },
+                    "subscriptionType": null,
+                    "types": [
+                      {
+                        "kind": "OBJECT",
+                        "name": "Query",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "viewer",
+                            "args": [
+                              {
+                                "name": "id",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "status",
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "find",
+                            "args": [
+                              {
+                                "name": "filter",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "Filter",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "Mutation",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "rename",
+                            "args": [
+                              {
+                                "name": "id",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              },
+                              {
+                                "name": "name",
+                                "type": {
+                                  "kind": "NON_NULL",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                  }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                              }
+                            ],
+                            "type": {
+                              "kind": "OBJECT",
+                              "name": "User",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "User",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                              }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "name",
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "inputFields": null,
+                        "interfaces": [],
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "INPUT_OBJECT",
+                        "name": "Filter",
+                        "specifiedByURL": null,
+                        "isOneOf": true,
+                        "fields": null,
+                        "inputFields": [
+                          {
+                            "name": "byId",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "ID",
+                              "ofType": null
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          },
+                          {
+                            "name": "byName",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "ID",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "Boolean",
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "inputFields": null,
+                        "interfaces": null,
+                        "enumValues": null,
+                        "possibleTypes": null
+                      }
+                    ],
+                    "directives": []
+                  }
+                }
+              }
+            },
+            {
+              "status": 200,
+              "contentType": "application/graphql-response+json",
+              "body": {
+                "data": {
+                  "viewer": {
+                    "id": "u-1",
+                    "name": "Ada"
+                  }
+                }
+              }
             }
-          }
+          ]
         }
       },
       "expected": [
@@ -79,14 +470,27 @@
           "phase": "completion",
           "assertions": [
             {
-              "path": "/outputs",
-              "equals": [
-                "Ada"
-              ]
+              "path": "/dispatches/0/headers/Authorization",
+              "equals": "Bearer t-1"
             },
             {
-              "path": "/error",
-              "absent": true
+              "path": "/dispatches/1/headers/Authorization",
+              "equals": "Bearer t-1"
+            },
+            {
+              "path": "/dispatches/2/headers/Authorization",
+              "equals": "Bearer t-1"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "viewer": {
+                    "id": "u-1",
+                    "name": "Ada"
+                  }
+                }
+              ]
             }
           ]
         }
@@ -96,65 +500,37 @@
       "id": "GQL-FI-02",
       "rules": [
         "OBI-B-02",
-        "GQL-P-03"
+        "GQL-P-04"
       ],
-      "section": "8.4",
-      "description": "An untrusted legacy application/json 500 remains structural failure; exact non-UTF-8 transport evidence is retained only below the bridge.",
+      "section": "4",
+      "description": "A pinned schema is never repaired by re-introspection: the service's request error against a pin-validated document is the invocation's unsuccessful completion, with no output and exactly one request.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
           "content": {
-            "data": {
-              "__schema": {
-                "queryType": {
-                  "name": "RootQuery"
-                },
-                "mutationType": null,
-                "subscriptionType": null,
-                "types": [
-                  {
-                    "kind": "OBJECT",
-                    "name": "RootQuery",
-                    "fields": [
-                      {
-                        "name": "viewer",
-                        "args": [],
-                        "type": {
-                          "kind": "SCALAR",
-                          "name": "String",
-                          "ofType": null
-                        },
-                        "isDeprecated": false
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "SCALAR",
-                    "name": "String"
-                  }
-                ]
-              }
-            }
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
           }
         },
         "binding": {
-          "selector": "query/viewer"
-        },
-        "configuration": {
-          "document": {
-            "source": "query { viewer }"
-          }
+          "selector": "Viewer"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
         },
         "peer": {
-          "status": 500,
-          "contentType": "application/json",
-          "headers": {
-            "X-Request-Id": "req-500"
-          },
-          "bodyBase64": "AP+AQQ=="
+          "status": 400,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "errors": [
+              {
+                "message": "Unknown argument \"id\" on field \"Query.viewer\"."
+              }
+            ]
+          }
         }
       },
       "expected": [
@@ -163,16 +539,12 @@
           "phase": "response",
           "assertions": [
             {
+              "path": "/dispatches/1",
+              "absent": true
+            },
+            {
               "path": "/outputs",
               "equals": []
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
-              "path": "/error/data",
-              "absent": true
             }
           ]
         }
@@ -182,96 +554,258 @@
       "id": "GQL-FI-03",
       "rules": [
         "OBI-B-02",
-        "GQL-P-03"
+        "GQL-P-02"
       ],
-      "section": "8.4",
-      "description": "A trusted GraphQL response with partial root data emits that application value before unsuccessful completion; errors and extensions stay below the bridge.",
+      "section": "3.3",
+      "description": "A structural introspection member absent at an element the operation reaches refuses before dispatch with no wire traffic at all.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
           "content": {
-            "data": {
-              "__schema": {
-                "queryType": {
-                  "name": "RootQuery"
-                },
-                "mutationType": null,
-                "subscriptionType": null,
-                "types": [
-                  {
-                    "kind": "OBJECT",
-                    "name": "RootQuery",
-                    "fields": [
-                      {
-                        "name": "viewer",
-                        "args": [],
-                        "type": {
-                          "kind": "SCALAR",
-                          "name": "String",
-                          "ofType": null
-                        },
-                        "isDeprecated": false
-                      }
-                    ]
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": {
+              "data": {
+                "__schema": {
+                  "queryType": {
+                    "name": "Query"
                   },
-                  {
-                    "kind": "SCALAR",
-                    "name": "String"
-                  }
-                ]
+                  "mutationType": {
+                    "name": "Mutation"
+                  },
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "Query",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": [
+                        {
+                          "name": "viewer",
+                          "args": [
+                            {
+                              "name": "id",
+                              "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "SCALAR",
+                                  "name": "ID",
+                                  "ofType": null
+                                }
+                              },
+                              "defaultValue": null,
+                              "isDeprecated": false,
+                              "deprecationReason": null
+                            }
+                          ],
+                          "type": {
+                            "kind": "OBJECT",
+                            "name": "User",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "status",
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "find",
+                          "args": [
+                            {
+                              "name": "filter",
+                              "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "INPUT_OBJECT",
+                                  "name": "Filter",
+                                  "ofType": null
+                                }
+                              },
+                              "defaultValue": null,
+                              "isDeprecated": false,
+                              "deprecationReason": null
+                            }
+                          ],
+                          "type": {
+                            "kind": "OBJECT",
+                            "name": "User",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "inputFields": null,
+                      "interfaces": [],
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "OBJECT",
+                      "name": "Mutation",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": [
+                        {
+                          "name": "rename",
+                          "args": [
+                            {
+                              "name": "id",
+                              "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "SCALAR",
+                                  "name": "ID",
+                                  "ofType": null
+                                }
+                              },
+                              "defaultValue": null,
+                              "isDeprecated": false,
+                              "deprecationReason": null
+                            },
+                            {
+                              "name": "name",
+                              "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "SCALAR",
+                                  "name": "String",
+                                  "ofType": null
+                                }
+                              },
+                              "defaultValue": null,
+                              "isDeprecated": false,
+                              "deprecationReason": null
+                            }
+                          ],
+                          "type": {
+                            "kind": "OBJECT",
+                            "name": "User",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "inputFields": null,
+                      "interfaces": [],
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "OBJECT",
+                      "name": "User",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "inputFields": null,
+                      "interfaces": [],
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "INPUT_OBJECT",
+                      "name": "Filter",
+                      "specifiedByURL": null,
+                      "isOneOf": true,
+                      "fields": null,
+                      "inputFields": [
+                        {
+                          "name": "byId",
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                          },
+                          "defaultValue": null,
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "byName",
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "defaultValue": null,
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "ID",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "inputFields": null,
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "inputFields": null,
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "Boolean",
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "inputFields": null,
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    }
+                  ],
+                  "directives": []
+                }
               }
             }
           }
         },
         "binding": {
-          "selector": "query/viewer"
-        },
-        "configuration": {
-          "document": {
-            "source": "query { person: viewer }"
-          }
+          "selector": "Viewer"
         },
         "invocation": {
-          "inputPresent": false
-        },
-        "peer": {
-          "status": 200,
-          "contentType": "application/graphql-response+json",
-          "body": {
-            "data": {
-              "person": "Ada"
-            },
-            "errors": [
-              {
-                "message": "nested field unavailable",
-                "extensions": {
-                  "code": "PARTIAL"
-                }
-              }
-            ],
-            "extensions": {
-              "trace": "gql-fi-03"
-            }
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
           }
         }
       },
       "expected": [
         {
-          "disposition": "error",
-          "phase": "completion",
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
           "assertions": [
             {
-              "path": "/outputs",
-              "equals": [
-                "Ada"
-              ]
-            },
-            {
-              "path": "/error/code",
-              "equals": "ERR_EXECUTION_FAILED"
-            },
-            {
-              "path": "/error/data",
+              "path": "/dispatch",
               "absent": true
             }
           ]

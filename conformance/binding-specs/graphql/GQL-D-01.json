@@ -2,138 +2,178 @@
   "rule": "GQL-D-01",
   "bindingSpec": "openbindings.graphql@1",
   "section": "4",
-  "description": "`location` is required and is an absolute `http` or `https` GraphQL service endpoint.",
+  "description": "Every source governed by this identifier carries a `location` that is an absolute URI whose scheme is `http` or `https`.",
+  "notes": "§4: the scheme set is this specification's convention (the over-HTTP draft is the only incorporated single-result transport); a subscription endpoint rides `content.subscriptions`, never `location`.",
   "tests": [
     {
-      "description": "absolute https GraphQL endpoint",
+      "description": "https endpoint",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "viewer": {} },
-        "sources": {
-          "api": {
-            "bindingSpec": "openbindings.graphql@1",
-            "location": "https://api.example.test/graphql"
-          }
+        "operations": {
+          "Viewer": {}
         },
-        "bindings": {
-          "viewer.api": {
-            "operation": "viewer",
-            "source": "api",
-            "selector": "query/viewer"
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "absolute http GraphQL endpoint with a query component",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": { "viewer": {} },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
-            "location": "http://localhost:8080/graphql?tenant=demo"
-          }
-        },
-        "bindings": {
-          "viewer.api": {
-            "operation": "viewer",
-            "source": "api",
-            "selector": "query/viewer"
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "location is required even when content pins the schema",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": { "viewer": {} },
-        "sources": {
-          "api": {
-            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
             "content": {
-              "data": {
-                "__schema": {
-                  "queryType": { "name": "RootQuery" },
-                  "mutationType": null,
-                  "subscriptionType": null,
-                  "types": [
-                    {
-                      "kind": "OBJECT",
-                      "name": "RootQuery",
-                      "fields": [
-                        {
-                          "name": "viewer",
-                          "args": [],
-                          "type": { "kind": "SCALAR", "name": "String", "ofType": null },
-                          "isDeprecated": false
-                        }
-                      ]
-                    },
-                    { "kind": "SCALAR", "name": "String" }
-                  ]
-                }
-              }
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
             }
           }
         },
         "bindings": {
-          "viewer.api": {
-            "operation": "viewer",
+          "Viewer.api": {
+            "operation": "Viewer",
             "source": "api",
-            "selector": "query/viewer"
+            "selector": "Viewer"
           }
         }
       },
-      "valid": false,
-      "violates": ["GQL-D-01"]
+      "valid": true
     },
     {
-      "description": "a WebSocket URI is not the GraphQL HTTP endpoint",
+      "description": "http endpoint",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "viewer": {} },
+        "operations": {
+          "Viewer": {}
+        },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
-            "location": "wss://api.example.test/graphql"
+            "location": "http://api.example.test/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
           }
         },
         "bindings": {
-          "viewer.api": {
-            "operation": "viewer",
+          "Viewer.api": {
+            "operation": "Viewer",
             "source": "api",
-            "selector": "query/viewer"
+            "selector": "Viewer"
           }
         }
       },
-      "valid": false,
-      "violates": ["GQL-D-01"]
+      "valid": true
     },
     {
-      "description": "a relative endpoint is invalid under the family and core",
+      "description": "location absent",
       "document": {
         "openbindings": "0.2.0",
-        "operations": { "viewer": {} },
+        "operations": {
+          "Viewer": {}
+        },
         "sources": {
           "api": {
             "bindingSpec": "openbindings.graphql@1",
-            "location": "/graphql"
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
           }
         },
         "bindings": {
-          "viewer.api": {
-            "operation": "viewer",
+          "Viewer.api": {
+            "operation": "Viewer",
             "source": "api",
-            "selector": "query/viewer"
+            "selector": "Viewer"
           }
         }
       },
       "valid": false,
-      "violates": ["GQL-D-01", "OBI-D-05"]
+      "violates": [
+        "GQL-D-01"
+      ]
+    },
+    {
+      "description": "relative location",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-01",
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "WebSocket scheme is not an incorporated transport for the endpoint",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "wss://api.example.test/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-01"
+      ]
+    },
+    {
+      "description": "location is not a string",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": {
+              "href": "https://api.example.test/graphql"
+            },
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-01"
+      ]
     }
   ]
 }
