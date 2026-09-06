@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios asserting the derived input and output schemas arrive with §6 and §7.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios asserting the derived input and output schemas arrive with §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus.",
   "scenarios": [
     {
       "id": "GQL-SS-01",

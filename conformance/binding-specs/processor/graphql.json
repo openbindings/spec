@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-processor-scenarios@1",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL processor scenarios for the closed load gates and confinement (§3.2), pinned-schema interpretation and live introspection (§3.3), and the staleness posture (§4). Peer shape for this family: `peer` is one scripted HTTP response `{status, contentType, body}`, or `{\"sequence\": [...]}` listing consecutive responses consumed in dispatch order. Observation paths: `/dispatch` is the last request the processor sent (`method`, `headers`, `body`, `url`), `/dispatches/<i>` the i-th request in order; `/outputs` the emitted operation values in order. Scenarios for §5 to §9 arrive with those sections.",
+  "description": "Portable GraphQL processor scenarios for the closed load gates and confinement (§3.2), pinned-schema interpretation and live introspection (§3.3), and the staleness posture (§4). Peer shape for this family: `peer` is one scripted HTTP response `{status, contentType, body}`, or `{\"sequence\": [...]}` listing consecutive responses consumed in dispatch order; an entry `{\"noResponse\": true}` scripts a request that yields no response (connection, name-resolution, or TLS failure, or timeout). Observation paths: `/dispatch` is the last request the processor sent (`method`, `headers`, `body`, `url`), `/dispatches/<i>` the i-th request in order; `/outputs` the emitted operation values in order. Scenarios for §5 to §9 arrive with those sections.",
   "scenarios": [
     {
       "id": "GQL-PS-01",
@@ -2154,7 +2154,7 @@
         "GQL-P-03"
       ],
       "section": "3.3",
-      "description": "A June 2018 service: every probe position observes only the base members, so the composed query carries none of the later additions and no includeDeprecated argument on args or inputFields.",
+      "description": "A June 2018 service: every probe position observes only the base members, so the composed query carries none of the later additions and no includeDeprecated argument on args or inputFields; the 2018-shaped result lacks isRepeatable and the __InputValue deprecation members, which the edition exceptions read as false and null.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -2329,9 +2329,7 @@
                                     "ofType": null
                                   }
                                 },
-                                "defaultValue": null,
-                                "isDeprecated": false,
-                                "deprecationReason": null
+                                "defaultValue": null
                               }
                             ],
                             "type": {
@@ -2367,9 +2365,7 @@
                                     "ofType": null
                                   }
                                 },
-                                "defaultValue": null,
-                                "isDeprecated": false,
-                                "deprecationReason": null
+                                "defaultValue": null
                               }
                             ],
                             "type": {
@@ -2404,9 +2400,7 @@
                                     "ofType": null
                                   }
                                 },
-                                "defaultValue": null,
-                                "isDeprecated": false,
-                                "deprecationReason": null
+                                "defaultValue": null
                               },
                               {
                                 "name": "name",
@@ -2419,9 +2413,7 @@
                                     "ofType": null
                                   }
                                 },
-                                "defaultValue": null,
-                                "isDeprecated": false,
-                                "deprecationReason": null
+                                "defaultValue": null
                               }
                             ],
                             "type": {
@@ -2486,9 +2478,7 @@
                               "name": "ID",
                               "ofType": null
                             },
-                            "defaultValue": null,
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "defaultValue": null
                           },
                           {
                             "name": "byName",
@@ -2497,9 +2487,7 @@
                               "name": "String",
                               "ofType": null
                             },
-                            "defaultValue": null,
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "defaultValue": null
                           }
                         ],
                         "interfaces": null,
@@ -2534,7 +2522,15 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "cache",
+                        "locations": [
+                          "FIELD"
+                        ],
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -4799,9 +4795,7 @@
                                   "ofType": null
                                 }
                               },
-                              "defaultValue": null,
-                              "isDeprecated": false,
-                              "deprecationReason": null
+                              "defaultValue": null
                             }
                           ],
                           "type": {
@@ -4837,9 +4831,7 @@
                                   "ofType": null
                                 }
                               },
-                              "defaultValue": null,
-                              "isDeprecated": false,
-                              "deprecationReason": null
+                              "defaultValue": null
                             }
                           ],
                           "type": {
@@ -4864,9 +4856,7 @@
                                   "ofType": null
                                 }
                               },
-                              "defaultValue": null,
-                              "isDeprecated": false,
-                              "deprecationReason": null
+                              "defaultValue": null
                             }
                           ],
                           "type": {
@@ -4901,9 +4891,7 @@
                                   "ofType": null
                                 }
                               },
-                              "defaultValue": null,
-                              "isDeprecated": false,
-                              "deprecationReason": null
+                              "defaultValue": null
                             },
                             {
                               "name": "name",
@@ -4916,9 +4904,7 @@
                                   "ofType": null
                                 }
                               },
-                              "defaultValue": null,
-                              "isDeprecated": false,
-                              "deprecationReason": null
+                              "defaultValue": null
                             }
                           ],
                           "type": {
@@ -4989,9 +4975,7 @@
                             "name": "ID",
                             "ofType": null
                           },
-                          "defaultValue": null,
-                          "isDeprecated": false,
-                          "deprecationReason": null
+                          "defaultValue": null
                         },
                         {
                           "name": "byName",
@@ -5000,9 +4984,7 @@
                             "name": "String",
                             "ofType": null
                           },
-                          "defaultValue": null,
-                          "isDeprecated": false,
-                          "deprecationReason": null
+                          "defaultValue": null
                         }
                       ],
                       "interfaces": null,
@@ -5576,6 +5558,50 @@
           "assertions": [
             {
               "path": "/dispatches/2",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-25",
+      "rules": [
+        "GQL-P-03"
+      ],
+      "section": "3.3",
+      "description": "A probe request that yields no response reaches no gate: the load does not complete and the invocation refuses before dispatch for want of an interpreted schema, with no further request.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+          }
+        },
+        "binding": {
+          "selector": "Viewer"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
+        },
+        "peer": {
+          "sequence": [
+            {
+              "noResponse": true
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatches/1",
               "absent": true
             }
           ]
