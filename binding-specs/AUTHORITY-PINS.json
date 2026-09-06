@@ -2240,6 +2240,149 @@
       "matchTokens": [
         "semver.org/spec/v2.0.0.html"
       ]
+    },
+    {
+      "id": "graphql-spec-june2018-source",
+      "family": "graphql",
+      "name": "GraphQL Specification, June 2018 (source tree at the release tag)",
+      "edition": "June2018",
+      "kind": "git-tree",
+      "repo": "graphql/graphql-spec",
+      "tag": "June2018",
+      "commit": "cdf792cf3b21584cc65b353d7f5eb90e4116f707",
+      "path": "spec",
+      "probe": {
+        "path": "spec/GraphQL.md",
+        "sha256": "f8cd3d7440f24ce42d081ac680ad47aa3d859d2e3371fb4099d77779a5235565",
+        "bytes": 5410
+      },
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "cdf792cf3b21584cc65b353d7f5eb90e4116f707"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "graphql-spec-october2021-source",
+      "family": "graphql",
+      "name": "GraphQL Specification, October 2021 (source tree at the release tag)",
+      "edition": "October2021",
+      "kind": "git-tree",
+      "repo": "graphql/graphql-spec",
+      "tag": "October2021",
+      "commit": "51337a9b820e296fa7d03ae77d534cb4b247c201",
+      "path": "spec",
+      "probe": {
+        "path": "spec/GraphQL.md",
+        "sha256": "9f48d9650307e82737c1ce17e1e6a1acf5cd92dd99bd4ef218cb5d91a13be56f",
+        "bytes": 6358
+      },
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "51337a9b820e296fa7d03ae77d534cb4b247c201"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "graphql-spec-september2025-source",
+      "family": "graphql",
+      "name": "GraphQL Specification, September 2025 (source tree at the release tag)",
+      "edition": "September2025",
+      "kind": "git-tree",
+      "repo": "graphql/graphql-spec",
+      "tag": "September2025",
+      "commit": "89d93ebbe05db06787646d76a696ead8de117b2b",
+      "path": "spec",
+      "probe": {
+        "path": "spec/GraphQL.md",
+        "sha256": "b6910d50c9ae28cc2772727871f2451897270090ffefa477962666c73c8fe3c4",
+        "bytes": 2625
+      },
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "89d93ebbe05db06787646d76a696ead8de117b2b"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "graphql-over-http-2026-09-03",
+      "family": "graphql",
+      "name": "GraphQL-over-HTTP draft (GraphQLOverHTTP.md) at 2026-09-03",
+      "kind": "git-file",
+      "repo": "graphql/graphql-over-http",
+      "commit": "d746195047ac4ae5c4bb11042b4941e6631726e8",
+      "path": "spec/GraphQLOverHTTP.md",
+      "sha256": "e7ef6c6f142b0352e72b5b8da1256ec5c10a9905c394517585ccbdd718ae8562",
+      "bytes": 33778,
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "d746195047ac4ae5c4bb11042b4941e6631726e8"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "graphql-ws-protocol",
+      "family": "graphql",
+      "name": "GraphQL over WebSocket Protocol (graphql-transport-ws), PROTOCOL.md",
+      "kind": "git-file",
+      "repo": "enisdenjo/graphql-ws",
+      "commit": "839ca7d652004513a063dd44e9bcfe7a3301f6f0",
+      "path": "PROTOCOL.md",
+      "sha256": "2e6fc7c378d89ed3fe759fdc1087b026a9695acac374b9e966131f56ab799ccc",
+      "bytes": 11780,
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "839ca7d652004513a063dd44e9bcfe7a3301f6f0"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "graphql-sse-protocol",
+      "family": "graphql",
+      "name": "GraphQL over Server-Sent Events Protocol, PROTOCOL.md",
+      "kind": "git-file",
+      "repo": "enisdenjo/graphql-sse",
+      "commit": "0e899300dca583cd5aa5a2fa1d4f15d6e9cafb0e",
+      "path": "PROTOCOL.md",
+      "sha256": "40ce389428ef58778a5f5a26526524bb11d51dc8bbbd3e420e80256d78db9573",
+      "bytes": 7972,
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "0e899300dca583cd5aa5a2fa1d4f15d6e9cafb0e"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "rfc6455",
+      "family": "graphql",
+      "name": "RFC 6455: The WebSocket Protocol",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6455.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc6455"
+      ],
+      "sha256": "765775326aee0ecca9b04bde3fd1f52932d498e33e34e428bd61b8a24da0fa3b",
+      "bytes": 162067,
+      "retrievedAt": "2026-09-06T09:40:04Z",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc6455",
+        "RFC 6455"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
     }
   ]
 }
