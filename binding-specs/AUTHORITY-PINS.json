@@ -585,8 +585,7 @@
     {
       "id": "whatwg-html-sse",
       "families": [
-        "openapi-3.2",
-        "graphql"
+        "openapi-3.2"
       ],
       "name": "WHATWG HTML source snapshot (server-sent events processing model)",
       "kind": "git-file",
@@ -2406,6 +2405,26 @@
       ],
       "status": "reference-only",
       "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06): Transfer-Encoding and the message-framing fields the candidate reserves are RFC 9112's. Promoted when the candidate cites it."
+    },
+    {
+      "id": "w3c-eventsource-2015",
+      "family": "graphql",
+      "name": "W3C Server-Sent Events, Recommendation of 3 February 2015 (dated, immutable URL)",
+      "kind": "url",
+      "url": "https://www.w3.org/TR/2015/REC-eventsource-20150203/",
+      "citedUrls": [
+        "https://www.w3.org/TR/eventsource/"
+      ],
+      "sha256": "9155a7d97f554003ab479bb7ba2f80ced58fd9ce521c85370debe981bbec2631",
+      "bytes": 71223,
+      "retrievedAt": "2026-09-06T18:20:40Z",
+      "citedBy": [],
+      "matchTokens": [
+        "REC-eventsource-20150203",
+        "www.w3.org/TR/eventsource"
+      ],
+      "status": "reference-only",
+      "reason": "graphql-sse defers its event-stream interpretation to the W3C Server-Sent Events specification at www.w3.org/TR/eventsource (PROTOCOL.md lines 15, 26, 93); the dated Recommendation is the immutable form. Promoted when the openbindings.graphql@1 candidate cites it."
     }
   ]
 }
