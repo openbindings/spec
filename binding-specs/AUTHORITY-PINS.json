@@ -2383,6 +2383,26 @@
       ],
       "status": "reference-only",
       "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06); no family text cites it yet. Promoted when the candidate's \u00a72 cites it."
+    },
+    {
+      "id": "rfc9112",
+      "family": "graphql",
+      "name": "RFC 9112: HTTP/1.1",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9112.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc9112"
+      ],
+      "sha256": "e4f426bac6206b67fdf9e0da826154f70588db2133a0a86b15cde4ff725d8937",
+      "bytes": 109913,
+      "retrievedAt": "2026-09-06T10:15:06Z",
+      "citedBy": [],
+      "matchTokens": [
+        "rfc9112",
+        "RFC 9112"
+      ],
+      "status": "reference-only",
+      "reason": "Pinned for the greenfield openbindings.graphql@1 program (audit/graphql-family-2026-09-06): Transfer-Encoding and the message-framing fields the candidate reserves are RFC 9112's. Promoted when the candidate cites it."
     }
   ]
 }
