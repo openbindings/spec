@@ -238,7 +238,7 @@
         "GQL-P-01"
       ],
       "section": "3.2",
-      "description": "One duplicated name does not destroy a sibling's addressable position: the sibling resolves and dispatches.",
+      "description": "A duplicated name destroys only the duplicated position's addressability; §5.2.2.1's failure is inventory-wide, so the sibling Status resolves and refuses before dispatch.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -252,33 +252,16 @@
         },
         "invocation": {
           "inputPresent": false
-        },
-        "peer": {
-          "status": 200,
-          "contentType": "application/graphql-response+json",
-          "body": {
-            "data": {
-              "status": "ok"
-            }
-          }
         }
       },
       "expected": [
         {
-          "disposition": "complete",
-          "phase": "completion",
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
           "assertions": [
             {
-              "path": "/dispatch/body/query",
-              "equals": "query A { status }\nquery A { status }\nquery Status { status }\n"
-            },
-            {
-              "path": "/outputs",
-              "equals": [
-                {
-                  "status": "ok"
-                }
-              ]
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }
@@ -1451,10 +1434,10 @@
     {
       "id": "GQL-PS-12",
       "rules": [
-        "GQL-P-02"
+        "GQL-P-01"
       ],
-      "section": "3.3",
-      "description": "A pinned result whose queryType is present but names a type absent from types is a structural absence at the root: every operation is invalid and refuses before dispatch.",
+      "section": "3.2",
+      "description": "An introspection result whose queryType names a type absent from types references an undefined type: it fails the schema-validity gate and refuses at load.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -1647,7 +1630,7 @@
       "expected": [
         {
           "disposition": "refusal",
-          "phase": "pre-dispatch",
+          "phase": "load",
           "assertions": [
             {
               "path": "/dispatch",
