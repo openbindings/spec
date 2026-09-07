@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-processor-scenarios@1",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL processor scenarios for the closed load gates and confinement (§3.2), pinned-schema interpretation and live introspection (§3.3), and the staleness posture (§4). Peer shape for this family: `peer` is one scripted HTTP response `{status, contentType, body}`, or `{\"sequence\": [...]}` listing consecutive responses consumed in dispatch order; an entry `{\"noResponse\": true}` scripts a request that yields no response (connection, name-resolution, or TLS failure, or timeout). Observation paths: `/dispatch` is the last request the processor sent (`method`, `headers`, `body`, `url`), `/dispatches/<i>` the i-th request in order; `/outputs` the emitted operation values in order. Scenarios for §5 to §9 arrive with those sections.",
+  "description": "Portable GraphQL processor scenarios for the closed load gates and confinement (§3.2), pinned-schema interpretation and live introspection (§3.3), and the staleness posture (§4). Peer shape for this family: `peer` is one scripted HTTP response `{status, contentType, body}`, or `{\"sequence\": [...]}` listing consecutive responses consumed in dispatch order; an entry `{\"noResponse\": true}` scripts a request that yields no response (connection, name-resolution, or TLS failure, or timeout). Observation paths: `/dispatch` is the last request the processor sent (`method`, `headers`, `body`, `url`), `/dispatches/<i>` the i-th request in order; `/outputs` the emitted operation values in order. Scenarios for §6 to §9 arrive with those sections.",
   "scenarios": [
     {
       "id": "GQL-PS-01",
@@ -22337,6 +22337,61 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-43",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A string schema omits the built-in directives as §3.13 permits; the interpreted schema still defines @skip, so a document using it validates and dispatches.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query V($x: Boolean!) { viewer(id: \"u-1\") { name @skip(if: $x) } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "V"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "x": true
+          }
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "viewer": {}
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query V($x: Boolean!) { viewer(id: \"u-1\") { name @skip(if: $x) } }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "viewer": {}
+                }
+              ]
             }
           ]
         }
