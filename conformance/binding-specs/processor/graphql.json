@@ -22628,6 +22628,41 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-49",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A scalar the string schema writes under a built-in name remains that built-in: a String literal at an Int position fails §5.6.1 under §3.5's coercion, the inventory is invalid, and the operation refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Q { f(n: \"123\") }\n",
+            "schema": "scalar Int\ntype Query { f(n: Int): Int }\n"
+          }
+        },
+        "binding": {
+          "selector": "Q"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
