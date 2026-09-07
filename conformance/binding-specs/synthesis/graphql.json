@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios asserting the derived input and output schemas arrive with §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -14 assert the derived input and output schemas of §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus.",
   "scenarios": [
     {
       "id": "GQL-SS-01",
@@ -1526,6 +1526,643 @@
               "sourceRef": "Viewer",
               "scope": "target",
               "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-07",
+      "description": "Input schema: scalar variables derive by the table with nullability composed; required lists the non-null variables without a default; no additionalProperties keyword.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query S($i: Int!, $f: Float, $s: String!, $b: Boolean, $id: ID!) { s(i: $i, f: $f, s: $s, b: $b, id: $id) }\n",
+          "schema": "type Query { s(i: Int!, f: Float, s: String!, b: Boolean, id: ID!): String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "S"
+        ],
+        "bindings": [
+          {
+            "operationKey": "S",
+            "bindingSelector": "S"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/S/input/type",
+            "equals": "object"
+          },
+          {
+            "path": "/operations/S/input/properties/i",
+            "equals": {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          },
+          {
+            "path": "/operations/S/input/properties/f",
+            "equals": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          {
+            "path": "/operations/S/input/properties/s",
+            "equals": {
+              "type": "string"
+            }
+          },
+          {
+            "path": "/operations/S/input/properties/b",
+            "equals": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          {
+            "path": "/operations/S/input/properties/id",
+            "equals": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          {
+            "path": "/operations/S/input/required",
+            "setEquals": [
+              "i",
+              "s",
+              "id"
+            ]
+          },
+          {
+            "path": "/operations/S/input/additionalProperties",
+            "absent": true
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "S",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "S",
+              "bindingSelector": "S",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-08",
+      "description": "Input schema: an enum with a default carries the default's image and no type member; a OneOf input object carries minProperties, maxProperties, and non-null properties.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query E($st: Status = ACTIVE, $filter: Filter!) { e(st: $st, filter: $filter) }\n",
+          "schema": "enum Status { ACTIVE RETIRED }\ninput Filter @oneOf { byId: ID byName: String }\ntype Query { e(st: Status, filter: Filter!): String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "E"
+        ],
+        "bindings": [
+          {
+            "operationKey": "E",
+            "bindingSelector": "E"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/E/input/properties/st",
+            "equals": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "ACTIVE",
+                    "RETIRED"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "ACTIVE"
+            }
+          },
+          {
+            "path": "/operations/E/input/properties/filter",
+            "equals": {
+              "type": "object",
+              "properties": {
+                "byId": {
+                  "type": [
+                    "string",
+                    "integer"
+                  ]
+                },
+                "byName": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "additionalProperties": false,
+              "minProperties": 1,
+              "maxProperties": 1
+            }
+          },
+          {
+            "path": "/operations/E/input/required",
+            "setEquals": [
+              "filter"
+            ]
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "E",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "E",
+              "bindingSelector": "E",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-09",
+      "description": "Input schema: a list position is an anyOf of the array and the single value, nullability applied to the item and then to the list.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query L($ids: [ID!]) { l(ids: $ids) }\n",
+          "schema": "type Query { l(ids: [ID!]): String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "L"
+        ],
+        "bindings": [
+          {
+            "operationKey": "L",
+            "bindingSelector": "L"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/L/input/properties/ids",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "integer"
+                        ]
+                      }
+                    },
+                    {
+                      "type": [
+                        "string",
+                        "integer"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "L",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "L",
+              "bindingSelector": "L",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-10",
+      "description": "Output schema: the whole data map with every collected response name required and additionalProperties false, nested objects likewise, leaves by the output pins.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query V($id: ID!) { viewer(id: $id) { id name } status }\n",
+          "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "V"
+        ],
+        "bindings": [
+          {
+            "operationKey": "V",
+            "bindingSelector": "V"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/V/output",
+            "equals": {
+              "type": "object",
+              "properties": {
+                "viewer": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "status": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "viewer",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "V",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "V",
+              "bindingSelector": "V",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-11",
+      "description": "Output schema: a selection on an abstract type yields one branch per possible concrete type in the interpreted schema's order, __typename as a const in each, combined with anyOf before nullability.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N($id: ID!) { node(id: $id) { id __typename ... on User { name } } }\n",
+          "schema": "interface Node { id: ID! }\ntype User implements Node { id: ID! name: String }\ntype Post implements Node { id: ID! title: String }\ntype Query { node(id: ID!): Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "__typename": {
+                          "type": "string",
+                          "const": "User"
+                        },
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "__typename",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "__typename": {
+                          "type": "string",
+                          "const": "Post"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-12",
+      "description": "Output schema: a response name whose only contributor is variable-conditioned is present but not required.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query C($show: Boolean!, $id: ID!) { status @include(if: $show) viewer(id: $id) { id } }\n",
+          "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "C"
+        ],
+        "bindings": [
+          {
+            "operationKey": "C",
+            "bindingSelector": "C"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/C/output/required",
+            "setEquals": [
+              "viewer"
+            ]
+          },
+          {
+            "path": "/operations/C/output/properties/status",
+            "equals": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "C",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "C",
+              "bindingSelector": "C",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-13",
+      "description": "Custom scalars: an unconstrained schema carrying the scalar's name in format and its specification URL in x-graphql-specifiedBy, with nullability composed around it; the position is a projection entry.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query T($d: DateTime!) { at(when: $d) }\n",
+          "schema": "scalar DateTime @specifiedBy(url: \"https://scalars.graphql.org/andimarek/date-time\")\ntype Query { at(when: DateTime!): DateTime }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "T"
+        ],
+        "bindings": [
+          {
+            "operationKey": "T",
+            "bindingSelector": "T"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/T/input/properties/d",
+            "equals": {
+              "allOf": [
+                {
+                  "format": "DateTime",
+                  "x-graphql-specifiedBy": "https://scalars.graphql.org/andimarek/date-time"
+                },
+                {
+                  "not": {
+                    "type": "null"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "path": "/operations/T/output/properties/at",
+            "equals": {
+              "anyOf": [
+                {
+                  "format": "DateTime",
+                  "x-graphql-specifiedBy": "https://scalars.graphql.org/andimarek/date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "T",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "T",
+              "bindingSelector": "T",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "T($d)",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "T",
+              "bindingSelector": "T",
+              "rule": "GQL-S-04",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Query.at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "T",
+              "bindingSelector": "T",
+              "rule": "GQL-S-04",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-14",
+      "description": "A recursive input type is cut into a referenced schema; the reference position carries nullability by anyOf and the cut-point key is synthesis policy.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query R($n: Node) { r(n: $n) }\n",
+          "schema": "input Node { value: Int child: Node }\ntype Query { r(n: Node): String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "R"
+        ],
+        "bindings": [
+          {
+            "operationKey": "R",
+            "bindingSelector": "R"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/R/input/properties/n/anyOf/1",
+            "equals": {
+              "type": "null"
+            }
+          },
+          {
+            "path": "/operations/R/input/properties/n/anyOf/0/type",
+            "absent": true
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "R",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "R",
+              "bindingSelector": "R",
               "rule": "GQL-S-01",
               "requirements": []
             }

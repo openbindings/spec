@@ -109,7 +109,8 @@
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
-        "binding-specs/README.md"
+        "binding-specs/README.md",
+        "binding-specs/graphql/openbindings.graphql.md"
       ],
       "matchTokens": [
         "rfc6901",
