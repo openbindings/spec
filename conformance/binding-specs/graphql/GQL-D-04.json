@@ -2,7 +2,7 @@
   "rule": "GQL-D-04",
   "bindingSpec": "openbindings.graphql@1",
   "section": "3.2",
-  "description": "Each such source's interpreted schema, carried or live-introspected, satisfies §3.2's schema-validity gate: every referenced type is defined, every field and argument has a type, no two types or directives share a name and no definition or extension repeats a field or argument name, input positions carry input types and output positions output types, at most one `schema` definition exists and any schema extension has one to extend, and the `query` root operation type is present and is an Object type.",
+  "description": "Each such source's carried `schema` satisfies §3.2's schema-validity gate: every referenced type is defined, every field and argument has a type, no two types or directives share a name and no definition or extension repeats a field or argument name, input positions carry input types and output positions output types, at most one `schema` definition exists and any schema extension extends a defined schema, and the `query` root operation type is present and is an Object type.",
   "notes": "§3.2 gate 5. An absent mutation or subscription root is not gated (§3.3.1 makes them optional); it is a §5.2.1.1 validation failure handled by §5.",
   "tests": [
     {
@@ -1170,7 +1170,115 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "skip",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "include",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "deprecated",
+                        "locations": [
+                          "FIELD_DEFINITION",
+                          "ARGUMENT_DEFINITION",
+                          "INPUT_FIELD_DEFINITION",
+                          "ENUM_VALUE"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "reason",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": "\"No longer supported\"",
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "specifiedBy",
+                        "locations": [
+                          "SCALAR"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "url",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "oneOf",
+                        "locations": [
+                          "INPUT_OBJECT"
+                        ],
+                        "isRepeatable": false,
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -2473,7 +2581,115 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "skip",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "include",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "deprecated",
+                        "locations": [
+                          "FIELD_DEFINITION",
+                          "ARGUMENT_DEFINITION",
+                          "INPUT_FIELD_DEFINITION",
+                          "ENUM_VALUE"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "reason",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": "\"No longer supported\"",
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "specifiedBy",
+                        "locations": [
+                          "SCALAR"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "url",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "oneOf",
+                        "locations": [
+                          "INPUT_OBJECT"
+                        ],
+                        "isRepeatable": false,
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -3631,7 +3847,115 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "skip",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "include",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "deprecated",
+                        "locations": [
+                          "FIELD_DEFINITION",
+                          "ARGUMENT_DEFINITION",
+                          "INPUT_FIELD_DEFINITION",
+                          "ENUM_VALUE"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "reason",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": "\"No longer supported\"",
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "specifiedBy",
+                        "locations": [
+                          "SCALAR"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "url",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "oneOf",
+                        "locations": [
+                          "INPUT_OBJECT"
+                        ],
+                        "isRepeatable": false,
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -4712,7 +5036,115 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "skip",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "include",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "deprecated",
+                        "locations": [
+                          "FIELD_DEFINITION",
+                          "ARGUMENT_DEFINITION",
+                          "INPUT_FIELD_DEFINITION",
+                          "ENUM_VALUE"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "reason",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": "\"No longer supported\"",
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "specifiedBy",
+                        "locations": [
+                          "SCALAR"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "url",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "oneOf",
+                        "locations": [
+                          "INPUT_OBJECT"
+                        ],
+                        "isRepeatable": false,
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -5998,7 +6430,115 @@
                         "possibleTypes": null
                       }
                     ],
-                    "directives": []
+                    "directives": [
+                      {
+                        "name": "skip",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "include",
+                        "locations": [
+                          "FIELD",
+                          "FRAGMENT_SPREAD",
+                          "INLINE_FRAGMENT"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "if",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "deprecated",
+                        "locations": [
+                          "FIELD_DEFINITION",
+                          "ARGUMENT_DEFINITION",
+                          "INPUT_FIELD_DEFINITION",
+                          "ENUM_VALUE"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "reason",
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "defaultValue": "\"No longer supported\"",
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "specifiedBy",
+                        "locations": [
+                          "SCALAR"
+                        ],
+                        "isRepeatable": false,
+                        "args": [
+                          {
+                            "name": "url",
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                              }
+                            },
+                            "defaultValue": null,
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ]
+                      },
+                      {
+                        "name": "oneOf",
+                        "locations": [
+                          "INPUT_OBJECT"
+                        ],
+                        "isRepeatable": false,
+                        "args": []
+                      }
+                    ]
                   }
                 }
               }
@@ -6049,7 +6589,7 @@
       ]
     },
     {
-      "description": "schema extension without a schema definition",
+      "description": "schema extension with the schema defined by the default root type name Query (§3.3 admits omitting the schema definition)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -6073,10 +6613,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "GQL-D-04"
-      ]
+      "valid": true
     }
   ]
 }
