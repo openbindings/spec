@@ -304,7 +304,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 206 scenarios
+coverage loss. The 207 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow

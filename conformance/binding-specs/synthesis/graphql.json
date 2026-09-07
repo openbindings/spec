@@ -2169,6 +2169,89 @@
           ]
         }
       }
+    },
+    {
+      "id": "GQL-SS-15",
+      "description": "A OneOf member takes exclude null in place of admit null, so an enum member is the bare enum schema; a nullable list of nullable strings composes item nullability, the singleton type collapse, and list nullability.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query O($f: Pick!, $tags: [String]) { o(f: $f, tags: $tags) }\n",
+          "schema": "enum Kind { A B }\ninput Pick @oneOf { byKind: Kind byName: String }\ntype Query { o(f: Pick!, tags: [String]): String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "O"
+        ],
+        "bindings": [
+          {
+            "operationKey": "O",
+            "bindingSelector": "O"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/O/input/properties/f/properties/byKind",
+            "equals": {
+              "enum": [
+                "A",
+                "B"
+              ]
+            }
+          },
+          {
+            "path": "/operations/O/input/properties/f/properties/byName",
+            "equals": {
+              "type": "string"
+            }
+          },
+          {
+            "path": "/operations/O/input/properties/tags",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "O",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "O",
+              "bindingSelector": "O",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
