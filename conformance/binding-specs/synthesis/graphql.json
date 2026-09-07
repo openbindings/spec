@@ -1445,6 +1445,54 @@
           "GQL-D-01"
         ]
       }
+    },
+    {
+      "id": "GQL-SS-05",
+      "description": "With content.subscriptions absent, the subscription definition is accounted invalid and yields no operation, while the query definition is represented.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Status { status }\nsubscription Ticks { ticks }\n",
+          "schema": "type Query { status: String }\ntype Subscription { ticks: Int }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Status"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Status",
+            "bindingSelector": "Status"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Status",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Status",
+              "bindingSelector": "Status",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Ticks",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }
