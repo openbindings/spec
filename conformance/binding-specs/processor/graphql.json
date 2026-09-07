@@ -22152,6 +22152,10 @@
               "equals": "query Status { status @cache(ttl: 5) }\n"
             },
             {
+              "path": "/dispatch/body/operationName",
+              "equals": "Status"
+            },
+            {
               "path": "/outputs",
               "equals": [
                 {
@@ -22446,13 +22450,13 @@
         "GQL-P-06"
       ],
       "section": "5.2",
-      "description": "A string schema that writes a built-in directive itself is read as written in place of the built-in: gate 5's duplicate test does not fire and the document dispatches.",
+      "description": "A string schema that writes a built-in directive itself, here @skip restricted to FIELD, is read as written in place of the built-in: gate 5's duplicate test does not fire and a field-position use validates and dispatches.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
           "content": {
             "document": "query Status { status @skip(if: false) }\n",
-            "schema": "type Query { status: String }\ndirective @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT\n"
+            "schema": "type Query { status: String }\ndirective @skip(if: Boolean!) on FIELD\n"
           }
         },
         "binding": {
@@ -22483,6 +22487,143 @@
               "equals": [
                 {}
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-46",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "The written @skip restricted to FIELD governs validation as written: a use on a fragment spread fails §5.7.2 and the inventory is invalid, so the operation refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query S { ...F @skip(if: false) }\nfragment F on Query { status }\n",
+            "schema": "type Query { status: String }\ndirective @skip(if: Boolean!) on FIELD\n"
+          }
+        },
+        "binding": {
+          "selector": "S"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-47",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A literal at a custom scalar position is treated as coercible (the scalar's rules are the service's), so the document validates and dispatches; the service's answer decides it.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Late { events(after: \"not-a-date\") }\n",
+            "schema": "scalar DateTime @specifiedBy(url: \"https://scalars.graphql.org/andimarek/date-time\")\ntype Query { events(after: DateTime): Int }\n"
+          }
+        },
+        "binding": {
+          "selector": "Late"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "events": 0
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Late { events(after: \"not-a-date\") }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "events": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-48",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "An Int literal outside the 32-bit range is refused by a service only as a SHOULD, so this specification treats it as coercible and dispatches; a strict service's request error is an unsuccessful completion under §8.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Big { f(n: 2147483648) }\n",
+            "schema": "type Query { f(n: Int): Int }\n"
+          }
+        },
+        "binding": {
+          "selector": "Big"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 400,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "errors": [
+              {
+                "message": "Int cannot represent non 32-bit signed integer value: 2147483648"
+              }
+            ]
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Big { f(n: 2147483648) }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }
