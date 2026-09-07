@@ -21866,6 +21866,10 @@
               "equals": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
             },
             {
+              "path": "/dispatch/body/operationName",
+              "equals": "Status"
+            },
+            {
               "path": "/outputs",
               "equals": [
                 {
@@ -21914,6 +21918,10 @@
             {
               "path": "/dispatch/body/query",
               "equals": "{ status }"
+            },
+            {
+              "path": "/dispatch/body/operationName",
+              "absent": true
             },
             {
               "path": "/outputs",
@@ -22391,6 +22399,89 @@
                 {
                   "viewer": {}
                 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-44",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "A selector naming a name two definitions share does not resolve and refuses at resolution, while the document keeps an addressable sibling so the source is not refused.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query A { status }\nquery A { status }\nquery Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "A"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-45",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A string schema that writes a built-in directive itself is read as written in place of the built-in: gate 5's duplicate test does not fire and the document dispatches.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status @skip(if: false) }\n",
+            "schema": "type Query { status: String }\ndirective @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {}
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Status { status @skip(if: false) }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {}
               ]
             }
           ]
