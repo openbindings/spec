@@ -24593,6 +24593,48 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-87",
+      "rules": [
+        "GQL-P-09"
+      ],
+      "section": "8",
+      "description": "An empty errors list beside no data is read as absent first, leaving a body with neither entry: malformed, any other response, unsuccessful with no output.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "errors": []
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

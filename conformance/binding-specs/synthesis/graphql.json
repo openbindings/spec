@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -16 assert the derived input and output schemas of §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus. Each names the synthesizer rules it exercises.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -17 assert the derived input and output schemas of §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus. Each names the synthesizer rules it exercises.",
   "scenarios": [
     {
       "id": "GQL-SS-01",
@@ -2345,6 +2345,85 @@
               "operationKey": "V",
               "bindingSelector": "V",
               "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-17",
+      "description": "A custom-scalar field selected under a list is one projection position named by response names with list indices omitted; a custom-scalar input-object field is named by its coordinate once.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q($f: Filter) { items(f: $f) { at } }\n",
+          "schema": "scalar DateTime\ninput Filter { after: DateTime and: [Filter!] }\ntype Item { at: DateTime }\ntype Query { items(f: Filter): [Item] }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "rules": [
+          "GQL-S-03",
+          "GQL-S-04"
+        ],
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/items/anyOf/0/items/anyOf/0/properties/at",
+            "equals": {
+              "anyOf": [
+                {
+                  "format": "DateTime"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Filter.after",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q#/items/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
               "requirements": []
             }
           ]
