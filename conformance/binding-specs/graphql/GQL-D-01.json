@@ -2,7 +2,7 @@
   "rule": "GQL-D-01",
   "bindingSpec": "openbindings.graphql@1",
   "section": "4",
-  "description": "Every source governed by this identifier carries a `location` that is an absolute URI whose scheme is `http` or `https`.",
+  "description": "Every source governed by this identifier carries a `location` that is an absolute URI under §4's definition, with no query component, whose scheme is `http` or `https`.",
   "notes": "§4: the scheme set is this specification's convention (the over-HTTP draft is the only incorporated single-result transport); a subscription endpoint rides `content.subscriptions`, never `location`.",
   "tests": [
     {
@@ -186,6 +186,35 @@
           "api": {
             "bindingSpec": "openbindings.graphql@1",
             "location": "https://api.example.test/graphql#v2",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-01"
+      ]
+    },
+    {
+      "description": "location carrying a query component",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql?tenant=1",
             "content": {
               "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
             }

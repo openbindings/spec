@@ -24195,6 +24195,107 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-79",
+      "rules": [
+        "GQL-P-03"
+      ],
+      "section": "3.3",
+      "description": "The capability probe is §8's POST request: it carries the pinned Accept, a 302 text/html answer is not followed and is not a GraphQL result, so gate 4 refuses the source at load with no further request.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+          }
+        },
+        "binding": {
+          "selector": "Viewer"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
+        },
+        "peer": {
+          "sequence": [
+            {
+              "status": 302,
+              "contentType": "text/html",
+              "body": "<html>moved</html>",
+              "headers": {
+                "Location": "https://elsewhere.example/graphql"
+              }
+            }
+          ]
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "load",
+          "assertions": [
+            {
+              "path": "/dispatches/0/headers/Accept",
+              "equals": "application/graphql-response+json, application/json;q=0.9"
+            },
+            {
+              "path": "/dispatches/0/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatches/1",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-80",
+      "rules": [
+        "GQL-P-09"
+      ],
+      "section": "8",
+      "description": "A Content-Type whose value is a list of media types selects no media type: the response is any other response and completes unsuccessfully with no output.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "text/html, application/graphql-response+json",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
