@@ -22469,7 +22469,9 @@
           "status": 200,
           "contentType": "application/graphql-response+json",
           "body": {
-            "data": {}
+            "data": {
+              "status": "ok"
+            }
           }
         }
       },
@@ -22485,7 +22487,9 @@
             {
               "path": "/outputs",
               "equals": [
-                {}
+                {
+                  "status": "ok"
+                }
               ]
             }
           ]
@@ -22659,6 +22663,169 @@
             {
               "path": "/dispatch",
               "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-50",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A widened @oneOf definition the string writes governs only directive validation; the OneOf semantics the edition keys to the name still apply, so an empty input object literal fails §5.6.1 and the operation refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Q { g(x: {}) }\n",
+            "schema": "directive @oneOf on INPUT_OBJECT | OBJECT\ninput F @oneOf { a: String b: Int }\ntype Query { g(x: F!): Int }\n"
+          }
+        },
+        "binding": {
+          "selector": "Q"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-51",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A pinned result lacking defaultValue at an argument §5.4.3 reads is an annotative absence: the rule is not evaluated there, the operation reaching it is lossy and dispatches, and a sibling is unaffected.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query A { f }\nquery B { status }\n",
+            "schema": {
+              "data": {
+                "__schema": {
+                  "queryType": {
+                    "name": "Query"
+                  },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "directives": [],
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "Query",
+                      "fields": [
+                        {
+                          "name": "f",
+                          "args": [
+                            {
+                              "name": "n",
+                              "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "SCALAR",
+                                  "name": "Int",
+                                  "ofType": null
+                                }
+                              }
+                            }
+                          ],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "Int",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "status",
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "inputFields": null,
+                      "interfaces": [],
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "fields": null,
+                      "inputFields": null,
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "fields": null,
+                      "inputFields": null,
+                      "interfaces": null,
+                      "enumValues": null,
+                      "possibleTypes": null
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "A"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "f": 3
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query A { f }\nquery B { status }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "f": 3
+                }
+              ]
             }
           ]
         }
