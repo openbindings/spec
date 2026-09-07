@@ -26,7 +26,7 @@ directory. The dedicated verifier is `scripts/verify-binding-specs.mjs`
 (run in CI). The ten specifications share one source-fixture shape in
 [`fixture.schema.json`](fixture.schema.json), one portable behavior shape in
 [`processor-scenario.schema.json`](processor-scenario.schema.json), and one
-portable authoring shape in
+shared reference-authoring shape in
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json). Source
 fixtures live in ten specification directories; processor scenarios live in
 [`processor/`](processor/), and synthesis scenarios live in
@@ -258,37 +258,39 @@ and each adapter remains responsible for demonstrating that a normalized
 observation came from the real family implementation.
 
 Each reference SDK also keeps authoring tests beside the family implementation.
-The shared `synthesis/` corpus makes the cross-implementation portion
-portable: each scenario supplies native source material and pins the exact
-operation keys, binding target identities, and normalized coverage
-dispositions expected from both SDKs. Diagnostic prose and SDK API shape are
-deliberately excluded. The processor scenarios cover invocation of the
-resulting binding vocabulary. Together they enforce the authoring invariant:
-inspection and synthesis use the same target-eligibility rules as invocation,
-no synthesized operation is statically guaranteed to refuse, every observed
-interaction or independently selectable artifact alternative receives a
-durable disposition, and a direct synthesis call fails as a whole when an
-accepted target cannot be represented faithfully. They do not claim that a
-synthesized interface is a temporal snapshot of a live service or remains
-usable after the source or peer changes.
+For OpenAPI, the shared `synthesis/` corpus tests the reference tooling's
+full-document generation and exhaustive reporting promises as well as
+binding-defined semantic facts. Its exact chosen operation keys, contract
+shapes, and report fields are reference-tooling expectations, not universal
+binding requirements. Existing rich-reporting tests remain intact; matching
+their whole output proves this stronger promise.
 
-## Portable synthesis scenarios
+The [OpenAPI correspondence witnesses and assertion-scope map](openapi-generation-correspondence.md)
+separate portable meaning from those additional expectations and demonstrate
+selected generation without a report. Source/target eligibility and
+emitted-correspondence soundness remain governed by the binding. Other
+families retain their own rules. Neither corpus claims that an interface
+remains usable after the source or peer changes.
+
+## Synthesis scenarios and their scope
 
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json) defines the
-artifact-to-OBI proof boundary. Its version-5 OpenAPI exchange (with version 4
-retained for families that have not adopted dependency coverage) distinguishes two
-outcomes. A `synthesized` scenario contains one native source and expects the
-exact operation-key set, the exact `(operationKey, bindingSelector)` target
-identities, and an exhaustive coverage ledger normalized to stable semantic
-fields (`sourceRef`, scope, status, governing rule, and runtime requirements).
-A `reasonCode`, where retained for local triage, is a diagnostic annotation:
-portable adapters ignore its presence, absence, and spelling. A `refused`
-scenario proves creation-time soundness: when an
-upstream-valid target cannot be represented faithfully and no independent
-artifact alternative preserves it, synthesis fails as a whole rather than
-returning a statically unbindable partial interface. Refusal scenarios cite
-the governing rules but deliberately do not compare exception types or
-diagnostic prose.
+shared artifact-to-OBI test format. Its version-5 OpenAPI exchange (with
+version 4 retained for other families) distinguishes two outcomes.
+A `synthesized` scenario expects exact operation keys, binding selectors, and
+an exhaustive ledger of source units, dispositions, and requirements.
+A `refused` scenario tests whole-source refusal or the reference tool's
+whole-generation-call failure when it cannot deliver its promised faithful
+full-document result. These are distinct: inability to represent some valid
+material need not make a selective OpenAPI generation call fail.
+A retained `reasonCode` remains local triage, ignored in comparison.
+Exception types and diagnostic prose are not compared.
+
+This format requires a coverage result and has no selection input. It is
+therefore not a universal interface for every conforming generator. OpenAPI
+§12.2 does not require a report, complete inventory, or the project's
+Synthesizer contract; the current exhaustive checks remain tests of the
+reference tooling's additional promises.
 
 Discrepancies discovered while executing this corpus are classified in
 [`adjudications.json`](adjudications.json), validated by
@@ -329,13 +331,11 @@ self-contained refuses a scenario declaring `resources` rather than executing
 it against a resolver that would never see them.
 
 A `synthesized` scenario MAY carry `assertions`: pointer-addressed comparisons
-evaluated against the emitted OBI document, reusing the same
-`path`/`equals`/`absent`/`oneOf`/`setEquals`/`contains` object and the same
-evaluators the processor corpus already uses. An assertion pins what it names
-and nothing else, which is what keeps it on the authority-defined side of the
-line drawn below under "What a synthesis scenario may pin". Author one only for
-a fact a finding is about: an assertion with no finding behind it is a golden
-file arriving by another route.
+against the emitted OBI using the existing processor assertion verbs.
+An assertion pins what it names and nothing else. For OpenAPI, classify the
+semantic fact separately from reference-selected names or shapes on its path
+as described below. Author an assertion for an identified issue, not as an
+unexplained golden file.
 
 Revision 4 renames the binding identity member `bindingRef` to
 `bindingSelector`, tracking the core rename of the binding member `ref` to
@@ -346,18 +346,17 @@ the sentinel `sourceRef` prefix `ambiguous-ref:` becomes
 `ambiguous-selector:`. `sourceRef` itself is unchanged — it names a
 source-local unit, not the binding member. Nothing else changes.
 
-Revision 5 adds `dependency` as a coverage scope for a source interaction that
-the governing binding specification requires synthesis to represent as a
-targetless Core dependency. A represented dependency entry is identified by
-its authority-defined `sourceRef` and therefore carries neither an operation
-key nor a binding selector. This keeps dependency-key spelling outside the
-portable comparison surface, as the OpenAPI family requires. Revision-4 files
-for families with no dependency scenarios remain valid and unchanged.
+Revision 5 adds `dependency` as a coverage scope for source interactions
+represented as targetless Core dependencies. A represented entry uses its
+source identity and carries neither an operation key nor a binding selector.
+Selecting all inbound slots and exposing these records are reference-tooling
+promises; dependency identity and role direction remain binding meaning.
+Revision-4 files for other families remain valid and unchanged.
 
-A scenario's `source` is shaped directly by Core's binding-source model: it
-declares `location`, `content`, or both. The corpus therefore remains usable by
-any synthesis surface and does not borrow its admissible inputs from a
-separately versioned project interface.
+A scenario's `source` uses Core's binding-source model: `location`, `content`,
+or both. Its artifact representations do not depend on a project interface.
+Its required output ledger still scopes these OpenAPI fixtures to tooling
+offering the full-document reporting behavior described above.
 
 The three scenario counts stated in this file are derived, not maintained by
 hand. `node scripts/count-binding-spec-scenarios.mjs` prints them per family
@@ -366,67 +365,50 @@ corpus disagree; a count worth publishing is worth failing on.
 
 ### What a synthesis scenario may pin
 
-The compared surface stops where it does for a reason, and the reason is worth
-stating so a later widening is argued rather than assumed. **A portable
-binding-specification scenario may require what Core, the governing binding
-specification, or one of its incorporated authorities defines, and must not
-require a project interface's record shape or what every authority delegates
-to an implementation.** Interface-specific expectations belong in that
-interface's own conformance suite.
+A portable binding-conformance assertion may require only what Core, the
+governing binding specification, or an incorporated authority defines.
+Interface-specific expectations belong in the interface's own suite.
+The existing OpenAPI synthesis fixtures also retain explicitly identified
+reference-strategy assertions. Those cannot reject an independent
+generator's otherwise conforming correspondence.
 
-The OpenAPI family specifications now define their synthesis semantics locally:
-target identity, operation-key stability, reference closure, coverage status,
-and creation-time soundness are portable because Core or the governing family
-specification fixes them. Presentation choices that those authorities leave
-free remain nonportable—for example, the name of a generated definition or
-which member of a reference cycle is chosen as a cut point. That is why the
-expected surface is operation-key and target identity plus an exhaustive
-coverage ledger, and why emitted schema content is compared only where a
-governing authority fixes the value being asserted.
+The OpenAPI family defines target identity, reference interpretation,
+confinement, value correspondence, and generation soundness locally. It does
+not require operation-key stability, flat generation, complete inventory,
+public coverage-status spellings, or this report format. A rule citation
+supports the semantic fact it governs, not every field in the fixture.
+The [assertion-scope map](openapi-generation-correspondence.md#reference-fixture-assertion-scope)
+classifies all OpenAPI synthesis expectations, including mixed assertions.
 
-Requiring a name no authority fixes would make conformance mean "matches what we
-built" rather than "matches what the authorities say" — the inversion the
-[binding-specs authoring doctrine](../../binding-specs/README.md) names in its
-authority precedence — and it would fail an implementation that has broken no
-rule. Recording agreement is different from requiring conformance: a retained
-`reasonCode` can help local triage, but because no governing authority fixes its
-spelling, portable adapters MUST ignore it. The portable verdict is carried by
-the status, source position, governing rule, and required configuration facts.
+Requiring a name no authority fixes would turn binding conformance into
+agreement with a chosen implementation. Recording that agreement as a
+reference-tooling regression is different. A normalized observation of a
+source unit, semantic disposition, or required configuration fact does not
+make its public representation mandatory. Diagnostic `reasonCode` spellings
+remain outside the compared surface.
 
 #### The addressing rule for assertions
 
-The same line, stated as a syntactic rule for the one place a scenario now
-reaches into emitted content. **An assertion's `path` may traverse names an
-authority defines and names the artifact itself supplies. It MUST NOT traverse
-a name an implementation mints.**
+For a portable binding-conformance claim, traversing an emitted name does
+not make that name compulsory unless an authority fixes it. Existing OpenAPI
+reference assertions may retain chosen names and shapes. Their conditional
+semantic fact and their additional strategy expectation must be separated.
 
-- Authority-defined: the core document model's members (`operations`, `input`,
-  `output`, `bindings`), members the governing binding specification defines,
-  and the JSON Schema dialect's keywords (`properties`, `items`, `allOf`,
-  `$defs`, `example`).
-- Artifact-supplied: an operation identifier the artifact declares, a property
-  or parameter name it declares, a media type it declares.
-- Minted, and therefore out of bounds: a generated or qualified `$defs`
-  cut-point key, and any operation-facing field name the artifact does not
-  supply — the OpenAPI siblings send deterministic generation of the
-  operation-facing field names to synthesis, so the wrapper property a
-  whole-value body rides under is the implementations' own name. Both the
-  [binding-specs authoring doctrine](../../binding-specs/README.md) and
-  [`ABSTRACTION-FIDELITY.md`](../../ABSTRACTION-FIDELITY.md) place a "synthesis
-  naming convention" outside every specification, so requiring a third-party
-  implementation to reproduce such a name would make conformance mean "matches
-  what we built".
+- Authority-defined members include Core's document model and JSON Schema
+  keywords. Their meaning remains portable.
+- Artifact-supplied operation identifiers, parameter names, and media types
+  retain their source meaning. This does not require reusing them as Core
+  operation keys or operation-facing fields.
+- Strategy-selected keys, schema factoring, and generated field names may be
+  checked for reference-tooling regression. The chosen spelling is not
+  binding conformance; references and value correspondence must remain sound.
 
-The rule has a known cost, recorded rather than worked around, and it is paid
-twice in the corpus as it stands. A property an authority *does* define but
-that is reachable only through a minted name cannot be asserted with today's
-five verbs: "these are exactly the definitions" and "no extra definition
-appeared" are the worked cases, which is why the `$defs` reachability closure
-behind `OAPI31-SS-19` stays pinned by SDK-local twin tests instead. And
-`OAPI31-SS-27` carries no assertion at all, because the value its case is about
-rides the synthesizer-named whole-body property. Both stay there until the
-vocabulary gains a name-independent verb, which is a decision in its own right
-and not one an authoring pass may take.
+A name-independent comparison of generated schema graphs would require
+additional harness design. This cleanup does not introduce it or add a
+new assertion verb. Existing SDK-local checks such as the `$defs` closure
+case behind `OAPI31-SS-19` and the whole-body naming case behind
+`OAPI31-SS-27` remain where they are. They neither prescribe those names
+for independent generators nor weaken the soundness of emitted schemas.
 
 ## Fixture file format
 
@@ -494,12 +476,12 @@ binding-specs/
   README.md            (this file)
   fixture.schema.json  (shared fixture shape for all ten specifications)
   processor-scenario.schema.json (portable P-rule scenario shape)
-  synthesis-scenario.schema.json (portable artifact-to-OBI scenario shape)
+  synthesis-scenario.schema.json (shared reference-authoring scenario shape)
   adjudication.schema.json (discrepancy-disposition record shape)
   adjudications.json    (review decisions from corpus findings)
   processor/            usage.json, openapi-{2.0,3.0,3.1,3.2}.json, asyncapi.json,
                         mcp.json, grpc.json, connect.json, graphql.json
-  synthesis/            one portable authoring file per published specification
+  synthesis/            one reference-authoring file per indexed specification
   usage/               USAGE-D-01.json ... USAGE-D-03.json
   openapi-2.0/         OAPI20-D-01.json ... OAPI20-D-02.json
   openapi-3.0/         OAPI30-D-01.json ... OAPI30-D-02.json
@@ -549,7 +531,9 @@ processor/synthesis scenarios — those are the jobs of family processors,
 adapters, and semantic acceptance review.
 
 The cross-implementation acceptance workflow checks out both reference SDKs and
-invokes their portable processor and synthesis adapters. A passing job is
+invokes their processor and reference-authoring adapters. OpenAPI synthesis
+results include the reference strategy's additional promises, not just the
+binding's minimum requirements. A passing job is
 evidence only for scenarios the pinned adapter revision actually loads, so its
 executed counts must equal the current corpus before the result is called complete.
 The SDK repositories can run the same corpus independently. Adapter lag is

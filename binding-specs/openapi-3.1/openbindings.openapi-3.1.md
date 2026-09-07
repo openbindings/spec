@@ -72,13 +72,13 @@
 
 ### 3.2 Closed load gates and confined defects
 
-**[convention]** Source loading, target addressability, synthesis accounting, and invocation outcome are independent axes. A result on one axis changes another only where a rule in this document states that propagation explicitly.
+**[convention]** Source loading, target addressability, generation correspondence, and invocation outcome are independent axes. A result on one axis changes another only where a rule in this document states that propagation explicitly. Invoking a binding requires neither OBI generation nor a generation report.
 
 **[convention]** A source **refuses at load** only at §3.2's closed gates. After those gates, a source **refuses as a source** only when its required inventory surface is defective or when inventory or reference defects prevent every declared target position from becoming addressable. A source-level **exclusion** instead declines an upstream-valid feature under a stated coverage limit; it is not a defect-derived source refusal.
 
 **[convention]** An **addressable target** is a structurally declared operation slot that survives inventory and reference processing. A declaration defect at that target or below does not erase its addressability. A `selector` naming an addressable target therefore resolves even when that target is later accounted invalid or excluded; a selector reaching no addressable target does not resolve and invocation **refuses at resolution** ([RFC 6901 §7](https://www.rfc-editor.org/rfc/rfc6901#section-7)).
 
-**[convention]** Synthesis accounts a target or subordinate projection as **represented** when its portable meaning is preserved; **invalid** when its owning declaration is upstream-invalid; **excluded** when this specification removes an upstream-valid unit under a stated exclusion; **lossy** when translation loses declared meaning; or **implementation-unsupported** when the specification defines the behavior but the synthesizer lacks the capability. A represented target MAY have a separately invalid, excluded, or lossy subordinate projection. Every invalid, excluded, lossy, or unsupported unit is **coverage loss** at that unit.
+**[convention]** For generation correspondence, a target or subordinate projection is **represented** when its portable meaning is preserved; **invalid** when its owning declaration is upstream-invalid; **excluded** when this specification removes an upstream-valid unit under a stated exclusion; **lossy** when translation loses declared meaning; or **implementation-unsupported** when the specification defines the behavior but the synthesizer lacks the capability. A represented target MAY have a separately invalid, excluded, or lossy subordinate projection. Every invalid, excluded, lossy, or unsupported unit is **coverage loss** at that unit.
 
 **[convention]** An addressable target that requires a missing choice or unsupported alternative is **unusable** and **refuses before dispatch** when invoked. A **context-required** refusal names a configuration point or credential that can make the same invocation proceed; a plain **refusal** names a condition no supplied context can change. Neither reaches the wire or has an observable side effect. Presentation of either refusal is context negotiation outside this specification (Core [§6](../../openbindings.md#6-binding-specifications)).
 
@@ -92,7 +92,7 @@
 
 **[limit]** **§3.2's smallest-owner rule**: after those gates pass, a defect confines to its smallest owning unit, and an unreachable defect destroys no target.
 
-**[limit]** How a processor names or presents a confined defect is not portable meaning of this identifier. It MUST identify the affected unit and responsible declaration position well enough to make the confinement observable, but this specification defines no defect-class taxonomy, per-class authority citation, or per-defect coverage-entry vocabulary.
+**[limit]** A confined defect has the specified effect at its smallest owning unit regardless of how a processor presents it. This specification requires no public source-position diagnostic, defect-class taxonomy, per-class authority citation, or per-defect coverage entry. Diagnostic presentation is optional; the refusal, no-dispatch effect, and treatment of unaffected siblings are not. This does not waive applicable Core reporting duties ([OBI-T-05](../../openbindings.md#103-tool-rules), [OBI-T-17](../../openbindings.md#103-tool-rules)).
 
 **[limit]** An **excluded** unit, and equally a unit removed as **invalid**, is removed from the effective declarations consumed below its owning boundary: no serialization, routing, or translation rule reads it as usable input. Removal does not erase a structurally addressable target slot. A selector naming an invalid or excluded target still resolves and invocation refuses before dispatch. A target whose remaining effective declarations no longer satisfy §8's path-template correspondence is itself excluded.
 
@@ -102,7 +102,7 @@
 
 **[limit]** **§3.2's source-refusal rule**: after the closed load gates, a source refuses as a source when the required root inventory surface is missing or malformed, or when the artifact declares at least one target slot but inventory or reference defects prevent every slot from becoming addressable. A target-confined invalidity or exclusion never contributes to this aggregation: even when every addressable target is invalid or excluded, the source remains accepted and each selector still resolves to its own pre-dispatch refusal. A valid present-but-empty surface is accepted and synthesizes zero operations. OAS 3.1.2 requires at least one of `paths`, `components`, or `webhooks`, so a source omitting all three refuses as a source ([OAS 3.1.2 §§3.1, 4.8.1.1](https://spec.openapis.org/oas/v3.1.2.html#openapi-object)).
 
-**[limit]** A target that is addressable but unusable because of a missing choice, unsupported alternative, or exclusion refuses before dispatch or is reported as synthesis coverage loss; it never becomes a source refusal.
+**[limit]** A target that is addressable but unusable because of a missing choice, unsupported alternative, or exclusion refuses before dispatch when invoked; it never becomes a source refusal. Its generation classification follows the separate rules for prerequisites and coverage loss, not the presence or absence of a report.
 
 **[limit]** This revision has one source-scope exclusion: §5.2 excludes a source whose root `jsonSchemaDialect` selects an unincorporated dialect. That upstream-valid feature exclusion is distinct from §3.2's defect-derived source refusal. No source member or addressable target is otherwise filtered merely by its position in the source.
 
@@ -161,7 +161,7 @@
 | **[convention]** Unresolvable selected Path Item `$ref` |
 | **[convention]** Unresolvable reference reached by one selected parameter, request body, response, server, or security requirement |
 | **[convention]** Unresolvable Schema Object reference reached only by one media alternative |
-| **[limit]** An unresolvable reference reachable only from an unused description position leaves invocation unaffected; synthesis reports that position as coverage loss. |
+| **[limit]** An unresolvable reference reachable only from an unused description position leaves invocation unaffected; the position is coverage loss in any derivation that includes it. |
 | **[limit]** A defect outside the target-plus-reachable closure has no effect on that target. |
 
 **[limit]** In table order, the three confinement conditions confine as follows: the referenced Path Item and its operations are unaddressable; the selected operation or its affected declared alternative is unusable while unrelated operations survive; or the affected media alternative is unavailable while sibling alternatives survive.
@@ -200,9 +200,9 @@
 
 **[incorporated]** A callback Path Item describes a request initiated by the service and expected responses, while a root webhook describes an incoming request the API consumer may implement; neither is an operation invocable through the addressed parent operation ([OAS 3.1.2 §§4.8.1.1, 4.8.10.1, 4.8.18](https://spec.openapis.org/oas/v3.1.2.html#oas-webhooks)).
 
-**[convention]** Synthesis MUST represent every callback and webhook operation that §3.2 does not exclude as a Core dependency with a deterministic slot-derived key and a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.6](../../openbindings.md#56-dependencies)).
+**[convention]** When generation represents a callback or webhook operation, it emits a Core dependency with a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.6](../../openbindings.md#56-dependencies)). Selecting a parent operation does not require generating its callbacks.
 
-**[convention]** `Deterministic slot-derived key` requires only that the key be a deterministic function of the declaration slot; its exact spelling is synthesis policy under §12.2 and is not portable binding meaning. The dependency contract's shape is likewise synthesis policy; only the role-inverted input/output meaning above is fixed here.
+**[convention]** Dependency key spelling and contract shape are generation policy under §12.2. Each emitted dependency preserves the identity of its distinct source consumption point, its role-inverted input/output meaning, and consistent references; distinct consumption points are not merged merely to share a key. This specification requires no slot-derived naming algorithm.
 
 **[incorporated]** Such a dependency carries no concrete target (Core [§5.6](../../openbindings.md#56-dependencies)).
 
@@ -212,13 +212,13 @@
 
 **[limit]** Dependencies add no invocation behavior to this binding; receiver deployment and dependency composition are permanently outside this operation boundary under this identifier (Core [§1.2](../../openbindings.md#12-out-of-scope)).
 
-## 7. Target interaction and caller envelope
+## 7. Target interaction and binding-facing envelope
 
 **[convention]** Here and below, an **effective** declaration is the declaration that remains after applying the artifact's scope, default, and override rules stated in §§8–10.
 
 **[incorporated]** An addressed operation denotes its declared HTTP method, completed target URL, parameters, optional request body, security requirements, and final HTTP response. The method is the Path Item field name that selects the Operation Object, and the target URL is composed from the effective Server Object's URL with the Paths Object key ([OAS 3.1.2 §4.8.10](https://spec.openapis.org/oas/v3.1.2.html#operation-object), [§4.8.9](https://spec.openapis.org/oas/v3.1.2.html#path-item-object), [§§4.8.5, 4.8.8](https://spec.openapis.org/oas/v3.1.2.html#server-object)).
 
-**[convention]** The caller-facing correspondence value is exactly `{parameters?: {...}, body?: <one JSON value>}`; absence means not supplied, `body: null` is a supplied JSON null, and the artifact alone determines parameter location and serialization.
+**[convention]** The binding-facing input value is exactly `{parameters?: {...}, body?: <one JSON value>}`; absence means not supplied, `body: null` is a supplied JSON null, and the artifact alone determines parameter location and serialization.
 
 **[convention]** The same absent-versus-supplied rule reaches into the `parameters` member: an absent key is not supplied, and a key present with `null` is a supplied JSON null, which satisfies a required parameter and is never missing under the requirement rule below; it then serializes under §8.1's undefined-value rule, on a `path` parameter too, whose `undefined` cell this specification does not override — a null `simple` path parameter expands to an empty segment and the completed target is dispatched with it.
 
@@ -242,7 +242,7 @@
 
 **[convention]** On the permitted-but-undefined methods the binding preserves a supplied declared body rather than deleting it, since the edition's own disposition is advice to authors (`SHOULD be avoided`) and not a consumer instruction to drop content; a supplied `body` on `trace` refuses as unroutable before dispatch.
 
-**[limit]** On such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it. The target is therefore invocable, not permanently unusable; the declaration is reported as coverage loss at the Request Body position ([RFC 9110 §9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.8)).
+**[limit]** On such a content-forbidding method the artifact's `required: true` request body creates no caller-body requirement, so a body-free invocation dispatches and the preceding `incorporated` rule's missing-required-body refusal does not reach it. The target is therefore invocable, not permanently unusable; the declaration is coverage loss at the Request Body position ([RFC 9110 §9.3.8](https://www.rfc-editor.org/rfc/rfc9110#section-9.3.8)).
 
 ## 8. Parameter serialization
 
@@ -290,7 +290,7 @@
 
 **[incorporated]** RFC 6570 serialization MUST use its declared operator and `*` for `explode: true`, and a non-exploded label list or map uses a comma. Multiple regular form-style query parameters share one `?` variable list; separately expanding multiple `?` templates is not conformant ([OAS 3.1.2 §§C.1–C.2](https://spec.openapis.org/oas/v3.1.2.html#equivalences-between-fields-and-rfc6570-operators), [OAS 3.1.2 §4.8.12.6](https://spec.openapis.org/oas/v3.1.2.html#style-examples), [RFC 6570 §3.2.5](https://www.rfc-editor.org/rfc/rfc6570#section-3.2.5)).
 
-**[pin]** Appendix C.3 says implementations MAY create a properly delimited URI Template for configurations with no direct RFC 6570 equivalent; this specification pins that latitude to a requirement, because RFC 6570 prefix operators cannot combine: a query mixing regular form expansion with `allowReserved: true` MUST be constructed manually per parameter, reserved-permitting values using reserved expansion and `[`, `]`, `#`, `&`, `=`, and `+` pre-percent-encoded where Appendix C.4.2 requires ([OAS 3.1.2 §§C.3–C.4.2](https://spec.openapis.org/oas/v3.1.2.html#non-rfc6570-field-values-and-combinations)).
+**[pin]** Appendix C.3 says implementations MAY create a properly delimited URI Template for configurations with no direct RFC 6570 equivalent; this specification requires the corresponding per-parameter result, because RFC 6570 prefix operators cannot combine: a query mixing regular form expansion with `allowReserved: true` MUST have the same contributions as manual per-parameter construction, reserved-permitting values using reserved expansion and `[`, `]`, `#`, `&`, `=`, and `+` pre-percent-encoded where Appendix C.4.2 requires ([OAS 3.1.2 §§C.3–C.4.2](https://spec.openapis.org/oas/v3.1.2.html#non-rfc6570-field-values-and-combinations)). This is an as-if result requirement, not a required implementation technique: no URI Template object or manual runtime assembly is required when another algorithm produces the same specified contributions and assembled query.
 
 **[convention]** The manual path assembles all present per-parameter contributions into one query component with one leading `?` and `&` between contributions; this assembled result is the single-query rule's equivalent at the authority's construction seam.
 
@@ -430,7 +430,7 @@
 
 **[exclusion]** A concrete request or response selection admitted by none of §3.2's six lanes is excluded at its smallest media owner because OAS supplies no value-to-bytes mapping; the exclusion reopens only if an incorporated authority defines that media/data-form cell.
 
-**[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; only a tool that separately claims validation owes Core's validation rules (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
+**[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; Core's operation-contract validation rule applies to a tool's separate claim of validation against an operation contract, not to a native OAS Schema Object validation claim (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)).
 
 ### 9.3 Form bodies and multipart parts
 
@@ -626,7 +626,7 @@
 
 **[convention]** A completed target whose scheme is not `http` or `https` refuses before dispatch, whether the scheme came directly from the artifact or a Server Variable substitution, because no incorporated authority defines that scheme's HTTP-semantics mapping. The completed target can still be changed by another effective `server` choice or by the complete configured URL below, so the operation stays addressable and represented and no declaration is excluded. This refusal rule reopens only if an incorporated authority defines that mapping.
 
-**[configuration point]** Whenever declaration-derived defaults and alternatives leave no completed `http` or `https` target but §10's complete-URL replacement can recover the operation, `configuration.server` is an actual requirement. Synthesis MUST record that requirement on the represented target, and invocation without a conforming replacement refuses before dispatch while awaiting `configuration.server` rather than excluding the target.
+**[configuration point]** Whenever declaration-derived defaults and alternatives leave no completed `http` or `https` target but §10's complete-URL replacement can recover the operation, `configuration.server` is an actual requirement. That requirement belongs to the represented target whether or not generation reports it, and invocation without a conforming replacement refuses before dispatch while awaiting `configuration.server` rather than excluding the target.
 
 **[configuration point]** The `server` configuration point MAY instead supply one complete consumer-configured URL. That URL is itself a valid `server` value and by itself discharges any required member choice; it MUST use `http` or `https`, have a nonempty host, and contain no userinfo, query, or fragment. It replaces the resolved server base, and the operation's path bytes join to it under the preceding boundary rule; the artifact's path template, path substitution, query construction, method, parameters, body, response, and security semantics remain unchanged.
 
@@ -684,21 +684,23 @@
 
 **[configuration point]** Every requirement is typed and discoverable from declarations. Preflightability is bounded: a requirement whose applicability is fixed by declarations alone is preflightable as an actual requirement, while `requestMedia` and `parameterConversion` are conditional on supplied values and are preflightable only as POSSIBLE requirements — a preflight can name them and their type but cannot know whether a given invocation will trigger them. No configuration member appears in the caller envelope or operation contract. Decoding and response classification are fixed rules rather than configuration points, and §9.4 treats codec availability as runtime capability.
 
-### 12.2 Synthesis boundary and coverage
+### 12.2 Generation correspondence and reporting
 
-**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)) and MAY remain flat (Core [§5.5](../../openbindings.md#55-transforms)).
+**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§5.5](../../openbindings.md#55-transforms)).
 
-**[convention]** Synthesis emits an `inputTransform` that constructs §7's envelope, and transforms never route values to HTTP locations.
+**[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit Core `inputTransform` or `outputTransform` wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
 
 **[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
-**[limit]** Synthesis emits flat protocol-neutral operation contracts together with an `inputTransform` that constructs §7's envelope: the envelope is the binding-boundary value, never the emitted operation contract, and qualified location-keys appear only in the transform's output. §12.2 licenses `inputTransform` and `outputTransform` as synthesis outputs, and operation/dependency key spelling, flattening, output-schema choice, and Schema Object translation as synthesis policy; no other input-restructuring apparatus exists under this identifier.
+**[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond Core's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
 
-**[convention]** Schema Object translation preserves the declared value domain up to representability: a synthesizer MUST account a lossy or non-equivalent Schema Object translation as coverage loss at its owning position, and output-schema choice carries no further soundness latitude.
+**[convention]** Schema Object translation preserves the declared value domain up to representability. A lossy or non-equivalent translation is coverage loss at its owning position and MUST NOT be presented as faithful representation of that meaning. When generated output cannot represent schema meaning, the tool surfaces that limitation under Core [OBI-T-05](../../openbindings.md#103-tool-rules); this requires no particular report format. Output-schema choice carries no further soundness latitude.
 
-**[convention]** A synthesizer MUST account for every addressable operation and every callback/webhook dependency using exactly one status defined by §3.2: `represented`, `invalid`, `excluded`, `lossy`, or `implementation-unsupported`. The status vocabulary and spellings are normative within this binding specification and do not depend on an interface-synthesizer contract; an interface may encode them differently only if it preserves their stated meaning. A failure in an unused description position is coverage loss rather than invocation behavior.
+**[convention]** Generation MAY select which operations, dependencies, or subordinate projections to derive. It need not produce an exhaustive inventory, a coverage report, selection metadata, or a public status vocabulary. Selection does not waive source interpretation, confinement, or the requirements of an emitted correspondence. Any claim of complete coverage MUST be true for the scope it claims; a tool need not make that claim. A complete-source claim cannot silently mean only the emitted subset. Deliberately unselected material need not be individually reported, but selection does not excuse undisclosed loss in meaning the output claims to represent.
 
-**[convention]** Every binding-specific configuration requirement remains in coverage accounting and invocation context, assigned to its represented target or declared alternative, and MUST NOT enter the operation input schema.
+**[convention]** In this document, `represented`, `invalid`, `excluded`, `lossy`, `implementation-unsupported`, and coverage accounting describe §3.2's semantic distinctions, not required public fields or spellings. Rules that account a unit or preserve a sibling constrain interpretation of that material; they do not mandate selecting it for generation. A failure in an unused description position is coverage loss rather than invocation behavior. Generation and reporting require no project interface contract.
+
+**[convention]** Every binding-specific configuration requirement remains a fact of its represented target or declared alternative and is supplied through invocation context; it MUST NOT enter the operation input schema. Whether generation reports that fact does not change its applicability, type, or declaration-derived discoverability under §12.1.
 
 **[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.6](../../openbindings.md#56-dependencies)).
 
@@ -718,7 +720,7 @@
 
 **[convention]** A processor conforms to **OAPI31-P-04** when it resolves servers and complete target URLs under §10 and security alternatives, credentials, prerequisites, and channel collisions under §11.
 
-**[convention]** A processor conforms to **OAPI31-P-05** when §3.2's source, addressability, synthesis-status, and invocation-outcome axes remain independent, including source-scope dialect exclusion and an all-invalid target inventory.
+**[convention]** A processor conforms to **OAPI31-P-05** when §3.2's source, addressability, generation-classification, and invocation-outcome axes remain independent, including source-scope dialect exclusion and an all-invalid target inventory.
 
 **[convention]** A processor conforms to **OAPI31-P-06** when §5.2 preserves `$dynamicRef`'s runtime dynamic scope by excluding only a schema-inspected owner and leaving type-uninspected JSON carriage unaffected.
 
@@ -828,13 +830,15 @@
 
 **[convention]** A processor conforms to **OAPI31-P-59** when §8.1 and §9.3 keep scalar conversion on the RFC 6570-style path separate from content-based media serialization: a number or boolean selected as content-based `text/plain` uses the binding-fixed lexical form without `parameterConversion`, while the same value on an explicitly style-selected Encoding path still requires that configuration.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-01** when it preserves §12.2's binding/transform boundary, emits §6.2's targetless unconstrained dependencies, accounts every lossy or non-equivalent Schema Object translation as coverage loss, and reports complete coverage under Core OBI-B-02.
+**[convention]** The generation rules below apply to correspondences derived from the affected source material, not to a mandatory selection or reporting scope (§12.2). Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) tests completeness of this binding specification, not coverage of a generator's output.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-02** when it uses §3.2's locally defined status vocabulary for sources, targets, dependencies, and subordinate projections without depending on any project interface contract.
+**[convention]** A synthesizer conforms to **OAPI31-S-01** when its emitted correspondences preserve §12.2's operation/binding/transform boundary and schema-translation soundness, including truthful generation claims, and its emitted dependencies preserve §6.2's role-inverted, targetless, unconstrained correspondence.
+
+`OAPI31-S-02` is retired and reserved: §3.2's semantic distinctions no longer require a public generation-report vocabulary. Remaining generation rule identifiers are unchanged.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-03** when §9.5's declared body projection for a no-content response is subordinate `excluded` coverage while the operation remains represented.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-04** when it reports §8.3's non-token cookie parameter and §9.4's non-token response Header Object key at their specified smallest owners and propagates only their required forms.
+**[convention]** A synthesizer conforms to **OAPI31-S-04** when it confines §8.3's non-token cookie parameter and §9.4's non-token response Header Object key at their specified smallest owners and propagates only their required forms.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-05** when §6.1 represents an otherwise usable operation whose Responses Object is `default`-only and projects that fallback Response Object normally.
 
@@ -844,7 +848,7 @@
 
 **[convention]** A synthesizer conforms to **OAPI31-S-08** when §§8.3 and 11 remove only statically unavoidable parameter or credential combinations, preserve non-colliding OR alternatives, and never treat an optional collision as a static exclusion.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-09** when §10 retains a target recoverable from unusable Server alternatives and records its actual `configuration.server` requirement.
+**[convention]** A synthesizer conforms to **OAPI31-S-09** when §10 retains a target recoverable from unusable Server alternatives and preserves its actual `configuration.server` prerequisite.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-10** when §11 excludes binding-carried credential alternatives from TRACE while retaining an anonymous or mutual-TLS alternative, and excludes the target only when no complete safe alternative remains.
 
@@ -858,9 +862,9 @@
 
 **[convention]** A synthesizer conforms to **OAPI31-S-15** when §10 accounts an absent or wrong-typed required Server Variable `default`, empty `enum`, or out-of-enum default as an `invalid` Server alternative while retaining each target recoverable through `configuration.server`.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-16** when §10 preserves a Server URL expression without a matching Server Variable Object, represents the target, and records its actual `configuration.server` requirement rather than excluding the alternative.
+**[convention]** A synthesizer conforms to **OAPI31-S-16** when §10 preserves a Server URL expression without a matching Server Variable Object, represents the target, and preserves its actual `configuration.server` prerequisite rather than excluding the alternative.
 
-**[convention]** A synthesizer conforms to **OAPI31-S-17** when §7 derives the operation input from the post-confinement effective parameter set, leaving a surviving same-named cross-location parameter unqualified when its only collision was removed.
+**[convention]** A synthesizer conforms to **OAPI31-S-17** when its generated correspondence uses §7's post-confinement effective parameter set and binding-facing keys, leaving a surviving same-named cross-location parameter unqualified when its only collision was removed.
 
 **[convention]** A synthesizer conforms to **OAPI31-S-18** when §9.3 preserves an admissible artifact-fixed literal multipart `filename` and accounts a fixed `filename*` exclusion at its media-alternative owner.
 
@@ -885,13 +889,15 @@ This section collects the points at which two implementations conforming to `ope
 | a JSON-lane number outside binary64: preserved as the supplied mathematical value, or reduced to the nearest finite binary64 value | §9.2 | the permitted set has exactly these two members; no other deviation from the supplied value is permitted, and a conformant implementation never fails or refuses for range or precision alone |
 | which character encoders or decoders beyond UTF-8 an implementation supports | §9.2 | UTF-8 MUST be supported in both directions; further directions are independent capabilities, with request absence or failure refusing before dispatch and response absence or failure reported loudly |
 | which content codings a runtime can encode and decode | §9.4 | the actual field still fixes the ordered stack; an absent capability refuses before dispatch on a request and fails loudly on a response, and no coding is skipped or inferred from an artifact declaration |
-| how a processor names or presents a confined defect | §3.2 | the affected unit and responsible declaration position remain observable; no defect-class taxonomy, per-class citation, or per-defect coverage vocabulary is portable |
+| whether and how a processor presents detailed diagnostics | §3.2 | the same affected unit, refusal, and unaffected sibling behavior; applicable Core reporting duties remain |
+| which source material generation selects and whether it emits a coverage report | §12.2 | source interpretation, emitted-correspondence soundness, and truthful claims; no mandatory inventory or selection metadata |
+| implementation technique for mixed regular/reserved query expansion | §8.2 | the same required per-parameter contributions, escaping, omission, and assembled query |
 | content-based form-urlencoded bytes: SPACE written `+` or `%20`, and `~` written literally or as `%7E` | §9.3 | every member of the declared set percent-decodes, under form-urlencoded decoding, to the supplied value; every other RFC 3986 unreserved byte stays literal and every other UTF-8 byte is uppercase `%HH` |
 | multipart part order across distinct properties | §9.3 | repeated parts for one array property preserve element order, and property-to-name membership is fixed |
 | the multipart boundary token, and the optional quoting the incorporated grammar permits for it on the media-type field | §9.3 | the entity framing itself — opening, inter-part, and closing delimiters — and that the token appears inside no encapsulated part |
 | whether a runtime follows a redirect, and what it advertises in transport content negotiation | §9.5 | classification depends on the final status; a redirect followed with the bound method and complete body preserved remains this interaction, a method-rewriting redirect is a final response of it, and the binding emits no negotiation field beyond those this specification pins |
 | the order of structured cookie contributions | §11 | membership is preserved and the join is `name=value` separated by `; ` |
-| operation and dependency key spelling, contract flattening, output-schema choice, and Schema Object translation | §6.2, §12.2 | these are synthesis policy rather than portable binding meaning; a dependency key remains a deterministic function of its declaration slot, the role-inverted input/output meaning of §6.2 is fixed, and a lossy or non-equivalent Schema Object translation is accounted as coverage loss |
+| operation/dependency key spelling, flat or nested contracts, output-schema choice, and Schema Object translation | §6.2, §12.2 | faithful correspondence, explicit necessary Core transforms, distinct role-inverted dependencies, and disclosure of unrepresentable schema meaning |
 | the serialized bytes of any JSON image this specification emits — a JSON-lane request body, a content-form parameter value, or a compound form or multipart property riding as `application/json`: object member order, insignificant whitespace, which of `\uXXXX` or a literal the escapable characters take, and the lexical spelling of a number whose value is fixed | §9.2 | the JSON **value** is identical, which is what this specification fixes and what every rule of it is stated over; RFC 8259 constrains the grammar and not the choice among its equivalent spellings, so this latitude reaches wire bytes and reaches no value, no assertion, and no outcome |
 
 **Configuration points.** Six, enumerated at §12.1 and no others. None appears in the caller envelope or the operation contract, and none is inferred from a supplied value.
@@ -947,18 +953,18 @@ This section collects the points at which two implementations conforming to `ope
 | not covered or confined | where |
 | --- | --- |
 | a closed ordered set of four conditions; no condition outside it is a load gate | §3.2 load gates |
-| no portable defect-class taxonomy, per-class authority citation, or per-defect coverage-entry vocabulary; only the affected unit and responsible declaration position are required to remain observable | §3.2 diagnostics |
+| no required public source-position diagnostic, defect taxonomy, per-class citation, or coverage-entry format | §3.2 diagnostics |
 | after the gates a defect confines to its smallest owning unit, and an unreachable defect destroys no target | §3.2 smallest-owner rule |
 | an excluded unit leaves the effective declarations of every rule here; a selector naming it still resolves, and the invocation refuses before dispatch | §3.2 excluded units |
 | after the load gates, fires only for a missing or malformed required inventory surface, or inventory/reference defects that prevent every declared target slot from becoming addressable; target-confined invalidity never aggregates into it | §3.2 source refusal |
-| an addressable-but-unusable target refuses before dispatch or is reported as coverage loss, and never becomes a source refusal | §3.2 unusable targets |
+| an addressable-but-unusable target refuses before dispatch when invoked and never becomes a source refusal; generation classification is a separate axis | §3.2 unusable targets |
 | exactly §5.2's root-dialect exclusion exists; no other source member or addressable target is filtered merely by its position in the source | §3.2 source-scope filtering |
 | an unknown non-extension field creates no binding behavior, `x-` extensions stay inert, and no unknown member is guessed into a fixed or patterned field | §3.2 unknown fields |
-| an unresolvable reference there leaves invocation unaffected and is reported as synthesis coverage loss | §5.1 unused description positions |
+| an unresolvable reference there leaves invocation unaffected and is coverage loss in a derivation that includes it | §5.1 unused description positions |
 | a defect outside the target-plus-reachable closure has no effect on that target | §5.1 defects outside the closure |
 | the three conditions confine to exactly the three consequences stated in table order | §5.1 confinement consequences |
 | add no invocation behavior; receiver deployment and dependency composition are permanently outside this operation boundary | §6.2 dependencies |
-| creates no caller-body requirement: a body-free invocation dispatches, and the declaration is reported as coverage loss | §7 required body on a content-forbidding method |
+| creates no caller-body requirement: a body-free invocation dispatches, and the declaration is coverage loss | §7 required body on a content-forbidding method |
 | a colliding identity supports no selection through it: a request selection refuses before dispatch, a response selection on a successful response is a loud protocol error (the failure side follows the best-effort failure-body rule), and map order never breaks the tie | §9.1 normalized media collisions |
 | create no operation input or output member and never select a declaration, carriage lane, or media type | §9.1 examples |
 | interoperable within RFC 8259 §6's binary64 expectation, over the two-member permitted set indexed above | §9.2 JSON-lane numbers |
@@ -979,7 +985,7 @@ This section collects the points at which two implementations conforming to `ope
 | the operation remains addressable and represented, the invocation refuses before dispatch, and a complete configured HTTP(S) URL remains the recovery; no declaration is excluded | §10 non-HTTP completed target |
 | an absent or wrong-typed required `default`, empty enum, or out-of-enum default is upstream-invalid and confined to its Server alternative while the target remains represented when complete-URL recovery exists | §10 malformed Server Variable Object |
 | remain visible as a consumer prerequisite; no credential bytes are synthesized for them | §11 other HTTP authentication schemes |
-| synthesis emits flat contracts plus an `inputTransform`; no other input-restructuring apparatus exists under this identifier | §12.2 input restructuring |
+| generation chooses contract structure and uses explicit Core transforms when needed; this binding provides no hidden restructuring | §12.2 input restructuring |
 | an empty or extension-only object is upstream-invalid and confined to the selected target before any response or caller value is inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact declaration | §6.1 Responses Object without a response declaration |
 | an upstream-invalid declaration confined to the smallest owning operation, accounted invalid; reopens only if an incorporated OAS edition admits such duplicates | §7 duplicate effective parameters |
 | an upstream-invalid declaration confined to the selected target, before caller values are inspected, accounted invalid; reopens only if an incorporated OAS 3.1 edition admits the exact malformed declaration or defines its wire meaning | §8.1 malformed Parameter Object |

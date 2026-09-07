@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.1@1",
   "family": "openapi-3.1",
-  "description": "OpenAPI 3.1 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "description": "Reference-tooling full-document OpenAPI 3.1 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI31-SS-01",
@@ -121,7 +121,7 @@
     },
     {
       "id": "OAPI31-SS-02",
-      "description": "A parameter/body-property collision is preserved because the synthesized flat contract maps through inputTransform to disjoint parameters and body envelope members, so both media alternatives remain represented [CO31-03].",
+      "description": "Reference-generator strategy (not mandatory contract shape): A parameter/body-property collision is preserved because the synthesized flat contract maps through inputTransform to disjoint parameters and body envelope members, so both media alternatives remain represented [CO31-03].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -223,7 +223,7 @@
     },
     {
       "id": "OAPI31-SS-03",
-      "description": "A required body property colliding with a parameter remains independently callable because synthesis maps its flat contract through inputTransform to disjoint envelope members [CO31-03].",
+      "description": "Reference-generator strategy (not mandatory contract shape): A required body property colliding with a parameter remains independently callable because synthesis maps its flat contract through inputTransform to disjoint envelope members [CO31-03].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -896,7 +896,7 @@
     },
     {
       "id": "OAPI31-SS-12",
-      "description": "A declaration-complex exact JSON request remains fully represented: synthesis owns the flat operation contract and emits inputTransform to the envelope's one body value; the binding has no declaration-complex correspondence trigger [CO31-03].",
+      "description": "Reference-generator strategy (not mandatory contract shape): A declaration-complex exact JSON request remains fully represented: synthesis owns the flat operation contract and emits inputTransform to the envelope's one body value; the binding has no declaration-complex correspondence trigger [CO31-03].",
       "source": {
         "bindingSpec": "openbindings.openapi-3.1@1",
         "content": {
@@ -4583,8 +4583,7 @@
       "id": "OAPI31-SS-51",
       "rules": [
         "OAPI31-P-05",
-        "OAPI31-S-01",
-        "OAPI31-S-02"
+        "OAPI31-S-01"
       ],
       "description": "A source whose sole addressable operation is upstream-invalid is still accepted and synthesized; the target is accounted invalid rather than being reclassified as a whole-source refusal.",
       "source": {
