@@ -2,8 +2,8 @@
   "rule": "GQL-D-02",
   "bindingSpec": "openbindings.graphql@1",
   "section": "3.1",
-  "description": "Every such source carries a `content` object with exactly §3.1's members: a string `document`, an optional `schema` that is a string or an object, and an optional `subscriptions` object of exactly `transport` and `location` whose transport and location scheme pair as §3.1 states, and no other member.",
-  "notes": "§3.1: discrimination between the two schema representations is by JSON type; the subscriptions member is OPTIONAL in the shape and its absence is never a load gate (its consequence is operation-scoped under §3.1 and §9).",
+  "description": "Every such source carries a `content` object with exactly \u00a73.1's members: a string `document`, an optional `schema` that is a string or an object, and an optional `subscriptions` object of exactly `transport` and `location` whose transport and location scheme pair as \u00a73.1 states, and no other member.",
+  "notes": "\u00a73.1: discrimination between the two schema representations is by JSON type; the subscriptions member is OPTIONAL in the shape and its absence is never a load gate (its consequence is operation-scoped under \u00a73.1 and \u00a79).",
   "tests": [
     {
       "description": "document alone (live introspection)",
@@ -1738,6 +1738,40 @@
               "subscriptions": {
                 "transport": "graphql-ws",
                 "location": "/graphql"
+              }
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-02"
+      ]
+    },
+    {
+      "description": "subscriptions member carrying a member the shape does not admit",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "subscriptions": {
+                "transport": "graphql-ws",
+                "location": "wss://api.example.test/graphql",
+                "protocol": "graphql-ws"
               }
             }
           }

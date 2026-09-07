@@ -232,7 +232,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 1064 scenarios citing every P-rule of usage,
+The current corpus contains 1073 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -304,7 +304,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 209 scenarios
+coverage loss. The 215 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
