@@ -1493,6 +1493,45 @@
           ]
         }
       }
+    },
+    {
+      "id": "GQL-SS-06",
+      "description": "An unused fragment invalidates the whole inventory: synthesis emits no operation and accounts every definition invalid; the source is not refused.",
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Status { status }\nquery Viewer($id: ID!) { viewer(id: $id) { id } }\nfragment Unused on User { id }\n",
+          "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [],
+        "bindings": [],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Status",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Viewer",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

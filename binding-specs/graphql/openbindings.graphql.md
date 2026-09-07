@@ -1,6 +1,6 @@
 # `openbindings.graphql` Binding Specification
 
-**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.graphql@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier. Sections 5 to 9 of this candidate are being drafted under the program recorded in `audit/graphql-family-2026-09-06` of the project container; each such section names its queue item in place of its text.
+**Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.graphql@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier. Sections 6 to 9 of this candidate are being drafted under the program recorded in `audit/graphql-family-2026-09-06` of the project container; each such section names its queue item in place of its text.
 
 ## 1. Identifier and rule labels
 
@@ -50,8 +50,8 @@
 | 2 — the syntax and meaning of `location` | §3.1, §4 | nothing recorded: §4's limit states that acquisition failure at the endpoint is the address scheme's own affair and §8 classifies the responses that do arrive. |
 | 3 — the accepted values and meaning of `content`, including any source mode in which `content` is forbidden | §3.1, §3.2, §3.3, §4 | nothing recorded. §4 states that no mode forbids `content` and that `content` is REQUIRED in the only mode this specification governs, so the clause is answered in the affirmative direction rather than left to entailment. |
 | 4 — how `location` and `content` compose within the content-primacy floor, including whether `location` supplies a reference base for embedded content | §3.3, §4 | nothing recorded: GraphQL has no references, so `location` supplies no reference base, and §4 states the staleness posture of a service-addressed family. |
-| 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5 | drafting pending under queue item P3-3. |
-| 6 — how the binding target and its interaction are identified | §3.2, §3.3, §4, §5, §8, §9, §11.1, §11.2 | drafting pending under queue items P3-3, P3-4, and P5 for §5, §8, and §9. |
+| 5 — the syntax and meaning of `selector`, including the absent-`selector` case | §3.2, §5.1 | nothing recorded: §5.1 states the resolution of every present and absent form, and §3.2 separates the outcome for a selector that reaches no addressable target from one that reaches an invalid or excluded target. |
+| 6 — how the binding target and its interaction are identified | §3.2, §3.3, §4, §5, §8, §9, §11.1, §11.2 | drafting pending under queue items P3-4 and P5 for §8 and §9. |
 | 7 — how caller-facing input and successful output values correspond to the source interaction, which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings at transform positions | §3.2, §4, §6, §7, §8, §9, §11.1, §11.2 | drafting pending under queue items P3-4 and P5. |
 
 **[convention]** Where §2's item map records a drafting-pending entry, that record licenses nothing: the candidate does not exist as a complete boundary until the entry is replaced, and no implementation may attribute a completion of that point to this identifier. This paragraph is removed with the last such entry; it exists because Core states no candidate stage and a reader must not mistake an unfinished boundary for a finished one.
@@ -280,7 +280,31 @@ query { t: __type(name: "__Type") { fields { name args { name } } } f: __type(na
 
 ## 5. Selector, operation resolution, and document validation
 
-*Drafting pending under queue item P3-3 of the program; the settled design is §4 of the current revision of `ARCHITECTURE-RULINGS.md`.*
+### 5.1 Selector and resolution
+
+**[convention]** `selector` is OPTIONAL. When present it is one GraphQL `Name` under §2.1.9 of the governing edition, naming the operation definition of the carried document that bears that name; the target is an operation definition and nothing narrower or wider, because the operation is the unit §6.1 of the governing edition executes, and no authority defines any other address for one. When absent, the target is the document's lone operation definition, which the governing edition permits to be anonymous only when it is the sole operation. The rejected spellings are a schema coordinate (§2.14 addresses schema elements, not operations), a JSON Pointer (a GraphQL document is not JSON), and a root-field selector (the operation is the document's, not the schema's).
+
+**[incorporated]** Resolution mirrors §6.1's `GetOperation`: with no operation name, the document must contain exactly one operation, and otherwise the operation of that name is selected and a name that matches none raises a request error; §5.2.2.1 makes a named operation definition unique within a document, and §5.2.3.1 forbids an anonymous operation definition in a document that holds more than one. Names compare by exact code-point equality under §2.1.9.
+
+**[convention]** A `selector` naming an addressable target (§3.2) resolves, whatever the target's disposition; an `invalid` or `excluded` target then refuses before dispatch. A `selector` naming no operation definition, a `selector` naming a name two definitions share, an absent `selector` over a document holding two or more operation definitions, and an absent `selector` over a document holding none do not resolve, and the invocation **refuses at resolution**, because the request that would result raises §6.1's request error at the service and this specification refuses it earlier and loudly rather than sending it.
+
+**[convention]** The selected operation's name is what §8 and §9 carry as `operationName`, because the selection must be stated on the wire whenever a name exists (§8 gives the reason the preserve rung fails there).
+
+### 5.2 Document validation
+
+**[incorporated]** Validity is a property of the whole request: §5 of the governing edition says "execution should only occur for valid requests", §6.1.1 says that where validation errors are known "the request must fail without execution", and the over-HTTP draft says validation of a request SHOULD apply all of §5's rules and that a request failing validation is answered with a request error result, so a failure anywhere in the carried document is a failure of every operation the document holds.
+
+**[convention]** Before synthesis or dispatch the processor validates the whole carried document against the interpreted schema under every rule of §5 of the governing edition. Any failure invalidates the source's entire target inventory: every operation definition is accounted `invalid`, no §5 rule is operation-scoped, §5.2.1.1's Operation Type Existence included (its formal rule ranges over every operation in the document, and the request fails as a whole there as everywhere in §5), and §5.1.1 is the one rule gate 3 already refuses at load. Validation runs before dispatch because deriving the output contract already requires the validated selection, so the check exists regardless, and refusing before dispatch is the loud choice where the draft makes the service's own validation a SHOULD; the losing reading, leaving validation to the service, would make an invalid document's refusal silent and per-request.
+
+**[convention]** A position at which a §5 rule cannot be evaluated for want of an absent structural introspection member is not a §5 failure, because the service's own schema is complete; it makes every operation reaching the position `invalid` under §3.3 and leaves the rest of the inventory to the remaining rules.
+
+**[pin]** A selection of the `__schema`, `__type`, or `__typename` meta-fields is validated, and its output derived (§7), against the introspection types as §4.2 of the governing edition defines them in type-system language, not against the carried schema's type set. Two readings survive, since June 2018 does not require those types to appear in `__Schema.types` while October 2021 and September 2025 do: validate against the carried set, under which every introspection selection over a June 2018 result is invalid, or against §4.2's definitions, under which a selection an earlier service refuses answers with the request error §8's classification already carries. This specification pins the second and discloses the first, because the first invalidates working documents on an accepted edition.
+
+**[limit]** Validation runs under the September 2025 rules for every service. Seven places where that edition validates more strictly than an earlier accepted edition are the observable consequence of §2's governing-text pin, and a document an older service would accept but September 2025 rejects is inventory-invalid here: a subscription's single root field must not be an introspection field (October 2021 §5.2.3.1); the lexical lookahead restrictions on numbers (October 2021 §2.1); an input object with an unbroken chain of non-null singular self-references is invalid (October 2021 §3.10); `@skip` and `@include` are forbidden on a subscription's root selection set (September 2025 §5.2.4.1); a fixed-width Unicode escape that is not a Unicode scalar value is a parse error (September 2025 §2.10.4, which gate 3 refuses); argument names must be unique within a field (September 2025 §3.6); and input-object default values must not form a cycle (September 2025 §3.10).
+
+**[limit]** The over-HTTP draft lets a service apply additional validation rules at its discretion. A service-added rule (depth, complexity, or an allow-list) that rejects a document this specification accepted produces that service's own request error result, which completes the invocation unsuccessfully under §8; it is not a defect of the document or of this specification, because the rule is the service's and no authority states it.
+
+**[limit]** The carried document is the executable document: this binding sends it as carried and strips or rewrites nothing (§4). A directive the interpreted schema does not define, a client-cache directive or a compiler directive among them, fails §5.7.1 and invalidates the inventory exactly as the service would refuse the request; authors carry the document a persisted-document pipeline would carry, after client directives are compiled away. A pinned schema that differs from what the service executes, a role-filtered schema or a gateway contract, is repaired by omitting `schema` so that live introspection with the invocation's own credentials supplies the schema the service will enforce (§3.3). Any stripping rule would author wire behaviour no authority states, so this specification defines none.
 
 ## 6. Caller envelope and input contract
 
@@ -336,6 +360,8 @@ query { t: __type(name: "__Type") { fields { name args { name } } } f: __type(na
 
 **[convention]** GQL-D-03's schema clause and GQL-D-04 reach carried content only, so a schema-absent source has nothing for them to decide and satisfies them; the live result's gates are the processor's under GQL-P-01 and GQL-P-03, never a document rule's, because Core's fifth invariant makes every document rule decidable from the document and locally available resources and never by reaching the network, and a rule that reached the service would make the verdict vary by the verifier's credentials (§3.3's limit).
 
+**[convention]** A document conforms to **GQL-D-05** when every binding governed by this identifier names §1's identifier and carries either a `selector` that is one `Name` under §2.1.9 of the governing edition naming exactly one operation definition of its source's carried document, or no `selector` over a document holding exactly one operation definition (§5.1).
+
 **[convention]** A synthesizer conforms to **GQL-S-01** when it emits one operation per operation definition accounted `represented` or `lossy`, emits none for an `invalid`, `excluded`, or `implementation-unsupported` definition, and accounts every operation definition with exactly one status under §3.2's precedence (§11.2).
 
 **[convention]** A synthesizer conforms to **GQL-S-02** when it emits no transform, keeps every configuration requirement out of the operation input schema, and records a projection entry for every position §3.3, §6, or §7 names (§11.2).
@@ -346,11 +372,15 @@ query { t: __type(name: "__Type") { fields { name args { name } } } f: __type(na
 
 **[convention]** A processor conforms to **GQL-P-03** when, with `schema` absent, it sends exactly §3.3's capability probe and then the introspection query composed from the listed query by removing each capability the probe did not observe, reads a null probe position as the base selection for that type, refuses the source at load, at gate 4, on a request error result, a null `data`, or an `errors` entry at either step, or a composed-query result without an object at `data.__schema`, treats a step that yields no response as an incomplete load that refuses before dispatch, applies gates 4 and 5 to the live result as to a carried one, sends both requests by POST whatever `httpMethod` selects, and sends them with the same configured `protocolFields`, `extensions`, and credentials the load carries, an invocation's or a synthesizer's.
 
+**[convention]** A processor conforms to **GQL-P-05** when it resolves a present `selector` to the operation definition of that exact name and an absent one to the lone operation definition, refuses at resolution a selector that names no definition or a shared name and an absent selector over zero or several definitions, and resolves a selector naming an `invalid` or `excluded` definition and then refuses before dispatch (§5.1).
+
+**[convention]** A processor conforms to **GQL-P-06** when it validates the whole carried document against the interpreted schema under every §5 rule of the September 2025 edition before synthesis or dispatch, accounts every operation definition `invalid` on any failure, treats a position unevaluable for a structural absence under §3.3 rather than §5, validates meta-field selections against §4.2's introspection types, sends the document as carried, and classifies a service-added rule's rejection under §8 (§5.2).
+
 **[convention]** A processor conforms to **GQL-P-04** when it dispatches against a pinned `schema` as carried, never re-introspects to repair it, classifies a service's request error against a pin-validated document as that service's own unsuccessful completion under §8, and emits a value the service returns beyond the pin's closed contract as the operation's value under §4's second staleness face.
 
 ### 11.4 Permitted variation and stated limits
 
-This section collects the points at which two implementations conforming to `openbindings.graphql@1` may still reach different outcomes, together with what this specification declines to cover. It is an index over rules stated elsewhere in this document and carries no provenance of its own. Rows for §5 to §9 arrive with those sections.
+This section collects the points at which two implementations conforming to `openbindings.graphql@1` may still reach different outcomes, together with what this specification declines to cover. It is an index over rules stated elsewhere in this document and carries no provenance of its own. Rows for §6 to §9 arrive with those sections.
 
 **Declared freedoms.** At each site the specification states the latitude rather than removing it, and states what survives across implementations that take it differently.
 
@@ -360,7 +390,7 @@ This section collects the points at which two implementations conforming to `ope
 | how a processor names or presents a confined defect | §3.2 | the affected unit and responsible position remain observable; no defect-class taxonomy, per-class citation, or per-defect coverage vocabulary is portable |
 | operation-key spelling, the key derived for a lone anonymous operation, and the resolution of a name collision between two sources under Core OBI-D-04 | §11.2 | one operation per represented or lossy operation definition; the emitted input and output schemas and every disposition are fixed |
 
-**Exclusions and reopen triggers.** Each declines an upstream-valid feature behind a stated trigger; rows for §5 to §9 arrive with those sections.
+**Exclusions and reopen triggers.** Each declines an upstream-valid feature behind a stated trigger; rows for §6 to §9 arrive with those sections.
 
 | excluded | where | reopen trigger |
 | --- | --- | --- |
@@ -376,7 +406,9 @@ This section collects the points at which two implementations conforming to `ope
 | a live-introspected contract is a claim about one credential set; portability across callers is obtained by pinning `schema` | §3.3 |
 | acquisition failure at `location` is decided by the address scheme and the runtime; this specification attaches one outcome to an introspection request and one to an operation request that yields no response | §3.3, §4, §8 |
 | a pinned `schema` is never repaired by re-introspection; drift of either face is the author's to repair | §4 |
-| the carried `document` is sent as carried and never rewritten; no stripping rule exists | §4 |
+| the carried `document` is sent as carried and never rewritten; no stripping rule exists, so a directive the interpreted schema does not define invalidates the inventory | §4, §5.2 |
+| validation runs under the September 2025 rules for every service; the seven tightenings over earlier editions are listed | §5.2 |
+| a service-added validation rule's rejection is that service's own unsuccessful completion | §5.2 |
 | the load gates are a closed ordered set; defects below them confine to their smallest owner; a source refuses as a source only when no addressable target remains | §3.2 |
 | how a processor names or presents a confined defect is not portable meaning; an invalid or excluded definition is removed from the effective inventory without erasing its addressable position | §3.2 |
 

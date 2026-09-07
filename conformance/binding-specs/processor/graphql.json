@@ -21824,6 +21824,523 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-31",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "A present selector resolves to the operation definition of that exact name and dispatches.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "status": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-32",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "An absent selector over a lone anonymous operation resolves to it and dispatches.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "{ status }",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "{ status }"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "status": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-33",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "An absent selector over a document holding several operation definitions reaches no addressable target: the invocation refuses at resolution.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-34",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "A selector naming no operation definition does not resolve: the invocation refuses at resolution.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Person"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-35",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "Names compare by exact code points: a selector differing only in case names no operation definition.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-36",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "An unused fragment fails §5.5.1.4 and invalidates the whole inventory: a sibling operation resolves and refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\nfragment Unused on User { id }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-37",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A directive the interpreted schema does not define fails §5.7.1; the document is sent as carried or not at all, so every operation refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status @connection(key: \"s\") }\nquery Viewer($id: ID!) { viewer(id: $id) { id } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Viewer"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-38",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A directive the interpreted schema defines validates, and the document dispatches with the directive carried as written.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status @cache(ttl: 5) }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\ndirective @cache(ttl: Int!) on FIELD\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Status { status @cache(ttl: 5) }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "status": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-39",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A mutation operation against a schema with no mutation root fails §5.2.1.1, which is inventory-wide like every §5 rule: the query sibling refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id } }\n",
+            "schema": "type Query { status: String }\ntype User { id: ID! }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-40",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A September 2025 tightening applies to every service: @skip on a subscription's root selection set (§5.2.4.1) invalidates the inventory, so the query sibling refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\nsubscription Ticks { ticks @skip(if: false) }\n",
+            "schema": "type Query { status: String }\ntype Subscription { ticks: Int }\n",
+            "subscriptions": {
+              "transport": "graphql-sse",
+              "location": "https://api.example.test/graphql/stream"
+            }
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-41",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A meta-field selection validates against §4.2's introspection types, not the carried type set: it dispatches against a schema whose types omit them.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query M { __schema { queryType { name } } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "M"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "Query"
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query M { __schema { queryType { name } } }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "__schema": {
+                    "queryType": {
+                      "name": "Query"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-42",
+      "rules": [
+        "GQL-P-06"
+      ],
+      "section": "5.2",
+      "description": "A service-added validation rule rejects a document this specification accepted: the service's request error is an unsuccessful completion with no output, not a defect.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Viewer"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "id": "u-1"
+          }
+        },
+        "peer": {
+          "status": 422,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "errors": [
+              {
+                "message": "Query depth limit exceeded"
+              }
+            ]
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/body/query",
+              "equals": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
