@@ -2,7 +2,7 @@
   "rule": "GQL-D-05",
   "bindingSpec": "openbindings.graphql@1",
   "section": "5.1",
-  "description": "Every binding governed by this identifier names §1's identifier and carries either a `selector` that is one `Name` under §2.1.9 of the governing edition naming exactly one operation definition of its source's carried document, or no `selector` over a document holding exactly one operation definition.",
+  "description": "Every binding governed by this identifier names §1's identifier and carries either a `selector` that is one `Name` under §2.1.8 of the governing edition naming exactly one operation definition of its source's carried document, or no `selector` over a document holding exactly one operation definition.",
   "notes": "Decidable offline from the carried document alone; resolution and refusal phases are the processor's under GQL-P-05.",
   "tests": [
     {

@@ -21933,7 +21933,7 @@
         "GQL-P-05"
       ],
       "section": "5.1",
-      "description": "An absent selector over a document holding several operation definitions reaches no addressable target: the invocation refuses at resolution.",
+      "description": "An absent selector over a document holding several operation definitions is ambiguous: no lone operation exists, so the invocation refuses at resolution although every definition remains addressable by name.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
