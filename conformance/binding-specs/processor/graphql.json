@@ -24406,6 +24406,54 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-83",
+      "rules": [
+        "GQL-P-09"
+      ],
+      "section": "8",
+      "description": "A quoted charset parameter value is unquoted before comparison, so charset=\"utf-8\" is the expected case and the result is a GraphQL result.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json; charset=\"utf-8\"",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "status": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
