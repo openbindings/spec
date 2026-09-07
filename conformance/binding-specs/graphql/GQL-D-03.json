@@ -2808,5 +2808,5 @@
       ]
     }
   ],
-  "notes": "For a schema-absent source the schema clause is unverified offline (Core \u00a710.5); the live result is gated by the processor under GQL-P-03."
+  "notes": "For a schema-absent source the schema clause has nothing to decide and is satisfied; the live result is gated by the processor under GQL-P-03."
 }
