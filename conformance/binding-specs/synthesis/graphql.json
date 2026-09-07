@@ -2379,7 +2379,21 @@
         ],
         "assertions": [
           {
-            "path": "/operations/Q/output/properties/items/anyOf/0/items/anyOf/0/properties/at",
+            "path": "/operations/Q/output/properties/items/type",
+            "equals": [
+              "array",
+              "null"
+            ]
+          },
+          {
+            "path": "/operations/Q/output/properties/items/items/type",
+            "equals": [
+              "object",
+              "null"
+            ]
+          },
+          {
+            "path": "/operations/Q/output/properties/items/items/properties/at",
             "equals": {
               "anyOf": [
                 {
