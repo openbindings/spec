@@ -22830,6 +22830,74 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-52",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "A selector that is not a Name does not resolve: the invocation refuses at resolution.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "query/status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-53",
+      "rules": [
+        "GQL-P-05"
+      ],
+      "section": "5.1",
+      "description": "An absent selector over a document holding no operation definition does not resolve: the source loads with an empty inventory and the invocation refuses at resolution.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "fragment F on Query { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {},
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "resolution",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     }
   ]
 }
