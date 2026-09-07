@@ -24504,7 +24504,7 @@
         "GQL-P-08"
       ],
       "section": "6",
-      "description": "Present input that is an empty map is carried as an empty variables map, on POST as on GET.",
+      "description": "Present input that is an empty map is carried as an empty variables map.",
       "given": {
         "source": {
           "location": "https://api.example.test/graphql",
@@ -24546,6 +24546,49 @@
                   "status": "ok"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-86",
+      "rules": [
+        "GQL-P-09"
+      ],
+      "section": "8",
+      "description": "A response carrying no Content-Type is read as application/octet-stream, its data never examined: any other response, completing unsuccessfully with no output.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/outputs",
+              "equals": []
             }
           ]
         }
