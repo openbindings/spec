@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -14 assert the derived input and output schemas of §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -14 assert the derived input and output schemas of §6 and §7. Operation keys asserted here are the reference synthesizer's spelling, which §11.2 and §11.4 declare synthesis policy; a synthesizer spelling keys otherwise conforms to GQL-S-01 and fails only the key comparison, as in every family's synthesis corpus. GQL-SS-07 to -15 exercise GQL-S-03 and GQL-S-04 through their schema assertions.",
   "scenarios": [
     {
       "id": "GQL-SS-01",
@@ -2101,17 +2101,17 @@
               "status": "represented",
               "operationKey": "T",
               "bindingSelector": "T",
-              "rule": "GQL-S-04",
+              "rule": "GQL-S-02",
               "requirements": []
             },
             {
               "sourceIndex": 0,
-              "sourceRef": "Query.at",
+              "sourceRef": "T#/at",
               "scope": "projection",
               "status": "represented",
               "operationKey": "T",
               "bindingSelector": "T",
-              "rule": "GQL-S-04",
+              "rule": "GQL-S-02",
               "requirements": []
             }
           ]
@@ -2172,7 +2172,7 @@
     },
     {
       "id": "GQL-SS-15",
-      "description": "A OneOf member takes exclude null in place of admit null, so an enum member is the bare enum schema; a nullable list of nullable strings composes item nullability, the singleton type collapse, and list nullability.",
+      "description": "A OneOf member takes exclude null in place of admit null: an enum member, having no type member, is wrapped in allOf with not-null; a nullable list of nullable strings composes item nullability, the singleton type collapse, and list nullability.",
       "source": {
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
@@ -2196,9 +2196,18 @@
           {
             "path": "/operations/O/input/properties/f/properties/byKind",
             "equals": {
-              "enum": [
-                "A",
-                "B"
+              "allOf": [
+                {
+                  "enum": [
+                    "A",
+                    "B"
+                  ]
+                },
+                {
+                  "not": {
+                    "type": "null"
+                  }
+                }
               ]
             }
           },

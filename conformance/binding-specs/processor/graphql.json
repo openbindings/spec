@@ -24454,6 +24454,102 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GQL-PS-84",
+      "rules": [
+        "GQL-P-08",
+        "GQL-P-03"
+      ],
+      "section": "8",
+      "description": "protocolFields are validated at load, before any request: with schema absent, a reserved-field contribution stops the load and the invocation refuses before dispatch with no introspection request sent.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "configuration": {
+          "protocolFields": {
+            "headers": {
+              "Connection": "close"
+            }
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatches/0",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-85",
+      "rules": [
+        "GQL-P-07",
+        "GQL-P-08"
+      ],
+      "section": "6",
+      "description": "Present input that is an empty map is carried as an empty variables map, on POST as on GET.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\n",
+            "schema": "type Query { status: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {}
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "status": "ok"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/body/variables",
+              "equals": {}
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "status": "ok"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
