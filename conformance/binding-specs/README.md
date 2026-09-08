@@ -232,7 +232,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 1118 scenarios citing every P-rule of usage,
+The current corpus contains 1125 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -304,7 +304,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 241 scenarios
+coverage loss. The 242 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
@@ -483,10 +483,10 @@ core, and resolution clauses are fixtured via embedded content.
 | ASYNC-D-01 | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
 | ASYNC-D-02 | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
 | ASYNC-D-03 | 5/7         | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
-| GQL-D-01   | 3/7         | absolute http(s) GraphQL endpoint; absent, relative, WebSocket-scheme, and non-string negatives |
+| GQL-D-01   | 3/8         | absolute http(s) GraphQL endpoint; absent, relative, WebSocket-scheme, and non-string negatives |
 | GQL-D-02   | 7/16        | three-member content envelope (document, schema as SDL or introspection result, subscriptions endpoint with paired transport); absent-content, string-content, missing-document, non-string, unknown-member, and pairing negatives |
-| GQL-D-03   | 4/10        | executable-document and schema grammar gates; syntax, type-system-definition-in-document, SDL syntax, and introspection-shape negatives |
-| GQL-D-04   | 6/25        | schema-validity gate subset; undefined type, missing query root, repeated names (field, type, directive, extension field), input-in-output, output-in-input, schema-definition count, and null or scalar queryType negatives |
+| GQL-D-03   | 4/13        | executable-document and schema grammar gates; syntax, type-system-definition-in-document, SDL syntax, and introspection-shape negatives |
+| GQL-D-04   | 7/25        | schema-validity gate subset; undefined type, missing query root, repeated names (field, type, directive, extension field), input-in-output, output-in-input, schema-definition count, and null or scalar queryType negatives |
 | GQL-D-05   | 3/6         | selector as an operation Name resolving to exactly one definition, or absent over a lone definition; ambiguity, dangling, root-field-spelling, shared-name, and empty-inventory negatives |
 ## Layout
 

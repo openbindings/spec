@@ -14454,6 +14454,111 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "introspection result with a types entry of kind OBJECT under the built-in name String, read as the built-in scalar",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Status": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Status { status }",
+              "schema": {
+                "data": {
+                  "__schema": {
+                    "queryType": {
+                      "name": "Query"
+                    },
+                    "mutationType": null,
+                    "subscriptionType": null,
+                    "types": [
+                      {
+                        "kind": "OBJECT",
+                        "name": "Query",
+                        "description": null,
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "s",
+                            "description": null,
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "String",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "interfaces": [],
+                        "possibleTypes": null,
+                        "enumValues": null,
+                        "inputFields": null,
+                        "ofType": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "String",
+                        "description": null,
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": [
+                          {
+                            "name": "len",
+                            "description": null,
+                            "args": [],
+                            "type": {
+                              "kind": "SCALAR",
+                              "name": "Int",
+                              "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "interfaces": [],
+                        "possibleTypes": null,
+                        "enumValues": null,
+                        "inputFields": null,
+                        "ofType": null
+                      },
+                      {
+                        "kind": "SCALAR",
+                        "name": "Int",
+                        "description": null,
+                        "specifiedByURL": null,
+                        "isOneOf": null,
+                        "fields": null,
+                        "interfaces": null,
+                        "possibleTypes": null,
+                        "enumValues": null,
+                        "inputFields": null,
+                        "ofType": null
+                      }
+                    ],
+                    "directives": []
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "Status.api": {
+            "operation": "Status",
+            "source": "api",
+            "selector": "Status"
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

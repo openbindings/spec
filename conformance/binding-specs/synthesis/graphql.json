@@ -8793,6 +8793,64 @@
           }
         ]
       }
+    },
+    {
+      "id": "GQL-SS-50",
+      "description": "A selection a literal condition does not exclude is variable-conditioned when it also carries a variable condition: the response name is present and not required.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q($x: Boolean!) { a @include(if: true) @skip(if: $x) }\n",
+          "schema": "type Query { a: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/a",
+            "equals": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "path": "/operations/Q/output/required",
+            "equals": []
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

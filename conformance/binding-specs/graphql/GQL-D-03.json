@@ -5382,6 +5382,96 @@
       "violates": [
         "GQL-D-03"
       ]
+    },
+    {
+      "description": "schema string carrying an unpaired surrogate, which is not a SourceCharacter sequence (gate 4)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "schema": "type Query { status: String } # \udead\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-03"
+      ]
+    },
+    {
+      "description": "empty document string (Document requires at least one Definition)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "",
+              "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-03"
+      ]
+    },
+    {
+      "description": "empty schema string (TypeSystemExtensionDocument requires at least one definition or extension)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+              "schema": ""
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-03"
+      ]
     }
   ],
   "notes": "For a schema-absent source the schema clause has nothing to decide and is satisfied; the live result is gated by the processor under GQL-P-03."
