@@ -9110,6 +9110,36 @@
       "violates": [
         "GQL-D-04"
       ]
+    },
+    {
+      "description": "schema extension when no schema is defined: no schema definition and no type named Query",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Status": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Status { status }",
+              "schema": "type Root { status: String }\nextend schema { query: Root }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Status.api": {
+            "operation": "Status",
+            "source": "api",
+            "selector": "Status"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-04"
+      ]
     }
   ]
 }

@@ -10557,6 +10557,10 @@
               "contains": "isRepeatable"
             },
             {
+              "path": "/dispatches/1/body/query",
+              "contains": "args(includeDeprecated: true)"
+            },
+            {
               "path": "/outputs",
               "equals": [
                 {
@@ -24623,8 +24627,7 @@
     {
       "id": "GQL-PS-88",
       "rules": [
-        "GQL-P-02",
-        "GQL-P-04"
+        "GQL-P-02"
       ],
       "section": "3.3",
       "description": "An introspection result that omits the built-in scalars and directives, as June 2018 allows, reads them as defined: a document using @include over a String field validates and dispatches.",
@@ -27557,8 +27560,7 @@
     {
       "id": "GQL-PS-96",
       "rules": [
-        "GQL-P-02",
-        "GQL-P-04"
+        "GQL-P-02"
       ],
       "section": "3.3",
       "description": "A null in a position \u00a74.2 declares non-null (isDeprecated on a __Field) reads as absent with its class's consequence: an annotative absence, so the operation reaching User.name still dispatches and its schema declares nothing for the member.",
@@ -31386,6 +31388,537 @@
                   "status": "ok"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-101",
+      "rules": [
+        "GQL-P-02",
+        "GQL-P-01"
+      ],
+      "section": "3.3",
+      "description": "An innermost reference element whose name is null names nothing gate 5 can test: it is a structural absence at that element, so the source loads and the operation reaching it refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\nquery Other { other }\n",
+            "schema": {
+              "data": {
+                "__schema": {
+                  "queryType": {
+                    "name": "Query"
+                  },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "Query",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": [
+                        {
+                          "name": "status",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": null,
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "other",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "interfaces": [],
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "interfaces": null,
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    }
+                  ],
+                  "directives": []
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-102",
+      "rules": [
+        "GQL-P-02",
+        "GQL-P-01"
+      ],
+      "section": "3.3",
+      "description": "The null-name absence of the previous scenario is operation-scoped: Other, which does not reach Query.status, dispatches against the same result.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Status { status }\nquery Other { other }\n",
+            "schema": {
+              "data": {
+                "__schema": {
+                  "queryType": {
+                    "name": "Query"
+                  },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "Query",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": [
+                        {
+                          "name": "status",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": null,
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "other",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "interfaces": [],
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "interfaces": null,
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    }
+                  ],
+                  "directives": []
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "Other"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "contentType": "application/graphql-response+json",
+          "body": {
+            "data": {
+              "other": "x"
+            }
+          }
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                {
+                  "other": "x"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-103",
+      "rules": [
+        "GQL-P-02",
+        "GQL-P-01"
+      ],
+      "section": "3.3",
+      "description": "A pinned result whose chain is truncated at the tenth wrapper, as the listed query's nine-level TypeRef fragment truncates it, carries a structural absence at that wrapper: the operation reaching the field refuses before dispatch and the source stays loaded.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query D { deep }\nquery Status { status }\n",
+            "schema": {
+              "data": {
+                "__schema": {
+                  "queryType": {
+                    "name": "Query"
+                  },
+                  "mutationType": null,
+                  "subscriptionType": null,
+                  "types": [
+                    {
+                      "kind": "OBJECT",
+                      "name": "Query",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": [
+                        {
+                          "name": "deep",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                              "kind": "LIST",
+                              "name": null,
+                              "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "LIST",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                      "kind": "LIST",
+                                      "name": null,
+                                      "ofType": {
+                                        "kind": "LIST",
+                                        "name": null,
+                                        "ofType": {
+                                          "kind": "LIST",
+                                          "name": null,
+                                          "ofType": {
+                                            "kind": "LIST",
+                                            "name": null,
+                                            "ofType": {
+                                              "kind": "LIST",
+                                              "name": null,
+                                              "ofType": null
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        },
+                        {
+                          "name": "status",
+                          "description": null,
+                          "args": [],
+                          "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                          },
+                          "isDeprecated": false,
+                          "deprecationReason": null
+                        }
+                      ],
+                      "interfaces": [],
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "interfaces": null,
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    },
+                    {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "description": null,
+                      "specifiedByURL": null,
+                      "isOneOf": null,
+                      "fields": null,
+                      "interfaces": null,
+                      "possibleTypes": null,
+                      "enumValues": null,
+                      "inputFields": null,
+                      "ofType": null
+                    }
+                  ],
+                  "directives": []
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "D"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-104",
+      "rules": [
+        "GQL-P-08"
+      ],
+      "section": "8",
+      "description": "A Cookie header contribution beside a present cookies map, even an empty one, refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "configuration": {
+          "protocolFields": {
+            "headers": {
+              "Cookie": "a=1"
+            },
+            "cookies": {}
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-105",
+      "rules": [
+        "GQL-P-08"
+      ],
+      "section": "8",
+      "description": "A cookie value that is not an RFC 6265 cookie-value (it carries a semicolon) refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "configuration": {
+          "protocolFields": {
+            "cookies": {
+              "session": "a;b"
+            }
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-106",
+      "rules": [
+        "GQL-P-08"
+      ],
+      "section": "8",
+      "description": "A header name that is not an RFC 9110 token (it carries a space) refuses before dispatch.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "configuration": {
+          "protocolFields": {
+            "headers": {
+              "X Trace": "1"
+            }
+          }
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GQL-PS-107",
+      "rules": [
+        "GQL-P-08"
+      ],
+      "section": "8",
+      "description": "An httpMethod value outside post and get refuses before dispatch as a configuration the specification does not define.",
+      "given": {
+        "source": {
+          "location": "https://api.example.test/graphql",
+          "content": {
+            "document": "query Viewer($id: ID!) { viewer(id: $id) { id name } }\nquery Status { status }\nquery Find($filter: Filter!) { find(filter: $filter) { id } }\nmutation Rename($id: ID!, $name: String!) { rename(id: $id, name: $name) { id name } }\n",
+            "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\n"
+          }
+        },
+        "binding": {
+          "selector": "Status"
+        },
+        "configuration": {
+          "httpMethod": "put"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
             }
           ]
         }

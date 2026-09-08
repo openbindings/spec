@@ -4082,6 +4082,35 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "document carrying a type-system extension (section 2.3: must not be executed)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Viewer": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Status { status }\nextend type Query { x: Int }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Viewer.api": {
+            "operation": "Viewer",
+            "source": "api",
+            "selector": "Viewer"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-03"
+      ]
     }
   ],
   "notes": "For a schema-absent source the schema clause has nothing to decide and is satisfied; the live result is gated by the processor under GQL-P-03."

@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -17 assert the derived input and output schemas of \u00a76 and \u00a77. A named operation definition's key is its name (\u00a711.2); the key of a lone anonymous operation and the resolution of a key collision between sources are synthesis policy under \u00a711.4, so a scenario asserting one of those pins the reference synthesizer's spelling and a synthesizer spelling it otherwise fails only the key comparison. Each names the synthesizer rules it exercises.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -17 assert the derived input and output schemas of \u00a76 and \u00a77. A named operation definition's key is its name (\u00a711.2); the key of a lone anonymous operation and the resolution of a key collision between sources are synthesis policy under \u00a711.4, so a scenario asserting one of those pins the reference synthesizer's spelling and a synthesizer spelling it otherwise fails only the key comparison. Each names the synthesizer rules it exercises. No scenario addresses a lone anonymous operation, because its key is \u00a711.4's declared freedom and a coverage entry must name a key; the projection-name rule for one is decided by \u00a77's text alone.",
   "scenarios": [
     {
       "id": "GQL-SS-01",
@@ -2149,7 +2149,8 @@
       },
       "rules": [
         "GQL-S-03",
-        "GQL-S-04"
+        "GQL-S-04",
+        "GQL-S-02"
       ]
     },
     {
@@ -2453,7 +2454,8 @@
       },
       "rules": [
         "GQL-S-03",
-        "GQL-S-04"
+        "GQL-S-04",
+        "GQL-S-02"
       ]
     },
     {
@@ -2512,7 +2514,7 @@
     },
     {
       "id": "GQL-SS-19",
-      "description": "Deprecated fields, arguments, and input fields the operation reaches are included in the derived schemas and annotated by projection entries named with the #deprecated suffix; the operation stays represented.",
+      "description": "Deprecated fields and input fields the operation reaches are included in the derived schemas and annotated by projection entries named with the #deprecated suffix; the operation stays represented.",
       "source": {
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
@@ -3882,13 +3884,13 @@
     },
     {
       "id": "GQL-SS-22",
-      "description": "A variable definition's description is emitted as the variable's property description; no other derived schema carries one.",
+      "description": "A variable definition's description is emitted as description on the outermost schema the position carries after nullability composition, beside default; no other derived schema carries one.",
       "source": {
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
-          "document": "query Q(\"the viewer's id\" $id: ID!) { viewer(id: $id) { id } }\n",
-          "schema": "type User { id: ID! }\ntype Query { viewer(id: ID!): User }\n"
+          "document": "query Q(\"the viewer's id\" $id: ID!, \"since when\" $w: DateTime = null) { viewer(id: $id, since: $w) { id } }\n",
+          "schema": "scalar DateTime\ntype User { id: ID! }\ntype Query { viewer(id: ID!, since: DateTime): User }\n"
         }
       },
       "expected": {
@@ -3906,8 +3908,26 @@
           {
             "path": "/operations/Q/input/properties/id",
             "equals": {
-              "type": "string",
+              "type": [
+                "string",
+                "integer"
+              ],
               "description": "the viewer's id"
+            }
+          },
+          {
+            "path": "/operations/Q/input/properties/w",
+            "equals": {
+              "anyOf": [
+                {
+                  "format": "DateTime"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "since when"
             }
           },
           {
@@ -3928,11 +3948,22 @@
               "bindingSelector": "Q",
               "rule": "GQL-S-01",
               "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q($w)",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
+              "requirements": []
             }
           ]
         }
       },
       "rules": [
+        "GQL-S-02",
         "GQL-S-03"
       ]
     },
@@ -4156,7 +4187,7 @@
     },
     {
       "id": "GQL-SS-26",
-      "description": "A pinned result's defaultValue is a GraphQL-language string parsed under the const-value grammar before the JSON image: a list literal becomes a JSON array and a string literal a JSON string.",
+      "description": "A pinned result's defaultValue on an input field is a GraphQL-language string parsed under the const-value grammar before the JSON image: a list literal becomes a JSON array and a string literal a JSON string, emitted as the field's default.",
       "rules": [
         "GQL-S-03"
       ],
@@ -4164,7 +4195,7 @@
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
-          "document": "query Q($a: [Int], $s: String) { n(a: $a, s: $s) }\n",
+          "document": "query Q($f: F) { n(f: $f) }\n",
           "schema": {
             "data": {
               "__schema": {
@@ -4186,30 +4217,14 @@
                         "description": null,
                         "args": [
                           {
-                            "name": "a",
+                            "name": "f",
                             "description": null,
                             "type": {
-                              "kind": "LIST",
-                              "name": null,
-                              "ofType": {
-                                "kind": "SCALAR",
-                                "name": "Int",
-                                "ofType": null
-                              }
-                            },
-                            "defaultValue": "[1, 2]",
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                          },
-                          {
-                            "name": "s",
-                            "description": null,
-                            "type": {
-                              "kind": "SCALAR",
-                              "name": "String",
+                              "kind": "INPUT_OBJECT",
+                              "name": "F",
                               "ofType": null
                             },
-                            "defaultValue": "\"x\"",
+                            "defaultValue": null,
                             "isDeprecated": false,
                             "deprecationReason": null
                           }
@@ -4227,6 +4242,48 @@
                     "possibleTypes": null,
                     "enumValues": null,
                     "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "INPUT_OBJECT",
+                    "name": "F",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": false,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": [
+                      {
+                        "name": "b",
+                        "description": null,
+                        "type": {
+                          "kind": "LIST",
+                          "name": null,
+                          "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Int",
+                            "ofType": null
+                          }
+                        },
+                        "defaultValue": "[1, 2]",
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      },
+                      {
+                        "name": "s",
+                        "description": null,
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
+                        "defaultValue": "\"x\"",
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
                     "ofType": null
                   },
                   {
@@ -4275,17 +4332,25 @@
         ],
         "assertions": [
           {
-            "path": "/operations/Q/input/properties/a/anyOf/0/anyOf/0/type",
-            "equals": "array"
+            "path": "/operations/Q/input/properties/f/properties/b/default",
+            "equals": [
+              1,
+              2
+            ]
           },
           {
-            "path": "/operations/Q/input/properties/s",
+            "path": "/operations/Q/input/properties/f/properties/s",
             "equals": {
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "x"
             }
+          },
+          {
+            "path": "/operations/Q/input/properties/f/required",
+            "equals": []
           }
         ],
         "coverage": {
@@ -4308,7 +4373,7 @@
     },
     {
       "id": "GQL-SS-27",
-      "description": "A pinned defaultValue string that does not parse as a const value is read as the annotative member absent: the operation reaching the argument is lossy with an entry naming the element and the member, and no default is emitted.",
+      "description": "A pinned input field's defaultValue string that does not parse as a const value is read as the annotative member absent: the operation reaching the field is lossy with an entry naming the element and the member, and the field carries no default.",
       "rules": [
         "GQL-S-01",
         "GQL-S-02",
@@ -4318,7 +4383,7 @@
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
-          "document": "query Q($s: String) { n(s: $s) }\n",
+          "document": "query Q($f: F) { n(f: $f) }\n",
           "schema": {
             "data": {
               "__schema": {
@@ -4340,14 +4405,14 @@
                         "description": null,
                         "args": [
                           {
-                            "name": "s",
+                            "name": "f",
                             "description": null,
                             "type": {
-                              "kind": "SCALAR",
-                              "name": "String",
+                              "kind": "INPUT_OBJECT",
+                              "name": "F",
                               "ofType": null
                             },
-                            "defaultValue": "not {{ a value",
+                            "defaultValue": null,
                             "isDeprecated": false,
                             "deprecationReason": null
                           }
@@ -4365,6 +4430,32 @@
                     "possibleTypes": null,
                     "enumValues": null,
                     "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "INPUT_OBJECT",
+                    "name": "F",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": false,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": [
+                      {
+                        "name": "s",
+                        "description": null,
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "String",
+                          "ofType": null
+                        },
+                        "defaultValue": "not {{ a value",
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
                     "ofType": null
                   },
                   {
@@ -4413,13 +4504,17 @@
         ],
         "assertions": [
           {
-            "path": "/operations/Q/input/properties/s",
+            "path": "/operations/Q/input/properties/f/properties/s",
             "equals": {
               "type": [
                 "string",
                 "null"
               ]
             }
+          },
+          {
+            "path": "/operations/Q/input/properties/f/properties/s/default",
+            "absent": true
           }
         ],
         "coverage": {
@@ -4438,7 +4533,7 @@
             },
             {
               "sourceIndex": 0,
-              "sourceRef": "Query.n(s:)#defaultValue",
+              "sourceRef": "F.s#defaultValue",
               "scope": "projection",
               "status": "lossy",
               "operationKey": "Q",
@@ -4454,7 +4549,8 @@
       "id": "GQL-SS-28",
       "description": "An argument is reached when the operation supplies it or the edition requires it, and an enum value when a literal names it or the enum types a position the operation reaches: the unsupplied nullable deprecated argument yields no entry, the supplied one does, the literal reaches only A, and the variable-typed enum reaches every value.",
       "rules": [
-        "GQL-S-02"
+        "GQL-S-02",
+        "GQL-S-03"
       ],
       "source": {
         "bindingSpec": "openbindings.graphql@1",
@@ -4680,6 +4776,324 @@
               "status": "represented",
               "operationKey": "L",
               "bindingSelector": "L",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-31",
+      "description": "An enum output leaf is its value-name enum, with null admitted through anyOf at a nullable position and standing alone at a non-null one.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query G { k kk }\n",
+          "schema": "enum K { A B }\ntype Query { k: K kk: K! }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "G"
+        ],
+        "bindings": [
+          {
+            "operationKey": "G",
+            "bindingSelector": "G"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/G/output/properties/k",
+            "equals": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "A",
+                    "B"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          {
+            "path": "/operations/G/output/properties/kk",
+            "equals": {
+              "enum": [
+                "A",
+                "B"
+              ]
+            }
+          },
+          {
+            "path": "/operations/G/output/required",
+            "equals": [
+              "k",
+              "kk"
+            ]
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "G",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "G",
+              "bindingSelector": "G",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-32",
+      "description": "A selection on an abstract type with no possible types derives type null at a nullable position and false at a non-null one; no schema is ever an empty anyOf.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query E { node { id } }\nquery F { nn { id } }\n",
+          "schema": "interface Node { id: ID! }\ntype Query { node: Node nn: Node! }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "E",
+          "F"
+        ],
+        "bindings": [
+          {
+            "operationKey": "E",
+            "bindingSelector": "E"
+          },
+          {
+            "operationKey": "F",
+            "bindingSelector": "F"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/E/output/properties/node",
+            "equals": {
+              "type": "null"
+            }
+          },
+          {
+            "path": "/operations/F/output/properties/nn",
+            "equals": false
+          },
+          {
+            "path": "/operations/F/output/required",
+            "equals": [
+              "nn"
+            ]
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "E",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "E",
+              "bindingSelector": "E",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "F",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "F",
+              "bindingSelector": "F",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-33",
+      "description": "Projection positions are named on the emitted contract after collapse: a custom scalar under a single surviving branch carries no bracket segment, while the same scalar under two surviving branches is two positions.",
+      "rules": [
+        "GQL-S-02",
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { at } }\nquery M { node { __typename at } }\n",
+          "schema": "scalar DateTime\ninterface Node { at: DateTime }\ntype User implements Node { at: DateTime }\ntype Post implements Node { at: DateTime }\ntype Query { node: Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "M",
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "M",
+            "bindingSelector": "M"
+          },
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "at": {
+                  "anyOf": [
+                    {
+                      "format": "DateTime"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "path": "/operations/M/output/properties/node/anyOf/0/anyOf/1/properties/__typename",
+            "equals": {
+              "type": "string",
+              "const": "Post"
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "M",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "M",
+              "bindingSelector": "M",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "M#/node[Post]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "M",
+              "bindingSelector": "M",
+              "rule": "GQL-S-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "M#/node[User]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "M",
+              "bindingSelector": "M",
+              "rule": "GQL-S-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N#/node/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-34",
+      "description": "A source that refuses as a source at resolution (two definitions sharing one name and no other) is, to synthesis, a loaded source whose every definition is invalid: no operation, one entry per definition, the entries referenced by name and document ordinal.",
+      "rules": [
+        "GQL-S-01"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query A { status }\nquery A { status }\n",
+          "schema": "type Query { status: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [],
+        "bindings": [],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "A#1",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "A#2",
+              "scope": "target",
+              "status": "invalid",
               "rule": "GQL-S-01",
               "requirements": []
             }
