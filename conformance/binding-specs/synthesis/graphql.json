@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@4",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -17 assert the derived input and output schemas of \u00a76 and \u00a77. A named operation definition's key is its name (\u00a711.2); the key of a lone anonymous operation and the resolution of a key collision between sources are synthesis policy under \u00a711.4, so a scenario asserting one of those pins the reference synthesizer's spelling and a synthesizer spelling it otherwise fails only the key comparison. Each names the synthesizer rules it exercises. No scenario addresses a lone anonymous operation, because its key is \u00a711.4's declared freedom and a coverage entry must name a key; the projection-name rule for one is decided by \u00a77's text alone.",
+  "description": "Portable GraphQL synthesis scenarios: one operation per operation definition, addressed by operation name, with the schema carried in either representation; and the two whole-source refusals the load gates make faithful. Scenarios GQL-SS-07 to -17 assert the derived input and output schemas of \u00a76 and \u00a77. A named operation definition's key is its name (\u00a711.2); the key of a lone anonymous operation and the resolution of a key collision between sources are synthesis policy under \u00a711.4, so a scenario asserting one of those pins the reference synthesizer's spelling and a synthesizer spelling it otherwise fails only the key comparison. Each names the synthesizer rules it exercises. No scenario addresses a lone anonymous operation, because its key is \u00a711.4's declared freedom and a coverage entry must name a key; the projection-name rule for one is decided by \u00a77's text alone. A schema-absent source is not addressed here either, since format @4 scripts no peer for the live introspection \u00a73.3 requires; the processor and fidelity corpora cover it.",
   "scenarios": [
     {
       "id": "GQL-SS-01",
@@ -2459,13 +2459,13 @@
     },
     {
       "id": "GQL-SS-18",
-      "description": "A definition under a built-in scalar name reads as that built-in scalar: an enum written as Int leaves Int an unbounded integer in the output schema.",
+      "description": "A scalar definition under a built-in scalar name is the built-in itself: a written scalar Int leaves Int an unbounded integer in the output schema.",
       "source": {
         "bindingSpec": "openbindings.graphql@1",
         "location": "https://api.example.test/graphql",
         "content": {
           "document": "query Q { n }\n",
-          "schema": "enum Int { ONE }\ntype Query { n: Int }\n"
+          "schema": "scalar Int\ntype Query { n: Int }\n"
         }
       },
       "expected": {
@@ -8850,6 +8850,299 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "GQL-SS-51",
+      "description": "An implementer's branch position is its first declaration of the implementation in document order: a later redundant extension moves nothing.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { __typename } }\n",
+          "schema": "interface Node { id: ID! }\ntype User implements Node { id: ID! }\ntype Post implements Node { id: ID! }\nextend type User implements Node\ntype Query { node: Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "User"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "Post"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-52",
+      "description": "Variable conditioning propagates through a conditioned field selection: a sub-name contributed only under a variable-conditioned parent selection is not required, while the parent name, having an unconditioned contributor, is.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q($x: Boolean!) { viewer { id } viewer @include(if: $x) { name } }\n",
+          "schema": "type User { id: ID! name: String }\ntype Query { viewer: User }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/viewer",
+            "equals": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "path": "/operations/Q/output/required",
+            "equals": [
+              "viewer"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-53",
+      "description": "A non-null argument the operation does not supply is read whatever its defaultValue holds: with the member absent the operation is lossy with an entry naming the argument and the member.",
+      "rules": [
+        "GQL-S-01",
+        "GQL-S-02"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query A { f }\n",
+          "schema": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "Query"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "Query",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "f",
+                        "description": null,
+                        "args": [
+                          {
+                            "name": "n",
+                            "description": null,
+                            "type": {
+                              "kind": "NON_NULL",
+                              "name": null,
+                              "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                              }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                          }
+                        ],
+                        "type": {
+                          "kind": "SCALAR",
+                          "name": "Int",
+                          "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [],
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  }
+                ],
+                "directives": []
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "A"
+        ],
+        "bindings": [
+          {
+            "operationKey": "A",
+            "bindingSelector": "A"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "A",
+              "scope": "target",
+              "status": "lossy",
+              "operationKey": "A",
+              "bindingSelector": "A",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Query.f(n:)#defaultValue",
+              "scope": "projection",
+              "status": "lossy",
+              "operationKey": "A",
+              "bindingSelector": "A",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/A/output/properties/f",
+            "equals": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ]
       }
     }
   ]

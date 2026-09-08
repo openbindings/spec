@@ -2,7 +2,7 @@
   "rule": "GQL-D-01",
   "bindingSpec": "openbindings.graphql@1",
   "section": "4",
-  "description": "Every source governed by this identifier carries a `location` that is an absolute URI under \u00a74's definition, with no query component, whose scheme is `http` or `https`.",
+  "description": "Every source governed by this identifier carries a `location` that is an absolute URI under \u00a74's definition, with no query component and no `userinfo` subcomponent, whose scheme is `http` or `https`.",
   "notes": "\u00a74: the scheme set is this specification's convention (the over-HTTP draft is the only incorporated single-result transport); a subscription endpoint rides `content.subscriptions`, never `location`.",
   "tests": [
     {
