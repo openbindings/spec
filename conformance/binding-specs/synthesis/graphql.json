@@ -6430,7 +6430,7 @@
     },
     {
       "id": "GQL-SS-38",
-      "description": "A definition occupying no addressable position is referenced by its name and its ordinal among the document's operation definitions, wherever it occurs: B stays addressable and represented while the two A definitions are A#2 and A#3.",
+      "description": "A definition occupying no addressable position is referenced by its name and its ordinal among the document's operation definitions, wherever it occurs: the two A definitions are A#2 and A#3, and B, though addressable, is invalid with them because \u00a75.2.2.1's failure is inventory-wide.",
       "rules": [
         "GQL-S-01"
       ],
@@ -6444,15 +6444,8 @@
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [
-          "B"
-        ],
-        "bindings": [
-          {
-            "operationKey": "B",
-            "bindingSelector": "B"
-          }
-        ],
+        "operations": [],
+        "bindings": [],
         "coverage": {
           "exhaustive": true,
           "fullyRepresented": false,
@@ -6461,9 +6454,7 @@
               "sourceIndex": 0,
               "sourceRef": "B",
               "scope": "target",
-              "status": "represented",
-              "operationKey": "B",
-              "bindingSelector": "B",
+              "status": "invalid",
               "rule": "GQL-S-01",
               "requirements": []
             },
@@ -8854,7 +8845,7 @@
     },
     {
       "id": "GQL-SS-51",
-      "description": "An implementer's branch position is its first declaration of the implementation in document order: a later redundant extension moves nothing.",
+      "description": "An implementer's branch position is its first declaration of the implementation in document order: a later extension declaring another interface moves nothing.",
       "rules": [
         "GQL-S-04"
       ],
@@ -8863,7 +8854,7 @@
         "location": "https://api.example.test/graphql",
         "content": {
           "document": "query N { node { __typename } }\n",
-          "schema": "interface Node { id: ID! }\ntype User implements Node { id: ID! }\ntype Post implements Node { id: ID! }\nextend type User implements Node\ntype Query { node: Node }\n"
+          "schema": "interface Node { id: ID! }\ninterface Other { id: ID! }\ntype User implements Node { id: ID! }\ntype Post implements Node { id: ID! }\nextend type User implements Other\ntype Query { node: Node }\n"
         }
       },
       "expected": {
@@ -9139,6 +9130,254 @@
               "type": [
                 "integer",
                 "null"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-54",
+      "description": "An input field is reached when a literal reaches its input object, since \u00a75.6.4 reads every field of the type: the deprecated field the literal does not bind still carries its entry.",
+      "rules": [
+        "GQL-S-02"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q { g(x: {a: 1}) }\n",
+          "schema": "input F { a: Int b: Int @deprecated(reason: \"x\") }\ntype Query { g(x: F): Int }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "F.b#deprecated",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/g",
+            "equals": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-55",
+      "description": "A directive argument the operation supplies is reached and recorded by its coordinate.",
+      "rules": [
+        "GQL-S-02"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q { status @cache(ttl: 5) }\n",
+          "schema": "directive @cache(ttl: Int @deprecated(reason: \"x\")) on FIELD\ntype Query { status: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "@cache(ttl:)#deprecated",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/status",
+            "equals": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-56",
+      "description": "Partial collapse: two identical branches collapse at the first of their positions and the differing third stands beside them, so the collapsed group's projection position carries the first type's name and the third its own.",
+      "rules": [
+        "GQL-S-02",
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { at } }\n",
+          "schema": "scalar DateTime\ninterface Node { at: DateTime }\ntype User implements Node { at: DateTime }\ntype Post implements Node { at: DateTime }\ntype Tag implements Node { at: DateTime! }\ntype Query { node: Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N#/node[Tag]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N#/node[User]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "at": {
+                          "anyOf": [
+                            {
+                              "format": "DateTime"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "at": {
+                          "allOf": [
+                            {
+                              "format": "DateTime"
+                            },
+                            {
+                              "not": {
+                                "type": "null"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
               ]
             }
           }

@@ -2,7 +2,7 @@
   "rule": "GQL-D-04",
   "bindingSpec": "openbindings.graphql@1",
   "section": "3.2",
-  "description": "Each such source's carried `schema` satisfies \u00a73.2's schema-validity gate: every referenced type is defined, every field and argument has a type, no two types or directives share a name and no definition or extension repeats a field or argument name, input positions carry input types and output positions output types, at most one `schema` definition exists and any schema extension extends a defined schema, and the `query` root operation type is present and is an Object type.",
+  "description": "Each such source's carried `schema` satisfies \u00a73.2's schema-validity gate: every referenced type is defined, every field and argument has a type, no two types or directives share a name and no definition or extension repeats a field or argument name, input positions carry input types and output positions output types, at most one `schema` definition exists and any schema extension extends a defined schema, and the `query` root operation type is present and is an Object type. Every union member and `possibleTypes` entry is an Object type, and no type of a kind other than scalar bears a built-in scalar name.",
   "notes": "\u00a73.2 gate 5. An absent mutation or subscription root is not gated (\u00a73.3.1 makes them optional); it is a \u00a75.2.1.1 validation failure handled by \u00a75.",
   "tests": [
     {
