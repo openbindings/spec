@@ -2,7 +2,7 @@
   "format": "openbindings.invocation-fidelity-scenarios@1",
   "bindingSpec": "openbindings.graphql@1",
   "family": "graphql",
-  "description": "GraphQL fidelity scenarios for the interpretation boundary: live introspection observes the schema the invocation's own request reaches, a pin is dispatched as carried, and a structural absence refuses before any wire traffic. Scenarios for the value boundary arrive with §6 to §9.",
+  "description": "GraphQL fidelity scenarios for the interpretation boundary: live introspection observes the schema the invocation's own request reaches, a pin is dispatched as carried, and a structural absence refuses before any wire traffic. Value-boundary scenarios cover the partial-result emission of \u00a78 and the GET lane's protocol-field carriage; subscription scenarios arrive with \u00a79.",
   "scenarios": [
     {
       "id": "GQL-FI-01",

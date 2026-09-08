@@ -4113,7 +4113,7 @@
       ]
     },
     {
-      "description": "introspection object carrying errors: null, which is neither absent nor a list (malformed under section 8's well-formedness)",
+      "description": "introspection object carrying errors: null, which is an errors entry (gate 4 admits only its absence or an empty list)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
