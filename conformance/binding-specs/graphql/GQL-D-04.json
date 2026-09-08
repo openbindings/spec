@@ -13001,6 +13001,36 @@
       "violates": [
         "GQL-D-04"
       ]
+    },
+    {
+      "description": "union with a member that is not an Object type (section 3.8.1)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "Status": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.graphql@1",
+            "location": "https://api.example.test/graphql",
+            "content": {
+              "document": "query Status { status }",
+              "schema": "type Query { viewer(id: ID!): User status: String find(filter: Filter!): User }\ntype Mutation { rename(id: ID!, name: String!): User }\ntype User { id: ID! name: String }\ninput Filter @oneOf { byId: ID byName: String }\nunion U = Int | User\nextend type Query { u: U }\n"
+            }
+          }
+        },
+        "bindings": {
+          "Status.api": {
+            "operation": "Status",
+            "source": "api",
+            "selector": "Status"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "GQL-D-04"
+      ]
     }
   ]
 }

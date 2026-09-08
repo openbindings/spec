@@ -1615,7 +1615,7 @@
           },
           {
             "path": "/operations/S/input/required",
-            "setEquals": [
+            "equals": [
               "i",
               "s",
               "id"
@@ -2021,7 +2021,7 @@
         "assertions": [
           {
             "path": "/operations/C/output/required",
-            "setEquals": [
+            "equals": [
               "viewer"
             ]
           },
@@ -2453,7 +2453,6 @@
         }
       },
       "rules": [
-        "GQL-S-03",
         "GQL-S-04",
         "GQL-S-02"
       ]
@@ -4547,7 +4546,7 @@
     },
     {
       "id": "GQL-SS-28",
-      "description": "An argument is reached when the operation supplies it or the edition requires it, and an enum value when a literal names it or the enum types a position the operation reaches: the unsupplied nullable deprecated argument yields no entry, the supplied one does, the literal reaches only A, and the variable-typed enum reaches every value.",
+      "description": "An argument is reached when the operation supplies it or the edition requires it, and an enum value when a literal names it or the enum types a position the operation reaches: the unsupplied nullable deprecated argument yields no entry, the literal reaches only A, and the variable-typed enum reaches every value, so B's deprecation is recorded.",
       "rules": [
         "GQL-S-02",
         "GQL-S-03"
@@ -6344,6 +6343,71 @@
               "scope": "target",
               "status": "invalid",
               "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-37",
+      "description": "A deprecated argument the operation supplies is reached and recorded by its schema coordinate with the #deprecated suffix.",
+      "rules": [
+        "GQL-S-02",
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query Q { f(a: 1) }\n",
+          "schema": "type Query { f(a: Int @deprecated(reason: \"x\")): Int }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "Q"
+        ],
+        "bindings": [
+          {
+            "operationKey": "Q",
+            "bindingSelector": "Q"
+          }
+        ],
+        "assertions": [
+          {
+            "path": "/operations/Q/output/properties/f",
+            "equals": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Q",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "Query.f(a:)#deprecated",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "Q",
+              "bindingSelector": "Q",
+              "rule": "GQL-S-02",
               "requirements": []
             }
           ]
