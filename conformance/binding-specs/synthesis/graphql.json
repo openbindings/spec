@@ -4120,7 +4120,7 @@
     },
     {
       "id": "GQL-SS-25",
-      "description": "An input field's declared default is emitted as the field's JSON Schema default on the outermost schema the position carries, and a defaulted field is not required.",
+      "description": "An input field's declared default is emitted as the field's JSON Schema default on the outermost schema the position carries, under the fixed image for string, list, float, boolean, and object literals, and a defaulted field is not required.",
       "rules": [
         "GQL-S-03"
       ],
@@ -4129,7 +4129,7 @@
         "location": "https://api.example.test/graphql",
         "content": {
           "document": "query Q($f: F) { n(f: $f) }\n",
-          "schema": "input F { a: String = \"x\" b: [Int] = [1, 2] }\ntype Query { n(f: F): Int }\n"
+          "schema": "input G { n: Int }\ninput F { a: String = \"x\" b: [Int] = [1, 2] c: Float = 1.5 d: Boolean = true e: G = { n: 1 } }\ntype Query { n(f: F): Int }\n"
         }
       },
       "expected": {
@@ -4164,6 +4164,20 @@
           {
             "path": "/operations/Q/input/properties/f/required",
             "equals": []
+          },
+          {
+            "path": "/operations/Q/input/properties/f/properties/c/default",
+            "equals": 1.5
+          },
+          {
+            "path": "/operations/Q/input/properties/f/properties/d/default",
+            "equals": true
+          },
+          {
+            "path": "/operations/Q/input/properties/f/properties/e/default",
+            "equals": {
+              "n": 1
+            }
           }
         ],
         "coverage": {
@@ -6412,6 +6426,782 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "GQL-SS-38",
+      "description": "A definition occupying no addressable position is referenced by its name and its ordinal among the document's operation definitions, wherever it occurs: B stays addressable and represented while the two A definitions are A#2 and A#3.",
+      "rules": [
+        "GQL-S-01"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query B { status }\nquery A { status }\nquery A { status }\n",
+          "schema": "type Query { status: String }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "B"
+        ],
+        "bindings": [
+          {
+            "operationKey": "B",
+            "bindingSelector": "B"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": false,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "B",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "B",
+              "bindingSelector": "B",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "A#2",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "A#3",
+              "scope": "target",
+              "status": "invalid",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "GQL-SS-39",
+      "description": "A branch's leaf is typed from the concrete type's own field definition, as ExecuteField reads it: a covariantly non-null implementer yields a branch that differs from its sibling, so the branches do not collapse and each carries its own projection position.",
+      "rules": [
+        "GQL-S-02",
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { at } }\n",
+          "schema": "scalar DateTime\ninterface Node { at: DateTime }\ntype User implements Node { at: DateTime! }\ntype Post implements Node { at: DateTime }\ntype Query { node: Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N#/node[Post]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-02",
+              "requirements": []
+            },
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N#/node[User]/at",
+              "scope": "projection",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-02",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "at": {
+                          "allOf": [
+                            {
+                              "format": "DateTime"
+                            },
+                            {
+                              "not": {
+                                "type": "null"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "at": {
+                          "anyOf": [
+                            {
+                              "format": "DateTime"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-40",
+      "description": "Branch order follows the interpreted schema: a union's listed members first and an extension's members after them in document order, whatever order the member types are defined in.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query S { search { __typename } }\n",
+          "schema": "type Tag { t: String }\ntype Post { p: String }\ntype User { u: String }\nunion SearchResult = Post | User\nextend union SearchResult = Tag\ntype Query { search: SearchResult }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "S"
+        ],
+        "bindings": [
+          {
+            "operationKey": "S",
+            "bindingSelector": "S"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "S",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "S",
+              "bindingSelector": "S",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/S/output/properties/search",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "Post"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "User"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "Tag"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-41",
+      "description": "An interface's Object implementers are ordered by the document position of the definition or extension that declares the implementation: User, declaring it in its definition, precedes Post, which declares it in a later extension although Post is defined first.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { __typename } }\n",
+          "schema": "interface Node { id: ID! }\ntype Post { id: ID! }\ntype User implements Node { id: ID! }\nextend type Post implements Node\ntype Query { node: Node }\n"
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "User"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "Post"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-42",
+      "description": "In an introspection result branch order is possibleTypes order, not the order of types: Post precedes User although types lists User first.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query N { node { __typename } }\n",
+          "schema": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "Query"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "Query",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "node",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                          "kind": "INTERFACE",
+                          "name": "Node",
+                          "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [],
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "OBJECT",
+                    "name": "User",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "id",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                          "kind": "NON_NULL",
+                          "name": null,
+                          "ofType": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                          }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [
+                      {
+                        "kind": "INTERFACE",
+                        "name": "Node",
+                        "ofType": null
+                      }
+                    ],
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "OBJECT",
+                    "name": "Post",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "id",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                          "kind": "NON_NULL",
+                          "name": null,
+                          "ofType": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                          }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [
+                      {
+                        "kind": "INTERFACE",
+                        "name": "Node",
+                        "ofType": null
+                      }
+                    ],
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "INTERFACE",
+                    "name": "Node",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "id",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                          "kind": "NON_NULL",
+                          "name": null,
+                          "ofType": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                          }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [],
+                    "possibleTypes": [
+                      {
+                        "kind": "OBJECT",
+                        "name": "Post",
+                        "ofType": null
+                      },
+                      {
+                        "kind": "OBJECT",
+                        "name": "User",
+                        "ofType": null
+                      }
+                    ],
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  }
+                ],
+                "directives": []
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "N"
+        ],
+        "bindings": [
+          {
+            "operationKey": "N",
+            "bindingSelector": "N"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "N",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "N",
+              "bindingSelector": "N",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/N/output/properties/node",
+            "equals": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "Post"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "__typename": {
+                          "type": "string",
+                          "const": "User"
+                        }
+                      },
+                      "required": [
+                        "__typename"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "GQL-SS-43",
+      "description": "A pinned result carrying a chain deeper than nine wrappers is read as carried: the output schema nests ten list levels around the leaf.",
+      "rules": [
+        "GQL-S-04"
+      ],
+      "source": {
+        "bindingSpec": "openbindings.graphql@1",
+        "location": "https://api.example.test/graphql",
+        "content": {
+          "document": "query D { deep }\n",
+          "schema": {
+            "data": {
+              "__schema": {
+                "queryType": {
+                  "name": "Query"
+                },
+                "mutationType": null,
+                "subscriptionType": null,
+                "types": [
+                  {
+                    "kind": "OBJECT",
+                    "name": "Query",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": [
+                      {
+                        "name": "deep",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                          "kind": "LIST",
+                          "name": null,
+                          "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                              "kind": "LIST",
+                              "name": null,
+                              "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                  "kind": "LIST",
+                                  "name": null,
+                                  "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                      "kind": "LIST",
+                                      "name": null,
+                                      "ofType": {
+                                        "kind": "LIST",
+                                        "name": null,
+                                        "ofType": {
+                                          "kind": "LIST",
+                                          "name": null,
+                                          "ofType": {
+                                            "kind": "LIST",
+                                            "name": null,
+                                            "ofType": {
+                                              "kind": "SCALAR",
+                                              "name": "Int",
+                                              "ofType": null
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                      }
+                    ],
+                    "interfaces": [],
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  },
+                  {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "description": null,
+                    "specifiedByURL": null,
+                    "isOneOf": null,
+                    "fields": null,
+                    "interfaces": null,
+                    "possibleTypes": null,
+                    "enumValues": null,
+                    "inputFields": null,
+                    "ofType": null
+                  }
+                ],
+                "directives": []
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": [
+          "D"
+        ],
+        "bindings": [
+          {
+            "operationKey": "D",
+            "bindingSelector": "D"
+          }
+        ],
+        "coverage": {
+          "exhaustive": true,
+          "fullyRepresented": true,
+          "entries": [
+            {
+              "sourceIndex": 0,
+              "sourceRef": "D",
+              "scope": "target",
+              "status": "represented",
+              "operationKey": "D",
+              "bindingSelector": "D",
+              "rule": "GQL-S-01",
+              "requirements": []
+            }
+          ]
+        },
+        "assertions": [
+          {
+            "path": "/operations/D/output/properties/deep/items/items/items/items/items/items/items/items/items/items/type",
+            "equals": [
+              "integer",
+              "null"
+            ]
+          },
+          {
+            "path": "/operations/D/output/properties/deep/type",
+            "equals": [
+              "array",
+              "null"
+            ]
+          }
+        ]
       }
     }
   ]
