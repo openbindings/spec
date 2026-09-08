@@ -232,7 +232,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 1138 scenarios citing every P-rule of usage,
+The current corpus contains 1148 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -304,7 +304,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 248 scenarios
+coverage loss. The 252 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
@@ -486,7 +486,7 @@ core, and resolution clauses are fixtured via embedded content.
 | GQL-D-01   | 3/8         | absolute http(s) GraphQL endpoint incl. uppercase scheme; absent, relative, non-string, WebSocket-scheme, fragment, query (empty included), and userinfo negatives |
 | GQL-D-02   | 7/17        | three-member content envelope (document, schema as SDL or introspection result, subscriptions endpoint with paired transport); absent-content, string-content, missing-document, non-string, unknown-member, and pairing negatives |
 | GQL-D-03   | 4/13        | executable-document and schema grammar gates; syntax, type-system-definition-in-document, SDL syntax, and introspection-shape negatives |
-| GQL-D-04   | 6/31        | schema-validity gate subset; undefined type, missing query root, repeated names (field, type, directive, extension field), input-in-output, output-in-input, schema-definition count, and null or scalar queryType negatives |
+| GQL-D-04   | 6/33        | schema-validity gate subset; undefined type, missing query root, repeated names (field, type, directive, extension field), input-in-output, output-in-input, schema-definition count, and null or scalar queryType negatives |
 | GQL-D-05   | 3/6         | selector as an operation Name resolving to exactly one definition, or absent over a lone definition; ambiguity, dangling, root-field-spelling, shared-name, and empty-inventory negatives |
 ## Layout
 
