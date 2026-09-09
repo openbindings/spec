@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/transforms-conformance-fixture-0.2.0.json",
   "title": "transform differential-conformance fixture file",
-  "description": "Describes a set of JSONata transform cases. Two kinds share this file shape: `agree` cases (the cross-SDK gate) pin the NORMATIVE jsonata-js output that every conformant engine MUST reproduce; `known-divergence` cases catalog, per root-cause pattern, where the implementation engine deviates from that normative output. An outcome is a small envelope so `undefined` stays distinct from a `null` value and error identity is a message substring rather than exact text.",
+  "description": "Describes pinned JSONata reference outcomes: `agree` contains regression cases; `known-divergence` records observed implementation differences. Core §5.5 is authoritative, including clause 7's bounded numerical latitude; a numerical departure requires justification under a consistent eligible model, not an arbitrary alternative answer. The separate numerical/ corpus carries raw-JSON, model-sensitive witnesses. An outcome envelope distinguishes undefined from null and avoids prescribing exact error text.",
   "type": "object",
   "required": ["kind", "language", "expectedEngine", "cases"],
   "properties": {

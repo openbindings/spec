@@ -61,6 +61,8 @@ jobs:
             ajv validate -s conformance/transforms/transforms.schema.json -d "$f" --spec=draft2020
           done
           node scripts/verify-transform-corpus.mjs
+          ajv validate -s conformance/transforms/numerical/scenarios.schema.json -d conformance/transforms/numerical/scenarios.json --spec=draft2020
+          node scripts/verify-transform-numerical.mjs
 
       - name: Validate binding-specification errata manifest
         run: ajv validate -s binding-specs/errata.schema.json -d binding-specs/errata.json --spec=draft2020

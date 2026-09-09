@@ -1,46 +1,51 @@
-# Transform differential-conformance corpus
+# Transform conformance reference corpus
 
-JSONata transforms ([§5.5](../../openbindings.md#55-transforms)) are pinned to
-**jsonata-js 2.1.1** as the normative behavioral tiebreak (OBI-D-18 /
-[§5.5](../../openbindings.md#55-transforms)). This corpus is the cross-SDK
-**parity gate**: it verifies that each SDK's transform engine reproduces that
-normative output, and it catalogs the residual places where an implementation
-engine deviates.
+Core [§5.5](../../openbindings.md#55-transforms) pins JSONata 2.1 with
+jsonata-js 2.1.1 as its behavioral tiebreak, **subject to clause 7's numerical
+latitude**. The prose is authoritative. These reference fixtures expose
+regressions; neither fixtures nor an official SDK define additional Core rules.
 
-It is located via `OB_SPEC_CORPUS` (the conformance root); harnesses append the
-`transforms` subpath. The TypeScript SDK evaluates with jsonata-js directly; the
-Go path (ob) evaluates with **gnata** (a pure-Go JSONata 2.x engine), and this
-corpus is how that engine is held to the normative one.
+Harnesses locate this directory beneath `OB_SPEC_CORPUS` (the conformance root).
+The existing file shapes and case identifiers remain available to SDK harnesses.
+Their adoption status must be checked at the implementation revision being
+qualified; this corpus does not assert current shipping-engine readiness.
 
-## `agree/` — the gate
+## `agree/` — pinned reference regression cases
 
-Expressions that **every** conformant engine evaluates identically to
-jsonata-js. Each case carries the normative `expected` outcome. Both SDK test
-suites run these and assert a match:
+Each case records the pinned reference outcome. Unchanged language semantics
+remain a parity gate. A numerical departure is acceptable only when justified
+by the evaluator's consistently specified, eligible clause 7 rules. An engine
+cannot waive an arbitrary mismatch by naming a numeric library. The dedicated
+[`numerical/`](numerical/README.md) scenarios make this distinction explicit.
 
-- Go: `ob` runs them through its adopted engine (`internal/app`, the same
-  `evalTransform` path invocation uses).
-- TS: `@openbindings/sdk` runs them through jsonata-js.
+## `known-divergence/` — recorded implementation observations
 
-A failure means an engine has drifted from the parity contract.
+Each case records a reference outcome and an observed implementation outcome,
+with a root-cause label. These are historical regression witnesses, not a claim
+about every current engine or which production documents can reach a behavior.
+Requalify them against the exact implementation snapshot under review.
 
-## `known-divergence/` — the catalog
+The recorded differences concern singleton filtering, match-result shape,
+wildcard flattening and regular-expression support. Numerical latitude does
+not waive those unrelated language differences. A closed divergence should be
+reverified and promoted to `agree/`; preserving a known defect is not a
+conformance requirement.
 
-The places the Go engine (gnata) deviates from normative jsonata-js **in ob's
-actual pipeline**. Each case records both the normative `expected` and the
-engine's `actual`, under a root-cause label. **None is reachable by any shipped
-OB transform** (verified against ob's production transforms and the conformance
-corpora). The catalog is regression-guarded: ob asserts each divergence still
-holds, so a future engine change that *closes* one fails the test, prompting the
-case to be re-verified and promoted to `agree/`.
+## `numerical/` — bounded permission and invariant witnesses
 
-The four residual root causes (gnata 0.2.x): `$filter` returning one match
-yields `[x]` not `x`; `$match` returns `{match,start,end,groups}` where
-jsonata-js returns `{match,index,groups}`; wildcard-over-array nests rather than
-flattens; and RE2 (Go's `regexp`) rejects Perl lookahead/lookbehind/backreferences
-that jsonata-js evaluates. (The big-integer-precision difference gnata shows on
-raw bytes does **not** occur in ob — its pipeline rounds large integers to
-float64 before the transform runs, so ob and jsonata-js agree.)
+Raw-JSON fixtures distinguish reference numerical behavior from an illustrative
+exact-input/decimal-computation model. They also cover capacity rejection,
+computed-value meaning, comparison consistency, syntax versus range, and fixed
+language controls. The model labels are test descriptions, not OBI configuration
+or a requirement that implementations support two modes.
 
-**The spec's normative requirement remains full jsonata-js.** This corpus
-documents an implementation-engine residual, not a specification concession.
+CI validates both fixture schemas and runs the repository's structural and
+numerical-contract verifiers. Those verifiers do not evaluate JSONata; actual
+engine execution remains a separate harness responsibility. Full conformance
+also requires behavior no finite corpus can establish, such as the absence of
+all possible host-environment extensions.
+
+General transform conformance does **not** establish the stronger official-SDK
+value-fidelity promise. Exact JSON carriage, copy/identity preservation and
+end-to-end invocation qualification require separate implementation tests;
+they are not silently imposed on every conforming implementation by this corpus.
