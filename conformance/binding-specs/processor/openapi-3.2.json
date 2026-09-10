@@ -4870,10 +4870,7 @@
                     "content": {
                       "text/plain": {
                         "schema": {
-                          "type": [
-                            "boolean",
-                            "number"
-                          ]
+                          "type": "boolean"
                         }
                       }
                     }
@@ -10961,7 +10958,7 @@
                 {
                   "n": 1
                 },
-                "second"
+                "c2Vjb25k"
               ]
             }
           ]
@@ -13926,7 +13923,7 @@
                 {
                   "n": 1
                 },
-                "second"
+                "c2Vjb25k"
               ]
             }
           ]

@@ -534,7 +534,7 @@
 
 **[incorporated]** A part whose resolved declaration admits `string` as its sole non-null type with `contentEncoding` remains artifact-encoded text. For multipart, that `contentEncoding` declares the equivalent `Content-Transfer-Encoding` header on the part, and an explicit Encoding header whose resolved declaration disallows the value makes both serialization and parsing undefined ([OAS 3.2.0 §§4.15.4.2, 4.24.4.3](https://spec.openapis.org/oas/v3.2.0.html#content-transfer-encoding-and-contentencoding)).
 
-**[convention]** A part with a typeless resolved declaration uses the raw-octet lane and §9.2's canonical Base64 boundary.
+**[convention]** A non-JSON part with a typeless resolved declaration uses the raw-octet lane and §9.2's canonical Base64 boundary.
 
 **[pin]** No `Content-Transfer-Encoding` field is emitted for such a part. The edition's equivalence — using `contentEncoding` for a multipart field "is equivalent to specifying an Encoding Object with a `headers` field containing `Content-Transfer-Encoding`" — describes what the declaration means, not a field a serializer adds; the same section notes the field is deprecated for `multipart/form-data`, and RFC 7578 §4.7 states "Senders SHOULD NOT generate any parts with a Content-Transfer-Encoding header field", which this specification pins. The declared equivalence still governs parsing and declaration semantics; the pin reopens only if an incorporated OAS edition states the emission as a serialization requirement ([OAS 3.2.0 §4.15.4.2](https://spec.openapis.org/oas/v3.2.0.html#content-transfer-encoding-and-contentencoding), [RFC 7578 §4.7](https://www.rfc-editor.org/rfc/rfc7578#section-4.7)).
 
