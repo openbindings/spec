@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/transforms-conformance-fixture-0.2.0.json",
-  "title": "transform differential-conformance fixture file",
-  "description": "Describes pinned JSONata reference outcomes: `agree` contains regression cases; `known-divergence` records observed implementation differences. Core §5.5 is authoritative, including clause 7's bounded numerical latitude; a numerical departure requires justification under a consistent eligible model, not an arbitrary alternative answer. The separate numerical/ corpus carries raw-JSON, model-sensitive witnesses. An outcome envelope distinguishes undefined from null and avoids prescribing exact error text.",
+  "title": "transform implementation-observation fixture file",
+  "description": "Historical JSONata implementation outcomes. These observations do not define language requirements or official-library fidelity guarantees. Authority-linked semantic cases live in language/. An outcome envelope distinguishes undefined from null.",
   "type": "object",
   "required": ["kind", "language", "expectedEngine", "cases"],
   "properties": {
@@ -10,7 +10,7 @@
     "language": { "const": "jsonata" },
     "expectedEngine": {
       "type": "string",
-      "description": "The engine that produced every `expected` outcome — the normative tiebreak the spec pins (jsonata-js@2.1.1)."
+      "description": "The engine that produced the recorded `expected` outcomes (jsonata-js@2.1.1); this is provenance, not normative authority."
     },
     "actualEngine": {
       "type": "string",

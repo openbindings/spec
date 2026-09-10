@@ -2,7 +2,7 @@
   "kind": "agree",
   "language": "jsonata",
   "expectedEngine": "jsonata-js@2.1.1",
-  "description": "Portable transform subset: expressions both jsonata-js (normative) and jsonata-go v1.5.4 evaluate identically. This is the cross-SDK GATE.",
+  "description": "Historical agreement observations for jsonata-js 2.1.1 and jsonata-go v1.5.4. Reference outcomes are compatibility evidence, not additional language requirements.",
   "cases": [
     {
       "id": "root-id-obj",

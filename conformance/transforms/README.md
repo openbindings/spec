@@ -1,51 +1,45 @@
-# Transform conformance reference corpus
+# Transform evidence and semantic conformance
 
-Core [§5.5](../../openbindings.md#55-transforms) pins JSONata 2.1 with
-jsonata-js 2.1.1 as its behavioral tiebreak, **subject to clause 7's numerical
-latitude**. The prose is authoritative. These reference fixtures expose
-regressions; neither fixtures nor an official SDK define additional Core rules.
+Core [§5.5](../../openbindings.md#55-transforms) incorporates the documented
+JSONata 2.1 language. Core prose and those incorporated semantics govern
+conformance; neither a runtime nor these fixtures adds requirements.
 
-Harnesses locate this directory beneath `OB_SPEC_CORPUS` (the conformance root).
-The existing file shapes and case identifiers remain available to SDK harnesses.
-Their adoption status must be checked at the implementation revision being
-qualified; this corpus does not assert current shipping-engine readiness.
+This is the Core binding-transform corpus. Operation Graph independently pins
+its graph-expression evaluator; its binding specification and execution corpus
+are not changed by this Core authority adjustment.
 
-## `agree/` — pinned reference regression cases
+## Authority-linked semantic cases
 
-Each case records the pinned reference outcome. Unchanged language semantics
-remain a parity gate. A numerical departure is acceptable only when justified
-by the evaluator's consistently specified, eligible clause 7 rules. An engine
-cannot waive an arbitrary mismatch by naming a numeric library. The dedicated
-[`numerical/`](numerical/README.md) scenarios make this distinction explicit.
+[`language/scenarios.json`](language/scenarios.json) ties each expected result
+to a documented language requirement or the OpenBindings integration boundary.
+Inputs and results are JSON text so loading the fixture does not itself round
+numbers. `failure` includes undefined, non-JSON results and evaluation errors
+at the OpenBindings boundary; it does not prescribe error codes or messages.
 
-## `known-divergence/` — recorded implementation observations
+LANG-22 deliberately compares an untouched copied value with its original
+inside the expression. It does not require an exact numeric representation.
+The 2.1.1 reference fails this witness because its copy path rounds through
+string formatting. A reference mismatch is not automatically a defect in
+another evaluator, and a reference result cannot override documented meaning.
 
-Each case records a reference outcome and an observed implementation outcome,
-with a root-cause label. These are historical regression witnesses, not a claim
-about every current engine or which production documents can reach a behavior.
-Requalify them against the exact implementation snapshot under review.
+`node scripts/verify-transform-authority.mjs` checks structure, authority links,
+IDs and the separation of normative text from implementation policy. It does
+not execute an evaluator. An evaluator harness executes the cases and applies
+the OpenBindings result/environment boundary. Passing this finite set is not
+whole-language or closed-environment certification.
 
-The recorded differences concern singleton filtering, match-result shape,
-wildcard flattening and regular-expression support. Numerical latitude does
-not waive those unrelated language differences. A closed divergence should be
-reverified and promoted to `agree/`; preserving a known defect is not a
-conformance requirement.
+## Historical implementation observations
 
-## `numerical/` — bounded permission and invariant witnesses
+`agree/` and `known-divergence/` retain their file shapes, IDs and recorded
+outcomes for existing SDK harnesses. `expectedEngine` records provenance,
+not normative authority. These files are a historical compatibility lane,
+not a general conformance oracle or a statement about currently shipped SDKs.
 
-Raw-JSON fixtures distinguish reference numerical behavior from an illustrative
-exact-input/decimal-computation model. They also cover capacity rejection,
-computed-value meaning, comparison consistency, syntax versus range, and fixed
-language controls. The model labels are test descriptions, not OBI configuration
-or a requirement that implementations support two modes.
+Review a mismatch against its governing language rule. A documented semantic
+violation remains a defect; a difference solely in an unspecified detail is
+not made nonconformant by the reference observation. Existing SDK harnesses may
+continue to use stricter parity gates as their own qualification policy.
+Do not silently reinterpret those harnesses as complete language conformance.
 
-CI validates both fixture schemas and runs the repository's structural and
-numerical-contract verifiers. Those verifiers do not evaluate JSONata; actual
-engine execution remains a separate harness responsibility. Full conformance
-also requires behavior no finite corpus can establish, such as the absence of
-all possible host-environment extensions.
-
-General transform conformance does **not** establish the stronger official-SDK
-value-fidelity promise. Exact JSON carriage, copy/identity preservation and
-end-to-end invocation qualification require separate implementation tests;
-they are not silently imposed on every conforming implementation by this corpus.
+Official-library numerical fidelity, precision choices and cross-SDK agreement
+are implementation qualification concerns, separate from this corpus.

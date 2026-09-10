@@ -3,7 +3,7 @@
  "language": "jsonata",
  "expectedEngine": "jsonata-js@2.1.1",
  "actualEngine": "gnata@0.2.2",
- "description": "Where ob's adopted Go engine (gnata) deviates from the normative jsonata-js in ob's ACTUAL transform pipeline (input pre-parsed to the Go JSON value model). None is reachable by any shipped OB transform; each is regression-guarded, so a gnata change that closes one is caught and the case can be promoted to agree. The spec's normative requirement remains full jsonata-js. NOTE: the big-integer-precision divergence gnata shows on raw bytes does NOT occur here \u2014 ob's pipeline rounds large integers to float64 before the transform runs, so ob and jsonata-js agree.",
+ "description": "Historical differences between jsonata-js 2.1.1 and the captured Go transform pipeline. Both the reference and observed results are evidence, not independent normative requirements. Re-evaluate differences against the documented language and the exact implementation being qualified.",
  "rootCauses": {
   "W": "Wildcard over an array (items.*) yields nested per-element arrays rather than a flattened sequence.",
   "F": "$filter returning exactly one match yields a single-element array [x] rather than x.",
