@@ -232,7 +232,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 1053 scenarios citing every P-rule of usage,
+The current corpus contains 1057 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,

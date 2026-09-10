@@ -674,18 +674,36 @@
                           "$ref": "#/components/schemas/Resource/properties/name"
                         }
                       }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
                     }
                   }
                 }
               }
-            }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
           }
         },
         "binding": {
           "selector": "#/paths/~1x/post"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
         }
       },
       "expected": [
@@ -20741,298 +20759,1019 @@
     },
     {
       "id": "OAPI32-PS-285",
-      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
+      "rules": [
+        "OAPI32-P-58",
+        "OAPI32-P-59"
+      ],
       "section": "8.3",
       "description": "An optional exploded form-cookie array remains represented, and a supplied one-item value emits exactly one Cookie pair.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Optional cookie projection input", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a"] } } },
-        "peer": { "status": 204, "headers": {}, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Optional cookie projection input",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "parts",
+                      "in": "cookie",
+                      "style": "form",
+                      "explode": true,
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "parts": [
+                "a"
+              ]
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
       },
-      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=a" }] }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Cookie",
+              "equals": "parts=a"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-286",
-      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
+      "rules": [
+        "OAPI32-P-58",
+        "OAPI32-P-59"
+      ],
       "section": "8.3",
       "description": "A required exploded form-cookie object remains represented, and a supplied one-property value emits exactly one Cookie pair under that property's name.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Required exploded cookie object", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "object", "properties": { "a": { "type": "string" } } } }],
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": { "a": "1" } } } },
-        "peer": { "status": 204, "headers": {}, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Required exploded cookie object",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "parts",
+                      "in": "cookie",
+                      "required": true,
+                      "style": "form",
+                      "explode": true,
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "parts": {
+                "a": "1"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
       },
-      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "a=1" }] }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Cookie",
+              "equals": "a=1"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-287",
-      "rules": ["OAPI32-P-58"],
+      "rules": [
+        "OAPI32-P-58"
+      ],
       "section": "8.3",
       "description": "OAS 3.2 non-exploded form-cookie arrays remain admitted and percent-encode reserved data inside a single member rather than entering the exploded wrong-delimiter path.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Non-exploded cookie array", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": false, "schema": { "type": "array", "items": { "type": "string" } } }],
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a,b"] } } },
-        "peer": { "status": 204, "headers": {}, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Non-exploded cookie array",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "parts",
+                      "in": "cookie",
+                      "required": true,
+                      "style": "form",
+                      "explode": false,
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "parts": [
+                "a,b"
+              ]
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
       },
-      "expected": [{
-        "disposition": "complete", "phase": "completion",
-        "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=a%2Cb" }]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Cookie",
+              "equals": "parts=a%2Cb"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-288",
-      "rules": ["OAPI32-P-59"],
+      "rules": [
+        "OAPI32-P-59"
+      ],
       "section": "8.3",
       "description": "A typeless exploded form-cookie declaration survives static analysis, but a supplied array would emit multiple pairs with the wrong delimiter and refuses.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Runtime exploded cookie array", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "style": "form", "explode": true, "schema": {} }],
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": ["a", "b"] } } }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Runtime exploded cookie array",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "parts",
+                      "in": "cookie",
+                      "style": "form",
+                      "explode": true,
+                      "schema": {}
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "parts": [
+                "a",
+                "b"
+              ]
+            }
+          }
+        }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-289",
-      "rules": ["OAPI32-P-60"],
+      "rules": [
+        "OAPI32-P-60"
+      ],
       "section": "9.1",
       "description": "A required Request Body whose sole object-model XML alternative is excluded has no surviving effective request-content alternative and excludes the target.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Post-confinement required body", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "post": {
-            "requestBody": { "required": true, "content": { "application/xml": { "schema": { "type": "object" } } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/post" },
-        "invocation": { "inputPresent": false }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Post-confinement required body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/xml": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-290",
-      "rules": ["OAPI32-P-61"],
+      "rules": [
+        "OAPI32-P-61"
+      ],
       "section": "9.1",
       "description": "Accept advertises admitted media from both success and failure Responses, but a failure-only problem media type cannot govern an actual 200 response.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Failure media Accept boundary", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": { "responses": {
-            "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "object" } } } },
-            "400": { "description": "bad", "content": { "application/problem+json": { "schema": { "type": "object" } } } }
-          } } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": false },
-        "peer": { "status": 200, "headers": { "Content-Type": "application/problem+json" }, "body": "{}" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Failure media Accept boundary",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "400": {
+                      "description": "bad",
+                      "content": {
+                        "application/problem+json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/problem+json"
+          },
+          "body": "{}"
+        }
       },
-      "expected": [{
-        "disposition": "error", "phase": "response",
-        "assertions": [
-          { "path": "/dispatch/headers/Accept", "equals": "application/json, application/problem+json" },
-          { "path": "/outputs", "equals": [] }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Accept",
+              "equals": "application/json, application/problem+json"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-291",
-      "rules": ["OAPI32-P-62"],
+      "rules": [
+        "OAPI32-P-62"
+      ],
       "section": "7",
       "description": "A fixed-operation PATCH preserves its required JSON Request Body and emits PATCH under RFC 5789 rather than treating the method as body-undefined.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "PATCH request body", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "patch": {
-            "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/patch" },
-        "invocation": { "inputPresent": true, "input": { "body": { "ok": true } } },
-        "peer": { "status": 204, "headers": {}, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "PATCH request body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "patch": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/patch"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "ok": true
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
       },
-      "expected": [{
-        "disposition": "complete", "phase": "completion",
-        "assertions": [
-          { "path": "/dispatch/method", "equals": "PATCH" },
-          { "path": "/dispatch/headers/Content-Type", "equals": "application/json" },
-          { "path": "/dispatch/body", "equals": { "ok": true } }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "PATCH"
+            },
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/json"
+            },
+            {
+              "path": "/dispatch/body",
+              "equals": {
+                "ok": true
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-292",
-      "rules": ["OAPI32-P-62"],
+      "rules": [
+        "OAPI32-P-62"
+      ],
       "section": "7",
       "description": "A fixed-operation PATCH with a required Request Body refuses before dispatch when the caller omits the body.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "PATCH required body", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "patch": {
-            "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/patch" },
-        "invocation": { "inputPresent": false }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "PATCH required body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "patch": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/patch"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-293",
-      "rules": ["OAPI32-P-58", "OAPI32-P-59"],
+      "rules": [
+        "OAPI32-P-58",
+        "OAPI32-P-59"
+      ],
       "section": "8.3",
       "description": "A supplied empty array is present rather than omitted and uses the form undefined-value cell, emitting one empty Cookie pair rather than disappearing or entering the multi-pair refusal path.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Empty form-cookie array", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "get": {
-            "parameters": [{ "name": "parts", "in": "cookie", "required": true, "style": "form", "explode": true, "schema": { "type": "array", "items": { "type": "string" } } }],
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/get" },
-        "invocation": { "inputPresent": true, "input": { "parameters": { "parts": [] } } },
-        "peer": { "status": 204, "headers": {}, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Empty form-cookie array",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "name": "parts",
+                      "in": "cookie",
+                      "required": true,
+                      "style": "form",
+                      "explode": true,
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "parts": []
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "headers": {},
+          "body": ""
+        }
       },
-      "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [{ "path": "/dispatch/headers/Cookie", "equals": "parts=" }] }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Cookie",
+              "equals": "parts="
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-294",
-      "rules": ["OAPI32-P-44"],
+      "rules": [
+        "OAPI32-P-44"
+      ],
       "section": "7",
       "description": "An admitted additionalOperations extension method with a required Request Body refuses before dispatch when the caller omits that body; extension status does not weaken required-body enforcement.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Extension method required body", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "additionalOperations": { "REPORT": {
-            "operationId": "customRequiredBody",
-            "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
-            "responses": { "204": { "description": "ok" } }
-          } } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/additionalOperations/REPORT" },
-        "invocation": { "inputPresent": false }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Extension method required body",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "additionalOperations": {
+                  "REPORT": {
+                    "operationId": "customRequiredBody",
+                    "requestBody": {
+                      "required": true,
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "responses": {
+                      "204": {
+                        "description": "ok"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/additionalOperations/REPORT"
+        },
+        "invocation": {
+          "inputPresent": false
+        }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-295",
-      "rules": ["OAPI32-P-63"],
+      "rules": [
+        "OAPI32-P-63"
+      ],
       "section": "9.3",
       "description": "Content-based form-urlencoded serialization writes number and boolean properties through the binding-fixed text/plain lexical form without consulting or requiring parameterConversion.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Form scalar text", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "post": {
-            "requestBody": { "required": true, "content": { "application/x-www-form-urlencoded": {
-              "schema": { "type": "object", "properties": { "count": { "type": "integer" }, "flag": { "type": "boolean" } } }
-            } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/post" },
-        "invocation": { "inputPresent": true, "input": { "body": { "count": 7, "flag": true } } },
-        "peer": { "status": 204, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Form scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "flag": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "count": 7,
+              "flag": true
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
-      "expected": [{
-        "disposition": "complete", "phase": "completion",
-        "assertions": [
-          { "path": "/dispatch/headers/Content-Type", "equals": "application/x-www-form-urlencoded" },
-          { "path": "/dispatch/body", "oneOf": ["count=7&flag=true", "flag=true&count=7"] }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "equals": "application/x-www-form-urlencoded"
+            },
+            {
+              "path": "/dispatch/body",
+              "oneOf": [
+                "count=7&flag=true",
+                "flag=true&count=7"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-296",
-      "rules": ["OAPI32-P-63"],
+      "rules": [
+        "OAPI32-P-63"
+      ],
       "section": "9.3",
       "description": "Content-based multipart serialization writes number and boolean properties through the binding-fixed text/plain lexical form without consulting or requiring parameterConversion; an omitted part Content-Type has the incorporated text/plain default.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Multipart scalar text", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "post": {
-            "requestBody": { "required": true, "content": { "multipart/form-data": {
-              "schema": { "type": "object", "properties": { "count": { "type": "integer" }, "flag": { "type": "boolean" } } }
-            } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/post" },
-        "invocation": { "inputPresent": true, "input": { "body": { "count": 7, "flag": true } } },
-        "peer": { "status": 204, "body": "" }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Multipart scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "multipart/form-data": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            },
+                            "flag": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "count": 7,
+              "flag": true
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
       },
-      "expected": [{
-        "disposition": "complete", "phase": "completion",
-        "assertions": [
-          { "path": "/dispatch/headers/Content-Type", "contains": "multipart/form-data; boundary=" },
-          { "path": "/dispatch/body", "contains": "Content-Disposition: form-data; name=\"count\"" },
-          { "path": "/dispatch/body", "contains": "Content-Disposition: form-data; name=\"flag\"" },
-          { "path": "/dispatch/body", "contains": "\r\n\r\n7\r\n" },
-          { "path": "/dispatch/body", "contains": "\r\n\r\ntrue\r\n" },
-          { "path": "/dispatch/body", "notContains": "Content-Type: application/json" }
-        ]
-      }]
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/headers/Content-Type",
+              "contains": "multipart/form-data; boundary="
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"count\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "Content-Disposition: form-data; name=\"flag\""
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\n7\r\n"
+            },
+            {
+              "path": "/dispatch/body",
+              "contains": "\r\n\r\ntrue\r\n"
+            },
+            {
+              "path": "/dispatch/body",
+              "notContains": "Content-Type: application/json"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-297",
-      "rules": ["OAPI32-P-02", "OAPI32-P-63"],
+      "rules": [
+        "OAPI32-P-02",
+        "OAPI32-P-63"
+      ],
       "section": "9.3",
       "description": "Explicit explode selects the RFC 6570-style Encoding path, so the same integer still requires parameterConversion and refuses before dispatch when that configuration is absent.",
       "given": {
-        "source": { "content": {
-          "openapi": "3.2.0", "info": { "title": "Style-path scalar conversion", "version": "1" },
-          "servers": [{ "url": "https://api.example" }],
-          "paths": { "/x": { "post": {
-            "requestBody": { "required": true, "content": { "application/x-www-form-urlencoded": {
-              "schema": { "type": "object", "properties": { "count": { "type": "integer" } } },
-              "encoding": { "count": { "explode": true } }
-            } } },
-            "responses": { "204": { "description": "ok" } }
-          } } }
-        } },
-        "binding": { "selector": "#/paths/~1x/post" },
-        "invocation": { "inputPresent": true, "input": { "body": { "count": 7 } } }
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Style-path scalar conversion",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "application/x-www-form-urlencoded": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "encoding": {
+                          "count": {
+                            "explode": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": {
+              "count": 7
+            }
+          }
+        }
       },
-      "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "OAPI32-PS-298",
@@ -25902,6 +26641,345 @@
             {
               "path": "/outputs",
               "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-362",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect allows an omitted optional body without request content.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": false
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/headers/content-type",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-363",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect refuses a supplied optional body with no available media.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": false
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-364",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect excludes a required body with no available media.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-365",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect preserves the usable JSON sibling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
             }
           ]
         }
