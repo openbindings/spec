@@ -1419,11 +1419,11 @@
       "kind": "url",
       "url": "https://spec.openapis.org/registry/index.html",
       "citedUrls": [],
-      "sha256": "ce3a41ccfc1bee1acd6c1e82e55d7aa543f653a54d8cf67fd62723a88599dcdd",
-      "bytes": 14546,
-      "retrievedAt": "2026-08-24T23:27:03Z",
+      "sha256": "43fdac85950c892a4e4d2404bd4dbe6f07587c53b2792317bd74960f46e3a657",
+      "bytes": 14424,
+      "retrievedAt": "2026-09-10T17:47:23Z",
       "status": "reference-only",
-      "reason": "Prepared from the OpenAPI 3.2 normative citation set for the registries its document fields reference.",
+      "reason": "Prepared from the OpenAPI 3.2 normative citation set for the registries its document fields reference. Rechecked 2026-09-10: publishing-generator/SEO metadata and equivalent relative API/RSS links changed; registry prose and resolved registry links are unchanged. Still reference-only, not incorporated by a binding specification.",
       "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/registry/index.html"

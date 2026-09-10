@@ -1,9 +1,44 @@
 {
   "rule": "OBI-D-18",
   "section": "10.2",
-  "description": "Has every transform expression in the document — every value in the transforms map and every inline string value of bindings[*].inputTransform and bindings[*].outputTransform — parsing as a syntactically valid expression of the pinned transform language (§5.5: JSONata 2.1, with jsonata-js 2.1.1's parse acceptance as the normative tiebreak). The rule is syntactic membership only: it does not establish that evaluation succeeds, that referenced data exists, or that dynamic errors will not occur.",
-  "notes": "Parse-only scope: positives include expressions whose evaluation would fail (a path into absent data, a call to an unregistered function) because those are evaluation outcomes under §5.5 clause 4, not document defects. The normative tiebreak is jsonata-js 2.1.1's parse acceptance; every expression in this fixture has an accept/reject status that is stable across known JSONata parser implementations (including pre-2.1 lines), so a validator backed by a different parser produces the same verdicts on this corpus. An empty string is not a parseable JSONata expression and is a negative case. Named transforms count whether or not any binding references them (the rule covers every value in the transforms map).",
+  "description": "Has every transform expression in the document — every value in the transforms map and every inline string value of bindings[*].inputTransform and bindings[*].outputTransform — parsing as a syntactically valid expression of the pinned transform language (§5.5: JSONata 2.1). The rule is syntactic membership only: it does not establish that evaluation succeeds, that referenced data exists, or that dynamic errors will not occur.",
+  "notes": "Parse-only scope: positives include expressions whose evaluation would fail (absent data, an unregistered function, or a literal beyond an evaluator's numerical range). The language documents numeric literal syntax by reference to JSON; a parser's numeric-capacity rejection alone does not establish a syntax defect. Verification must still check all remaining grammar and static rules: ignoring S0102 cannot establish the validity of an expression such as 1e400 +. An empty string is not parseable. Named transforms count whether or not any binding references them. A validator without the required parse capability leaves the rule unverified, rather than classifying unsupported numeric capacity as document invalidity.",
   "tests": [
+    {
+      "description": "a named literal beyond binary64 range is syntactically valid, even if evaluation would fail",
+      "document": {"openbindings":"0.2.0","operations":{"op":{}},"transforms":{"wide":"1e400"}},
+      "valid": true
+    },
+    {
+      "description": "JSON numeric literal syntax also applies to inline input transforms",
+      "document": {
+        "openbindings":"0.2.0","operations":{"op":{}},
+        "sources":{"api":{"bindingSpec":"openbindings.openapi-3.1@1","location":"https://api.example.com/openapi.json"}},
+        "bindings":{"op.api":{"operation":"op","source":"api","inputTransform":"{\"n\":1e400}"}}
+      },
+      "valid": true
+    },
+    {
+      "description": "JSON numeric literal syntax also applies to inline output transforms",
+      "document": {
+        "openbindings":"0.2.0","operations":{"op":{}},
+        "sources":{"api":{"bindingSpec":"openbindings.openapi-3.1@1","location":"https://api.example.com/openapi.json"}},
+        "bindings":{"op.api":{"operation":"op","source":"api","outputTransform":"[1e400]"}}
+      },
+      "valid": true
+    },
+    {
+      "description": "a range-limited first token does not hide a trailing syntax defect",
+      "document": {"openbindings":"0.2.0","operations":{"op":{}},"transforms":{"broken":"1e400 +"}},
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
+    {
+      "description": "JSON numeric literal syntax excludes malformed exponent spelling",
+      "document": {"openbindings":"0.2.0","operations":{"op":{}},"transforms":{"broken":"1e+"}},
+      "valid": false,
+      "violates": ["OBI-D-18"]
+    },
     {
       "description": "named transform with a simple object-construction expression parses",
       "document": {
