@@ -1,0 +1,22 @@
+syntax = "proto3";
+package processorcompact;
+
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1;
+}
+
+message Node {
+  repeated int32 numbers = 1;
+  map<string, int32> labels = 2;
+  oneof choice {
+    string text = 3;
+    int32 count = 4;
+  }
+  State state = 5;
+  Node next = 6;
+}
+
+service Values {
+  rpc Unary(Node) returns (Node);
+}

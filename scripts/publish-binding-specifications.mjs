@@ -1,425 +1,483 @@
 #!/usr/bin/env node
-/**
- * Creates one immutable publication bundle for one or more binding-
- * specification revisions and records them in binding-specs/publications.json.
- *
- * A bundle preserves the repository-relative context needed to read the
- * defining documents and the publication-time conformance evidence. The
- * mutable family paths remain convenient "latest" mirrors; the manifest and
- * bundle are the durable publication record.
- *
- * Usage:
- *   node scripts/publish-binding-specifications.mjs \
- *     --publication 2026-07-23-initial \
- *     --published-at 2026-07-23 \
- *     --core-release 0.2.0 \
- *     --adjudication conformance/binding-specs/adjudications.json \
- *     --families operation-graph@1,usage@1,openapi@1,mcp@1,grpc@1,connect@1,asyncapi@1
- *
- * --adjudication names the committed record that approved the cohort; the
- * script refuses to mint without one.
- */
+/** Finalize an exact-byte, independently reviewed binding-specification stage. */
 
 import {
   copyFileSync,
   existsSync,
-  lstatSync,
   mkdirSync,
   readFileSync,
-  readdirSync,
   renameSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { createHash } from "node:crypto";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
+import {
+  DEPENDENCY_INSTALL_COMMAND,
+  FAMILIES,
+  GRPC_RUNNER_COMMANDS,
+  REQUIRED_DEPENDENCY_INSTALLS,
+  REQUIRED_GATES,
+  assertExactCoreAuthority,
+  assertManifestGovernedStatus,
+  assertPublicationState,
+  candidateDocument,
+  copyTree,
+  dependencyAttestation,
+  exactModuleRecord,
+  executionResultSha256,
+  expectedModuleClosure,
+  fail,
+  fileRecords,
+  grpcApparatusRoot,
+  grpcApparatusFileSha256,
+  grpcProtobufOracleClosure,
+  grpcProtobufOracleEvidence,
+  moduleSourceDocument,
+  parseArgs,
+  readCanonicalJson,
+  recordRoot,
+  selectedFromIdentifiers,
+  sha256,
+  workingSnapshot,
+  writeCanonicalJson,
+} from "./binding-spec-publication-support.mjs";
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(SCRIPT_DIR, "..");
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BINDING_ROOT = join(ROOT, "binding-specs");
 const RELEASES_ROOT = join(BINDING_ROOT, "releases");
 const MANIFEST_PATH = join(BINDING_ROOT, "publications.json");
+const DIGEST = /^[0-9a-f]{64}$/;
 
-const FAMILIES = {
-  "operation-graph": {
-    identifier: "openbindings.operation-graph",
-    document: "binding-specs/operation-graph/openbindings.operation-graph.md",
-  },
-  usage: {
-    identifier: "openbindings.usage",
-    document: "binding-specs/usage/openbindings.usage.md",
-  },
-  "openapi-2.0": {
-    identifier: "openbindings.openapi-2.0",
-    document: "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
-  },
-  "openapi-3.0": {
-    identifier: "openbindings.openapi-3.0",
-    document: "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-  },
-  "openapi-3.1": {
-    identifier: "openbindings.openapi-3.1",
-    document: "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-  },
-  "openapi-3.2": {
-    identifier: "openbindings.openapi-3.2",
-    document: "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
-  },
-  mcp: {
-    identifier: "openbindings.mcp",
-    document: "binding-specs/mcp/openbindings.mcp.md",
-  },
-  grpc: {
-    identifier: "openbindings.grpc",
-    document: "binding-specs/grpc/openbindings.grpc.md",
-  },
-  connect: {
-    identifier: "openbindings.connect",
-    document: "binding-specs/connect/openbindings.connect.md",
-  },
-  asyncapi: {
-    identifier: "openbindings.asyncapi",
-    document: "binding-specs/asyncapi/openbindings.asyncapi.md",
-  },
-  graphql: {
-    identifier: "openbindings.graphql",
-    document: "binding-specs/graphql/openbindings.graphql.md",
-  },
-};
-const OPENAPI_FAMILIES = new Set([
-  "openapi-2.0",
-  "openapi-3.0",
-  "openapi-3.1",
-  "openapi-3.2",
-]);
-const PUBLICATION_CATALOG_ENTRIES = new Set([
-  "README.md",
-  "errata.json",
-  "errata",
-  ...Object.keys(FAMILIES),
-]);
-
-function fail(message) {
-  console.error(`error: ${message}`);
-  process.exit(2);
+function sameJson(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function parseArgs(argv) {
-  const out = {};
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "-h" || arg === "--help") {
-      console.log(
-        "Usage: publish-binding-specifications.mjs --publication <id> --published-at YYYY-MM-DD --core-release X.Y.Z --families family@revision,..."
-      );
-      process.exit(0);
-    }
-    if (!arg.startsWith("--")) fail(`unexpected argument ${arg}`);
-    const value = argv[i + 1];
-    if (!value || value.startsWith("--")) fail(`${arg} requires a value`);
-    out[arg.slice(2)] = value;
-    i += 1;
-  }
-  return out;
+function requireExactKeys(value, keys, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${label} must be an object`);
+  if (!sameJson(Object.keys(value).sort(), [...keys].sort())) fail(`${label} fields differ from the closed format`);
 }
 
-function sha256(bytes) {
-  return createHash("sha256").update(bytes).digest("hex");
-}
-
-function coreSpecificationVersions(markdown) {
-  return [
-    ...markdown.matchAll(
-      /^This is \*\*version (\d+\.\d+\.\d+)\*\* of the OpenBindings specification\./gm
-    ),
-  ].map((match) => match[1]);
-}
-
-function assertOpenApiCoreAuthority(markdown, document, expectedVersion) {
-  const declarations = [
-    ...markdown.matchAll(
-      /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
-    ),
-  ].map((match) => match[1]);
-  if (declarations.length !== 1) {
-    fail(`${document} must declare exactly one versioned OpenBindings Core authority in §2`);
-  }
-  const sectionMatches = [...markdown.matchAll(/^## 13\. Normative references\s*$/gm)];
-  if (sectionMatches.length !== 1) {
-    fail(`${document} must contain exactly one §13 Normative references section`);
-  }
-  const references = markdown.slice(sectionMatches[0].index);
-  const coreReferences = [
-    ...references.matchAll(
-      /^- \[OpenBindings Specification (\d+\.\d+\.\d+)\]\(\.\.\/\.\.\/openbindings\.md\)$/gm
-    ),
-  ].map((match) => match[1]);
-  if (coreReferences.length !== 1) {
-    fail(`${document} §13 must contain exactly one versioned OpenBindings Specification reference`);
-  }
-  if (declarations[0] !== expectedVersion || coreReferences[0] !== expectedVersion) {
-    fail(
-      `${document} Core declaration and normative reference must both name --core-release ${expectedVersion}`
-    );
-  }
-}
-
-function listFiles(root) {
-  const out = [];
-  function visit(dir) {
-    for (const name of readdirSync(dir).sort()) {
-      const full = join(dir, name);
-      const st = lstatSync(full);
-      if (st.isSymbolicLink()) fail(`publication bundles cannot contain symlinks: ${full}`);
-      if (st.isDirectory()) visit(full);
-      else if (st.isFile()) out.push(full);
-    }
-  }
-  visit(root);
-  return out;
-}
-
-function copyTree(source, destination, filter = () => true) {
-  if (!existsSync(source)) return;
-  function visit(srcDir, destDir) {
-    mkdirSync(destDir, { recursive: true });
-    for (const name of readdirSync(srcDir).sort()) {
-      const src = join(srcDir, name);
-      const rel = relative(source, src);
-      if (rel.split(/[\\/]/).includes("node_modules") || !filter(rel)) continue;
-      const dest = join(destDir, name);
-      const st = lstatSync(src);
-      if (st.isSymbolicLink()) fail(`publication sources cannot contain symlinks: ${src}`);
-      if (st.isDirectory()) visit(src, dest);
-      else if (st.isFile()) copyFileSync(src, dest);
-    }
-  }
-  visit(source, destination);
-}
-
-const args = parseArgs(process.argv.slice(2));
-const publication = args.publication;
-const publishedAt = args["published-at"];
-const coreRelease = args["core-release"];
-const requested = (args.families || "")
-  .split(",")
-  .map((item) => item.trim())
-  .filter(Boolean);
-
-if (!publication || !/^[a-z0-9][a-z0-9.-]*$/.test(publication)) {
-  fail("--publication must be a stable lowercase publication id");
-}
-if (!publishedAt || !/^\d{4}-\d{2}-\d{2}$/.test(publishedAt)) {
-  fail("--published-at must be YYYY-MM-DD");
-}
-if (!coreRelease || !/^\d+\.\d+\.\d+$/.test(coreRelease)) {
-  fail("--core-release must be X.Y.Z");
-}
-if (requested.length === 0) fail("--families must name at least one family@revision");
-
-const coreText = readFileSync(join(ROOT, "openbindings.md"), "utf8");
-const rootCoreVersions = coreSpecificationVersions(coreText);
-if (rootCoreVersions.length !== 1) {
-  fail(`openbindings.md must declare exactly one specification version`);
-}
-if (rootCoreVersions[0] !== coreRelease) {
-  fail(
-    `--core-release ${coreRelease} does not match openbindings.md version ${rootCoreVersions[0]}`
-  );
-}
-
-// Publication is the irreversible act in this repository; it requires a
-// standing adjudication record, named explicitly, so a publication can never
-// again be a single keystroke ahead of its review (2026-08-11 lesson; the
-// development-exercise wave was minted with no adjudication precondition).
-const adjudication = args.adjudication;
-if (!adjudication) {
-  fail(
-    "--adjudication <path> is required: the committed adjudication or release-review record that approved this publication cohort"
-  );
-}
-if (!existsSync(join(ROOT, adjudication))) {
-  fail(`--adjudication record not found: ${adjudication}`);
-}
-
-const selected = requested.map((item) => {
-  // Family slugs may carry an upstream-line segment with dots (openapi-3.1),
-  // per the README naming convention.
-  const match = item.match(/^([a-z0-9]+(?:[.-][a-z0-9]+)*)@([1-9][0-9]*)$/);
-  if (!match) fail(`invalid family revision ${item}`);
-  const family = match[1];
-  const revision = Number(match[2]);
-  const config = FAMILIES[family];
-  if (!config) fail(`unknown published family ${family}`);
+function stageDocument(entry, sourcePath, stageRoot) {
   return {
-    family,
-    revision,
-    identifier: `${config.identifier}@${revision}`,
-    document: config.document,
+    canonicalUrl: `https://openbindings.com/binding-specs/${entry.family}/${entry.revision}`,
+    family: entry.family,
+    identifier: entry.identifier,
+    path: `root/${entry.document}`,
+    rawUrl: `https://openbindings.com/raw/binding-specs/${entry.family}/${entry.revision}.md`,
+    revision: entry.revision,
+    sha256: sha256(readFileSync(join(stageRoot, entry.document))),
+    sourcePath,
   };
-});
-
-if (new Set(selected.map((entry) => entry.family)).size !== selected.length) {
-  fail("--families contains a duplicate family");
 }
 
-const publicationDir = join(RELEASES_ROOT, publication);
-if (existsSync(publicationDir)) fail(`publication already exists: ${publicationDir}`);
-
-let manifest = {
-  format: "openbindings.binding-spec-publications@1",
-  latest: {},
-  publications: [],
-};
-if (existsSync(MANIFEST_PATH)) {
-  manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
-}
-if (manifest.format !== "openbindings.binding-spec-publications@1") {
-  fail(`unsupported manifest format ${manifest.format}`);
+function coreVersions(markdown) {
+  return [...markdown.matchAll(/^This is \*\*version (\d+\.\d+\.\d+)\*\* of the OpenBindings specification\./gm)].map((match) => match[1]);
 }
 
-const existingIds = new Set(manifest.publications.map((entry) => entry.identifier));
-for (const entry of selected) {
-  if (existingIds.has(entry.identifier)) fail(`${entry.identifier} is already published`);
-  const priorRevisions = manifest.publications
-    .filter((candidate) => candidate.family === entry.family)
-    .map((candidate) => candidate.revision);
-  const expectedRevision = priorRevisions.length === 0 ? 1 : Math.max(...priorRevisions) + 1;
-  if (entry.revision !== expectedRevision) {
-    fail(
-      `${entry.identifier} is not the next revision; expected ${FAMILIES[entry.family].identifier}@${expectedRevision}`
-    );
+function taggedCoreBytes(version) {
+  const tagRef = `refs/tags/v${version}`;
+  const type = spawnSync("git", ["cat-file", "-t", tagRef], { cwd: ROOT, encoding: "utf8" });
+  if (type.status !== 0 || type.stdout.trim() !== "tag") fail(`Core ${version} is not proven by annotated tag v${version}`);
+  const commit = spawnSync("git", ["rev-parse", `${tagRef}^{commit}`], { cwd: ROOT, encoding: "utf8" });
+  if (commit.status !== 0) fail(`annotated tag v${version} does not peel to a commit`);
+  const sourcePath = `versions/${version}/openbindings.md`;
+  const tagged = spawnSync("git", ["show", `${commit.stdout.trim()}:${sourcePath}`], { cwd: ROOT, encoding: null });
+  if (tagged.status !== 0) fail(`annotated tag v${version} does not contain immutable ${sourcePath}`);
+  if (tagged.stdout.toString("utf8").includes("unreleased working draft")) fail(`immutable Core ${version} snapshot still claims to be an unreleased working draft`);
+  return { bytes: tagged.stdout, sourcePath };
+}
+
+function verifyStage(stageDir, stage, manifest) {
+  requireExactKeys(stage, [
+    "apparatusRootSha256", "authoritySha256", "core",
+    "corpusRootSha256", "definingDocuments", "files", "format",
+    "grpcProcessorCorpusSha256", "identifiers", "modules", "publication",
+    "publishedAt", "rootSha256", "sourceFileCount", "sourceHead", "sourceSnapshotSha256", "state",
+  ], "stage.json");
+  if (stage.format !== "openbindings.binding-spec-publication-stage@3") fail("unsupported stage record; finalization requires a freshly prepared @3 stage");
+  if (stage.state !== "prepared-unminted" || stage.core?.lifecycle !== "released") fail("candidate-review evidence does not confer mint eligibility; prepare a fresh stage after the Core release is immutable");
+  requireExactKeys(stage.core, ["lifecycle", "path", "sha256", "sourcePath", "version"], "stage Core authority");
+  if (stage.core.path !== "root/openbindings.md" || stage.core.sourcePath !== `versions/${stage.core.version}/openbindings.md`) fail("released stage Core paths are not exact");
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(stage.publication || "")) fail("stage publication id is unsafe");
+  for (const field of ["apparatusRootSha256", "authoritySha256", "corpusRootSha256", "grpcProcessorCorpusSha256", "rootSha256", "sourceSnapshotSha256"]) {
+    if (!DIGEST.test(stage[field] || "")) fail(`stage ${field} must be a SHA-256 digest`);
   }
-  const text = readFileSync(join(ROOT, entry.document), "utf8");
-  if (!text.includes(entry.identifier)) {
-    fail(`${entry.document} does not name ${entry.identifier}`);
+  if (!/^\d+\.\d+\.\d+$/.test(stage.core.version || "") || !DIGEST.test(stage.core.sha256 || "")) fail("stage Core authority is not exact");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(stage.publishedAt || "")) fail("stage publishedAt must be YYYY-MM-DD");
+  if (!Number.isInteger(stage.sourceFileCount) || stage.sourceFileCount < 1) fail("stage sourceFileCount must be a positive integer");
+  const stageRoot = join(stageDir, "root");
+  const actual = fileRecords(stageRoot, stageDir);
+  if (!sameJson(actual, stage.files)) fail("stage file inventory differs from stage.json");
+  if (recordRoot(actual) !== stage.rootSha256) fail("stage root digest differs from stage.json");
+  const taggedCore = taggedCoreBytes(stage.core.version);
+  const worktreeCorePath = join(ROOT, taggedCore.sourcePath);
+  if (!existsSync(worktreeCorePath) || !readFileSync(worktreeCorePath).equals(taggedCore.bytes)) fail(`${taggedCore.sourcePath} differs from annotated tag v${stage.core.version}`);
+  const stagedCore = readFileSync(join(stageRoot, "openbindings.md"));
+  if (sha256(stagedCore) !== stage.core.sha256 || !stagedCore.equals(taggedCore.bytes)) fail("stage Core bytes are not the exact immutable tagged release snapshot");
+  if (!sameJson(coreVersions(stagedCore.toString("utf8")), [stage.core.version])) fail("stage Core text does not declare the recorded authority version exactly once");
+  assertManifestGovernedStatus(
+    readFileSync(join(stageRoot, "binding-specs", "README.md"), "utf8"),
+    readFileSync(join(stageRoot, "RELEASING.md"), "utf8"),
+  );
+  if (sha256(readFileSync(join(stageRoot, "binding-specs", "AUTHORITY-PINS.json"))) !== stage.authoritySha256) fail("stage authority digest mismatch");
+  if (sha256(readFileSync(join(stageRoot, "conformance", "binding-specs", "processor", "grpc.json"))) !== stage.grpcProcessorCorpusSha256) fail("stage gRPC processor corpus digest mismatch");
+  for (const path of [
+    "scripts/count-binding-spec-scenarios.mjs",
+    "scripts/verify-binding-specs.mjs",
+    "scripts/verify-binding-spec-publications.mjs",
+    "scripts/verify-grpc-binding-runners.mjs",
+    "scripts/verify-grpc-ds-witness.mjs",
+    "scripts/verify-grpc-protobuf-compiler.mjs",
+    "scripts/verify-grpc-protobuf-oracle.mjs",
+    "scripts/verify-grpc-protobuf-values.mjs",
+    "scripts/verify-grpc-tls-fixtures.mjs",
+    "conformance/binding-specs/schema-engine/package-lock.json",
+    "conformance/binding-specs/schema-engine/package.json",
+  ]) if (!existsSync(join(stageRoot, path))) fail(`stage lacks runnable verifier dependency ${path}`);
+  for (const id of Object.keys(REQUIRED_DEPENDENCY_INSTALLS)) dependencyAttestation(stageRoot, id);
+  const stagedOracleClosure = grpcProtobufOracleClosure(stageRoot);
+  const sourceOracleClosure = grpcProtobufOracleClosure(ROOT);
+  if (!sameJson(stagedOracleClosure, sourceOracleClosure)) fail("staged gRPC Protobuf oracle differs from the exact source authority, harness, source, case, result, or counts");
+
+  const selected = selectedFromIdentifiers(stage.identifiers);
+  const expectedDocuments = selected.map((entry) => stageDocument(
+    entry,
+    candidateDocument(ROOT, entry.family, entry.revision, manifest),
+    stageRoot,
+  )).sort((a, b) => a.identifier.localeCompare(b.identifier));
+  if (!sameJson(stage.definingDocuments, expectedDocuments)) fail("stage defining-document closure is not the independently derived exact closure");
+  for (const document of expectedDocuments) {
+    const bytes = readFileSync(join(stageDir, document.path));
+    const markdown = bytes.toString("utf8");
+    assertPublicationState(markdown, document.identifier);
+    assertExactCoreAuthority(markdown, document.identifier, stage.core.version);
+    const source = join(ROOT, document.sourcePath);
+    if (!existsSync(source) || !readFileSync(source).equals(bytes)) fail(`${document.identifier}: staged defining bytes differ from their candidate source`);
   }
-  if (OPENAPI_FAMILIES.has(entry.family)) {
-    assertOpenApiCoreAuthority(text, entry.document, coreRelease);
+
+  const derivedModules = expectedModuleClosure(stage.identifiers).map((module) => ({
+    ...module,
+    sourceDocument: moduleSourceDocument(module.module, module.revision, manifest),
+  }));
+  for (const module of derivedModules) if (!existsSync(join(stageRoot, module.document))) fail(`stage normative-module closure is missing ${module.identifier}`);
+  const existingModules = new Map((manifest.modules || []).map((entry) => [entry.identifier, entry]));
+  for (const module of derivedModules) {
+    if (!existingModules.has(module.identifier)) {
+      const revisions = (manifest.modules || []).filter((entry) => entry.module === module.module).map((entry) => entry.revision);
+      const expected = revisions.length === 0 ? 1 : Math.max(...revisions) + 1;
+      if (module.revision !== expected) fail(`${module.identifier} is not the next module revision; expected @${expected}`);
+    }
+  }
+  const expectedModules = derivedModules.map((module) => exactModuleRecord(module, stageRoot, "root/", module.sourceDocument));
+  if (!sameJson(stage.modules, expectedModules)) fail("stage normative-module closure is not the independently derived exact closure");
+  for (const module of expectedModules) {
+    const bytes = readFileSync(join(stageDir, module.path));
+    const markdown = bytes.toString("utf8");
+    assertPublicationState(markdown, module.identifier);
+    assertExactCoreAuthority(markdown, module.identifier, stage.core.version);
+    const source = join(ROOT, module.sourcePath);
+    if (!existsSync(source) || !readFileSync(source).equals(bytes)) fail(`${module.identifier}: staged module bytes differ from the authoritative source module`);
+  }
+  for (const document of expectedDocuments) {
+    const markdown = readFileSync(join(stageDir, document.path), "utf8");
+    for (const module of expectedModules.filter((candidate) => candidate.consumers.includes(document.identifier))) {
+      const route = `/binding-spec-modules/${module.module}/${module.revision}`;
+      if (!markdown.includes(`](${route})`) || /\]\(\.\.\/modules\/openbindings\./.test(markdown)) fail(`${document.identifier}: normative module citation must use permanent route ${route}`);
+    }
+  }
+
+  const apparatus = readCanonicalJson(join(stageRoot, "conformance", "binding-specs", "grpc-apparatus.manifest.json"), "staged gRPC apparatus manifest");
+  if (!Array.isArray(apparatus.files)) fail("staged gRPC apparatus manifest lacks files");
+  const paths = new Set();
+  for (const file of apparatus.files) {
+    if (paths.has(file.path)) fail(`staged gRPC apparatus repeats ${file.path}`);
+    paths.add(file.path);
+    const path = join(stageRoot, file.path);
+    if (!existsSync(path) || grpcApparatusFileSha256(stageRoot, file) !== file.sha256) fail(`staged gRPC apparatus mismatch at ${file.path}`);
+  }
+  if (grpcApparatusRoot(apparatus) !== stage.apparatusRootSha256) fail("stage apparatus root is not derived from the closed apparatus manifest");
+  return { expectedDocuments, expectedModules, stageRoot };
+}
+
+function execute(command, cwd, environment = process.env) {
+  const result = spawnSync(command[0], command.slice(1), { cwd, encoding: "utf8", env: environment });
+  return {
+    exitCode: result.status ?? 1,
+    resultSha256: executionResultSha256(result.stdout || ""),
+    stdout: result.stdout || "",
+    stderr: result.stderr || "",
+  };
+}
+
+function verifyExecution(record, expected, label, cwd, environment) {
+  requireExactKeys(record, expected.keys, label);
+  if (!sameJson(record.command, expected.command) || record.id !== expected.id || record.target !== expected.target || record.targetRootSha256 !== expected.targetRootSha256) fail(`${label} is not bound to the required command and exact target root`);
+  if (record.status !== "pass" || record.exitCode !== 0 || !DIGEST.test(record.resultSha256 || "")) fail(`${label} is not a complete passing execution record`);
+  const actual = execute(record.command, cwd, environment);
+  if (actual.exitCode !== 0) fail(`${label} did not pass at finalization: ${(actual.stderr || actual.stdout).trim()}`);
+  if (actual.resultSha256 !== record.resultSha256) fail(`${label} result digest differs when re-run at finalization`);
+  return actual.stdout;
+}
+
+function verifyEvidence(evidence, stage, stageRecordSha256, stageRoot) {
+  requireExactKeys(evidence, ["dependencyInstalls", "format", "gates", "oracle", "publication", "runners", "stageRecordSha256"], "evidence");
+  if (evidence.format !== "openbindings.binding-spec-publication-evidence@1" || evidence.publication !== stage.publication || evidence.stageRecordSha256 !== stageRecordSha256) fail("evidence does not bind the exact stage record");
+  const installs = Array.isArray(evidence.dependencyInstalls) ? evidence.dependencyInstalls : [];
+  if (installs.length !== Object.keys(REQUIRED_DEPENDENCY_INSTALLS).length) fail("evidence dependency-install set is not closed");
+  const ephemeralNodeModules = [];
+  try {
+    for (const id of Object.keys(REQUIRED_DEPENDENCY_INSTALLS).sort()) {
+      const matches = installs.filter((install) => install?.id === id);
+      if (matches.length !== 1) fail(`evidence requires exactly one ${id}`);
+      const before = dependencyAttestation(stageRoot, id);
+      const installRoot = join(stageRoot, before.directory);
+      const nodeModules = join(installRoot, "node_modules");
+      ephemeralNodeModules.push(nodeModules);
+      rmSync(nodeModules, { recursive: true, force: true });
+      verifyExecution(matches[0], {
+        command: DEPENDENCY_INSTALL_COMMAND,
+        id,
+        keys: ["command", "dependencies", "directory", "exitCode", "id", "packageLockSha256", "packageSha256", "resultSha256", "status", "target", "targetRootSha256"],
+        target: "stage",
+        targetRootSha256: stage.rootSha256,
+      }, `${id} dependency install`, installRoot);
+      const after = dependencyAttestation(stageRoot, id, true);
+      if (matches[0].directory !== after.directory || !sameJson(matches[0].dependencies, after.dependencies) || matches[0].packageSha256 !== after.packageSha256 || matches[0].packageLockSha256 !== after.packageLockSha256) fail(`${id} does not attest the exact staged package, lockfile, and installed versions`);
+    }
+    if (!Array.isArray(evidence.gates)) fail("evidence gates must be an array");
+    let oracle;
+    for (const [id, rule] of Object.entries(REQUIRED_GATES)) {
+      const matches = evidence.gates.filter((gate) => gate?.id === id);
+      if (matches.length !== 1) fail(`evidence requires exactly one ${id} gate`);
+      const stdout = verifyExecution(matches[0], {
+        command: rule.command,
+        id,
+        keys: ["command", "exitCode", "id", "resultSha256", "status", "target", "targetRootSha256"],
+        target: rule.target,
+        targetRootSha256: rule.target === "stage" ? stage.rootSha256 : stage.sourceSnapshotSha256,
+      }, `${id} gate`, rule.target === "stage" ? stageRoot : ROOT);
+      if (id === "grpc-protobuf-oracle") oracle = grpcProtobufOracleEvidence(stageRoot, stdout);
+    }
+    if (evidence.gates.length !== Object.keys(REQUIRED_GATES).length) fail("evidence contains an unrecognized or duplicate gate");
+    if (!oracle || !sameJson(evidence.oracle, oracle)) fail("evidence does not bind the exact gRPC Protobuf oracle authority, harness, source, case, result, and toolchain observation");
+
+    if (!Array.isArray(evidence.runners)) fail("evidence runners must be an array");
+    const outputs = {};
+    for (const [language, command] of Object.entries(GRPC_RUNNER_COMMANDS)) {
+      const matches = evidence.runners.filter((runner) => runner?.language === language);
+      if (matches.length !== 1) fail(`evidence requires exactly one ${language} runner`);
+      const environment = language === "go" ? { ...process.env, GOCACHE: "/private/tmp/openbindings-grpc-go-build-cache" } : process.env;
+      outputs[language] = verifyExecution(matches[0], {
+        command,
+        id: `grpc-runner-${language}`,
+        keys: ["apparatusRootSha256", "command", "corpusSha256", "exitCode", "id", "language", "resultSha256", "status", "target", "targetRootSha256"],
+        target: "stage",
+        targetRootSha256: stage.rootSha256,
+      }, `${language} runner`, stageRoot, environment);
+      if (matches[0].apparatusRootSha256 !== stage.apparatusRootSha256 || matches[0].corpusSha256 !== stage.grpcProcessorCorpusSha256) fail(`${language} runner does not bind the exact apparatus and corpus`);
+    }
+    if (evidence.runners.length !== 2 || outputs.go !== outputs.typescript) fail("runner evidence does not establish Go/TypeScript output parity");
+  } finally {
+    for (const path of ephemeralNodeModules) rmSync(path, { recursive: true, force: true });
   }
 }
 
-const snapshotRoot = join(publicationDir, "root");
-const manifestTempPath = `${MANIFEST_PATH}.${process.pid}.tmp`;
-mkdirSync(snapshotRoot, { recursive: true });
+function verifyAdjudication(adjudication, evidenceSha256, stage, stageRecordSha256) {
+  requireExactKeys(adjudication, ["evidenceSha256", "format", "identifiers", "p3Dispositions", "publication", "reviews", "rootSha256", "stageRecordSha256", "unresolvedP0P2"], "adjudication");
+  if (adjudication.format !== "openbindings.binding-spec-publication-adjudication@2") fail("unsupported adjudication format");
+  if (adjudication.evidenceSha256 !== evidenceSha256 || adjudication.publication !== stage.publication || adjudication.rootSha256 !== stage.rootSha256 || adjudication.stageRecordSha256 !== stageRecordSha256 || !sameJson(adjudication.identifiers, stage.identifiers)) fail("adjudication does not bind the exact reviewed stage and evidence");
+  if (adjudication.unresolvedP0P2 !== 0) fail("adjudication has unresolved P0-P2 findings");
+  if (!Array.isArray(adjudication.reviews) || !Array.isArray(adjudication.p3Dispositions)) fail("adjudication lacks closed review/disposition arrays");
+  const p3 = new Set();
+  const findingIds = new Set();
+  const reviewerIds = new Set();
+  for (const role of ["authority", "conformance", "publisher"]) {
+    const matches = adjudication.reviews.filter((review) => review?.role === role);
+    if (matches.length !== 1) fail(`adjudication requires exactly one ${role} review`);
+    const review = matches[0];
+    requireExactKeys(review, ["findings", "recordedAt", "reviewer", "role", "rootSha256", "stageRecordSha256", "unresolved", "verdict"], `${role} review`);
+    if (review.verdict !== "ACCEPT" || review.rootSha256 !== stage.rootSha256 || review.stageRecordSha256 !== stageRecordSha256 || typeof review.reviewer !== "string" || !review.reviewer || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(review.recordedAt || "") || Number.isNaN(Date.parse(review.recordedAt))) fail(`${role} review is not a named, dated ACCEPT of the exact stage record`);
+    reviewerIds.add(review.reviewer.normalize("NFKC").trim().toLowerCase());
+    if (!Array.isArray(review.findings)) fail(`${role} review findings must be an array`);
+    const derived = { p0: 0, p1: 0, p2: 0 };
+    for (const finding of review.findings) {
+      requireExactKeys(finding, ["id", "severity", "status", "summary"], `${role} finding`);
+      if (findingIds.has(finding.id)) fail(`duplicate review finding id ${finding.id}`);
+      findingIds.add(finding.id);
+      if (!/^[A-Z][A-Z0-9-]+$/.test(finding.id || "") || !["p0", "p1", "p2", "p3"].includes(finding.severity) || !["open", "resolved"].includes(finding.status) || typeof finding.summary !== "string" || !finding.summary) fail(`${role} review contains a malformed finding`);
+      if (finding.severity === "p3") p3.add(finding.id);
+      else if (finding.status === "open") derived[finding.severity]++;
+    }
+    requireExactKeys(review.unresolved, ["p0", "p1", "p2"], `${role} unresolved counts`);
+    if (!sameJson(review.unresolved, derived) || Object.values(derived).some((count) => count !== 0)) fail(`${role} review has unresolved P0-P2 findings or false counts`);
+  }
+  if (adjudication.reviews.length !== 3) fail("adjudication contains an unrecognized or duplicate review role");
+  if (reviewerIds.size !== 3) fail("authority, conformance, and publisher reviews must name three distinct normalized reviewers");
+  const dispositions = new Set();
+  for (const disposition of adjudication.p3Dispositions) {
+    requireExactKeys(disposition, ["decision", "id", "rationale"], "P3 disposition");
+    if (dispositions.has(disposition.id) || !p3.has(disposition.id)) fail(`orphan or duplicate P3 disposition ${disposition.id}`);
+    if (!["accepted", "deferred", "resolved"].includes(disposition.decision) || typeof disposition.rationale !== "string" || !disposition.rationale) fail(`P3 disposition ${disposition.id} is incomplete`);
+    dispositions.add(disposition.id);
+  }
+  if (dispositions.size !== p3.size || [...p3].some((id) => !dispositions.has(id))) fail("P3 dispositions are not the exact union of reviewer P3 findings");
+}
 
 try {
-  for (const file of ["openbindings.md", "openbindings.schema.json", "EDITORS.md"]) {
-    copyFileSync(join(ROOT, file), join(snapshotRoot, file));
+  const args = parseArgs(process.argv.slice(2));
+  if (!args["from-stage"] || !args.evidence || !args.adjudication) fail("--from-stage, --evidence, and --adjudication are required");
+  const stageDir = resolve(args["from-stage"]);
+  const stagePath = join(stageDir, "stage.json");
+  const evidenceSource = resolve(ROOT, args.evidence);
+  const adjudicationSource = resolve(ROOT, args.adjudication);
+  for (const [label, path] of [["stage record", stagePath], ["evidence record", evidenceSource], ["adjudication record", adjudicationSource]]) if (!existsSync(path)) fail(`${label} not found: ${path}`);
+  const stage = readCanonicalJson(stagePath, "stage.json");
+  const originalManifest = readFileSync(MANIFEST_PATH);
+  const manifest = JSON.parse(originalManifest.toString("utf8"));
+  const { expectedDocuments, expectedModules, stageRoot } = verifyStage(stageDir, stage, manifest);
+  const stageRecordSha256 = sha256(readFileSync(stagePath));
+  const evidence = readCanonicalJson(evidenceSource, args.evidence);
+  verifyEvidence(evidence, stage, stageRecordSha256, stageRoot);
+  const evidenceSha256 = sha256(readFileSync(evidenceSource));
+  const adjudication = readCanonicalJson(adjudicationSource, args.adjudication);
+  verifyAdjudication(adjudication, evidenceSha256, stage, stageRecordSha256);
+
+  const excluded = [evidenceSource, adjudicationSource]
+    .map((path) => relative(ROOT, path).split("\\").join("/"))
+    .filter((path) => !path.startsWith("../"));
+  const snapshot = workingSnapshot(ROOT, excluded);
+  if (snapshot.head !== stage.sourceHead || snapshot.sha256 !== stage.sourceSnapshotSha256 || snapshot.files !== stage.sourceFileCount) fail("repository source snapshot changed after the reviewed stage was prepared");
+  if (manifest.format !== "openbindings.binding-spec-publications@1") fail(`unsupported manifest format ${manifest.format}`);
+  const publishedIds = new Set((manifest.publications || []).map((entry) => entry.identifier));
+  for (const identifier of stage.identifiers) if (publishedIds.has(identifier)) fail(`${identifier} is already published`);
+
+  const publicationDir = join(RELEASES_ROOT, stage.publication);
+  if (existsSync(publicationDir)) fail(`publication already exists: ${publicationDir}`);
+  const tempDir = `${publicationDir}.${process.pid}.tmp`;
+  const originalMirrors = new Map();
+  const consumedCandidates = new Map();
+  const consumedModuleCandidates = new Map();
+  const manifestTemp = `${MANIFEST_PATH}.${process.pid}.tmp`;
+  mkdirSync(tempDir, { recursive: true });
+  try {
+    copyTree(stageRoot, join(tempDir, "root"));
+    copyFileSync(stagePath, join(tempDir, "stage.json"));
+    copyFileSync(evidenceSource, join(tempDir, "evidence.json"));
+    copyFileSync(adjudicationSource, join(tempDir, "adjudication.json"));
+    const files = fileRecords(join(tempDir, "root"), tempDir);
+    if (!sameJson(files, stage.files)) fail("copied release root differs from reviewed stage");
+    const record = {
+      adjudication: { path: "adjudication.json", sha256: sha256(readFileSync(adjudicationSource)) },
+      coreRelease: stage.core.version,
+      evidence: { path: "evidence.json", sha256: evidenceSha256 },
+      files,
+      format: "openbindings.binding-spec-publication@3",
+      identifiers: stage.identifiers,
+      modules: stage.modules,
+      publication: stage.publication,
+      publishedAt: stage.publishedAt,
+      rootSha256: stage.rootSha256,
+      stage: { path: "stage.json", sha256: stageRecordSha256 },
+    };
+    writeCanonicalJson(join(tempDir, "publication.json"), record);
+    mkdirSync(RELEASES_ROOT, { recursive: true });
+    renameSync(tempDir, publicationDir);
+
+    manifest.publications ||= [];
+    manifest.modules ||= [];
+    manifest.latest ||= {};
+    manifest.latestModules ||= {};
+    const recordPath = relative(ROOT, join(publicationDir, "publication.json")).split("\\").join("/");
+    const recordDigest = sha256(readFileSync(join(publicationDir, "publication.json")));
+    for (const document of expectedDocuments) {
+      const archivedDocument = relative(ROOT, join(publicationDir, document.path)).split("\\").join("/");
+      const moduleRefs = expectedModules.filter((module) => module.consumers.includes(document.identifier)).map(({ identifier, sha256: digest }) => ({ identifier, sha256: digest }));
+      manifest.publications.push({
+        canonicalUrl: document.canonicalUrl,
+        coreRelease: stage.core.version,
+        document: archivedDocument,
+        family: document.family,
+        identifier: document.identifier,
+        modules: moduleRefs,
+        publication: stage.publication,
+        publicationRecord: recordPath,
+        publicationRecordSha256: recordDigest,
+        publishedAt: stage.publishedAt,
+        rawUrl: document.rawUrl,
+        revision: document.revision,
+      });
+      manifest.latest[document.family] = document.identifier;
+      const mirror = join(ROOT, FAMILIES[document.family].document);
+      originalMirrors.set(mirror, readFileSync(mirror));
+      if (document.sourcePath !== FAMILIES[document.family].document) {
+        consumedCandidates.set(join(ROOT, document.sourcePath), readFileSync(join(ROOT, document.sourcePath)));
+      }
+      copyFileSync(join(stageDir, document.path), `${mirror}.${process.pid}.tmp`);
+      renameSync(`${mirror}.${process.pid}.tmp`, mirror);
+    }
+    const existingModules = new Map(manifest.modules.map((module) => [module.identifier, module]));
+    for (const module of expectedModules) {
+      const existing = existingModules.get(module.identifier);
+      if (existing && existing.sha256 !== module.sha256) fail(`${module.identifier}: same module revision has different bytes`);
+      if (!existing) {
+        manifest.modules.push({
+          canonicalUrl: module.canonicalUrl,
+          document: relative(ROOT, join(publicationDir, module.path)).split("\\").join("/"),
+          identifier: module.identifier,
+          module: module.module,
+          publication: stage.publication,
+          publicationRecord: recordPath,
+          publicationRecordSha256: recordDigest,
+          publishedAt: stage.publishedAt,
+          rawUrl: module.rawUrl,
+          revision: module.revision,
+          sha256: module.sha256,
+        });
+        manifest.latestModules[module.module] = module.identifier;
+        const mirror = join(ROOT, "binding-specs", "modules", `openbindings.${module.module}.md`);
+        originalMirrors.set(mirror, readFileSync(mirror));
+        if (module.sourcePath !== `binding-specs/modules/openbindings.${module.module}.md`) {
+          consumedModuleCandidates.set(join(ROOT, module.sourcePath), readFileSync(join(ROOT, module.sourcePath)));
+        }
+        copyFileSync(join(stageDir, module.path), `${mirror}.${process.pid}.tmp`);
+        renameSync(`${mirror}.${process.pid}.tmp`, mirror);
+      }
+    }
+    manifest.publications.sort((a, b) => a.identifier.localeCompare(b.identifier));
+    manifest.modules.sort((a, b) => a.identifier.localeCompare(b.identifier));
+    manifest.latest = Object.fromEntries(Object.entries(manifest.latest).sort(([a], [b]) => a.localeCompare(b)));
+    manifest.latestModules = Object.fromEntries(Object.entries(manifest.latestModules).sort(([a], [b]) => a.localeCompare(b)));
+    manifest.floor ||= { publications: 0 };
+    manifest.floor.publications = manifest.publications.length;
+    manifest.floor.modules = manifest.modules.length;
+    writeCanonicalJson(manifestTemp, manifest);
+    renameSync(manifestTemp, MANIFEST_PATH);
+    for (const document of expectedDocuments) {
+      if (document.sourcePath !== FAMILIES[document.family].document) rmSync(join(ROOT, document.sourcePath), { force: true });
+    }
+    for (const module of expectedModules) {
+      if (!existingModules.has(module.identifier) && module.sourcePath !== `binding-specs/modules/openbindings.${module.module}.md`) rmSync(join(ROOT, module.sourcePath), { force: true });
+    }
+    console.log(`published ${stage.identifiers.join(", ")} from reviewed stage ${stage.rootSha256}`);
+  } catch (error) {
+    rmSync(manifestTemp, { force: true });
+    rmSync(tempDir, { recursive: true, force: true });
+    rmSync(publicationDir, { recursive: true, force: true });
+    writeFileSync(MANIFEST_PATH, originalManifest);
+    for (const [path, bytes] of originalMirrors) writeFileSync(path, bytes);
+    for (const [path, bytes] of consumedCandidates) {
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, bytes);
+    }
+    for (const [path, bytes] of consumedModuleCandidates) {
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, bytes);
+    }
+    throw error;
   }
-
-  copyTree(join(ROOT, "binding-specs"), join(snapshotRoot, "binding-specs"), (rel) => {
-    const first = rel.split(/[\\/]/)[0];
-    return (
-      first !== "releases" &&
-      rel !== "publications.json" &&
-      PUBLICATION_CATALOG_ENTRIES.has(first) &&
-      !rel.split(/[\\/]/).includes(".DS_Store")
-    );
-  });
-  copyTree(
-    join(ROOT, "conformance", "binding-specs"),
-    join(snapshotRoot, "conformance", "binding-specs")
-  );
-  copyTree(
-    join(ROOT, "conformance", "operation-graph"),
-    join(snapshotRoot, "conformance", "operation-graph")
-  );
-  // The binding-specification corpus README derives its fixture convention
-  // from the core corpus schema by relative link; retain that dependency so
-  // the archived evidence remains self-contained.
-  if (existsSync(join(ROOT, "conformance", "fixture.schema.json"))) {
-    mkdirSync(join(snapshotRoot, "conformance"), { recursive: true });
-    copyFileSync(
-      join(ROOT, "conformance", "fixture.schema.json"),
-      join(snapshotRoot, "conformance", "fixture.schema.json")
-    );
-  }
-  // The informative catalog links publications.json. A publication bundle
-  // cannot embed the live top-level manifest (its digest points back to this
-  // bundle), so preserve a non-circular, publication-local context record at
-  // that path instead. It is sufficient to identify the exact cohort without
-  // pretending to be the live registry.
-  writeFileSync(
-    join(snapshotRoot, "binding-specs", "publications.json"),
-    `${JSON.stringify(
-      {
-        format: "openbindings.binding-spec-publication-context@1",
-        publication,
-        publishedAt,
-        coreRelease,
-        identifiers: selected.map((entry) => entry.identifier).sort(),
-      },
-      null,
-      2
-    )}\n`
-  );
-
-  const files = listFiles(snapshotRoot).map((full) => ({
-    path: relative(publicationDir, full).split("\\").join("/"),
-    sha256: sha256(readFileSync(full)),
-  }));
-
-  const publicationRecord = {
-    format: "openbindings.binding-spec-publication@1",
-    publication,
-    publishedAt,
-    coreRelease,
-    identifiers: selected.map((entry) => entry.identifier).sort(),
-    files,
-  };
-  writeFileSync(
-    join(publicationDir, "publication.json"),
-    `${JSON.stringify(publicationRecord, null, 2)}\n`
-  );
-
-  const publicationRecordPath = relative(ROOT, join(publicationDir, "publication.json"))
-    .split("\\")
-    .join("/");
-  const publicationRecordSha256 = sha256(
-    readFileSync(join(publicationDir, "publication.json"))
-  );
-
-  for (const entry of selected) {
-    const archivedDocument = join("binding-specs", "releases", publication, "root", entry.document)
-      .split("\\")
-      .join("/");
-    manifest.publications.push({
-      identifier: entry.identifier,
-      family: entry.family,
-      revision: entry.revision,
-      publishedAt,
-      coreRelease,
-      publication,
-      publicationRecord: publicationRecordPath,
-      publicationRecordSha256,
-      document: archivedDocument,
-      canonicalUrl: `https://openbindings.com/binding-specs/${entry.family}/${entry.revision}`,
-      rawUrl: `https://openbindings.com/raw/binding-specs/${entry.family}/${entry.revision}.md`,
-    });
-    manifest.latest[entry.family] = entry.identifier;
-  }
-
-  manifest.publications.sort((a, b) => a.identifier.localeCompare(b.identifier));
-  // Raise the withdrawal-resistant floor with every publication so a later
-  // removal cannot pass verification silently (see the verifier's floor check).
-  manifest.floor = manifest.floor || { publications: 0 };
-  manifest.floor.publications = manifest.publications.length;
-  manifest.latest = Object.fromEntries(
-    Object.entries(manifest.latest).sort(([a], [b]) => a.localeCompare(b))
-  );
-  writeFileSync(manifestTempPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  renameSync(manifestTempPath, MANIFEST_PATH);
-
-  console.log(
-    `published ${selected.map((entry) => entry.identifier).join(", ")} in ${relative(
-      ROOT,
-      publicationDir
-    )}`
-  );
 } catch (error) {
-  rmSync(manifestTempPath, { force: true });
-  rmSync(publicationDir, { recursive: true, force: true });
-  throw error;
+  console.error(`error: ${error.message}`);
+  process.exit(2);
 }

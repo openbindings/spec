@@ -1,10 +1,12 @@
 # Binding specifications
 
-**Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
+**Publication state is manifest-governed.** The OpenBindings Project's canonical root [`binding-specs/publications.json`](publications.json) is the sole registry of minted binding-specification and companion-module identifiers; an exact identifier absent from that manifest is an unpublished candidate. Status labels below describe that rule and do not hard-code the current inventory.
+
+During 0.2 development the publication lifecycle was exercised against earlier drafts; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications. The inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts. This README itself is informative: it carries the cross-specification doctrine, index, and authoring template.
 
 The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no conformance weight here, but state the conventions a binding specification's own text adopts when it follows this guidance.
 
-These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI 3.1 candidate proposes `openbindings.openapi-3.1@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them. The binding specification is sovereign over the sources that name it; these project candidates choose to incorporate capable existing artifact and protocol authorities because doing so produces the most faithful and reusable brownfield bindings. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core and a different relationship to those upstream rules.
+These are the **openbindings project's** binding specifications _for_ the named source families. Before their exact bytes are entered in the canonical publication manifest they are candidates; afterward those same defining bytes are the minted revision. For example, the OpenAPI 3.1 document proposes or defines `openbindings.openapi-3.1@1` under this project's namespace and authority according to that manifest state. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them. The binding specification is sovereign over the sources that name it; these project documents choose to incorporate capable existing artifact and protocol authorities because doing so produces the most faithful and reusable brownfield bindings. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core and a different relationship to those upstream rules.
 
 ## Meaning first, action complete
 
@@ -122,7 +124,7 @@ schema is not a faithful substitute for a missing application contract.
 
 ## Identifiers
 
-When published, project binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Every current family candidate proposes revision `1`.
+Project binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. A family's first candidate proposes revision `1`; the canonical manifest records which exact revisions have been minted.
 
 **Project naming convention.** When a versioned upstream family is divided by upstream line, `<name>` is `<family>-<upstream-line>`, with the line spelled exactly as the upstream spells it. The OpenAPI siblings therefore propose `openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`, `openbindings.openapi-3.1@1`, and `openbindings.openapi-3.2@1`. The `@<rev>` component remains the revision of this project's binding specification, not an upstream version. A family whose specification spans all upstream versions omits the upstream-line segment. Artifact patch editions and dialect versions do not appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section enumerates the exact artifact editions it accepts (core [§6](../openbindings.md#6-binding-specifications)). The publication manifest's family key and the permanent URL's `<family>` segment use that same slug; for example, `openapi-3.1` yields `/binding-specs/openapi-3.1/1` and `/raw/binding-specs/openapi-3.1/1.md` for revision `1`.
 
@@ -131,7 +133,8 @@ When published, project binding specifications are identified as `openbindings.<
 - **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. An unqualified support claim covers that complete domain; an implementation with narrower coverage reports partial support rather than presenting the identifier as fully supported.
 - **The OpenBindings project publishes an `openbindings.*` identifier only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on the existence or local use of identifiers governed by other authorities.
 - **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
-- **Core dependencies are exact.** A project binding specification that normatively incorporates the OpenBindings Specification names one exact Core version in its scope-and-authorities section and repeats that version in its normative references. At publication, the declared version MUST equal both the publication record's `coreRelease` and the version of `openbindings.md` preserved in the immutable bundle. Core is a repository-internal authority carried in that bundle, not an external authority recorded in [`AUTHORITY-PINS.json`](AUTHORITY-PINS.json).
+- **Core dependencies are exact.** A project binding specification that normatively incorporates the OpenBindings Specification names one exact Core version in its scope-and-authorities section and repeats that version in its normative references. Review preparation calls this an authority `version`, not a release: while that Core is still the root working draft, the stage is explicitly review-only. A mint-ready stage exists only after `versions/<version>/openbindings.md` and its annotated `v<version>` tag prove the immutable release, and it carries those exact tagged bytes. At publication, the declared version MUST equal both the publication record's `coreRelease` and the version of `openbindings.md` preserved in the immutable bundle. Core is a repository-internal authority carried in that bundle, not an external authority recorded in [`AUTHORITY-PINS.json`](AUTHORITY-PINS.json).
+- **Companion-module dependencies are exact.** A reusable normative module has its own exact identifier, immutable defining bytes, permanent human and raw URLs, and stable rule labels, but it is not a legal `source.bindingSpec`. Every consuming binding revision records the module identifier and SHA-256 in its publication closure. A module change that alters a consumer's observable domain or behavior therefore requires both a new module identifier and a new binding-specification identifier for that consumer.
 
 ### A revision is not a roadmap
 
@@ -170,27 +173,90 @@ promised in advance to whoever reads the gap today.
 
 ### Publication lifecycle
 
-The mutable family path is the candidate. After first publication it becomes a
-convenience mirror of the latest published revision. Publication is one
-explicit operation:
+Before first publication, the mutable family path is the candidate. Afterward
+that path is the byte-identical latest-revision mirror; revision `N+1` is
+authored separately at
+`binding-specs/candidates/<family>/<N+1>/openbindings.<family>.md` so candidate
+work cannot mutate or invalidate revision `N`. Companion modules follow the
+same rule at
+`binding-specs/candidates/modules/<module>/<N+1>/openbindings.<module>.md`.
+Each exact consumer revision has an append-only module-reference registry
+entry; changing a future consumer's module never reinterprets an archived
+consumer. A new module revision is next-only and mints in the same closure as
+at least one new consuming binding revision. Publication is one transaction
+with a reviewable preparation phase:
 
-1. finish and review the candidate document and its conformance evidence;
-2. run `scripts/publish-binding-specifications.mjs`, naming the exact family
-   revisions in the publication cohort and the exact companion Core release;
-3. commit the new entry in [`publications.json`](publications.json) and the new
-   self-contained bundle under `binding-specs/releases/<publication>/`; and
-4. publish the corresponding permanent website routes.
+1. finish and review the mutable candidate document and its conformance
+   evidence;
+2. run `node scripts/prepare-binding-specification-publication.mjs
+   --publication <id> --published-at <date> --core-version <X.Y.Z>
+   --families <family@revision,...> --stage <outside-repo-directory>`, naming the
+   exact family revisions, companion Core authority version, and an explicit staging
+   directory outside the repository. It copies the candidate defining bytes
+   without transforming them, closes every defining document, module, route,
+   verifier import, conformance file, and exact dependency lock, and writes a
+   canonical [`stage.json`](publication-stage.schema.json). If the named Core
+   is still the explicitly unreleased root draft, this is a `candidate-review`
+   stage whose nested `core` record says `unreleased-candidate`; it is not
+   mint-ready. Only a wholly fresh preparation after the matching immutable
+   snapshot and annotated tag exist produces `prepared-unminted` with a
+   `released` Core record. Preparation never promotes one state in place,
+   mints an identifier, or changes a latest mirror;
+3. run `scripts/record-binding-spec-publication-evidence.mjs --from-stage ...
+   --out ...`. The recorder performs the lockfile-exact dependency installs
+   for the local JSON Schema engine and TypeScript gRPC runner,
+   every required source/stage gate—including the independent Go/TypeScript
+   D/S witness and `grpc-protobuf-oracle`—and both language runners. For a
+   gRPC-family stage, provision the exact official `protoc-36.1` executable
+   named by the staged oracle manifest at
+   `$OPENBINDINGS_PROTOC_36_1_ROOT/bin/protoc` (the default root is
+   `/private/tmp/protoc-36.1`). The oracle independently replays the staged
+   cases and binds the upstream authority commit, release-archive and
+   executable identities, verifier harness, recursive `.proto` sources, cases,
+   recorded observations, and result counts. Its canonical
+   evidence first re-locks the source snapshot, then binds commands, result
+   digests, both exact dependency packages and lockfiles, the stage record,
+   staged root, gRPC apparatus root, and processor corpus under the
+   [publication-evidence schema](publication-evidence.schema.json).
+   Evidence may be recorded for either review state and says only what ran
+   against those bytes; it confers no mint eligibility.
+   Dependencies are execution
+   environment only; `node_modules` is never part of the stage or bundle;
+4. obtain independent authority, conformance, and publisher cold reviews of
+   the exact staged root and sealed stage record. Record named, dated reviews,
+   using three distinct normalized reviewer identifiers,
+   their complete finding lists, zero unresolved P0–P2, and dispositions for
+   the exact union of all P3 findings in canonical
+   [`openbindings.binding-spec-publication-adjudication@2`](publication-adjudication.schema.json)
+   JSON;
+5. run `scripts/publish-binding-specifications.mjs --from-stage ... --evidence
+   ... --adjudication ...`. Finalization rejects a `candidate-review` stage
+   before mutation and accepts only a freshly prepared released-Core stage.
+   It independently verifies the annotated tag and version snapshot, re-derives the module
+   closure and permanent routes, re-runs the recorded commands—including the
+   exact pinned Protobuf oracle—against their
+   exact roots, verifies the reviews and dispositions, copies the reviewed
+   root without transforming a byte, installs latest mirrors, and atomically
+   writes the immutable bundle and manifest entries. This manifest update —
+   not preparation — mints each identifier;
+6. commit the transaction and publish its permanent website routes.
 
 The bundle preserves the defining documents, the core text and authoring
 doctrine they cited, and the publication-time binding-specification and
 operation-graph conformance evidence. `publication.json` hashes every archived
-file, while the top-level manifest hashes that record. CI verifies the digest
-chain and rejects edits, removals, or renames beneath `binding-specs/releases/`.
-It also requires each mutable family path to remain byte-identical to the
-revision named by the manifest's `latest` map. A future revision is authored
-as a candidate, published into a new bundle, and only then becomes the latest
-mirror; it never edits its predecessor. Before the first publication, the
-manifest is intentionally empty and there are no release bundles or errata.
+file, while the top-level manifest hashes that record. Version-3 publication
+records also hash the stage, executable evidence, and adjudication, bind the
+complete root, and list every normative companion module with its exact
+identifier, consumers, digest, and permanent human/raw routes. CI verifies
+the digest chain and rejects edits, removals, or renames beneath
+`binding-specs/releases/`. It also requires each family and companion-module
+latest mirror to remain byte-identical to the revision named by the manifest.
+A future binding or module revision is authored at its dedicated candidate
+path, staged, reviewed, and published into a new bundle before becoming the
+latest mirror; finalization then removes each now-consumed candidate path. It
+never edits a predecessor and never moves a module latest mirror backward when
+a later consumer reuses an older module. The manifest itself, rather than this
+prose, states whether the first publication has occurred.
 After publication, clarifications use the append-only errata process and
 semantic changes use a new identifier.
 
@@ -261,19 +327,31 @@ replaces a library that hides required facts or imposes conflicting policy.
 
 | Specification   | Document                                                                           | Status                                                                                             | Identifier(s)                    | `selector` shape (summary)                                                                                                                                              |
 | --------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **unreleased @1 candidate** | `openbindings.operation-graph@1` | JSON Pointer to a graph definition |
-| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **unreleased @1 candidate** | `openbindings.usage@1`           | space-separated command path (absent selector = root) |
-| openapi-2.0     | [openbindings.openapi-2.0.md](openapi-2.0/openbindings.openapi-2.0.md)             | **unreleased @1 candidate** | `openbindings.openapi-2.0@1`     | JSON Pointer to the operation object |
-| openapi-3.0     | [openbindings.openapi-3.0.md](openapi-3.0/openbindings.openapi-3.0.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.0@1`     | JSON Pointer to the operation object |
-| openapi-3.1     | [openbindings.openapi-3.1.md](openapi-3.1/openbindings.openapi-3.1.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.1@1`     | JSON Pointer to the operation object |
-| openapi-3.2     | [openbindings.openapi-3.2.md](openapi-3.2/openbindings.openapi-3.2.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.2@1`     | JSON Pointer to the operation object |
-| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **unreleased @1 candidate** | `openbindings.mcp@1`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
-| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **unreleased @1 candidate** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
-| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **unreleased @1 candidate** | `openbindings.connect@1`         | `<fully-qualified-service>/<method>` |
-| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **unreleased @1 candidate** | `openbindings.asyncapi@1`        | edition-dependent operation reference |
-| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **unreleased @1 candidate** | `openbindings.graphql@1`         | `query/<field>` or `mutation/<field>` |
+| operation-graph | [openbindings.operation-graph.md](operation-graph/openbindings.operation-graph.md) | **see canonical manifest** | `openbindings.operation-graph@1` | JSON Pointer to a graph definition |
+| usage           | [openbindings.usage.md](usage/openbindings.usage.md)                               | **see canonical manifest** | `openbindings.usage@1`           | space-separated command path (absent selector = root) |
+| openapi-2.0     | [openbindings.openapi-2.0.md](openapi-2.0/openbindings.openapi-2.0.md)             | **see canonical manifest** | `openbindings.openapi-2.0@1`     | JSON Pointer to the operation object |
+| openapi-3.0     | [openbindings.openapi-3.0.md](openapi-3.0/openbindings.openapi-3.0.md)             | **see canonical manifest** | `openbindings.openapi-3.0@1`     | JSON Pointer to the operation object |
+| openapi-3.1     | [openbindings.openapi-3.1.md](openapi-3.1/openbindings.openapi-3.1.md)             | **see canonical manifest** | `openbindings.openapi-3.1@1`     | JSON Pointer to the operation object |
+| openapi-3.2     | [openbindings.openapi-3.2.md](openapi-3.2/openbindings.openapi-3.2.md)             | **see canonical manifest** | `openbindings.openapi-3.2@1`     | JSON Pointer to the operation object |
+| mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **see canonical manifest** | `openbindings.mcp@1`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
+| grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **see canonical manifest** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
+| connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **see canonical manifest** | `openbindings.connect@1`         | `<fully-qualified-service>/<method>` |
+| asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **see canonical manifest** | `openbindings.asyncapi@1`        | edition-dependent operation reference |
+| graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **see canonical manifest** | `openbindings.graphql@1`         | `query/<field>` or `mutation/<field>` |
 
-A candidate page remains informational until promotion. It uses the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier; its status banner states the remaining publication gates.
+### Companion modules
+
+| Module | Document | Status | Identifier | Consumers |
+| --- | --- | --- | --- | --- |
+| Protobuf correspondence | [openbindings.protobuf-correspondence.md](modules/openbindings.protobuf-correspondence.md) | **see canonical manifest** | `openbindings.module.protobuf-correspondence@1` | gRPC; Connect |
+
+Companion modules are published only in the immutable closure of at least one
+binding specification. Their permanent routes are
+`/binding-spec-modules/<module>/<revision>` and
+`/raw/binding-spec-modules/<module>/<revision>.md`; a mutable module path is
+only the latest authoring mirror.
+
+A candidate page remains informational until finalization. It uses the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier. Its canonical, status-neutral publication-state line remains byte-identical after publication: only the publication manifest decides whether those exact bytes mint the identifier.
 
 ## The authority precedence: who has already decided
 
@@ -582,6 +660,7 @@ The adversarial review resolved the former lower-confidence questions below. The
 - **Usage field identity and multiplicity:** first-long-else-first-short remains the canonical JSON field identity. Identity collisions, combined repeatable-plus-variadic declarations, and order-dependent `overrides` inputs refuse; count, repeatable, and variadic forms otherwise keep distinct argv shapes.
 - **Usage optional `--`:** both artifact-permitted spellings remain an unordered permitted set through the `delimiter` point. The processor corpus accepts both and gives neither preference.
 - **AsyncAPI:** the first-revision candidate is being realigned around AsyncAPI's own protocol-binding system. The outer OpenBindings specification delegates concrete protocol semantics to the selected AsyncAPI binding and runtime driver rather than maintaining an HTTP/WebSocket allowlist here.
+- **gRPC identifier topology:** gRPC services do not carry a source-self-identified gRPC library release line that selects different binding documents, so `openbindings.grpc@1` is one protocol binding whose exact v1.83.1 authority is a revision pin. Proto2, Proto3, and Editions are descriptor-language domains, not gRPC binding siblings; their shared descriptor, value, binary, and schema correspondence therefore has the independently versioned `openbindings.module.protobuf-correspondence@1` identity used by gRPC and Connect. A semantics-changing gRPC authority advance publishes the next gRPC binding revision; a semantics-changing Protobuf correspondence advance publishes a new module revision and new revisions only for affected consumers.
 - **Operation Graph startup:** every held `operation` invocation opens at graph start. This preserves the identity law and output-before-input causality; the eager timing consequence is explicit and covered by OG-EX-39..46.
 - **GraphQL:** Query and mutation outputs are the selected root-field application value. Trusted GraphQL errors cause unsuccessful completion after any selected partial value; native envelopes remain diagnostic. Subscription targets are coverage-accounted exclusions because their per-event partial-data-plus-error lifecycle can continue, and the candidate refuses rather than approximates it.
 
@@ -781,7 +860,7 @@ Apply the [deference order](#the-deference-order) to every answer in the templat
 ### The template
 
 1. **Status and identifier** — the exact identifier this document defines, its defining authority, and the revision discipline (OBI-B-01, OBI-B-03). The document may carry its own edition label; that label is not the identifier.
-2. **Scope and authorities** — the exact OpenBindings Core version incorporated, when Core is a normative dependency; every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision); and the boundary between those authorities and this specification's overlay. The exact Core version also appears in the normative-reference list and, at publication, matches the bundled Core text and `coreRelease` record. Where no external artifact authority exists, state the artifact and interaction semantics this specification defines itself. A candidate MAY also incorporate a **sibling candidate** by its proposed exact identifier, scoped to named sections and rule identifiers (`openbindings.connect@1`'s schema layer, cited from the `openbindings.grpc@1` candidate, is the pattern). Both candidates must be reviewed together before either is published. After publication, the "citations denote revisions" discipline above governs.
+2. **Scope and authorities** — the exact OpenBindings Core version incorporated, when Core is a normative dependency; every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision); and the boundary between those authorities and this specification's overlay. The exact Core version also appears in the normative-reference list and, at publication, matches the bundled Core text and `coreRelease` record. Where no external artifact authority exists, state the artifact and interaction semantics this specification defines itself. A candidate MAY incorporate a first-class companion module by exact module identifier and publication-recorded digest; gRPC and Connect sharing `openbindings.module.protobuf-correspondence@1` is the pattern. A binding specification does not use an unrelated transport sibling as shorthand for artifact semantics. After publication, the "citations denote revisions" discipline above governs.
 3. **Accepted source representations** (OBI-B-02 item 1) — whether each source mode accepts an artifact; the exact upstream edition envelope and every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly. Every accepted edition receives conformance coverage for its edition-specific branches.
 4. **`location`** (item 2) — the accepted absolute-address syntax and what it addresses. **Acquisition-failure semantics follow the address scheme:** where `location` is a URI, whether a dereference succeeded is the scheme's own affair (an HTTP status, a `file://` open error, a TLS failure), and a specification need say nothing — the terseness is deference, not an omission. A specification that mints an address form with no incorporating scheme (an executable address, say) owes the success condition itself, because none is inherited (`openbindings.usage@1`'s `exec:` requires exit 0, its stdout otherwise not an artifact, is the pattern).
 5. **`content`** (item 3) — the accepted JSON values and their meaning, including any mode in which `content` is forbidden.
@@ -821,7 +900,7 @@ Where a specification labels the provenance of each normative paragraph, this pr
 
 ### Promotion
 
-A draft is promoted when every OBI-B-02 item has a definite answer under the template — a rule, a named configuration point, an explicit exclusion, or a scoped incorporation of another published binding specification by exact identifier. Promotion mints the identifier, and reference tooling adopts it — replacing the pre-bindingSpec token — in the same change. Conformance fixtures for the specification's own rules are recommended at promotion, alongside correcting the page's core citations to the current core text.
+A draft is ready for preparation when every OBI-B-02 item has a definite answer under the template — a rule, a named configuration point, an explicit exclusion, or a scoped incorporation of another published binding specification by exact identifier. Preparation seals those status-neutral candidate bytes for final cold review but does not mint the identifier. Finalization mints it through the manifest and reference tooling adopts it — replacing the pre-bindingSpec token — in the same transaction. Conformance fixtures for the specification's own rules are required evidence for that transaction, and the exact Core declaration and normative reference must already match the bundled Core text.
 
 Promotion is **spec-first**: it designs the ideal specification for the family, not a codification of current reference-implementation behavior. Where shipped code and the promoted specification diverge, the code changes — each divergence is recorded as implementation work at promotion, and a specification is never weakened, nor an item left open, because an implementation has not caught up. An implementation's partial coverage is the implementation's own declaration, exactly as tools declare partial core support; it is never the specification's content.
 

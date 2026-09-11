@@ -1,0 +1,87 @@
+syntax = "proto3";
+package demo;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "value-closed.proto";
+
+enum State {
+  option allow_alias = true;
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1;
+  STATE_READY_ALIAS = 1;
+}
+
+message Node {
+  string snake_case = 1 [json_name = "customName"];
+  int64 big = 2;
+  bytes raw = 3;
+  repeated int32 numbers = 4;
+  map<string, int32> labels = 5;
+  oneof choice {
+    string text = 6;
+    int32 count = 7;
+  }
+  State state = 8;
+  Node next = 9;
+  google.protobuf.Timestamp timestamp = 10;
+  google.protobuf.Duration duration = 11;
+  google.protobuf.FieldMask mask = 12;
+  google.protobuf.Struct object = 13;
+  google.protobuf.StringValue wrapped = 14;
+  google.protobuf.Any any = 15;
+  int32 signed32 = 16;
+  uint32 unsigned32 = 17;
+  uint64 unsigned64 = 18;
+  double precise = 19;
+  float ratio = 20;
+  bool enabled = 21;
+}
+
+message Wire {
+  int32 a = 1;
+  repeated int32 values = 2;
+}
+
+message MapKeys {
+  map<bool, int32> bools = 1;
+  map<int32, string> ints = 2;
+  map<uint64, string> uints = 3;
+}
+
+message DirectNull {
+  google.protobuf.NullValue value = 1;
+}
+
+message DynamicValue {
+  google.protobuf.Value value = 1;
+}
+
+message WrapperContexts {
+  google.protobuf.StringValue singular = 1;
+  repeated google.protobuf.StringValue repeated = 2;
+  map<string, google.protobuf.StringValue> mapped = 3;
+}
+
+message NullContexts {
+  oneof choice {
+    google.protobuf.StringValue wrapped = 1;
+    google.protobuf.Value dynamic = 2;
+  }
+}
+
+message ProtoKeys {
+  string proto_field = 1 [json_name = "__proto__"];
+  map<string, string> mapped = 2;
+  google.protobuf.Struct object = 3;
+}
+
+message AmbiguousNames {
+  string chosen = 1 [json_name = "other_original"];
+  string other_original = 2 [json_name = "different"];
+}

@@ -1,160 +1,537 @@
 {
-  "format": "openbindings.binding-spec-synthesis-scenarios@4",
+  "format": "openbindings.binding-spec-synthesis-scenarios@7",
   "bindingSpec": "openbindings.grpc@1",
   "family": "grpc",
-  "description": "gRPC method inventory and bound-closure schema-range accounting.",
+  "description": "Portable gRPC method inventory, schema projection, reflection parity, target identity, and exhaustive smallest-owner coverage.",
   "scenarios": [
     {
       "id": "GRPC-SS-01",
-      "description": "An admitted method is represented while a method whose request closure uses proto2 required presence is explicitly excluded.",
+      "rules": ["GRPC-S-01", "GRPC-S-02"],
+      "description": "One service containing all four cardinalities produces four canonically keyed operations and bindings.",
       "source": {
         "bindingSpec": "openbindings.grpc@1",
         "location": "grpc://localhost:50051",
-        "content": "syntax = \"proto2\";\npackage demo;\nmessage Good { optional string value = 1; }\nmessage Bad { required string value = 1; }\nservice Echo {\n  rpc Accepted(Good) returns (Good);\n  rpc Excluded(Bad) returns (Good);\n}\n"
+        "content": "syntax = \"proto3\"; package demo; message Req {} message Res {} service S { rpc Unary(Req) returns (Res); rpc Server(Req) returns (stream Res); rpc Client(stream Req) returns (Res); rpc Bidi(stream Req) returns (stream Res); }"
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": ["Accepted"],
+        "operations": ["demo.S.Bidi", "demo.S.Client", "demo.S.Server", "demo.S.Unary"],
         "bindings": [
-          { "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted" }
+          { "operationKey": "demo.S.Bidi", "bindingSelector": "demo.S/Bidi" },
+          { "operationKey": "demo.S.Client", "bindingSelector": "demo.S/Client" },
+          { "operationKey": "demo.S.Server", "bindingSelector": "demo.S/Server" },
+          { "operationKey": "demo.S.Unary", "bindingSelector": "demo.S/Unary" }
         ],
         "coverage": {
           "exhaustive": true,
-          "fullyRepresented": false,
+          "fullyRepresented": true,
           "entries": [
-            { "sourceIndex": 0, "sourceRef": "demo.Echo/Accepted", "scope": "target", "status": "represented", "operationKey": "Accepted", "bindingSelector": "demo.Echo/Accepted", "requirements": [] },
-            { "sourceIndex": 0, "sourceRef": "demo.Echo/Excluded", "scope": "target", "status": "excluded", "reasonCode": "grpc.schema_range", "rule": "GRPC-P-03", "requirements": [] }
+            { "sourceIndex": 0, "sourceRef": "demo.S/Bidi", "scope": "target", "status": "represented", "operationKey": "demo.S.Bidi", "bindingSelector": "demo.S/Bidi", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.S/Client", "scope": "target", "status": "represented", "operationKey": "demo.S.Client", "bindingSelector": "demo.S/Client", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.S/Server", "scope": "target", "status": "represented", "operationKey": "demo.S.Server", "bindingSelector": "demo.S/Server", "requirements": [] },
+            { "sourceIndex": 0, "sourceRef": "demo.S/Unary", "scope": "target", "status": "represented", "operationKey": "demo.S.Unary", "bindingSelector": "demo.S/Unary", "requirements": [] }
           ]
         }
       }
     },
     {
       "id": "GRPC-SS-02",
-      "description": "A valid schema paired with a non-gRPC target address is refused before synthesis.",
+      "rules": ["GRPC-S-03"],
+      "description": "Recursive messages and an int64 field require distinct faithful input and output projections rather than an unconstrained object.",
       "source": {
         "bindingSpec": "openbindings.grpc@1",
-        "location": "https://grpc.example.test",
-        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+        "location": "grpcs://api.example:443",
+        "content": "syntax = \"proto3\"; package demo; message Node { int64 id = 1; repeated Node children = 2; } service S { rpc Put(Node) returns (Node); }"
       },
       "expected": {
-        "outcome": "refused",
-        "rules": [
-          "GRPC-D-02"
-        ]
+        "outcome": "synthesized",
+        "operations": ["demo.S.Put"],
+        "bindings": [{ "operationKey": "demo.S.Put", "bindingSelector": "demo.S/Put" }],
+        "assertions": [
+          { "path": "/schemas/input.demo.Node/type", "equals": "object" },
+          { "path": "/schemas/input.demo.Node/properties/children/anyOf/0/items/$ref", "equals": "#/schemas/input.demo.Node" },
+          { "path": "/schemas/output.demo.Node/properties/id/type", "equals": "string" }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Put", "scope": "target", "status": "represented", "operationKey": "demo.S.Put", "bindingSelector": "demo.S/Put", "requirements": [] }
+        ] }
       }
     },
     {
       "id": "GRPC-SS-03",
-      "description": "A bare host:port target remains faithfully represented while coverage identifies the binding-spec-required transport election.",
+      "rules": ["GRPC-S-04", "GRPC-S-07"],
+      "description": "A group-bearing method is excluded at its projection owner while a sibling method remains represented and coverage stays exhaustive.",
       "source": {
         "bindingSpec": "openbindings.grpc@1",
-        "location": "localhost:50051",
-        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto2\"; package demo; message Good { optional string value = 1; } message Bad { optional group Legacy = 1 { optional string value = 2; } } service S { rpc AGood(Good) returns (Good); rpc ZBad(Bad) returns (Good); }"
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [
-          "Call"
-        ],
-        "bindings": [
-          {
-            "operationKey": "Call",
-            "bindingSelector": "demo.Echo/Call"
-          }
-        ],
-        "coverage": {
-          "exhaustive": true,
-          "fullyRepresented": true,
-          "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "demo.Echo/Call",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "Call",
-              "bindingSelector": "demo.Echo/Call",
-              "requirements": [
-                "configuration.transport"
-              ]
-            }
-          ]
-        }
+        "operations": ["demo.S.AGood"],
+        "bindings": [{ "operationKey": "demo.S.AGood", "bindingSelector": "demo.S/AGood" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/AGood", "scope": "target", "status": "represented", "operationKey": "demo.S.AGood", "bindingSelector": "demo.S/AGood", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "demo.S/ZBad", "scope": "target", "status": "excluded", "operationKey": "demo.S.ZBad", "bindingSelector": "demo.S/ZBad", "rule": "GRPC-S-07", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "file[12]:source.proto#demo.Bad/field:1", "scope": "projection", "status": "excluded", "operationKey": "demo.S.ZBad", "bindingSelector": "demo.S/ZBad", "rule": "GRPC-S-03", "requirements": [] }
+        ] }
       }
     },
     {
       "id": "GRPC-SS-04",
-      "description": "A scheme-qualified discovery address rewritten to a bare emitted target reports the transport election required by the emitted OBI.",
-      "source": {
-        "bindingSpec": "openbindings.grpc@1",
-        "location": "grpc://localhost:50051",
-        "outputLocation": "api.example.test:443",
-        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+      "rules": ["GRPC-S-05"],
+      "description": "A reflected descriptor graph produces the same target identity as its embedded binary FileDescriptorSet.",
+      "source": { "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051" },
+      "discovery": {
+        "format": "openbindings.grpc-reflection-transcript@1",
+        "version": "v1",
+        "stream": 0,
+        "listedServices": ["demo.S"],
+        "descriptorSetBase64": "CkwKDHNvdXJjZS5wcm90bxIEZGVtbyIFCgNSZXEiBQoDUmVzMiAKAVMSGwoDR2V0EgkuZGVtby5SZXEaCS5kZW1vLlJlc2IGcHJvdG8z",
+        "requests": [{ "kind": "list-services", "value": "" }, { "kind": "file-containing-symbol", "value": "demo.S" }]
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [
-          "Call"
-        ],
-        "bindings": [
-          {
-            "operationKey": "Call",
-            "bindingSelector": "demo.Echo/Call"
-          }
-        ],
-        "coverage": {
-          "exhaustive": true,
-          "fullyRepresented": true,
-          "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "demo.Echo/Call",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "Call",
-              "bindingSelector": "demo.Echo/Call",
-              "requirements": [
-                "configuration.transport"
-              ]
-            }
-          ]
-        }
+        "operations": ["demo.S.Get"],
+        "bindings": [{ "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "represented", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "requirements": [] }
+        ] }
       }
     },
     {
       "id": "GRPC-SS-05",
-      "description": "A bare discovery address rewritten to a scheme-qualified emitted target carries no stale transport requirement.",
+      "rules": ["GRPC-S-06"],
+      "description": "A bare authority preserves a transport configuration requirement in the represented binding.",
+      "source": { "bindingSpec": "openbindings.grpc@1", "location": "localhost:50051", "content": "syntax = \"proto3\"; package demo; message Req {} service S { rpc Get(Req) returns (Req); }" },
+      "expected": {
+        "outcome": "synthesized", "operations": ["demo.S.Get"], "bindings": [{ "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "represented", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "requirements": ["configuration.transport"] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-06",
+      "rules": ["GRPC-S-06"],
+      "description": "An explicit TLS scheme carries no stale transport election requirement.",
+      "source": { "bindingSpec": "openbindings.grpc@1", "location": "grpcs://api.example:443", "content": "syntax = \"proto3\"; package demo; message Req {} service S { rpc Get(Req) returns (Req); }" },
+      "expected": {
+        "outcome": "synthesized", "operations": ["demo.S.Get"], "bindings": [{ "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "represented", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-07",
+      "rules": ["GRPC-S-08"],
+      "description": "An empty descriptor set emits no operations or bindings and has exhaustive empty coverage.",
+      "source": { "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051", "content": { "file": [] } },
+      "expected": { "outcome": "synthesized", "operations": [], "bindings": [], "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [] } }
+    },
+    {
+      "id": "GRPC-SS-08",
+      "rules": ["GRPC-S-01", "GRPC-S-08"],
+      "description": "The reflection service is exhaustively excluded as infrastructure and emits no application operation.",
       "source": {
         "bindingSpec": "openbindings.grpc@1",
-        "location": "localhost:50051",
-        "outputLocation": "grpcs://api.example.test:443",
-        "content": "syntax = \"proto3\";\npackage demo;\nmessage EchoRequest {}\nservice Echo { rpc Call(EchoRequest) returns (EchoRequest); }\n"
+        "location": "grpc://localhost:50051",
+        "content": {
+          "file": [{
+            "name": "reflection.proto", "package": "grpc.reflection.v1", "syntax": "proto3",
+            "messageType": [{ "name": "ServerReflectionRequest" }, { "name": "ServerReflectionResponse" }],
+            "service": [{ "name": "ServerReflection", "method": [{ "name": "ServerReflectionInfo", "inputType": ".grpc.reflection.v1.ServerReflectionRequest", "outputType": ".grpc.reflection.v1.ServerReflectionResponse", "clientStreaming": true, "serverStreaming": true }] }]
+          }]
+        }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": [], "bindings": [],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "grpc.reflection.v1.ServerReflection/ServerReflectionInfo", "scope": "target", "status": "excluded", "rule": "GRPC-S-01", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-09",
+      "rules": ["GRPC-S-03", "GRPC-S-04", "GRPC-S-07"],
+      "description": "A proto2 required field excludes its method at the exact field projection owner.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto2\"; package demo; message Req { required string value = 1; } message Res {} service S { rpc Get(Req) returns (Res); }"
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": [], "bindings": [],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-07", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "file[12]:source.proto#demo.Req/field:1", "scope": "projection", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-03", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-10",
+      "rules": ["GRPC-S-03", "GRPC-S-04", "GRPC-S-07"],
+      "description": "A caller-visible extension excludes its extendee closure at the exact message projection owner.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto2\"; package demo; message Req { extensions 100 to max; } extend Req { optional string caller = 100; } message Res {} service S { rpc Get(Req) returns (Res); }"
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": [], "bindings": [],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-07", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "file[12]:source.proto#demo.Req", "scope": "projection", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-03", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-11",
+      "rules": ["GRPC-S-03", "GRPC-S-04", "GRPC-S-07"],
+      "description": "Edition LEGACY_REQUIRED carried as a binary FileDescriptorSet excludes its exact field projection owner.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051",
+        "content": { "$fileDescriptorSet": "Cm4KDHNvdXJjZS5wcm90bxIEZGVtbyIiCgNSZXESGwoFdmFsdWUYASABKAlCBaoBAggDUgV2YWx1ZSIFCgNSZXMyIAoBUxIbCgNHZXQSCS5kZW1vLlJlcRoJLmRlbW8uUmVzYghlZGl0aW9uc3DpBw==" }
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": [], "bindings": [],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Get", "scope": "target", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-07", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "file[12]:source.proto#demo.Req/field:1", "scope": "projection", "status": "excluded", "operationKey": "demo.S.Get", "bindingSelector": "demo.S/Get", "rule": "GRPC-S-03", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-12",
+      "rules": ["GRPC-S-03"],
+      "description": "Directional schemas close ordinary objects and exercise aliases, ranges, oneofs, maps, open enums, well-known types, Any, and recursion with hostile instances.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpcs://api.example:443",
+        "content": "syntax = \"proto3\"; package demo; import \"google/protobuf/any.proto\"; import \"google/protobuf/duration.proto\"; import \"google/protobuf/field_mask.proto\"; import \"google/protobuf/struct.proto\"; import \"google/protobuf/timestamp.proto\"; import \"google/protobuf/wrappers.proto\"; message Nested { string value = 1; } enum State { STATE_UNSPECIFIED = 0; STATE_READY = 1; } message Shape { int64 big = 1; string snake_case = 2 [json_name = \"customName\"]; oneof choice { string text = 3; int32 count = 4; google.protobuf.Value dynamic = 22; google.protobuf.NullValue null_choice = 23; } map<int32, string> labels = 5; repeated int32 numbers = 6; State state = 7; google.protobuf.Timestamp timestamp = 8; google.protobuf.Any any = 9; Shape next = 10; google.protobuf.FieldMask mask = 11; google.protobuf.NullValue nil_value = 12; bytes blob = 13; double ratio = 14; uint32 small = 15; google.protobuf.Duration duration = 16; map<bool, string> flags = 17; map<uint64, string> huge_labels = 18; google.protobuf.StringValue wrapper = 19; repeated google.protobuf.StringValue wrapper_items = 20; map<string, google.protobuf.StringValue> wrapper_map = 21; repeated google.protobuf.Value value_items = 24; map<string, google.protobuf.Value> value_map = 25; } service S { rpc Check(Shape) returns (Shape); }"
       },
       "expected": {
         "outcome": "synthesized",
-        "operations": [
-          "Call"
+        "operations": ["demo.S.Check"],
+        "bindings": [{ "operationKey": "demo.S.Check", "bindingSelector": "demo.S/Check" }],
+        "assertions": [
+          { "path": "/schemas/input.demo.Shape/additionalProperties", "equals": false },
+          { "path": "/schemas/output.demo.Shape/additionalProperties", "equals": false },
+          { "path": "/schemas/input.demo.Shape/properties/snake_case/anyOf/0/type", "equals": "string" },
+          { "path": "/schemas/input.demo.Shape/properties/snake_case/anyOf/0/pattern", "equals": "^[^\\uD800-\\uDFFF]*$" },
+          { "path": "/schemas/output.demo.Shape/properties/snake_case", "absent": true },
+          { "path": "/schemas/input.demo.Shape/properties/next/anyOf/0/$ref", "equals": "#/schemas/input.demo.Shape" },
+          { "path": "/schemas/input.demo.Shape/properties/timestamp/anyOf/0/$ref", "equals": "#/schemas/input.google.protobuf.Timestamp" },
+          { "path": "/schemas/input.demo.Shape/properties/wrapperItems/anyOf/0/items/type", "equals": "string" },
+          { "path": "/schemas/input.demo.Shape/properties/wrapperMap/anyOf/0/additionalProperties/type", "equals": "string" },
+          { "path": "/schemas/output.google.protobuf.StringValue/type", "equals": "string" }
         ],
+        "schemaInstances": [
+          { "schema": "input.demo.Shape", "value": {}, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "ghost": 1 }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "big": "9223372036854775807" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "big": "9223372036854775808" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "big": 1 }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "big": "+1" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "big": "01" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "snake_case": "x" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "customName": "x" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "snakeCase": "x" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "snake_case": "x", "customName": "y" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "count": 1 }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "count": "1" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "text": "x", "count": 1 }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "labels": { "-2147483648": "a", "2147483647": "b" } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "labels": { "2147483648": "x" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "labels": { "+1": "x" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "labels": { "01": "x" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "numbers": [1, 2] }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "numbers": [null] }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "numbers": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "labels": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "state": "STATE_READY" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "state": "MISSING" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "state": 123 }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "state": "123" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "ratio": 1.5 }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "ratio": "NaN" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "ratio": "1.5" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "small": 4294967295 }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "small": "1" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "timestamp": "2026-09-28T12:34:56Z" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "timestamp": "2026-09-28T12:34:56+00:00" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "timestamp": "2026-99-99T12:34:56Z" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "duration": "1.000s" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "duration": "+1s" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "mask": "" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "mask": "snake_case" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "nilValue": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "nilValue": "NULL_VALUE" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "dynamic": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "nullChoice": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "dynamic": null, "nullChoice": null }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "valueItems": [null] }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "valueMap": { "x": null } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "valueItems": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "valueMap": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "next": { "next": { "big": "1" } } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "next": { "ghost": true } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "blob": "Zg==" }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "blob": "Zh==" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "blob": "Zg" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "blob": "-w==" }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "flags": { "true": "a", "false": "b" } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "flags": { "True": "a" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "hugeLabels": { "18446744073709551615": "a" } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "hugeLabels": { "018446744073709551615": "a" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "wrapper": null }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "wrapperItems": ["x"] }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "wrapperItems": [null] }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "wrapperMap": { "x": "y" } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "wrapperMap": { "x": null } }, "valid": false },
+          { "schema": "input.google.protobuf.StringValue", "value": null, "valid": true },
+          { "schema": "input.google.protobuf.Value", "value": null, "valid": true },
+          { "schema": "input.google.protobuf.Value", "valueJson": "1.7976931348623157e308", "valid": true },
+          { "schema": "input.google.protobuf.Value", "valueJson": "1.7976931348623159e308", "valid": false },
+          { "schema": "input.google.protobuf.Value", "valueJson": "-1.7976931348623159e308", "valid": false },
+          { "schema": "input.google.protobuf.Struct", "valueJson": "{\"x\":1.7976931348623157e308}", "valid": true },
+          { "schema": "input.google.protobuf.Struct", "valueJson": "{\"x\":1.7976931348623159e308}", "valid": false },
+          { "schema": "input.google.protobuf.ListValue", "valueJson": "[1.7976931348623157e308]", "valid": true },
+          { "schema": "input.google.protobuf.ListValue", "valueJson": "[1.7976931348623159e308]", "valid": false },
+          { "schema": "input.demo.Shape", "valueJson": "{\"dynamic\":1.7976931348623157e308}", "valid": true },
+          { "schema": "input.demo.Shape", "valueJson": "{\"dynamic\":1.7976931348623159e308}", "valid": false },
+          { "schema": "input.demo.Shape", "value": { "any": { "@type": "type.googleapis.com/demo.Nested", "value": "x" } }, "valid": true },
+          { "schema": "input.demo.Shape", "value": { "any": { "@type": "/demo.Nested", "value": "x" } }, "valid": false },
+          { "schema": "input.demo.Shape", "value": { "any": { "@type": "type.googleapis.com/demo.Missing" } }, "valid": false },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.StringValue", "value": null }, "valid": true },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.Value", "value": null }, "valid": true },
+          { "schema": "input.google.protobuf.Any", "valueJson": "{\"@type\":\"type.googleapis.com/google.protobuf.Value\",\"value\":1.7976931348623157e308}", "valid": true },
+          { "schema": "input.google.protobuf.Any", "valueJson": "{\"@type\":\"type.googleapis.com/google.protobuf.Value\",\"value\":1.7976931348623159e308}", "valid": false },
+          { "schema": "output.demo.Shape", "value": { "big": "9223372036854775807", "customName": "x", "state": 123 }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "mask": "", "nilValue": null }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "any": { "@type": "type.googleapis.com/demo.Nested", "value": "x" } }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "any": { "@type": "/demo.Nested", "value": "x" } }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "mask": "Foo.barBaz" }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "mask": "snake_case" }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "blob": "Zg==" }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "blob": "Zh==" }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "dynamic": null }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "nullChoice": null }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "dynamic": null, "nullChoice": null }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "valueItems": [null] }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "valueMap": { "x": null } }, "valid": true },
+          { "schema": "output.demo.Shape", "value": { "wrapperItems": [null] }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "wrapperMap": { "x": null } }, "valid": false },
+          { "schema": "output.google.protobuf.StringValue", "value": "", "valid": true },
+          { "schema": "output.google.protobuf.StringValue", "value": null, "valid": false },
+          { "schema": "output.google.protobuf.Value", "value": null, "valid": true },
+          { "schema": "output.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.StringValue", "value": "" }, "valid": true },
+          { "schema": "output.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.StringValue", "value": null }, "valid": false },
+          { "schema": "output.google.protobuf.Value", "valueJson": "1.7976931348623157e308", "valid": true },
+          { "schema": "output.google.protobuf.Value", "valueJson": "1.7976931348623159e308", "valid": false },
+          { "schema": "output.demo.Shape", "value": { "big": 1 }, "valid": false },
+          { "schema": "output.demo.Shape", "value": { "snake_case": "x" }, "valid": false }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Check", "scope": "target", "status": "represented", "operationKey": "demo.S.Check", "bindingSelector": "demo.S/Check", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-13",
+      "rules": ["GRPC-S-03"],
+      "description": "Edition 2026 enum schemas preserve the incorporated custom JSON spelling and open-enum numeric behavior directionally.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "edition = \"2026\"; package enumdemo; import \"google/protobuf/json_options.proto\"; enum State { STATE_UNSPECIFIED = 0; STATE_READY = 1 [(pb.enumvalue.json).string = \"ready-value\"]; STATE_NUMERIC = 123 [(pb.enumvalue.json).string = \"123\"]; } message Value { State state = 1; } service S { rpc Read(Value) returns (Value); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["enumdemo.S.Read"],
+        "bindings": [{ "operationKey": "enumdemo.S.Read", "bindingSelector": "enumdemo.S/Read" }],
+        "assertions": [
+          { "path": "/schemas/input.enumdemo.Value/properties/state/anyOf/0/anyOf/0/enum", "equals": ["123", "STATE_NUMERIC", "STATE_READY", "STATE_UNSPECIFIED", "ready-value"] },
+          { "path": "/schemas/output.enumdemo.Value/properties/state/anyOf/0/enum", "equals": ["123", "STATE_UNSPECIFIED", "ready-value"] }
+        ],
+        "schemaInstances": [
+          { "schema": "input.enumdemo.Value", "value": { "state": "STATE_READY" }, "valid": true },
+          { "schema": "input.enumdemo.Value", "value": { "state": "ready-value" }, "valid": true },
+          { "schema": "input.enumdemo.Value", "value": { "state": "123" }, "valid": true },
+          { "schema": "input.enumdemo.Value", "value": { "state": 123 }, "valid": true },
+          { "schema": "input.enumdemo.Value", "value": { "state": "missing" }, "valid": false },
+          { "schema": "output.enumdemo.Value", "value": { "state": "ready-value" }, "valid": true },
+          { "schema": "output.enumdemo.Value", "value": { "state": "123" }, "valid": true },
+          { "schema": "output.enumdemo.Value", "value": { "state": "STATE_READY" }, "valid": false },
+          { "schema": "output.enumdemo.Value", "value": { "state": 123 }, "valid": true }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "enumdemo.S/Read", "scope": "target", "status": "represented", "operationKey": "enumdemo.S.Read", "bindingSelector": "enumdemo.S/Read", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-14",
+      "rules": ["GRPC-S-03", "GRPC-S-04", "GRPC-S-07"],
+      "description": "The first-party enum JSON option remains descriptor metadata: direct caller exposure of its EnumValueOptions extendee is excluded.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto3\"; package demo; import \"google/protobuf/descriptor.proto\"; service S { rpc Inspect(google.protobuf.EnumValueOptions) returns (google.protobuf.EnumValueOptions); }"
+      },
+      "expected": {
+        "outcome": "synthesized", "operations": [], "bindings": [],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "demo.S/Inspect", "scope": "target", "status": "excluded", "operationKey": "demo.S.Inspect", "bindingSelector": "demo.S/Inspect", "rule": "GRPC-S-07", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "file[32]:google/protobuf/descriptor.proto#google.protobuf.EnumValueOptions", "scope": "projection", "status": "excluded", "operationKey": "demo.S.Inspect", "bindingSelector": "demo.S/Inspect", "rule": "GRPC-S-03", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-15",
+      "rules": ["GRPC-S-03"],
+      "description": "An ordinary message whose accepted JSON field spelling collides with the reserved Any @type member remains directly projectable but is omitted from the closed Any alternative set.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto3\"; package collision; import \"google/protobuf/any.proto\"; import \"google/protobuf/empty.proto\"; message Collision { string payload = 1 [json_name = \"@type\"]; } message Safe { string value = 1; } message Envelope { google.protobuf.Any any = 1; Collision direct = 2; } service S { rpc Check(Envelope) returns (Envelope); rpc Direct(Collision) returns (Collision); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["collision.S.Check", "collision.S.Direct"],
         "bindings": [
-          {
-            "operationKey": "Call",
-            "bindingSelector": "demo.Echo/Call"
-          }
+          { "operationKey": "collision.S.Check", "bindingSelector": "collision.S/Check" },
+          { "operationKey": "collision.S.Direct", "bindingSelector": "collision.S/Direct" }
         ],
-        "coverage": {
-          "exhaustive": true,
-          "fullyRepresented": true,
-          "entries": [
-            {
-              "sourceIndex": 0,
-              "sourceRef": "demo.Echo/Call",
-              "scope": "target",
-              "status": "represented",
-              "operationKey": "Call",
-              "bindingSelector": "demo.Echo/Call",
-              "requirements": []
-            }
-          ]
-        }
+        "schemaInstances": [
+          { "schema": "input.collision.Collision", "value": { "payload": "x" }, "valid": true },
+          { "schema": "input.collision.Collision", "value": { "@type": "x" }, "valid": true },
+          { "schema": "output.collision.Collision", "value": { "@type": "x" }, "valid": true },
+          { "schema": "input.google.protobuf.Any", "value": {}, "valid": true },
+          { "schema": "output.google.protobuf.Any", "value": {}, "valid": true },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/collision.Safe", "value": "x" }, "valid": true },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/collision.Collision", "payload": "x" }, "valid": false },
+          { "schema": "output.google.protobuf.Any", "value": { "@type": "type.googleapis.com/collision.Collision" }, "valid": false },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.Empty" }, "valid": true },
+          { "schema": "input.google.protobuf.Any", "value": { "@type": "type.googleapis.com/google.protobuf.Empty", "value": {} }, "valid": false }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "collision.S/Check", "scope": "target", "status": "represented", "operationKey": "collision.S.Check", "bindingSelector": "collision.S/Check", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "collision.S/Direct", "scope": "target", "status": "represented", "operationKey": "collision.S.Direct", "bindingSelector": "collision.S/Direct", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-16",
+      "rules": ["GRPC-S-03", "GRPC-S-04", "GRPC-S-07"],
+      "description": "A cross-field collision between an effective JSON name and another field's accepted original name excludes the smallest ambiguous message while a sibling method remains represented.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto3\"; package spelling; message Good { string value = 1; } message Ambiguous { string chosen = 1 [json_name = \"other_original\"]; string other_original = 2 [json_name = \"different\"]; } message Envelope { Ambiguous bad = 1; } service S { rpc AGood(Good) returns (Good); rpc ZBad(Envelope) returns (Good); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["spelling.S.AGood"],
+        "bindings": [{ "operationKey": "spelling.S.AGood", "bindingSelector": "spelling.S/AGood" }],
+        "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [
+          { "sourceIndex": 0, "sourceRef": "file[12]:source.proto#spelling.Ambiguous", "scope": "projection", "status": "excluded", "operationKey": "spelling.S.ZBad", "bindingSelector": "spelling.S/ZBad", "rule": "GRPC-S-03", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "spelling.S/AGood", "scope": "target", "status": "represented", "operationKey": "spelling.S.AGood", "bindingSelector": "spelling.S/AGood", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "spelling.S/ZBad", "scope": "target", "status": "excluded", "operationKey": "spelling.S.ZBad", "bindingSelector": "spelling.S/ZBad", "rule": "GRPC-S-07", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-17",
+      "rules": ["GRPC-S-03"],
+      "description": "Proto2 closed-enum output schemas expose only recognized typed values across singular, unpacked repeated, packed repeated, map, and oneof fields; unknown wire numbers remain outside the typed projection.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto2\"; package closedproto2; enum State { STATE_UNSPECIFIED = 0; STATE_READY = 1; } message Shape { optional State singular = 1; repeated State unpacked = 2 [packed = false]; repeated State packed = 3 [packed = true]; map<int32, State> mapped = 4; oneof choice { State selected = 5; string text = 6; } } service S { rpc Check(Shape) returns (Shape); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["closedproto2.S.Check"],
+        "bindings": [{ "operationKey": "closedproto2.S.Check", "bindingSelector": "closedproto2.S/Check" }],
+        "schemaInstances": [
+          { "schema": "output.closedproto2.Shape", "value": { "singular": "STATE_READY", "unpacked": ["STATE_READY"], "packed": ["STATE_UNSPECIFIED"], "mapped": { "1": "STATE_READY" }, "selected": "STATE_UNSPECIFIED" }, "valid": true },
+          { "schema": "output.closedproto2.Shape", "value": { "singular": 123 }, "valid": false },
+          { "schema": "output.closedproto2.Shape", "value": { "unpacked": [123] }, "valid": false },
+          { "schema": "output.closedproto2.Shape", "value": { "packed": [123] }, "valid": false },
+          { "schema": "output.closedproto2.Shape", "value": { "mapped": { "1": 123 } }, "valid": false },
+          { "schema": "output.closedproto2.Shape", "value": { "selected": 123 }, "valid": false }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "closedproto2.S/Check", "scope": "target", "status": "represented", "operationKey": "closedproto2.S.Check", "bindingSelector": "closedproto2.S/Check", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-18",
+      "rules": ["GRPC-S-03"],
+      "description": "Edition 2026 with effective CLOSED enum semantics has the same typed output boundary as proto2 across singular, repeated, map, and oneof fields.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "edition = \"2026\"; package closededition; enum State { option features.enum_type = CLOSED; STATE_UNSPECIFIED = 0; STATE_READY = 1; } message Shape { State singular = 1; repeated State repeated_value = 2; map<int32, State> mapped = 3; oneof choice { State selected = 4; string text = 5; } } service S { rpc Check(Shape) returns (Shape); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["closededition.S.Check"],
+        "bindings": [{ "operationKey": "closededition.S.Check", "bindingSelector": "closededition.S/Check" }],
+        "schemaInstances": [
+          { "schema": "output.closededition.Shape", "value": { "singular": "STATE_READY", "repeatedValue": ["STATE_UNSPECIFIED"], "mapped": { "1": "STATE_READY" }, "selected": "STATE_UNSPECIFIED" }, "valid": true },
+          { "schema": "output.closededition.Shape", "value": { "singular": 123 }, "valid": false },
+          { "schema": "output.closededition.Shape", "value": { "repeatedValue": [123] }, "valid": false },
+          { "schema": "output.closededition.Shape", "value": { "mapped": { "1": 123 } }, "valid": false },
+          { "schema": "output.closededition.Shape", "value": { "selected": 123 }, "valid": false }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "closededition.S/Check", "scope": "target", "status": "represented", "operationKey": "closededition.S.Check", "bindingSelector": "closededition.S/Check", "requirements": [] }
+        ] }
+      }
+    },
+    {
+      "id": "GRPC-SS-19",
+      "rules": ["GRPC-S-03"],
+      "description": "The portable caller-JSON profile retains a representation for every Protobuf scalar class and keeps one rich request/response closure fully represented across all four RPC cardinalities.",
+      "source": {
+        "bindingSpec": "openbindings.grpc@1",
+        "location": "grpc://localhost:50051",
+        "content": "syntax = \"proto3\"; package portable; enum State { STATE_UNSPECIFIED = 0; STATE_READY = 1; } message Rich { double d = 1; float f = 2; int32 i32 = 3; int64 i64 = 4; uint32 u32 = 5; uint64 u64 = 6; sint32 si32 = 7; sint64 si64 = 8; fixed32 f32 = 9; fixed64 f64 = 10; sfixed32 sf32 = 11; sfixed64 sf64 = 12; bool flag = 13; string text = 14; bytes blob = 15; State state = 16; repeated int32 list = 17; map<bool, string> by_bool = 18; map<int32, string> by_int = 19; map<uint64, string> by_uint64 = 20; map<string, string> by_string = 21; oneof choice { string chosen_text = 22; int32 chosen_count = 23; } Rich next = 24; } service S { rpc Unary(Rich) returns (Rich); rpc Server(Rich) returns (stream Rich); rpc Client(stream Rich) returns (Rich); rpc Bidi(stream Rich) returns (stream Rich); }"
+      },
+      "expected": {
+        "outcome": "synthesized",
+        "operations": ["portable.S.Bidi", "portable.S.Client", "portable.S.Server", "portable.S.Unary"],
+        "bindings": [
+          { "operationKey": "portable.S.Bidi", "bindingSelector": "portable.S/Bidi" },
+          { "operationKey": "portable.S.Client", "bindingSelector": "portable.S/Client" },
+          { "operationKey": "portable.S.Server", "bindingSelector": "portable.S/Server" },
+          { "operationKey": "portable.S.Unary", "bindingSelector": "portable.S/Unary" }
+        ],
+        "assertions": [
+          { "path": "/schemas/input.portable.Rich/properties/i32/anyOf/0/type", "equals": "integer" },
+          { "path": "/schemas/input.portable.Rich/properties/i64/anyOf/0/type", "equals": "string" },
+          { "path": "/schemas/output.portable.Rich/additionalProperties", "equals": false }
+        ],
+        "schemaInstances": [
+          { "schema": "input.portable.Rich", "value": { "d": 1.5, "f": "Infinity", "i32": -2147483648, "i64": "-9223372036854775808", "u32": 4294967295, "u64": "18446744073709551615", "si32": 1, "si64": "2", "f32": 3, "f64": "4", "sf32": -5, "sf64": "-6", "flag": true, "text": "x", "blob": "AA==", "state": "STATE_READY", "list": [1, 2], "byBool": { "true": "x" }, "byInt": { "-1": "x" }, "byUint64": { "18446744073709551615": "x" }, "byString": { "01": "x" }, "chosenCount": 1, "next": {} }, "valid": true },
+          { "schema": "input.portable.Rich", "value": { "i32": "1" }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "i64": 1 }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "u64": "+1" }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "blob": "AA" }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "byBool": { "True": "x" } }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "byInt": { "01": "x" } }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "state": "1" }, "valid": false },
+          { "schema": "input.portable.Rich", "value": { "chosenText": "x", "chosenCount": 1 }, "valid": false },
+          { "schema": "output.portable.Rich", "value": { "d": "NaN", "i32": 1, "i64": "1", "u64": "1", "blob": "AA==", "state": 123 }, "valid": true }
+        ],
+        "coverage": { "exhaustive": true, "fullyRepresented": true, "entries": [
+          { "sourceIndex": 0, "sourceRef": "portable.S/Bidi", "scope": "target", "status": "represented", "operationKey": "portable.S.Bidi", "bindingSelector": "portable.S/Bidi", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "portable.S/Client", "scope": "target", "status": "represented", "operationKey": "portable.S.Client", "bindingSelector": "portable.S/Client", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "portable.S/Server", "scope": "target", "status": "represented", "operationKey": "portable.S.Server", "bindingSelector": "portable.S/Server", "requirements": [] },
+          { "sourceIndex": 0, "sourceRef": "portable.S/Unary", "scope": "target", "status": "represented", "operationKey": "portable.S.Unary", "bindingSelector": "portable.S/Unary", "requirements": [] }
+        ] }
       }
     }
   ]

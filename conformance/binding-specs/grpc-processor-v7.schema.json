@@ -1,0 +1,754 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/grpc-processor-v7.schema.json",
+  "title": "OpenBindings gRPC processor scenario revision 7",
+  "type": "object",
+  "required": ["id", "rules", "section", "description", "given", "expected"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^GRPC-PS-[0-9]{2,}$" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^GRPC-P-[0-9]+$" }
+    },
+    "section": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "given": {
+      "type": "object",
+      "required": ["source", "binding", "invocation", "peer"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["location"],
+          "additionalProperties": false,
+          "properties": {
+            "location": { "type": "string", "minLength": 1 },
+            "content": {
+              "oneOf": [
+                { "type": "string" },
+                {
+                  "type": "object",
+                  "required": ["$fileDescriptorSet"],
+                  "additionalProperties": false,
+                  "properties": { "$fileDescriptorSet": { "$ref": "#/$defs/base64" } }
+                },
+                {
+                  "type": "object",
+                  "required": ["file"],
+                  "not": { "required": ["$fileDescriptorSet"] },
+                  "properties": { "file": { "type": "array", "minItems": 1 } }
+                }
+              ]
+            }
+          }
+        },
+        "binding": {
+          "type": "object",
+          "required": ["selector"],
+          "additionalProperties": false,
+          "properties": {
+            "selector": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*/[A-Za-z_][A-Za-z0-9_]*$"
+            }
+          }
+        },
+        "configuration": { "$ref": "#/$defs/configuration" },
+        "runtime": { "$ref": "#/$defs/runtime" },
+        "invocation": { "$ref": "#/$defs/invocation" },
+        "peer": { "$ref": "#/$defs/peer" }
+      }
+    },
+    "expected": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/expectedAlternative" }
+    }
+  },
+  "$defs": {
+    "base64": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    },
+    "metadataBase64": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=?)?$"
+    },
+    "metadataGroup": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["name", "values"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "pattern": "^(?!grpc-)(?!.*-bin$)[0-9a-z_.-]+$" },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "pattern": "^[ -~]*$" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["name", "values"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "pattern": "^(?!grpc-)[0-9a-z_.-]+-bin$" },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["base64"],
+                "additionalProperties": false,
+                "properties": { "base64": { "$ref": "#/$defs/metadataBase64" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "headerGroup": {
+      "type": "object",
+      "required": ["name", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^(?::(?:method|scheme|authority|path|status)|[0-9a-z_.-]+)$" },
+        "values": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+    "responseHeaderGroup": {
+      "type": "object",
+      "required": ["name", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "oneOf": [
+            { "const": ":status" },
+            { "enum": ["grpc-encoding", "grpc-accept-encoding", "grpc-status", "grpc-message", "grpc-status-details-bin"] },
+            { "type": "string", "pattern": "^(?!te$)(?!grpc-)[0-9a-z_.-]+$" }
+          ]
+        },
+        "values": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "name": { "type": "string", "pattern": "^(?!grpc-)[0-9a-z_.-]+-bin$" } }, "required": ["name"] },
+          "then": { "properties": { "values": { "items": { "$ref": "#/$defs/wireMetadataBase64" } } } }
+        },
+        {
+          "if": { "properties": { "name": { "type": "string", "pattern": "^(?!grpc-)(?!.*-bin$)[0-9a-z_.-]+$" } }, "required": ["name"] },
+          "then": { "properties": { "values": { "items": { "type": "string", "pattern": "^[ -~]+$" } } } }
+        }
+      ]
+    },
+    "trailerHeaderGroup": {
+      "type": "object",
+      "required": ["name", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "oneOf": [
+            { "enum": ["grpc-status", "grpc-message", "grpc-status-details-bin"] },
+            { "type": "string", "pattern": "^(?!(?:content-type|te)$)(?!grpc-)[0-9a-z_.-]+$" }
+          ]
+        },
+        "values": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "name": { "type": "string", "pattern": "^(?!grpc-)[0-9a-z_.-]+-bin$" } }, "required": ["name"] },
+          "then": { "properties": { "values": { "items": { "$ref": "#/$defs/wireMetadataBase64" } } } }
+        },
+        {
+          "if": { "properties": { "name": { "type": "string", "pattern": "^(?!grpc-)(?!.*-bin$)[0-9a-z_.-]+$" } }, "required": ["name"] },
+          "then": { "properties": { "values": { "items": { "type": "string", "pattern": "^[ -~]+$" } } } }
+        }
+      ]
+    },
+    "wireMetadataBase64": { "type": "string", "pattern": "^(?:[A-Za-z0-9+/]*={0,2})(?:,(?:[A-Za-z0-9+/]*={0,2}))*$" },
+    "observedMetadata": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["name", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "pattern": "^(?!grpc-)(?!.*-bin$)[0-9a-z_.-]+$" },
+            "value": { "type": "string", "pattern": "^[ -~]+$" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["name", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "pattern": "^(?!grpc-)[0-9a-z_.-]+-bin$" },
+            "value": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/base64" } }
+          }
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "transport": { "enum": ["plaintext", "tls"] },
+        "metadata": { "type": "array", "items": { "$ref": "#/$defs/metadataGroup" } },
+        "discoveryMetadata": { "type": "array", "items": { "$ref": "#/$defs/metadataGroup" } },
+        "compression": { "enum": ["identity", "gzip"] },
+        "timeoutNs": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "discoveryTimeoutNs": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "trustRootsSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "serverName": { "type": "string", "minLength": 1 },
+            "clientCertificateSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "clientPrivateKeySha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxInboundMessageBytes": { "type": "integer", "minimum": 0 },
+            "maxOutboundMessageBytes": { "type": "integer", "minimum": 0 },
+            "maxMetadataBytes": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["clockStartNs"],
+      "additionalProperties": false,
+      "properties": {
+        "clockStartNs": { "type": "string", "pattern": "^[0-9]+$" }
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["inputPresent", "actions"],
+      "additionalProperties": false,
+      "properties": {
+        "inputPresent": { "type": "boolean" },
+        "input": {},
+        "actions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["type", "value"],
+                "additionalProperties": false,
+                "properties": { "type": { "const": "write" }, "value": {} }
+              },
+              {
+                "type": "object",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": { "type": { "const": "half-close" } }
+              },
+              {
+                "type": "object",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": { "type": { "const": "cancel" } }
+              },
+              {
+                "type": "object",
+                "required": ["type", "index"],
+                "additionalProperties": false,
+                "properties": {
+                  "type": { "const": "await-output" },
+                  "index": { "type": "integer", "minimum": 0 }
+                }
+              },
+              {
+                "type": "object",
+                "required": ["type", "name"],
+                "additionalProperties": false,
+                "properties": {
+                  "type": { "const": "await-native" },
+                  "name": {
+                    "type": "string",
+                    "pattern": "^(?:channel-ready|rpc-opened|request-half-closed)$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": ["type", "nanoseconds"],
+                "additionalProperties": false,
+                "properties": {
+                  "type": { "const": "advance-clock" },
+                  "nanoseconds": { "type": "string", "pattern": "^[1-9][0-9]*$" }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "inputPresent": { "const": true } }, "required": ["inputPresent"] },
+          "then": { "required": ["input"] },
+          "else": { "not": { "required": ["input"] } }
+        }
+      ]
+    },
+    "trigger": {
+      "oneOf": [
+        { "type": "object", "required": ["start"], "additionalProperties": false, "properties": { "start": { "const": true } } },
+        { "type": "object", "required": ["action"], "additionalProperties": false, "properties": { "action": { "type": "integer", "minimum": 0 } } },
+        {
+          "type": "object",
+          "required": ["native"],
+          "additionalProperties": false,
+          "properties": {
+            "native": {
+              "type": "string",
+              "pattern": "^(?:channel-ready|rpc-opened|request-half-closed|reflection-v1-query|reflection-v1alpha-query|output-(?:0|[1-9][0-9]*))$"
+            }
+          }
+        }
+      ]
+    },
+    "peer": {
+      "type": "object",
+      "required": ["format", "freshChannel", "events"],
+      "additionalProperties": false,
+      "properties": {
+        "format": { "const": "openbindings.grpc-peer@1" },
+        "freshChannel": { "type": "boolean" },
+        "tlsFixture": {
+          "type": "object",
+          "required": ["fixture", "expectedAlpn", "expectedSni", "requireClientCertificate"],
+          "additionalProperties": false,
+          "properties": {
+            "fixture": { "const": "openbindings.grpc-tls-fixture@1" },
+            "expectedAlpn": { "const": "h2" },
+            "expectedSni": { "type": ["string", "null"] },
+            "requireClientCertificate": { "type": "boolean" }
+          }
+        },
+        "metadataMeasurement": {
+          "type": "object",
+          "required": ["algorithm", "requestBytes"],
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": { "const": "controlled-peer-observed-field-section@1" },
+            "requestBytes": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/peerEvent" }
+        }
+      }
+    },
+    "peerEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "success"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "connection-outcome" },
+            "success": { "type": "boolean" },
+            "failureCause": { "enum": ["security", "transport"] }
+          },
+          "allOf": [
+            { "if": { "properties": { "success": { "const": false } }, "required": ["success"] }, "then": { "required": ["failureCause"] } },
+            { "if": { "properties": { "success": { "const": true } }, "required": ["success"] }, "then": { "not": { "required": ["failureCause"] } } }
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "headers", "endStream"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "response-headers" },
+            "headers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/responseHeaderGroup" } },
+            "endStream": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "dataBase64", "endStream"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "data" },
+            "dataBase64": { "$ref": "#/$defs/base64" },
+            "endStream": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "headers"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "trailers" },
+            "headers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/trailerHeaderGroup" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "transport-close" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "currentRpcAccepted"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "goaway" },
+            "currentRpcAccepted": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "errorCode"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "rst-stream" },
+            "errorCode": { "type": "integer", "minimum": 0, "maximum": 4294967295 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "reflectionVersion", "stream", "validHost", "originalRequest", "elapsedNs", "messageBase64", "responseKind", "compressed"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "reflection-message" },
+            "reflectionVersion": { "enum": ["v1", "v1alpha"] },
+            "stream": { "type": "integer", "minimum": 0 },
+            "validHost": { "type": "string" },
+            "originalRequest": {
+              "type": "object",
+              "required": ["kind", "value", "host"],
+              "additionalProperties": false,
+              "properties": {
+                "kind": { "enum": ["list-services", "file-containing-symbol"] },
+                "value": { "type": "string" },
+                "host": { "type": "string" }
+              }
+            },
+            "elapsedNs": { "type": "string", "pattern": "^[0-9]+$" },
+            "messageBase64": { "$ref": "#/$defs/base64" },
+            "responseKind": { "enum": ["file-descriptor-response", "list-services-response", "error-response"] },
+            "compressed": { "type": "boolean" },
+            "serviceList": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$" }
+            },
+            "errorResponse": {
+              "type": "object",
+              "required": ["errorCode", "errorMessage"],
+              "additionalProperties": false,
+              "properties": {
+                "errorCode": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 },
+                "errorMessage": { "type": "string" }
+              }
+            }
+          },
+          "allOf": [
+            { "if": { "properties": { "responseKind": { "const": "file-descriptor-response" } }, "required": ["responseKind"] }, "then": { "not": { "anyOf": [{ "required": ["serviceList"] }, { "required": ["errorResponse"] }] } } },
+            { "if": { "properties": { "responseKind": { "const": "list-services-response" } }, "required": ["responseKind"] }, "then": { "required": ["serviceList"], "not": { "required": ["errorResponse"] } } },
+            { "if": { "properties": { "responseKind": { "const": "error-response" } }, "required": ["responseKind"] }, "then": { "required": ["errorResponse"], "not": { "required": ["serviceList"] } } }
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["id", "after", "type", "reflectionVersion", "stream", "elapsedNs", "rpcStatus"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "$ref": "#/$defs/peerEventId" },
+            "after": { "$ref": "#/$defs/trigger" },
+            "type": { "const": "reflection-status" },
+            "reflectionVersion": { "enum": ["v1", "v1alpha"] },
+            "stream": { "type": "integer", "minimum": 0 },
+            "elapsedNs": { "type": "string", "pattern": "^[0-9]+$" },
+            "rpcStatus": { "type": "integer", "minimum": 0, "maximum": 16 }
+          }
+        }
+      ]
+    },
+    "peerEventId": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "timelineEvent": {
+      "oneOf": [
+        { "$ref": "#/$defs/channelReadyEvent" },
+        { "$ref": "#/$defs/rpcOpenedEvent" },
+        { "$ref": "#/$defs/requestMessageEvent" },
+        { "$ref": "#/$defs/inputAcceptedEvent" },
+        { "$ref": "#/$defs/inputRejectedEvent" },
+        { "$ref": "#/$defs/inputHalfClosedEvent" },
+        { "$ref": "#/$defs/outputEvent" },
+        { "$ref": "#/$defs/finalStatusEvent" },
+        { "$ref": "#/$defs/cancelledEvent" },
+        { "$ref": "#/$defs/actionFailedEvent" },
+        { "$ref": "#/$defs/terminalEvent" }
+      ]
+    },
+    "cause": { "enum": ["status", "deadline", "caller", "protocol", "conversion", "configuration", "limit", "transport", "security"] },
+    "channelReadyEvent": {
+      "type": "object",
+      "required": ["event"],
+      "additionalProperties": false,
+      "properties": { "event": { "const": "channel-ready" } }
+    },
+    "rpcOpenedEvent": {
+      "type": "object",
+      "required": ["event"],
+      "additionalProperties": false,
+      "properties": { "event": { "const": "rpc-opened" } }
+    },
+    "requestMessageEvent": {
+      "type": "object",
+      "required": ["event", "index"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "request-message" },
+        "index": { "type": "integer", "minimum": 0 },
+        "valueJson": { "type": "string", "minLength": 1 }
+      }
+    },
+    "inputAcceptedEvent": {
+      "type": "object",
+      "required": ["event", "action", "index"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "input-accepted" },
+        "action": { "type": "integer", "minimum": 0 },
+        "index": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "inputRejectedEvent": {
+      "type": "object",
+      "required": ["event", "action"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "input-rejected" },
+        "action": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "inputHalfClosedEvent": {
+      "type": "object",
+      "required": ["event"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "input-half-closed" },
+        "action": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "outputEvent": {
+      "type": "object",
+      "required": ["event", "index", "valueJson"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "output" },
+        "index": { "type": "integer", "minimum": 0 },
+        "valueJson": { "type": "string", "minLength": 1 }
+      }
+    },
+    "finalStatusEvent": {
+      "type": "object",
+      "required": ["event", "code"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "final-status" },
+        "code": { "type": "integer", "minimum": 0, "maximum": 16 }
+      }
+    },
+    "cancelledEvent": {
+      "type": "object",
+      "required": ["event", "cause"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "cancelled" },
+        "action": { "type": "integer", "minimum": 0 },
+        "cause": { "$ref": "#/$defs/cause" }
+      }
+    },
+    "actionFailedEvent": {
+      "type": "object",
+      "required": ["event", "action", "cause"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "action-failed" },
+        "action": { "type": "integer", "minimum": 0 },
+        "cause": { "enum": ["caller", "conversion", "limit", "closed"] }
+      }
+    },
+    "terminalEvent": {
+      "type": "object",
+      "required": ["event", "disposition", "cause"],
+      "additionalProperties": false,
+      "properties": {
+        "event": { "const": "terminal" },
+        "disposition": { "enum": ["complete", "error", "refusal", "context-required"] },
+        "cause": { "$ref": "#/$defs/cause" }
+      }
+    },
+    "native": {
+      "type": "object",
+      "required": ["requestHeaders", "requestMessages", "reflection", "cancellations"],
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "transport": { "enum": ["plaintext", "tls"] },
+            "dialAuthority": { "type": "string" },
+            "httpAuthority": { "type": "string" },
+            "tlsVersion": { "const": "1.3" },
+            "alpn": { "const": "h2" },
+            "sni": { "type": ["string", "null"] },
+            "peerCertificateSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "clientCertificateSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        },
+        "requestHeaders": { "type": "array", "items": { "$ref": "#/$defs/headerGroup" } },
+        "leadingMetadata": { "type": "array", "items": { "$ref": "#/$defs/observedMetadata" } },
+        "trailingMetadata": { "type": "array", "items": { "$ref": "#/$defs/observedMetadata" } },
+        "grpcMessageRaw": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "statusDetails": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["rawBase64", "decoded"],
+            "additionalProperties": false,
+            "properties": {
+              "rawBase64": { "type": "string" },
+              "decoded": { "type": "boolean" },
+              "codePresent": { "type": "boolean" },
+              "code": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 }
+            },
+            "allOf": [
+              {
+                "if": { "properties": { "decoded": { "const": true } }, "required": ["decoded"] },
+                "then": { "required": ["codePresent"] },
+                "else": { "not": { "anyOf": [{ "required": ["codePresent"] }, { "required": ["code"] }] } }
+              },
+              {
+                "if": { "properties": { "codePresent": { "const": true } }, "required": ["codePresent"] },
+                "then": { "required": ["code"] },
+                "else": { "not": { "required": ["code"] } }
+              }
+            ]
+          }
+        },
+        "metadataMeasurement": {
+          "type": "object",
+          "required": ["algorithm", "requestBytes"],
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": { "const": "controlled-peer-observed-field-section@1" },
+            "requestBytes": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "requestMessages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["compressedFlag", "decodedLength", "lengthMatchesEncodedPayload"],
+            "additionalProperties": false,
+            "properties": {
+              "compressedFlag": { "enum": [0, 1] },
+              "decodedLength": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+              "decodedPayloadBase64": { "$ref": "#/$defs/base64" },
+              "frameBase64": { "$ref": "#/$defs/base64" },
+              "lengthMatchesEncodedPayload": { "const": true },
+              "gzipMemberValid": { "const": true },
+              "valueJson": { "type": "string" }
+            },
+            "allOf": [{
+              "if": { "properties": { "compressedFlag": { "const": 1 } }, "required": ["compressedFlag"] },
+              "then": { "required": ["gzipMemberValid"] },
+              "else": { "not": { "required": ["gzipMemberValid"] } }
+            }]
+          }
+        },
+        "reflection": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["version", "stream", "requestKind", "requestValue", "host", "openedAtNs", "deadlineNs", "requestHeaders"],
+            "additionalProperties": false,
+            "properties": {
+              "version": { "enum": ["v1", "v1alpha"] },
+              "stream": { "type": "integer", "minimum": 0 },
+              "requestKind": { "enum": ["list-services", "file-containing-symbol"] },
+              "requestValue": { "type": "string" },
+              "host": { "type": "string" },
+              "requestBase64": { "$ref": "#/$defs/base64" },
+              "openedAtNs": { "type": "string", "pattern": "^[0-9]+$" },
+              "deadlineNs": { "type": ["string", "null"], "pattern": "^[1-9][0-9]*$" },
+              "requestHeaders": { "type": "array", "items": { "$ref": "#/$defs/headerGroup" } }
+            }
+          }
+        },
+        "cancellations": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "assertion": {
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "pattern": "^/" },
+        "equals": {},
+        "absent": { "const": true },
+        "contains": {},
+        "notContains": {}
+      },
+      "oneOf": [
+        { "required": ["equals"] },
+        { "required": ["absent"] },
+        { "required": ["contains"] },
+        { "required": ["notContains"] }
+      ]
+    },
+    "expectedAlternative": {
+      "type": "object",
+      "required": ["disposition", "phase", "assertions", "timeline", "native"],
+      "additionalProperties": false,
+      "properties": {
+        "disposition": { "enum": ["complete", "error", "refusal", "context-required"] },
+        "phase": { "enum": ["load", "resolution", "pre-dispatch", "dispatch", "response", "completion"] },
+        "description": { "type": "string" },
+        "assertions": { "type": "array", "items": { "$ref": "#/$defs/assertion" } },
+        "timeline": { "type": "array", "items": { "$ref": "#/$defs/timelineEvent" } },
+        "native": { "$ref": "#/$defs/native" }
+      }
+    }
+  }
+}

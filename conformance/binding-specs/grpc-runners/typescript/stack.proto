@@ -1,0 +1,12 @@
+syntax = "proto3";
+package openbindings.test;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+service Stack {
+  rpc Unary(google.protobuf.Empty) returns (google.protobuf.StringValue);
+  rpc Server(google.protobuf.Empty) returns (stream google.protobuf.StringValue);
+  rpc Client(stream google.protobuf.StringValue) returns (google.protobuf.StringValue);
+  rpc Bidi(stream google.protobuf.StringValue) returns (stream google.protobuf.StringValue);
+}

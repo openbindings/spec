@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+package openbindings.oracle;
+
+enum ClosedNonZero {
+  FIRST = 7;
+  SECOND = 9;
+}
+
+enum ClosedMapValue {
+  MAP_ZERO = 0;
+  MAP_FIRST = 7;
+  MAP_SECOND = 9;
+}
+
+message Child {
+  optional int32 left = 1;
+  optional int32 right = 2;
+}
+
+message ClosedProbe {
+  optional ClosedNonZero singular = 1;
+  repeated ClosedNonZero expanded = 2 [packed = false];
+  repeated ClosedNonZero packed = 3 [packed = true];
+
+  oneof selection {
+    ClosedNonZero selected = 4;
+    int32 alternate = 5;
+  }
+
+  map<sint32, ClosedMapValue> sint_map = 6;
+  map<fixed32, ClosedMapValue> fixed_map = 7;
+  map<bool, ClosedMapValue> bool_map = 8;
+  map<string, Child> message_map = 9;
+  map<int32, string> int_map = 10;
+  map<uint64, string> uint_map = 11;
+  map<sfixed64, string> sfixed_map = 12;
+  optional string proto2_text = 13;
+}

@@ -1,9 +1,9 @@
 {
   "rule": "GRPC-D-01",
   "bindingSpec": "openbindings.grpc@1",
-  "section": "5",
-  "description": "`content`, when present, is single-file proto source text (string; `google/protobuf/*` imports only) or a `google.protobuf.FileDescriptorSet` in canonical protobuf JSON (object; unknown members and bracket-keyed extension members refused). No other JSON type or shape is an accepted `content` value.",
-  "notes": "The accepted schema RANGE (proto2 groups, required presence, DELIMITED encoding, editions json_format) is evaluated per bound-method closure and attributed to GRPC-P-03, not this rule; range cases are not fixtured here. Verifying the proto-string carriage requires a protobuf compiler; a validator without one reports those tests unverified rather than passing or failing them. The shared-type positive (a message reused in two sibling fields) pins that ordinary DAG reuse in the SOURCE gives a conformant processor nothing to refuse at bind time; synthesis fidelity for that shape — the full schema surviving in every sibling position rather than truncating to a bare object — is a §10 synthesis-convention concern, verified in the SDK module tests, not decidable from the document here.",
+  "section": "3",
+  "description": "`content`, when present, is exactly single-file proto text, strict ProtoJSON FileDescriptorSet, or the disjoint canonical-Base64 `$fileDescriptorSet` carrier; absent content selects reflection.",
+  "notes": "Verifying the proto and descriptor forms requires Protobuf capability. A validator without it reports those cases unverified rather than guessing. Descriptor-range and smallest-owner cases are exercised by portable processor and synthesis evidence.",
   "tests": [
     {
       "description": "string content: single-file proto3 source text with no imports",
@@ -28,7 +28,7 @@
       "valid": true
     },
     {
-      "description": "string content importing under the google/protobuf/* prefix, which processors resolve from their bundled copies",
+      "description": "string content importing one file from the exact google/protobuf allowlist, which processors resolve from their bundled copies",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "ping": {} },
@@ -129,7 +129,7 @@
       "valid": true
     },
     {
-      "description": "string content importing outside google/protobuf/* is refused loudly at load: a schema needing more carries the descriptor-set form",
+      "description": "string content importing outside the exact google/protobuf allowlist is refused loudly at load: a schema needing more carries the descriptor-set form",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getMenu": {} },
@@ -243,6 +243,99 @@
       "violates": ["GRPC-D-01"]
     },
     {
+      "description": "tagged binary FileDescriptorSet uses canonical padded Base64 and resolves the selected method",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051",
+            "content": {
+              "$fileDescriptorSet": "CkwKDHNvdXJjZS5wcm90bxIEZGVtbyIFCgNSZXEiBQoDUmVzMiAKAVMSGwoDR2V0EgkuZGVtby5SZXEaCS5kZW1vLlJlc2IGcHJvdG8z"
+            }
+          }
+        },
+        "bindings": {
+          "get.svc": {
+            "operation": "get",
+            "source": "svc",
+            "selector": "demo.S/Get"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "tagged descriptor carrier rejects omitted canonical Base64 padding",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051",
+            "content": { "$fileDescriptorSet": "CgA" }
+          }
+        },
+        "bindings": {
+          "get.svc": {
+            "operation": "get",
+            "source": "svc",
+            "selector": "demo.S/Get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-01"]
+    },
+    {
+      "description": "tagged descriptor carrier is closed and rejects a second member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051",
+            "content": { "$fileDescriptorSet": "CgA=", "format": "protobuf" }
+          }
+        },
+        "bindings": {
+          "get.svc": {
+            "operation": "get",
+            "source": "svc",
+            "selector": "demo.S/Get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-01"]
+    },
+    {
+      "description": "a google/protobuf prefix does not widen the exact import allowlist",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051",
+            "content": "syntax = \"proto3\"; import \"google/protobuf/cpp_features.proto\"; package demo; service S { rpc Get(Req) returns (Res); } message Req {} message Res {}"
+          }
+        },
+        "bindings": {
+          "get.svc": {
+            "operation": "get",
+            "source": "svc",
+            "selector": "demo.S/Get"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-01"]
+    },
+    {
       "description": "bracket-keyed extension member (compiled custom option) is refused loudly: a conformant pin carries option-stripped descriptors",
       "document": {
         "openbindings": "0.2.0",
@@ -283,6 +376,46 @@
             "selector": "blend.CoffeeShop/GetMenu"
           }
         }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-01"]
+    },
+    {
+      "description": "strict Edition 2026 JSON-FDS admits the exact pb.enumvalue.json option at its EnumValueOptions owner",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "get": {} },
+        "sources": { "svc": { "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051", "content": {
+          "file": [{
+            "name": "enum.proto", "package": "demo", "syntax": "editions", "edition": "EDITION_2026",
+            "enumType": [{ "name": "State", "value": [{ "name": "STATE_UNSPECIFIED", "number": 0 }, { "name": "STATE_READY", "number": 1, "options": { "[pb.enumvalue.json]": { "string": "ready" } } }] }],
+            "messageType": [{ "name": "Req" }, { "name": "Res" }],
+            "service": [{ "name": "S", "method": [{ "name": "Get", "inputType": ".demo.Req", "outputType": ".demo.Res" }] }]
+          }]
+        } } },
+        "bindings": { "get.svc": { "operation": "get", "source": "svc", "selector": "demo.S/Get" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "pb.enumvalue.json is refused at a non-EnumValueOptions owner",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "get": {} },
+        "sources": { "svc": { "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051", "content": {
+          "file": [{ "name": "bad.proto", "package": "demo", "syntax": "editions", "edition": "EDITION_2026", "options": { "[pb.enumvalue.json]": { "string": "bad" } }, "messageType": [{ "name": "Req" }, { "name": "Res" }], "service": [{ "name": "S", "method": [{ "name": "Get", "inputType": ".demo.Req", "outputType": ".demo.Res" }] }] }]
+        } } },
+        "bindings": { "get.svc": { "operation": "get", "source": "svc", "selector": "demo.S/Get" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-01"]
+    },
+    {
+      "description": "an arbitrary bracket-keyed EnumValueOptions extension is outside the closed JSON-FDS registry",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "get": {} },
+        "sources": { "svc": { "bindingSpec": "openbindings.grpc@1", "location": "grpc://localhost:50051", "content": {
+          "file": [{ "name": "bad.proto", "package": "demo", "syntax": "editions", "edition": "EDITION_2026", "enumType": [{ "name": "State", "value": [{ "name": "STATE_UNSPECIFIED", "number": 0, "options": { "[acme.enum_json]": { "string": "bad" } } }] }], "messageType": [{ "name": "Req" }, { "name": "Res" }], "service": [{ "name": "S", "method": [{ "name": "Get", "inputType": ".demo.Req", "outputType": ".demo.Res" }] }] }]
+        } } },
+        "bindings": { "get.svc": { "operation": "get", "source": "svc", "selector": "demo.S/Get" } }
       },
       "valid": false,
       "violates": ["GRPC-D-01"]

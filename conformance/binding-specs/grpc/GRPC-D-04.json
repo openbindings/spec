@@ -1,0 +1,40 @@
+{
+  "rule": "GRPC-D-04",
+  "bindingSpec": "openbindings.grpc@1",
+  "section": "3",
+  "description": "The Protobuf companion-module identifier is not a bindingSpec value and a gRPC source does not silently select another protocol.",
+  "tests": [
+    {
+      "description": "gRPC bindingSpec governs an admitted embedded proto",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.grpc@1",
+            "location": "grpc://localhost:50051",
+            "content": "syntax = \"proto3\"; package demo; service S { rpc Get(Req) returns (Res); } message Req {} message Res {}"
+          }
+        },
+        "bindings": { "get.svc": { "operation": "get", "source": "svc", "selector": "demo.S/Get" } }
+      },
+      "valid": true
+    },
+    {
+      "description": "the companion module identifier cannot masquerade as a binding specification",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": { "get": {} },
+        "sources": {
+          "svc": {
+            "bindingSpec": "openbindings.module.protobuf-correspondence@1",
+            "location": "grpc://localhost:50051"
+          }
+        },
+        "bindings": { "get.svc": { "operation": "get", "source": "svc", "selector": "demo.S/Get" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-04"]
+    }
+  ]
+}

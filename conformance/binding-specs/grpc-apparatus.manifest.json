@@ -1,0 +1,349 @@
+{
+  "files": [
+    {
+      "path": "binding-specs/AUTHORITY-PINS.json",
+      "sha256": "8f094af15f7c7986667cdf065b962312d840b17eefba60f6d97048ada885abcb"
+    },
+    {
+      "path": "binding-specs/README.md",
+      "sha256": "ee13ef86bd3ce479bfc81634fa9bc48f270639f5b6aae1fcb1f56dd289b3a65f"
+    },
+    {
+      "path": "binding-specs/connect/openbindings.connect.md",
+      "sha256": "0e350b15cfaeebe1dffa6ef255845c83df15bc2cee5c1adcb3ead5872729d550"
+    },
+    {
+      "path": "binding-specs/grpc/openbindings.grpc.md",
+      "sha256": "7f97a876126c00d070aae5938f4c379e83c20d763153dce2673383c810a61f7e"
+    },
+    {
+      "path": "binding-specs/modules/openbindings.protobuf-correspondence.md",
+      "sha256": "7252126e23bf0ece6fd20c0950d021f40a4a8befba80901d497cb7e3d386eb07"
+    },
+    {
+      "path": "binding-specs/publication-adjudication.schema.json",
+      "sha256": "c2f531730a9395de40e0da2a0f7cce3dfb7f26a5306b20611269aca7aa856029"
+    },
+    {
+      "path": "binding-specs/publication-evidence.schema.json",
+      "sha256": "c00a5cdef7996fc661e5d56b9df343711f611349233c2ab51535a2b31453428e"
+    },
+    {
+      "path": "binding-specs/publication-stage.schema.json",
+      "sha256": "894b0b528ba6cabc08e833146f355d6fd929c10a9760524d5cbc6b772e395f3e"
+    },
+    {
+      "path": "conformance/binding-specs/README.md",
+      "sha256": "4ecaebdfc82fccf308e1603102e7b21db1579755f989f6e3964707ac8d15a017"
+    },
+    {
+      "path": "conformance/binding-specs/fixture.schema.json",
+      "sha256": "7374f60ed230b8ba471e41b964315df6b36d550845292715453bed312b43188d"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-apparatus.manifest.schema.json",
+      "sha256": "f417115e60cf16f39d50ae62b831bfdbc7a0b18457d460cac411815b800f08b0"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-boundary-matrix.json",
+      "sha256": "8932d0584e5ec3fc39ab42c4380f3c39860a095b84c6f554fff25a24dd1ca5a5"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/compiler-cases.json",
+      "sha256": "ba39c4bef7537bedb6e354d77e14221d4281b16c64205550dab4d048c5133e25"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/closed.proto",
+      "sha256": "a757c7e7d7f012a4c3f006b36a10f7f7fc1ef61d03d08d8f66b5c4f41702677a"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/defaults.proto",
+      "sha256": "8ff0df25c422c81e1ff01489fac2db00d060ff42e893a50d41b82928401aaf74"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/edition.proto",
+      "sha256": "353cb95371da3a84ef36858b6ab6699dec0bf934f153506dffe5ed3efa63cc22"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/invalid-map-default.proto",
+      "sha256": "a780e55c5cdb89cd9469f3f889a3f4fc9b89a633e02391f2d6659af6b7ff65ae"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/oracle-cases.json",
+      "sha256": "fc2f1079c7992a30d28a1d26c83d9888fb9e3e6f6a45cbebe2e909d680540dc0"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/oracle-manifest.json",
+      "sha256": "550c110eaad5252fd6cc9cadb4332225ed950381ad04852788fc9f83d6b9818a"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/oracle/oracle-results.json",
+      "sha256": "4a54c37589f6ee00fc999d87c08433c3b4bf4543465c3c2467378b050f761195"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/processor-closed.proto",
+      "sha256": "78a121cf64ecff242ed891d7f0beaf6b24249d8176f40705a311d696ffbdabb0"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/processor-compact.proto",
+      "sha256": "71b5e3213443f4838ed3c8b1f5238a4c724fb81fed173843032f566046950079"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/processor-enum.proto",
+      "sha256": "132bd4862227b7d47c3df2791fe74f9045300ec5885328693cf18211ce06843b"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/processor-value.proto",
+      "sha256": "26c54eb2992aa08b98fead98c0a60baa804c40a82ccbc6958dacbaf64f1c3d12"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/value-cases.json",
+      "sha256": "2b1dae755e41711fedf2edcd14cf0971b96945af7e490729c7e5b6ed10ac201e"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/value-closed-edition.proto",
+      "sha256": "d1038f52109cbd90e2fb4a09358c7f367b1e0d87b47f47d029c5d2799a253b9e"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/value-closed.proto",
+      "sha256": "b269c94d17ee55dbb468b5bc55d41eccbb5ff9b1ecf9e29986a67c1dd26373d3"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/value-enum.proto",
+      "sha256": "4ffc5c57a965c2764bd3f75dd0ab6e7bf7cccb6022cb7640787a3aa2dde60755"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/protobuf/value.proto",
+      "sha256": "2791b2aeba41d9f258a76e5d2cd013de235a7a8c7a445975c001400c1f2555e8"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/ca.pem",
+      "sha256": "51ab7fb0ea47fa278756cf55332f2113edf6430af403045e4cac1210d212b10e"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/client-key.pem",
+      "sha256": "93a9a4a4fedba527cdf902fd4c903943e07e1cb8ba517c792a7f6a918055ba53"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/client.pem",
+      "sha256": "ac61ddd2d48c00e538c9bd331efaddb62f0ec649188c64b981313bb03ae0d2b9"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/ip-ca.pem",
+      "sha256": "7c5959f6e0dcbfcd8ca3cd569d6f417a682d8686c094cbad60f1ab884f17467e"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/ip-server.pem",
+      "sha256": "ffbef5f42ca3ebdadad6ad5a75e8ae61e62eccb3dc64f3675682e797eccdf1c7"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/server-key.pem",
+      "sha256": "22c944ba7aa3bbcb60cee404ed41ea161a95fc96a622d6916e2cc10e36b5cb02"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-fixtures/tls/server.pem",
+      "sha256": "8664a0b09a9140f02a9c1c96372144dc284c0437fa5e757e73a3b143e96549cd"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-processor-v7.schema.json",
+      "sha256": "5aa61793f6ed46364987a9fa3f75ea52f88351d40167d5b3c018970c3424a23d"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/README.md",
+      "sha256": "1d2b50f4e73971cdd969953d4b98c7b00c1ddf836bc478ab227b79f62cb000c8"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/ds_witness.go",
+      "sha256": "af368995d1c1f1738924899bbab45577ea4e4f93a1c52339d6b54436ddcbe644"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/go.mod",
+      "sha256": "a8e098523e27e755b0ea3ab1292cf58f9417a9acecbbb76a3989476b3276094a"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/go.sum",
+      "sha256": "7781e70033bff344f07778f5571238347209d0b1d249b515547527ed757dd359"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/protobuf.go",
+      "sha256": "a72493989daee75dc0616ab30898f0b67b0b862618ed3b5fe0731789f05d17b3"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/protojson_strict.go",
+      "sha256": "d6095cc3dd0abb7145ec0dedaae5c81c214be53e1f335f6b2b2946a24307e883"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/runner.go",
+      "sha256": "f04e6c92cbde1de40911ffaf415641686aba787618375f116fadda9238d73498"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/semantic.go",
+      "sha256": "a284f9eae3a70e4580a428b74e4872e4a62ce237dfd0a9e3661f85188ab2b1e0"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/go/stack.go",
+      "sha256": "3a0bf95302e122a53962b36997deb9c9f960f5fb8dcce14507a52086fc8e759b"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/ds-witness.mjs",
+      "sha256": "f057062001f66f50772b0377181e6ed7261a4cfb8bb0b8e0751ba168d91343cd"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/package-lock.json",
+      "sha256": "61448c9fd347f5d79d21205509c9950c5a5fa228ef6c0e9ea97410441fd975bf"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/package.json",
+      "sha256": "c8bb27476f34cdabb5c9a040886fcc911b310ab064135648cf34ea0c8a93f58b"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/protobuf.mjs",
+      "sha256": "a3d6de16f5c2d74a5f573a1ebac9b0049822735f5e9160d911f12651b78fbd0a"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/protojson-lossless.mjs",
+      "sha256": "4574cb4d26da8317554c9881e23340b158f1097fbc5b61b53fbc5af472d1b156"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/runner.ts",
+      "sha256": "8a35e3ffccb60937b0ac03b1098a9c4f4e19e6f50a7f76e53bd97b0f3d8693e7"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/semantic.mjs",
+      "sha256": "052f1f64d09f10c055e5fac8eeba67740657b539ce74302ee90e2b86680c1bb9"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/stack.mjs",
+      "sha256": "9806f1cb7959466e7d63502bdf2ccbd0cbc7e4e043cd5c2064199e932eb0dc86"
+    },
+    {
+      "path": "conformance/binding-specs/grpc-runners/typescript/stack.proto",
+      "sha256": "3aa08b08f98fa3e62818c03a56368f7665557c9909524c2af695e696444ba3b5"
+    },
+    {
+      "path": "conformance/binding-specs/grpc/GRPC-D-01.json",
+      "sha256": "5c560c69b3f6e2a473c76711e9ce602597572597314a35b0f02b47339cf30b67"
+    },
+    {
+      "path": "conformance/binding-specs/grpc/GRPC-D-02.json",
+      "sha256": "6bcba2d2f6fd1f5971f3b43d15b5c300372b8fa2ec3e15f47ecbaab12dae03cd"
+    },
+    {
+      "path": "conformance/binding-specs/grpc/GRPC-D-03.json",
+      "sha256": "c1de42959d078bdf93ce9ef8fa9a4c56fdfa1795116aed4094207497d0d74e33"
+    },
+    {
+      "path": "conformance/binding-specs/grpc/GRPC-D-04.json",
+      "sha256": "3c4f78996323ddcad85c3d5c2d06cd081ad91fc57c0819708d9a119299a7c111"
+    },
+    {
+      "path": "conformance/binding-specs/processor-scenario.schema.json",
+      "sha256": "7a1e22036ec6c5f5afff4a664dd18d18b83b9f5a59c2202c65ad83435d98d0c1"
+    },
+    {
+      "path": "conformance/binding-specs/processor/grpc.json",
+      "sha256": "cb31d8b74f089b94d42a1eaaba664a1225af07073f878e7dc0da80a9f378f853"
+    },
+    {
+      "path": "conformance/binding-specs/schema-engine/package-lock.json",
+      "sha256": "0b7076c74f4b8c44997258a0966785e4dc5986593315bec7d5fcef74dd84d42f"
+    },
+    {
+      "path": "conformance/binding-specs/schema-engine/package.json",
+      "sha256": "8a8759b12a6fd01b5f6fb071a61db6c3e3261703b32bdca4d3be527746df233c"
+    },
+    {
+      "path": "conformance/binding-specs/synthesis-scenario.schema.json",
+      "sha256": "f3a5f24c419793a3799fe9b8084522eacb94564126d51029143abb286eabcb93"
+    },
+    {
+      "path": "conformance/binding-specs/synthesis/grpc.json",
+      "sha256": "46cea5694d57d3f882165cb144991a838df8ae13f3c7f7c0309ad4586beda806"
+    },
+    {
+      "path": "conformance/invocation-fidelity/grpc.json",
+      "sha256": "863a19ccf2bdec6091ce869a44727d85ea5c2e5f4fab95fa087dd584a73b8d5c"
+    },
+    {
+      "path": "scripts/binding-spec-publication-support.mjs",
+      "sha256": "1ddd373794683c30b09bc613fb5659153e9878cbe1518318717b1ba213670321"
+    },
+    {
+      "path": "scripts/count-binding-spec-scenarios.mjs",
+      "sha256": "a12365b7db847ffa71975ec5f5ba1d09126acbd6d2811c27f9df3712fe9f864d"
+    },
+    {
+      "path": "scripts/prepare-binding-specification-publication.mjs",
+      "sha256": "b39cfce32c2e133b2a800d2f85db6c98084c0b260b498b7759d45da80fa585cf"
+    },
+    {
+      "path": "scripts/publish-binding-specifications.mjs",
+      "sha256": "bc573645fa359e139bcaef14bfed92e1b82fee5a46e6bcc6ed6de308e815440e"
+    },
+    {
+      "path": "scripts/record-binding-spec-publication-evidence.mjs",
+      "sha256": "fb96c96e7d7e23182c5d9bf6f004a6415aecc8caf11ee42345e6aa397234a472"
+    },
+    {
+      "path": "scripts/test-binding-spec-publication-lifecycle.mjs",
+      "sha256": "9f43b6a36d08ac9131e49dcb4712a653b433dba6867da67f4c445647510f0d88"
+    },
+    {
+      "path": "scripts/verify-authority-pins.mjs",
+      "sha256": "c0809dcd53960df36f85a1d3f54950606a488b585955eb81a20eb3019082d66f"
+    },
+    {
+      "path": "scripts/verify-binding-spec-publications.mjs",
+      "sha256": "40b44227f2b34c43ee3a7a4a5bcd5f33a3c75bb028c0f297808df35d183939da"
+    },
+    {
+      "normalization": "grpc-apparatus-root-v1",
+      "path": "scripts/verify-binding-specs.mjs",
+      "sha256": "581b5b1a2b96c23f1c4442d7bf361208af46871a4e17fa5953e30eeb8ae7c33b"
+    },
+    {
+      "path": "scripts/verify-grpc-binding-runners.mjs",
+      "sha256": "cac4df7cb42cdcc9edacadf01050a931bbdb2600d358896e332f741ed21013f9"
+    },
+    {
+      "path": "scripts/verify-grpc-ds-witness.mjs",
+      "sha256": "22a11a26df845fdde4fb3151b04e8f3a381dcb85ac69dbb383b58fa5b4b331aa"
+    },
+    {
+      "path": "scripts/verify-grpc-protobuf-compiler.mjs",
+      "sha256": "ca4fef58ec2155a70c40b21b8a5d0200cb859aa559f32f3ab9df3092d4ad14ce"
+    },
+    {
+      "path": "scripts/verify-grpc-protobuf-oracle-bridge.mjs",
+      "sha256": "3e5cb39adc677296f369ecbe712cb0a5f88ff495cbbe9f9c27a2815713a59169"
+    },
+    {
+      "path": "scripts/verify-grpc-protobuf-oracle.mjs",
+      "sha256": "0df19f70cc2df01de4808cb02f52a381e639d9007f4664ec2007c2ad08b31217"
+    },
+    {
+      "path": "scripts/verify-grpc-protobuf-values.mjs",
+      "sha256": "066029e8b51be3381fc7eebdb25551e54893cedcccbc4f0f035092145a2370e1"
+    },
+    {
+      "path": "scripts/verify-grpc-tls-fixtures.mjs",
+      "sha256": "744357de4874ba3b52150a75cfe7c57b7193afaea251d266ced4e8109624aa3f"
+    }
+  ],
+  "format": "openbindings.grpc-apparatus-manifest@1",
+  "manifestSha256": "8e7d5e4f3aeed14a16a61822d93d72c7e8b3eaedc58e29ae8f2f42179781dad5",
+  "rules": {
+    "boundaryMutants": 177,
+    "definition": 4,
+    "processor": 19,
+    "synthesis": 8
+  },
+  "runnerExpectation": {
+    "actionCount": 19,
+    "format": "openbindings.grpc-runner-result@1",
+    "peerDataBytes": 1074,
+    "scenarioCount": 163,
+    "semanticOutputCount": 38,
+    "terminalCount": 163
+  }
+}

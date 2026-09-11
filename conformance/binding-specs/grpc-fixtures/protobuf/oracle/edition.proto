@@ -1,0 +1,17 @@
+edition = "2026";
+
+package openbindings.oracle.edition;
+
+option features.enum_type = CLOSED;
+
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1;
+}
+
+message ClosedProbe {
+  State singular = 1;
+  repeated State expanded = 2 [features.repeated_field_encoding = EXPANDED];
+  repeated State packed = 3 [features.repeated_field_encoding = PACKED];
+  map<string, State> mapped = 4;
+}

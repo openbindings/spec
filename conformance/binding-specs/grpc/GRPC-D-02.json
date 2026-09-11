@@ -327,6 +327,56 @@
       },
       "valid": false,
       "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "a trailing-dot DNS spelling is outside the exact target grammar",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "getMenu": {} },
+        "sources": { "shop": { "bindingSpec": "openbindings.grpc@1", "location": "api.example.com.:443" } },
+        "bindings": { "getMenu.shop": { "operation": "getMenu", "source": "shop", "selector": "blend.CoffeeShop/GetMenu" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "an IPv6 zone identifier is outside the exact target grammar",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "getMenu": {} },
+        "sources": { "shop": { "bindingSpec": "openbindings.grpc@1", "location": "[fe80::1%25en0]:443" } },
+        "bindings": { "getMenu.shop": { "operation": "getMenu", "source": "shop", "selector": "blend.CoffeeShop/GetMenu" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "an IPvFuture host is outside revision 1",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "getMenu": {} },
+        "sources": { "shop": { "bindingSpec": "openbindings.grpc@1", "location": "[v1.fe80]:443" } },
+        "bindings": { "getMenu.shop": { "operation": "getMenu", "source": "shop", "selector": "blend.CoffeeShop/GetMenu" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "IPv4 is not bracketed in the admitted target spelling",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "getMenu": {} },
+        "sources": { "shop": { "bindingSpec": "openbindings.grpc@1", "location": "[192.0.2.1]:443" } },
+        "bindings": { "getMenu.shop": { "operation": "getMenu", "source": "shop", "selector": "blend.CoffeeShop/GetMenu" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
+    },
+    {
+      "description": "percent-encoded host text is outside revision 1",
+      "document": {
+        "openbindings": "0.2.0", "operations": { "getMenu": {} },
+        "sources": { "shop": { "bindingSpec": "openbindings.grpc@1", "location": "%61pi.example.com:443" } },
+        "bindings": { "getMenu.shop": { "operation": "getMenu", "source": "shop", "selector": "blend.CoffeeShop/GetMenu" } }
+      },
+      "valid": false,
+      "violates": ["GRPC-D-02"]
     }
   ]
 }

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
   "title": "OpenBindings binding-specification synthesis scenarios",
-  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about. Revision 4 renames the binding identity member bindingRef to bindingSelector, tracking the core rename of the binding member ref to selector; sourceRef names a source-local unit, not the binding member, and is unchanged. Revision 5 adds targetless dependency coverage for source interactions synthesized as Core dependencies.",
+  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about. Revision 4 renames the binding identity member bindingRef to bindingSelector, tracking the core rename of the binding member ref to selector; sourceRef names a source-local unit, not the binding member, and is unchanged. Revision 5 adds targetless dependency coverage for source interactions synthesized as Core dependencies. Revision 7 adds the gRPC discovery transcript without changing the meaning of revisions 4 or 5.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -10,7 +10,8 @@
     "format": {
       "enum": [
         "openbindings.binding-spec-synthesis-scenarios@4",
-        "openbindings.binding-spec-synthesis-scenarios@5"
+        "openbindings.binding-spec-synthesis-scenarios@5",
+        "openbindings.binding-spec-synthesis-scenarios@7"
       ]
     },
     "bindingSpec": {
@@ -78,6 +79,10 @@
               ]
             }
           },
+          "discovery": {
+            "description": "Revision-7 versioned controlled discovery transcript. Family-specific verification closes its shape; it is harness input, never a source member.",
+            "type": "object"
+          },
           "expected": {
             "type": "object",
             "required": ["outcome"],
@@ -137,6 +142,26 @@
                   ]
                 }
               },
+              "schemaInstances": {
+                "description": "Optional hostile and positive instance checks against a named synthesized schema. These exercise only portable JSON Schema 2020-12 assertions emitted by the binding specification; they are corpus evidence, not emitted OBI members.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["schema", "valid"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "schema": { "type": "string", "pattern": "^(input|output)\\.[A-Za-z_][A-Za-z0-9_.]*$" },
+                    "value": {},
+                    "valueJson": { "type": "string", "description": "An exact strict-JSON instance used when lossless number spelling matters." },
+                    "valid": { "type": "boolean" }
+                  },
+                  "oneOf": [
+                    { "required": ["value"], "not": { "required": ["valueJson"] } },
+                    { "required": ["valueJson"], "not": { "required": ["value"] } }
+                  ]
+                }
+              },
               "coverage": {
                 "type": "object",
                 "required": ["exhaustive", "fullyRepresented", "entries"],
@@ -167,7 +192,8 @@
                       { "required": ["operations"] },
                       { "required": ["bindings"] },
                       { "required": ["coverage"] },
-                      { "required": ["assertions"] }
+                      { "required": ["assertions"] },
+                      { "required": ["schemaInstances"] }
                     ]
                   }
                 }
@@ -192,8 +218,27 @@
         "properties": {
           "format": { "const": "openbindings.binding-spec-synthesis-scenarios@5" }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": { "family": { "const": "grpc" } },
+        "required": ["family"]
       },
-      "else": {
+      "then": {
+        "properties": { "format": { "const": "openbindings.binding-spec-synthesis-scenarios@7" } }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "family": {
+            "enum": ["usage", "asyncapi", "mcp", "connect", "graphql"]
+          }
+        },
+        "required": ["family"]
+      },
+      "then": {
         "properties": {
           "format": { "const": "openbindings.binding-spec-synthesis-scenarios@4" }
         }

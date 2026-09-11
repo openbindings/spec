@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/grpc-apparatus.manifest.schema.json",
+  "title": "OpenBindings gRPC family apparatus manifest",
+  "type": "object",
+  "required": ["format", "manifestSha256", "files", "rules", "runnerExpectation"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.grpc-apparatus-manifest@1" },
+    "manifestSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "pattern": "^(audit/grpc-family-|binding-specs/|conformance/|scripts/)[A-Za-z0-9._/@+-]+(?:/[A-Za-z0-9._@+-]+)*$" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "normalization": { "const": "grpc-apparatus-root-v1" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "path": { "const": "scripts/verify-binding-specs.mjs" } }, "required": ["path"] },
+            "then": { "required": ["normalization"] },
+            "else": { "not": { "required": ["normalization"] } }
+          }
+        ]
+      }
+    },
+    "rules": {
+      "type": "object",
+      "required": ["boundaryMutants", "definition", "processor", "synthesis"],
+      "additionalProperties": false,
+      "properties": {
+        "boundaryMutants": { "const": 177 },
+        "definition": { "const": 4 },
+        "processor": { "const": 19 },
+        "synthesis": { "const": 8 }
+      }
+    },
+    "runnerExpectation": {
+      "type": "object",
+      "required": ["format", "scenarioCount", "actionCount", "peerDataBytes", "semanticOutputCount", "terminalCount"],
+      "additionalProperties": false,
+      "properties": {
+        "format": { "const": "openbindings.grpc-runner-result@1" },
+        "scenarioCount": { "const": 163 },
+        "actionCount": { "const": 19 },
+        "peerDataBytes": { "const": 1074 },
+        "semanticOutputCount": { "const": 38 },
+        "terminalCount": { "const": 163 }
+      }
+    }
+  }
+}

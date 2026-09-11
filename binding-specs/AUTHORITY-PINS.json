@@ -1,7 +1,7 @@
 {
   "$comment": "Tracked authority-pin manifest for the binding-specification family. One entry per incorporated upstream authority per pinned edition; digests are sha256 over the exact bytes at the pinned source (git-tree entries pin a commit and digest a probe file inside the pinned tree). Verified by scripts/verify-authority-pins.mjs; bytes are not stored in this repository. `families` records applicability where one authority serves multiple binding-specification families. An entry carrying `status: reference-only` prepares verified bytes that no binding-specification text yet cites; it states why, carries an empty citedBy, and the verifier asserts that its matchTokens appear in no specification text until the status is deliberately removed.",
   "manifestVersion": 3,
-  "generatedAt": "2026-09-04T03:47:31Z",
+  "generatedAt": "2026-09-06T09:53:52Z",
   "informativeCitations": {
     "exact": [
       "https://spec.openapis.org",
@@ -49,6 +49,7 @@
         "binding-specs/usage/openbindings.usage.md",
         "binding-specs/mcp/openbindings.mcp.md",
         "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md",
         "binding-specs/connect/openbindings.connect.md",
         "binding-specs/graphql/openbindings.graphql.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
@@ -80,6 +81,7 @@
         "binding-specs/usage/openbindings.usage.md",
         "binding-specs/mcp/openbindings.mcp.md",
         "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md",
         "binding-specs/connect/openbindings.connect.md",
         "binding-specs/graphql/openbindings.graphql.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
@@ -154,6 +156,7 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/connect/openbindings.connect.md",
+        "binding-specs/grpc/openbindings.grpc.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
@@ -628,6 +631,7 @@
       "id": "rfc4648",
       "families": [
         "asyncapi",
+        "grpc",
         "openapi-2.0",
         "openapi-3.0",
         "openapi-3.1",
@@ -644,6 +648,8 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
@@ -1778,373 +1784,709 @@
     },
     {
       "id": "protobuf-descriptor-proto",
-      "family": "grpc",
-      "name": "protobuf descriptor.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf descriptor.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/descriptor.proto",
-      "sha256": "f46ec56fc26c48433f4cebfdc98cf1cdd5ae15f129f150256dfa82c1ec77e0a3",
-      "bytes": 58877,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "c96db5406336ebcc82523c1dfb122721986a1f43c4aaed45a4a4ad6996efacc2",
+      "bytes": 61186,
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-any-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/any.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/any.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/any.proto",
       "sha256": "8e56f61e3078e9232d39ce1b1bab28613783af8191f93a910c3617933f87a179",
       "bytes": 5552,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-api-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/api.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/api.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/api.proto",
       "sha256": "6d47d6272eb687c806b6feb08ef3925243c64ea076cd9440b783e27a7aec5502",
       "bytes": 8845,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-duration-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/duration.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/duration.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/duration.proto",
       "sha256": "a3f7301ff2956ec2e30c2241ece07197e4a86c752348d5607224819d4921c9fe",
       "bytes": 4892,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-empty-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/empty.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/empty.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/empty.proto",
       "sha256": "ecef3d54cc9e079673b9816c67bac770f7f3bf6dada2d4596ba69d71daa971e6",
       "bytes": 2363,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-field-mask-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/field_mask.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/field_mask.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/field_mask.proto",
       "sha256": "9f031219ae54383afa84299fdd747e119b5f83c8e3dab060930ebb126af4460f",
       "bytes": 8041,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-source-context-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/source_context.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/source_context.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/source_context.proto",
       "sha256": "37d3401de89af1d1496fc949924a5f2011bd2fadfbeb0da1caa277159a96776d",
       "bytes": 2341,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-struct-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/struct.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/struct.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/struct.proto",
-      "sha256": "4f46aa6248ddcd0ac820aab2ffd4f4e02c5bcd09596edc763fa6764f74deb785",
-      "bytes": 4317,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "85d5dd93079588f3fa33b5affe431223de4036f66ffb76253efe930bc2d39696",
+      "bytes": 4319,
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-timestamp-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/timestamp.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/timestamp.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/timestamp.proto",
       "sha256": "fa6c44dca2c90a2aaf3a1e4776cef2e9177f70fba365f236269f0f41ac166c96",
       "bytes": 6595,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-type-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/type.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/type.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/type.proto",
       "sha256": "50a3b67b4d894e828173319aafcd6ac440c15340048452bd13a13e8b47cc6637",
       "bytes": 7774,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-wrappers-proto",
-      "family": "grpc",
-      "name": "protobuf bundled google/protobuf/wrappers.proto (v35.0)",
-      "edition": "v35.0",
+      "families": ["grpc", "connect"],
+      "name": "protobuf bundled google/protobuf/wrappers.proto (v36.1)",
+      "edition": "v36.1",
       "kind": "git-file",
       "repo": "protocolbuffers/protobuf",
-      "tag": "v35.0",
-      "commit": "e59364c38e10de3686a3305ff11fbfc59a10dbd8",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
       "path": "src/google/protobuf/wrappers.proto",
       "sha256": "6878dc7534cf9805eee56345cdc38b5e9ca39dece246710c663c7007a67fef49",
       "bytes": 5392,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "e59364c38e10de3686a3305ff11fbfc59a10dbd8"
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
       ]
     },
     {
       "id": "protobuf-proto2-spec",
-      "family": "grpc",
+      "families": ["grpc", "connect"],
       "name": "Protocol Buffers proto2 language specification",
       "kind": "git-file",
       "repo": "protocolbuffers/protocolbuffers.github.io",
-      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
       "path": "content/reference/protobuf/proto2-spec.md",
       "sha256": "6efbbdabe66d9a64d9d9bddf3e476ce53c13a73e3c75f32114f2a7facbf51697",
       "bytes": 11036,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
       ]
     },
     {
       "id": "protobuf-proto3-spec",
-      "family": "grpc",
+      "families": ["grpc", "connect"],
       "name": "Protocol Buffers proto3 language specification",
       "kind": "git-file",
       "repo": "protocolbuffers/protocolbuffers.github.io",
-      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
       "path": "content/reference/protobuf/proto3-spec.md",
       "sha256": "4502b11352581af381af4aa53f8d7a7b3404c2f0ab8fd742ece0e2295123008f",
       "bytes": 8821,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
       ]
     },
     {
       "id": "protobuf-edition-2023-spec",
-      "family": "grpc",
+      "families": ["grpc", "connect"],
       "name": "Protocol Buffers Edition 2023 language specification",
       "kind": "git-file",
       "repo": "protocolbuffers/protocolbuffers.github.io",
-      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
       "path": "content/reference/protobuf/edition-2023-spec.md",
       "sha256": "8d1c74b661975afc5ecbde8a9dc36822e6aec9bfce13b6bde7e393fd2db7290b",
       "bytes": 10087,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
       ]
     },
     {
       "id": "protobuf-edition-2024-spec",
-      "family": "grpc",
+      "families": ["grpc", "connect"],
       "name": "Protocol Buffers Edition 2024 language specification",
       "kind": "git-file",
       "repo": "protocolbuffers/protocolbuffers.github.io",
-      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
       "path": "content/reference/protobuf/edition-2024-spec.md",
       "sha256": "0bb977cf525929a4f66af8e1f8c7ff851edffdbb98b85bd47173bc572d133207",
       "bytes": 10594,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
       ]
     },
     {
       "id": "protojson",
-      "family": "grpc",
+      "families": ["grpc", "connect"],
       "name": "ProtoJSON Format guide",
       "kind": "git-file",
       "repo": "protocolbuffers/protocolbuffers.github.io",
-      "commit": "c42a0a804ac01e48631dbce5dc738bb9a4bb8190",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
       "path": "content/programming-guides/json.md",
-      "sha256": "ee87ab41162d7f7142e240cdd3e99cca5b67fe7fa103df0a3b06340329bd164f",
-      "bytes": 29811,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "6b9e11e6dff5889639140173acb835a7d560aa9d6a75c3acfd67ca452c229b60",
+      "bytes": 31374,
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
-        "binding-specs/grpc/openbindings.grpc.md"
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
       ],
       "matchTokens": [
-        "c42a0a804ac01e48631dbce5dc738bb9a4bb8190"
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
       ]
     },
     {
       "id": "grpc-protocol-http2",
       "family": "grpc",
-      "name": "gRPC over HTTP/2 protocol (PROTOCOL-HTTP2.md, v1.83.0)",
-      "edition": "v1.83.0",
+      "name": "gRPC over HTTP/2 protocol (PROTOCOL-HTTP2.md, v1.83.1)",
+      "edition": "v1.83.1",
       "kind": "git-file",
       "repo": "grpc/grpc",
-      "tag": "v1.83.0",
-      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "tag": "v1.83.1",
+      "commit": "aae267021b1ac256f8b9038d0ef528c3798cc137",
       "path": "doc/PROTOCOL-HTTP2.md",
       "sha256": "b51ea1b8cee67ad3477e73152bb60ac3ebf6e164962b46ba79434e980739256f",
       "bytes": 16105,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
         "binding-specs/grpc/openbindings.grpc.md"
       ],
       "matchTokens": [
-        "c876f4da50f7da2f331888b88b2a7243514139fe"
+        "aae267021b1ac256f8b9038d0ef528c3798cc137"
+      ]
+    },
+    {
+      "id": "grpc-status-proto",
+      "family": "grpc",
+      "name": "gRPC google.rpc.Status message definition (v1.83.1)",
+      "edition": "v1.83.1",
+      "kind": "git-file",
+      "repo": "grpc/grpc",
+      "tag": "v1.83.1",
+      "commit": "aae267021b1ac256f8b9038d0ef528c3798cc137",
+      "path": "src/proto/grpc/status/status.proto",
+      "sha256": "8ce775609f34754322d2f83ed5775d4901012f0cfb587f9b061e4f16a5477e0d",
+      "bytes": 4061,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "src/proto/grpc/status/status.proto"
       ]
     },
     {
       "id": "grpc-reflection-v1",
       "family": "grpc",
-      "name": "gRPC Server Reflection v1 service definition (v1.83.0)",
-      "edition": "v1.83.0",
+      "name": "gRPC Server Reflection v1 service definition (v1.83.1)",
+      "edition": "v1.83.1",
       "kind": "git-file",
       "repo": "grpc/grpc",
-      "tag": "v1.83.0",
-      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "tag": "v1.83.1",
+      "commit": "aae267021b1ac256f8b9038d0ef528c3798cc137",
       "path": "src/proto/grpc/reflection/v1/reflection.proto",
       "sha256": "92fe8aab9378b0b9807b081de1fc743f847262c1fb6d1ca16501f9e91d450b19",
       "bytes": 5952,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
         "binding-specs/grpc/openbindings.grpc.md"
       ],
       "matchTokens": [
-        "c876f4da50f7da2f331888b88b2a7243514139fe"
+        "aae267021b1ac256f8b9038d0ef528c3798cc137"
       ]
     },
     {
       "id": "grpc-reflection-v1alpha",
       "family": "grpc",
-      "name": "gRPC Server Reflection v1alpha service definition (v1.83.0)",
-      "edition": "v1.83.0",
+      "name": "gRPC Server Reflection v1alpha service definition (v1.83.1)",
+      "edition": "v1.83.1",
       "kind": "git-file",
       "repo": "grpc/grpc",
-      "tag": "v1.83.0",
-      "commit": "c876f4da50f7da2f331888b88b2a7243514139fe",
+      "tag": "v1.83.1",
+      "commit": "aae267021b1ac256f8b9038d0ef528c3798cc137",
       "path": "src/proto/grpc/reflection/v1alpha/reflection.proto",
       "sha256": "7359100201654510cd159cbb5c468a8bec14b549973c6f8ff7aee9a1237aec47",
       "bytes": 5442,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "retrievedAt": "2026-09-05T16:00:00Z",
       "citedBy": [
         "binding-specs/grpc/openbindings.grpc.md"
       ],
       "matchTokens": [
-        "c876f4da50f7da2f331888b88b2a7243514139fe"
+        "aae267021b1ac256f8b9038d0ef528c3798cc137"
       ]
+    },
+    {
+      "id": "protobuf-json-parser-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ ProtoJSON parser decision source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/json/internal/parser.cc",
+      "sha256": "75f65d1e18ae481f8a71349b5036424de898e8874fc8863df1e669cbfaec3349",
+      "bytes": 51735,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/json/internal/parser.cc"]
+    },
+    {
+      "id": "protobuf-json-unparser-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ ProtoJSON printer decision source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/json/internal/unparser.cc",
+      "sha256": "2674473c17e699aa87b6ceb264d26f195341508b54b193f78c9b143919dfa7a4",
+      "bytes": 32780,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/json/internal/unparser.cc"]
+    },
+    {
+      "id": "protobuf-wire-format-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ binary wire-format decision source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/wire_format.cc",
+      "sha256": "448cf6121fe42dee353001d759b8efdb3e4a2d024e9785efac3c961fbf16bf87",
+      "bytes": 69079,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/wire_format.cc"]
+    },
+    {
+      "id": "protobuf-descriptor-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ descriptor semantics decision source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/descriptor.cc",
+      "sha256": "816e890c0252f4eea24439533f6e3952031baf37fc9d4d88f3cbcaff2828ef85",
+      "bytes": 391334,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/descriptor.cc"]
+    },
+    {
+      "id": "protobuf-text-format-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ text-format observation source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/text_format.cc",
+      "sha256": "8ea18555ef72b2d3124d1a414db974b31aa6d59101d4ffd67976db0432bd02f6",
+      "bytes": 124509,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/text_format.cc"]
+    },
+    {
+      "id": "protobuf-unknown-field-set-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 C++ unknown-field preservation source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/unknown_field_set.cc",
+      "sha256": "34609067b02c441e3a895b6a175c7c5cdad2e14c82278c7b51cd0ccf6c8da7ce",
+      "bytes": 7950,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/unknown_field_set.cc"]
+    },
+    {
+      "id": "protobuf-command-line-interface-cc",
+      "families": ["grpc", "connect"],
+      "name": "Protobuf 36.1 protoc decode-path decision source",
+      "edition": "v36.1",
+      "kind": "git-file",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "src/google/protobuf/compiler/command_line_interface.cc",
+      "sha256": "3ec39cbcaf2cbfc7bc83b66d1cb22e83ef7ff5126f1e8c7d6aa63a2321dddf9f",
+      "bytes": 131946,
+      "retrievedAt": "2026-09-06T09:53:52Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["src/google/protobuf/compiler/command_line_interface.cc"]
+    },
+    {
+      "id": "protobuf-v36.1-source-tree",
+      "families": ["grpc", "connect"],
+      "name": "Protocol Buffers compiler and source tree 36.1",
+      "edition": "v36.1",
+      "kind": "git-tree",
+      "repo": "protocolbuffers/protobuf",
+      "tag": "v36.1",
+      "commit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+      "path": "",
+      "probe": {
+        "path": "src/google/protobuf/compiler/parser.cc",
+        "sha256": "04227f73014aa70ea8fb46319798741bd6f191b2bb8029564bb3094e6d85c0ca",
+        "bytes": 98976
+      },
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
+      ],
+      "matchTokens": [
+        "f377bfefc5e2cfab68b816903c25b23e091c439d"
+      ]
+    },
+    {
+      "id": "protobuf-documentation-2026-09-05",
+      "families": ["grpc", "connect"],
+      "name": "Protocol Buffers language, Editions, binary, and ProtoJSON documentation snapshot",
+      "edition": "2026-09-05",
+      "kind": "git-tree",
+      "repo": "protocolbuffers/protocolbuffers.github.io",
+      "commit": "4b88f52a8f830d4b4fbdad161dee33618ebc617f",
+      "path": "content",
+      "probe": {
+        "path": "content/programming-guides/json.md",
+        "sha256": "6b9e11e6dff5889639140173acb835a7d560aa9d6a75c3acfd67ca452c229b60",
+        "bytes": 31374
+      },
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md",
+        "binding-specs/modules/openbindings.protobuf-correspondence.md"
+      ],
+      "matchTokens": [
+        "4b88f52a8f830d4b4fbdad161dee33618ebc617f"
+      ]
+    },
+    {
+      "id": "protobuf-protoc-36.1-macos-aarch64",
+      "families": ["grpc", "connect"],
+      "name": "Protocol Buffers protoc 36.1 macOS aarch64 release archive",
+      "edition": "v36.1",
+      "kind": "url",
+      "url": "https://github.com/protocolbuffers/protobuf/releases/download/v36.1/protoc-36.1-osx-aarch_64.zip",
+      "citedUrls": ["https://github.com/protocolbuffers/protobuf/releases/download/v36.1/protoc-36.1-osx-aarch_64.zip"],
+      "sha256": "de56d57afe30c5d191b11d24ff93dd4025728d7fb43b773886b2d3613e0bdbb2",
+      "bytes": 2622007,
+      "retrievedAt": "2026-09-05T16:40:00Z",
+      "citedBy": ["binding-specs/modules/openbindings.protobuf-correspondence.md"],
+      "matchTokens": ["protoc-36.1-osx-aarch_64.zip"]
+    },
+    {
+      "id": "grpc-v1.83.1-source-tree",
+      "family": "grpc",
+      "name": "gRPC protocol, reflection, naming, status, and compression source tree",
+      "edition": "v1.83.1",
+      "kind": "git-tree",
+      "repo": "grpc/grpc",
+      "tag": "v1.83.1",
+      "commit": "aae267021b1ac256f8b9038d0ef528c3798cc137",
+      "path": "",
+      "probe": {
+        "path": "doc/PROTOCOL-HTTP2.md",
+        "sha256": "b51ea1b8cee67ad3477e73152bb60ac3ebf6e164962b46ba79434e980739256f",
+        "bytes": 16105
+      },
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": [
+        "binding-specs/grpc/openbindings.grpc.md"
+      ],
+      "matchTokens": [
+        "aae267021b1ac256f8b9038d0ef528c3798cc137"
+      ]
+    },
+    {
+      "id": "rfc5234",
+      "family": "grpc",
+      "name": "RFC 5234: Augmented BNF for Syntax Specifications",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc5234.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc5234"],
+      "sha256": "fc871020f53baa6b60fc6835c557b433f38d53c5cc41ab56d03622b084f53a12",
+      "bytes": 26359,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc5234", "RFC 5234"]
+    },
+    {
+      "id": "rfc7540",
+      "family": "grpc",
+      "name": "RFC 7540: Hypertext Transfer Protocol Version 2",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7540.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc7540"],
+      "sha256": "6a67e8d7fdfa7b5272fc55f8fba62b266f932031c7f39e29c52f83e129bc2967",
+      "bytes": 209580,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc7540", "RFC 7540"]
+    },
+    {
+      "id": "rfc8446",
+      "family": "grpc",
+      "name": "RFC 8446: The Transport Layer Security Protocol Version 1.3",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8446.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc8446"],
+      "sha256": "47871bc8820a2c3b6ea89f061055577058862cf543686b82d10131239702b3bd",
+      "bytes": 337736,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc8446", "RFC 8446"]
+    },
+    {
+      "id": "rfc5280",
+      "family": "grpc",
+      "name": "RFC 5280: Internet X.509 Public Key Infrastructure Certificate and CRL Profile",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc5280.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc5280"],
+      "sha256": "a2f2628c0a83b873fc4786abd921f9b2c02395954b655d190bf16b831633345d",
+      "bytes": 352580,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc5280", "RFC 5280"]
+    },
+    {
+      "id": "rfc9525",
+      "family": "grpc",
+      "name": "RFC 9525: Service Identity in TLS",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9525.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc9525"],
+      "sha256": "ed8116c2435376dffe37ec2ca688c3a8515e36820852b29e0b6cdfbe92abd2c5",
+      "bytes": 69260,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc9525", "RFC 9525"]
+    },
+    {
+      "id": "rfc7301",
+      "family": "grpc",
+      "name": "RFC 7301: Transport Layer Security Application-Layer Protocol Negotiation Extension",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7301.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc7301"],
+      "sha256": "ba122aee58871c604c9e98e2c9f81d5042e4056bd497cd41e23ad80fe3123222",
+      "bytes": 17439,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc7301", "RFC 7301"]
+    },
+    {
+      "id": "rfc6066",
+      "family": "grpc",
+      "name": "RFC 6066: TLS Extensions",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6066.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc6066"],
+      "sha256": "6a33cceaa5e1b6518923d9d04ffaa738bad0417806b3c94a995484e140f5cbc0",
+      "bytes": 55079,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc6066", "RFC 6066"]
+    },
+    {
+      "id": "rfc1952",
+      "family": "grpc",
+      "name": "RFC 1952: GZIP file format specification version 4.3",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc1952.txt",
+      "citedUrls": ["https://www.rfc-editor.org/rfc/rfc1952"],
+      "sha256": "164ef0897b4cbec63abf1b57f069f3599bd0fb7c72c2a4dee21bd7e03ec9af67",
+      "bytes": 25037,
+      "retrievedAt": "2026-09-05T16:00:00Z",
+      "citedBy": ["binding-specs/grpc/openbindings.grpc.md"],
+      "matchTokens": ["rfc1952", "RFC 1952"]
     },
     {
       "id": "connect-protocol",

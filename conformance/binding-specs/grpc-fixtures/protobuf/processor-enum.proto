@@ -1,0 +1,17 @@
+edition = "2026";
+package processorenum;
+
+import "google/protobuf/json_enumvalue_options.proto";
+
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1 [(pb.enumvalue.json).string = "ready-value"];
+}
+
+message EnumValue {
+  State state = 1;
+}
+
+service Values {
+  rpc Unary(EnumValue) returns (EnumValue);
+}

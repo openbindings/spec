@@ -94,6 +94,21 @@ fi
 
 mkdir -p "$dest_dir"
 cp "$working_spec" "$dest_spec"
+# A released snapshot must not retain the root document's draft-status clause.
+# The surrounding version sentence is deliberately unchanged, so the helper
+# can prove that exactly one expected status clause was removed.
+draft_status=" This text is the unreleased working draft of that version; the latest release is **"
+if [[ "$(grep -F -c "$draft_status" "$dest_spec")" -ne 1 ]]; then
+  echo "error: working spec must contain exactly one canonical unreleased-draft status clause" >&2
+  exit 2
+fi
+status_tmp="$(mktemp)"
+sed -E 's/ This text is the unreleased working draft of that version; the latest release is \*\*[^*]+\*\* \(immutable released snapshots live under `versions\/`\)\.//' "$dest_spec" >"$status_tmp"
+mv "$status_tmp" "$dest_spec"
+if grep -F -q "unreleased working draft" "$dest_spec" || ! grep -F -q "This is **version $version** of the OpenBindings specification." "$dest_spec"; then
+  echo "error: released snapshot status/version postcondition failed" >&2
+  exit 2
+fi
 cp "$working_schema" "$dest_schema"
 cp "$working_editors" "$dest_editors"
 cp "$working_license" "$dest_dir/LICENSE"
@@ -137,8 +152,8 @@ Created snapshot:
 
 Next steps:
   - Review the diff, including the versions/README.md prose: the
-    working-draft sentence still names the version just released and
-    must move to the next draft
+    immutable snapshot no longer carries the root document's draft-status
+    clause; the root remains the working draft until the next-draft step
   - Retitle the CHANGELOG section: "## $version (working draft)" ->
     "## $version — YYYY-MM-DD" (dated to the tag)
   - Commit, then tag (annotated) in the same sitting: git tag -a v$version

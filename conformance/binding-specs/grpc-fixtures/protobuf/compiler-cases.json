@@ -1,0 +1,70 @@
+{
+  "format": "openbindings.protobuf-compiler-cases@1",
+  "cases": [
+    {
+      "id": "proto2-required",
+      "accepted": true,
+      "source": "syntax = \"proto2\"; package demo; message Req { required string name = 1; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "proto3-streams",
+      "accepted": true,
+      "source": "syntax = \"proto3\"; package demo; message Req {} message Res {} service S { rpc Chat(stream Req) returns (stream Res); }"
+    },
+    {
+      "id": "proto2-caller-extension",
+      "accepted": true,
+      "source": "syntax = \"proto2\"; package demo; message Req { extensions 100 to max; } extend Req { optional string note = 100; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "edition-2023",
+      "accepted": true,
+      "source": "edition = \"2023\"; package demo; message Req { string value = 1; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "edition-2024",
+      "accepted": true,
+      "source": "edition = \"2024\"; package demo; message Req { string value = 1; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "edition-2024-legacy-required",
+      "accepted": true,
+      "source": "edition = \"2024\"; package demo; message Req { string value = 1 [features.field_presence = LEGACY_REQUIRED]; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "edition-2026-enum-json",
+      "accepted": true,
+      "source": "edition = \"2026\"; package demo; import \"google/protobuf/json_enumvalue_options.proto\"; enum E { E_UNSPECIFIED = 0; E_VALUE = 1 [(pb.enumvalue.json).string = \"value\"]; } message Req { E value = 1; } message Res {} service S { rpc Get(Req) returns (Res); }"
+    },
+    {
+      "id": "future-edition",
+      "accepted": false,
+      "source": "edition = \"2027\"; package demo; message Req {}"
+    },
+    {
+      "id": "nonallowlisted-google-import",
+      "accepted": false,
+      "source": "edition = \"2024\"; package demo; import \"google/protobuf/cpp_features.proto\"; message Req {}"
+    },
+    {
+      "id": "nonallowlisted-google-import-single-quotes",
+      "accepted": false,
+      "source": "edition = \"2024\"; package demo; import 'google/protobuf/cpp_features.proto'; message Req {}"
+    },
+    {
+      "id": "host-relative-import",
+      "accepted": false,
+      "source": "syntax = \"proto3\"; package demo; import \"../private.proto\"; message Req {}"
+    },
+    {
+      "id": "group-exclusion",
+      "accepted": false,
+      "source": "syntax = \"proto2\"; package demo; message Req { optional group Legacy = 1 { optional string value = 2; } }"
+    },
+    {
+      "id": "messageset-exclusion",
+      "accepted": false,
+      "source": "syntax = \"proto2\"; package demo; message Req { option message_set_wire_format = true; extensions 4 to max; }"
+    }
+  ]
+}

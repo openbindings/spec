@@ -12,7 +12,7 @@ ten standalone brownfield synthesis binding specifications, keyed to each specif
 | openapi-3.1 | `openbindings.openapi-3.1@1` | [`openapi-3.1/openbindings.openapi-3.1.md`](../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md) | OAPI31-D-01..02 | OAPI31-P-01..58 |
 | openapi-3.2 | `openbindings.openapi-3.2@1` | [`openapi-3.2/openbindings.openapi-3.2.md`](../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md) | OAPI32-D-01..02 | OAPI32-P-01..62 |
 | mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |
-| grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
+| grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..04  | GRPC-P-01..19     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
 | asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
 | graphql  | `openbindings.graphql@1`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
@@ -151,6 +151,22 @@ pass. The repository verifier requires unique, resolving paths, null
 placeholders, and an unpaired surrogate in each current materialization.
 Revision-1 files outside the OpenAPI family remain valid and unchanged.
 
+Processor-scenario revision 7 is reserved for gRPC's ordered caller-action,
+raw-peer, native-capture, and semantic-timeline exchange. Its family schema is
+[`grpc-processor-v7.schema.json`](grpc-processor-v7.schema.json). Peer and
+timeline events are closed discriminated unions, peer triggers form an acyclic
+causal order, and semantic/native message, status, metadata, deadline,
+compression, cancellation, and limit evidence is cross-checked by the
+repository verifier. The executable
+[`grpc-boundary-matrix.json`](grpc-boundary-matrix.json) keeps 177 adverse
+mutations covering those boundaries, every event variant, synthesis revision
+isolation, and duplicate JSON members. Revision 7 does not widen or redefine
+the separately assigned in-flight AsyncAPI processor revision 6.
+The gRPC apparatus manifest seals that matrix, the schemas and corpora, the
+runtime witnesses, and a root-neutral digest of the verifier itself. Its
+canonical-body digest is the externally reviewed apparatus root, so changing
+the judge, deleting a record, or substituting an artifact reopens the seal.
+
 Processor-scenario revision 5 adds the `semanticEquals` assertion for wire
 representations that contain JSON. It prevents a scenario from choosing one
 otherwise-equivalent JSON byte spelling merely to verify the value, and also
@@ -232,7 +248,7 @@ by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
 
-The current corpus contains 981 scenarios citing every P-rule of usage,
+The current corpus contains 1133 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -242,7 +258,7 @@ upstream-invalid Response Object batch, the Round R2 batch that carries
 that rule onto the 2.0 and 3.2 lanes and pins its success scope on all four,
 and the bounded OAS family-closure batch for cookie multiplicity, effective
 required bodies, failure-media advertisement, runtime compound members, and
-fixed PATCH carriage (256 distinct rules). A complete citation set is a structural guarantee: it
+fixed PATCH carriage, and the full gRPC lifecycle surface (268 distinct rules). A complete citation set is a structural guarantee: it
 means no defined P-rule lacks a scenario, not that one scenario exercises every
 clause collected by a legacy umbrella rule. New semantic-closure rules use one
 stable P-rule identifier per observable claim so the corresponding scenario is
@@ -304,7 +320,7 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 196 scenarios
+coverage loss. The 210 scenarios
 exercise all ten standalone brownfield synthesis specifications and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
@@ -474,9 +490,10 @@ core, and resolution clauses are fixtured via embedded content.
 | MCP-D-01   | 2/7         | pinned-listing grammar; pagination-member, stray-member, shape, and type negatives                                                                                                   |
 | MCP-D-02   | 2/4         | required absolute http/https address; content-only-source negative                                                                                                                   |
 | MCP-D-03   | 5/8         | entity/remainder grammar, verbatim remainders, template addressing; unknown-entity, byte-exactness, dangling, and ambiguity negatives (pinned listings)                              |
-| GRPC-D-01  | 4/5         | proto-string + FDS carriages, shared-type (DAG-reuse) source; import-prefix, unknown-member, extension-member, and type negatives                                                    |
-| GRPC-D-02  | 6/9         | all three port-explicit address forms and host shapes; component, portless, undefined-scheme, and content-only negatives                                                             |
-| GRPC-D-03  | 3/7         | packaged + packageless service selectors; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas)                                                             |
+| GRPC-D-01  | 6/10        | proto-string, binary/JSON FDS, shared-type DAG, and exact Edition enum-value JSON-option positives; import, member, owner, extension, and type negatives                                |
+| GRPC-D-02  | 6/14        | all admitted port-explicit DNS/IPv4/IPv6 address forms; component, portless, scheme, trailing-dot, zone, bracket, IPvFuture, percent, and content-only negatives                       |
+| GRPC-D-03  | 3/7         | packaged + packageless service selectors; separator, empty-segment, byte-exactness, and dangling negatives (embedded schemas)                                                        |
+| GRPC-D-04  | 1/1         | binding-specification identity positive and companion-module-as-binding negative                                                                                                     |
 | CONN-D-01  | 4/3         | incorporated carriages + descriptorless-mode positive + shared-type (DAG-reuse) source; import, type, unknown-member negatives                                                       |
 | CONN-D-02  | 3/8         | base-URL grammar incl. path prefix; trailing-slash, component, scheme, and content-only negatives                                                                                    |
 | CONN-D-03  | 2/4         | schema-mode + descriptorless-mode positives; separator, empty-segment, byte-exactness negatives                                                                                      |
@@ -494,6 +511,9 @@ binding-specs/
   README.md            (this file)
   fixture.schema.json  (shared fixture shape for all ten specifications)
   processor-scenario.schema.json (portable P-rule scenario shape)
+  grpc-processor-v7.schema.json (closed gRPC action/peer/timeline shape)
+  grpc-boundary-matrix.json (executable gRPC schema and semantic mutants)
+  grpc-apparatus.manifest.json (sealed gRPC normative/executable closure)
   synthesis-scenario.schema.json (portable artifact-to-OBI scenario shape)
   adjudication.schema.json (discrepancy-disposition record shape)
   adjudications.json    (review decisions from corpus findings)
@@ -506,7 +526,7 @@ binding-specs/
   openapi-3.1/         OAPI31-D-01.json ... OAPI31-D-02.json
   openapi-3.2/         OAPI32-D-01.json ... OAPI32-D-02.json
   mcp/                 MCP-D-01.json   ... MCP-D-03.json
-  grpc/                GRPC-D-01.json  ... GRPC-D-03.json
+  grpc/                GRPC-D-01.json  ... GRPC-D-04.json
   connect/             CONN-D-01.json  ... CONN-D-03.json
   asyncapi/            ASYNC-D-01.json ... ASYNC-D-03.json
   graphql/             GQL-D-01.json   ... GQL-D-03.json
@@ -543,10 +563,11 @@ or pattern-only fallback is accepted. Synthesis scenario files are also
 checked for all ten specifications, including target/disposition consistency.
 It asserts this README's three scenario counts against the corpus, and probes the
 synthesis schema with a source declaring neither `location` nor `content` to
-prove the adopted contract constraint is still enforced. It does not judge D
-verdicts, prove every clause collected by an umbrella rule, or execute
-processor/synthesis scenarios — those are the jobs of family processors,
-adapters, and semantic acceptance review.
+prove the adopted contract constraint is still enforced. It also rejects
+duplicate members in every governed JSON document and executes the gRPC
+revision-7 boundary matrix. It does not judge D verdicts or substitute for the
+family adapters that obtain observations from real implementations; those
+remain jobs of family processors, adapters, and semantic acceptance review.
 
 The cross-implementation acceptance workflow checks out both reference SDKs and
 invokes their portable processor and synthesis adapters. A passing job is

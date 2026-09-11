@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package openbindings.oracle;
+
+message ReflectionDefaults {
+  string valid_host = 1;
+  int32 error_code = 2;
+}
+
+message ScalarProbe {
+  int64 signed_value = 1;
+  uint64 unsigned_value = 2;
+  float float_value = 3;
+  double double_value = 4;
+}

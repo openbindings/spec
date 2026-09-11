@@ -1,0 +1,334 @@
+{
+  "cases": [
+    {
+      "dataBase64": "IgIQBQ==",
+      "expected": "accepted",
+      "id": "edition-closed-map-unknown-missing-key",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "Ug4I////////////AhIBeA==",
+      "expected": "accepted",
+      "id": "int-map-tenth-byte-two",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CP///////////wI=",
+      "expected": "accepted",
+      "id": "signed64-tenth-byte-two",
+      "messageType": "openbindings.oracle.ScalarProbe",
+      "source": "defaults.proto"
+    },
+    {
+      "dataBase64": "EP///////////wI=",
+      "expected": "accepted",
+      "id": "unsigned64-tenth-byte-two",
+      "messageType": "openbindings.oracle.ScalarProbe",
+      "source": "defaults.proto"
+    },
+    {
+      "dataBase64": "Ug8I/////////////wISAXg=",
+      "expected": "refused",
+      "id": "int-map-eleven-byte-value",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "",
+      "expected": "accepted",
+      "id": "empty-message",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CAc=",
+      "expected": "accepted",
+      "id": "closed-singular-known",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CAU=",
+      "expected": "accepted",
+      "id": "closed-singular-unknown",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CAcIBQ==",
+      "expected": "accepted",
+      "id": "closed-singular-known-then-unknown",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CAUICQ==",
+      "expected": "accepted",
+      "id": "closed-singular-unknown-then-known",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "EAcQBRAJ",
+      "expected": "accepted",
+      "id": "closed-expanded-mixed",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "GgMHBQk=",
+      "expected": "accepted",
+      "id": "closed-packed-mixed",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "IAUoAw==",
+      "expected": "accepted",
+      "id": "closed-oneof-unknown-then-alternate",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "KAMgBQ==",
+      "expected": "accepted",
+      "id": "closed-oneof-alternate-then-unknown",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgQIARAH",
+      "expected": "accepted",
+      "id": "closed-map-known",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgQIARAF",
+      "expected": "accepted",
+      "id": "closed-map-unknown",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgIQBw==",
+      "expected": "accepted",
+      "id": "closed-map-missing-key",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgIIAQ==",
+      "expected": "accepted",
+      "id": "closed-map-missing-value",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgYIARAHEAU=",
+      "expected": "accepted",
+      "id": "closed-map-known-then-unknown-value",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgYIARAFEAc=",
+      "expected": "accepted",
+      "id": "closed-map-unknown-then-known-value",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgYIAQgEEAc=",
+      "expected": "accepted",
+      "id": "closed-map-duplicate-key-in-entry",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgQIARAHMgQIARAJ",
+      "expected": "accepted",
+      "id": "closed-map-duplicate-entry",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgQIARAFMgQIARAH",
+      "expected": "accepted",
+      "id": "closed-map-unknown-entry-then-known",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgQIARAHMgQIARAF",
+      "expected": "accepted",
+      "id": "closed-map-known-entry-then-unknown",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "OgcNBAMCARAH",
+      "expected": "accepted",
+      "id": "fixed-map-key",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "QgQIAhAJ",
+      "expected": "accepted",
+      "id": "bool-map-noncanonical-true-wire",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "SgsKAWESAggBEgIQAg==",
+      "expected": "accepted",
+      "id": "message-map-value-merge",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "Ug4I////////////ARIBeA==",
+      "expected": "accepted",
+      "id": "int-map-negative-one-wire",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "Wg4I////////////ARIBeA==",
+      "expected": "accepted",
+      "id": "uint-map-maximum-wire",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "YgwJ/v////////8SAXg=",
+      "expected": "accepted",
+      "id": "sfixed-map-negative-two-wire",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "agH/agF4",
+      "expected": "accepted",
+      "id": "proto2-string-invalid-overwritten",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "agF4agH/",
+      "expected": "accepted",
+      "id": "proto2-string-valid-overwritten-by-invalid",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "",
+      "expected": "accepted",
+      "id": "reflection-defaults-omitted",
+      "messageType": "openbindings.oracle.ReflectionDefaults",
+      "source": "defaults.proto"
+    },
+    {
+      "dataBase64": "CgAQAA==",
+      "expected": "accepted",
+      "id": "reflection-defaults-explicit",
+      "messageType": "openbindings.oracle.ReflectionDefaults",
+      "source": "defaults.proto"
+    },
+    {
+      "dataBase64": "CP///////////wI=",
+      "expected": "accepted",
+      "id": "enum-varint-tenth-byte-two",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "CAE=",
+      "expected": "accepted",
+      "id": "edition-closed-singular-known",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "CAU=",
+      "expected": "accepted",
+      "id": "edition-closed-singular-unknown",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "EAEQBRAA",
+      "expected": "accepted",
+      "id": "edition-closed-expanded-mixed",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "GgMBBQA=",
+      "expected": "accepted",
+      "id": "edition-closed-packed-mixed",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "IgUKAWEQAQ==",
+      "expected": "accepted",
+      "id": "edition-closed-map-known",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "IgUKAWEQBQ==",
+      "expected": "accepted",
+      "id": "edition-closed-map-unknown",
+      "messageType": "openbindings.oracle.edition.ClosedProbe",
+      "source": "edition.proto"
+    },
+    {
+      "dataBase64": "",
+      "expected": "refused",
+      "id": "source-map-enum-without-zero",
+      "messageType": "openbindings.oracle.invalid.InvalidMap",
+      "source": "invalid-map-default.proto"
+    },
+    {
+      "dataBase64": "MgQI",
+      "expected": "refused",
+      "id": "truncated-map-entry",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgIQBQ==",
+      "expected": "accepted",
+      "id": "closed-map-unknown-missing-key",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MgYIAQgEEAU=",
+      "expected": "accepted",
+      "id": "closed-map-unknown-duplicate-key",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "iICAgICAgICAAgA=",
+      "expected": "refused",
+      "id": "tag-tenth-byte-two",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    },
+    {
+      "dataBase64": "MoCAgICAgICAgAI=",
+      "expected": "refused",
+      "id": "length-tenth-byte-two",
+      "messageType": "openbindings.oracle.ClosedProbe",
+      "source": "closed.proto"
+    }
+  ],
+  "format": "openbindings.protobuf-oracle-cases@1"
+}

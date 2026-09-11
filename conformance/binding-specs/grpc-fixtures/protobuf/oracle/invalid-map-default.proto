@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package openbindings.oracle.invalid;
+
+enum NonZero {
+  FIRST = 7;
+  SECOND = 9;
+}
+
+message InvalidMap {
+  map<string, NonZero> values = 1;
+}

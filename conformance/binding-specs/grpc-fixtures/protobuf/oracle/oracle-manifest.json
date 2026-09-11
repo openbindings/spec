@@ -1,0 +1,40 @@
+{
+  "accepted": 42,
+  "authorityCommit": "f377bfefc5e2cfab68b816903c25b23e091c439d",
+  "caseCount": 47,
+  "caseRootSha256": "2100be41488aa8b9fa6a8000b5f840a6bb5afd415a0ff5b9abe02db75f4cd73f",
+  "files": [
+    {
+      "path": "closed.proto",
+      "sha256": "a757c7e7d7f012a4c3f006b36a10f7f7fc1ef61d03d08d8f66b5c4f41702677a"
+    },
+    {
+      "path": "defaults.proto",
+      "sha256": "8ff0df25c422c81e1ff01489fac2db00d060ff42e893a50d41b82928401aaf74"
+    },
+    {
+      "path": "edition.proto",
+      "sha256": "353cb95371da3a84ef36858b6ab6699dec0bf934f153506dffe5ed3efa63cc22"
+    },
+    {
+      "path": "invalid-map-default.proto",
+      "sha256": "a780e55c5cdb89cd9469f3f889a3f4fc9b89a633e02391f2d6659af6b7ff65ae"
+    },
+    {
+      "path": "oracle-cases.json",
+      "sha256": "fc2f1079c7992a30d28a1d26c83d9888fb9e3e6f6a45cbebe2e909d680540dc0"
+    },
+    {
+      "path": "oracle-results.json",
+      "sha256": "4a54c37589f6ee00fc999d87c08433c3b4bf4543465c3c2467378b050f761195"
+    }
+  ],
+  "format": "openbindings.protobuf-oracle-manifest@1",
+  "manifestSha256": "696ac2dc1ac865fba045e929352738be6c02519105c2688350759a090a18effe",
+  "protocArchiveSha256": "de56d57afe30c5d191b11d24ff93dd4025728d7fb43b773886b2d3613e0bdbb2",
+  "protocBinarySha256": "dbd9a127dbbadd379bbea9a28a4349a0c9b1ad34b4c06f03fbe0f3853583a014",
+  "protocVersion": "libprotoc 36.1",
+  "refused": 5,
+  "resultRootSha256": "0cc22576c5d29ff9a1e2dffd7386d746cad97d105bef53dcf41b8d9ceb29165f",
+  "sourceRootSha256": "5632193e8f2835024d5d1a755762b33914131708fe811cc2c29fb266bd8512a0"
+}

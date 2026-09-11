@@ -9,6 +9,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -76,13 +77,18 @@ try {
     ];
     const missing = required.filter((path) => !existsSync(join(snapshot, path)));
     const leaked = excluded.filter((path) => existsSync(join(snapshot, path)));
-    if (missing.length > 0 || leaked.length > 0) {
+    const snapshotCore = existsSync(join(snapshot, "openbindings.md"))
+      ? readFileSync(join(snapshot, "openbindings.md"), "utf8")
+      : "";
+    const wrongState = snapshotCore.includes("unreleased working draft");
+    if (missing.length > 0 || leaked.length > 0 || wrongState) {
       if (missing.length > 0) {
         console.error(`release snapshot missing:\n  ${missing.join("\n  ")}`);
       }
       if (leaked.length > 0) {
         console.error(`release snapshot contains non-core corpus:\n  ${leaked.join("\n  ")}`);
       }
+      if (wrongState) console.error("release snapshot still claims to be an unreleased working draft");
       process.exitCode = 1;
     } else {
       console.log("release snapshot layout: OK");

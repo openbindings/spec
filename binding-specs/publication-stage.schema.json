@@ -1,0 +1,140 @@
+{
+  "$id": "https://openbindings.com/binding-specs/publication-stage.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "apparatusRootSha256": { "$ref": "#/$defs/digest" },
+    "authoritySha256": { "$ref": "#/$defs/digest" },
+    "core": { "$ref": "#/$defs/core" },
+    "coreRelease": { "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "type": "string" },
+    "coreSha256": { "$ref": "#/$defs/digest" },
+    "corpusRootSha256": { "$ref": "#/$defs/digest" },
+    "definingDocuments": {
+      "items": { "$ref": "#/$defs/document" },
+      "type": "array"
+    },
+    "files": {
+      "items": { "$ref": "#/$defs/file" },
+      "type": "array"
+    },
+    "format": { "enum": ["openbindings.binding-spec-publication-stage@2", "openbindings.binding-spec-publication-stage@3"] },
+    "grpcProcessorCorpusSha256": { "$ref": "#/$defs/digest" },
+    "identifiers": {
+      "items": { "pattern": "^openbindings\\.[a-z0-9]+(?:[.-][a-z0-9]+)*@[1-9][0-9]*$", "type": "string" },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "modules": {
+      "items": { "$ref": "#/$defs/module" },
+      "type": "array"
+    },
+    "publication": { "pattern": "^[a-z0-9][a-z0-9.-]*$", "type": "string" },
+    "publishedAt": { "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "type": "string" },
+    "rootSha256": { "$ref": "#/$defs/digest" },
+    "sourceFileCount": { "minimum": 1, "type": "integer" },
+    "sourceHead": { "minLength": 7, "type": "string" },
+    "sourceSnapshotSha256": { "$ref": "#/$defs/digest" },
+    "state": { "enum": ["candidate-review", "prepared-unminted"] }
+  },
+  "required": [
+    "apparatusRootSha256", "authoritySha256",
+    "corpusRootSha256", "definingDocuments", "files", "format",
+    "grpcProcessorCorpusSha256", "identifiers", "modules", "publication",
+    "publishedAt", "rootSha256", "sourceFileCount", "sourceHead", "sourceSnapshotSha256", "state"
+  ],
+  "type": "object",
+  "allOf": [
+    {
+      "if": { "properties": { "format": { "const": "openbindings.binding-spec-publication-stage@2" } } },
+      "then": {
+        "properties": { "state": { "const": "prepared-unminted" } },
+        "required": ["coreRelease", "coreSha256"],
+        "not": { "required": ["core"] }
+      }
+    },
+    {
+      "if": { "properties": { "format": { "const": "openbindings.binding-spec-publication-stage@3" } } },
+      "then": {
+        "properties": {
+          "modules": { "items": { "required": ["sourcePath"] } }
+        },
+        "required": ["core"],
+        "not": { "anyOf": [{ "required": ["coreRelease"] }, { "required": ["coreSha256"] }] }
+      }
+    },
+    {
+      "if": { "properties": { "core": { "properties": { "lifecycle": { "const": "released" } }, "required": ["lifecycle"] } }, "required": ["core"] },
+      "then": {
+        "properties": {
+          "core": { "properties": { "sourcePath": { "pattern": "^versions/[0-9]+\\.[0-9]+\\.[0-9]+/openbindings\\.md$" } } },
+          "state": { "const": "prepared-unminted" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "core": { "properties": { "lifecycle": { "const": "unreleased-candidate" } }, "required": ["lifecycle"] } }, "required": ["core"] },
+      "then": {
+        "properties": {
+          "core": { "properties": { "sourcePath": { "const": "openbindings.md" } } },
+          "state": { "const": "candidate-review" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "core": {
+      "additionalProperties": false,
+      "properties": {
+        "lifecycle": { "enum": ["released", "unreleased-candidate"] },
+        "path": { "const": "root/openbindings.md" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "sourcePath": { "pattern": "^(?:openbindings\\.md|versions/[0-9]+\\.[0-9]+\\.[0-9]+/openbindings\\.md)$", "type": "string" },
+        "version": { "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$", "type": "string" }
+      },
+      "required": ["lifecycle", "path", "sha256", "sourcePath", "version"],
+      "type": "object"
+    },
+    "digest": { "pattern": "^[0-9a-f]{64}$", "type": "string" },
+    "document": {
+      "additionalProperties": false,
+      "properties": {
+        "canonicalUrl": { "pattern": "^https://openbindings\\.com/", "type": "string" },
+        "family": { "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$", "type": "string" },
+        "identifier": { "type": "string" },
+        "path": { "pattern": "^root/binding-specs/", "type": "string" },
+        "rawUrl": { "pattern": "^https://openbindings\\.com/", "type": "string" },
+        "revision": { "minimum": 1, "type": "integer" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "sourcePath": { "pattern": "^binding-specs/", "type": "string" }
+      },
+      "required": ["canonicalUrl", "family", "identifier", "path", "rawUrl", "revision", "sha256", "sourcePath"],
+      "type": "object"
+    },
+    "file": {
+      "additionalProperties": false,
+      "properties": {
+        "path": { "pattern": "^root/", "type": "string" },
+        "sha256": { "$ref": "#/$defs/digest" }
+      },
+      "required": ["path", "sha256"],
+      "type": "object"
+    },
+    "module": {
+      "additionalProperties": false,
+      "properties": {
+        "canonicalUrl": { "pattern": "^https://openbindings\\.com/", "type": "string" },
+        "consumers": { "items": { "type": "string" }, "minItems": 1, "type": "array", "uniqueItems": true },
+        "identifier": { "pattern": "^openbindings\\.module\\.", "type": "string" },
+        "module": { "type": "string" },
+        "path": { "pattern": "^root/binding-specs/modules/", "type": "string" },
+        "rawUrl": { "pattern": "^https://openbindings\\.com/", "type": "string" },
+        "revision": { "minimum": 1, "type": "integer" },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "sourcePath": { "pattern": "^binding-specs/", "type": "string" }
+      },
+      "required": ["canonicalUrl", "consumers", "identifier", "module", "path", "rawUrl", "revision", "sha256"],
+      "type": "object"
+    }
+  }
+}

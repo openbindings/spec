@@ -1,0 +1,97 @@
+{
+  "$id": "https://openbindings.com/binding-specs/publication-evidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.binding-spec-publication-evidence@1" },
+    "dependencyInstalls": { "items": { "$ref": "#/$defs/install" }, "maxItems": 2, "minItems": 2, "type": "array" },
+    "gates": { "items": { "$ref": "#/$defs/execution" }, "maxItems": 10, "minItems": 10, "type": "array" },
+    "oracle": { "$ref": "#/$defs/oracle" },
+    "publication": { "type": "string" },
+    "runners": { "items": { "$ref": "#/$defs/runner" }, "maxItems": 2, "minItems": 2, "type": "array" },
+    "stageRecordSha256": { "$ref": "#/$defs/digest" }
+  },
+  "required": ["dependencyInstalls", "format", "gates", "oracle", "publication", "runners", "stageRecordSha256"],
+  "type": "object",
+  "$defs": {
+    "digest": { "pattern": "^[0-9a-f]{64}$", "type": "string" },
+    "execution": {
+      "additionalProperties": false,
+      "properties": {
+        "command": { "items": { "minLength": 1, "type": "string" }, "minItems": 1, "type": "array" },
+        "exitCode": { "const": 0 },
+        "id": { "type": "string" },
+        "resultSha256": { "$ref": "#/$defs/digest" },
+        "status": { "const": "pass" },
+        "target": { "enum": ["source", "stage"] },
+        "targetRootSha256": { "$ref": "#/$defs/digest" }
+      },
+      "required": ["command", "exitCode", "id", "resultSha256", "status", "target", "targetRootSha256"],
+      "type": "object"
+    },
+    "install": {
+      "additionalProperties": false,
+      "properties": {
+        "command": { "items": { "type": "string" }, "type": "array" },
+        "dependencies": { "additionalProperties": { "type": "string" }, "type": "object" },
+        "directory": { "type": "string" },
+        "exitCode": { "const": 0 },
+        "id": { "enum": ["schema-engine-lockfile-install", "typescript-lockfile-install"] },
+        "packageLockSha256": { "$ref": "#/$defs/digest" },
+        "packageSha256": { "$ref": "#/$defs/digest" },
+        "resultSha256": { "$ref": "#/$defs/digest" },
+        "status": { "const": "pass" },
+        "target": { "const": "stage" },
+        "targetRootSha256": { "$ref": "#/$defs/digest" }
+      },
+      "required": ["command", "dependencies", "directory", "exitCode", "id", "packageLockSha256", "packageSha256", "resultSha256", "status", "target", "targetRootSha256"],
+      "type": "object"
+    },
+    "oracle": {
+      "additionalProperties": false,
+      "properties": {
+        "authorityRootSha256": { "$ref": "#/$defs/digest" },
+        "harnessRootSha256": { "$ref": "#/$defs/digest" },
+        "observation": { "$ref": "#/$defs/oracleObservation" }
+      },
+      "required": ["authorityRootSha256", "harnessRootSha256", "observation"],
+      "type": "object"
+    },
+    "oracleObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted": { "minimum": 0, "type": "integer" },
+        "authorityCommit": { "pattern": "^[0-9a-f]{40}$", "type": "string" },
+        "caseCount": { "minimum": 1, "type": "integer" },
+        "caseRootSha256": { "$ref": "#/$defs/digest" },
+        "format": { "const": "openbindings.protobuf-oracle-result@1" },
+        "manifestSha256": { "$ref": "#/$defs/digest" },
+        "passed": { "const": true },
+        "protocArchiveSha256": { "$ref": "#/$defs/digest" },
+        "protocBinarySha256": { "$ref": "#/$defs/digest" },
+        "refused": { "minimum": 0, "type": "integer" },
+        "resultRootSha256": { "$ref": "#/$defs/digest" },
+        "sourceRootSha256": { "$ref": "#/$defs/digest" }
+      },
+      "required": ["accepted", "authorityCommit", "caseCount", "caseRootSha256", "format", "manifestSha256", "passed", "protocArchiveSha256", "protocBinarySha256", "refused", "resultRootSha256", "sourceRootSha256"],
+      "type": "object"
+    },
+    "runner": {
+      "additionalProperties": false,
+      "properties": {
+        "apparatusRootSha256": { "$ref": "#/$defs/digest" },
+        "command": { "items": { "minLength": 1, "type": "string" }, "minItems": 1, "type": "array" },
+        "corpusSha256": { "$ref": "#/$defs/digest" },
+        "exitCode": { "const": 0 },
+        "id": { "type": "string" },
+        "language": { "enum": ["go", "typescript"] },
+        "resultSha256": { "$ref": "#/$defs/digest" },
+        "status": { "const": "pass" },
+        "target": { "const": "stage" },
+        "targetRootSha256": { "$ref": "#/$defs/digest" }
+      },
+      "required": ["apparatusRootSha256", "command", "corpusSha256", "exitCode", "id", "language", "resultSha256", "status", "target", "targetRootSha256"],
+      "type": "object"
+    }
+  }
+}

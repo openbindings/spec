@@ -1,0 +1,287 @@
+{
+  "format": "openbindings.protobuf-oracle-observations@1",
+  "results": [
+    {
+      "exitCode": 0,
+      "id": "edition-closed-map-unknown-missing-key",
+      "stderr": "",
+      "stdout": "4 {\n  1: \"\"\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "int-map-tenth-byte-two",
+      "stderr": "",
+      "stdout": "int_map {\n  key: -1\n  value: \"x\"\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "signed64-tenth-byte-two",
+      "stderr": "",
+      "stdout": "signed_value: 9223372036854775807\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "unsigned64-tenth-byte-two",
+      "stderr": "",
+      "stdout": "unsigned_value: 9223372036854775807\n"
+    },
+    {
+      "exitCode": 1,
+      "id": "int-map-eleven-byte-value",
+      "stderr": "Failed to parse input.\n",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "id": "empty-message",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-singular-known",
+      "stderr": "",
+      "stdout": "singular: FIRST\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-singular-unknown",
+      "stderr": "",
+      "stdout": "1: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-singular-known-then-unknown",
+      "stderr": "",
+      "stdout": "singular: FIRST\n1: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-singular-unknown-then-known",
+      "stderr": "",
+      "stdout": "singular: SECOND\n1: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-expanded-mixed",
+      "stderr": "",
+      "stdout": "expanded: FIRST\nexpanded: SECOND\n2: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-packed-mixed",
+      "stderr": "",
+      "stdout": "packed: FIRST\npacked: SECOND\n3: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-oneof-unknown-then-alternate",
+      "stderr": "",
+      "stdout": "alternate: 3\n4: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-oneof-alternate-then-unknown",
+      "stderr": "",
+      "stdout": "alternate: 3\n4: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-known",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_FIRST\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-unknown",
+      "stderr": "",
+      "stdout": "6 {\n  1: 1\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-missing-key",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: 0\n  value: MAP_FIRST\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-missing-value",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_ZERO\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-known-then-unknown-value",
+      "stderr": "",
+      "stdout": "6 {\n  1: 1\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-unknown-then-known-value",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_FIRST\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-duplicate-key-in-entry",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: 2\n  value: MAP_FIRST\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-duplicate-entry",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_FIRST\n}\nsint_map {\n  key: -1\n  value: MAP_SECOND\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-unknown-entry-then-known",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_FIRST\n}\n6 {\n  1: 1\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-known-entry-then-unknown",
+      "stderr": "",
+      "stdout": "sint_map {\n  key: -1\n  value: MAP_FIRST\n}\n6 {\n  1: 1\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "fixed-map-key",
+      "stderr": "",
+      "stdout": "fixed_map {\n  key: 16909060\n  value: MAP_FIRST\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "bool-map-noncanonical-true-wire",
+      "stderr": "",
+      "stdout": "bool_map {\n  key: true\n  value: MAP_SECOND\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "message-map-value-merge",
+      "stderr": "",
+      "stdout": "message_map {\n  key: \"a\"\n  value {\n    left: 1\n    right: 2\n  }\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "int-map-negative-one-wire",
+      "stderr": "",
+      "stdout": "int_map {\n  key: -1\n  value: \"x\"\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "uint-map-maximum-wire",
+      "stderr": "",
+      "stdout": "uint_map {\n  key: 18446744073709551615\n  value: \"x\"\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "sfixed-map-negative-two-wire",
+      "stderr": "",
+      "stdout": "sfixed_map {\n  key: -2\n  value: \"x\"\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "proto2-string-invalid-overwritten",
+      "stderr": "",
+      "stdout": "proto2_text: \"x\"\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "proto2-string-valid-overwritten-by-invalid",
+      "stderr": "",
+      "stdout": "proto2_text: \"\\377\"\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "reflection-defaults-omitted",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "id": "reflection-defaults-explicit",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "id": "enum-varint-tenth-byte-two",
+      "stderr": "",
+      "stdout": "1: 18446744073709551615\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-singular-known",
+      "stderr": "",
+      "stdout": "singular: STATE_READY\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-singular-unknown",
+      "stderr": "",
+      "stdout": "1: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-expanded-mixed",
+      "stderr": "",
+      "stdout": "expanded: STATE_READY\nexpanded: STATE_UNSPECIFIED\n2: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-packed-mixed",
+      "stderr": "",
+      "stdout": "packed: STATE_READY\npacked: STATE_UNSPECIFIED\n3: 5\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-map-known",
+      "stderr": "",
+      "stdout": "mapped {\n  key: \"a\"\n  value: STATE_READY\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "edition-closed-map-unknown",
+      "stderr": "",
+      "stdout": "4 {\n  1: \"a\"\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 1,
+      "id": "source-map-enum-without-zero",
+      "stderr": "invalid-map-default.proto:11:3: Enum value in map must define 0 as the first value.\n",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "id": "truncated-map-entry",
+      "stderr": "Failed to parse input.\n",
+      "stdout": ""
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-unknown-missing-key",
+      "stderr": "",
+      "stdout": "6 {\n  1: 0\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 0,
+      "id": "closed-map-unknown-duplicate-key",
+      "stderr": "",
+      "stdout": "6 {\n  1: 4\n  2: 5\n}\n"
+    },
+    {
+      "exitCode": 1,
+      "id": "tag-tenth-byte-two",
+      "stderr": "Failed to parse input.\n",
+      "stdout": ""
+    },
+    {
+      "exitCode": 1,
+      "id": "length-tenth-byte-two",
+      "stderr": "Failed to parse input.\n",
+      "stdout": ""
+    }
+  ]
+}

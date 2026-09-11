@@ -9,9 +9,9 @@
       "rules": [
         "OBI-B-02",
         "GRPC-P-06",
-        "GRPC-P-07"
+        "GRPC-P-15"
       ],
-      "section": "9.4",
+      "section": "11",
       "description": "A server-streaming RPC emits an application value before unsuccessful completion; lower-layer assertions separately retain the INTERNAL status, rich detail, and multivalued trailing metadata.",
       "given": {
         "source": {
@@ -78,10 +78,10 @@
       "id": "GRPC-FI-02",
       "rules": [
         "OBI-B-02",
-        "GRPC-P-06"
+        "GRPC-P-14"
       ],
-      "section": "9.4",
-      "description": "RESOURCE_EXHAUSTED causes unsuccessful completion while.",
+      "section": "11",
+      "description": "RESOURCE_EXHAUSTED causes unsuccessful completion while preserving any earlier committed output.",
       "given": {
         "source": {
           "location": "grpcs://api.example:443",
@@ -123,10 +123,11 @@
       "id": "GRPC-FI-03",
       "rules": [
         "OBI-B-02",
-        "GRPC-P-03",
-        "GRPC-P-04"
+        "GRPC-P-04",
+        "GRPC-P-08",
+        "GRPC-P-15"
       ],
-      "section": "9.1",
+      "section": "7",
       "description": "A local ProtoJSON validation failure is terminal but does not invent source-native gRPC status evidence; earlier bidirectional outputs remain visible.",
       "given": {
         "source": {

@@ -45,7 +45,7 @@ A release snapshot captures the normative core spec at the time of release:
 **Not snapshotted:**
 
 - The project's shared interfaces are **no longer in this repository** — they live in [openbindings/interfaces](https://github.com/openbindings/interfaces), independently versioned with location-based identity. They were never snapshotted with the core spec: copying a contract into a spec snapshot would create a second URL for the same contract, fragmenting identity.
-- `binding-specs/` — binding specifications release on their own cadence and are cited by identifier, never by core release version. No project binding specification has been published yet: every current family document is a mutable first-`@1` candidate and `binding-specs/publications.json` is empty. A first publication will create an immutable, digest-recorded bundle under `binding-specs/releases/`, add it to that manifest, and serve it from its permanent revision URL. Core snapshots do not duplicate that independent archive. After publication, an incompatible change requires a new binding-specification identifier ([OBI-B-03](openbindings.md#104-binding-specification-rules)).
+- `binding-specs/` — binding specifications release on their own cadence and are cited by identifier, never by core release version. Binding-specification and companion-module publication state is determined solely by the OpenBindings Project's canonical root `binding-specs/publications.json`; entries are immutable publications, while exact identifiers absent from that manifest remain candidates. A publication creates an immutable, digest-recorded bundle under `binding-specs/releases/`, adds it to that manifest, and serves it from its permanent revision URL. Core snapshots do not duplicate that independent archive. After publication, an incompatible change requires a new binding-specification identifier ([OBI-B-03](openbindings.md#104-binding-specification-rules)).
 - The **non-core** conformance corpora — `conformance/binding-specs/`, `conformance/operation-graph/`, `conformance/transforms/`. These are keyed to binding-specification identifiers and to the transform language, not to the core rule identifiers, so they follow what they test rather than the core release. Copy only the directories listed in step 2; taking `conformance/` wholesale would freeze corpora that are not the core spec's to freeze.
 - `scripts/` — repo-wide tooling (canonical-order checker, manifest generator, corpus verifier). These operate on the current working tree and aren't part of any specific release.
 
@@ -59,6 +59,11 @@ A release snapshot captures the normative core spec at the time of release:
      ensure every claimed assent has a durable record. Do not cut 0.2 while
      `IPR.md` still labels that decision outstanding.
    - Ensure any binding specifications under `binding-specs/` that ship with this change set are ready. They are not snapshotted, but a core release that cites a specification still being drafted publishes a dangling citation.
+   - If gRPC-family binding or Protobuf-correspondence evidence changed, install
+     the exact official `protoc-36.1` archive and executable named by
+     `conformance/binding-specs/grpc-fixtures/protobuf/oracle/oracle-manifest.json`,
+     then run `node scripts/verify-grpc-protobuf-oracle.mjs`. The dedicated
+     macOS CI job independently downloads and checks that pinned artifact.
    - Run `node scripts/verify-binding-spec-publications.mjs`. Every binding-specification identifier cited as published must already be present in `binding-specs/publications.json`, with its immutable bundle and permanent URLs.
    - Regenerate `conformance/manifest.json` (`node scripts/generate-conformance-manifest.mjs`) and run `node scripts/verify-corpus.mjs` to confirm the corpus is in sync with the spec.
 
@@ -66,7 +71,11 @@ A release snapshot captures the normative core spec at the time of release:
 
    - Create a new directory: `versions/<next>/`
    - Copy the normative artifacts into it:
-     - `openbindings.md` → `versions/<next>/openbindings.md`
+     - `openbindings.md` → `versions/<next>/openbindings.md`, removing only
+       the root document's canonical "unreleased working draft / latest
+       release" status clause from the snapshot. The immutable snapshot still
+       declares the exact released version but must not describe itself as a
+       draft. The helper below performs and validates that one exact removal.
      - `openbindings.schema.json` → `versions/<next>/openbindings.schema.json`
      - `EDITORS.md` → `versions/<next>/editors.md`
      - `LICENSE` → `versions/<next>/LICENSE`

@@ -1,0 +1,17 @@
+syntax = "proto2";
+package processorclosed;
+
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1;
+}
+
+message Value {
+  optional State singular = 1;
+  repeated State expanded = 2 [packed = false];
+  repeated State packed = 3 [packed = true];
+}
+
+service Values {
+  rpc Unary(Value) returns (Value);
+}

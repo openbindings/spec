@@ -19,6 +19,20 @@ import { createHash } from "node:crypto";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import {
+  DEPENDENCY_INSTALL_COMMAND,
+  FAMILIES,
+  GRPC_RUNNER_COMMANDS,
+  MODULES,
+  PUBLICATION_STATE_LINE,
+  REQUIRED_DEPENDENCY_INSTALLS,
+  REQUIRED_GATES,
+  assertExactCoreAuthority,
+  assertManifestGovernedStatus,
+  dependencyAttestation,
+  expectedModuleClosure,
+  grpcProtobufOracleEvidence,
+} from "./binding-spec-publication-support.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
@@ -38,6 +52,41 @@ function readJson(path, label) {
     errors.push(`${label}: ${error.message}`);
     return null;
   }
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return value.map(canonicalJson);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalJson(value[key])]));
+  }
+  return value;
+}
+
+function readCanonicalJson(path, label) {
+  const text = readFileSync(path, "utf8");
+  let value;
+  try {
+    value = JSON.parse(text);
+  } catch (error) {
+    errors.push(`${label}: ${error.message}`);
+    return null;
+  }
+  if (text !== `${JSON.stringify(canonicalJson(value), null, 2)}\n`) {
+    errors.push(`${label}: JSON is not canonical sorted-key serialization`);
+  }
+  return value;
+}
+
+function recordRoot(records) {
+  return sha256(
+    Buffer.from(
+      records.map(({ path, sha256: digest }) => `${path}\0${digest}\n`).sort().join("")
+    )
+  );
+}
+
+function sameArray(a, b) {
+  return Array.isArray(a) && Array.isArray(b) && JSON.stringify(a) === JSON.stringify(b);
 }
 
 function coreSpecificationVersions(markdown) {
@@ -142,6 +191,21 @@ function candidateSpecificationPages() {
   return pages;
 }
 
+function futureCandidatePages() {
+  const root = join(ROOT, "binding-specs", "candidates");
+  const moduleRoot = join(root, "modules");
+  return listFiles(root).filter((path) => path.endsWith(".md") && !path.startsWith(`${moduleRoot}${sep}`));
+}
+
+function futureModuleCandidatePages() {
+  return listFiles(join(ROOT, "binding-specs", "candidates", "modules")).filter((path) => path.endsWith(".md"));
+}
+
+function hasCanonicalPublicationState(markdown) {
+  return markdown.split(/\r?\n/).filter((line) => line === PUBLICATION_STATE_LINE).length === 1
+    && !/^\*\*(?:Status|Publication):/m.test(markdown);
+}
+
 function gitShow(base, path) {
   const result = spawnSync("git", ["show", `${base}:${path}`], {
     cwd: ROOT,
@@ -182,11 +246,25 @@ const manifest = readJson(MANIFEST_PATH, "binding-specs/publications.json");
 const errataManifest = readJson(ERRATA_MANIFEST_PATH, "binding-specs/errata.json");
 if (!manifest) process.exit(2);
 if (!errataManifest) process.exit(2);
+try {
+  assertManifestGovernedStatus(
+    readFileSync(join(ROOT, "binding-specs", "README.md"), "utf8"),
+    readFileSync(join(ROOT, "RELEASING.md"), "utf8"),
+  );
+} catch (error) {
+  errors.push(error.message);
+}
 if (manifest.format !== "openbindings.binding-spec-publications@1") {
   errors.push(`unsupported manifest format ${manifest.format}`);
 }
 if (!manifest.latest || typeof manifest.latest !== "object" || Array.isArray(manifest.latest)) {
   errors.push("manifest.latest must be an object");
+}
+if (manifest.modules !== undefined && !Array.isArray(manifest.modules)) {
+  errors.push("manifest.modules must be an array");
+}
+if (manifest.latestModules !== undefined && (!manifest.latestModules || typeof manifest.latestModules !== "object" || Array.isArray(manifest.latestModules))) {
+  errors.push("manifest.latestModules must be an object");
 }
 // --- Withdrawal-resistant floor ---------------------------------------------
 // The --base comparison has single-push memory: one violating push resets its
@@ -205,6 +283,11 @@ if (!manifest.latest || typeof manifest.latest !== "object" || Array.isArray(man
       errors.push(
         `publications count ${manifest.publications.length} is below the committed floor ${floor.publications}; removing a published entry requires lowering the floor and appending a tombstones entry`
       );
+    }
+    if (floor.modules !== undefined && (!Number.isInteger(floor.modules) || floor.modules < 0)) {
+      errors.push("manifest.floor.modules must be a non-negative integer");
+    } else if (floor.modules !== undefined && Array.isArray(manifest.modules) && manifest.modules.length < floor.modules) {
+      errors.push(`module count ${manifest.modules.length} is below the committed floor ${floor.modules}`);
     }
   }
   for (const tombstone of Array.isArray(manifest.tombstones) ? manifest.tombstones : []) {
@@ -248,6 +331,7 @@ if (!Array.isArray(errataManifest.errata)) {
   errors.push("errata manifest entries must be an array");
 }
 const publications = Array.isArray(manifest.publications) ? manifest.publications : [];
+const modules = Array.isArray(manifest.modules) ? manifest.modules : [];
 const errataEntries = Array.isArray(errataManifest.errata) ? errataManifest.errata : [];
 
 // Candidate specifications are publication inputs, so their local links and
@@ -257,6 +341,18 @@ const errataEntries = Array.isArray(errataManifest.errata) ? errataManifest.erra
 for (const page of candidateSpecificationPages()) {
   const markdown = readFileSync(page, "utf8");
   const pageLabel = relative(ROOT, page);
+  const family = pageLabel.split("/")[1];
+  const statusCount = [...markdown.matchAll(/^\*\*Status:/gm)].length;
+  const publicationCount = [...markdown.matchAll(/^\*\*Publication: `openbindings\.[^`]+@[1-9][0-9]*`, \d{4}-\d{2}-\d{2}\.\*\*/gm)].length;
+  const neutral = hasCanonicalPublicationState(markdown);
+  if (manifest.latest?.[family] === undefined) {
+    if (!neutral && (statusCount !== 1 || publicationCount !== 0 || !/^\*\*Status:.*unreleased.*candidate/im.test(markdown))) {
+      errors.push(`${pageLabel}: an unpublished family must carry exactly one recognized unreleased-candidate status`);
+    }
+    if (["grpc", "connect"].includes(family) && !neutral) errors.push(`${pageLabel}: the gRPC publication family must use the canonical status-neutral publication-state line`);
+  } else if (!neutral && (statusCount !== 0 || publicationCount !== 1)) {
+    errors.push(`${pageLabel}: a published latest mirror must carry one canonical publication state (legacy bundles may retain their affirmative publication header)`);
+  }
   if (/^binding-specs\/openapi-(?:2\.0|3\.0|3\.1|3\.2)\//.test(pageLabel)) {
     // Published mirrors keep the Core dependency frozen in their immutable
     // publication record; only an unreleased candidate tracks the live Core
@@ -265,6 +361,14 @@ for (const page of candidateSpecificationPages()) {
       ? liveCoreVersion
       : undefined;
     verifyOpenApiCoreAuthority(markdown, pageLabel, expectedVersion);
+  }
+  if (neutral) {
+    const latestEntry = publications.find((entry) => entry.identifier === manifest.latest?.[family]);
+    try {
+      assertExactCoreAuthority(markdown, `openbindings.${family}`, latestEntry?.coreRelease || liveCoreVersion);
+    } catch (error) {
+      errors.push(`${pageLabel}: ${error.message}`);
+    }
   }
   for (const match of markdown.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
     const href = match[1];
@@ -300,9 +404,97 @@ for (const page of candidateSpecificationPages()) {
   }
 }
 
+for (const page of futureCandidatePages()) {
+  const pageLabel = relative(ROOT, page).split("\\").join("/");
+  const match = pageLabel.match(/^binding-specs\/candidates\/([a-z0-9]+(?:[.-][a-z0-9]+)*)\/([1-9][0-9]*)\/openbindings\.\1\.md$/);
+  if (!match) {
+    errors.push(`${pageLabel}: future candidate path must be binding-specs/candidates/<family>/<revision>/openbindings.<family>.md`);
+    continue;
+  }
+  const [, family, revisionText] = match;
+  const revision = Number(revisionText);
+  const prior = publications.filter((entry) => entry.family === family).map((entry) => entry.revision);
+  const expected = prior.length === 0 ? 1 : Math.max(...prior) + 1;
+  const markdown = readFileSync(page, "utf8");
+  if (revision !== expected) errors.push(`${pageLabel}: future candidate revision must be next @${expected}`);
+  if (!hasCanonicalPublicationState(markdown)) errors.push(`${pageLabel}: future candidate must use the canonical status-neutral publication-state line`);
+  const identifier = `openbindings.${family}@${revision}`;
+  if (!markdown.includes(identifier)) errors.push(`${pageLabel}: future candidate does not name ${identifier}`);
+  if (!FAMILIES[family]) {
+    errors.push(`${pageLabel}: future candidate names unknown project binding-specification family ${family}`);
+  } else {
+    try { assertExactCoreAuthority(markdown, identifier, liveCoreVersion); }
+    catch (error) { errors.push(`${pageLabel}: ${error.message}`); }
+    for (const module of expectedModuleClosure([identifier])) {
+      const route = `/binding-spec-modules/${module.module}/${module.revision}`;
+      if (!markdown.includes(`](${route})`) || /\]\(\.\.\/modules\/openbindings\./.test(markdown)) errors.push(`${pageLabel}: normative module citation must use permanent route ${route}`);
+    }
+  }
+}
+
+for (const page of futureModuleCandidatePages()) {
+  const pageLabel = relative(ROOT, page).split("\\").join("/");
+  const match = pageLabel.match(/^binding-specs\/candidates\/modules\/([a-z0-9]+(?:[.-][a-z0-9]+)*)\/([1-9][0-9]*)\/openbindings\.\1\.md$/);
+  if (!match) {
+    errors.push(`${pageLabel}: future module path must be binding-specs/candidates/modules/<module>/<revision>/openbindings.<module>.md`);
+    continue;
+  }
+  const [, moduleName, revisionText] = match;
+  const revision = Number(revisionText);
+  const prior = modules.filter((entry) => entry.module === moduleName).map((entry) => entry.revision);
+  const expected = prior.length === 0 ? 1 : Math.max(...prior) + 1;
+  const markdown = readFileSync(page, "utf8");
+  if (!MODULES[moduleName]) errors.push(`${pageLabel}: future candidate names unknown companion module ${moduleName}`);
+  if (revision !== expected) errors.push(`${pageLabel}: future module revision must be next @${expected}`);
+  if (!hasCanonicalPublicationState(markdown)) errors.push(`${pageLabel}: future module candidate must use the canonical status-neutral publication-state line`);
+  const identifier = `openbindings.module.${moduleName}@${revision}`;
+  if (!markdown.includes(identifier)) errors.push(`${pageLabel}: future module candidate does not name ${identifier}`);
+  try { assertExactCoreAuthority(markdown, identifier, liveCoreVersion); }
+  catch (error) { errors.push(`${pageLabel}: ${error.message}`); }
+  const ref = `${moduleName}@${revision}`;
+  const consumers = Object.entries(FAMILIES).flatMap(([family, config]) => Object.entries(config.moduleRefsByRevision || {}).flatMap(([consumerRevision, refs]) => refs.includes(ref) ? [`${family}@${consumerRevision}`] : []));
+  if (consumers.length === 0) errors.push(`${pageLabel}: new module revision is not registered in any exact consumer-revision closure`);
+}
+
 const byIdentifier = new Map();
+const modulesByIdentifier = new Map();
 const publicationRecords = new Map();
 const publicationRecordDigests = new Map();
+for (const module of modules) {
+  if (!module || typeof module !== "object") {
+    errors.push("module publication entry must be an object");
+    continue;
+  }
+  const expectedIdentifier = `openbindings.module.${module.module}@${module.revision}`;
+  if (module.identifier !== expectedIdentifier) errors.push(`${module.identifier}: expected module identifier ${expectedIdentifier}`);
+  if (!MODULES[module.module]) errors.push(`${module.identifier}: unknown project companion module ${module.module}`);
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(module.publication || "")) errors.push(`${module.identifier}: publication id is unsafe`);
+  if (modulesByIdentifier.has(module.identifier)) errors.push(`duplicate module identifier ${module.identifier}`);
+  modulesByIdentifier.set(module.identifier, module);
+  const expectedCanonical = `https://openbindings.com/binding-spec-modules/${module.module}/${module.revision}`;
+  const expectedRaw = `https://openbindings.com/raw/binding-spec-modules/${module.module}/${module.revision}.md`;
+  if (module.canonicalUrl !== expectedCanonical) errors.push(`${module.identifier}: canonicalUrl must be ${expectedCanonical}`);
+  if (module.rawUrl !== expectedRaw) errors.push(`${module.identifier}: rawUrl must be ${expectedRaw}`);
+  const expectedDocument = MODULES[module.module] ? `binding-specs/releases/${module.publication}/root/${MODULES[module.module].document}` : null;
+  if (expectedDocument && module.document !== expectedDocument) errors.push(`${module.identifier}: module document must be ${expectedDocument}`);
+  const expectedPublicationRecord = `binding-specs/releases/${module.publication}/publication.json`;
+  if (module.publicationRecord !== expectedPublicationRecord) errors.push(`${module.identifier}: publication record must be ${expectedPublicationRecord}`);
+  const documentPath = join(ROOT, module.document || "");
+  if (!existsSync(documentPath)) errors.push(`${module.identifier}: missing module document ${module.document}`);
+  else {
+    const bytes = readFileSync(documentPath);
+    if (sha256(bytes) !== module.sha256) errors.push(`${module.identifier}: module document digest mismatch`);
+    const markdown = bytes.toString("utf8");
+    if (hasCanonicalPublicationState(markdown)) {
+      const mintingPublication = publications.find((entry) => entry.publication === module.publication);
+      try { assertExactCoreAuthority(markdown, module.identifier, mintingPublication?.coreRelease || liveCoreVersion); }
+      catch (error) { errors.push(`${module.identifier}: ${error.message}`); }
+    }
+  }
+  const recordPath = join(ROOT, module.publicationRecord || "");
+  if (!existsSync(recordPath)) errors.push(`${module.identifier}: missing publication record ${module.publicationRecord}`);
+  else if (sha256(readFileSync(recordPath)) !== module.publicationRecordSha256) errors.push(`${module.identifier}: publication record digest mismatch`);
+}
 for (const entry of publications) {
   if (!entry || typeof entry !== "object") {
     errors.push("publication entry must be an object");
@@ -316,6 +508,8 @@ for (const entry of publications) {
     errors.push(`duplicate publication identifier ${entry.identifier}`);
   }
   byIdentifier.set(entry.identifier, entry);
+  if (!FAMILIES[entry.family]) errors.push(`${entry.identifier}: unknown project binding-specification family ${entry.family}`);
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(entry.publication || "")) errors.push(`${entry.identifier}: publication id is unsafe`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.publishedAt || "")) {
     errors.push(`${entry.identifier}: publishedAt must be YYYY-MM-DD`);
   }
@@ -330,7 +524,17 @@ for (const entry of publications) {
   if (entry.rawUrl !== expectedRaw) {
     errors.push(`${entry.identifier}: rawUrl must be ${expectedRaw}`);
   }
+  if (!Array.isArray(entry.modules)) errors.push(`${entry.identifier}: modules must be an array`);
+  for (const moduleRef of Array.isArray(entry.modules) ? entry.modules : []) {
+    const module = modulesByIdentifier.get(moduleRef?.identifier);
+    if (!module) errors.push(`${entry.identifier}: unknown normative module ${moduleRef?.identifier}`);
+    else if (module.sha256 !== moduleRef.sha256) errors.push(`${entry.identifier}: normative module digest mismatch for ${moduleRef.identifier}`);
+  }
 
+  const expectedDocument = FAMILIES[entry.family] ? `binding-specs/releases/${entry.publication}/root/${FAMILIES[entry.family].document}` : null;
+  if (expectedDocument && entry.document !== expectedDocument) errors.push(`${entry.identifier}: defining document must be ${expectedDocument}`);
+  const expectedPublicationRecord = `binding-specs/releases/${entry.publication}/publication.json`;
+  if (entry.publicationRecord !== expectedPublicationRecord) errors.push(`${entry.identifier}: publication record must be ${expectedPublicationRecord}`);
   const documentPath = join(ROOT, entry.document || "");
   if (!existsSync(documentPath)) {
     errors.push(`${entry.identifier}: missing defining document ${entry.document}`);
@@ -341,6 +545,10 @@ for (const entry of publications) {
     }
     if (/^openapi-(?:2\.0|3\.0|3\.1|3\.2)$/.test(entry.family || "")) {
       verifyOpenApiCoreAuthority(documentMarkdown, entry.document, entry.coreRelease);
+    }
+    if (hasCanonicalPublicationState(documentMarkdown)) {
+      try { assertExactCoreAuthority(documentMarkdown, entry.identifier, entry.coreRelease); }
+      catch (error) { errors.push(`${entry.identifier}: ${error.message}`); }
     }
   }
 
@@ -466,10 +674,52 @@ for (const entry of publications) {
   }
 }
 
+for (const [moduleName, identifier] of Object.entries(manifest.latestModules || {})) {
+  const entry = modulesByIdentifier.get(identifier);
+  if (!entry) {
+    errors.push(`latestModules.${moduleName} names unknown identifier ${identifier}`);
+    continue;
+  }
+  if (entry.module !== moduleName) errors.push(`latestModules.${moduleName} points to module ${entry.module}`);
+  const revisions = modules.filter((candidate) => candidate.module === moduleName).map((candidate) => candidate.revision);
+  if (entry.revision !== Math.max(...revisions)) errors.push(`latestModules.${moduleName} does not point to the greatest published revision`);
+  const currentPath = join(ROOT, "binding-specs", "modules", `openbindings.${moduleName}.md`);
+  if (!existsSync(currentPath)) errors.push(`latestModules.${moduleName}: missing current module mirror`);
+  else if (!readFileSync(currentPath).equals(readFileSync(join(ROOT, entry.document)))) errors.push(`latestModules.${moduleName}: current module mirror differs from ${entry.identifier}`);
+}
+for (const entry of modules) {
+  if (manifest.latestModules?.[entry.module] === undefined) errors.push(`${entry.identifier}: module is absent from manifest.latestModules`);
+}
+
+const liveModuleRoot = join(ROOT, "binding-specs", "modules");
+if (existsSync(liveModuleRoot)) {
+  for (const path of listFiles(liveModuleRoot).filter((path) => path.endsWith(".md"))) {
+    const markdown = readFileSync(path, "utf8");
+    const label = relative(ROOT, path);
+    const identifier = [...markdown.matchAll(/\*\*`(openbindings\.module\.[^`]+@[1-9][0-9]*)`\*\*/g)][0]?.[1];
+    const statusCount = [...markdown.matchAll(/^\*\*Status:/gm)].length;
+    const publicationCount = [...markdown.matchAll(/^\*\*Publication: `openbindings\.module\.[^`]+@[1-9][0-9]*`, \d{4}-\d{2}-\d{2}\.\*\*/gm)].length;
+    const neutral = hasCanonicalPublicationState(markdown);
+    if (!identifier || !modulesByIdentifier.has(identifier)) {
+      if (!neutral && (statusCount !== 1 || publicationCount !== 0 || !/^\*\*Status:.*unreleased.*candidate/im.test(markdown))) errors.push(`${label}: unpublished module must carry one exact publication state`);
+      if (label.endsWith("openbindings.protobuf-correspondence.md") && !neutral) errors.push(`${label}: Protobuf correspondence must use the canonical status-neutral publication-state line`);
+    } else if (!neutral && (statusCount !== 0 || publicationCount !== 1)) errors.push(`${label}: published module mirror must carry one canonical publication state (legacy bundles may retain their publication header)`);
+    if (neutral) {
+      const publishedModule = modules.find((entry) => entry.identifier === identifier);
+      const mintingPublication = publications.find((entry) => entry.publication === publishedModule?.publication);
+      try {
+        assertExactCoreAuthority(markdown, identifier || label, mintingPublication?.coreRelease || liveCoreVersion);
+      } catch (error) {
+        errors.push(`${label}: ${error.message}`);
+      }
+    }
+  }
+}
+
 for (const [publication, recordPath] of publicationRecords) {
   const record = readJson(recordPath, `${publication}/publication.json`);
   if (!record) continue;
-  if (record.format !== "openbindings.binding-spec-publication@1") {
+  if (!["openbindings.binding-spec-publication@1", "openbindings.binding-spec-publication@2", "openbindings.binding-spec-publication@3"].includes(record.format)) {
     errors.push(`${publication}: unsupported publication record format ${record.format}`);
   }
   if (record.publication !== publication) {
@@ -494,6 +744,174 @@ for (const [publication, recordPath] of publicationRecords) {
   }
   const recordIdentifiers = Array.isArray(record.identifiers) ? record.identifiers : [];
   const recordFiles = Array.isArray(record.files) ? record.files : [];
+  if (["openbindings.binding-spec-publication@2", "openbindings.binding-spec-publication@3"].includes(record.format)) {
+    if (record.rootSha256 !== recordRoot(recordFiles)) errors.push(`${publication}: publication root digest mismatch`);
+    if (!Array.isArray(record.modules)) errors.push(`${publication}: publication record modules must be an array`);
+    const expectedModuleRefs = new Map();
+    for (const entry of manifestEntries) {
+      for (const moduleRef of entry.modules || []) expectedModuleRefs.set(moduleRef.identifier, moduleRef.sha256);
+    }
+    for (const module of record.modules || []) {
+      if (expectedModuleRefs.get(module.identifier) !== module.sha256) errors.push(`${publication}: publication record module ${module.identifier} is not the consumer closure`);
+      expectedModuleRefs.delete(module.identifier);
+    }
+    for (const identifier of expectedModuleRefs.keys()) errors.push(`${publication}: publication record omits consumer module ${identifier}`);
+    const stagePath = join(dirname(recordPath), record.stage?.path || "");
+    const adjudicationPath = join(dirname(recordPath), record.adjudication?.path || "");
+    if (record.stage?.path !== "stage.json" || !existsSync(stagePath) || sha256(readFileSync(stagePath)) !== record.stage?.sha256) {
+      errors.push(`${publication}: missing or mismatched sealed stage record`);
+    }
+    if (record.adjudication?.path !== "adjudication.json" || !existsSync(adjudicationPath) || sha256(readFileSync(adjudicationPath)) !== record.adjudication?.sha256) {
+      errors.push(`${publication}: missing or mismatched adjudication record`);
+    }
+    const stage = existsSync(stagePath) ? readCanonicalJson(stagePath, `${publication}/stage.json`) : null;
+    const adjudication = existsSync(adjudicationPath) ? readCanonicalJson(adjudicationPath, `${publication}/adjudication.json`) : null;
+    if (stage) {
+      if (stage.rootSha256 !== record.rootSha256 || JSON.stringify(stage.identifiers) !== JSON.stringify(recordIdentifiers)) errors.push(`${publication}: stage does not bind publication identifiers/root`);
+      if (sha256(readFileSync(stagePath)) !== adjudication?.stageRecordSha256) errors.push(`${publication}: adjudication does not bind sealed stage record`);
+    }
+    if (adjudication && record.format === "openbindings.binding-spec-publication@2") {
+      if (adjudication.rootSha256 !== record.rootSha256 || adjudication.unresolvedP0P2 !== 0) errors.push(`${publication}: adjudication does not accept the publication root with zero unresolved P0-P2`);
+      const roles = new Map((adjudication.reviews || []).map((review) => [review.role, review]));
+      for (const role of ["authority", "conformance", "publisher"]) {
+        const review = roles.get(role);
+        if (review?.verdict !== "ACCEPT" || review?.rootSha256 !== record.rootSha256) errors.push(`${publication}: adjudication lacks exact-root ACCEPT from ${role}`);
+      }
+      const languages = new Map((adjudication.runners || []).map((runner) => [runner.language, runner]));
+      for (const language of ["go", "typescript"]) if (languages.get(language)?.status !== "pass") errors.push(`${publication}: adjudication lacks passing ${language} execution`);
+      const gates = new Set((adjudication.gates || []).filter((gate) => gate.status === "pass").map((gate) => gate.id));
+      for (const gate of ["binding-specs", "authority-pins", "publications", "grpc-protobuf-compiler", "grpc-runners", "grpc-tls", "diff-check"]) if (!gates.has(gate)) errors.push(`${publication}: adjudication lacks passing ${gate} gate`);
+    }
+    if (record.format === "openbindings.binding-spec-publication@3") {
+      const evidencePath = join(dirname(recordPath), record.evidence?.path || "");
+      if (record.evidence?.path !== "evidence.json" || !existsSync(evidencePath) || sha256(readFileSync(evidencePath)) !== record.evidence?.sha256) {
+        errors.push(`${publication}: missing or mismatched machine evidence record`);
+      }
+      const evidence = existsSync(evidencePath) ? readCanonicalJson(evidencePath, `${publication}/evidence.json`) : null;
+      const stageDigest = existsSync(stagePath) ? sha256(readFileSync(stagePath)) : null;
+      const legacyStage = stage?.format === "openbindings.binding-spec-publication-stage@2";
+      const currentStage = stage?.format === "openbindings.binding-spec-publication-stage@3";
+      if ((!legacyStage && !currentStage) || stage?.state !== "prepared-unminted") errors.push(`${publication}: @3 bundle requires one finalizable prepared-unminted stage`);
+      if (currentStage) {
+        const expectedCorePath = `versions/${stage?.core?.version}/openbindings.md`;
+        const releasedCorePath = join(ROOT, expectedCorePath);
+        const bundleCorePath = join(dirname(recordPath), "root", "openbindings.md");
+        if (stage?.core?.lifecycle !== "released" || stage?.core?.path !== "root/openbindings.md" || stage?.core?.sourcePath !== expectedCorePath || stage?.core?.version !== record.coreRelease || stage?.core?.sha256 !== (existsSync(bundleCorePath) ? sha256(readFileSync(bundleCorePath)) : null)) errors.push(`${publication}: stage does not bind an exact released Core authority`);
+        if (!existsSync(releasedCorePath) || !existsSync(bundleCorePath) || !readFileSync(releasedCorePath).equals(readFileSync(bundleCorePath))) errors.push(`${publication}: archived Core differs from immutable ${expectedCorePath}`);
+        if (existsSync(bundleCorePath) && readFileSync(bundleCorePath, "utf8").includes("unreleased working draft")) errors.push(`${publication}: archived released Core still claims to be an unreleased working draft`);
+      }
+      if (!Number.isInteger(stage?.sourceFileCount) || stage.sourceFileCount < 1) errors.push(`${publication}: stage does not bind the source file count used by source-target evidence`);
+      const stageCoreVersion = currentStage ? stage?.core?.version : stage?.coreRelease;
+      if (!sameArray(stage?.files, recordFiles) || !sameArray(stage?.modules, record.modules) || stage?.publication !== publication || stage?.publishedAt !== record.publishedAt || stageCoreVersion !== record.coreRelease) errors.push(`${publication}: stage does not bind the exact publication file/module closure and metadata`);
+      if (evidence?.format !== "openbindings.binding-spec-publication-evidence@1" || evidence?.stageRecordSha256 !== stageDigest || evidence?.publication !== publication) errors.push(`${publication}: evidence does not bind the exact stage record`);
+      if (adjudication?.format !== "openbindings.binding-spec-publication-adjudication@2" || adjudication?.evidenceSha256 !== record.evidence?.sha256 || adjudication?.stageRecordSha256 !== stageDigest) errors.push(`${publication}: adjudication does not bind exact evidence and stage records`);
+
+      const requiredGates = new Set(Object.keys(REQUIRED_GATES));
+      const installs = Array.isArray(evidence?.dependencyInstalls) ? evidence.dependencyInstalls : [];
+      const requiredInstalls = new Set(Object.keys(REQUIRED_DEPENDENCY_INSTALLS));
+      const bundleRoot = join(dirname(recordPath), "root");
+      if (installs.length !== requiredInstalls.size) errors.push(`${publication}: evidence dependency-install set is not closed`);
+      for (const install of installs) {
+        let expected;
+        try { expected = dependencyAttestation(bundleRoot, install?.id); }
+        catch (error) { errors.push(`${publication}: ${error.message}`); }
+        if (!requiredInstalls.delete(install?.id) || !expected || !sameArray(install?.command, DEPENDENCY_INSTALL_COMMAND) || install?.directory !== expected.directory || JSON.stringify(install?.dependencies) !== JSON.stringify(expected.dependencies) || install?.packageSha256 !== expected.packageSha256 || install?.packageLockSha256 !== expected.packageLockSha256 || install?.status !== "pass" || install?.exitCode !== 0 || install?.target !== "stage" || install?.targetRootSha256 !== record.rootSha256 || !/^[0-9a-f]{64}$/.test(install?.resultSha256 || "")) errors.push(`${publication}: malformed, duplicate, or unrecognized dependency-install evidence ${install?.id}`);
+      }
+      for (const id of requiredInstalls) errors.push(`${publication}: evidence omits ${id}`);
+      const gates = Array.isArray(evidence?.gates) ? evidence.gates : [];
+      if (gates.length !== requiredGates.size) errors.push(`${publication}: evidence gate set is not closed`);
+      for (const gate of gates) {
+        const rule = REQUIRED_GATES[gate?.id];
+        const expectedRoot = rule?.target === "stage" ? record.rootSha256 : stage?.sourceSnapshotSha256;
+        if (!requiredGates.delete(gate?.id) || gate?.status !== "pass" || gate?.exitCode !== 0 || gate?.target !== rule?.target || gate?.targetRootSha256 !== expectedRoot || !sameArray(gate?.command, rule?.command) || !/^[0-9a-f]{64}$/.test(gate?.resultSha256 || "")) errors.push(`${publication}: malformed, duplicate, or unrecognized gate evidence ${gate?.id}`);
+      }
+      for (const gate of requiredGates) errors.push(`${publication}: evidence omits ${gate} gate`);
+      const oracleGate = gates.find((gate) => gate?.id === "grpc-protobuf-oracle");
+      let expectedOracle;
+      let oracleStdout = "";
+      try {
+        oracleStdout = `${JSON.stringify(canonicalJson(evidence?.oracle?.observation))}\n`;
+        expectedOracle = grpcProtobufOracleEvidence(bundleRoot, oracleStdout);
+      } catch (error) {
+        errors.push(`${publication}: ${error.message}`);
+      }
+      if (!expectedOracle || JSON.stringify(evidence?.oracle) !== JSON.stringify(expectedOracle)) errors.push(`${publication}: evidence does not bind the exact gRPC Protobuf oracle authority, harness, source, case, result, and toolchain observation`);
+      if (!oracleGate || oracleGate.resultSha256 !== sha256(Buffer.from(oracleStdout))) errors.push(`${publication}: gRPC Protobuf oracle gate digest does not bind its canonical observation`);
+      const runners = Array.isArray(evidence?.runners) ? evidence.runners : [];
+      for (const language of ["go", "typescript"]) {
+        const matches = runners.filter((runner) => runner?.language === language);
+        if (matches.length !== 1 || matches[0].id !== `grpc-runner-${language}` || !sameArray(matches[0].command, GRPC_RUNNER_COMMANDS[language]) || matches[0].status !== "pass" || matches[0].exitCode !== 0 || matches[0].target !== "stage" || matches[0].targetRootSha256 !== record.rootSha256 || matches[0].apparatusRootSha256 !== stage?.apparatusRootSha256 || matches[0].corpusSha256 !== stage?.grpcProcessorCorpusSha256 || !/^[0-9a-f]{64}$/.test(matches[0].resultSha256 || "")) errors.push(`${publication}: evidence lacks exact-command, exact-root ${language} runner execution`);
+      }
+      if (runners.length !== 2) errors.push(`${publication}: evidence runner set is not closed`);
+
+      const reviews = Array.isArray(adjudication?.reviews) ? adjudication.reviews : [];
+      const p3 = new Set();
+      const findingIds = new Set();
+      const reviewerIds = new Set();
+      for (const role of ["authority", "conformance", "publisher"]) {
+        const matches = reviews.filter((review) => review?.role === role);
+        if (matches.length !== 1 || matches[0]?.verdict !== "ACCEPT" || matches[0]?.rootSha256 !== record.rootSha256 || matches[0]?.stageRecordSha256 !== stageDigest || !matches[0]?.reviewer || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(matches[0]?.recordedAt || "") || Number.isNaN(Date.parse(matches[0]?.recordedAt))) errors.push(`${publication}: adjudication lacks named, dated exact-stage ACCEPT from ${role}`);
+        if (matches.length === 1 && matches[0]?.reviewer) reviewerIds.add(matches[0].reviewer.normalize("NFKC").trim().toLowerCase());
+        for (const finding of matches[0]?.findings || []) {
+          if (findingIds.has(finding.id)) errors.push(`${publication}: duplicate finding id ${finding.id}`);
+          findingIds.add(finding.id);
+          if (finding.severity === "p3") p3.add(finding.id);
+          else if (["p0", "p1", "p2"].includes(finding.severity) && finding.status === "open") errors.push(`${publication}: unresolved ${finding.severity.toUpperCase()} finding ${finding.id}`);
+        }
+      }
+      if (reviews.length !== 3 || adjudication?.unresolvedP0P2 !== 0) errors.push(`${publication}: adjudication review set is not closed with zero unresolved P0-P2`);
+      if (currentStage && reviewerIds.size !== 3) errors.push(`${publication}: authority, conformance, and publisher reviews do not name three distinct normalized reviewers`);
+      const dispositions = Array.isArray(adjudication?.p3Dispositions) ? adjudication.p3Dispositions : [];
+      const dispositionIds = new Set(dispositions.map((entry) => entry?.id));
+      if (dispositionIds.size !== dispositions.length || dispositionIds.size !== p3.size || [...p3].some((id) => !dispositionIds.has(id)) || dispositions.some((entry) => !["accepted", "deferred", "resolved"].includes(entry?.decision) || !entry?.rationale)) errors.push(`${publication}: P3 dispositions are not the exact complete reviewer P3 union`);
+
+      let derivedModules = [];
+      try {
+        derivedModules = expectedModuleClosure(recordIdentifiers);
+      } catch (error) {
+        errors.push(`${publication}: cannot derive normative module closure: ${error.message}`);
+      }
+      if ((record.modules || []).length !== derivedModules.length) errors.push(`${publication}: module closure cardinality differs from authoritative family registry`);
+      for (const expected of derivedModules) {
+        const matches = (record.modules || []).filter((module) => module.identifier === expected.identifier);
+        const expectedPath = `root/${expected.document}`;
+        const expectedCanonical = `https://openbindings.com/binding-spec-modules/${expected.module}/${expected.revision}`;
+        const expectedRaw = `https://openbindings.com/raw/binding-spec-modules/${expected.module}/${expected.revision}.md`;
+        const modulePath = join(dirname(recordPath), expectedPath);
+        const digest = existsSync(modulePath) ? sha256(readFileSync(modulePath)) : null;
+        if (matches.length !== 1 || !sameArray(matches[0].consumers, expected.consumers) || matches[0].path !== expectedPath || matches[0].canonicalUrl !== expectedCanonical || matches[0].rawUrl !== expectedRaw || matches[0].sha256 !== digest) errors.push(`${publication}: ${expected.identifier} is not the independently derived exact module closure`);
+        if (currentStage && matches.length === 1) {
+          const manifestModule = modulesByIdentifier.get(expected.identifier);
+          const expectedSourcePath = manifestModule?.publication === publication
+            ? (expected.revision === 1 ? MODULES[expected.module].document : `binding-specs/candidates/modules/${expected.module}/${expected.revision}/openbindings.${expected.module}.md`)
+            : manifestModule?.document;
+          if (matches[0].sourcePath !== expectedSourcePath) errors.push(`${publication}: ${expected.identifier} does not record its exact immutable or candidate source path`);
+        }
+        if (existsSync(modulePath)) {
+          const markdown = readFileSync(modulePath, "utf8");
+          if (!hasCanonicalPublicationState(markdown)) errors.push(`${publication}: ${expected.identifier} archived bytes lack canonical status-neutral publication state`);
+          try { assertExactCoreAuthority(markdown, expected.identifier, record.coreRelease); }
+          catch (error) { errors.push(`${publication}: ${error.message}`); }
+        }
+      }
+      const stageDocuments = Array.isArray(stage?.definingDocuments) ? stage.definingDocuments : [];
+      if (stageDocuments.length !== manifestEntries.length) errors.push(`${publication}: stage defining-document closure cardinality differs from manifest cohort`);
+      for (const entry of manifestEntries) {
+        const archivedPath = join(ROOT, entry.document);
+        const expectedStagePath = entry.document.slice(relative(ROOT, dirname(recordPath)).split("\\").join("/").length + 1);
+        const matches = stageDocuments.filter((document) => document.identifier === entry.identifier);
+        const markdown = existsSync(archivedPath) ? readFileSync(archivedPath, "utf8") : "";
+        if (matches.length !== 1 || matches[0].path !== expectedStagePath || matches[0].canonicalUrl !== entry.canonicalUrl || matches[0].rawUrl !== entry.rawUrl || matches[0].family !== entry.family || matches[0].revision !== entry.revision || matches[0].sha256 !== (existsSync(archivedPath) ? sha256(readFileSync(archivedPath)) : null)) errors.push(`${publication}: ${entry.identifier} is not the exact staged defining-document closure`);
+        if (!hasCanonicalPublicationState(markdown)) errors.push(`${publication}: ${entry.identifier} archived bytes lack canonical status-neutral publication state`);
+        try { assertExactCoreAuthority(markdown, entry.identifier, record.coreRelease); }
+        catch (error) { errors.push(`${publication}: ${error.message}`); }
+        for (const module of derivedModules.filter((candidate) => candidate.consumers.includes(entry.identifier))) {
+          const route = `/binding-spec-modules/${module.module}/${module.revision}`;
+          if (!markdown.includes(`](${route})`) || /\]\(\.\.\/modules\/openbindings\./.test(markdown)) errors.push(`${publication}: ${entry.identifier} does not cite ${module.identifier} through its permanent module route`);
+        }
+      }
+    }
+  }
   const archivedCorePath = join(dirname(recordPath), "root", "openbindings.md");
   if (!existsSync(archivedCorePath)) {
     errors.push(`${publication}: immutable bundle is missing root/openbindings.md`);
@@ -600,6 +1018,12 @@ if (base) {
         } else if (JSON.stringify(current) !== JSON.stringify(oldEntry)) {
           errors.push(`published manifest entry changed: ${oldEntry.identifier}`);
         }
+      }
+      const currentModulesById = new Map(modules.map((entry) => [entry.identifier, entry]));
+      for (const oldEntry of oldManifest.modules || []) {
+        const current = currentModulesById.get(oldEntry.identifier);
+        if (!current) errors.push(`published module entry removed: ${oldEntry.identifier}`);
+        else if (JSON.stringify(current) !== JSON.stringify(oldEntry)) errors.push(`published module entry changed: ${oldEntry.identifier}`);
       }
     }
   }

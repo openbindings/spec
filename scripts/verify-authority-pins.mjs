@@ -62,14 +62,17 @@ const MANIFEST = join(SPEC_ROOT, "binding-specs", "AUTHORITY-PINS.json");
 const CACHE = join(SPEC_ROOT, ".authority-cache");
 
 const BINDING_SPECS = join(SPEC_ROOT, "binding-specs");
-const SPEC_TEXTS = readdirSync(BINDING_SPECS, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
-  .flatMap((entry) =>
-    readdirSync(join(BINDING_SPECS, entry.name))
-      .filter((name) => /^openbindings\..+\.md$/.test(name))
-      .map((name) => `binding-specs/${entry.name}/${name}`),
-  )
-  .sort();
+function bindingSpecTexts(dir, rel = "binding-specs") {
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === "releases") continue;
+    const childRel = `${rel}/${entry.name}`;
+    if (entry.isDirectory()) out.push(...bindingSpecTexts(join(dir, entry.name), childRel));
+    else if (/^openbindings\..+\.md$/.test(entry.name)) out.push(childRel);
+  }
+  return out;
+}
+const SPEC_TEXTS = bindingSpecTexts(BINDING_SPECS).sort();
 SPEC_TEXTS.push("binding-specs/README.md");
 
 const problems = []; // { kind, message } — kind: moved | unreachable | completeness | manifest

@@ -1,0 +1,74 @@
+{
+  "$id": "https://openbindings.com/binding-specs/publication-adjudication.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evidenceSha256": { "$ref": "#/$defs/digest" },
+    "format": { "const": "openbindings.binding-spec-publication-adjudication@2" },
+    "identifiers": { "items": { "type": "string" }, "minItems": 1, "type": "array", "uniqueItems": true },
+    "p3Dispositions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "decision": { "enum": ["accepted", "deferred", "resolved"] },
+          "id": { "minLength": 1, "type": "string" },
+          "rationale": { "minLength": 1, "type": "string" }
+        },
+        "required": ["decision", "id", "rationale"],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "publication": { "type": "string" },
+    "reviews": {
+      "$comment": "Exactly one authority, conformance, and publisher review is required. The publication finalizer additionally requires their NFKC-trimmed, case-folded reviewer identifiers to be pairwise distinct; JSON Schema cannot express that cross-item identity constraint.",
+      "items": { "$ref": "#/$defs/review" },
+      "maxItems": 3,
+      "minItems": 3,
+      "type": "array"
+    },
+    "rootSha256": { "$ref": "#/$defs/digest" },
+    "stageRecordSha256": { "$ref": "#/$defs/digest" },
+    "unresolvedP0P2": { "const": 0 }
+  },
+  "required": ["evidenceSha256", "format", "identifiers", "p3Dispositions", "publication", "reviews", "rootSha256", "stageRecordSha256", "unresolvedP0P2"],
+  "type": "object",
+  "$defs": {
+    "digest": { "pattern": "^[0-9a-f]{64}$", "type": "string" },
+    "finding": {
+      "additionalProperties": false,
+      "properties": {
+        "id": { "minLength": 1, "type": "string" },
+        "severity": { "enum": ["p0", "p1", "p2", "p3"] },
+        "status": { "enum": ["open", "resolved"] },
+        "summary": { "minLength": 1, "type": "string" }
+      },
+      "required": ["id", "severity", "status", "summary"],
+      "type": "object"
+    },
+    "review": {
+      "additionalProperties": false,
+      "properties": {
+        "findings": { "items": { "$ref": "#/$defs/finding" }, "type": "array" },
+        "recordedAt": { "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", "type": "string" },
+        "reviewer": { "minLength": 1, "type": "string" },
+        "role": { "enum": ["authority", "conformance", "publisher"] },
+        "rootSha256": { "$ref": "#/$defs/digest" },
+        "stageRecordSha256": { "$ref": "#/$defs/digest" },
+        "unresolved": {
+          "additionalProperties": false,
+          "properties": {
+            "p0": { "minimum": 0, "type": "integer" },
+            "p1": { "minimum": 0, "type": "integer" },
+            "p2": { "minimum": 0, "type": "integer" }
+          },
+          "required": ["p0", "p1", "p2"],
+          "type": "object"
+        },
+        "verdict": { "const": "ACCEPT" }
+      },
+      "required": ["findings", "recordedAt", "reviewer", "role", "rootSha256", "stageRecordSha256", "unresolved", "verdict"],
+      "type": "object"
+    }
+  }
+}

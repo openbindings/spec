@@ -1,0 +1,53 @@
+syntax = "proto3";
+package processorvalues;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+enum State {
+  option allow_alias = true;
+  STATE_UNSPECIFIED = 0;
+  STATE_READY = 1;
+  STATE_READY_ALIAS = 1;
+}
+
+message Wire {
+  int32 a = 1;
+  repeated int32 values = 2;
+}
+
+message Node {
+  string snake_case = 1 [json_name = "customName"];
+  int64 big = 2;
+  bytes raw = 3;
+  repeated int32 numbers = 4;
+  map<string, int32> labels = 5;
+  oneof choice {
+    string text = 6;
+    int32 count = 7;
+  }
+  State state = 8;
+  Node next = 9;
+  google.protobuf.Timestamp timestamp = 10;
+  google.protobuf.Duration duration = 11;
+  google.protobuf.FieldMask mask = 12;
+  google.protobuf.Struct object = 13;
+  google.protobuf.StringValue wrapped = 14;
+  google.protobuf.Any any = 15;
+  uint64 unsigned64 = 16;
+  double precise = 17;
+  float ratio = 18;
+  map<bool, int32> bools = 19;
+  map<int32, string> ints = 20;
+  map<uint64, string> uints = 21;
+  google.protobuf.NullValue null_value = 22 [json_name = "nullValue"];
+  google.protobuf.Value dynamic = 23;
+}
+
+service Values {
+  rpc Unary(Node) returns (Node);
+}
