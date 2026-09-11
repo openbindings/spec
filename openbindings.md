@@ -105,7 +105,9 @@ JSON shown inline in this document is illustrative unless the surrounding prose 
 
 ## 1. Positioning and scope
 
-OpenBindings operates one layer above protocol-specific interface specifications like OpenAPI, AsyncAPI, gRPC, and MCP. Those specifications describe how to interact with endpoints over a particular wire format. An OBI describes, at the layer above: protocol-independent operation contracts, concrete realizations the document's publisher makes available, named operation dependencies the described component consumes, and the shared names by which those operations can be recognized.
+This specification defines an interface document model, not a client–server protocol or runtime API. An OBI may be authored and supplied independently of the software it describes. This specification does not require that software to publish, receive, or interpret the OBI.
+
+OpenBindings operates one layer above protocol-specific interface specifications like OpenAPI, AsyncAPI, gRPC, and MCP. Those specifications describe how to interact with endpoints over a particular wire format. An OBI describes, at the layer above: protocol-independent operation contracts, concrete realizations declared through bindings, named operation dependencies the described component consumes, and the shared names by which those operations can be recognized.
 
 Two stances define this specification's shape, and the rest of the document is read in their light:
 
@@ -392,7 +394,7 @@ An OBI document is a JSON object. Top-level fields:
 
 **Names.** All map keys this specification defines (operation, dependency, binding, source, transform, schema, and example keys) and all operation aliases MUST match the pattern `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` ([OBI-D-03](#102-document-rules)). Names are opaque ASCII tokens compared by exact, case-sensitive string equality: processors do not trim, case-fold, Unicode-normalize, or otherwise rewrite them. Dot and hyphen carry no structural semantics; a dot may be used by authoring convention to qualify a shared name ([§5.1](#51-operations)), but nothing in this specification parses the segments. Names are not URIs, paths, or native programming-language identifiers merely because their spelling resembles one; code generators apply their own deterministic naming policy. The grammar permits a leading digit (`2fa.verify`) for the same reason: names are data labels, not host-language identifiers, and excluding spellings that only some target languages reject would push one ecosystem's lexical rules into every document. Operation keys MUST be unique within a document; dependency, binding, source, transform, and schema keys MUST be unique within their respective maps.
 
-**Value domain.** Operation-boundary values are JSON values per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). A payload that is not naturally JSON (binary content, text with its own syntax) crosses the operation boundary only in a JSON representation, and which representation a binding uses is its binding specification's concern.
+**Value representation.** Operation inputs and outputs are described in terms of the JSON data model per [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259). The governing binding specification defines how that representation corresponds to the data of the source interaction. This does not prescribe the data types a tool uses internally or exposes through its own APIs, nor require it to materialize JSON text. The applicable schema, transform, and binding semantics govern interpretation of the described values; tool obligations remain scoped to the capabilities exercised ([§10.1](#101-tool-obligations)).
 
 ### 5.1. Operations
 
