@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-mqtt-peer-1.schema.json",
+  "title": "AsyncAPI MQTT peer script revision 1",
+  "type": "object",
+  "required": ["protocolVersion", "connection", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "protocolVersion": { "enum": ["3.1.1", "5.0"] },
+    "connection": {
+      "type": "object",
+      "required": ["accepted"],
+      "additionalProperties": false,
+      "properties": {
+        "accepted": { "type": "boolean" },
+        "returnCode": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "reasonCode": { "enum": [0, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 140, 144, 149, 151, 153, 154, 155, 156, 157, 159] },
+        "sessionPresent": { "type": "boolean" },
+        "properties": { "$ref": "#/$defs/connackProperties" }
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/ackEvent" },
+          { "$ref": "#/$defs/publishEvent" },
+          { "$ref": "#/$defs/disconnectEvent" },
+          { "$ref": "#/$defs/transportLossEvent" },
+          { "$ref": "#/$defs/reconnectEvent" }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "protocolVersion": { "const": "3.1.1" } }, "required": ["protocolVersion"] },
+      "then": {
+        "properties": {
+          "connection": {
+            "if": { "properties": { "accepted": { "const": true } }, "required": ["accepted"] },
+            "then": {
+              "required": ["sessionPresent"],
+              "not": { "anyOf": [{ "required": ["returnCode"] }, { "required": ["reasonCode"] }, { "required": ["properties"] }] }
+            },
+            "else": {
+              "required": ["returnCode", "sessionPresent"],
+              "properties": { "sessionPresent": { "const": false } },
+              "not": { "anyOf": [{ "required": ["reasonCode"] }, { "required": ["properties"] }] }
+            }
+          },
+          "events": {
+            "items": {
+              "allOf": [
+                { "not": { "properties": { "kind": { "const": "disconnect" } }, "required": ["kind"] } },
+                {
+                  "if": { "properties": { "kind": { "const": "reconnect" } }, "required": ["kind"] },
+                  "then": { "not": { "anyOf": [{ "required": ["properties"] }, { "required": ["connect"] }] } }
+                },
+                { "not": { "required": ["subscribe"] } }
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "connection": {
+            "required": ["reasonCode", "properties"],
+            "not": { "required": ["returnCode"] },
+            "if": { "properties": { "accepted": { "const": true } }, "required": ["accepted"] },
+            "then": { "required": ["sessionPresent"], "properties": { "reasonCode": { "const": 0 } } },
+            "else": { "required": ["sessionPresent"], "properties": { "sessionPresent": { "const": false }, "reasonCode": { "not": { "const": 0 } } } }
+          },
+          "events": {
+            "items": {
+              "allOf": [
+                {
+                  "if": { "properties": { "kind": { "const": "reconnect" } }, "required": ["kind"] },
+                  "then": { "required": ["connect", "properties"] }
+                },
+                {
+                  "if": { "properties": { "kind": { "const": "suback" } }, "required": ["kind"] },
+                  "then": { "required": ["subscribe"] },
+                  "else": { "not": { "required": ["subscribe"] } }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "base64": { "type": "string", "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$" },
+    "trigger": {
+      "oneOf": [
+        { "type": "object", "required": ["kind"], "additionalProperties": false, "properties": { "kind": { "const": "start" } } },
+        { "type": "object", "required": ["kind", "index"], "additionalProperties": false, "properties": { "kind": { "const": "action" }, "index": { "type": "integer", "minimum": 0 } } },
+        {
+          "type": "object", "required": ["kind", "name", "count"], "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "native" },
+            "name": { "enum": ["dispatch", "acknowledgement", "subscription-opened", "subscription-closed", "input-half-closed", "cancellation-propagated", "connection-opened", "connection-closed", "reconnected", "delivery"] },
+            "count": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "ackEvent": {
+      "type": "object",
+      "required": ["after", "kind", "packetId"],
+      "additionalProperties": false,
+      "properties": {
+        "after": { "$ref": "#/$defs/trigger" },
+        "kind": { "enum": ["puback", "pubrec", "pubrel", "pubcomp", "suback", "unsuback"] },
+        "packetId": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "reasonCode": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "grantedQos": { "enum": [0, 1, 2, 128] },
+        "properties": { "$ref": "#/$defs/ackProperties" },
+        "subscribe": { "$ref": "#/$defs/subscribeEvidence" }
+      }
+    },
+    "subscribeEvidence": {
+      "type": "object", "required": ["topic", "qos", "properties"], "additionalProperties": false,
+      "properties": {
+        "topic": { "type": "string", "minLength": 1 },
+        "qos": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "properties": { "$ref": "#/$defs/subscribeProperties" }
+      }
+    },
+    "subscribeProperties": {
+      "type": "array", "description": "Exact ordered, duplicate-preserving MQTT 5 SUBSCRIBE property sequence.",
+      "items": { "oneOf": [
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "subscription-identifier" }, "value": { "type": "integer", "minimum": 1, "maximum": 268435455 } } },
+        { "$ref": "#/$defs/userProperty" }
+      ] },
+      "contains": { "type": "object", "properties": { "name": { "const": "subscription-identifier" } }, "required": ["name"] },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "publishEvent": {
+      "type": "object",
+      "required": ["after", "kind", "topic", "qos", "retain", "duplicate", "payloadBase64"],
+      "additionalProperties": false,
+      "properties": {
+        "after": { "$ref": "#/$defs/trigger" }, "kind": { "const": "publish" },
+        "topic": { "type": "string", "minLength": 1 }, "qos": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "retain": { "type": "boolean" }, "duplicate": { "type": "boolean" },
+        "payloadBase64": { "$ref": "#/$defs/base64" },
+        "packetId": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "properties": { "$ref": "#/$defs/publishProperties" }
+      },
+      "allOf": [{ "if": { "properties": { "qos": { "const": 0 } }, "required": ["qos"] }, "then": { "not": { "required": ["packetId"] }, "properties": { "duplicate": { "const": false } } }, "else": { "required": ["packetId"] } }]
+    },
+    "disconnectEvent": {
+      "type": "object", "required": ["after", "kind"], "additionalProperties": false,
+      "properties": {
+        "after": { "$ref": "#/$defs/trigger" }, "kind": { "const": "disconnect" },
+        "reasonCode": { "enum": [0, 128, 129, 130, 131, 135, 137, 139, 141, 142, 143, 144, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162] },
+        "properties": { "$ref": "#/$defs/disconnectProperties" }
+      },
+      "allOf": [{
+        "properties": { "properties": { "not": { "contains": { "type": "object", "properties": { "name": { "const": "session-expiry-interval" } }, "required": ["name"] } } } }
+      }]
+    },
+    "transportLossEvent": {
+      "type": "object", "required": ["after", "kind"], "additionalProperties": false,
+      "properties": { "after": { "$ref": "#/$defs/trigger" }, "kind": { "const": "transport-loss" } }
+    },
+    "connectProperties": {
+      "type": "array", "items": { "oneOf": [
+        { "$ref": "#/$defs/userProperty" },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "session-expiry-interval" }, "value": { "type": "integer", "minimum": 0, "maximum": 4294967295 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "receive-maximum" }, "value": { "type": "integer", "minimum": 1, "maximum": 65535 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "topic-alias-maximum" }, "value": { "type": "integer", "minimum": 0, "maximum": 65535 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "request-response-information" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "authentication-method" }, "value": { "type": "string", "minLength": 1 } } },
+        { "type": "object", "required": ["name", "valueBase64"], "additionalProperties": false, "properties": { "name": { "const": "authentication-data" }, "valueBase64": { "$ref": "#/$defs/base64" } } }
+      ] }
+    },
+    "reconnectConnect": {
+      "type": "object",
+      "required": ["clientId", "cleanStart", "keepAlive", "usernamePresent", "passwordPresent", "properties"],
+      "additionalProperties": false,
+      "properties": {
+        "clientId": { "type": "string" },
+        "cleanStart": { "type": "boolean" },
+        "keepAlive": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "usernamePresent": { "type": "boolean" },
+        "passwordPresent": { "type": "boolean" },
+        "usernameSha256": { "anyOf": [{ "type": "null" }, { "type": "string", "pattern": "^[0-9a-f]{64}$" }] },
+        "passwordSha256": { "anyOf": [{ "type": "null" }, { "type": "string", "pattern": "^[0-9a-f]{64}$" }] },
+        "properties": { "$ref": "#/$defs/connectProperties" }
+      },
+      "allOf": [
+        { "if": { "properties": { "clientId": { "const": "" } }, "required": ["clientId"] }, "then": { "properties": { "cleanStart": { "const": true } } } },
+        { "if": { "properties": { "usernamePresent": { "const": true } }, "required": ["usernamePresent"] }, "then": { "required": ["usernameSha256"], "properties": { "usernameSha256": { "type": "string" } } }, "else": { "properties": { "usernameSha256": { "type": "null" } } } },
+        { "if": { "properties": { "passwordPresent": { "const": true } }, "required": ["passwordPresent"] }, "then": { "required": ["passwordSha256"], "properties": { "usernamePresent": { "const": true }, "passwordSha256": { "type": "string" } } }, "else": { "properties": { "passwordSha256": { "type": "null" } } } }
+      ]
+    },
+    "reconnectEvent": {
+      "type": "object", "required": ["after", "kind", "attempt", "sessionPresent"], "additionalProperties": false,
+      "properties": {
+        "after": { "$ref": "#/$defs/trigger" }, "kind": { "const": "reconnect" },
+        "attempt": { "type": "integer", "minimum": 1 }, "sessionPresent": { "type": "boolean" },
+        "connect": { "$ref": "#/$defs/reconnectConnect" },
+        "properties": { "$ref": "#/$defs/connackProperties" }
+      }
+    },
+    "userProperty": { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "user-property" }, "value": { "type": "array", "prefixItems": [{ "type": "string" }, { "type": "string" }], "items": false, "minItems": 2 } } },
+    "reasonString": { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "reason-string" }, "value": { "type": "string" } } },
+    "publishProperties": {
+      "type": "array", "description": "Ordered, duplicate-preserving MQTT 5 PUBLISH property sequence.",
+      "items": { "oneOf": [
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "content-type" }, "value": { "type": "string" } } },
+        { "type": "object", "required": ["name", "valueBase64"], "additionalProperties": false, "properties": { "name": { "const": "correlation-data" }, "valueBase64": { "$ref": "#/$defs/base64" } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "message-expiry-interval" }, "value": { "type": "integer", "minimum": 0, "maximum": 4294967295 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "payload-format-indicator" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "response-topic" }, "value": { "type": "string", "minLength": 1, "pattern": "^[^+#]+$" } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "subscription-identifier" }, "value": { "type": "integer", "minimum": 1, "maximum": 268435455 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "topic-alias" }, "value": { "type": "integer", "minimum": 1, "maximum": 65535 } } },
+        { "$ref": "#/$defs/userProperty" }
+      ] }
+    },
+    "ackProperties": { "type": "array", "items": { "oneOf": [{ "$ref": "#/$defs/reasonString" }, { "$ref": "#/$defs/userProperty" }] } },
+    "disconnectProperties": {
+      "type": "array", "items": { "oneOf": [
+        { "$ref": "#/$defs/reasonString" }, { "$ref": "#/$defs/userProperty" },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "session-expiry-interval" }, "value": { "type": "integer", "minimum": 0, "maximum": 4294967295 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "server-reference" }, "value": { "type": "string", "minLength": 1 } } }
+      ] }
+    },
+    "connackProperties": {
+      "type": "array", "items": { "oneOf": [
+        { "$ref": "#/$defs/reasonString" }, { "$ref": "#/$defs/userProperty" },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "session-expiry-interval" }, "value": { "type": "integer", "minimum": 0, "maximum": 4294967295 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "assigned-client-identifier" }, "value": { "type": "string", "minLength": 1 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "receive-maximum" }, "value": { "type": "integer", "minimum": 1, "maximum": 65535 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "topic-alias-maximum" }, "value": { "type": "integer", "minimum": 0, "maximum": 65535 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "server-keep-alive" }, "value": { "type": "integer", "minimum": 0, "maximum": 65535 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "maximum-qos" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "retain-available" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "wildcard-subscription-available" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "subscription-identifier-available" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "shared-subscription-available" }, "value": { "enum": [0, 1] } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "server-reference" }, "value": { "type": "string", "minLength": 1 } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "response-information" }, "value": { "type": "string" } } },
+        { "type": "object", "required": ["name", "value"], "additionalProperties": false, "properties": { "name": { "const": "authentication-method" }, "value": { "type": "string", "minLength": 1 } } },
+        { "type": "object", "required": ["name", "valueBase64"], "additionalProperties": false, "properties": { "name": { "const": "authentication-data" }, "valueBase64": { "$ref": "#/$defs/base64" } } }
+      ] }
+    }
+  }
+}

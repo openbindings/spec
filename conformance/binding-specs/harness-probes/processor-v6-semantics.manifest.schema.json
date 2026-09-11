@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v6-semantics.manifest.schema.json",
+  "title": "Portable revision-6 semantic qualification manifest",
+  "type": "object",
+  "required": [
+    "format",
+    "algorithm",
+    "artifactFile",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "openbindings.binding-spec-harness-semantics-manifest@1"
+    },
+    "algorithm": {
+      "const": "openbindings.sorted-json-sha256@1"
+    },
+    "artifactFile": {
+      "const": "processor-v6-semantics.json"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "caseId",
+          "trialId",
+          "expectation",
+          "sha256"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "caseId": {
+            "type": "string",
+            "pattern": "^V6-SEMANTIC-[A-Z0-9-]+$"
+          },
+          "trialId": {
+            "type": "string",
+            "pattern": "^V6-SEMANTIC-[A-Z0-9-]+-[AR][0-9]{2}$"
+          },
+          "expectation": {
+            "enum": [
+              "accepted",
+              "rejected"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

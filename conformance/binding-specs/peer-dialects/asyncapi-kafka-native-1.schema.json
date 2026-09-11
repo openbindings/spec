@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-kafka-native-1.schema.json",
+  "title": "AsyncAPI Kafka normalized native observation revision 1",
+  "oneOf": [
+    { "$ref": "#/$defs/record" },
+    { "$ref": "#/$defs/ack" },
+    { "$ref": "#/$defs/subscription" },
+    { "$ref": "#/$defs/reconnected" },
+    { "$ref": "#/$defs/empty" }
+  ],
+  "$defs": {
+    "base64": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    },
+    "headers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "valueBase64"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "valueBase64": { "$ref": "#/$defs/base64" }
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "enum": ["dispatch", "delivery"] },
+        "facts": {
+          "type": "object",
+          "required": ["topic", "partition", "offset", "keyBase64", "valueBase64", "headers", "redelivered"],
+          "additionalProperties": false,
+          "properties": {
+            "topic": { "type": "string", "minLength": 1 },
+            "partition": { "type": "integer", "minimum": 0 },
+            "offset": {
+              "anyOf": [
+                { "type": "string", "pattern": "^(?:0|[1-9][0-9]{0,18})$" },
+                { "type": "null" }
+              ]
+            },
+            "keyBase64": { "anyOf": [{ "$ref": "#/$defs/base64" }, { "type": "null" }] },
+            "valueBase64": { "$ref": "#/$defs/base64" },
+            "headers": { "$ref": "#/$defs/headers" },
+            "redelivered": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "ack": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "acknowledgement" },
+        "facts": {
+          "type": "object",
+          "required": ["topic", "partition", "offset", "boundary"],
+          "additionalProperties": false,
+          "properties": {
+            "topic": { "type": "string", "minLength": 1 },
+            "partition": { "type": "integer", "minimum": 0 },
+            "offset": { "type": "string", "pattern": "^(?:0|[1-9][0-9]{0,18})$" },
+            "boundary": { "const": "broker-accepted" }
+          }
+        }
+      }
+    },
+    "subscription": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "enum": ["subscription-opened", "subscription-closed"] },
+        "facts": {
+          "type": "object",
+          "required": ["topic", "partitions"],
+          "additionalProperties": false,
+          "properties": {
+            "topic": { "type": "string", "minLength": 1 },
+            "partitions": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "reconnected": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "reconnected" },
+        "facts": {
+          "type": "object",
+          "required": ["attempt"],
+          "additionalProperties": false,
+          "properties": { "attempt": { "type": "integer", "minimum": 1 } }
+        }
+      }
+    },
+    "empty": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "enum": ["input-half-closed", "cancellation-propagated", "connection-opened", "connection-closed"] },
+        "facts": { "type": "object", "maxProperties": 0 }
+      }
+    }
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "rule": "ASYNC31-D-07",
+  "bindingSpec": "openbindings.asyncapi-3.1@1",
+  "section": "5",
+  "description": "HTTP response, terminal outcome, and zero-output boundary.",
+  "tests": [
+    {
+      "description": "a zero-content 204 completion has no output",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a framed non-2xx response is an unsuccessful outcome without output",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "reply is excluded",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  },
+                  "reply": {}
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-07"
+      ]
+    },
+    {
+      "description": "HTTPS response semantics are excluded",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "https",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-07"
+      ]
+    },
+    {
+      "description": "payload response schema is excluded",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {
+                      "payload": {}
+                    }
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-07"
+      ]
+    },
+    {
+      "description": "security response branch is excluded",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "security": [],
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-07"
+      ]
+    }
+  ]
+}

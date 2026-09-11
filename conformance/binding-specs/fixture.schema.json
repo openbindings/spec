@@ -9,7 +9,7 @@
   "properties": {
     "rule": {
       "type": "string",
-      "pattern": "^(USAGE|OAPI(20|30|31|32)|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+$",
+      "pattern": "^(USAGE|OAPI(20|30|31|32)|MCP|GRPC|CONN|ASYNC(26|30|31)?|GQL)-D-[0-9]+$",
       "description": "The family source-rule identifier this fixture covers, as defined in the family binding specification's Conformance section (e.g., USAGE-D-02)."
     },
     "bindingSpec": {
@@ -62,7 +62,7 @@
             "description": "When valid is false, the set of rules the document is intended to test as violated — family D-rules, plus core OBI rules where an overlap is inherent (e.g. a relative-in-form location also violates OBI-D-05). Minimum-set semantics, exactly as the core corpus defines them: a tool that reports violated rules at all must report at least these; supersets are never a defect.",
             "items": {
               "type": "string",
-              "pattern": "^((USAGE|OAPI(20|30|31|32)|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+|OBI-[DT]-[0-9]+)$"
+              "pattern": "^((USAGE|OAPI(20|30|31|32)|MCP|GRPC|CONN|ASYNC(26|30|31)?|GQL)-D-[0-9]+|OBI-[DT]-[0-9]+)$"
             }
           }
         }

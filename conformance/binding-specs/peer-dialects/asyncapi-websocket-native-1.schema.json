@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-websocket-native-1.schema.json",
+  "title": "AsyncAPI WebSocket normalized native observation revision 1",
+  "oneOf": [
+    { "$ref": "#/$defs/openingRequest" },
+    { "$ref": "#/$defs/opened" },
+    { "$ref": "#/$defs/message" },
+    { "$ref": "#/$defs/closeDispatch" },
+    { "$ref": "#/$defs/closed" },
+    { "$ref": "#/$defs/empty" }
+  ],
+  "$defs": {
+    "base64": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    },
+    "openingRequest": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "dispatch" },
+        "facts": {
+          "type": "object",
+          "required": ["frameType", "headers", "method", "target", "host", "connection", "upgrade", "secWebSocketKey", "secWebSocketVersion", "subprotocols", "extensions", "authorizationSha256", "apiKeyHeaders"],
+          "additionalProperties": false,
+          "properties": {
+            "frameType": { "const": "opening-request" },
+            "headers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "valueSha256"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+                  "valueSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+                }
+              }
+            },
+            "method": { "const": "GET" },
+            "target": { "type": "string", "minLength": 1 },
+            "host": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000-\\u001F\\u007F]+$" },
+            "connection": { "const": "Upgrade" },
+            "upgrade": { "const": "websocket" },
+            "secWebSocketKey": { "$ref": "#/$defs/base64" },
+            "secWebSocketVersion": { "const": "13" },
+            "subprotocols": { "type": "array", "maxItems": 0 },
+            "extensions": { "type": "array", "maxItems": 0 },
+            "authorizationSha256": { "anyOf": [{ "type": "null" }, { "type": "string", "pattern": "^[0-9a-f]{64}$" }] },
+            "apiKeyHeaders": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "valueSha256"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+                  "valueSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "opened": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "connection-opened" },
+        "facts": {
+          "type": "object",
+          "required": ["status", "upgrade", "connectionTokens", "secWebSocketAccept", "subprotocol", "extensions"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "const": 101 },
+            "upgrade": { "type": "string", "pattern": "^[Ww][Ee][Bb][Ss][Oo][Cc][Kk][Ee][Tt]$" },
+            "connectionTokens": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+              "contains": { "type": "string", "pattern": "^[Uu][Pp][Gg][Rr][Aa][Dd][Ee]$" }
+            },
+            "secWebSocketAccept": { "$ref": "#/$defs/base64" },
+            "subprotocol": { "type": "null" },
+            "extensions": { "type": "array", "maxItems": 0 }
+          }
+        }
+      }
+    },
+    "message": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "enum": ["dispatch", "delivery"] },
+        "facts": {
+          "type": "object",
+          "required": ["opcode", "messageBase64", "fragmentCount"],
+          "additionalProperties": false,
+          "properties": {
+            "opcode": { "enum": ["text", "binary"] },
+            "messageBase64": { "$ref": "#/$defs/base64" },
+            "fragmentCount": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "closeDispatch": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "dispatch" },
+        "facts": {
+          "type": "object",
+          "required": ["frameType", "code", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "frameType": { "const": "close" },
+            "code": {
+              "anyOf": [
+                { "enum": [1000, 1001, 1002, 1003, 1007, 1008, 1009, 1010, 1011] },
+                { "type": "integer", "minimum": 3000, "maximum": 4999 }
+              ]
+            },
+            "reason": { "type": "string", "maxLength": 123 }
+          }
+        }
+      }
+    },
+    "closed": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "connection-closed" },
+        "facts": {
+          "type": "object",
+          "required": ["origin", "clean", "code", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "origin": { "enum": ["peer", "local"] },
+            "clean": { "type": "boolean" },
+            "code": { "type": ["integer", "null"], "minimum": 1000, "maximum": 4999 },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+    "empty": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "enum": ["input-half-closed", "cancellation-propagated"] },
+        "facts": { "type": "object", "maxProperties": 0 }
+      }
+    }
+  }
+}

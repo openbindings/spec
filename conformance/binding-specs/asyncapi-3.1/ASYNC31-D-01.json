@@ -1,0 +1,250 @@
+{
+  "rule": "ASYNC31-D-01",
+  "bindingSpec": "openbindings.asyncapi-3.1@1",
+  "section": "3",
+  "description": "Source carriage, deterministic object/YAML representation, exact edition, Info envelope, and root map-container shapes satisfy the closed load gate.",
+  "tests": [
+    {
+      "description": "exact 3.1.0 object content passes the load gate",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Kernel","version":"1"},"servers":{"s":{"host":"example.test","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a leading BOM and one YAML 1.2.2 document are accepted",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"﻿asyncapi: 3.1.0\ninfo: {title: Kernel, version: '1'}\nservers: {s: {host: example.test, protocol: test}}\nchannels: {c: {}}\noperations: {op: {action: send, channel: {$ref: '#/channels/c'}}}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a location-only source uses the absolute entry URI and UTF-8 representation convention",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"https://example.test/api.yaml"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a YAML non-scalar mapping key is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\n? [bad, key]\n: value\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "an explicit application tag is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: !example {title: Bad, version: '1'}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "positive infinity with no JSON image is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\nvalue: .inf\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a multi-document YAML stream is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: One, version: '1'}\n---\nasyncapi: 3.1.0\ninfo: {title: Two, version: '1'}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a prerelease edition is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0-rc.1","info":{"title":"Bad","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a non-string edition is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":3.1,"info":{"title":"Bad","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "missing Info is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0"}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "Info with a non-string version is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad","version":1}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a non-map root operations container is rejected globally",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad","version":"1"},"operations":[]}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "duplicate YAML mapping keys are rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\nasyncapi: 3.1.0\ninfo: {title: Duplicate, version: '1'}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "scalar YAML root is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"scalar\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "sequence YAML root is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"- one\n- two\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a later minor edition is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.2.0","info":{"title":"Bad","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a later major edition is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"4.0.0","info":{"title":"Bad","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "Info missing required title is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "negative infinity with no JSON image is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\nvalue: -.inf\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "NaN with no JSON image is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\nvalue: .nan\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "direct numeric content is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":31}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "direct array content is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":[]}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "direct null content is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":null}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a relative location is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"relative/api.yaml"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01", "OBI-D-05"]
+    },
+    {
+      "description": "Info with a non-string title is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":7,"version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "Info missing required version is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a non-map root servers container is rejected globally",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad","version":"1"},"servers":[]}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a non-map root channels container is rejected globally",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad","version":"1"},"channels":[]}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "a non-map root components container is rejected globally",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad","version":"1"},"components":[]}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "direct boolean content is rejected",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":false}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "the exact-edition gate rejects AsyncAPI 3.0.0",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.0.0","info":{"title":"Old","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "flow and block collections comments indentation and an alias compose as one YAML 1.2.2 document",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"# complete YAML composition\nasyncapi: 3.1.0\ninfo: {title: Flow, version: '1'}\nserver: &server\n  host: example.test\n  protocol: http\nservers:\n  s: *server\nchannels: {c: {}}\noperations:\n  op: {action: send, channel: {$ref: '#/channels/c'}}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "JSON-compatible explicit YAML tags compose without enabling application tags",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: !!str 3.1.0\ninfo: !!map {title: !!str Tagged, version: !!str '1'}\nservers: {}\nchannels: {}\noperations: {}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "Failsafe mapping-key spelling and Core scalar values remain distinct",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Core, version: '1'}\nyes: yes\n01: 1\nservers: {}\nchannels: {}\noperations: {}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a relative co-present location is invalid even though content has primacy",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"relative.yaml","content":{"asyncapi":"3.1.0","info":{"title":"Bad base","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01", "OBI-D-05"]
+    },
+    {
+      "description": "an empty-fragment delimiter is not a fragment-free entry-document location",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"https://example.test/api.yaml#","content":{"asyncapi":"3.1.0","info":{"title":"Bad fragment","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01"]
+    },
+    {
+      "description": "an unknown reserved YAML directive is valid and ignored",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"%FOO alpha beta\n---\nasyncapi: 3.1.0\ninfo: {title: Reserved, version: '1'}\nservers: {}\nchannels: {}\noperations: {}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "prototype-looking YAML mapping keys remain exact own data members",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"asyncapi: 3.1.0\ninfo: {title: Own, version: '1'}\n__proto__: own-proto\nconstructor: own-constructor\nprototype: own-prototype\nservers: {}\nchannels: {}\noperations: {}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "an absolute location containing a raw space is not an RFC 3986 URI",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"https://example.test/a b.yaml","content":{"asyncapi":"3.1.0","info":{"title":"Bad URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01", "OBI-D-05"]
+    },
+    {
+      "description": "an absolute location containing a malformed percent triplet is not an RFC 3986 URI",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}} ,"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"https://example.test/a%ZZ.yaml","content":{"asyncapi":"3.1.0","info":{"title":"Bad URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-01", "OBI-D-05"]
+    },
+    {"description":"a YAML 2.0 directive has an incompatible major and is fatal","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"%YAML 2.0\n---\nasyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a YAML 0.9 directive has an incompatible major and is fatal","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"%YAML 0.9\n---\nasyncapi: 3.1.0\ninfo: {title: Bad, version: '1'}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a compatible-major YAML 1.3 directive is processed with the pinned 1.2.2 rules","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":"%YAML 1.3\n---\nasyncapi: 3.1.0\ninfo: {title: Compatible, version: '1'}\nservers: {}\nchannels: {}\noperations: {}\n"}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":true},
+    {"description":"RFC 3986 admits userinfo expanded IPv6 with IPv4 ls32 and an empty port in an absolute location","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://user:pw@[2001:0DB8:0:0:0:0:192.0.2.1]:/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":true},
+    {"description":"two userinfo separators are malformed RFC 3986 authority syntax","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://a@b@c/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a nondigit port is malformed RFC 3986 authority syntax","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://host:abc/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a bracketed value that is neither IPv6 nor IPvFuture is malformed","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://[xyz]/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a compressed IPv6 location may end with dotted IPv4 ls32","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://[::ffff:192.0.2.1]/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":true},
+    {"description":"a dotted IPv4 group cannot occur to the left of an IPv6 compression marker","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://[192.0.2.1::]/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]},
+    {"description":"a dotted IPv4 group left of compression remains invalid when an h16 follows","document":{"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","location":"x://[192.0.2.1::1]/root.yaml","content":{"asyncapi":"3.1.0","info":{"title":"URI","version":"1"}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-01"]}
+  ]
+}

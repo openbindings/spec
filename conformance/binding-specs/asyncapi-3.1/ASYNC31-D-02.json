@@ -1,0 +1,536 @@
+{
+  "rule": "ASYNC31-D-02",
+  "bindingSpec": "openbindings.asyncapi-3.1@1",
+  "section": "4",
+  "description": "A present selector has the canonical conceptual server/operation cell spelling; absence applies the represented-cell zero/one/many rule.",
+  "tests": [
+    {
+      "description": "a canonical selector escapes only the operation token",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "test"
+                }
+              },
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op/a~b": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op~1a~0b"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a percent triplet is literal and is not decoded into a slash",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "test"
+                }
+              },
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op%2Fpart": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op%2Fpart"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an operation key ending in literal tilde-one is escaped exactly once",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "test"
+                }
+              },
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op~1": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op~01"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a malformed tilde escape is rejected",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "x",
+                  "protocol": "test"
+                }
+              },
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op": {
+                  "action": "send",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op~2"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "a selector with a missing segment is rejected",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "a selector with an extra segment is rejected",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op/extra"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "the old actual-document operation pointer is rejected",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "a missing root server key is unaddressable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {},
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op": {
+                  "action": "send",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/missing/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "a missing root operation key is unaddressable",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "x",
+                  "protocol": "test"
+                }
+              },
+              "channels": {},
+              "operations": {}
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/missing"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "an absent selector has no represented target in the profile-free slice",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "Selector",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "x",
+                  "protocol": "test"
+                }
+              },
+              "channels": {
+                "c": {}
+              },
+              "operations": {
+                "op": {
+                  "action": "send",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    },
+    {
+      "description": "an absent selector selects the sole represented HTTP cell",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test/api",
+                  "protocol": "http"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an absent selector is ambiguous when two HTTP cells are represented",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {}
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test/api",
+                  "protocol": "http"
+                },
+                "t": {
+                  "host": "other.test",
+                  "protocol": "http"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-02"
+      ]
+    }
+  ]
+}

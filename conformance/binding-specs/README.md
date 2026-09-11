@@ -1,7 +1,8 @@
 # Binding-specification conformance subcorpus
 
 Source fixtures (D-rules) and portable processor scenarios (P-rules) for the
-ten standalone brownfield synthesis binding specifications, keyed to each specification under
+ten action-complete brownfield candidates plus one bounded AsyncAPI 3.1
+common-kernel and payloadless plaintext-HTTP candidate, keyed to each specification under
 [`binding-specs/`](../../binding-specs/):
 
 | Family   | Identifier                | Specification                                                                                | Source rules   | Processor rules   |
@@ -15,6 +16,7 @@ ten standalone brownfield synthesis binding specifications, keyed to each specif
 | grpc     | `openbindings.grpc@1`     | [`grpc/openbindings.grpc.md`](../../binding-specs/grpc/openbindings.grpc.md)                 | GRPC-D-01..03  | GRPC-P-01..07     |
 | connect  | `openbindings.connect@1`  | [`connect/openbindings.connect.md`](../../binding-specs/connect/openbindings.connect.md)     | CONN-D-01..03  | CONN-P-01..07     |
 | asyncapi | `openbindings.asyncapi@1` | [`asyncapi/openbindings.asyncapi.md`](../../binding-specs/asyncapi/openbindings.asyncapi.md) | ASYNC-D-01..03 | ASYNC-P-01..07    |
+| asyncapi-3.1 | `openbindings.asyncapi-3.1@1` | [`asyncapi-3.1/openbindings.asyncapi-3.1.md`](../../binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md) | ASYNC31-D-01..07 | ASYNC31-P-01..13 |
 | graphql  | `openbindings.graphql@1`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..03   | GQL-P-01..05      |
 
 This is a per-family subcorpus, governed by the family binding
@@ -23,12 +25,12 @@ core corpus but is verified separately: the core tooling
 (`verify-corpus.mjs`, `generate-conformance-manifest.mjs`) scans only
 `document/` and `tool/`, so it neither picks up nor is broken by this
 directory. The dedicated verifier is `scripts/verify-binding-specs.mjs`
-(run in CI). The ten specifications share one source-fixture shape in
+(run in CI). The eleven specifications share one source-fixture shape in
 [`fixture.schema.json`](fixture.schema.json), one portable behavior shape in
 [`processor-scenario.schema.json`](processor-scenario.schema.json), and one
 portable authoring shape in
 [`synthesis-scenario.schema.json`](synthesis-scenario.schema.json). Source
-fixtures live in ten specification directories; processor scenarios live in
+fixtures live in eleven specification directories; processor scenarios live in
 [`processor/`](processor/), and synthesis scenarios live in
 [`synthesis/`](synthesis/).
 
@@ -80,7 +82,7 @@ Two boundaries keep the verdicts honest:
 D-rules bind documents; each family's P-rules bind processors (wire
 behavior, configuration points, classification). The rule-keyed D fixture
 format remains document-only. A separate portable processor-scenario format
-under `processor/` covers all ten standalone brownfield synthesis specifications. Where a
+under `processor/` covers all eleven family candidates. Where a
 family attributes a constraint to a P-rule (the YAML
 grammar pin and exact OpenAPI/AsyncAPI edition discrimination under the
 OAPI20/OAPI30/OAPI31/OAPI32-P-01 and ASYNC-P-01 rules, gRPC's bound-closure
@@ -133,6 +135,26 @@ These are harness facts rather than binding configuration points:
 they exist so a scenario can distinguish directionality, absence, failure, and
 the requirement not to invoke a decoder on a no-content response.
 
+For WebSocket cases, `given.configuration.websocketHeaders` is the ordered
+closed list of ordinary request-header names and lowercase SHA-256 value
+digests. The normalized opening request carries the same required `headers`
+list exactly; Host, upgrade, WebSocket negotiation, Authorization, and API-key
+evidence remain in their dedicated fields.
+
+The revision-6 `runtime` object is closed: its only members are the four codec
+maps above and the following three MQTT facts. The optional
+`mqttPreSubackBufferLimit` is a nonnegative integer count of complete inbound
+PUBLISH slots retained while one SUBSCRIBE awaits SUBACK. A publication that
+arrives when that many slots are already retained is itself a stored exhausted
+marker: its MQTT acknowledgement must still complete. After an exact successful
+SUBACK, every admitted earlier slot drains in arrival order before the marker
+terminates the interaction with error; the exhausted publication and every
+later slot emit no output. Omission means no harness-set limit.
+`mqttUsernameUtf8Sha256` is the lowercase SHA-256 digest of the exact
+UTF-8 username octets and `mqttPasswordBinarySha256` is the lowercase SHA-256
+digest of the exact decoded binary password octets. They prove credential
+carriage without placing credential values in normalized observations.
+
 Processor-scenario revision 2 re-keys the former unified `openapi` family as
 the exact `openapi-2.0`, `openapi-3.0`, `openapi-3.1`, and `openapi-3.2`
 siblings and carries their exact binding-specification identifiers. The
@@ -159,7 +181,9 @@ boundaries, or item order. The assertion first requires the complete selected
 representation to parse under the named interpreter and then compares the
 resulting JSON value structurally:
 
-- `form-json-field` parses the pointed-at
+- `form-json-field` requires `formEncoding` to be exactly `oas-3.0`,
+  `oas-3.1`, or `oas-3.2`; the tag is part of the assertion rather than an
+  inference from a sibling fixture. It parses the pointed-at
   `application/x-www-form-urlencoded` body, selects exactly one field with the
   decoded `name`, parses that field's complete decoded value as JSON, and
   compares it with `value`. Parsing splits raw fields on `&` and each field on
@@ -210,8 +234,9 @@ resulting JSON value structurally:
   without fixing whitespace, member order, escapes, or number spelling within
   an item.
 
-The three named interpreters require both `name` and `names`; the other three
-forbid both. `names` is the exact order-insensitive multiset of every decoded
+The three named interpreters require both `name` and `names`; the other modes
+forbid both. Only `form-json-field` requires `formEncoding`, and every other
+mode forbids it. `names` is the exact order-insensitive multiset of every decoded
 form field, multipart part, or query-contribution name in the complete parsed
 wrapper, including duplicates. It prevents a correct selected value from
 hiding an extra flattened field, part, or query contribution. A failed parse,
@@ -231,8 +256,173 @@ as their JSON values. Numbers compare by the exact mathematical value denoted
 by their RFC 8259 decimal spellings, with `-0` and `0` equal. These rules let
 equivalent whitespace, escaping, member order, and number spelling vary while
 preventing an adapter's host-number representation from changing a verdict.
+In revision 6 an expected semantic value containing any number MUST use
+`valueJson`, a complete JSON text, instead of `value`; this preserves the
+author's decimal spelling before a host decoder can round it. `value` remains
+the convenient form for number-free expected values. Earlier formats retain
+their existing shape.
 
-The current corpus contains 981 scenarios citing every P-rule of usage,
+Processor-scenario revision 6 adds a portable messaging interaction schedule
+and observation boundary for the AsyncAPI edition siblings. It is additive:
+the legacy `asyncapi` candidate remains revision 1, the OpenAPI siblings remain
+revision 5, and no earlier format silently acquires revision-6 vocabulary.
+Processor-scenario revision 7 is the additive AsyncAPI 3.1 successor: C20A
+migrated only `processor/asyncapi-3.1.json` to `@7` and left AsyncAPI 2.6/3.0
+on `@6`. Revision 7 retains all revision-6 schedule, timeline, assertion,
+resource, and ownership semantics while admitting the closed HTTP revision-2
+apparatus. C21 uses that apparatus for the first normative payloadless
+plaintext-HTTP profile; HTTPS remains qualified apparatus but unrepresented.
+
+`given.invocation.actions` is an exact caller-action sequence. `write` supplies
+one application value. A number-free write uses `value`; a write containing a
+JSON number uses `valueJson`, one complete JSON text. Unary revision-6 input
+uses the same split between `input` and `inputJson`. This prevents the harness
+host language from rounding caller values before the processor sees them.
+`await-output` and `await-native` are deterministic
+interleaving barriers: their positive `count` is the cumulative number of the
+named observations that must exist before the adapter performs the next caller
+action. In the C21 HTTP slice, only the peer prefix required to satisfy that
+barrier is admitted before the next caller action; that action wins over an
+unacknowledged peer-script suffix. A pre-open cancellation observes the
+connection attempt but emits no invented connection-close fact, while every
+post-open cancellation closes exactly once. `half-close` closes only the input direction, and `cancel` requests
+cancellation of the active interaction. Legacy `writes` is forbidden in
+revision 6; streaming inputs use `actions`. A schedule has at most one
+half-close and one cancel, no write after
+either, and cancel is final. The repository verifier checks those temporal
+invariants in addition to the exchange schema.
+
+Every revision-6 or revision-7 expected alternative carries `timeline`, including `[]` when
+no governed event precedes refusal, and a nonempty `rules` list exactly equal
+to its scenario's rule citations. The alternative-level list owns the whole
+expected disposition, phase, timeline, and assertion set; the verifier rejects
+both an unowned expected result and a gratuitous scenario citation. Earlier
+formats neither require nor admit this ownership member. Timeline equality is
+exact and ordered.
+`input-accepted` and `output` carry zero-based indexes; an `output` also carries
+the operation value. A number-free output uses `value`; an output containing
+any JSON number uses `valueJson`, one complete JSON text, in both the expected
+and observed timeline so arbitrary-precision values cannot be rounded by the
+harness host language. The same mathematical equality rules defined above
+compare those texts. Revision-6 structural `equals`, `oneOf`, and `setEquals`
+assertions do not admit numeric expected values; a numeric wire value instead
+uses the appropriate lossless `semanticEquals` mode. `native` events carry one closed common name plus a
+profile-owned `facts` object. The revision-6 common names are `dispatch`,
+`acknowledgement`, `subscription-opened`, `subscription-closed`,
+`input-half-closed`, `cancellation-propagated`, `connection-opened`,
+`connection-closed`, `reconnected`, and `delivery`; revision 7 additionally
+admits `connection-attempted` and `request-started`, and revision 6 rejects
+those names. A profile defines the exact
+portable facts for the events it uses. Adapters omit implementation logs and
+facts that no governing authority or binding rule makes portable. The terminal
+`disposition` and `phase` occur after the final timeline event. Revision 6 adds
+`cancelled` as a terminal disposition and `interaction` as the phase for a
+failure after a session, subscription, or other multi-event interaction became
+active.
+
+Revision 6 retains all six revision-5 `semanticEquals` interpreters and adds
+`bytesEquals`, whose `base64` member is the canonical RFC
+4648 representation of the exact expected octets. It adds two
+`semanticEquals` interpreters: `json-text` parses the complete selected string
+as one JSON text, and `json-base64-bytes` requires canonical Base64, decodes it,
+requires valid UTF-8, parses the complete bytes as one JSON text, and then uses
+the structural equality rules above. These modes make the test author's intent
+explicit: semantic equality where JSON spelling may vary, byte equality where
+framing or payload octets are fixed.
+
+A revision-6 `peer` is versioned independently. It contains exactly `dialect`
+and `script`; the dialect is one of the HTTP, WebSocket, Kafka, or MQTT
+AsyncAPI peer tokens registered by this corpus. The repository verifier routes
+the script through that dialect's closed schema. The outer scenario format is
+therefore family-neutral without treating an adapter-private peer object as
+portable evidence. The normative corpus-level scheduling, peer-event mapping,
+closed native facts, and adapter-qualification rules are in the
+[revision-6 peer-dialect contract](peer-dialects/README.md). A peer event or
+native fact not admitted there is not portable evidence.
+
+A revision-7 `peer` keeps that exact outer shape. It admits HTTP peer `@2` and
+the existing WebSocket, Kafka, and MQTT peer `@1` tokens; it deliberately does
+not admit HTTP peer `@1`. Every processor revision before `@7`, including the
+otherwise open `@1` carrier, rejects peer `@2` and the exact revision-2 HTTP
+runtime/security/TLS names by both JSON Schema and the manual verifier without
+closing unrelated historic configuration. Under `@7`, the closed AsyncAPI
+HTTP runtime `@2` object is required only when the peer dialect is HTTP `@2`;
+the existing WebSocket, Kafka, and MQTT `@1` dialects retain their existing
+configuration shapes, including `websocketHeaders`. These constraints are
+format- and family-routed: `@7` is valid only for `asyncapi-3.1`, and every
+legacy family rejects it.
+
+C20B/C20B14 add a versioned, closed, deterministic test-only TLS asset exchange and
+191 portable TLS/security/HTTP semantic qualification cases without changing
+the AsyncAPI 3.1 family rules or representing HTTPS. The asset, evidence,
+manifest, integrity, and secret-safety contract is specified in the
+[peer-dialect README](peer-dialects/README.md#c20b14-deterministic-tls-and-http-qualification).
+
+Revisions 6 and 7 admit `given.resourceBytes`, a closed exact-octet companion to
+`given.resources`. It is a map keyed by absolute retrieval URI. Each value has
+exactly `format: "openbindings.resource-bytes@1"` and `dataBase64`, the
+canonical RFC 4648 Base64 spelling of the returned octets. The two maps are
+disjoint for a URI. Adapters decode `resourceBytes` before applying a family
+specification's encoding and document-composition rules; they do not replace
+invalid octets or infer an encoding. Earlier processor formats reject this
+member.
+
+For `openbindings.asyncapi-3.1@1`, decoding preserves the distinction between
+a well-formed upstream YAML resource in the candidate's locally unadmitted
+UTF-16/32 encodings and octets malformed under every YAML-recognized encoding.
+The former is portable excluded-target evidence; the latter is portable
+smallest-owner invalidity evidence. This classification is family semantics,
+not behavior inferred by the generic carrier.
+
+The repository verifier performs AsyncAPI 3.1 YAML composition with the exact
+`yaml@2.8.1` package pinned in
+`conformance/operation-graph/runners/js/package-lock.json`, then walks its
+AST to impose the pinned Core-value, Failsafe-key, explicit-tag, duplicate-key,
+finite-JSON-image, and alias-cycle rules. One shared routine handles entry
+strings, textual resources, and byte resources after YAML BOM or BOM-less
+UTF-8/16/32 detection; no hand-written syntax subset is a qualification path.
+CI installs that repository-owned lock before this verifier runs. The verifier
+loads the package relative to the locked package manifest, never from PATH,
+TypeSpec, or a global/transitive module tree; a clean-PATH run after `npm ci`
+is therefore a required reproducibility check. YAML mappings are materialized
+as null-prototype maps with own data properties, so `__proto__`, `constructor`,
+and `prototype` remain exact keys. Unknown reserved directives are ignored as
+YAML 1.2.2 requires. An incompatible `%YAML` major is fatal; a `1.x` directive
+is processed under the pinned 1.2.2 rules, including the authority-permitted
+higher-minor warning. Other parser warnings remain fatal.
+
+Revision 7 also admits `keyMaterializations` only for the AsyncAPI 3.1 corpus.
+Each closed record names a source-map JSON Pointer, exact UTF-16 code units
+containing an unpaired surrogate, and the JSON-safe value to add under that
+key. The adapter materializes the key only after strict JSON parsing and before
+common-kernel evaluation; the record never reaches the processor. This keeps
+hostile non-scalar-key evidence transferable without placing an unpaired
+surrogate in a JSON artifact. The pointer is confined to `source/content` or a
+descendant, or to one parsed `resources/<absolute-URI>` entry or its
+descendants. It cannot address peer, invocation, authored OBI operation,
+configuration, expectations, the carrier itself, or any other harness state.
+`resourceBytes` is not addressable because it is only an octet envelope until
+encoding detection and YAML composition produce the separately modeled source
+tree. Earlier scenario formats reject the member.
+
+Those external byte cases are lazy AsyncAPI 3.1 resolution evidence: they are
+owned by `ASYNC31-P-04`, not the entry-document `ASYNC31-P-01` load gate, and
+an unreachable byte resource is inert. Resolution validates exact RFC 3986
+URI-reference syntax and performs RFC 3986 relative resolution without WHATWG
+normalization, then applies encoding/composition, fragment, and selected-kind
+checks. Thus valid
+UTF-16/32 carriage is excluded only when the selected owner is otherwise
+upstream-valid, and that provenance survives every later reference hop; a
+selected scalar, wrong-kind value, or invalid concrete object
+remains invalid.
+
+The C21 HTTP path uses one generic HTTP peer@2 mapper. Its closed qualification
+tokens cover map entry, response heads, interim/final heads, body chunks,
+disconnects, and the terminal mapped classification. The AsyncAPI interpreter
+consumes that mapped observation and the existing C20B predicates; no second
+profile-private response classifier is an alternate qualification route.
+
+The current corpus contains 1221 scenarios citing every P-rule of usage,
 AsyncAPI, MCP, gRPC, Connect, and GraphQL, together with partitioned OpenAPI
 3.0/3.1 scenarios, the full authority-derived 2.0 batch, the 3.2
 request-surface batch and the native 3.2 response-governance, content-coding,
@@ -242,7 +432,7 @@ upstream-invalid Response Object batch, the Round R2 batch that carries
 that rule onto the 2.0 and 3.2 lanes and pins its success scope on all four,
 and the bounded OAS family-closure batch for cookie multiplicity, effective
 required bodies, failure-media advertisement, runtime compound members, and
-fixed PATCH carriage (256 distinct rules). A complete citation set is a structural guarantee: it
+fixed PATCH carriage (269 distinct rules). A complete citation set is a structural guarantee: it
 means no defined P-rule lacks a scenario, not that one scenario exercises every
 clause collected by a legacy umbrella rule. New semantic-closure rules use one
 stable P-rule identifier per observable claim so the corresponding scenario is
@@ -304,8 +494,8 @@ entries: they are diagnostics, not cross-SDK behavior. Entry order is also
 non-semantic. A represented entry must point to an expected binding;
 `fullyRepresented` is true only when every coverage entry is represented;
 `invalid`, `excluded`, `lossy`, and `implementation-unsupported` entries are all
-coverage loss. The 196 scenarios
-exercise all ten standalone brownfield synthesis specifications and mix faithful
+coverage loss. The 271 scenarios
+exercise all eleven family candidates and mix faithful
 targets with artifact alternatives, binding-spec exclusions, invalid source
 units, and required whole-source refusals. This corpus is designed to grow
 with newly discovered upstream edge cases; it is neither a crawler corpus nor
@@ -327,6 +517,26 @@ must be answerable from its own `content` or its own `resources`, so no runner
 touches the network. A runner for a family whose corpus sources are all
 self-contained refuses a scenario declaring `resources` rather than executing
 it against a resolver that would never see them.
+
+Revision 6 additionally permits top-level `resourceBytes` with the same closed
+`openbindings.resource-bytes@1` canonical-Base64 envelope defined for processor
+scenarios. It supplies exact octets through the same offline resolver and adds
+no comparison surface. Earlier synthesis formats reject it. A URI MUST NOT
+appear in both `resources` and `resourceBytes` in one scenario.
+
+AsyncAPI 3.1 invalid-owner coverage uses an injective authored-location
+identity. Entry-root and component owners use canonical JSON Pointers;
+external owners use the absolute retrieval URI without fragment followed by a
+canonical RFC 6901 fragment whose UTF-8 octets use uppercase percent escapes
+and leave only unreserved bytes plus `/` and `~` literal. Invalid Operation and
+Channel owners repeat only across distinct affected root `operationKey`s;
+invalid Server owners are deduplicated and carry no `operationKey`.
+Reached non-map typed component containers use their container pointer and the
+same type-specific repetition rule; unreached containers are inert. Reference
+failure ownership is chosen before encoding that identity: a concrete invalid
+value owns itself, a pure same-kind chain with no concrete value uses its first
+entered target, and a malformed URI/fragment that cannot name a canonical
+target charges its containing current owner.
 
 A `synthesized` scenario MAY carry `assertions`: pointer-addressed comparisons
 evaluated against the emitted OBI document, reusing the same
@@ -353,6 +563,32 @@ its authority-defined `sourceRef` and therefore carries neither an operation
 key nor a binding selector. This keeps dependency-key spelling outside the
 portable comparison surface, as the OpenAPI family requires. Revision-4 files
 for families with no dependency scenarios remain valid and unchanged.
+
+Revision 6 is the edition-sibling AsyncAPI synthesis exchange. Revision 7 is
+used only by `synthesis/asyncapi-3.1.json`; C21 adds represented HTTP cells
+without adding a synthesis field, while AsyncAPI 2.6/3.0 remain revision 6. Both revisions require a
+nonempty `rules` list and governing family-spec `section` on every scenario and
+requires every coverage entry and assertion to name its governing rule. A
+scenario's scalar `section` anchors its first rule in the AsyncAPI 3.1
+specification. Secondary rules may govern other sections and must each resolve
+to an anchored normative definition. This also applies to AsyncAPI 3.1
+processor scenarios: a load/eligibility refusal can retain its original
+section while its explicit trace assertion additionally cites P13 in §5.
+A revision-6 assertion defaults to the emitted `document` surface. The
+`coverage-inventory` surface, used only with path `/` and `setEquals`, compares
+the exact order-independent set of stable coverage identity fields (`sourceIndex`,
+`sourceRef`, `scope`, and present operation/binding identity); it deliberately
+excludes disposition, diagnostics, requirements, and owner rules so inventory
+and classification have different evidence owners. The verifier requires
+direct coverage of every S-rule,
+rejects duplicate binding identities and duplicate semantic coverage
+identities, and admits the precise scopes `message-alternative`,
+`reply-message-alternative`, and `protocol-cell`. The legacy `alternative`
+scope remains available only to earlier family files. A protocol cell is the
+smallest source interaction selected by the governing AsyncAPI sibling; it is
+not a statement that protocol metadata enters the OBI operation schema.
+Lifecycle schedules and event timelines remain processor evidence and never
+become synthesized Core fields merely because revision 6 can test them.
 
 A scenario's `source` is shaped directly by Core's binding-source model: it
 declares `location`, `content`, or both. The corpus therefore remains usable by
@@ -483,6 +719,13 @@ core, and resolution clauses are fixtured via embedded content.
 | ASYNC-D-01 | 2/3         | object + string representations; number/array/null negatives                                                                                                                         |
 | ASYNC-D-02 | 2/3         | absolute-URI address; relative-in-form negatives                                                                                                                                     |
 | ASYNC-D-03 | 5/7         | pointer spelling incl. RFC 6901 `~1`/`~0`/`~01` escapes and Reference Object resolution; bare-key, non-operation-target, unescaped, percent-encoded-spelling, and dangling negatives |
+| ASYNC31-D-01 | 11/39     | exact 3.1.0 object/YAML/location representations; complete flow/block/alias syntax, compatible/incompatible YAML directives, prototype-looking own keys, JSON-domain, edition, Info, root-container, tag, duplicate-key, multi-document, and structural RFC 3986 fragment-free location authorities including terminal IPv4-form ls32                    |
+| ASYNC31-D-02 | 4/8       | canonical escaped conceptual-cell selectors, including one-pass `~01` and sole represented-cell absence; malformed, noncanonical, dangling, and ambiguous/no-target negatives       |
+| ASYNC31-D-03 | 11/18     | root and authored-location Reference Object closure, reached component-key/container grammar, ignored siblings, full-ledger first-root server membership, and absent/empty/all or restricted membership; smallest-owner, cycle, direct-component-target, later-referent, and unavailable-cell negatives |
+| ASYNC31-D-04 | 10/14     | closed payloadless plaintext HTTP admission, full-spelling RFC3986 authority/pathname, numeric reg-name, terminal IPv6/IPv4-form literal, bracketed-IPv4 exclusion, ports, empty security, and binding/configuration defaults             |
+| ASYNC31-D-05 | 3/14      | one direct concrete empty Message, exact authored empty-object input/no-output/no-transform contract, and excluded message/value constructs                                           |
+| ASYNC31-D-06 | 3/13      | static authority/pathname plus channel address, encoded-path preservation, and exact bodyless HTTP/1.1 POST request                                                                  |
+| ASYNC31-D-07 | 2/4       | zero-output HTTP response, framing, unsuccessful outcome, cancellation/disconnect, and no-retry boundary                                                                             |
 | GQL-D-01   | 2/3         | absolute HTTP(S) GraphQL endpoint; missing, relative, and WebSocket-location negatives                                                                                                |
 | GQL-D-02   | 2/4         | successful introspection execution-result object; bare schema, wrapper-stripped, stringified, and errored-result negatives                                                           |
 | GQL-D-03   | 2/4         | exact lower-case root-kind/field selectors with actual root-type mapping; case, path-shape, and dangling-field negatives                                                                  |
@@ -492,12 +735,17 @@ core, and resolution clauses are fixtured via embedded content.
 ```
 binding-specs/
   README.md            (this file)
-  fixture.schema.json  (shared fixture shape for all ten specifications)
+  fixture.schema.json  (shared fixture shape for all eleven specifications)
   processor-scenario.schema.json (portable P-rule scenario shape)
   synthesis-scenario.schema.json (portable artifact-to-OBI scenario shape)
+  peer-dialects/       closed AsyncAPI peer/native @1 schemas plus the staged
+                       AsyncAPI HTTP peer/native/runtime @2 schemas
+  harness-probes/      processor-v6 qualification, the 67-case processor-v7
+                       scaffold, and the 191-case C20B14 TLS/HTTP suite
   adjudication.schema.json (discrepancy-disposition record shape)
   adjudications.json    (review decisions from corpus findings)
-  processor/            usage.json, openapi-{2.0,3.0,3.1,3.2}.json, asyncapi.json,
+  processor/            usage.json, openapi-{2.0,3.0,3.1,3.2}.json,
+                        asyncapi{,-2.6,-3.0,-3.1}.json,
                         mcp.json, grpc.json, connect.json, graphql.json
   synthesis/            one portable authoring file per published specification
   usage/               USAGE-D-01.json ... USAGE-D-03.json
@@ -509,6 +757,7 @@ binding-specs/
   grpc/                GRPC-D-01.json  ... GRPC-D-03.json
   connect/             CONN-D-01.json  ... CONN-D-03.json
   asyncapi/            ASYNC-D-01.json ... ASYNC-D-03.json
+  asyncapi-3.1/        ASYNC31-D-01.json ... ASYNC31-D-07.json
   graphql/             GQL-D-01.json   ... GQL-D-03.json
 ```
 
@@ -529,24 +778,43 @@ of treating a shared major/minor line as implicitly accepted.
 internally consistent: every D-rule fixture file validates against this subtree's
 `fixture.schema.json`; each file's `rule` matches its filename, family
 directory, and `bindingSpec`; the cited `section` exists in the family
-spec; every family D-rule extracted from the ten specifications is either
+spec; every family D-rule extracted from the eleven specifications is either
 fixtured here or listed as deferred in this README; every negative test
 carries `violates`, and every `violates` entry names a rule the family spec
 or the core spec actually defines. Processor scenario files validate against
 their own schema; family, identifier, section, scenario ids, and every
 referenced P-rule are cross-checked verbatim against the owning family
-specification. The verifier requires complete P-rule citation coverage for all ten
+specification. The verifier requires complete P-rule citation coverage for all eleven
 standalone specifications, including every OpenAPI sibling. Synthesis and
 invocation-fidelity scenario citations must likewise exist verbatim in their
 owning family specification or, for an OBI citation, in Core; no legacy-token
 or pattern-only fallback is accepted. Synthesis scenario files are also
-checked for all ten specifications, including target/disposition consistency.
+checked for all eleven specifications, including target/disposition consistency.
 It asserts this README's three scenario counts against the corpus, and probes the
 synthesis schema with a source declaring neither `location` nor `content` to
 prove the adopted contract constraint is still enforced. It does not judge D
-verdicts, prove every clause collected by an umbrella rule, or execute
-processor/synthesis scenarios — those are the jobs of family processors,
-adapters, and semantic acceptance review.
+verdicts or prove every clause collected by an umbrella rule. It executes the
+bounded AsyncAPI 3.1 C21 processor/synthesis slice and leaves every other
+family scenario to family processors, adapters, and semantic acceptance review.
+
+Because the AsyncAPI 3.1 candidate is a bounded review slice, the verifier also
+owns an exact canonical SHA-256 root over its seven D fixtures and its P/S
+files, plus exact D-test counts and complete `ASYNC31-PS-*`/`ASYNC31-SS-*` ID
+sets. C21F locks the exact processor and synthesis counts enforced by the
+verifier, including
+resolved root/component/external owners, effective membership, exact operation
+contracts and transforms, target authority/path formation, response triggers,
+one shared common-kernel result, full YAML composition and encoding detection,
+ordered direct-membership occurrences, injective external source references,
+deterministic caller/peer races, direct-empty security, clean unsuccessful
+completion, full-ledger root-slot/authorship handling, scalar-safe map-owner
+identities, generic HTTP peer mapping/classification tokens, and total
+lifecycle prefixes. This is a repository review lock, not a public semantic surface. Any
+intentional corpus change updates the cases first, reruns all ordinary shape and
+ownership checks, independently reviews the canonicalized diff, and only then
+updates the verifier constant. Mutation probes delete a case, replace a case
+with same-rule evidence, and swap two same-rule payloads so a count-only or
+rule-only check cannot masquerade as content integrity.
 
 The cross-implementation acceptance workflow checks out both reference SDKs and
 invokes their portable processor and synthesis adapters. A passing job is

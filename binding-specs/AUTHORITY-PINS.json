@@ -51,6 +51,7 @@
         "binding-specs/grpc/openbindings.grpc.md",
         "binding-specs/connect/openbindings.connect.md",
         "binding-specs/graphql/openbindings.graphql.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/README.md"
       ],
@@ -82,6 +83,7 @@
         "binding-specs/grpc/openbindings.grpc.md",
         "binding-specs/connect/openbindings.connect.md",
         "binding-specs/graphql/openbindings.graphql.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/README.md"
       ],
@@ -108,6 +110,7 @@
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/README.md"
       ],
@@ -158,6 +161,7 @@
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md"
       ],
       "matchTokens": [
@@ -165,9 +169,9 @@
         "RFC 3986"
       ]
     },
-    {
-      "id": "rfc9110",
-      "family": "shared",
+  {
+    "id": "rfc9110",
+    "family": "shared",
       "name": "RFC 9110: HTTP Semantics",
       "kind": "url",
       "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
@@ -181,8 +185,9 @@
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/connect/openbindings.connect.md"
+      "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+      "binding-specs/connect/openbindings.connect.md",
+      "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
       ],
       "matchTokens": [
         "rfc9110",
@@ -224,7 +229,8 @@
         "openapi-3.2",
         "openapi-2.0",
         "openapi-3.0",
-        "asyncapi"
+        "asyncapi",
+        "asyncapi-3.1"
       ],
       "name": "YAML Ain't Markup Language, version 1.2.2",
       "edition": "1.2.2",
@@ -239,7 +245,8 @@
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/asyncapi/openbindings.asyncapi.md"
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
       ],
       "matchTokens": [
         "yaml.org/spec/1.2.2"
@@ -899,7 +906,8 @@
       "id": "json-reference-draft-03",
       "families": [
         "openapi-2.0",
-        "openapi-3.0"
+        "openapi-3.0",
+        "asyncapi-3.1"
       ],
       "name": "JSON Reference (draft-pbryan-zyp-json-ref-03)",
       "kind": "url",
@@ -912,7 +920,8 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
       ],
       "matchTokens": [
         "draft-pbryan-zyp-json-ref-03"
@@ -1649,7 +1658,10 @@
     },
     {
       "id": "asyncapi-3.1.0",
-      "family": "asyncapi",
+      "families": [
+        "asyncapi",
+        "asyncapi-3.1"
+      ],
       "name": "AsyncAPI Specification 3.1.0",
       "edition": "3.1.0",
       "kind": "git-file",
@@ -1661,7 +1673,8 @@
       "bytes": 132656,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/asyncapi/openbindings.asyncapi.md"
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
       ],
       "matchTokens": [
         "b3fac5bb522771428ea57b16129b273cd3ea0180"
@@ -1669,7 +1682,10 @@
     },
     {
       "id": "asyncapi-bindings-v3.1.0",
-      "family": "asyncapi",
+      "families": [
+        "asyncapi",
+        "asyncapi-3.1"
+      ],
       "name": "AsyncAPI protocol bindings collection (asyncapi/bindings)",
       "edition": "v3.1.0",
       "kind": "git-tree",
@@ -1684,10 +1700,398 @@
       },
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/asyncapi/openbindings.asyncapi.md"
+        "binding-specs/asyncapi/openbindings.asyncapi.md",
+        "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
       ],
       "matchTokens": [
         "ec5c590d4212905a13014cfd43f72fb086c00e85"
+      ]
+    },
+    {
+      "id": "asyncapi-2.6-http-binding-0.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI HTTP binding 0.1.0 used by the 2.6 sibling",
+      "edition": "0.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "commit": "f3bfe694ac2354e746929ce002441ceb7bef50f4",
+      "path": "http/README.md",
+      "sha256": "d76a2d13d6fe6f5d9057d6339960045a841c62fb365b2c35ea0b2713aeb8e396",
+      "bytes": 2850,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 2.6 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/f3bfe694ac2354e746929ce002441ceb7bef50f4/http/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-2.6-websocket-binding-0.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI WebSocket binding 0.1.0 used by the 2.6 sibling",
+      "edition": "0.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "commit": "f3bfe694ac2354e746929ce002441ceb7bef50f4",
+      "path": "websockets/README.md",
+      "sha256": "fae8bca9d9bfe0d28234911715377d825e7befbb242eaf5b0aa13ba0fc95513e",
+      "bytes": 1986,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 2.6 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/f3bfe694ac2354e746929ce002441ceb7bef50f4/websockets/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-2.6-mqtt-binding-0.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI MQTT binding 0.1.0 used by the 2.6 sibling",
+      "edition": "0.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "commit": "f3bfe694ac2354e746929ce002441ceb7bef50f4",
+      "path": "mqtt/README.md",
+      "sha256": "17817fcdb6d8b2e64a4eba623b8145baf524aa333934fe6485166c5308eef41f",
+      "bytes": 3720,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 2.6 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/f3bfe694ac2354e746929ce002441ceb7bef50f4/mqtt/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-3.0-http-binding-0.2.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI HTTP binding 0.2.0 used by the 3.0 sibling",
+      "edition": "0.2.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.0.0",
+      "commit": "306f1fc8333e10730a6dd953e92211f0cdb7736e",
+      "path": "http/README.md",
+      "sha256": "898211bbcca48431060138364249f3a6e208e884ac80ec9d521e83261db41980",
+      "bytes": 2867,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 3.0 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/306f1fc8333e10730a6dd953e92211f0cdb7736e/http/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-3.0-websocket-binding-0.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI WebSocket binding 0.1.0 used by the 3.0 sibling",
+      "edition": "0.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.0.0",
+      "commit": "306f1fc8333e10730a6dd953e92211f0cdb7736e",
+      "path": "websockets/README.md",
+      "sha256": "3e15f0b51f385e2c1df75fe235f7f790c0d69dc67109c1e03da165d211a7a7ec",
+      "bytes": 2171,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 3.0 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/306f1fc8333e10730a6dd953e92211f0cdb7736e/websockets/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-3.0-mqtt-binding-0.2.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI MQTT binding 0.2.0 used by the 3.0 sibling",
+      "edition": "0.2.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.0.0",
+      "commit": "306f1fc8333e10730a6dd953e92211f0cdb7736e",
+      "path": "mqtt/README.md",
+      "sha256": "8125a641a275aae35df42aa823550006b1f434384ce596551de665b21554f639",
+      "bytes": 7399,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 3.0 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/306f1fc8333e10730a6dd953e92211f0cdb7736e/mqtt/README.md"
+      ]
+    },
+  {
+    "id": "asyncapi-3.1-http-binding-0.3.0",
+    "families": [
+      "asyncapi",
+      "asyncapi-3.1"
+    ],
+      "name": "AsyncAPI HTTP binding 0.3.0 used by the 3.1 sibling",
+      "edition": "0.3.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.1.0",
+      "commit": "ec5c590d4212905a13014cfd43f72fb086c00e85",
+      "path": "http/README.md",
+      "sha256": "cd2dc18c4d2aeba10889129a16b0d5c12fa70ab82fb0594fc5e50cd55a86e995",
+      "bytes": 3351,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+    "citedBy": [
+      "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
+    ],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/ec5c590d4212905a13014cfd43f72fb086c00e85/http/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-3.1-websocket-binding-0.1.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI WebSocket binding 0.1.0 used by the 3.1 sibling",
+      "edition": "0.1.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.1.0",
+      "commit": "ec5c590d4212905a13014cfd43f72fb086c00e85",
+      "path": "websockets/README.md",
+      "sha256": "3e15f0b51f385e2c1df75fe235f7f790c0d69dc67109c1e03da165d211a7a7ec",
+      "bytes": 2171,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 3.1 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/ec5c590d4212905a13014cfd43f72fb086c00e85/websockets/README.md"
+      ]
+    },
+    {
+      "id": "asyncapi-3.1-mqtt-binding-0.2.0",
+      "family": "asyncapi",
+      "name": "AsyncAPI MQTT binding 0.2.0 used by the 3.1 sibling",
+      "edition": "0.2.0",
+      "kind": "git-file",
+      "repo": "asyncapi/bindings",
+      "tag": "v3.1.0",
+      "commit": "ec5c590d4212905a13014cfd43f72fb086c00e85",
+      "path": "mqtt/README.md",
+      "sha256": "bc021514c223778344f2a6e6fe8193e6f3d061c3b3019f12d3e7cbbac9dbac4c",
+      "bytes": 7400,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact profile authority; it becomes cited when the AsyncAPI 3.1 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://github.com/asyncapi/bindings/blob/ec5c590d4212905a13014cfd43f72fb086c00e85/mqtt/README.md"
+      ]
+    },
+    {
+      "id": "json-schema-draft-07-core",
+      "family": "asyncapi",
+      "name": "JSON Schema Draft-07 core",
+      "edition": "draft-handrews-json-schema-01",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-handrews-json-schema-01.txt",
+      "sha256": "bff8b135bff912f41beeac807cf9d9fd5d8e6ca7435b9168d9eb3f4c3eae3ad8",
+      "bytes": 49308,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact schema authority; it becomes cited when the AsyncAPI 2.6 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.ietf.org/archive/id/draft-handrews-json-schema-01.txt"
+      ]
+    },
+    {
+      "id": "json-schema-draft-07-validation",
+      "family": "asyncapi",
+      "name": "JSON Schema Draft-07 validation",
+      "edition": "draft-handrews-json-schema-validation-01",
+      "kind": "url",
+      "url": "https://www.ietf.org/archive/id/draft-handrews-json-schema-validation-01.txt",
+      "sha256": "e9fc6c7fe25cd39b475b8f9bc3aa43d6b84771dcedd448d1b4aa95683fda45ea",
+      "bytes": 60889,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact schema authority; it becomes cited when the AsyncAPI 2.6 sibling is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.ietf.org/archive/id/draft-handrews-json-schema-validation-01.txt"
+      ]
+    },
+    {
+      "id": "rfc6455",
+      "family": "asyncapi",
+      "name": "RFC 6455: The WebSocket Protocol",
+      "edition": "RFC 6455",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6455.txt",
+      "sha256": "765775326aee0ecca9b04bde3fd1f52932d498e33e34e428bd61b8a24da0fa3b",
+      "bytes": 162067,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact WebSocket authority; it becomes cited by all three AsyncAPI siblings when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc6455.txt"
+      ]
+    },
+    {
+      "id": "rfc7386",
+      "family": "asyncapi-3.1",
+      "name": "RFC 7386: JSON Merge Patch",
+      "edition": "RFC 7386",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7386.txt",
+      "sha256": "f6d41a44cc52138f799757fd8d45b839701b6a41c4c33e63d08a43907c7e8130",
+      "bytes": 12930,
+      "retrievedAt": "2026-09-05T14:44:38Z",
+      "status": "reference-only",
+      "reason": "Staged exact merge authority for the next AsyncAPI 3.1 trait-processing slice; it is not yet normative and becomes cited only when that slice is drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc7386.txt"
+      ]
+    },
+  {
+    "id": "rfc9112",
+    "families": [
+      "asyncapi",
+      "asyncapi-3.1"
+    ],
+      "name": "RFC 9112: HTTP/1.1",
+      "edition": "RFC 9112",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9112.txt",
+      "sha256": "e4f426bac6206b67fdf9e0da826154f70588db2133a0a86b15cde4ff725d8937",
+      "bytes": 109913,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+    "citedBy": [
+      "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md"
+    ],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc9112.txt"
+      ]
+    },
+    {
+      "id": "rfc8446",
+      "family": "asyncapi",
+      "name": "RFC 8446: TLS 1.3",
+      "edition": "RFC 8446",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc8446.txt",
+      "sha256": "47871bc8820a2c3b6ea89f061055577058862cf543686b82d10131239702b3bd",
+      "bytes": 337736,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact TLS authority; it becomes cited by secure AsyncAPI profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc8446.txt"
+      ]
+    },
+    {
+      "id": "rfc5280",
+      "family": "asyncapi",
+      "name": "RFC 5280: Internet X.509 Public Key Infrastructure Certificate and CRL Profile",
+      "edition": "RFC 5280",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc5280.txt",
+      "sha256": "a2f2628c0a83b873fc4786abd921f9b2c02395954b655d190bf16b831633345d",
+      "bytes": 352580,
+      "retrievedAt": "2026-09-05T02:50:00Z",
+      "status": "reference-only",
+      "reason": "Staged exact certificate-path authority; it becomes cited by secure AsyncAPI profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc5280.txt"
+      ]
+    },
+    {
+      "id": "rfc6066",
+      "family": "asyncapi",
+      "name": "RFC 6066: TLS Extensions — Server Name Indication",
+      "edition": "RFC 6066",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc6066.txt",
+      "sha256": "6a33cceaa5e1b6518923d9d04ffaa738bad0417806b3c94a995484e140f5cbc0",
+      "bytes": 55079,
+      "retrievedAt": "2026-09-05T02:40:00Z",
+      "status": "reference-only",
+      "reason": "Staged exact SNI authority; it becomes cited by secure HTTP/WebSocket AsyncAPI profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc6066.txt"
+      ]
+    },
+    {
+      "id": "rfc7301",
+      "family": "asyncapi",
+      "name": "RFC 7301: TLS Application-Layer Protocol Negotiation",
+      "edition": "RFC 7301",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc7301.txt",
+      "sha256": "ba122aee58871c604c9e98e2c9f81d5042e4056bd497cd41e23ad80fe3123222",
+      "bytes": 17439,
+      "retrievedAt": "2026-09-05T02:40:00Z",
+      "status": "reference-only",
+      "reason": "Staged exact ALPN authority; it becomes cited by secure HTTP/WebSocket AsyncAPI profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc7301.txt"
+      ]
+    },
+    {
+      "id": "rfc9525",
+      "family": "asyncapi",
+      "name": "RFC 9525: Service Identity in TLS",
+      "edition": "RFC 9525",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc9525.txt",
+      "sha256": "ed8116c2435376dffe37ec2ca688c3a8515e36820852b29e0b6cdfbe92abd2c5",
+      "bytes": 69260,
+      "retrievedAt": "2026-09-05T02:30:00Z",
+      "status": "reference-only",
+      "reason": "Staged exact service-identity authority; it becomes cited by secure AsyncAPI profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://www.rfc-editor.org/rfc/rfc9525.txt"
+      ]
+    },
+    {
+      "id": "mqtt-3.1.1-errata01",
+      "family": "asyncapi",
+      "name": "MQTT Version 3.1.1 Plus Errata 01",
+      "edition": "3.1.1 Plus Errata 01",
+      "kind": "url",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.pdf",
+      "sha256": "34798ac68b1a2cc587a3490886457c6f395ae242a1120ed1ba74d63514603e19",
+      "bytes": 1506688,
+      "retrievedAt": "2026-09-05T00:12:15Z",
+      "status": "reference-only",
+      "reason": "Staged exact MQTT authority; it becomes cited by the MQTT 3.1.1 profiles when drafted.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.pdf"
+      ]
+    },
+    {
+      "id": "mqtt-5.0-os",
+      "family": "asyncapi",
+      "name": "MQTT Version 5.0 OASIS Standard",
+      "edition": "5.0",
+      "kind": "url",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.pdf",
+      "sha256": "e8f8e9d2467618d5c5a6398bdf971cb90cdbe2c8e33242e028f442bee8e5de20",
+      "bytes": 1928173,
+      "retrievedAt": "2026-09-05T01:33:00Z",
+      "status": "reference-only",
+      "reason": "Pinned for the revision-6 apparatus and the conditional MQTT 5 profile; it becomes cited if MQTT 5 is admitted by an AsyncAPI sibling.",
+      "citedBy": [],
+      "matchTokens": [
+        "https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.pdf"
       ]
     },
     {

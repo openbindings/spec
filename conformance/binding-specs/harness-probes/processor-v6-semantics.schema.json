@@ -1,0 +1,888 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v6-semantics.schema.json",
+  "title": "Portable revision-6 semantic qualification cases",
+  "type": "object",
+  "required": [
+    "format",
+    "description",
+    "manifestFile",
+    "cases"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "openbindings.binding-spec-harness-semantics@1"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "manifestFile": {
+      "const": "processor-v6-semantics.manifest.json"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/mqttPacketCase"
+          },
+          {
+            "$ref": "#/$defs/mqttConnectionCase"
+          },
+          {
+            "$ref": "#/$defs/peerCase"
+          },
+          {
+            "$ref": "#/$defs/nativeCase"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "dialect": {
+      "enum": [
+        "openbindings.asyncapi-http-peer@1",
+        "openbindings.asyncapi-websocket-peer@1",
+        "openbindings.asyncapi-kafka-peer@1",
+        "openbindings.asyncapi-mqtt-peer@1"
+      ]
+    },
+    "trialId": {
+      "type": "string",
+      "pattern": "^V6-SEMANTIC-[A-Z0-9-]+-[AR][0-9]{2}$"
+    },
+    "property": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": [
+            "assigned-client-identifier",
+            "authentication-data",
+            "authentication-method",
+            "content-type",
+            "correlation-data",
+            "maximum-packet-size",
+            "maximum-qos",
+            "message-expiry-interval",
+            "payload-format-indicator",
+            "reason-string",
+            "receive-maximum",
+            "response-information",
+            "response-topic",
+            "retain-available",
+            "server-reference",
+            "session-expiry-interval",
+            "shared-subscription-available",
+            "subscription-identifier",
+            "subscription-identifier-available",
+            "topic-alias",
+            "topic-alias-maximum",
+            "user-property",
+            "wildcard-subscription-available"
+          ]
+        },
+        "value": {},
+        "valueBase64": {
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "value"
+          ],
+          "not": {
+            "required": [
+              "valueBase64"
+            ]
+          }
+        },
+        {
+          "required": [
+            "valueBase64"
+          ],
+          "not": {
+            "required": [
+              "value"
+            ]
+          }
+        }
+      ]
+    },
+    "properties": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/property"
+      }
+    },
+    "connect": {
+      "type": "object",
+      "required": [
+        "clientId",
+        "cleanStart",
+        "keepAlive",
+        "usernamePresent",
+        "passwordPresent",
+        "properties"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "cleanStart": {
+          "type": "boolean"
+        },
+        "cleanSession": {
+          "type": "boolean"
+        },
+        "keepAlive": {
+          "type": "integer"
+        },
+        "usernamePresent": {
+          "type": "boolean"
+        },
+        "passwordPresent": {
+          "type": "boolean"
+        },
+        "usernameSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "passwordSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "properties": {
+          "$ref": "#/$defs/properties"
+        }
+      }
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "packetType": {
+          "type": "string"
+        },
+        "packetId": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "topic": {
+          "type": "string"
+        },
+        "qos": {
+          "type": "integer"
+        },
+        "duplicate": {
+          "type": "boolean"
+        },
+        "retain": {
+          "type": "boolean"
+        },
+        "payloadBase64": {
+          "type": "string"
+        },
+        "properties": {
+          "$ref": "#/$defs/properties"
+        },
+        "reasonCode": {
+          "type": "integer"
+        },
+        "grantedQos": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clientId": {
+          "type": "string"
+        },
+        "cleanStart": {
+          "type": "boolean"
+        },
+        "cleanSession": {
+          "type": "boolean"
+        },
+        "keepAlive": {
+          "type": "integer"
+        },
+        "usernamePresent": {
+          "type": "boolean"
+        },
+        "passwordPresent": {
+          "type": "boolean"
+        },
+        "usernameSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "passwordSha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sessionPresent": {
+          "type": "boolean"
+        },
+        "origin": {
+          "enum": [
+            "local",
+            "peer"
+          ]
+        },
+        "cause": {
+          "type": "string"
+        },
+        "attempt": {
+          "type": "integer"
+        },
+        "connect": {
+          "$ref": "#/$defs/connect"
+        }
+      }
+    },
+    "timelineEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "name",
+            "facts"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "native"
+            },
+            "name": {
+              "enum": [
+                "dispatch",
+                "acknowledgement",
+                "delivery",
+                "connection-opened",
+                "connection-closed",
+                "reconnected",
+                "subscription-opened",
+                "subscription-closed",
+                "input-half-closed",
+                "cancellation-propagated"
+              ]
+            },
+            "facts": {
+              "$ref": "#/$defs/facts"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "index",
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "output"
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "value": {}
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "index"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "input-accepted",
+                "input-rejected"
+              ]
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "expected": {
+      "type": "object",
+      "required": [
+        "timeline"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "disposition": {
+          "enum": [
+            "complete",
+            "error",
+            "cancelled"
+          ]
+        },
+        "timeline": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/timelineEvent"
+          }
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mqttPreSubackBufferLimit": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "mqttPacketSubject": {
+      "type": "object",
+      "required": [
+        "protocolVersion",
+        "expected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocolVersion": {
+          "enum": [
+            "3.1.1",
+            "5.0"
+          ]
+        },
+        "expected": {
+          "$ref": "#/$defs/expected"
+        },
+        "runtime": {
+          "$ref": "#/$defs/runtime"
+        }
+      }
+    },
+    "connectionPeer": {
+      "type": "object",
+      "required": [
+        "protocolVersion",
+        "connection"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocolVersion": {
+          "enum": [
+            "3.1.1",
+            "5.0"
+          ]
+        },
+        "connection": {
+          "type": "object",
+          "required": [
+            "accepted"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "accepted": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "mqttConnectionSubject": {
+      "type": "object",
+      "required": [
+        "peerScript",
+        "expected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "peerScript": {
+          "$ref": "#/$defs/connectionPeer"
+        },
+        "expected": {
+          "$ref": "#/$defs/expected"
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      }
+    },
+    "peerSubject": {
+      "type": "object",
+      "required": [
+        "dialect",
+        "script"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "$ref": "#/$defs/dialect"
+        },
+        "script": {
+          "$ref": "#/$defs/peerScript"
+        }
+      }
+    },
+    "nativeSubject": {
+      "type": "object",
+      "required": [
+        "dialect",
+        "peerScript",
+        "event"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "$ref": "#/$defs/dialect"
+        },
+        "peerScript": {
+          "type": "object",
+          "required": [
+            "protocolVersion"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "protocolVersion": {
+              "enum": [
+                "3.1.1",
+                "5.0"
+              ]
+            }
+          }
+        },
+        "event": {
+          "$ref": "#/$defs/nativeEvent"
+        }
+      }
+    },
+    "mqttPacketTrial": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/trialId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/mqttPacketSubject"
+        }
+      }
+    },
+    "mqttConnectionTrial": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/trialId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/mqttConnectionSubject"
+        }
+      }
+    },
+    "peerTrial": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/trialId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/peerSubject"
+        }
+      }
+    },
+    "nativeTrial": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/trialId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/nativeSubject"
+        }
+      }
+    },
+    "mqttPacketCase": {
+      "type": "object",
+      "required": [
+        "id",
+        "validator",
+        "accepted",
+        "rejected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^V6-SEMANTIC-[A-Z0-9-]+$"
+        },
+        "validator": {
+          "const": "mqtt-packet-flow"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mqttPacketTrial"
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mqttPacketTrial"
+          }
+        }
+      }
+    },
+    "mqttConnectionCase": {
+      "type": "object",
+      "required": [
+        "id",
+        "validator",
+        "accepted",
+        "rejected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^V6-SEMANTIC-[A-Z0-9-]+$"
+        },
+        "validator": {
+          "const": "mqtt-connection-timeline"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mqttConnectionTrial"
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mqttConnectionTrial"
+          }
+        }
+      }
+    },
+    "peerCase": {
+      "type": "object",
+      "required": [
+        "id",
+        "validator",
+        "accepted",
+        "rejected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^V6-SEMANTIC-[A-Z0-9-]+$"
+        },
+        "validator": {
+          "const": "peer-script"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/peerTrial"
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/peerTrial"
+          }
+        }
+      }
+    },
+    "nativeCase": {
+      "type": "object",
+      "required": [
+        "id",
+        "validator",
+        "accepted",
+        "rejected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^V6-SEMANTIC-[A-Z0-9-]+$"
+        },
+        "validator": {
+          "const": "native-event-schema"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeTrial"
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeTrial"
+          }
+        }
+      }
+    },
+    "handshake": {
+      "type": "object",
+      "required": [
+        "outcome"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "upgrade": {
+          "type": "string"
+        },
+        "connectionTokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "secWebSocketAccept": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subprotocol": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "peerConnection": {
+      "type": "object",
+      "required": [
+        "accepted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        },
+        "reasonCode": {
+          "type": "integer"
+        },
+        "sessionPresent": {
+          "type": "boolean"
+        },
+        "properties": {
+          "$ref": "#/$defs/properties"
+        }
+      }
+    },
+    "peerEvent": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "count": {
+              "type": "integer"
+            }
+          }
+        },
+        "kind": {
+          "type": "string"
+        },
+        "packetId": {
+          "type": "integer"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "qos": {
+          "type": "integer"
+        },
+        "retain": {
+          "type": "boolean"
+        },
+        "duplicate": {
+          "type": "boolean"
+        },
+        "payloadBase64": {
+          "type": "string"
+        },
+        "reasonCode": {
+          "type": "integer"
+        },
+        "grantedQos": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "properties": {
+          "$ref": "#/$defs/properties"
+        },
+        "frame": {
+          "type": "object"
+        },
+        "code": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "peerScript": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocolVersion": {
+          "enum": [
+            "3.1.1",
+            "5.0"
+          ]
+        },
+        "connection": {
+          "$ref": "#/$defs/peerConnection"
+        },
+        "handshake": {
+          "$ref": "#/$defs/handshake"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/peerEvent"
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "handshake",
+            "events"
+          ]
+        },
+        {
+          "required": [
+            "protocolVersion",
+            "connection",
+            "events"
+          ]
+        }
+      ]
+    },
+    "nativeEvent": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "facts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "native"
+        },
+        "name": {
+          "type": "string"
+        },
+        "facts": {
+          "$ref": "#/$defs/facts"
+        }
+      }
+    }
+  }
+}

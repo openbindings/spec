@@ -10382,6 +10382,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.1",
                 "name": "note",
                 "names": [
                   "note"
@@ -10906,6 +10907,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.1",
                 "name": "ids",
                 "names": [
                   "ids"
@@ -11021,6 +11023,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.1",
                 "name": "count",
                 "names": [
                   "count",
@@ -11033,6 +11036,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.1",
                 "name": "flag",
                 "names": [
                   "count",

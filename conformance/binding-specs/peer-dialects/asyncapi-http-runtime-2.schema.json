@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-http-runtime-2.schema.json",
+  "title": "AsyncAPI 3.1 HTTP revision-7 configuration",
+  "description": "Closed semantic configuration for AsyncAPI 3.1 HTTP peer/native revision 2. Credential values are configuration inputs and never normalized observations.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "serverVariables": { "$ref": "#/$defs/stringMap" },
+    "channelParameters": { "$ref": "#/$defs/stringMap" },
+    "http": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": { "$ref": "#/$defs/stringMap" },
+        "headers": { "$ref": "#/$defs/headerMap" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": ["server", "operation"],
+      "additionalProperties": false,
+      "properties": {
+        "server": { "$ref": "#/$defs/securityLayer" },
+        "operation": { "$ref": "#/$defs/securityLayer" }
+      }
+    },
+    "tls": {
+      "type": "object",
+      "required": ["trustAnchorsDerBase64", "validationTimeUnixSeconds"],
+      "additionalProperties": false,
+      "properties": {
+        "trustAnchorsDerBase64": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/base64" }
+        },
+        "validationTimeUnixSeconds": { "$ref": "#/$defs/decimal" },
+        "clientCertificateChainDerBase64": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/base64" }
+        },
+        "clientPrivateKeyCapability": { "type": "string", "minLength": 1 }
+      },
+      "dependentRequired": {
+        "clientCertificateChainDerBase64": ["clientPrivateKeyCapability"],
+        "clientPrivateKeyCapability": ["clientCertificateChainDerBase64"]
+      }
+    }
+  },
+  "$defs": {
+    "base64": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+    },
+    "decimal": { "type": "string", "pattern": "^(?:0|[1-9][0-9]*)$" },
+    "stringMap": {
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "additionalProperties": { "type": "string" }
+    },
+    "headerMap": {
+      "type": "object",
+      "propertyNames": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+      "additionalProperties": { "type": "string" }
+    },
+    "securityLayer": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["alternativeIndex"],
+          "additionalProperties": false,
+          "properties": { "alternativeIndex": { "type": "null" } }
+        },
+        {
+          "type": "object",
+          "required": ["alternativeIndex", "credential"],
+          "additionalProperties": false,
+          "properties": {
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "credential": { "$ref": "#/$defs/credential" }
+          }
+        }
+      ]
+    },
+    "credential": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "username", "password"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "basic" },
+            "username": { "type": "string" },
+            "password": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "token"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "bearer" },
+            "token": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "api-key" },
+            "value": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "x509" } }
+        }
+      ]
+    }
+  }
+}

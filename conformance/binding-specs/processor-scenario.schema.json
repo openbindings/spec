@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/processor-scenario.schema.json",
   "title": "OpenBindings binding-specification processor scenarios",
-  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized. Revision 4 adds lossless caller-input materializations for hostile string code units that the corpus JSON representation cannot carry portably. Revision 5 adds semanticEquals so permitted JSON byte variation does not weaken value, field-ownership, or sequential-order evidence.",
+  "description": "Portable semantic scenarios for binding-specification P-rules. Family adapters translate the semantic configuration points and peer scripts into an implementation's API and normalize observations; an actual observation passes when it satisfies every assertion in any one expected alternative. Revision 2 re-keys the former unified OpenAPI family as four exact minor-line siblings; revision-1 files for the other families remain valid. Revision 3 adds the notContains assertion so a scenario can pin the absence of a substring - a header never emitted, a field never serialized. Revision 4 adds lossless caller-input materializations for hostile string code units that the corpus JSON representation cannot carry portably. Revision 5 adds semanticEquals so permitted JSON byte variation does not weaken value, field-ownership, or sequential-order evidence. Revision 6 adds a closed caller-action schedule, an exact normalized interaction timeline, cancellation and interaction-phase outcomes, exact-byte assertions, versioned peer scripts for the AsyncAPI edition siblings, and exact P-rule owners on every expected alternative. Revision 7 is additive and AsyncAPI-3.1-only; it retains revision-6 scenario semantics while admitting the staged closed HTTP peer/native revision-2 and HTTP runtime configuration vocabularies.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -12,15 +12,17 @@
         "openbindings.binding-spec-processor-scenarios@1",
         "openbindings.binding-spec-processor-scenarios@3",
         "openbindings.binding-spec-processor-scenarios@4",
-        "openbindings.binding-spec-processor-scenarios@5"
+        "openbindings.binding-spec-processor-scenarios@5",
+        "openbindings.binding-spec-processor-scenarios@6",
+        "openbindings.binding-spec-processor-scenarios@7"
       ]
     },
     "bindingSpec": {
       "type": "string",
-      "pattern": "^openbindings\\.(usage|openapi-(2\\.0|3\\.0|3\\.1|3\\.2)|asyncapi|mcp|grpc|connect|graphql)@[1-9][0-9]*$"
+      "pattern": "^openbindings\\.(usage|openapi-(2\\.0|3\\.0|3\\.1|3\\.2)|asyncapi(-2\\.6|-3\\.0|-3\\.1)?|mcp|grpc|connect|graphql)@[1-9][0-9]*$"
     },
     "family": {
-      "enum": ["usage", "openapi-2.0", "openapi-3.0", "openapi-3.1", "openapi-3.2", "asyncapi", "mcp", "grpc", "connect", "graphql"]
+      "enum": ["usage", "openapi-2.0", "openapi-3.0", "openapi-3.1", "openapi-3.2", "asyncapi", "asyncapi-2.6", "asyncapi-3.0", "asyncapi-3.1", "mcp", "grpc", "connect", "graphql"]
     },
     "description": { "type": "string", "minLength": 1 },
     "scenarios": {
@@ -40,7 +42,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-PS-[0-9]{2,}$"
+            "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC(26|30|31)?|MCP|GRPC|CONN|GQL)-PS-[0-9]{2,}$"
           },
           "rules": {
             "type": "array",
@@ -48,10 +50,10 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-P-[0-9]+$"
+              "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC(26|30|31)?|MCP|GRPC|CONN|GQL)-P-[0-9]+$"
             }
           },
-          "section": { "type": "string", "minLength": 1 },
+          "section": { "type": "string", "minLength": 1, "description": "Governing family-spec section. For anchored AsyncAPI 3.1 rules, this cites the first scenario rule; secondary rules resolve independently to their defining sections." },
           "description": { "type": "string", "minLength": 1 },
           "given": {
             "type": "object",
@@ -60,6 +62,10 @@
             "properties": {
               "source": { "type": "object" },
               "binding": { "type": "object" },
+              "operation": {
+                "type": "object",
+                "description": "Authored OBI operation contract used when a binding-specific invocation case requires exact input/output evidence."
+              },
               "configuration": {
                 "type": "object",
                 "description": "Values keyed by the specification's semantic configuration-point names; concrete API carriage is deliberately not implied."
@@ -70,18 +76,28 @@
                 "properties": {
                   "inputPresent": { "type": "boolean" },
                   "input": {},
+                  "inputJson": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Revision-6-only complete lossless JSON text for a unary input containing a JSON number."
+                  },
                   "inputMaterializations": {
                     "type": "array",
                     "minItems": 1,
                     "items": { "$ref": "#/$defs/inputMaterialization" }
                   },
-                  "writes": { "type": "array" }
+                  "writes": { "type": "array" },
+                  "actions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/$defs/invocationAction" }
+                  }
                 },
                 "additionalProperties": true
               },
               "peer": {
                 "type": "object",
-                "description": "A family-specific scripted transport/process outcome supplied by the harness adapter."
+                "description": "A family-specific scripted transport/process outcome supplied by the harness adapter. Revision 6 requires an exact dialect token and routes the script through that dialect's closed schema."
               },
               "runtime": {
                 "type": "object",
@@ -90,7 +106,22 @@
                   "requestCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
                   "responseCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
                   "requestContentCodings": { "$ref": "#/$defs/codecCapabilityMap" },
-                  "responseContentCodings": { "$ref": "#/$defs/codecCapabilityMap" }
+                  "responseContentCodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                  "mqttPreSubackBufferLimit": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Maximum count of complete inbound PUBLISH slots retained between SUBSCRIBE dispatch and its exact successful SUBACK. Every received QoS 1/2 slot is acknowledged before exhaustion is reported; the first slot beyond the limit is a stored failure."
+                  },
+                  "mqttUsernameUtf8Sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$",
+                    "description": "Expected lowercase SHA-256 digest of the exact UTF-8 username bytes placed in CONNECT; the normalized observation carries only this digest."
+                  },
+                  "mqttPasswordBinarySha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$",
+                    "description": "Expected lowercase SHA-256 digest of the exact binary password bytes placed in CONNECT; the normalized observation carries only this digest."
+                  }
                 },
                 "additionalProperties": true
               },
@@ -102,12 +133,14 @@
                   "description": "Absolute URI spelling; adapters do not infer a base for corpus resources."
                 },
                 "additionalProperties": {
-                  "description": "The parsed object or source text returned for this artifact URI.",
-                  "oneOf": [
-                    { "type": "object" },
-                    { "type": "string" }
-                  ]
+                  "description": "Any parsed JSON-image value or source text returned for this artifact URI. Family semantics decide whether the selected value has the required kind."
                 }
+              },
+              "resourceBytes": { "$ref": "#/$defs/resourceBytes" }
+              ,"keyMaterializations": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "$ref": "#/$defs/keyMaterialization" }
               }
             }
           },
@@ -121,7 +154,7 @@
               "additionalProperties": false,
               "properties": {
                 "disposition": {
-                  "enum": ["complete", "error", "refusal", "context-required"]
+                  "enum": ["complete", "error", "refusal", "context-required", "cancelled"]
                 },
                 "phase": {
                   "enum": [
@@ -129,11 +162,49 @@
                     "resolution",
                     "pre-dispatch",
                     "dispatch",
+                    "interaction",
                     "response",
                     "completion"
                   ]
                 },
                 "description": { "type": "string" },
+                "trace": {
+                  "type": "object",
+                  "description": "AsyncAPI-3.1 revision-7 C21 finite-trace qualification, separate from the immutable live disposition/phase/timeline. Required by the C21 capability validator, forbidden on other families/revisions. A valid cancellation qualifies only its admitted prefix; refused invocation is not-observed.",
+                  "required": ["status", "afterTerminal"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "status": { "enum": ["valid", "invalid", "not-observed"] },
+                    "afterTerminal": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "description": "Governed native observations after the live terminal; not operation output or a second terminal.",
+                      "items": { "allOf": [{ "$ref": "#/$defs/timelineEvent" }, {
+                        "required": ["kind", "name", "facts"],
+                        "properties": {
+                          "kind": { "const": "native" },
+                          "name": { "const": "connection-closed" },
+                          "facts": { "required": ["stage", "origin"], "properties": { "stage": { "const": "terminal" }, "origin": { "enum": ["local", "peer"] } } }
+                        }
+                      }] }
+                    }
+                  }
+                },
+                "rules": {
+                  "description": "Revision-6/7 atomic owners for this complete expected alternative, including its disposition, phase, timeline, trace qualification where present, and assertions.",
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC(26|30|31)?|MCP|GRPC|CONN|GQL)-P-[0-9]+$"
+                  }
+                },
+                "timeline": {
+                  "type": "array",
+                  "description": "Exact ordered operation-boundary and governed native events observed before the terminal disposition.",
+                  "items": { "$ref": "#/$defs/timelineEvent" }
+                },
                 "assertions": {
                   "type": "array",
                   "description": "Optional facts about the normalized observation beyond disposition and phase. Portable scenarios assert only wire dispatch or operation-value facts fixed by the governing binding specification; diagnostic error objects and concrete context-challenge record shapes are outside this format's comparison boundary.",
@@ -153,6 +224,7 @@
                       "setEquals": { "type": "array", "uniqueItems": true },
                       "contains": {},
                       "notContains": {},
+                      "bytesEquals": { "$ref": "#/$defs/base64Bytes" },
                       "semanticEquals": { "$ref": "#/$defs/semanticEquality" }
                     },
                     "oneOf": [
@@ -162,6 +234,7 @@
                       { "required": ["setEquals"] },
                       { "required": ["contains"] },
                       { "required": ["notContains"] },
+                      { "required": ["bytesEquals"] },
                       { "required": ["semanticEquals"] }
                     ]
                   }
@@ -174,6 +247,211 @@
     }
   },
   "$defs": {
+    "resourceBytes": {
+      "type": "object",
+      "description": "Revision-6 exact-octet resource carrier keyed by absolute retrieval URI. It is disjoint from resources and every value is a versioned canonical Base64 envelope.",
+      "propertyNames": {
+        "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["format", "dataBase64"],
+        "additionalProperties": false,
+        "properties": {
+          "format": { "const": "openbindings.resource-bytes@1" },
+          "dataBase64": {
+            "type": "string",
+            "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          }
+        }
+      }
+    },
+    "invocationAction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "write" },
+            "value": {},
+            "valueJson": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Complete lossless JSON text for a written value containing a JSON number."
+            }
+          },
+          "oneOf": [
+            { "required": ["value"], "not": { "required": ["valueJson"] } },
+            { "required": ["valueJson"], "not": { "required": ["value"] } }
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["kind", "count"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "await-output" },
+            "count": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "name", "count"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "await-native" },
+            "name": { "$ref": "#/$defs/nativeEventName" },
+            "count": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "half-close" } }
+        },
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "cancel" } }
+        }
+      ]
+    },
+    "nativeEventName": {
+      "enum": [
+        "connection-attempted",
+        "dispatch",
+        "request-started",
+        "acknowledgement",
+        "subscription-opened",
+        "subscription-closed",
+        "input-half-closed",
+        "cancellation-propagated",
+        "connection-opened",
+        "connection-closed",
+        "reconnected",
+        "delivery"
+      ]
+    },
+    "timelineEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "index"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "input-accepted" },
+            "index": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "index"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "output" },
+            "index": { "type": "integer", "minimum": 0 },
+            "value": {},
+            "valueJson": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Complete lossless JSON text for an operation value containing a number."
+            }
+          },
+          "oneOf": [
+            { "required": ["value"], "not": { "required": ["valueJson"] } },
+            { "required": ["valueJson"], "not": { "required": ["value"] } }
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["kind", "name", "facts"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "native" },
+            "name": { "$ref": "#/$defs/nativeEventName" },
+            "facts": { "type": "object" }
+          }
+        }
+      ]
+    },
+    "base64Bytes": {
+      "type": "object",
+      "required": ["base64"],
+      "additionalProperties": false,
+      "properties": {
+        "base64": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        }
+      }
+    },
+    "peerScriptV6": {
+      "type": "object",
+      "required": ["dialect", "script"],
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "enum": [
+            "openbindings.asyncapi-http-peer@1",
+            "openbindings.asyncapi-websocket-peer@1",
+            "openbindings.asyncapi-kafka-peer@1",
+            "openbindings.asyncapi-mqtt-peer@1"
+          ]
+        },
+        "script": { "type": "object" }
+      }
+    },
+    "peerScriptV7": {
+      "type": "object",
+      "required": ["dialect", "script"],
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "enum": [
+            "openbindings.asyncapi-http-peer@2",
+            "openbindings.asyncapi-websocket-peer@1",
+            "openbindings.asyncapi-kafka-peer@1",
+            "openbindings.asyncapi-mqtt-peer@1"
+          ]
+        },
+        "script": { "type": "object" }
+      }
+    },
+    "httpV2ConfigurationNamesForbidden": {
+      "not": {
+        "anyOf": [
+          { "required": ["serverVariables"] },
+          { "required": ["channelParameters"] },
+          { "required": ["http"] },
+          { "required": ["security"] },
+          { "required": ["tls"] }
+        ]
+      }
+    },
+    "httpV2ConfigurationNamesExceptHistoricSecurityForbidden": {
+      "not": {
+        "anyOf": [
+          { "required": ["serverVariables"] },
+          { "required": ["channelParameters"] },
+          { "required": ["http"] },
+          { "required": ["tls"] },
+          {
+            "properties": {
+              "security": {
+                "anyOf": [
+                  { "required": ["server"] },
+                  { "required": ["operation"] }
+                ]
+              }
+            },
+            "required": ["security"]
+          }
+        ]
+      }
+    },
     "inputMaterialization": {
       "type": "object",
       "description": "Corpus-only preprocessing of a JSON-safe caller-input template. Before invocation, the adapter replaces the null placeholder at path with one string containing exactly the listed UTF-16 code units, including at least one unpaired surrogate, without normalization or replacement; this record itself never reaches the processor.",
@@ -193,6 +471,26 @@
         }
       }
     },
+    "keyMaterialization": {
+      "type": "object",
+      "description": "Corpus-only preprocessing of a JSON-safe source template. Before common-kernel evaluation, the adapter adds value under one exact UTF-16-code-unit key in the map at path. This record never reaches the processor and avoids placing a non-scalar JSON string in the portable artifact.",
+      "required": ["path", "kind", "codeUnits", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^/(?:source/content(?:/(?:[^~/]|~[01])*)*|resources/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])*)*)$",
+          "description": "Canonical JSON Pointer confined to source.content or a parsed resources entry. resourceBytes is not addressable before decoding."
+        },
+        "kind": { "const": "unpaired-utf16-key" },
+        "codeUnits": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 0, "maximum": 65535 }
+        },
+        "value": {}
+      }
+    },
     "codecCapabilityMap": {
       "type": "object",
       "description": "Case-insensitive codec name to a deterministic harness action. unavailable forces absence in this direction; fail raises if invoked; identity copies the exact test bytes or code points unchanged.",
@@ -202,7 +500,7 @@
     "semanticEquality": {
       "type": "object",
       "description": "A harness-level semantic interpretation of the value at path. The interpreter validates the complete named field, part, query contribution, or sequential framing and compares its parsed JSON value without fixing an equivalent JSON byte spelling.",
-      "required": ["as", "value"],
+      "required": ["as"],
       "additionalProperties": false,
       "properties": {
         "as": {
@@ -212,7 +510,9 @@
             "query-json-parameter",
             "querystring-json",
             "json-lines",
-            "json-sequence"
+            "json-sequence",
+            "json-text",
+            "json-base64-bytes"
           ]
         },
         "name": { "type": "string", "minLength": 1 },
@@ -221,8 +521,21 @@
           "minItems": 1,
           "items": { "type": "string", "minLength": 1 }
         },
-        "value": {}
+        "formEncoding": {
+          "enum": ["oas-3.0", "oas-3.1", "oas-3.2"],
+          "description": "Required only for form-json-field; selects the exact edition-specific application/x-www-form-urlencoded spelling."
+        },
+        "value": {},
+        "valueJson": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Revision-6-only complete JSON text for an expected value whose exact number spelling cannot be carried losslessly through a host JSON number."
+        }
       },
+      "oneOf": [
+        { "required": ["value"], "not": { "required": ["valueJson"] } },
+        { "required": ["valueJson"], "not": { "required": ["value"] } }
+      ],
       "allOf": [
         {
           "if": {
@@ -242,11 +555,28 @@
               ]
             }
           }
+        },
+        {
+          "if": {
+            "properties": { "as": { "const": "form-json-field" } },
+            "required": ["as"]
+          },
+          "then": { "required": ["formEncoding"] },
+          "else": { "not": { "required": ["formEncoding"] } }
         }
       ]
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": { "format": { "const": "openbindings.binding-spec-processor-scenarios@7" }, "family": { "const": "asyncapi-3.1" } },
+        "required": ["format", "family"]
+      },
+      "else": {
+        "properties": { "scenarios": { "items": { "properties": { "expected": { "items": { "not": { "required": ["trace"] } } } } } } }
+      }
+    },
     {
       "if": {
         "properties": {
@@ -262,15 +592,122 @@
         }
       },
       "else": {
+        "if": {
+          "properties": {
+            "family": { "enum": ["asyncapi-2.6", "asyncapi-3.0"] }
+          },
+          "required": ["family"]
+        },
+        "then": {
+          "properties": {
+            "format": { "const": "openbindings.binding-spec-processor-scenarios@6" }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": { "family": { "const": "asyncapi-3.1" } },
+            "required": ["family"]
+          },
+          "then": {
+            "properties": {
+              "format": { "const": "openbindings.binding-spec-processor-scenarios@7" }
+            }
+          },
+          "else": {
+            "properties": {
+              "format": { "const": "openbindings.binding-spec-processor-scenarios@1" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "format": { "not": { "const": "openbindings.binding-spec-processor-scenarios@7" } } },
+        "required": ["format"]
+      },
+      "then": {
         "properties": {
-          "format": { "const": "openbindings.binding-spec-processor-scenarios@1" }
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "peer": {
+                      "not": {
+                        "properties": { "dialect": { "const": "openbindings.asyncapi-http-peer@2" } },
+                        "required": ["dialect"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
     {
       "if": {
         "properties": {
-          "format": { "const": "openbindings.binding-spec-processor-scenarios@5" }
+          "format": {
+            "enum": [
+              "openbindings.binding-spec-processor-scenarios@1",
+              "openbindings.binding-spec-processor-scenarios@3",
+              "openbindings.binding-spec-processor-scenarios@4",
+              "openbindings.binding-spec-processor-scenarios@6"
+            ]
+          }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "configuration": { "$ref": "#/$defs/httpV2ConfigurationNamesForbidden" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "format": { "const": "openbindings.binding-spec-processor-scenarios@5" } },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "configuration": { "$ref": "#/$defs/httpV2ConfigurationNamesExceptHistoricSecurityForbidden" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "enum": [
+              "openbindings.binding-spec-processor-scenarios@5",
+              "openbindings.binding-spec-processor-scenarios@6",
+              "openbindings.binding-spec-processor-scenarios@7"
+            ]
+          }
         },
         "required": ["format"]
       },
@@ -292,6 +729,314 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@5" }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "expected": {
+                  "items": {
+                    "properties": {
+                      "assertions": {
+                        "items": {
+                          "not": { "required": ["bytesEquals"] },
+                          "properties": {
+                            "semanticEquals": {
+                              "not": { "required": ["valueJson"] },
+                              "properties": {
+                                "as": {
+                                  "enum": [
+                                    "form-json-field",
+                                    "multipart-json-part",
+                                    "query-json-parameter",
+                                    "querystring-json",
+                                    "json-lines",
+                                    "json-sequence"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": {
+            "enum": [
+              "openbindings.binding-spec-processor-scenarios@6",
+              "openbindings.binding-spec-processor-scenarios@7"
+            ]
+          }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "runtime": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "requestCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                        "responseCharacterEncodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                        "requestContentCodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                        "responseContentCodings": { "$ref": "#/$defs/codecCapabilityMap" },
+                        "mqttPreSubackBufferLimit": { "type": "integer", "minimum": 0 },
+                        "mqttUsernameUtf8Sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+                        "mqttPasswordBinarySha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+                      }
+                    },
+                    "invocation": {
+                      "not": { "required": ["writes"] },
+                      "allOf": [
+                        {
+                          "if": { "required": ["actions"] },
+                          "then": {
+                            "properties": { "inputPresent": { "const": false } },
+                            "not": {
+                              "anyOf": [
+                                { "required": ["input"] },
+                                { "required": ["inputJson"] }
+                              ]
+                            }
+                          },
+                          "else": {
+                            "if": {
+                              "properties": { "inputPresent": { "const": true } },
+                              "required": ["inputPresent"]
+                            },
+                            "then": {
+                              "oneOf": [
+                                { "required": ["input"], "not": { "required": ["inputJson"] } },
+                                { "required": ["inputJson"], "not": { "required": ["input"] } }
+                              ]
+                            },
+                            "else": {
+                              "not": {
+                                "anyOf": [
+                                  { "required": ["input"] },
+                                  { "required": ["inputJson"] }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "expected": {
+                  "items": { "required": ["timeline", "rules"] }
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "not": { "required": ["resourceBytes"] },
+                  "properties": {
+                    "invocation": {
+                      "not": {
+                        "anyOf": [
+                          { "required": ["actions"] },
+                          { "required": ["inputJson"] }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "expected": {
+                  "items": {
+                    "allOf": [
+                      { "not": { "required": ["rules"] } },
+                      {
+                        "not": {
+                          "anyOf": [
+                            { "required": ["timeline"] },
+                            {
+                              "properties": { "disposition": { "const": "cancelled" } },
+                              "required": ["disposition"]
+                            },
+                            {
+                              "properties": { "phase": { "const": "interaction" } },
+                              "required": ["phase"]
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "properties": {
+                      "assertions": {
+                        "items": { "not": { "required": ["bytesEquals"] } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@6" }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "peer": { "$ref": "#/$defs/peerScriptV6" },
+                    "configuration": {
+                      "properties": {
+                        "websocketHeaders": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": ["name", "valueSha256"],
+                            "additionalProperties": false,
+                            "properties": {
+                              "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+                              "valueSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "invocation": {
+                      "properties": {
+                        "actions": {
+                          "items": {
+                            "not": {
+                              "properties": {
+                                "kind": { "const": "await-native" },
+                                "name": { "enum": ["connection-attempted", "request-started"] }
+                              },
+                              "required": ["kind", "name"]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "expected": {
+                  "items": {
+                    "properties": {
+                      "timeline": {
+                        "items": {
+                          "not": {
+                            "properties": {
+                              "kind": { "const": "native" },
+                              "name": { "enum": ["connection-attempted", "request-started"] }
+                            },
+                            "required": ["kind", "name"]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "format": { "const": "openbindings.binding-spec-processor-scenarios@7" }
+        },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": {
+              "properties": {
+                "given": {
+                  "properties": {
+                    "peer": { "$ref": "#/$defs/peerScriptV7" }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "peer": {
+                            "properties": { "dialect": { "const": "openbindings.asyncapi-http-peer@2" } },
+                            "required": ["dialect"]
+                          }
+                        },
+                        "required": ["peer"]
+                      },
+                      "then": {
+                        "properties": {
+                          "configuration": {
+                            "$ref": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-http-runtime-2.schema.json"
+                          }
+                        }
+                      },
+                      "else": {
+                        "properties": {
+                          "configuration": { "$ref": "#/$defs/httpV2ConfigurationNamesForbidden" }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "format": { "not": { "const": "openbindings.binding-spec-processor-scenarios@7" } } },
+        "required": ["format"]
+      },
+      "then": {
+        "properties": {
+          "scenarios": {
+            "items": { "properties": { "given": { "not": { "required": ["keyMaterializations"] } } } }
           }
         }
       }

@@ -1,0 +1,1125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v7-tls-semantics.schema.json",
+  "title": "AsyncAPI HTTP revision-2 deterministic TLS, security, framing, and lifecycle qualification",
+  "type": "object",
+  "required": [
+    "format",
+    "description",
+    "cases"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "openbindings.asyncapi-http-tls-qualification@2"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "decimal": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "utf16CodeUnits": {
+      "type": "object",
+      "required": ["format", "codeUnits"],
+      "additionalProperties": false,
+      "properties": {
+        "format": { "const": "openbindings.utf16-code-units@1" },
+        "codeUnits": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 0, "maximum": 65535 },
+          "contains": { "type": "integer", "minimum": 55296, "maximum": 57343 },
+          "minContains": 1
+        }
+      }
+    },
+    "portableString": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/$defs/utf16CodeUnits" }
+      ]
+    },
+    "repairPatch": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["op", "path"],
+          "additionalProperties": false,
+          "properties": {
+            "op": { "const": "remove" },
+            "path": { "type": "string", "pattern": "^/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])+)*$" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["op", "path", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "op": { "enum": ["add", "replace"] },
+            "path": { "type": "string", "pattern": "^(?:/(?:[^~/]|~[01])+)*$" },
+            "value": true
+          }
+        },
+        {
+          "type": "object",
+          "required": ["op", "serverChain", "serverPrivateKeyCapability", "serverChainSha256"],
+          "additionalProperties": false,
+          "properties": {
+            "op": { "const": "replace-server-path" },
+            "serverChain": { "type": "array", "items": { "$ref": "#/$defs/assetName" } },
+            "serverPrivateKeyCapability": { "$ref": "#/$defs/capability" },
+            "serverChainSha256": { "type": "array", "items": { "$ref": "#/$defs/digest" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["op", "clientChain", "clientPrivateKeyCapability", "clientChainSha256"],
+          "additionalProperties": false,
+          "properties": {
+            "op": { "const": "replace-client-path" },
+            "clientChain": { "type": "array", "items": { "$ref": "#/$defs/assetName" } },
+            "clientPrivateKeyCapability": { "$ref": "#/$defs/capability" },
+            "clientChainSha256": { "type": "array", "items": { "$ref": "#/$defs/digest" } }
+          }
+        }
+      ]
+    },
+    "assetName": {
+      "enum": [
+        "root-a",
+        "intermediate-a",
+        "server-good",
+        "server-expired",
+        "server-future",
+        "server-client-eku",
+        "server-bad-ku",
+        "root-b",
+        "server-root-b",
+        "client-good",
+        "client-server-eku",
+        "server-no-ku",
+        "server-key-encipherment-only",
+        "server-wildcard",
+        "server-ipv6",
+        "intermediate-ca-false",
+        "server-via-ca-false",
+        "intermediate-no-keycertsign",
+        "server-via-no-keycertsign",
+        "intermediate-b",
+        "server-via-intermediate-b",
+        "intermediate-a-wrong-key",
+        "server-unknown-critical",
+        "intermediate-name-constraints",
+        "server-via-name-constraints",
+        "server-uppercase-san", "intermediate-name-excluded", "server-name-excluded",
+        "intermediate-ip-constraints", "server-ip-permitted", "intermediate-ip-excluded", "server-ip-excluded",
+        "intermediate-policy-good", "server-policy-good", "intermediate-policy-any-map", "server-policy-any-map",
+        "intermediate-policy-explicit", "server-policy-missing", "intermediate-policy-inhibit-any", "server-policy-any-only",
+        "client-expired", "client-key-encipherment-only", "client-via-intermediate-b",
+        "intermediate-policy-inhibit-mapping", "intermediate-policy-mapping-child", "server-policy-mapping-inhibited"
+      ]
+    },
+    "capability": {
+      "enum": [
+        "c20b-key-root-a", "c20b-key-intermediate-a", "c20b-key-server-good",
+        "c20b-key-server-expired", "c20b-key-server-future", "c20b-key-server-client-eku",
+        "c20b-key-server-bad-ku", "c20b-key-root-b", "c20b-key-server-root-b",
+        "c20b-key-client-good", "c20b-key-client-server-eku", "c20b-key-server-no-ku",
+        "c20b-key-server-key-encipherment-only", "c20b-key-server-wildcard", "c20b-key-server-ipv6",
+        "c20b-key-intermediate-ca-false", "c20b-key-server-via-ca-false",
+        "c20b-key-intermediate-no-keycertsign", "c20b-key-server-via-no-keycertsign",
+        "c20b-key-intermediate-b", "c20b-key-server-via-intermediate-b",
+        "c20b-key-intermediate-a-wrong-key", "c20b-key-server-unknown-critical",
+        "c20b-key-intermediate-name-constraints", "c20b-key-server-via-name-constraints",
+        "c20b-key-server-uppercase-san", "c20b-key-intermediate-name-excluded", "c20b-key-server-name-excluded",
+        "c20b-key-intermediate-ip-constraints", "c20b-key-server-ip-permitted", "c20b-key-intermediate-ip-excluded", "c20b-key-server-ip-excluded",
+        "c20b-key-intermediate-policy-good", "c20b-key-server-policy-good", "c20b-key-intermediate-policy-any-map", "c20b-key-server-policy-any-map",
+        "c20b-key-intermediate-policy-explicit", "c20b-key-server-policy-missing", "c20b-key-intermediate-policy-inhibit-any", "c20b-key-server-policy-any-only",
+        "c20b-key-client-expired", "c20b-key-client-key-encipherment-only", "c20b-key-client-via-intermediate-b",
+        "c20b-key-intermediate-policy-inhibit-mapping", "c20b-key-intermediate-policy-mapping-child",
+        "c20b-key-server-policy-mapping-inhibited"
+      ]
+    },
+    "publicQuery": {
+      "type": "object",
+      "required": [
+        "nameEncoded",
+        "valueEncoded"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "nameEncoded": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+$"
+        },
+        "valueEncoded": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})*$"
+        }
+      }
+    },
+    "publicHeader": {
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/portableString" },
+        "value": { "$ref": "#/$defs/portableString" }
+      }
+    },
+    "publicInputs": {
+      "type": "object",
+      "required": [
+        "query",
+        "headers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/publicQuery"
+          }
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/publicHeader"
+          }
+        }
+      }
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["securityLayer", "alternativeIndex", "kind", "username", "secret"],
+          "additionalProperties": false,
+          "properties": {
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "kind": { "const": "basic" },
+            "username": { "$ref": "#/$defs/portableString" },
+            "secret": { "$ref": "#/$defs/portableString" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["securityLayer", "alternativeIndex", "kind", "secret"],
+          "additionalProperties": false,
+          "properties": {
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "kind": { "enum": ["bearer", "oauth-bearer", "oidc-bearer"] },
+            "secret": { "$ref": "#/$defs/portableString" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["securityLayer", "alternativeIndex", "kind", "name", "secret"],
+          "additionalProperties": false,
+          "properties": {
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "kind": { "enum": ["api-key-query", "api-key-header"] },
+            "name": { "$ref": "#/$defs/portableString" },
+            "secret": { "$ref": "#/$defs/portableString" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["securityLayer", "alternativeIndex", "kind"],
+          "additionalProperties": false,
+          "properties": {
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "kind": { "const": "x509" }
+          }
+        }
+      ]
+    },
+    "alternative": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["basic", "bearer", "oauth-bearer", "oidc-bearer", "x509"] }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "name"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["api-key-query", "api-key-header"] },
+            "name": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "alternatives": {
+      "type": "object",
+      "required": [
+        "server",
+        "operation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "server": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/alternative"
+              }
+            ]
+          }
+        },
+        "operation": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/alternative"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "queryContribution": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "nameEncoded",
+            "valueEncoded"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "value"
+            },
+            "nameEncoded": {
+              "type": "string",
+              "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+$"
+            },
+            "valueEncoded": {
+              "type": "string",
+              "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "securityLayer",
+            "alternativeIndex",
+            "nameEncoded",
+            "valueSha256",
+            "componentSha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "credential"
+            },
+            "securityLayer": {
+              "enum": [
+                "server",
+                "operation"
+              ]
+            },
+            "alternativeIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "nameEncoded": {
+              "type": "string",
+              "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+$"
+            },
+            "valueSha256": {
+              "$ref": "#/$defs/digest"
+            },
+            "componentSha256": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "headerContribution": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "name",
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "value"
+            },
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "securityLayer",
+            "alternativeIndex",
+            "name",
+            "valueSha256",
+            "fieldLineSha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "credential"
+            },
+            "securityLayer": {
+              "enum": [
+                "server",
+                "operation"
+              ]
+            },
+            "alternativeIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "name": {
+              "type": "string"
+            },
+            "valueSha256": {
+              "$ref": "#/$defs/digest"
+            },
+            "fieldLineSha256": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "absent"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "contentType",
+            "octetLengthDecimal",
+            "bodySha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "present"
+            },
+            "contentType": {
+              "type": "string"
+            },
+            "octetLengthDecimal": {
+              "$ref": "#/$defs/decimal"
+            },
+            "bodySha256": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "dispatch": {
+      "type": "object",
+      "required": [
+        "httpVersion",
+        "method",
+        "scheme",
+        "authority",
+        "path",
+        "queryContributions",
+        "headerContributions",
+        "originFormSha256",
+        "headerBlockSha256",
+        "body"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "httpVersion": {
+          "const": "1.1"
+        },
+        "method": {
+          "enum": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+        },
+        "scheme": {
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "authority": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "queryContributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/queryContribution"
+          }
+        },
+        "headerContributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/headerContribution"
+          }
+        },
+        "originFormSha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "headerBlockSha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "body": {
+          "$ref": "#/$defs/body"
+        }
+      }
+    },
+    "tlsSubject": {
+      "type": "object",
+      "required": [
+        "serverChain",
+        "trustAnchors",
+        "serverPrivateKeyCapability",
+        "validationTimeUnixSeconds",
+        "referenceIdentity",
+        "observedSni",
+        "tlsVersionsOffered",
+        "alpnOffered",
+        "serverTlsVersionSelected",
+        "serverAlpnSelected",
+        "observed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "serverChain": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assetName"
+          }
+        },
+        "trustAnchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assetName"
+          }
+        },
+        "serverPrivateKeyCapability": {
+          "$ref": "#/$defs/capability"
+        },
+        "validationTimeUnixSeconds": {
+          "$ref": "#/$defs/decimal"
+        },
+        "referenceIdentity": {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "dns",
+                "ip"
+              ]
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "observedSni": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tlsVersionsOffered": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpnOffered": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "serverTlsVersionSelected": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "serverAlpnSelected": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observed": {
+          "type": "object",
+          "required": [
+            "trustAnchorSha256",
+            "serverChainSha256",
+            "clientChainSha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "trustAnchorSha256": {
+              "$ref": "#/$defs/digest"
+            },
+            "serverChainSha256": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/digest"
+              }
+            },
+            "clientChainSha256": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "required": [
+            "required",
+            "chain",
+            "privateKeyCapability",
+            "trustAnchors"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "required": {
+              "const": true
+            },
+            "chain": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/assetName"
+              }
+            },
+            "privateKeyCapability": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/capability"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "trustAnchors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/assetName"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySubject": {
+      "type": "object",
+      "required": [
+        "alternatives",
+        "inputs",
+        "dispatch"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "alternatives": {
+          "$ref": "#/$defs/alternatives"
+        },
+        "inputs": {
+          "type": "object",
+          "required": [
+            "artifact",
+            "caller",
+            "credentials"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "artifact": {
+              "$ref": "#/$defs/publicInputs"
+            },
+            "caller": {
+              "$ref": "#/$defs/publicInputs"
+            },
+            "credentials": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/selection"
+              }
+            },
+            "tlsClientCertificate": {
+              "type": "object",
+              "required": ["chain", "privateKeyCapability", "trustAnchors", "chainSha256"],
+              "additionalProperties": false,
+              "properties": {
+                "chain": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/assetName" } },
+                "privateKeyCapability": { "$ref": "#/$defs/capability" },
+                "trustAnchors": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/assetName" } },
+                "chainSha256": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/digest" } }
+              }
+            }
+          }
+        },
+        "dispatch": {
+          "$ref": "#/$defs/dispatch"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "inputs": { "required": ["tlsClientCertificate"] }
+            },
+            "required": ["inputs"]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "properties": {
+                  "credentials": {
+                    "contains": {
+                      "type": "object",
+                      "properties": { "kind": { "const": "x509" } },
+                      "required": ["kind"]
+                    },
+                    "minContains": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "responseHead": {
+      "type": "object",
+      "required": [
+        "kind",
+        "status",
+        "headers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "head"
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "$ref": "#/$defs/portableString" },
+              "value": { "$ref": "#/$defs/portableString" }
+            }
+          }
+        }
+      }
+    },
+    "responseEvent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/responseHead"
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "dataBase64"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "body"
+            },
+            "dataBase64": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "stage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "disconnect"
+            },
+            "stage": {
+              "enum": [
+                "tls",
+                "before-request",
+                "request",
+                "response",
+                "terminal"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nativeEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "enum": [
+                "connection-attempted",
+                "connection-opened",
+                "request-started",
+                "dispatch",
+                "connection-closed",
+                "output"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "phase",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "const": "acknowledgement"
+            },
+            "phase": {
+              "enum": [
+                "interim",
+                "final"
+              ]
+            },
+            "status": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "octetLengthDecimal",
+            "bodySha256"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "const": "delivery"
+            },
+            "octetLengthDecimal": {
+              "$ref": "#/$defs/decimal"
+            },
+            "bodySha256": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "stage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "const": "cancellation-propagated"
+            },
+            "stage": {
+              "enum": [
+                "tls",
+                "before-request",
+                "request",
+                "response"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "outcome"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "const": "terminal"
+            },
+            "outcome": {
+              "enum": [
+                "complete",
+                "error"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "responseSubject": {
+      "type": "object",
+      "required": [
+        "method",
+        "replySelected",
+        "events",
+        "native"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "enum": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+        },
+        "replySelected": {
+          "type": "boolean"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/responseEvent"
+          }
+        },
+        "native": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nativeEvent"
+          }
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "valid",
+        "description",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^C20B-(TLS|SEC|HTTP)-[0-9]{2,}$"
+        },
+        "category": {
+          "enum": [
+            "tls",
+            "http-security",
+            "http-response"
+          ]
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedViolation": {
+          "type": "string",
+          "pattern": "^[A-Z0-9-]+$"
+        },
+        "repairCaseId": {
+          "type": "string",
+          "pattern": "^C20B-(TLS|SEC|HTTP)-[0-9]{2,}$"
+        },
+        "repairPatch": {
+          "$ref": "#/$defs/repairPatch"
+        },
+        "subject": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "valid": {
+                "const": false
+              }
+            },
+            "required": [
+              "valid"
+            ]
+          },
+          "then": {
+            "required": [
+              "expectedViolation",
+              "repairCaseId",
+              "repairPatch"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "expectedViolation"
+                  ]
+                },
+                {
+                  "required": [
+                    "repairCaseId"
+                  ]
+                },
+                {
+                  "required": [
+                    "repairPatch"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "tls"
+              }
+            },
+            "required": [
+              "category"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subject": {
+                "$ref": "#/$defs/tlsSubject"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "http-security"
+              }
+            },
+            "required": [
+              "category"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subject": {
+                "$ref": "#/$defs/securitySubject"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "http-response"
+              }
+            },
+            "required": [
+              "category"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subject": {
+                "$ref": "#/$defs/responseSubject"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

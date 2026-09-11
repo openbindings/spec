@@ -1,0 +1,655 @@
+{
+  "format": "openbindings.binding-spec-harness-semantics-manifest@1",
+  "algorithm": "openbindings.sorted-json-sha256@1",
+  "artifactFile": "processor-v6-semantics.json",
+  "entries": [
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R01",
+      "expectation": "rejected",
+      "sha256": "64b6784781f292e79c0fd36212d1a624c24fce68d18589105e9799dfdd082af9"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R02",
+      "expectation": "rejected",
+      "sha256": "bc569a4d72b1f4ef5a834b2bee0488d1cfa6bbc063b602eb2beccdece1638742"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R03",
+      "expectation": "rejected",
+      "sha256": "18b98339b9d48123dafb8cfabcd8d281dacdb4bed801bdd1a2e36b28e53caaee"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R04",
+      "expectation": "rejected",
+      "sha256": "4b9cb05175fead933438a669fec4edc42c65f51cee05dd2ba440615bcd237cfe"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R05",
+      "expectation": "rejected",
+      "sha256": "f322d4f1629a8c743a053123a4c9b8b5bd224335069a900268d4c907c14d6bbf"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01",
+      "trialId": "V6-SEMANTIC-C4-MANDATORY-CONNECT-01-R06",
+      "expectation": "rejected",
+      "sha256": "75c34692c82cbf32dd2d06dca22a7cc9c80aaca3b2f74b713988b4a7481aea1b"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01",
+      "trialId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01-A01",
+      "expectation": "accepted",
+      "sha256": "31ed78f47615961c9b0c831e84446a99ba1ea2e93e3fd1b93134622c4c06b98c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01",
+      "trialId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01-A02",
+      "expectation": "accepted",
+      "sha256": "6b0ef70421547abf3fb7e154315084bd44c4c3a6c75483ba8fd2a8f7fdd14ff7"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01",
+      "trialId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01-A03",
+      "expectation": "accepted",
+      "sha256": "0fb696a94b2c72a3cbcb23a5e0961bf4268a53ab02376478280fa1fe314b3a3d"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01",
+      "trialId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01-A04",
+      "expectation": "accepted",
+      "sha256": "1737148bc67989cf58558a5392bab7b94a4a61565cf7eea6e9df6536fa86e35f"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01",
+      "trialId": "V6-SEMANTIC-C4-PER-FLOW-RESUME-01-R01",
+      "expectation": "rejected",
+      "sha256": "c6d9f2cfe4ac7ec71802c3404f553b7e5be69acc7ac7beb42de4b7a53d546ffc"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-A01",
+      "expectation": "accepted",
+      "sha256": "6b53aad824343709c548ecca4908791cd5389ff6ccbe877c611e91e3eb1053d7"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-A02",
+      "expectation": "accepted",
+      "sha256": "7af7154a4fda9f6805032b901609978e397cc6fad6506aea33d7b30273f2a2a3"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-A03",
+      "expectation": "accepted",
+      "sha256": "e80a1c1df9e8e74debc658ebbff06802eb2e04389b9f9d0f8dc5f5d563a41445"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-A04",
+      "expectation": "accepted",
+      "sha256": "c12fe3ee134e1a785a92ab36624467dc94d5133d3aa6c6a3f867f0c52d780f4e"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-A05",
+      "expectation": "accepted",
+      "sha256": "583eeb64bcda1b3cda8adb63bc319d52dbe821bcd0b2a3e8ec5e5bbb1b9b6789"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-R01",
+      "expectation": "rejected",
+      "sha256": "9357c54470db85708ff35457591900adb1eb2255480dd219553fa43c7b988085"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-R02",
+      "expectation": "rejected",
+      "sha256": "449792eaabcf4b8eccc96ad5d22fb9a24dff68917517201950890e464d417caf"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-R03",
+      "expectation": "rejected",
+      "sha256": "0d54a50b516c805e7e36c2967abc20e8ba0646da55793432856d76f79850ada1"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-R04",
+      "expectation": "rejected",
+      "sha256": "fd7d44f224af02b133e9193b6bdcb14d243dbf0edf517a95a4b48650d4627d0c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01",
+      "trialId": "V6-SEMANTIC-C4-CONNACK-CAPABILITIES-01-R05",
+      "expectation": "rejected",
+      "sha256": "0d1ecee7a714300dc09ca004982106c2c865fae425dc7d8ecb80bb62cb9fc4db"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C4-RFC6455-CASE-INSENSITIVITY-01",
+      "trialId": "V6-SEMANTIC-C4-RFC6455-CASE-INSENSITIVITY-01-A01",
+      "expectation": "accepted",
+      "sha256": "c1ad82682cc1b7266d0d964488ebc7dccd470e3e88eadddcebfeaf9d93cad6ad"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01-A01",
+      "expectation": "accepted",
+      "sha256": "538cc94ef7040dead484eee8b7de8eb26cda1feed04a5a71049b2b5808115465"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01-A02",
+      "expectation": "accepted",
+      "sha256": "71e07fed70b2e21c0bd4e06ab0987e4439c43b15fc43af1a291f265a8626b19d"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01-R01",
+      "expectation": "rejected",
+      "sha256": "f27d4080dd3cc3751b86e91992ad0996df5c26d92b1d6595825eddf3a5ee1458"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-NATIVE-01-R02",
+      "expectation": "rejected",
+      "sha256": "a5677edee20b28fe128a3f4dee894b1fce1452e7e6b82907937d719666f62b84"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-A01",
+      "expectation": "accepted",
+      "sha256": "cfeda84cab7456b129301fa46b2ca9915770e55e313423ce0e2ab8ad3a6bdcd7"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-A02",
+      "expectation": "accepted",
+      "sha256": "e315a9aa928849fce71e5889992dbb6ede3e189a60801562b32e4bb7af894dbe"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-R01",
+      "expectation": "rejected",
+      "sha256": "7fd1f41be13cef415deb9b98f10f1e0861dd216162f8249330f16034e3c70175"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-R02",
+      "expectation": "rejected",
+      "sha256": "1f82f7d4c5164c3e98715a86f41d9767be5c8c434bb13bbfa25b6e8fadae32e6"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-R03",
+      "expectation": "rejected",
+      "sha256": "260d99249a8605e97120e9b2706b617e75dfb15d3d547712cc017f7b82120ff1"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-R04",
+      "expectation": "rejected",
+      "sha256": "64a0aa34f24a59d8faa7b998888058a90eb22587271bfbb5b788e51d9dccd0c5"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-PUBREL-RESUME-01",
+      "trialId": "V6-SEMANTIC-C5-PUBREL-RESUME-01-R05",
+      "expectation": "rejected",
+      "sha256": "82bac134ff06a7ebea7c2eb1fc35615d0cf258d9343b71e5cac31519a72ffab2"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01",
+      "trialId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01-A01",
+      "expectation": "accepted",
+      "sha256": "822119198ef2b40d3f16ee2e45bb6979e3e3a0bf9d5af2de7aae2294dc0d4ddb"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01",
+      "trialId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01-A02",
+      "expectation": "accepted",
+      "sha256": "dc51846c0c1534b8f0ccf24497de114c2d5abf36eabc02828365d5e58f512625"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01",
+      "trialId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01-R01",
+      "expectation": "rejected",
+      "sha256": "7da7e0eb8b52ddd7be9f3a34e9f4d21736fc7a13fad9b57b9f16610809acba38"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01",
+      "trialId": "V6-SEMANTIC-C5-INBOUND-MAXIMUM-AND-RECONNECT-CAPABILITY-01-R02",
+      "expectation": "rejected",
+      "sha256": "631b995e275952d157108f74c61e61c2215238ec59b851ead5381179a50d77cf"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01",
+      "trialId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01-A01",
+      "expectation": "accepted",
+      "sha256": "8224c471d6879854b7a7c6407a78b4abf749ff9b0b8d6084bf0a285b02f7cf81"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01",
+      "trialId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01-A02",
+      "expectation": "accepted",
+      "sha256": "93dfdd12cf36f8366067a6ec82c761b907d6adc866f99c359dce7d79960f704d"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01",
+      "trialId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01-R01",
+      "expectation": "rejected",
+      "sha256": "98dcc2b8230ea1737eea917f72de446b96cad2bada11b5dd67be70f747d02b74"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01",
+      "trialId": "V6-SEMANTIC-C6-DIRECTIONAL-RECEIVE-MAXIMUM-01-R02",
+      "expectation": "rejected",
+      "sha256": "b30ae4eb8737ad4a8856e8fce0c66f1b12fb259d31bb54b8a94110e4a39f2a63"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01-A01",
+      "expectation": "accepted",
+      "sha256": "bbb2166bd66c8dca95dfbb024dcf4a7b6d1cb8a6a72485d3249e528ad4abf7c3"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01-R01",
+      "expectation": "rejected",
+      "sha256": "1befb1f6868cab3043acf84a2946c021643a361edbbed0c8395ad28aa810bf62"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01-R02",
+      "expectation": "rejected",
+      "sha256": "846208c3edb218c0502205575c987d0d5476d67d46a39e73703c4888c4751ddf"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01-R03",
+      "expectation": "rejected",
+      "sha256": "63ccb89746821c152cf0cb6749c6c68d888fb3e1d0a6892a5a180b91ea8b285b"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-DEPENDENCIES-01-R04",
+      "expectation": "rejected",
+      "sha256": "78602e6341241f66c8999f0dc48a6dd91b0c7e41187ee1c852f17016930a754f"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-NATIVE-EVIDENCE-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-NATIVE-EVIDENCE-01-A01",
+      "expectation": "accepted",
+      "sha256": "8ff38dda69084ba0cf9ca51a911e0db7cfbeb7ca98347723fb6ce3f2bb3a329a"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-RECONNECT-NATIVE-EVIDENCE-01",
+      "trialId": "V6-SEMANTIC-C6-RECONNECT-NATIVE-EVIDENCE-01-R01",
+      "expectation": "rejected",
+      "sha256": "114f3077770b29b6d59f062e218cb86eb2ca680d337c16c4989ab0173526da8f"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-MAXIMUM-PACKET-SIZE-CLOSURE-01",
+      "trialId": "V6-SEMANTIC-C6-MAXIMUM-PACKET-SIZE-CLOSURE-01-R01",
+      "expectation": "rejected",
+      "sha256": "abcaa4e9a8b450eb40f661eec62648a2defdb8e0c74ce58656b93723b3b80382"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01",
+      "trialId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01-A01",
+      "expectation": "accepted",
+      "sha256": "e4582fa9630c14fe448723b641930a807b1b60f70efc0f7b1b6efebaf2029937"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01",
+      "trialId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01-A02",
+      "expectation": "accepted",
+      "sha256": "0496e8a105df21017813daf1748eacc15ddcd91ce9c8d3b75b81107db93a06f5"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01",
+      "trialId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01-R01",
+      "expectation": "rejected",
+      "sha256": "a702076d07615eeb19b42a6d6c59ffe7376063472d14534501969b78708fe5ba"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01",
+      "trialId": "V6-SEMANTIC-C6-TOPIC-ALIAS-01-R02",
+      "expectation": "rejected",
+      "sha256": "014cf6c0e0d37d65e38b5fa73d55ce6fca4dcd4eac17ff158040342cc6c02cef"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R01",
+      "expectation": "rejected",
+      "sha256": "e1ec999293c8aa925575b1d79f3241155a9ad084f76e8ff2b8ea3f3eab8fc062"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R02",
+      "expectation": "rejected",
+      "sha256": "bac12c1f8163fda199bca12bff25c992f1d71c32eb5c000f45df71ea79fda3c5"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R03",
+      "expectation": "rejected",
+      "sha256": "47f86d1094efe93522c49b3c26364bf3b9b528308997bc4e28f5bd6f5c09ae43"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R04",
+      "expectation": "rejected",
+      "sha256": "9a80b5da8c8c6f12b39dabd9311a187ea3dc30b5eb259255cd3c67131a0acfb7"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R05",
+      "expectation": "rejected",
+      "sha256": "a5bd825e2bb8736a50d4eed09d885ae0bb31cca8aed9de7f21bbc1a6e47fcf5a"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R06",
+      "expectation": "rejected",
+      "sha256": "e67c91e2bcdeaec6bfdbc3c6a20fbb4a96807211e09c0d2703e6aec4222d6047"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R07",
+      "expectation": "rejected",
+      "sha256": "d2abb8eddbe57cb2666bb45f2cf06fe90d7cc79327374ab798ba152e5fef82e4"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01",
+      "trialId": "V6-SEMANTIC-C6-PUBLISH-DUP-IDENTITY-01-R08",
+      "expectation": "rejected",
+      "sha256": "266f1447bf2761eea52da7d5bdd5117993d995b5b40eb58e01eebaababa8daab"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01",
+      "trialId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01-R01",
+      "expectation": "rejected",
+      "sha256": "279675e6a234a8d21ccef85aeb6dfb001e138d5fdaabb22e3d71d3cf5e6d2720"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01",
+      "trialId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01-R02",
+      "expectation": "rejected",
+      "sha256": "b8fe8e0f3f69f4c344b606c03d9cb54dbc4a38430155b31e80e991ea08de893c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01",
+      "trialId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01-R03",
+      "expectation": "rejected",
+      "sha256": "df02ba3d64dbfd20f42594a4b7dfb6058a88204a2fc5b1535362f637d083b3f3"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01",
+      "trialId": "V6-SEMANTIC-C7-AUTHENTICATION-METHOD-EQUALITY-01-R04",
+      "expectation": "rejected",
+      "sha256": "4f6ba445a7d15550b9051ec214c83d74de26971c34c7b8d1e492e5c388de157f"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-A01",
+      "expectation": "accepted",
+      "sha256": "8c03be8801a531fe2b622967bae6495b5b008af223058301b6e0486713d9d884"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-A02",
+      "expectation": "accepted",
+      "sha256": "a9cf8bb9778fa58db07bc78f8ba921b1962620d261a478110ce06cdd7bc2534d"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-A03",
+      "expectation": "accepted",
+      "sha256": "eb3f9bddf969bf720a7d5e2f59125d07e67b7137e0d4a878fb9e60f37caa6bce"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-R01",
+      "expectation": "rejected",
+      "sha256": "d6f29ad560ad00c493cc7ea6dd33b15de99a3b88041f3ff7ba0ebed72c1a6cdb"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-R02",
+      "expectation": "rejected",
+      "sha256": "34de497ab49b2bdf6ac70e394231e1403f55ce2bdae6746b7718339929623938"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-R03",
+      "expectation": "rejected",
+      "sha256": "4bd6d612f56a4d2d8117f801405628f6f6ac44af366e6dfca07796912746ae75"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01",
+      "trialId": "V6-SEMANTIC-C7-RETAINED-PUBLISH-COMPARATOR-01-R04",
+      "expectation": "rejected",
+      "sha256": "4306150182f927ea32de135b13ab988d83b46979a25d9eb06a4671c615804382"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-CURRENT-SESSION-EXPIRY-01",
+      "trialId": "V6-SEMANTIC-C7-CURRENT-SESSION-EXPIRY-01-A01",
+      "expectation": "accepted",
+      "sha256": "7e3d5f41acdf43f446eb8af539c4d5fdd62ec7f044942c0895b19af9960ae31c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C7-CURRENT-SESSION-EXPIRY-01",
+      "trialId": "V6-SEMANTIC-C7-CURRENT-SESSION-EXPIRY-01-R01",
+      "expectation": "rejected",
+      "sha256": "3114e33d2cec6094e7cb10ce6420f146d8410df1943f6e424ed9d0ce6b7aa529"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-SUBSCRIPTION-IDENTIFIER-CAUSALITY-01",
+      "trialId": "V6-SEMANTIC-C9-SUBSCRIPTION-IDENTIFIER-CAUSALITY-01-A01",
+      "expectation": "accepted",
+      "sha256": "f897d4ca55aa8d128bb6dea7269976e19391e243f61538dc3fb296292c2514c8"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-A01",
+      "expectation": "accepted",
+      "sha256": "1faa748e8828e502a8b960489e5022fee85e684427c7470fc7edff461b5ff800"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-A02",
+      "expectation": "accepted",
+      "sha256": "914eaf919d58824a5f414ebd45adaeb46ea260aa3492a99749e50616cfcb6499"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-A03",
+      "expectation": "accepted",
+      "sha256": "a772d1b6230661a786c20e3363d9909466804288186deef22220df18abff8723"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-R01",
+      "expectation": "rejected",
+      "sha256": "56c58051b0128b6ec1e8dc62f655e24225bc3148ee5634e7e0ca0ad8c7d404f8"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-R02",
+      "expectation": "rejected",
+      "sha256": "cbd952ca1da5e68f864c7088aae2d2838d9ab2cbd0efd5fa624c959a2e9124db"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT5-01-R03",
+      "expectation": "rejected",
+      "sha256": "ee98862a400da8eacf93a5c8abce05b114eb9133d2f35ab338c8a61142b49c0c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-A01",
+      "expectation": "accepted",
+      "sha256": "f890f1e4903dcfaea2a2714e40ff932ee3b29764cb86c4ee5f97b6d9c8b4a05f"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-A02",
+      "expectation": "accepted",
+      "sha256": "59507da954fe325900228aacc35c85fc8f86a8cc6e79d8e6c52cad9752af4190"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-A03",
+      "expectation": "accepted",
+      "sha256": "7be0f50d20d85ed6d0f0ad16ce3f01c308175c6003bb67da5d28144c74e6920a"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-R01",
+      "expectation": "rejected",
+      "sha256": "0bf60ba04a11f8029f229ac90b7f48dfae1a34446b4ccc80c92f2d470132ddaa"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-R02",
+      "expectation": "rejected",
+      "sha256": "219fd69d3be13def497023e8d65bd6faf48b6c7ddb35870598e32ac2e9c97f9b"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01",
+      "trialId": "V6-SEMANTIC-C9-CROSS-FLOW-ORDER-MQTT311-01-R03",
+      "expectation": "rejected",
+      "sha256": "4a86233d36455c4e68f0993add37b90a16a89c020ceb8c944804128c5ca5ff05"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C8-OUTBOUND-RESEND-ORDER-01",
+      "trialId": "V6-SEMANTIC-C8-OUTBOUND-RESEND-ORDER-01-A01",
+      "expectation": "accepted",
+      "sha256": "d1becff96955a0be122350fa00347e3f3206b02ec52886f9ca467926e4b7698c"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C8-OUTBOUND-RESEND-ORDER-01",
+      "trialId": "V6-SEMANTIC-C8-OUTBOUND-RESEND-ORDER-01-R01",
+      "expectation": "rejected",
+      "sha256": "084d9194c5767bc01f0c40d4c91df4b3fa77dec5c2460d984444fdc9cabd8e25"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01",
+      "trialId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01-A01",
+      "expectation": "accepted",
+      "sha256": "34f69c10a8cd15c70161eefa583d389f6e5472ed32bacb402e7eab5c4ca5fe25"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01",
+      "trialId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01-A02",
+      "expectation": "accepted",
+      "sha256": "9d15363e4f4eced60d50ca2bd8bb2c3a00873dbb2004a8fdbcbcd212df531772"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01",
+      "trialId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01-A03",
+      "expectation": "accepted",
+      "sha256": "fb9875ed9bc4a59173957c023d2ffac2a93a3c3284252147b185b2fc85bd65ab"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01",
+      "trialId": "V6-SEMANTIC-C10-UNIFIED-INBOUND-ACK-ORDER-01-A04",
+      "expectation": "accepted",
+      "sha256": "f1b6280d8ef9235799e3f2ecbc366492d2964037faa9ee2ea68ef151405e4795"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01",
+      "trialId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01-A01",
+      "expectation": "accepted",
+      "sha256": "7eb04c75738deeb74f4308a0b9c697deb697b93ab35c9df908bc2472d75199c1"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01",
+      "trialId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01-A02",
+      "expectation": "accepted",
+      "sha256": "c09f0646c0a4e3c643d870aa26ff763f10586074da91a64463d581f1f00e0d2a"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01",
+      "trialId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01-A03",
+      "expectation": "accepted",
+      "sha256": "a70b9a2d2b4ce6332ebf352350cadbfd36941b339dd4fe449c61484d349b0cba"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01",
+      "trialId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01-R01",
+      "expectation": "rejected",
+      "sha256": "a33114b5a06d2ccd609149fcc6bbbb56093d80d078265be13afdad9964ddc971"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01",
+      "trialId": "V6-SEMANTIC-C10-SUBSCRIPTION-GENERATIONS-01-R02",
+      "expectation": "rejected",
+      "sha256": "b0c9e8f54ca3201cb042900a28f86266d5d1e42560dcc2ec7b40142c132ca122"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C11-UNOBSERVED-GENERATION-CARRY-01",
+      "trialId": "V6-SEMANTIC-C11-UNOBSERVED-GENERATION-CARRY-01-A01",
+      "expectation": "accepted",
+      "sha256": "89d1c2510a7b3af519697c16f0da855cb8eda3f0c4c1898d08256af1b4e24322"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C11-UNOBSERVED-GENERATION-CARRY-01",
+      "trialId": "V6-SEMANTIC-C11-UNOBSERVED-GENERATION-CARRY-01-R01",
+      "expectation": "rejected",
+      "sha256": "d017d84f606ad64cea2787b4bc54893e010d19eef2438131f5e30931acde3ccb"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C11-UNSUBSCRIBE-RESUBSCRIBE-GENERATION-01",
+      "trialId": "V6-SEMANTIC-C11-UNSUBSCRIBE-RESUBSCRIBE-GENERATION-01-A01",
+      "expectation": "accepted",
+      "sha256": "e60348c64e87458701006f60bf641dcc6fc383a41601b0af523d32d6d12f97a1"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C11-UNSUBSCRIBE-RESUBSCRIBE-GENERATION-01",
+      "trialId": "V6-SEMANTIC-C11-UNSUBSCRIBE-RESUBSCRIBE-GENERATION-01-R01",
+      "expectation": "rejected",
+      "sha256": "57f786fe9df865aa83999b59aab3ee61b5ef02cd1f6d86fd6e3b836f73db923e"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01",
+      "trialId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01-A01",
+      "expectation": "accepted",
+      "sha256": "a1d2088831b77977e6d5f3b884e9c790d87dc4ca68c883320a8d0f6436af36bf"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01",
+      "trialId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01-A02",
+      "expectation": "accepted",
+      "sha256": "844a1a55afeeb1fd008b6cb9feb0ebfa3ab70b78d7d86f58d9a885724a5b8bf7"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01",
+      "trialId": "V6-SEMANTIC-C12-SUBSCRIPTION-CORRELATED-STATE-01-R01",
+      "expectation": "rejected",
+      "sha256": "911da49b94b1cc92de7f36f28dd3fd6beb6885eefa38ea16b2757d7efdd7d75e"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01",
+      "trialId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01-A01",
+      "expectation": "accepted",
+      "sha256": "8e4d09b5d1077c02062371d96cbcea22747bcd28b8af3c00a0a3f8f0e29b5b3d"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01",
+      "trialId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01-A02",
+      "expectation": "accepted",
+      "sha256": "4691fab0187acd85d7bd5c2bcc6afa37fc656a100eb491e74feecf38a18e7ce8"
+    },
+    {
+      "caseId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01",
+      "trialId": "V6-SEMANTIC-C13-SESSION-SUBSCRIPTION-FRONTIER-01-R01",
+      "expectation": "rejected",
+      "sha256": "5a1214448afe8eb16a8129818b9361d6f5ca2c974ac6c15e0c35f16d8a3a7995"
+    }
+  ]
+}

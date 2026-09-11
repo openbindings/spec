@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v6.schema.json",
+  "title": "Processor-scenario revision-6 portable harness probes",
+  "type": "object",
+  "required": ["format", "description", "semanticCasesFile", "matcherCases", "mappingCases", "peerCases", "scenarioCases"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.binding-spec-harness-probes@1" },
+    "description": { "type": "string", "minLength": 1 },
+    "semanticCasesFile": { "const": "processor-v6-semantics.json" },
+    "matcherCases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "dialect", "expected", "passingObservation", "failingObservations"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^V6-MATCH-[0-9]{2,}$" },
+          "dialect": { "$ref": "#/$defs/dialect" },
+          "expected": { "type": "object" },
+          "passingObservation": { "$ref": "#/$defs/observation" },
+          "failingObservations": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name", "observation"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "observation": { "$ref": "#/$defs/observation" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "mappingCases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "dialect", "script", "expectedMappings", "failingMappings"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^V6-MAPPING-[A-Z0-9]+-[0-9]{2,}$" },
+          "dialect": { "$ref": "#/$defs/dialect" },
+          "script": { "type": "object" },
+          "expectedMappings": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "object" }
+          },
+          "failingMappings": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name", "mappedObservations"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "mappedObservations": { "type": "array", "items": { "type": "object" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "peerCases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "dialect", "valid", "invalid"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^V6-PEER-[A-Z0-9]+-[0-9]{2,}$" },
+          "dialect": { "$ref": "#/$defs/dialect" },
+          "valid": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+          "invalid": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name", "script"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "script": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scenarioCases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "valid", "invalid"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^V6-SCENARIO-[A-Z0-9-]+-[0-9]{2,}$" },
+          "valid": { "$ref": "#/$defs/scenarioTrial" },
+          "invalid": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/scenarioTrial" },
+                {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": { "name": { "type": "string", "minLength": 1 } }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dialect": {
+      "enum": [
+        "openbindings.asyncapi-http-peer@1",
+        "openbindings.asyncapi-websocket-peer@1",
+        "openbindings.asyncapi-kafka-peer@1",
+        "openbindings.asyncapi-mqtt-peer@1"
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "required": ["disposition", "phase", "timeline"],
+      "properties": {
+        "disposition": { "enum": ["complete", "error", "refusal", "context-required", "cancelled"] },
+        "phase": { "enum": ["load", "resolution", "pre-dispatch", "dispatch", "interaction", "response", "completion"] },
+        "timeline": { "type": "array" }
+      }
+    },
+    "scenarioTrial": {
+      "type": "object",
+      "required": ["format", "given", "expected"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "format": {
+          "enum": [
+            "openbindings.binding-spec-processor-scenarios@1",
+            "openbindings.binding-spec-processor-scenarios@6"
+          ]
+        },
+        "given": { "type": "object" },
+        "expected": { "type": "array", "minItems": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

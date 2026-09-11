@@ -271,6 +271,7 @@ replaces a library that hides required facts or imposes conflicting policy.
 | grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **unreleased @1 candidate** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
 | connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **unreleased @1 candidate** | `openbindings.connect@1`         | `<fully-qualified-service>/<method>` |
 | asyncapi        | [openbindings.asyncapi.md](asyncapi/openbindings.asyncapi.md)                      | **unreleased @1 candidate** | `openbindings.asyncapi@1`        | edition-dependent operation reference |
+| asyncapi-3.1    | [openbindings.asyncapi-3.1.md](asyncapi-3.1/openbindings.asyncapi-3.1.md)          | **unreleased @1 common-kernel + payloadless plaintext HTTP candidate** | `openbindings.asyncapi-3.1@1` | `#/servers/<server>/operations/<operation>` conceptual cell; absence uses represented-cell zero/one/many resolution |
 | graphql         | [openbindings.graphql.md](graphql/openbindings.graphql.md)                         | **unreleased @1 candidate** | `openbindings.graphql@1`         | `query/<field>` or `mutation/<field>` |
 
 A candidate page remains informational until promotion. It uses the full authoring template and proposed rule identifiers so design review can evaluate a complete boundary without mistaking the proposal for a published identifier; its status banner states the remaining publication gates.

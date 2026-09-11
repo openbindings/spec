@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v7-tls-semantics.manifest.schema.json",
+  "title": "AsyncAPI HTTP TLS qualification canonical case manifest",
+  "type": "object",
+  "required": ["format", "artifact", "caseCount", "acceptedCount", "rejectedCount", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.asyncapi-http-tls-qualification-manifest@2" },
+    "artifact": { "const": "processor-v7-tls-semantics.json" },
+    "caseCount": { "type": "integer", "minimum": 1 },
+    "acceptedCount": { "type": "integer", "minimum": 1 },
+    "rejectedCount": { "type": "integer", "minimum": 1 },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^C20B-(TLS|SEC|HTTP)-[0-9]{2,}$" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    }
+  }
+}

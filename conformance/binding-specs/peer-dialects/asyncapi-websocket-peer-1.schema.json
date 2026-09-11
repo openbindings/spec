@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-websocket-peer-1.schema.json",
+  "title": "AsyncAPI WebSocket peer script revision 1",
+  "type": "object",
+  "required": ["handshake", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "handshake": {
+      "type": "object",
+      "required": ["outcome", "status", "upgrade", "connectionTokens", "secWebSocketAccept", "subprotocol", "extensions"],
+      "additionalProperties": false,
+      "properties": {
+        "outcome": { "enum": ["accepted", "rejected", "protocol-error"] },
+        "status": { "type": "integer", "minimum": 101, "maximum": 599 },
+        "upgrade": {
+          "type": ["string", "null"],
+          "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"
+        },
+        "connectionTokens": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" }
+        },
+        "secWebSocketAccept": {
+          "type": ["string", "null"],
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        },
+        "subprotocol": { "type": ["string", "null"], "minLength": 1, "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+        "extensions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000-\\u001F\\u007F]+$" }
+        },
+        "error": { "enum": ["wrong-accept", "unauthorized-subprotocol", "unauthorized-extension", "missing-upgrade", "wrong-upgrade", "missing-connection", "wrong-connection"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "outcome": { "const": "rejected" } },
+            "required": ["outcome"]
+          },
+          "then": {
+            "properties": {
+              "status": { "type": "integer", "minimum": 200, "maximum": 599 },
+              "upgrade": { "type": "null" },
+              "connectionTokens": { "type": "array", "maxItems": 0 },
+              "secWebSocketAccept": { "type": "null" },
+              "subprotocol": { "type": "null" },
+              "extensions": { "type": "array", "maxItems": 0 }
+            }
+          },
+          "else": {
+            "properties": {
+              "status": { "const": 101 },
+              "secWebSocketAccept": { "type": "string", "minLength": 1 }
+            },
+            "allOf": [
+              {
+                "if": { "properties": { "outcome": { "const": "accepted" } }, "required": ["outcome"] },
+                "then": {
+                  "properties": {
+                    "upgrade": { "type": "string", "pattern": "^[Ww][Ee][Bb][Ss][Oo][Cc][Kk][Ee][Tt]$" },
+                    "connectionTokens": {
+                      "type": "array",
+                      "minItems": 1,
+                      "contains": { "type": "string", "pattern": "^[Uu][Pp][Gg][Rr][Aa][Dd][Ee]$" }
+                    },
+                    "subprotocol": { "type": "null" },
+                    "extensions": { "type": "array", "maxItems": 0 }
+                  },
+                  "not": { "required": ["error"] }
+                },
+                "else": { "required": ["error"] }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["after", "kind", "text"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "text-message" },
+              "text": { "type": "string" }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["after", "kind", "base64"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "binary-message" },
+              "base64": {
+                "type": "string",
+                "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["after", "kind", "opcode", "fragmentsBase64"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "fragmented-message" },
+              "opcode": { "enum": ["text", "binary"] },
+              "fragmentsBase64": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "string",
+                  "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["after", "kind", "code", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "close" },
+              "code": {
+                "anyOf": [
+                  { "enum": [1000, 1001, 1002, 1003, 1007, 1008, 1009, 1010, 1011] },
+                  { "type": "integer", "minimum": 3000, "maximum": 4999 }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 123,
+                "description": "The verifier additionally enforces the RFC 6455 123-octet UTF-8 limit and rejects unpaired surrogates."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["after", "kind", "violation", "fin", "opcode", "masked", "payloadBase64"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "invalid-frame" },
+              "violation": { "enum": ["invalid-utf8-text", "unexpected-continuation", "fragmented-control", "masked-server-frame"] },
+              "fin": { "type": "boolean" },
+              "opcode": { "enum": ["continuation", "text", "binary", "close", "ping", "pong"] },
+              "masked": { "type": "boolean" },
+              "payloadBase64": {
+                "type": "string",
+                "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+              }
+            },
+            "allOf": [{
+              "if": { "properties": { "violation": { "const": "invalid-utf8-text" } }, "required": ["violation"] },
+              "then": { "properties": { "fin": { "const": true } } }
+            }]
+          },
+          {
+            "type": "object",
+            "required": ["after", "kind"],
+            "additionalProperties": false,
+            "properties": {
+              "after": { "$ref": "#/$defs/trigger" },
+              "kind": { "const": "disconnect" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "trigger": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "start" } }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "index"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "action" },
+            "index": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "name", "count"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "native" },
+            "name": {
+              "enum": [
+                "dispatch",
+                "connection-opened",
+                "delivery",
+                "cancellation-propagated",
+                "connection-closed"
+              ]
+            },
+            "count": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

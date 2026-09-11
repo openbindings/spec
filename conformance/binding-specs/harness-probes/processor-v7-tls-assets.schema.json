@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/harness-probes/processor-v7-tls-assets.schema.json",
+  "title": "AsyncAPI HTTP deterministic TLS qualification assets",
+  "type": "object",
+  "required": ["format", "description", "validationTimeUnixSeconds", "certificates", "privateKeyCapabilities"],
+  "additionalProperties": false,
+  "properties": {
+    "format": { "const": "openbindings.asyncapi-http-tls-assets@1" },
+    "description": { "type": "string", "minLength": 1 },
+    "validationTimeUnixSeconds": { "$ref": "#/$defs/decimal" },
+    "certificates": {
+      "type": "object",
+      "minProperties": 46,
+      "maxProperties": 46,
+      "propertyNames": { "$ref": "#/$defs/assetName" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["derBase64"],
+        "additionalProperties": false,
+        "properties": { "derBase64": { "$ref": "#/$defs/base64" } }
+      }
+    },
+    "privateKeyCapabilities": {
+      "type": "object",
+      "minProperties": 46,
+      "maxProperties": 46,
+      "propertyNames": { "$ref": "#/$defs/capabilityName" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["certificate", "pkcs8DerBase64"],
+        "additionalProperties": false,
+        "properties": {
+          "certificate": { "$ref": "#/$defs/assetName" },
+          "pkcs8DerBase64": { "$ref": "#/$defs/base64" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "decimal": { "type": "string", "pattern": "^(?:0|[1-9][0-9]*)$" },
+    "base64": { "type": "string", "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$" },
+    "capabilityName": {
+      "enum": [
+        "c20b-key-root-a", "c20b-key-intermediate-a", "c20b-key-server-good",
+        "c20b-key-server-expired", "c20b-key-server-future", "c20b-key-server-client-eku",
+        "c20b-key-server-bad-ku", "c20b-key-root-b", "c20b-key-server-root-b",
+        "c20b-key-client-good", "c20b-key-client-server-eku", "c20b-key-server-no-ku",
+        "c20b-key-server-key-encipherment-only", "c20b-key-server-wildcard", "c20b-key-server-ipv6",
+        "c20b-key-intermediate-ca-false", "c20b-key-server-via-ca-false",
+        "c20b-key-intermediate-no-keycertsign", "c20b-key-server-via-no-keycertsign",
+        "c20b-key-intermediate-b", "c20b-key-server-via-intermediate-b",
+        "c20b-key-intermediate-a-wrong-key", "c20b-key-server-unknown-critical",
+        "c20b-key-intermediate-name-constraints", "c20b-key-server-via-name-constraints",
+        "c20b-key-server-uppercase-san", "c20b-key-intermediate-name-excluded",
+        "c20b-key-server-name-excluded", "c20b-key-intermediate-ip-constraints",
+        "c20b-key-server-ip-permitted", "c20b-key-intermediate-ip-excluded",
+        "c20b-key-server-ip-excluded", "c20b-key-intermediate-policy-good",
+        "c20b-key-server-policy-good", "c20b-key-intermediate-policy-any-map",
+        "c20b-key-server-policy-any-map", "c20b-key-intermediate-policy-explicit",
+        "c20b-key-server-policy-missing", "c20b-key-intermediate-policy-inhibit-any",
+        "c20b-key-server-policy-any-only", "c20b-key-client-expired",
+        "c20b-key-client-key-encipherment-only", "c20b-key-client-via-intermediate-b",
+        "c20b-key-intermediate-policy-inhibit-mapping", "c20b-key-intermediate-policy-mapping-child",
+        "c20b-key-server-policy-mapping-inhibited"
+      ]
+    },
+    "assetName": {
+      "enum": [
+        "root-a", "intermediate-a", "server-good", "server-expired",
+        "server-future", "server-client-eku", "server-bad-ku", "root-b",
+        "server-root-b", "client-good", "client-server-eku",
+        "server-no-ku", "server-key-encipherment-only", "server-wildcard",
+        "server-ipv6", "intermediate-ca-false", "server-via-ca-false",
+        "intermediate-no-keycertsign", "server-via-no-keycertsign",
+        "intermediate-b", "server-via-intermediate-b",
+        "intermediate-a-wrong-key", "server-unknown-critical",
+        "intermediate-name-constraints", "server-via-name-constraints",
+        "server-uppercase-san", "intermediate-name-excluded", "server-name-excluded",
+        "intermediate-ip-constraints", "server-ip-permitted", "intermediate-ip-excluded",
+        "server-ip-excluded", "intermediate-policy-good", "server-policy-good",
+        "intermediate-policy-any-map", "server-policy-any-map", "intermediate-policy-explicit",
+        "server-policy-missing", "intermediate-policy-inhibit-any", "server-policy-any-only",
+        "client-expired", "client-key-encipherment-only", "client-via-intermediate-b",
+        "intermediate-policy-inhibit-mapping", "intermediate-policy-mapping-child", "server-policy-mapping-inhibited"
+      ]
+    }
+  }
+}

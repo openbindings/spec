@@ -1,0 +1,1278 @@
+{
+  "rule": "ASYNC31-D-04",
+  "bindingSpec": "openbindings.asyncapi-3.1@1",
+  "section": "5",
+  "description": "Closed payloadless plaintext HTTP cell admission.",
+  "tests": [
+    {
+      "description": "the exact payloadless plaintext HTTP subset is represented",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "omitted POST method and bindingVersion use the frozen defaults",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an explicit POST and 0.3.0 binding are represented",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {
+                      "method": "POST",
+                      "bindingVersion": "0.3.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an empty server and channel HTTP binding remains represented",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "bindings": {
+                    "http": {}
+                  },
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "missing operation HTTP binding",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "send action",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "send",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "HTTPS protocol",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "https",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "HTTP protocol version 2",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "protocolVersion": "2",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "GET method",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {
+                      "method": "GET"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "wrong binding version",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {
+                      "bindingVersion": "0.2.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "query binding",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {
+                      "query": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "nonempty configuration-only feature",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op",
+            "configuration": {
+              "x": true
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "ASYNC31-D-04"
+      ]
+    },
+    {
+      "description": "explicit port with separate pathname",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test:8443",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "bracketed IPv6 authority",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "[2001:db8::1]:8080",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "malformed bracketed authority",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "[2001:db8::1",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC31-D-04"]
+    },
+    {
+      "description": "authority port exceeds 65535",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test:65536",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC31-D-04"]
+    },
+    {
+      "description": "path is not carried in server.host",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test/api",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["ASYNC31-D-04"]
+    },
+    {
+      "description": "a numeric reg-name authority is represented without IPv4 misclassification",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "123",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "uppercase expanded IPv6 with leading-zero h16 and IPv4-form ls32 is represented",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "[2001:0DB8:0000:0000:0000:FF00:192.0.2.128]:8080",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "explicit empty operation security is represented like absence",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "call": {
+            "input": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "sources": {
+          "api": {
+            "bindingSpec": "openbindings.asyncapi-3.1@1",
+            "content": {
+              "asyncapi": "3.1.0",
+              "info": {
+                "title": "C21",
+                "version": "1"
+              },
+              "servers": {
+                "s": {
+                  "host": "example.test",
+                  "protocol": "http",
+                  "pathname": "/api"
+                }
+              },
+              "channels": {
+                "c": {
+                  "address": "/events",
+                  "messages": {
+                    "m": {}
+                  }
+                }
+              },
+              "operations": {
+                "op": {
+                  "action": "receive",
+                  "channel": {
+                    "$ref": "#/channels/c"
+                  },
+                  "bindings": {
+                    "http": {}
+                  },
+                  "security": []
+                }
+              }
+            }
+          }
+        },
+        "bindings": {
+          "call.api": {
+            "operation": "call",
+            "source": "api",
+            "selector": "#/servers/s/operations/op"
+          }
+        }
+      },
+      "valid": true
+    },
+    {"description":"a compressed IPv6 HTTP authority may end with dotted IPv4 ls32","document":{"openbindings":"0.2.0","operations":{"call":{"input":{"type":"object","properties":{},"additionalProperties":false}}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"C21","version":"1"},"servers":{"s":{"host":"[::ffff:192.0.2.1]","protocol":"http"}},"channels":{"c":{"address":"/events","messages":{"m":{}}}},"operations":{"op":{"action":"receive","channel":{"$ref":"#/channels/c"},"bindings":{"http":{}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":true},
+    {"description":"a dotted IPv4 group left of IPv6 compression is not an HTTP authority","document":{"openbindings":"0.2.0","operations":{"call":{"input":{"type":"object","properties":{},"additionalProperties":false}}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"C21","version":"1"},"servers":{"s":{"host":"[192.0.2.1::]","protocol":"http"}},"channels":{"c":{"address":"/events","messages":{"m":{}}}},"operations":{"op":{"action":"receive","channel":{"$ref":"#/channels/c"},"bindings":{"http":{}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-04"]},
+    {"description":"a dotted IPv4 group left of compression stays invalid before a trailing h16","document":{"openbindings":"0.2.0","operations":{"call":{"input":{"type":"object","properties":{},"additionalProperties":false}}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"C21","version":"1"},"servers":{"s":{"host":"[192.0.2.1::1]","protocol":"http"}},"channels":{"c":{"address":"/events","messages":{"m":{}}}},"operations":{"op":{"action":"receive","channel":{"$ref":"#/channels/c"},"bindings":{"http":{}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-04"]}
+    ,{"description":"bracketed IPv4 is not an IP-literal and is excluded from the HTTP authority grammar","document":{"openbindings":"0.2.0","operations":{"call":{"input":{"type":"object","properties":{},"additionalProperties":false}}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"C21","version":"1"},"servers":{"s":{"host":"[127.0.0.1]","protocol":"http","pathname":"/api"}},"channels":{"c":{"address":"/events","messages":{"m":{}}}},"operations":{"op":{"action":"receive","channel":{"$ref":"#/channels/c"},"bindings":{"http":{}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},"valid":false,"violates":["ASYNC31-D-04"]}
+  ]
+}

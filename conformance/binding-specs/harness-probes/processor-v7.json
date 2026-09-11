@@ -1,0 +1,742 @@
+{
+  "format": "openbindings.binding-spec-harness-probes@2",
+  "description": "Tracked C20A schema and version-isolation qualification for processor/synthesis revision 7 and AsyncAPI HTTP peer/native revision 2. TLS byte placeholders below prove only the closed transport shape; path validation is intentionally outside this scaffold.",
+  "cases": [
+    {
+      "id": "V7-SCAFFOLD-PEER-CLEARTEXT-01",
+      "validator": "http-peer@2",
+      "valid": true,
+      "description": "A minimal cleartext HTTP/1.1 response script is admitted.",
+      "subject": {
+        "transport": "cleartext",
+        "events": [
+          { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-02",
+      "validator": "http-peer@2",
+      "valid": true,
+      "description": "A structurally complete TLS peer uses canonical Base64 DER placeholders and an opaque private-key capability; no certificate-validity claim is made.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": "1.3",
+          "serverAlpnSelected": "http/1.1",
+          "requireClientCertificate": true,
+          "clientTrustAnchorsDerBase64": ["MAA="]
+        },
+        "events": [
+          { "kind": "response-head", "after": { "kind": "native", "name": "request-started", "count": 1 }, "httpVersion": "1.1", "status": 200, "headers": [{ "name": "Content-Length", "value": "0" }] }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-DISPATCH-03",
+      "validator": "http-native@2",
+      "valid": true,
+      "description": "The exact secret-safe HTTP dispatch fact shape is admitted.",
+      "subject": {
+        "kind": "native",
+        "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1",
+          "method": "GET",
+          "scheme": "http",
+          "authority": "example.test",
+          "path": "/",
+          "queryContributions": [],
+          "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "8a5edab282632443219e051e4ade2d1d5bbc671c781051bf1437897cbdfea0f1",
+          "headerBlockSha256": "a24f4d96f3f4dc331c08c023dec0c7cb10f97d530c7eacf8351d5e6a170c0a52",
+          "body": { "kind": "absent" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-CLEARTEXT-04",
+      "validator": "http-runtime@2",
+      "valid": true,
+      "description": "Closed parameter, HTTP contribution and security-alternative configuration is admitted without TLS.",
+      "subject": {
+        "serverVariables": { "region": "east" },
+        "channelParameters": { "orderId": "42" },
+        "http": { "query": { "trace": "a" }, "headers": { "X-Public": "yes" } },
+        "security": {
+          "server": { "alternativeIndex": null },
+          "operation": { "alternativeIndex": 0, "credential": { "kind": "bearer", "token": "token-value" } }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-TLS-05",
+      "validator": "http-runtime@2",
+      "valid": true,
+      "description": "TLS runtime configuration has one trust anchor, canonical validation time, and a paired client chain/capability.",
+      "subject": {
+        "tls": {
+          "trustAnchorsDerBase64": ["MAA="],
+          "validationTimeUnixSeconds": "0",
+          "clientCertificateChainDerBase64": ["MAA="],
+          "clientPrivateKeyCapability": "client-key-a"
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-UNKNOWN-06",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "Unknown peer-script fields are rejected.",
+      "subject": {
+        "transport": "cleartext",
+        "events": [{ "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [], "typo": true }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-BASE64-07",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "Syntactically padded but noncanonical Base64 is rejected by the manual canonical-octet guard.",
+      "subject": {
+        "transport": "tls", "tls": { "serverCertificateChainDerBase64": ["AB=="], "serverPrivateKeyCapability": "server-key-a", "clientTlsVersionsOffered": ["1.3"], "observedSni": "example.test", "clientAlpnOffered": ["http/1.1"], "serverTlsVersionSelected": "1.3", "serverAlpnSelected": "http/1.1" },
+        "events": [{ "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-DIGEST-08",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "A non-lowercase SHA-256 digest is rejected.",
+      "subject": {
+        "kind": "native",
+        "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1", "method": "GET", "scheme": "http", "authority": "example.test", "path": "/",
+          "queryContributions": [], "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "8A5EDAB282632443219E051E4ADE2D1D5BBC671C781051BF1437897CBDFEA0F1",
+          "headerBlockSha256": "a24f4d96f3f4dc331c08c023dec0c7cb10f97d530c7eacf8351d5e6a170c0a52",
+          "body": { "kind": "absent" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-RAW-SECRET-09",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "A credential contribution cannot carry its raw value.",
+      "subject": {
+        "kind": "native", "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1", "method": "GET", "scheme": "http", "authority": "example.test", "path": "/",
+          "queryContributions": [{ "kind": "credential", "securityLayer": "operation", "alternativeIndex": 0, "nameEncoded": "key", "valueSha256": "0000000000000000000000000000000000000000000000000000000000000000", "componentSha256": "0000000000000000000000000000000000000000000000000000000000000000", "value": "secret" }],
+          "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "8a5edab282632443219e051e4ade2d1d5bbc671c781051bf1437897cbdfea0f1",
+          "headerBlockSha256": "a24f4d96f3f4dc331c08c023dec0c7cb10f97d530c7eacf8351d5e6a170c0a52",
+          "body": { "kind": "absent" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-PRIVATE-KEY-10",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "Native evidence cannot expose private-key material or capabilities.",
+      "subject": {
+        "kind": "native", "name": "connection-attempted",
+        "facts": { "transport": "tls", "scheme": "https", "authority": "example.test", "referenceIdentity": "example.test", "sni": "example.test", "alpnOffered": ["http/1.1"], "tlsVersionsOffered": ["1.3"], "trustAnchorSha256": "0000000000000000000000000000000000000000000000000000000000000000", "validationTimeUnixSeconds": "0", "privateKey": "raw" }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V6-HTTP2-11",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "HTTP peer revision 2 cannot be smuggled into processor-scenario revision 6.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@6",
+        "bindingSpec": "openbindings.asyncapi-3.0@1",
+        "family": "asyncapi-3.0",
+        "description": "version isolation mutation",
+        "scenarios": [{
+          "id": "ASYNC30-PS-999", "rules": ["ASYNC30-P-1"], "section": "1", "description": "must reject peer v2 under fixture v6",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@2", "script": { "transport": "cleartext", "events": [{ "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC30-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-LEGACY-V7-12",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Processor-scenario revision 7 is AsyncAPI-3.1-only.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7",
+        "bindingSpec": "openbindings.asyncapi-3.0@1",
+        "family": "asyncapi-3.0",
+        "description": "family routing mutation",
+        "scenarios": [{
+          "id": "ASYNC30-PS-999", "rules": ["ASYNC30-P-1"], "section": "1", "description": "must reject v7 under legacy family",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC30-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-NONHTTP1-13",
+      "validator": "processor-scenario",
+      "valid": true,
+      "description": "Revision 7 continues to admit an existing revision-1 non-HTTP peer dialect while HTTP itself is staged at revision 2.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7",
+        "bindingSpec": "openbindings.asyncapi-3.1@1",
+        "family": "asyncapi-3.1",
+        "description": "additive non-HTTP compatibility",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "Kafka revision 1 remains structural apparatus",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-kafka-peer@1", "script": { "events": [] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-HTTP1-14",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "AsyncAPI-3.1 revision 7 HTTP cases cannot fall back to the old HTTP peer revision 1.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7",
+        "bindingSpec": "openbindings.asyncapi-3.1@1",
+        "family": "asyncapi-3.1",
+        "description": "HTTP peer downgrade mutation",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "must reject HTTP peer revision 1",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@1", "script": { "status": 204, "headers": [], "bodyBase64": "" } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-CORRELATION-GOOD-15",
+      "validator": "dialect-correlation",
+      "valid": true,
+      "description": "HTTP peer revision 2 correlates only with HTTP native revision 2.",
+      "subject": { "peerDialect": "openbindings.asyncapi-http-peer@2", "nativeDialect": "openbindings.asyncapi-http-native@2" }
+    },
+    {
+      "id": "V7-SCAFFOLD-CORRELATION-BAD-16",
+      "validator": "dialect-correlation",
+      "valid": false,
+      "description": "HTTP peer revision 2 cannot be normalized through HTTP native revision 1.",
+      "subject": { "peerDialect": "openbindings.asyncapi-http-peer@2", "nativeDialect": "openbindings.asyncapi-http-native@1" }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-TYPO-17",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "Runtime configuration rejects unknown or misspelled fields.",
+      "subject": { "validatonTimeUnixSeconds": "0" }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-OBSERVATION-18",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "Runtime configuration cannot carry observation-only request digests.",
+      "subject": { "originFormSha256": "0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-RUNTIME7-19",
+      "validator": "processor-scenario",
+      "valid": true,
+      "description": "The closed HTTP runtime vocabulary is admitted through an AsyncAPI-3.1 processor revision-7 scenario.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7",
+        "bindingSpec": "openbindings.asyncapi-3.1@1",
+        "family": "asyncapi-3.1",
+        "description": "runtime revision 7 positive",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "runtime configuration is version isolated",
+          "given": { "source": {}, "binding": {}, "configuration": { "http": { "query": {}, "headers": {} } }, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@2", "script": { "transport": "cleartext", "events": [] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-RUNTIME6-20",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "The HTTP runtime revision-2 vocabulary is rejected by both processor revision-6 schema and manual validation.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@6",
+        "bindingSpec": "openbindings.asyncapi-3.0@1",
+        "family": "asyncapi-3.0",
+        "description": "runtime revision 6 mutation",
+        "scenarios": [{
+          "id": "ASYNC30-PS-999", "rules": ["ASYNC30-P-1"], "section": "1", "description": "runtime configuration must not cross versions",
+          "given": { "source": {}, "binding": {}, "configuration": { "http": { "query": {}, "headers": {} } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC30-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-BODY-PRESENT-21",
+      "validator": "http-native@2",
+      "valid": true,
+      "description": "A payload-declaring dispatch uses the exact present body shape, including a zero-octet payload.",
+      "subject": {
+        "kind": "native", "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1", "method": "POST", "scheme": "http", "authority": "example.test", "path": "/orders",
+          "queryContributions": [], "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "headerBlockSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "body": { "kind": "present", "contentType": "application/json", "octetLengthDecimal": "0", "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-BODY-OLD-KIND-22",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "The former none body token is the only defect and is rejected.",
+      "subject": {
+        "kind": "native", "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1", "method": "GET", "scheme": "http", "authority": "example.test", "path": "/",
+          "queryContributions": [], "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "8a5edab282632443219e051e4ade2d1d5bbc671c781051bf1437897cbdfea0f1",
+          "headerBlockSha256": "a24f4d96f3f4dc331c08c023dec0c7cb10f97d530c7eacf8351d5e6a170c0a52",
+          "body": { "kind": "none" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-BODY-MISSING-TYPE-23",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "A present body missing only contentType is rejected.",
+      "subject": {
+        "kind": "native", "name": "dispatch",
+        "facts": {
+          "httpVersion": "1.1", "method": "POST", "scheme": "http", "authority": "example.test", "path": "/",
+          "queryContributions": [], "headerContributions": [{ "kind": "value", "name": "Host", "value": "example.test" }],
+          "originFormSha256": "8a5edab282632443219e051e4ade2d1d5bbc671c781051bf1437897cbdfea0f1",
+          "headerBlockSha256": "a24f4d96f3f4dc331c08c023dec0c7cb10f97d530c7eacf8351d5e6a170c0a52",
+          "body": { "kind": "present", "octetLengthDecimal": "0", "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" }
+        }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-ALPN-NULL-24",
+      "validator": "http-native@2",
+      "valid": true,
+      "description": "TLS connection-opened evidence requires alpnSelected but admits null as an explicit failed selection.",
+      "subject": {
+        "kind": "native", "name": "connection-opened",
+        "facts": { "transport": "tls", "tlsVersion": "1.3", "sni": "example.test", "alpnSelected": null, "peerCertificateChainSha256": ["0000000000000000000000000000000000000000000000000000000000000000"] }
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-PASSIVE-25",
+      "validator": "http-peer@2",
+      "valid": true,
+      "description": "A passive TLS peer with no response events supports local handshake failure or pre-request cancellation without a truth label.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="], "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"], "observedSni": "example.test", "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": null, "serverAlpnSelected": null
+        },
+        "events": []
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-BAD-ALPN-26",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "An unsupported server ALPN selection is the only defect and is rejected.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="], "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"], "observedSni": "example.test", "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": "1.3", "serverAlpnSelected": "h2"
+        },
+        "events": []
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-TWO-FINALS-27",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "An actual revision-7 processor subject cannot bypass HTTP peer chronology with two final response heads.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7", "bindingSpec": "openbindings.asyncapi-3.1@1", "family": "asyncapi-3.1", "description": "two-final chronology mutation",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "two final heads are illegal",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@2", "script": { "transport": "cleartext", "events": [
+            { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] },
+            { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 200, "headers": [] }
+          ] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-EARLY-BODY-28",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "An actual revision-7 processor subject rejects response bytes before a final response head.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7", "bindingSpec": "openbindings.asyncapi-3.1@1", "family": "asyncapi-3.1", "description": "early-body chronology mutation",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "body before final is illegal",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@2", "script": { "transport": "cleartext", "events": [
+            { "kind": "body-chunk", "after": { "kind": "start" }, "dataBase64": "" },
+            { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }
+          ] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-REQUEST-STARTED-29",
+      "validator": "http-native@2",
+      "valid": true,
+      "description": "request-started proves the first request octet exactly.",
+      "subject": { "kind": "native", "name": "request-started", "facts": { "httpVersion": "1.1", "octetsSentDecimal": "1" } }
+    },
+    {
+      "id": "V7-SCAFFOLD-NATIVE-REQUEST-ZERO-30",
+      "validator": "http-native@2",
+      "valid": false,
+      "description": "request-started cannot claim zero transmitted octets.",
+      "subject": { "kind": "native", "name": "request-started", "facts": { "httpVersion": "1.1", "octetsSentDecimal": "0" } }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V1-HTTP2-31",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Open legacy processor revision 1 still rejects the exact HTTP peer revision-2 token.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@1", "bindingSpec": "openbindings.asyncapi@1", "family": "asyncapi", "description": "legacy peer token mutation",
+        "scenarios": [{
+          "id": "ASYNC-PS-999", "rules": ["ASYNC-P-1"], "section": "1", "description": "HTTP peer revision 2 must not enter revision 1",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@2", "script": { "transport": "cleartext", "events": [] } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V1-TLS-32",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Open legacy processor revision 1 rejects the exact new tls configuration name while retaining unrelated historic names.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@1", "bindingSpec": "openbindings.asyncapi@1", "family": "asyncapi", "description": "legacy TLS configuration mutation",
+        "scenarios": [{
+          "id": "ASYNC-PS-999", "rules": ["ASYNC-P-1"], "section": "1", "description": "TLS runtime data must not enter revision 1",
+          "given": { "source": {}, "binding": {}, "configuration": { "tls": { "trustAnchorsDerBase64": ["MAA="], "validationTimeUnixSeconds": "0" } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-ASYNC31-V6-33",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "The AsyncAPI 3.1 family cannot regress from its routed processor revision 7 to revision 6.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@6", "bindingSpec": "openbindings.asyncapi-3.1@1", "family": "asyncapi-3.1", "description": "Async31 format downgrade mutation",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "Async31 requires revision 7",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"], "timeline": [], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-SYNTHESIS-WRONG-FAMILY-34",
+      "validator": "synthesis-scenario",
+      "valid": false,
+      "description": "Synthesis revision 7 is rejected when the otherwise coherent AsyncAPI 3.1 subject claims another family.",
+      "subject": {
+        "format": "openbindings.binding-spec-synthesis-scenarios@7", "bindingSpec": "openbindings.asyncapi-3.1@1", "family": "asyncapi-3.0", "description": "synthesis family routing mutation",
+        "scenarios": [{
+          "id": "ASYNC31-SS-999", "rules": ["ASYNC31-S-01", "ASYNC31-S-03"], "section": "5", "description": "only family is wrong",
+          "source": { "bindingSpec": "openbindings.asyncapi-3.1@1", "content": { "asyncapi": "3.1.0", "info": { "title": "x", "version": "1" }, "servers": { "s": { "host": "e", "protocol": "test" } }, "channels": { "c": {} }, "operations": { "op": { "action": "receive", "channel": { "$ref": "#/channels/c" } } } } },
+          "expected": {
+            "outcome": "synthesized", "operations": [], "bindings": [],
+            "assertions": [{ "rule": "ASYNC31-S-01", "surface": "coverage-inventory", "path": "/", "setEquals": [{ "sourceIndex": 0, "sourceRef": "#/servers/s/operations/op", "scope": "protocol-cell", "operationKey": "op", "bindingSelector": "#/servers/s/operations/op" }] }],
+            "coverage": { "exhaustive": true, "fullyRepresented": false, "entries": [{ "sourceIndex": 0, "sourceRef": "#/servers/s/operations/op", "scope": "protocol-cell", "status": "excluded", "operationKey": "op", "bindingSelector": "#/servers/s/operations/op", "rule": "ASYNC31-S-03", "requirements": [] }] }
+          }
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V6-NEW-NATIVE-35",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "The request-started native token is rejected under processor revision 6.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@6", "bindingSpec": "openbindings.asyncapi-3.0@1", "family": "asyncapi-3.0", "description": "native token version mutation",
+        "scenarios": [{
+          "id": "ASYNC30-PS-999", "rules": ["ASYNC30-P-1"], "section": "1", "description": "request-started belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "invocation": { "inputPresent": false }, "peer": { "dialect": "openbindings.asyncapi-http-peer@1", "script": { "after": { "kind": "start" }, "outcome": "response", "status": 204, "headers": [], "bodyBase64": "" } } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "rules": ["ASYNC30-P-1"], "timeline": [{ "kind": "native", "name": "request-started", "facts": { "httpVersion": "1.1", "octetsSentDecimal": "1" } }], "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V5-TLS-36",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Processor revision 5 rejects the new tls configuration while its historic configuration remains open.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@5", "bindingSpec": "openbindings.openapi-3.0@1", "family": "openapi-3.0", "description": "revision-5 TLS configuration mutation",
+        "scenarios": [{
+          "id": "OAPI30-PS-999", "rules": ["OAPI30-P-1"], "section": "1", "description": "TLS runtime data belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "configuration": { "tls": { "trustAnchorsDerBase64": ["MAA="], "validationTimeUnixSeconds": "0" } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-WS-HEADERS-37",
+      "validator": "processor-scenario",
+      "valid": true,
+      "description": "Revision 7 preserves the existing websocketHeaders configuration when the selected peer is WebSocket revision 1.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@7", "bindingSpec": "openbindings.asyncapi-3.1@1", "family": "asyncapi-3.1", "description": "non-HTTP configuration compatibility",
+        "scenarios": [{
+          "id": "ASYNC31-PS-999", "rules": ["ASYNC31-P-1"], "section": "1", "description": "WebSocket headers remain valid",
+          "given": {
+            "source": {}, "binding": {}, "configuration": { "websocketHeaders": [] }, "invocation": { "inputPresent": false },
+            "peer": { "dialect": "openbindings.asyncapi-websocket-peer@1", "script": { "handshake": { "upgrade": "websocket", "connectionTokens": ["Upgrade"], "outcome": "accepted", "status": 101, "secWebSocketAccept": "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", "subprotocol": null, "extensions": [] }, "events": [] } }
+          },
+          "expected": [{
+            "disposition": "complete", "phase": "completion", "rules": ["ASYNC31-P-1"],
+            "timeline": [
+              { "kind": "native", "name": "dispatch", "facts": { "frameType": "opening-request", "headers": [], "method": "GET", "target": "/events", "host": "example.test", "connection": "Upgrade", "upgrade": "websocket", "secWebSocketKey": "dGhlIHNhbXBsZSBub25jZQ==", "secWebSocketVersion": "13", "subprotocols": [], "extensions": [], "authorizationSha256": null, "apiKeyHeaders": [] } },
+              { "kind": "native", "name": "connection-opened", "facts": { "status": 101, "upgrade": "websocket", "connectionTokens": ["Upgrade"], "secWebSocketAccept": "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", "subprotocol": null, "extensions": [] } }
+            ],
+            "assertions": []
+          }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-BASE64-38",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "Noncanonical runtime trust-anchor Base64 is the only defect and is rejected.",
+      "subject": { "tls": { "trustAnchorsDerBase64": ["AB=="], "validationTimeUnixSeconds": "0" } }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-DECIMAL-39",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "A leading-zero validation time is the only defect and is rejected.",
+      "subject": { "tls": { "trustAnchorsDerBase64": ["MAA="], "validationTimeUnixSeconds": "00" } }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-SECURITY-ONEOF-40",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "An anonymous security layer cannot also carry a credential.",
+      "subject": { "security": { "server": { "alternativeIndex": null, "credential": { "kind": "bearer", "token": "t" } }, "operation": { "alternativeIndex": null } } }
+    },
+    {
+      "id": "V7-SCAFFOLD-RUNTIME-SECURITY-TYPO-41",
+      "validator": "http-runtime@2",
+      "valid": false,
+      "description": "A valid selected credential with one misspelled extra field is rejected.",
+      "subject": { "security": { "server": { "alternativeIndex": null }, "operation": { "alternativeIndex": 0, "credential": { "kind": "bearer", "token": "t", "tokn": "t" } } } }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-NULL-VERSION-ALPN-42",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "A null server TLS selection cannot coexist with a non-null ALPN selection.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": null,
+          "serverAlpnSelected": "http/1.1"
+        },
+        "events": []
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-RESPONSE-NO-SELECTION-43",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "A TLS script cannot deliver an HTTP response when neither TLS nor ALPN was selected.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": null,
+          "serverAlpnSelected": null
+        },
+        "events": [
+          { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-RESPONSE-NO-ALPN-44",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "A selected TLS 1.3 connection cannot deliver an HTTP response without selecting HTTP/1.1 ALPN.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": "1.3",
+          "serverAlpnSelected": null
+        },
+        "events": [
+          { "kind": "response-head", "after": { "kind": "start" }, "httpVersion": "1.1", "status": 204, "headers": [] }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-DURING-HANDSHAKE-DISCONNECT-45",
+      "validator": "http-peer@2",
+      "valid": true,
+      "description": "A peer disconnect during TLS remains executable without a successful TLS or ALPN selection.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": null,
+          "serverAlpnSelected": null
+        },
+        "events": [
+          { "kind": "disconnect", "after": { "kind": "start" }, "stage": "during-tls" }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V1-SERVER-VARIABLES-46",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Open processor revision 1 rejects the exact new serverVariables configuration name.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@1", "bindingSpec": "openbindings.asyncapi@1", "family": "asyncapi", "description": "legacy server variables mutation",
+        "scenarios": [{
+          "id": "ASYNC-PS-999", "rules": ["ASYNC-P-1"], "section": "1", "description": "serverVariables belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "configuration": { "serverVariables": { "tenant": "a" } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V1-CHANNEL-PARAMETERS-47",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Open processor revision 1 rejects the exact new channelParameters configuration name.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@1", "bindingSpec": "openbindings.asyncapi@1", "family": "asyncapi", "description": "legacy channel parameters mutation",
+        "scenarios": [{
+          "id": "ASYNC-PS-999", "rules": ["ASYNC-P-1"], "section": "1", "description": "channelParameters belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "configuration": { "channelParameters": { "tenant": "a" } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V5-LAYER-SECURITY-48",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Processor revision 5 rejects the new server/operation security-layer shape while preserving its historic security configuration.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@5", "bindingSpec": "openbindings.openapi-3.0@1", "family": "openapi-3.0", "description": "revision-5 security-layer mutation",
+        "scenarios": [{
+          "id": "OAPI30-PS-999", "rules": ["OAPI30-P-1"], "section": "1", "description": "layered security belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "configuration": { "security": { "server": { "alternativeIndex": null }, "operation": { "alternativeIndex": null } } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PEER-TLS-REQUEST-DISCONNECT-NO-SELECTION-49",
+      "validator": "http-peer@2",
+      "valid": false,
+      "description": "A request-started-triggered disconnect during the request cannot occur without successful TLS 1.3 and HTTP/1.1 ALPN selection.",
+      "subject": {
+        "transport": "tls",
+        "tls": {
+          "serverCertificateChainDerBase64": ["MAA="],
+          "serverPrivateKeyCapability": "server-key-a",
+          "clientTlsVersionsOffered": ["1.3"],
+          "observedSni": "example.test",
+          "clientAlpnOffered": ["http/1.1"],
+          "serverTlsVersionSelected": null,
+          "serverAlpnSelected": null
+        },
+        "events": [
+          {
+            "kind": "disconnect",
+            "after": { "kind": "native", "name": "request-started", "count": 1 },
+            "stage": "during-request"
+          }
+        ]
+      }
+    },
+    {
+      "id": "V7-SCAFFOLD-PROCESSOR-V1-LAYER-SECURITY-50",
+      "validator": "processor-scenario",
+      "valid": false,
+      "description": "Ordinary open processor revision 1 rejects the new server/operation security-layer shape.",
+      "subject": {
+        "format": "openbindings.binding-spec-processor-scenarios@1", "bindingSpec": "openbindings.asyncapi@1", "family": "asyncapi", "description": "legacy layered security mutation",
+        "scenarios": [{
+          "id": "ASYNC-PS-999", "rules": ["ASYNC-P-1"], "section": "1", "description": "layered security belongs to revision 7",
+          "given": { "source": {}, "binding": {}, "configuration": { "security": { "server": { "alternativeIndex": null }, "operation": { "alternativeIndex": null } } }, "invocation": { "inputPresent": false } },
+          "expected": [{ "disposition": "complete", "phase": "completion", "assertions": [] }]
+        }]
+      }
+    },
+    {"id":"V7-SCAFFOLD-MAPPER-SUCCESS-51","validator":"http-peer-mapper@2","valid":true,"description":"A final 204 maps to the exact successful classification and branch-token set.","subject":{"script":{"transport":"cleartext","events":[{"kind":"response-head","after":{"kind":"native","name":"dispatch","count":1},"httpVersion":"1.1","status":204,"headers":[]}]},"expected":{"classification":"successful-final","coverageTokens":["http-peer@2:final","http-peer@2:map","http-peer@2:response-head","http-peer@2:successful-final"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-UNSUCCESSFUL-52","validator":"http-peer-mapper@2","valid":true,"description":"A clean framed 404 maps to unsuccessful-final, never successful-final.","subject":{"script":{"transport":"cleartext","events":[{"kind":"response-head","after":{"kind":"native","name":"dispatch","count":1},"httpVersion":"1.1","status":404,"headers":[{"name":"Content-Length","value":"0"}]}]},"expected":{"classification":"unsuccessful-final","coverageTokens":["http-peer@2:final","http-peer@2:map","http-peer@2:response-head","http-peer@2:unsuccessful-final"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-INCOMPLETE-53","validator":"http-peer-mapper@2","valid":true,"description":"An empty peer prefix maps to incomplete with no invented head token.","subject":{"script":{"transport":"cleartext","events":[]},"expected":{"classification":"incomplete","coverageTokens":["http-peer@2:incomplete","http-peer@2:map"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-PROTOCOL-54","validator":"http-peer-mapper@2","valid":true,"description":"A response triggered before dispatch maps to protocol-error while retaining the observed head token.","subject":{"script":{"transport":"cleartext","events":[{"kind":"response-head","after":{"kind":"native","name":"connection-opened","count":1},"httpVersion":"1.1","status":204,"headers":[]}]},"expected":{"classification":"protocol-error","coverageTokens":["http-peer@2:map","http-peer@2:protocol-error","http-peer@2:response-head"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-DISCONNECT-55","validator":"http-peer-mapper@2","valid":true,"description":"A causal disconnect before request maps to peer-disconnect and the disconnect branch.","subject":{"script":{"transport":"cleartext","events":[{"kind":"disconnect","after":{"kind":"native","name":"connection-opened","count":1},"stage":"before-request"}]},"expected":{"classification":"peer-disconnect","coverageTokens":["http-peer@2:disconnect","http-peer@2:map","http-peer@2:peer-disconnect"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-INTERIM-56","validator":"http-peer-mapper@2","valid":true,"description":"An interim then final response maps every head branch exactly once.","subject":{"script":{"transport":"cleartext","events":[{"kind":"response-head","after":{"kind":"native","name":"dispatch","count":1},"httpVersion":"1.1","status":103,"headers":[]},{"kind":"response-head","after":{"kind":"native","name":"acknowledgement","count":1},"httpVersion":"1.1","status":204,"headers":[]}]},"expected":{"classification":"successful-final","coverageTokens":["http-peer@2:final","http-peer@2:interim","http-peer@2:map","http-peer@2:response-head","http-peer@2:successful-final"]}}},
+    {"id":"V7-SCAFFOLD-MAPPER-BODY-57","validator":"http-peer-mapper@2","valid":true,"description":"A framed body chunk contributes the body token before successful classification.","subject":{"script":{"transport":"cleartext","events":[{"kind":"response-head","after":{"kind":"native","name":"dispatch","count":1},"httpVersion":"1.1","status":200,"headers":[{"name":"Content-Length","value":"1"}]},{"kind":"body-chunk","after":{"kind":"native","name":"acknowledgement","count":1},"dataBase64":"QQ=="}]},"expected":{"classification":"successful-final","coverageTokens":["http-peer@2:body","http-peer@2:final","http-peer@2:map","http-peer@2:response-head","http-peer@2:successful-final"]}}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-SOURCE-58","validator":"key-materialization-path","valid":true,"description":"A source.content descendant is an admitted materialization domain.","subject":{"context":"processor","path":"/source/content/operations"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-RESOURCE-59","validator":"key-materialization-path","valid":true,"description":"A parsed resource descendant is an admitted materialization domain.","subject":{"context":"synthesis","path":"/resources/https:~1~1example.test~1source.json/channel/messages"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-PEER-60","validator":"key-materialization-path","valid":false,"description":"Peer stimulus is outside the source materialization domain.","subject":{"context":"processor","path":"/peer/script"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-INVOCATION-61","validator":"key-materialization-path","valid":false,"description":"Invocation state is outside the source materialization domain.","subject":{"context":"processor","path":"/invocation"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-OPERATION-62","validator":"key-materialization-path","valid":false,"description":"The authored OBI operation contract is outside the source materialization domain.","subject":{"context":"processor","path":"/operation"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-CONFIG-63","validator":"key-materialization-path","valid":false,"description":"Runtime configuration is outside the source materialization domain.","subject":{"context":"processor","path":"/configuration"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-SELF-64","validator":"key-materialization-path","valid":false,"description":"The materialization carrier cannot address itself.","subject":{"context":"synthesis","path":"/keyMaterializations"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-EXPECTED-65","validator":"key-materialization-path","valid":false,"description":"Expected evidence is outside the source materialization domain.","subject":{"context":"synthesis","path":"/expected"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-BYTES-66","validator":"key-materialization-path","valid":false,"description":"A resourceBytes envelope cannot be addressed before decoding and composition.","subject":{"context":"processor","path":"/resourceBytes/https:~1~1example.test~1source.yaml"}},
+    {"id":"V7-SCAFFOLD-MATERIALIZE-ESCAPE-67","validator":"key-materialization-path","valid":false,"description":"A noncanonical JSON Pointer escape cannot cross the source boundary.","subject":{"context":"processor","path":"/source/content/~2escape"}}
+  ]
+}

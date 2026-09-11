@@ -41,7 +41,7 @@ jobs:
       - name: Run operation-graph reference runner (executes execution fixtures)
         run: |
           cd conformance/operation-graph/runners/js
-          npm install --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
           node run.mjs
 
       - name: Run operation-graph reference runner (adversarial interleavings)
@@ -51,6 +51,19 @@ jobs:
 
       - name: Verify binding-specs conformance subcorpus
         run: node scripts/verify-binding-specs.mjs
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.24.1'
+          cache: false
+
+      - name: Verify AsyncAPI family completion register
+        run: |
+          node scripts/verify-asyncapi-family-completion.mjs
+          node --test scripts/test-asyncapi-completion-evidence.mjs
+
+      - name: Execute independent AsyncAPI HTTP witness and semantic mutants
+        run: node scripts/test-asyncapi-family.mjs --suite=all --mutants
 
       - name: Verify binding-spec publication records
         run: node scripts/verify-binding-spec-publications.mjs

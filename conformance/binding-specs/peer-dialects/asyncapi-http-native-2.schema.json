@@ -1,0 +1,314 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/binding-specs/peer-dialects/asyncapi-http-native-2.schema.json",
+  "title": "AsyncAPI HTTP normalized native observation revision 2",
+  "description": "Closed secret-safe HTTP/1.1 native event vocabulary admitted only by processor scenarios revision 7.",
+  "oneOf": [
+    { "$ref": "#/$defs/connectionAttempted" },
+    { "$ref": "#/$defs/connectionOpened" },
+    { "$ref": "#/$defs/requestStarted" },
+    { "$ref": "#/$defs/dispatch" },
+    { "$ref": "#/$defs/acknowledgement" },
+    { "$ref": "#/$defs/delivery" },
+    { "$ref": "#/$defs/connectionClosed" },
+    { "$ref": "#/$defs/cancellation" }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "decimal": { "type": "string", "pattern": "^(?:0|[1-9][0-9]*)$" },
+    "field": {
+      "type": "object",
+      "required": ["name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+        "value": { "type": "string" }
+      }
+    },
+    "securityIdentity": {
+      "type": "object",
+      "required": ["securityLayer", "alternativeIndex"],
+      "properties": {
+        "securityLayer": { "enum": ["server", "operation"] },
+        "alternativeIndex": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "queryContribution": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "nameEncoded", "valueEncoded"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "value" },
+            "nameEncoded": { "type": "string", "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+$" },
+            "valueEncoded": { "type": "string", "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})*$" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "securityLayer", "alternativeIndex", "nameEncoded", "valueSha256", "componentSha256"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "credential" },
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "nameEncoded": { "type": "string", "pattern": "^(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+$" },
+            "valueSha256": { "$ref": "#/$defs/digest" },
+            "componentSha256": { "$ref": "#/$defs/digest" }
+          }
+        }
+      ]
+    },
+    "headerContribution": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "name", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "value" },
+            "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+            "value": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "securityLayer", "alternativeIndex", "name", "valueSha256", "fieldLineSha256"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "credential" },
+            "securityLayer": { "enum": ["server", "operation"] },
+            "alternativeIndex": { "type": "integer", "minimum": 0 },
+            "name": { "type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$" },
+            "valueSha256": { "$ref": "#/$defs/digest" },
+            "fieldLineSha256": { "$ref": "#/$defs/digest" }
+          }
+        }
+      ]
+    },
+    "body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": { "kind": { "const": "absent" } }
+        },
+        {
+          "type": "object",
+          "required": ["kind", "contentType", "octetLengthDecimal", "bodySha256"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "present" },
+            "contentType": { "type": "string", "minLength": 1 },
+            "octetLengthDecimal": { "$ref": "#/$defs/decimal" },
+            "bodySha256": { "$ref": "#/$defs/digest" }
+          }
+        }
+      ]
+    },
+    "connectionAttempted": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "connection-attempted" },
+        "facts": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["transport", "scheme", "authority"],
+              "additionalProperties": false,
+              "properties": {
+                "transport": { "const": "cleartext" },
+                "scheme": { "const": "http" },
+                "authority": { "type": "string", "minLength": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["transport", "scheme", "authority", "referenceIdentity", "sni", "alpnOffered", "tlsVersionsOffered", "trustAnchorSha256", "validationTimeUnixSeconds"],
+              "additionalProperties": false,
+              "properties": {
+                "transport": { "const": "tls" },
+                "scheme": { "const": "https" },
+                "authority": { "type": "string", "minLength": 1 },
+                "referenceIdentity": { "type": "string", "minLength": 1 },
+                "sni": { "type": ["string", "null"] },
+                "alpnOffered": { "const": ["http/1.1"] },
+                "tlsVersionsOffered": { "const": ["1.3"] },
+                "trustAnchorSha256": { "$ref": "#/$defs/digest" },
+                "validationTimeUnixSeconds": { "$ref": "#/$defs/decimal" },
+                "clientCertificateChainSha256": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "$ref": "#/$defs/digest" }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "connectionOpened": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "connection-opened" },
+        "facts": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["transport"],
+              "additionalProperties": false,
+              "properties": { "transport": { "const": "cleartext" } }
+            },
+            {
+              "type": "object",
+              "required": ["transport", "tlsVersion", "sni", "alpnSelected", "peerCertificateChainSha256"],
+              "additionalProperties": false,
+              "properties": {
+                "transport": { "const": "tls" },
+                "tlsVersion": { "const": "1.3" },
+                "sni": { "type": ["string", "null"] },
+                "alpnSelected": { "enum": ["http/1.1", null] },
+                "peerCertificateChainSha256": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "$ref": "#/$defs/digest" }
+                },
+                "clientCertificateChainSha256": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "$ref": "#/$defs/digest" }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "requestStarted": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "request-started" },
+        "facts": {
+          "type": "object",
+          "required": ["httpVersion", "octetsSentDecimal"],
+          "additionalProperties": false,
+          "properties": {
+            "httpVersion": { "const": "1.1" },
+            "octetsSentDecimal": { "const": "1" }
+          }
+        }
+      }
+    },
+    "dispatch": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "dispatch" },
+        "facts": {
+          "type": "object",
+          "required": ["httpVersion", "method", "scheme", "authority", "path", "queryContributions", "headerContributions", "originFormSha256", "headerBlockSha256", "body"],
+          "additionalProperties": false,
+          "properties": {
+            "httpVersion": { "const": "1.1" },
+            "method": { "enum": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] },
+            "scheme": { "enum": ["http", "https"] },
+            "authority": { "type": "string", "minLength": 1 },
+            "path": { "type": "string", "pattern": "^/[^?#]*$" },
+            "queryContributions": { "type": "array", "items": { "$ref": "#/$defs/queryContribution" } },
+            "headerContributions": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/headerContribution" } },
+            "originFormSha256": { "$ref": "#/$defs/digest" },
+            "headerBlockSha256": { "$ref": "#/$defs/digest" },
+            "body": { "$ref": "#/$defs/body" }
+          }
+        }
+      }
+    },
+    "acknowledgement": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "acknowledgement" },
+        "facts": {
+          "type": "object",
+          "required": ["httpVersion", "stage", "status", "headers"],
+          "additionalProperties": false,
+          "properties": {
+            "httpVersion": { "const": "1.1" },
+            "stage": { "enum": ["interim", "final"] },
+            "status": { "type": "integer", "minimum": 100, "maximum": 599 },
+            "headers": { "type": "array", "items": { "$ref": "#/$defs/field" } }
+          }
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "delivery" },
+        "facts": {
+          "type": "object",
+          "required": ["httpVersion", "body"],
+          "additionalProperties": false,
+          "properties": {
+            "httpVersion": { "const": "1.1" },
+            "body": { "$ref": "#/$defs/body" }
+          }
+        }
+      }
+    },
+    "connectionClosed": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "connection-closed" },
+        "facts": {
+          "type": "object",
+          "required": ["origin", "stage", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "origin": { "enum": ["local", "peer"] },
+            "stage": { "enum": ["connect", "tls", "request", "response", "terminal"] },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "cancellation": {
+      "type": "object",
+      "required": ["kind", "name", "facts"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "native" },
+        "name": { "const": "cancellation-propagated" },
+        "facts": {
+          "type": "object",
+          "required": ["stage"],
+          "additionalProperties": false,
+          "properties": {
+            "stage": { "enum": ["before-connect", "during-tls", "before-request", "during-request", "response"] }
+          }
+        }
+      }
+    }
+  }
+}

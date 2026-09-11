@@ -1,0 +1,171 @@
+{
+  "rule": "ASYNC31-D-03",
+  "bindingSpec": "openbindings.asyncapi-3.1@1",
+  "section": "4",
+  "description": "The selected Operation/Channel/Server closure is structurally usable and its resolved channel is effectively available on the selected server.",
+  "tests": [
+    {
+      "description": "root Operation, Channel, and Server Reference Objects form a usable selected closure",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Refs","version":"1"},"servers":{"s-ref":{"$ref":"#/servers/s"},"s":{"host":"x","protocol":"test"}},"channels":{"c-ref":{"$ref":"#/channels/c"},"c":{"servers":[{"$ref":"#/servers/s-ref"}]}},"operations":{"op-ref":{"$ref":"#/operations/op"},"op":{"action":"receive","channel":{"$ref":"#/channels/c-ref"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s-ref/operations/op-ref"}}},
+      "valid": true
+    },
+    {
+      "description": "a root slot may resolve to a component Operation whose component Channel explicitly selects a root Server slot",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Authored locations","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"operations":{"op":{"$ref":"#/components/operations/base"}},"components":{"operations":{"base":{"action":"send","channel":{"$ref":"#/components/channels/c"}}},"channels":{"c":{"servers":[{"$ref":"#/servers/s"}]} }}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "added properties beside Reference Object ref are ignored throughout the selected closure",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Ignored siblings","version":"1"},"servers":{"s":{"$ref":"#/components/servers/base","host":7}},"channels":{"c":{"$ref":"#/components/channels/base","servers":"ignored"}},"operations":{"op":{"$ref":"#/components/operations/base","action":"sideways"}},"components":{"servers":{"base":{"host":"x","protocol":"test"}},"channels":{"base":{"servers":[{"$ref":"#/servers/s","extra":"ignored"}]}},"operations":{"base":{"action":"send","channel":{"$ref":"#/channels/c","extra":"ignored"}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "an unselected malformed operation stays confined",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Confined","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"good":{"action":"send","channel":{"$ref":"#/channels/c"}},"bad":{"action":"sideways"}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/good"}}},
+      "valid": true
+    },
+    {
+      "description": "dangling references in deferred trait message and binding fields are inert",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Deferred","version":"1"},"servers":{"s":{"host":"x","protocol":"http","bindings":{"http":{"$ref":"#/missing/binding"}}}},"channels":{"c":{"messages":{"m":{"$ref":"#/missing/message"}},"bindings":{"ws":{"$ref":"#/missing/channelBinding"}}}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"},"traits":[{"$ref":"#/missing/trait"}],"bindings":{"mqtt":{"$ref":"#/missing/operationBinding"}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a malformed selected operation action invalidates that operation owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad action","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"sideways","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a selected operation missing channel invalidates that operation owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"No channel","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{},"operations":{"op":{"action":"send"}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a selected server missing string host invalidates that server owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad server","version":"1"},"servers":{"s":{"protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a selected server missing string protocol invalidates that server owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad server","version":"1"},"servers":{"s":{"host":"x","protocol":7}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "an invalid selected root server key invalidates the server owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad key","version":"1"},"servers":{"bad.key":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/bad.key/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a channel-owned non-array servers field invalidates the selected channel owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad channel","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":{"$ref":"#/servers/s"}}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a channel-owned unresolvable server reference invalidates the selected channel owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad channel ref","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/servers/missing"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a pure common-closure Reference Object cycle invalidates its operation owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Cycle","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{},"operations":{"op":{"$ref":"#/operations/again"},"again":{"$ref":"#/operations/op"}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "absent channel servers makes the channel available on every usable root server",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"All","version":"1"},"servers":{"east":{"host":"e","protocol":"test"},"west":{"host":"w","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/west/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "explicit empty channel servers also means every usable root server",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"All","version":"1"},"servers":{"east":{"host":"e","protocol":"test"},"west":{"host":"w","protocol":"test"}},"channels":{"c":{"servers":[]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/west/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a root operation cannot target a component-channel slot directly",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Component channel","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{},"operations":{"op":{"action":"send","channel":{"$ref":"#/components/channels/c"}}},"components":{"channels":{"c":{}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a root channel cannot name a component-server slot as its effective root-server membership",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Component server","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/components/servers/s"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":{"s":{"host":"x","protocol":"test"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "an explicit east-only subset does not form a west cell",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Subset","version":"1"},"servers":{"east":{"host":"e","protocol":"test"},"west":{"host":"w","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/servers/east"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/west/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a reached component Operation key outside the upstream grammar invalidates that operation owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad component operation key","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"$ref":"#/components/operations/bad~1key"}},"components":{"operations":{"bad/key":{"action":"send","channel":{"$ref":"#/channels/c"}},"good":{"action":"send","channel":{"$ref":"#/channels/c"}}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a reached component Channel key outside the upstream grammar invalidates that channel owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad component channel key","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"operations":{"op":{"$ref":"#/components/operations/base"}},"components":{"operations":{"base":{"action":"send","channel":{"$ref":"#/components/channels/bad~1key"}}},"channels":{"bad/key":{},"good":{}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a reached component Server key outside the upstream grammar invalidates that server owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Bad component server key","version":"1"},"servers":{"s":{"$ref":"#/components/servers/bad~1key"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":{"bad/key":{"host":"x","protocol":"test"},"good":{"host":"x","protocol":"test"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "invalid keys in unreachable Operation Channel and Server component maps remain confined",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Unreachable bad component keys","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"operations":{"bad/key":{"action":"sideways"}},"channels":{"bad/key":{"servers":"bad"}},"servers":{"bad/key":{"host":7,"protocol":8}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a reached non-map components operations container invalidates that typed container owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Non-map component operations","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"$ref":"#/components/operations/0"}},"components":{"operations":[{"action":"send","channel":{"$ref":"#/channels/c"}}]}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a reached non-map components channels container invalidates that typed container owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Non-map component channels","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"operations":{"op":{"$ref":"#/components/operations/op"}},"components":{"operations":{"op":{"action":"send","channel":{"$ref":"#/components/channels/0"}}},"channels":[{}]}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "a reached non-map components servers container invalidates that typed container owner",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Non-map component servers","version":"1"},"servers":{"s":{"$ref":"#/components/servers/0"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":[{"host":"x","protocol":"test"}]}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    },
+    {
+      "description": "unreached non-map typed component containers remain inert",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Unreached non-map components","version":"1"},"servers":{"s":{"host":"x","protocol":"test"}},"channels":{"c":{}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"operations":[],"channels":[],"servers":[]}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a component Server alias that later traverses a root Server slot names that root cell",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"Ledger membership","version":"1"},"servers":{"s2":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/components/servers/alias"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":{"alias":{"$ref":"#/servers/s2"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s2/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "the first root Server slot traversed by a two-root alias chain determines membership",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"First root membership","version":"1"},"servers":{"s1":{"$ref":"#/servers/s2"},"s2":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/components/servers/alias"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":{"alias":{"$ref":"#/servers/s1"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s1/operations/op"}}},
+      "valid": true
+    },
+    {
+      "description": "a later root Server referent is not substituted for the first traversed membership slot",
+      "document": {"openbindings":"0.2.0","operations":{"call":{}},"sources":{"api":{"bindingSpec":"openbindings.asyncapi-3.1@1","content":{"asyncapi":"3.1.0","info":{"title":"No later substitution","version":"1"},"servers":{"s1":{"$ref":"#/servers/s2"},"s2":{"host":"x","protocol":"test"}},"channels":{"c":{"servers":[{"$ref":"#/components/servers/alias"}]}},"operations":{"op":{"action":"send","channel":{"$ref":"#/channels/c"}}},"components":{"servers":{"alias":{"$ref":"#/servers/s1"}}}}}},"bindings":{"call.api":{"operation":"call","source":"api","selector":"#/servers/s2/operations/op"}}},
+      "valid": false,
+      "violates": ["ASYNC31-D-03"]
+    }
+  ]
+}

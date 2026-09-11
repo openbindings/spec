@@ -1,0 +1,5009 @@
+{
+  "format": "openbindings.asyncapi-family-completion@1",
+  "status": "execution-in-progress",
+  "contractVersion": 1,
+  "baseline": {
+    "record": "C21-HTTP-ACCEPTANCE.md",
+    "sha256": "44208d84a7586bbdcb5ce80012f82aedf8391cc8ec6d3b1ee5c0d070b74a0d3b",
+    "meaning": "Previously accepted bounded 3.1 C21 regression; not independent-witness or family acceptance."
+  },
+  "scopeDecision": {
+    "id": "M0-PROFILES-01",
+    "decision": "Retain MQTT5 and reduced Kafka as explicit revision-one exclusions; complete all required HTTP/HTTPS, WS/WSS and MQTT311/MQTTS cells across three siblings.",
+    "status": "recorded-awaiting-evidence-and-review",
+    "basis": "Neither conditional profile is currently admitted. This does not remove a required matrix cell. Lack of a driver is not the rationale.",
+    "reopen": "Separate authority-complete package with finite correspondence and independent evidence."
+  },
+  "obiB02": {
+    "1": "bounded-3.1-only",
+    "2": "bounded-3.1-only",
+    "3": "bounded-3.1-only",
+    "4": "bounded-3.1-only",
+    "5": "bounded-3.1-only",
+    "6": "empty-http-3.1-only",
+    "7": "empty-http-3.1-only"
+  },
+  "entries": [
+    {
+      "id": "AA31-source-carriage",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "specified",
+      "owner": "asyncapi-family",
+      "title": "Object, JSON, YAML carriage; duplicate keys, numeric/Unicode fidelity, exact-edition gate",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Load all admitted forms equivalently; reject invalid and excluded forms before network",
+      "normativeRules": [
+        "ASYNC31-D-01",
+        "ASYNC31-P-01",
+        "ASYNC31-P-02"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-01.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Independent raw/source carriage and lossless ownership evidence remain open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-source-composition",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "specified",
+      "owner": "asyncapi-family",
+      "title": "location/content composition, lazy resources and reference base",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-source-carriage"
+      ],
+      "acceptanceCriterion": "Content precedence and external rebasing preserve authored owner and unused defects remain inert",
+      "normativeRules": [
+        "ASYNC31-D-01",
+        "ASYNC31-P-03"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-01.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Independent composition/resource-byte support remains open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-reference-ownership",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "specified",
+      "owner": "asyncapi-family",
+      "title": "Typed reference chains, cycles and smallest failure owner",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-source-composition"
+      ],
+      "acceptanceCriterion": "Local/external chains and cycles yield exact deduplicated owner without losing siblings",
+      "normativeRules": [
+        "ASYNC31-D-02",
+        "ASYNC31-P-04",
+        "ASYNC31-S-02"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-02.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "M1a local alias evidence is bounded; external and malformed-owner confinement remains open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-cell-selection",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "specified",
+      "owner": "asyncapi-family",
+      "title": "Root slots, effective membership and selectors",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-reference-ownership"
+      ],
+      "acceptanceCriterion": "Omitted/explicit selectors, zero/one/multiple cells and nonroot memberships have exact outcomes",
+      "normativeRules": [
+        "ASYNC31-D-03",
+        "ASYNC31-P-06",
+        "ASYNC31-S-01"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-03.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "M1a covers local membership examples; complete independent selector/owner evidence remains open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-empty-http",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "implemented",
+      "owner": "asyncapi-family",
+      "title": "One empty message POST, exact input and synthesis",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-cell-selection"
+      ],
+      "acceptanceCriterion": "Independent processor and synthesizer agree on empty POST, refusals and exact generated contracts",
+      "normativeRules": [
+        "ASYNC31-D-04",
+        "ASYNC31-D-05",
+        "ASYNC31-D-06",
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-S-08",
+        "ASYNC31-S-09",
+        "ASYNC31-S-10",
+        "ASYNC31-S-11"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-04.json",
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-05.json",
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-06.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [
+          "scripts/test-asyncapi-family.mjs --suite=all --mutants --clean (M1a bounded)"
+        ],
+        "boundary": [
+          "conformance/asyncapi-family/witness/http-cases.json"
+        ],
+        "mutation": [
+          "method/input/success-body/synthesis-input: four actual Go code mutations"
+        ],
+        "integration": [
+          "21 registered C21 synthesis cases and full binding-specification regression"
+        ]
+      },
+      "findings": [
+        "M1a execution passed; expected-before-evaluator sequencing deviation and non-authoring review remain open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-http-lifecycle",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "implemented",
+      "owner": "asyncapi-family",
+      "title": "Response framing, terminal outcomes and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-empty-http"
+      ],
+      "acceptanceCriterion": "Real socket cases distinguish all admitted terminal/framing/cancel boundaries with no retry/output",
+      "normativeRules": [
+        "ASYNC31-D-07",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12",
+        "ASYNC31-P-13"
+      ],
+      "evidence": {
+        "definition": [
+          "conformance/binding-specs/asyncapi-3.1/ASYNC31-D-07.json"
+        ],
+        "processor": [
+          "conformance/binding-specs/processor/asyncapi-3.1.json"
+        ],
+        "synthesis": [
+          "conformance/binding-specs/synthesis/asyncapi-3.1.json"
+        ],
+        "independentDerivation": [
+          "conformance/asyncapi-family/M1A-EXECUTION.md (review pending)"
+        ],
+        "independentExecution": [
+          "scripts/test-asyncapi-family.mjs --suite=all --mutants --clean (M1a bounded)"
+        ],
+        "boundary": [
+          "conformance/asyncapi-family/witness/http-cases.json"
+        ],
+        "mutation": [
+          "method/input/success-body/synthesis-input: four actual Go code mutations"
+        ],
+        "integration": [
+          "21 registered C21 synthesis cases and full binding-specification regression"
+        ]
+      },
+      "findings": [
+        "Finite-stream and count-1 cancellation witness only; full independent lifecycle and non-authoring review remain open."
+      ],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-operation-traits",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered operation traits and target-member protection",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-reference-ownership"
+      ],
+      "acceptanceCriterion": "Later trait replaces earlier contributions; target top-level members win; invalid trait scope refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-message-traits",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered message traits and reference provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-reference-ownership"
+      ],
+      "acceptanceCriterion": "Reference-resolved ordered merges preserve origin and protect target members",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-message-selection",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Effective message alternatives and edition-specific omissions",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-operation-traits",
+        "AA31-message-traits"
+      ],
+      "acceptanceCriterion": "0/1/multiple matching alternatives and omitted/empty lists are tested per edition",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-message-values",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Complete payload/header application value",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-selection"
+      ],
+      "acceptanceCriterion": "Absent differs from null; exactly-one matching; no hidden payload unwrapping",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-simple-payload",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Simple JSON and text payloads end-to-end",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-values"
+      ],
+      "acceptanceCriterion": "Exact bytes, media selection, validation and synthesized input agree for boundary values",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-schema-format",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native and admitted multi-format schema recognition",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-selection"
+      ],
+      "acceptanceCriterion": "Only exact admitted forms are interpreted; foreign format has explicit owner and refusal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-schema-keywords",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Closed keyword correspondence and annotation loss",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-schema-format"
+      ],
+      "acceptanceCriterion": "Every keyword has a mapped/excluded/lossy disposition with source-target boundary agreement",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-schema-graphs",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Recursion, shared identity and external references",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-schema-keywords"
+      ],
+      "acceptanceCriterion": "Recursive schemas and shared targets retain identity; pure-ref SCC and rebasing boundaries tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-schema-validation",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Value equivalence and lossless validation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-schema-graphs"
+      ],
+      "acceptanceCriterion": "Generated boundary values yield matching source/projected-schema outcomes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-address-parameters",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Parameter precedence and expansion",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§8/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-values"
+      ],
+      "acceptanceCriterion": "Missing/explicit values, escaping, reserved characters and multi-server addresses are exact",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-http-methods",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTP methods and native binding versions",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-simple-payload"
+      ],
+      "acceptanceCriterion": "Each admitted method has exact carriage; incompatible role/version refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-http-query",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native query schemas and deterministic codecs",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-http-methods",
+        "AA31-address-parameters"
+      ],
+      "acceptanceCriterion": "Ordered contributions, omission and reserved-name collisions discriminate exact bytes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-http-headers",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native/application headers and reserved fields",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-http-query"
+      ],
+      "acceptanceCriterion": "Header schemas/codecs/order/collisions preserve complete caller contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-reply-selection",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Explicit 3.1 Reply messages and targets",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-schema-validation",
+        "AA31-http-headers"
+      ],
+      "acceptanceCriterion": "No fallback from invalid reply; selected target and 0/1/multiple reply alternatives tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-reply-values",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply decode, headers and zero-content values",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-reply-selection"
+      ],
+      "acceptanceCriterion": "Actual responses reconstruct and validate exact application output or fail loudly",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-reply-lifecycle",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply success, failure and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§13/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-reply-values"
+      ],
+      "acceptanceCriterion": "Status/body/framing failures and cancellation preserve prior outputs and one terminal outcome",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-security-selection",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exact security alternatives and credential provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-values"
+      ],
+      "acceptanceCriterion": "0/1/multiple alternatives, scopes and credentials have governed ownership and redacted evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-tls-identity",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "TLS1.3, chain and service-identity validation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-security-selection"
+      ],
+      "acceptanceCriterion": "Real trusted/untrusted/mismatch handshakes; zero app bytes before security success",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-https",
+      "edition": "3.1",
+      "profile": "http",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTPS carriage, SNI and ALPN",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-tls-identity",
+        "AA31-http-headers"
+      ],
+      "acceptanceCriterion": "HTTP contract preserved over TLS; incorrect negotiation refuses before app dispatch",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-ws-handshake",
+      "edition": "3.1",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "WebSocket13 GET, no extensions/subprotocol",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-values",
+        "AA31-address-parameters"
+      ],
+      "acceptanceCriterion": "Exact accept handshake and forbidden selection failures proven using real frames",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-ws-publish",
+      "edition": "3.1",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish-one message and framing",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-ws-handshake",
+        "AA31-schema-validation"
+      ],
+      "acceptanceCriterion": "Text/binary and fragmentation preserve application boundaries with exact completion",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-ws-subscribe",
+      "edition": "3.1",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription, ordering and output-before-failure",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-ws-publish"
+      ],
+      "acceptanceCriterion": "Real ordered frames, fragmented delivery, close and cancellation preserve output prefix",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-wss",
+      "edition": "3.1",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure WebSocket lifecycle",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-ws-subscribe",
+        "AA31-tls-identity"
+      ],
+      "acceptanceCriterion": "WSS handshake/security failures and cancellation respect shared secure transport model",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtt-session",
+      "edition": "3.1",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "MQTT311 clean-session setup",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-values"
+      ],
+      "acceptanceCriterion": "CleanSession, clientId, no Will, keepalive0 and CONNACK failures have exact packet evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtt-qos",
+      "edition": "3.1",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish QoS0/1/2 acknowledgement boundaries",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-mqtt-session",
+        "AA31-schema-validation"
+      ],
+      "acceptanceCriterion": "Real PUBLISH/PUBACK/PUBREC/PUBREL/PUBCOMP flows distinguish completion, duplicate and failure",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtt-subscribe",
+      "edition": "3.1",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription and pre-SUBACK buffering",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-mqtt-qos"
+      ],
+      "acceptanceCriterion": "SUBACK grant/failure, buffered delivery and output ordering proven with real packets",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtt-redelivery",
+      "edition": "3.1",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Retained messages, duplicate identity and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-mqtt-subscribe"
+      ],
+      "acceptanceCriterion": "DUP/packet-id reuse, QoS2 identity, DISCONNECT and no reconnect preserve governed outputs",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtts",
+      "edition": "3.1",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure MQTT311",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-mqtt-redelivery",
+        "AA31-tls-identity"
+      ],
+      "acceptanceCriterion": "MQTTS identity/chain failures emit no application traffic and preserve session contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-coverage-algebra",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exhaustive inventory and smallest-owner accounting",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-message-selection"
+      ],
+      "acceptanceCriterion": "Every encountered operation/message/reply/cell has exact disposition, no ghost objects",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-contract-invariance",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Cross-profile operation contracts",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-coverage-algebra",
+        "AA31-schema-validation"
+      ],
+      "acceptanceCriterion": "Multiple servers/profiles cannot silently narrow one operation's full input/output schema",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-composition",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Mixed sources and failure confinement",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-contract-invariance"
+      ],
+      "acceptanceCriterion": "Paired plus coupled integration cases preserve unaffected siblings and stable identities",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-readiness",
+      "edition": "3.1",
+      "profile": "common",
+      "milestone": "M12",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Core seven-item closure and publication rehearsal",
+      "authority": [
+        {
+          "pin": "asyncapi-3.1.0",
+          "commit": "b3fac5bb522771428ea57b16129b273cd3ea0180",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA31-composition"
+      ],
+      "acceptanceCriterion": "All required cells accepted; two frozen reviews, exact sources, clean install and temporary bundle rehearsal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-source-carriage",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Object, JSON, YAML carriage; duplicate keys, numeric/Unicode fidelity, exact-edition gate",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Load all admitted forms equivalently; reject invalid and excluded forms before network",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-source-composition",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "location/content composition, lazy resources and reference base",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-source-carriage"
+      ],
+      "acceptanceCriterion": "Content precedence and external rebasing preserve authored owner and unused defects remain inert",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-reference-ownership",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Typed reference chains, cycles and smallest failure owner",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-source-composition"
+      ],
+      "acceptanceCriterion": "Local/external chains and cycles yield exact deduplicated owner without losing siblings",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-cell-selection",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Root slots, effective membership and selectors",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-reference-ownership"
+      ],
+      "acceptanceCriterion": "Omitted/explicit selectors, zero/one/multiple cells and nonroot memberships have exact outcomes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-empty-http",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "One empty message POST, exact input and synthesis",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-cell-selection"
+      ],
+      "acceptanceCriterion": "Independent processor and synthesizer agree on empty POST, refusals and exact generated contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-http-lifecycle",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Response framing, terminal outcomes and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-empty-http"
+      ],
+      "acceptanceCriterion": "Real socket cases distinguish all admitted terminal/framing/cancel boundaries with no retry/output",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-operation-traits",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered operation traits and target-member protection",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-reference-ownership"
+      ],
+      "acceptanceCriterion": "Later trait replaces earlier contributions; target top-level members win; invalid trait scope refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-message-traits",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered message traits and reference provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-reference-ownership"
+      ],
+      "acceptanceCriterion": "Reference-resolved ordered merges preserve origin and protect target members",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-message-selection",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Effective message alternatives and edition-specific omissions",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-operation-traits",
+        "AA30-message-traits"
+      ],
+      "acceptanceCriterion": "0/1/multiple matching alternatives and omitted/empty lists are tested per edition",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-message-values",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Complete payload/header application value",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-selection"
+      ],
+      "acceptanceCriterion": "Absent differs from null; exactly-one matching; no hidden payload unwrapping",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-simple-payload",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Simple JSON and text payloads end-to-end",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-values"
+      ],
+      "acceptanceCriterion": "Exact bytes, media selection, validation and synthesized input agree for boundary values",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-schema-format",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native and admitted multi-format schema recognition",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-selection"
+      ],
+      "acceptanceCriterion": "Only exact admitted forms are interpreted; foreign format has explicit owner and refusal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-schema-keywords",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Closed keyword correspondence and annotation loss",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-schema-format"
+      ],
+      "acceptanceCriterion": "Every keyword has a mapped/excluded/lossy disposition with source-target boundary agreement",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-schema-graphs",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Recursion, shared identity and external references",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-schema-keywords"
+      ],
+      "acceptanceCriterion": "Recursive schemas and shared targets retain identity; pure-ref SCC and rebasing boundaries tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-schema-validation",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Value equivalence and lossless validation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-schema-graphs"
+      ],
+      "acceptanceCriterion": "Generated boundary values yield matching source/projected-schema outcomes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-address-parameters",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Parameter precedence and expansion",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§8/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-values"
+      ],
+      "acceptanceCriterion": "Missing/explicit values, escaping, reserved characters and multi-server addresses are exact",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-http-methods",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTP methods and native binding versions",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-simple-payload"
+      ],
+      "acceptanceCriterion": "Each admitted method has exact carriage; incompatible role/version refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-http-query",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native query schemas and deterministic codecs",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-http-methods",
+        "AA30-address-parameters"
+      ],
+      "acceptanceCriterion": "Ordered contributions, omission and reserved-name collisions discriminate exact bytes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-http-headers",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native/application headers and reserved fields",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-http-query"
+      ],
+      "acceptanceCriterion": "Header schemas/codecs/order/collisions preserve complete caller contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-reply-selection",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Explicit 3.1 Reply messages and targets",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-schema-validation",
+        "AA30-http-headers"
+      ],
+      "acceptanceCriterion": "No fallback from invalid reply; selected target and 0/1/multiple reply alternatives tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA30-reply-values",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply decode, headers and zero-content values",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-reply-selection"
+      ],
+      "acceptanceCriterion": "Actual responses reconstruct and validate exact application output or fail loudly",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA30-reply-lifecycle",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply success, failure and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§13/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-reply-values"
+      ],
+      "acceptanceCriterion": "Status/body/framing failures and cancellation preserve prior outputs and one terminal outcome",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA30-security-selection",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exact security alternatives and credential provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-values"
+      ],
+      "acceptanceCriterion": "0/1/multiple alternatives, scopes and credentials have governed ownership and redacted evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-tls-identity",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "TLS1.3, chain and service-identity validation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-security-selection"
+      ],
+      "acceptanceCriterion": "Real trusted/untrusted/mismatch handshakes; zero app bytes before security success",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-https",
+      "edition": "3.0",
+      "profile": "http",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTPS carriage, SNI and ALPN",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-tls-identity",
+        "AA30-http-headers"
+      ],
+      "acceptanceCriterion": "HTTP contract preserved over TLS; incorrect negotiation refuses before app dispatch",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-ws-handshake",
+      "edition": "3.0",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "WebSocket13 GET, no extensions/subprotocol",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-values",
+        "AA30-address-parameters"
+      ],
+      "acceptanceCriterion": "Exact accept handshake and forbidden selection failures proven using real frames",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-ws-publish",
+      "edition": "3.0",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish-one message and framing",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-ws-handshake",
+        "AA30-schema-validation"
+      ],
+      "acceptanceCriterion": "Text/binary and fragmentation preserve application boundaries with exact completion",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-ws-subscribe",
+      "edition": "3.0",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription, ordering and output-before-failure",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-ws-publish"
+      ],
+      "acceptanceCriterion": "Real ordered frames, fragmented delivery, close and cancellation preserve output prefix",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-wss",
+      "edition": "3.0",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure WebSocket lifecycle",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-ws-subscribe",
+        "AA30-tls-identity"
+      ],
+      "acceptanceCriterion": "WSS handshake/security failures and cancellation respect shared secure transport model",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-mqtt-session",
+      "edition": "3.0",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "MQTT311 clean-session setup",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-values"
+      ],
+      "acceptanceCriterion": "CleanSession, clientId, no Will, keepalive0 and CONNACK failures have exact packet evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-mqtt-qos",
+      "edition": "3.0",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish QoS0/1/2 acknowledgement boundaries",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-mqtt-session",
+        "AA30-schema-validation"
+      ],
+      "acceptanceCriterion": "Real PUBLISH/PUBACK/PUBREC/PUBREL/PUBCOMP flows distinguish completion, duplicate and failure",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-mqtt-subscribe",
+      "edition": "3.0",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription and pre-SUBACK buffering",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-mqtt-qos"
+      ],
+      "acceptanceCriterion": "SUBACK grant/failure, buffered delivery and output ordering proven with real packets",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-mqtt-redelivery",
+      "edition": "3.0",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Retained messages, duplicate identity and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-mqtt-subscribe"
+      ],
+      "acceptanceCriterion": "DUP/packet-id reuse, QoS2 identity, DISCONNECT and no reconnect preserve governed outputs",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-mqtts",
+      "edition": "3.0",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure MQTT311",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-mqtt-redelivery",
+        "AA30-tls-identity"
+      ],
+      "acceptanceCriterion": "MQTTS identity/chain failures emit no application traffic and preserve session contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-coverage-algebra",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exhaustive inventory and smallest-owner accounting",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-message-selection"
+      ],
+      "acceptanceCriterion": "Every encountered operation/message/reply/cell has exact disposition, no ghost objects",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-contract-invariance",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Cross-profile operation contracts",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-coverage-algebra",
+        "AA30-schema-validation"
+      ],
+      "acceptanceCriterion": "Multiple servers/profiles cannot silently narrow one operation's full input/output schema",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-composition",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Mixed sources and failure confinement",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-contract-invariance"
+      ],
+      "acceptanceCriterion": "Paired plus coupled integration cases preserve unaffected siblings and stable identities",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA30-readiness",
+      "edition": "3.0",
+      "profile": "common",
+      "milestone": "M12",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Core seven-item closure and publication rehearsal",
+      "authority": [
+        {
+          "pin": "asyncapi-3.0.0",
+          "commit": "d78dcea70c9b094a3df72f9a4e811828cec778cc",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA30-composition"
+      ],
+      "acceptanceCriterion": "All required cells accepted; two frozen reviews, exact sources, clean install and temporary bundle rehearsal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-source-carriage",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Object, JSON, YAML carriage; duplicate keys, numeric/Unicode fidelity, exact-edition gate",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Load all admitted forms equivalently; reject invalid and excluded forms before network",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-source-composition",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "location/content composition, lazy resources and reference base",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§3",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-source-carriage"
+      ],
+      "acceptanceCriterion": "Content precedence and external rebasing preserve authored owner and unused defects remain inert",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-reference-ownership",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Typed reference chains, cycles and smallest failure owner",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-source-composition"
+      ],
+      "acceptanceCriterion": "Local/external chains and cycles yield exact deduplicated owner without losing siblings",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-cell-selection",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Root slots, effective membership and selectors",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§4",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-reference-ownership"
+      ],
+      "acceptanceCriterion": "Omitted/explicit selectors, zero/one/multiple cells and nonroot memberships have exact outcomes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-empty-http",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "One empty message POST, exact input and synthesis",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-cell-selection"
+      ],
+      "acceptanceCriterion": "Independent processor and synthesizer agree on empty POST, refusals and exact generated contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-http-lifecycle",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M1",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Response framing, terminal outcomes and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§5",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-empty-http"
+      ],
+      "acceptanceCriterion": "Real socket cases distinguish all admitted terminal/framing/cancel boundaries with no retry/output",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-operation-traits",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered operation traits and target-member protection",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-reference-ownership"
+      ],
+      "acceptanceCriterion": "Later trait replaces earlier contributions; target top-level members win; invalid trait scope refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-message-traits",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Ordered message traits and reference provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-reference-ownership"
+      ],
+      "acceptanceCriterion": "Reference-resolved ordered merges preserve origin and protect target members",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-message-selection",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Effective message alternatives and edition-specific omissions",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-operation-traits",
+        "AA26-message-traits"
+      ],
+      "acceptanceCriterion": "0/1/multiple matching alternatives and omitted/empty lists are tested per edition",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-message-values",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Complete payload/header application value",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§6/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-selection"
+      ],
+      "acceptanceCriterion": "Absent differs from null; exactly-one matching; no hidden payload unwrapping",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-simple-payload",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M2",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Simple JSON and text payloads end-to-end",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-values"
+      ],
+      "acceptanceCriterion": "Exact bytes, media selection, validation and synthesized input agree for boundary values",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-schema-format",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native and admitted multi-format schema recognition",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-selection"
+      ],
+      "acceptanceCriterion": "Only exact admitted forms are interpreted; foreign format has explicit owner and refusal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-schema-keywords",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Closed keyword correspondence and annotation loss",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-schema-format"
+      ],
+      "acceptanceCriterion": "Every keyword has a mapped/excluded/lossy disposition with source-target boundary agreement",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-schema-graphs",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Recursion, shared identity and external references",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-schema-keywords"
+      ],
+      "acceptanceCriterion": "Recursive schemas and shared targets retain identity; pure-ref SCC and rebasing boundaries tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-schema-validation",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M3",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Value equivalence and lossless validation",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§9/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-schema-graphs"
+      ],
+      "acceptanceCriterion": "Generated boundary values yield matching source/projected-schema outcomes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-address-parameters",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Parameter precedence and expansion",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§8/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-values"
+      ],
+      "acceptanceCriterion": "Missing/explicit values, escaping, reserved characters and multi-server addresses are exact",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-http-methods",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTP methods and native binding versions",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-simple-payload"
+      ],
+      "acceptanceCriterion": "Each admitted method has exact carriage; incompatible role/version refuses",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-http-query",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native query schemas and deterministic codecs",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-http-methods",
+        "AA26-address-parameters"
+      ],
+      "acceptanceCriterion": "Ordered contributions, omission and reserved-name collisions discriminate exact bytes",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-http-headers",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M4",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Native/application headers and reserved fields",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§10/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-http-query"
+      ],
+      "acceptanceCriterion": "Header schemas/codecs/order/collisions preserve complete caller contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-reply-selection",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Explicit 3.1 Reply messages and targets",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§7/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-schema-validation",
+        "AA26-http-headers"
+      ],
+      "acceptanceCriterion": "No fallback from invalid reply; selected target and 0/1/multiple reply alternatives tested",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA26-reply-values",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply decode, headers and zero-content values",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-reply-selection"
+      ],
+      "acceptanceCriterion": "Actual responses reconstruct and validate exact application output or fail loudly",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA26-reply-lifecycle",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M5",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Reply success, failure and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§13/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-reply-values"
+      ],
+      "acceptanceCriterion": "Status/body/framing failures and cancellation preserve prior outputs and one terminal outcome",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Current architecture admits explicit Reply correspondence only in the 3.1 sibling.",
+        "owner": "protocol-cell",
+        "propagation": "Exclude affected cell; preserve unrelated cells.",
+        "observable": "Pre-dispatch refusal and exhaustive excluded coverage; no operation/binding emitted.",
+        "reopen": "Edition-specific authority-complete Reply correspondence and D/P/S plus independent execution."
+      }
+    },
+    {
+      "id": "AA26-security-selection",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exact security alternatives and credential provenance",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-values"
+      ],
+      "acceptanceCriterion": "0/1/multiple alternatives, scopes and credentials have governed ownership and redacted evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-tls-identity",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "TLS1.3, chain and service-identity validation",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§12/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-security-selection"
+      ],
+      "acceptanceCriterion": "Real trusted/untrusted/mismatch handshakes; zero app bytes before security success",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-https",
+      "edition": "2.6",
+      "profile": "http",
+      "milestone": "M6",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "HTTPS carriage, SNI and ALPN",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14/C19A",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-tls-identity",
+        "AA26-http-headers"
+      ],
+      "acceptanceCriterion": "HTTP contract preserved over TLS; incorrect negotiation refuses before app dispatch",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-ws-handshake",
+      "edition": "2.6",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "WebSocket13 GET, no extensions/subprotocol",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-values",
+        "AA26-address-parameters"
+      ],
+      "acceptanceCriterion": "Exact accept handshake and forbidden selection failures proven using real frames",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-ws-publish",
+      "edition": "2.6",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish-one message and framing",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-ws-handshake",
+        "AA26-schema-validation"
+      ],
+      "acceptanceCriterion": "Text/binary and fragmentation preserve application boundaries with exact completion",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-ws-subscribe",
+      "edition": "2.6",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription, ordering and output-before-failure",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-ws-publish"
+      ],
+      "acceptanceCriterion": "Real ordered frames, fragmented delivery, close and cancellation preserve output prefix",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-wss",
+      "edition": "2.6",
+      "profile": "websocket",
+      "milestone": "M7",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure WebSocket lifecycle",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-ws-subscribe",
+        "AA26-tls-identity"
+      ],
+      "acceptanceCriterion": "WSS handshake/security failures and cancellation respect shared secure transport model",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-mqtt-session",
+      "edition": "2.6",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "MQTT311 clean-session setup",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-values"
+      ],
+      "acceptanceCriterion": "CleanSession, clientId, no Will, keepalive0 and CONNACK failures have exact packet evidence",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-mqtt-qos",
+      "edition": "2.6",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Publish QoS0/1/2 acknowledgement boundaries",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-mqtt-session",
+        "AA26-schema-validation"
+      ],
+      "acceptanceCriterion": "Real PUBLISH/PUBACK/PUBREC/PUBREL/PUBCOMP flows distinguish completion, duplicate and failure",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-mqtt-subscribe",
+      "edition": "2.6",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Subscription and pre-SUBACK buffering",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-mqtt-qos"
+      ],
+      "acceptanceCriterion": "SUBACK grant/failure, buffered delivery and output ordering proven with real packets",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-mqtt-redelivery",
+      "edition": "2.6",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Retained messages, duplicate identity and cancellation",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-mqtt-subscribe"
+      ],
+      "acceptanceCriterion": "DUP/packet-id reuse, QoS2 identity, DISCONNECT and no reconnect preserve governed outputs",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-mqtts",
+      "edition": "2.6",
+      "profile": "mqtt311",
+      "milestone": "M8",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Secure MQTT311",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-mqtt-redelivery",
+        "AA26-tls-identity"
+      ],
+      "acceptanceCriterion": "MQTTS identity/chain failures emit no application traffic and preserve session contracts",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-coverage-algebra",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Exhaustive inventory and smallest-owner accounting",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-message-selection"
+      ],
+      "acceptanceCriterion": "Every encountered operation/message/reply/cell has exact disposition, no ghost objects",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-contract-invariance",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Cross-profile operation contracts",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-coverage-algebra",
+        "AA26-schema-validation"
+      ],
+      "acceptanceCriterion": "Multiple servers/profiles cannot silently narrow one operation's full input/output schema",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-composition",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M11",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Mixed sources and failure confinement",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-contract-invariance"
+      ],
+      "acceptanceCriterion": "Paired plus coupled integration cases preserve unaffected siblings and stable identities",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA26-readiness",
+      "edition": "2.6",
+      "profile": "common",
+      "milestone": "M12",
+      "disposition": "required",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Core seven-item closure and publication rehearsal",
+      "authority": [
+        {
+          "pin": "asyncapi-2.6.0",
+          "commit": "1824379ba6252bfb52550337a86ca9b10a33b3aa",
+          "clause": "Operation, Channel, Message and Reference Objects",
+          "provenance": "incorporated"
+        },
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§15",
+          "provenance": "local-plan"
+        }
+      ],
+      "dependencies": [
+        "AA26-composition"
+      ],
+      "acceptanceCriterion": "All required cells accepted; two frozen reviews, exact sources, clean install and temporary bundle rehearsal",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [],
+      "acceptedHistory": []
+    },
+    {
+      "id": "AA31-mqtt5-disposition",
+      "edition": "3.1",
+      "profile": "mqtt5",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one mqtt5 exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 MQTT 5 (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: MQTT5 needs a separate version-specific session/reason-code/property correspondence; revision one completes the required MQTT311 contract.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pinned complete clean-start/session-expiry, reason-code, property and packet/lifecycle rules; D/P/S and independent real-peer evidence."
+      }
+    },
+    {
+      "id": "AA31-kafka-disposition",
+      "edition": "3.1",
+      "profile": "kafka",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one kafka exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 Kafka reduced (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: no Kafka release or offset/commit/rebalance correspondence is incorporated; revision one completes HTTP, WebSocket and MQTT311.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pin one Apache Kafka release, native field mapping, partition/acks/offset/commit/rebalance/cancel rules; D/P/S and independent real-peer evidence."
+      }
+    },
+    {
+      "id": "AA30-mqtt5-disposition",
+      "edition": "3.0",
+      "profile": "mqtt5",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one mqtt5 exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 MQTT 5 (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: MQTT5 needs a separate version-specific session/reason-code/property correspondence; revision one completes the required MQTT311 contract.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pinned complete clean-start/session-expiry, reason-code, property and packet/lifecycle rules; D/P/S and independent real-peer evidence."
+      }
+    },
+    {
+      "id": "AA30-kafka-disposition",
+      "edition": "3.0",
+      "profile": "kafka",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one kafka exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 Kafka reduced (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: no Kafka release or offset/commit/rebalance correspondence is incorporated; revision one completes HTTP, WebSocket and MQTT311.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pin one Apache Kafka release, native field mapping, partition/acks/offset/commit/rebalance/cancel rules; D/P/S and independent real-peer evidence."
+      }
+    },
+    {
+      "id": "AA26-mqtt5-disposition",
+      "edition": "2.6",
+      "profile": "mqtt5",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one mqtt5 exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 MQTT 5 (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: MQTT5 needs a separate version-specific session/reason-code/property correspondence; revision one completes the required MQTT311 contract.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pinned complete clean-start/session-expiry, reason-code, property and packet/lifecycle rules; D/P/S and independent real-peer evidence."
+      }
+    },
+    {
+      "id": "AA26-kafka-disposition",
+      "edition": "2.6",
+      "profile": "kafka",
+      "milestone": "M0",
+      "disposition": "excluded",
+      "state": "planned",
+      "owner": "asyncapi-family",
+      "title": "Revision-one kafka exclusion",
+      "authority": [
+        {
+          "document": "ARCHITECTURE-RULINGS.md",
+          "clause": "§14 Kafka reduced (conditional)",
+          "provenance": "exclusion"
+        }
+      ],
+      "dependencies": [],
+      "acceptanceCriterion": "Reviewed refusal and coverage evidence closes the profile disposition without inventing driver semantics.",
+      "normativeRules": [],
+      "evidence": {
+        "definition": [],
+        "processor": [],
+        "synthesis": [],
+        "independentDerivation": [],
+        "independentExecution": [],
+        "boundary": [],
+        "mutation": [],
+        "integration": []
+      },
+      "findings": [
+        "Exclusion decision recorded; normative sibling propagation and frozen review remain required."
+      ],
+      "acceptedHistory": [],
+      "exclusion": {
+        "rationale": "Retain existing non-admission: no Kafka release or offset/commit/rebalance correspondence is incorporated; revision one completes HTTP, WebSocket and MQTT311.",
+        "owner": "protocol-cell",
+        "propagation": "Do not interpret native binding fields; exclude affected cell only and preserve unrelated represented cells.",
+        "observable": "Pre-dispatch refusal, zero wire traffic and exhaustive excluded-cell coverage with no emitted binding.",
+        "reopen": "Pin one Apache Kafka release, native field mapping, partition/acks/offset/commit/rebalance/cancel rules; D/P/S and independent real-peer evidence."
+      }
+    }
+  ]
+}

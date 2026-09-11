@@ -15238,6 +15238,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.2",
                 "name": "count",
                 "names": [
                   "count",
@@ -15250,6 +15251,7 @@
               "path": "/dispatch/body",
               "semanticEquals": {
                 "as": "form-json-field",
+                "formEncoding": "oas-3.2",
                 "name": "flag",
                 "names": [
                   "count",

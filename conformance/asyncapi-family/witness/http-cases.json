@@ -1,0 +1,1892 @@
+{
+  "format": "openbindings.asyncapi-independent-witness@1",
+  "packet": "M1a",
+  "authority": {
+    "candidate": "binding-specs/asyncapi-3.1/openbindings.asyncapi-3.1.md#5-synthesis-and-the-payloadless-plaintext-http-profile",
+    "upstream": "asyncapi-3.1.0",
+    "httpBinding": "asyncapi-3.1-http-binding-0.3.0",
+    "provenance": "Expected wire strings and outcomes authored from candidate §5; not exported from either implementation."
+  },
+  "base": {
+    "source": {
+      "content": {
+        "asyncapi": "3.1.0",
+        "info": {
+          "title": "Independent HTTP witness",
+          "version": "1"
+        },
+        "servers": {
+          "s": {
+            "host": "example.test",
+            "protocol": "http",
+            "pathname": "/api"
+          }
+        },
+        "channels": {
+          "c": {
+            "address": "/events",
+            "messages": {
+              "m": {}
+            }
+          }
+        },
+        "operations": {
+          "op": {
+            "action": "receive",
+            "channel": {
+              "$ref": "#/channels/c"
+            },
+            "bindings": {
+              "http": {}
+            }
+          }
+        }
+      }
+    },
+    "binding": {
+      "selector": "#/servers/s/operations/op"
+    },
+    "configuration": {},
+    "invocation": {
+      "inputPresent": true,
+      "input": {}
+    },
+    "operation": {
+      "input": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "M1-01-defaults",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-02-explicit-defaults",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/bindings/http",
+          "value": {
+            "method": "POST",
+            "bindingVersion": "0.3.0"
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-03-empty-security",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/security",
+          "value": []
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-04-boundary-slash",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/servers/s/pathname",
+          "value": "/api/"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-05-percent-preservation",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/channels/c/address",
+          "value": "/%2F/events"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/%2F/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-06-missing-binding",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/bindings",
+          "remove": true
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-07-wrong-method",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/bindings/http/method",
+          "value": "GET"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-08-wrong-version",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/bindings/http/bindingVersion",
+          "value": "0.2.0"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-09-explicit-messages",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/messages",
+          "value": []
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-10-payload",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/channels/c/messages/m/payload",
+          "value": {}
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-11-security",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/operations/op/security",
+          "value": [
+            {}
+          ]
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-12-https",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/servers/s/protocol",
+          "value": "https"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-13-absent-input",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "inputPresent": false
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-14-null-input",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation/input",
+          "value": null
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-15-nonempty-input",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation/input",
+          "value": {
+            "payload": null
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-16-wrong-contract",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/operation/input/additionalProperties",
+          "value": true
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-17-output-contract",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/operation/output",
+          "value": {}
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-18-transform",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/binding/inputTransform",
+          "value": "$"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-19-lowercase-escape",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/channels/c/address",
+          "value": "/%2f"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-20-invalid-port",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/servers/s/host",
+          "value": "example.test:65536"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-21-configuration",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/configuration",
+          "value": {
+            "timeout": 3
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-22-zero-200",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 200 Fixture\r\nContent-Length: 0\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 200,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          200
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-23-zero-205",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 205 Fixture\r\nContent-Length: 0\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 205,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          205
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-24-clean-400",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 400 Fixture\r\nContent-Length: 3\r\n\r\nbad",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 400,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "3"
+            }
+          ]
+        },
+        {
+          "kind": "body-chunk",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "dataBase64": "YmFk"
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          400
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-25-redirect-no-follow",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 302 Fixture\r\nContent-Length: 0\r\nLocation: http://elsewhere.test/\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 302,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "0"
+            },
+            {
+              "name": "Location",
+              "value": "http://elsewhere.test/"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          302
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-26-not-modified",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 304 Fixture\r\nContent-Length: 123\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 304,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "123"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          304
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-27-success-body-forbidden",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 200 Fixture\r\nContent-Length: 1\r\n\r\nx",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 200,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "kind": "body-chunk",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "dataBase64": "eA=="
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          200
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-28-short-body",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 400 Fixture\r\nContent-Length: 2\r\n\r\nx",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 400,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "kind": "body-chunk",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "dataBase64": "eA=="
+        },
+        {
+          "kind": "disconnect",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "stage": "during-response"
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          400
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-29-extra-body",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 400 Fixture\r\nContent-Length: 1\r\n\r\nxx",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 400,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "kind": "body-chunk",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "dataBase64": "eHg="
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          400
+        ],
+        "connections": 1,
+        "trace": "invalid"
+      }
+    },
+    {
+      "id": "M1-30-missing-length",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 200 Fixture\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 200,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-31-duplicate-length",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 200 Fixture\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 200,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "0"
+            },
+            {
+              "name": "Content-Length",
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-32-noncanonical-length",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 200 Fixture\r\nContent-Length: 00\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 200,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "00"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-33-illegal-204-length",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 204 Fixture\r\nContent-Length: 0\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": [
+            {
+              "name": "Content-Length",
+              "value": "0"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-34-switching-protocols",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 101 Fixture\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 101,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "error",
+        "phase": "response",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-35-cancel-connection-attempted",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "await-native",
+                "name": "connection-attempted",
+                "count": 1
+              },
+              {
+                "kind": "cancel"
+              }
+            ]
+          }
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "cancelled",
+        "phase": "interaction",
+        "request": "",
+        "statuses": [],
+        "connections": 0,
+        "closeCount": 0
+      }
+    },
+    {
+      "id": "M1-36-cancel-connection-opened",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "await-native",
+                "name": "connection-opened",
+                "count": 1
+              },
+              {
+                "kind": "cancel"
+              }
+            ]
+          }
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "cancelled",
+        "phase": "interaction",
+        "request": "",
+        "statuses": [],
+        "connections": 1,
+        "closeCount": 1
+      }
+    },
+    {
+      "id": "M1-37-cancel-request-started",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "await-native",
+                "name": "request-started",
+                "count": 1
+              },
+              {
+                "kind": "cancel"
+              }
+            ]
+          }
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "cancelled",
+        "phase": "interaction",
+        "request": "P",
+        "statuses": [],
+        "connections": 1,
+        "closeCount": 1
+      }
+    },
+    {
+      "id": "M1-38-cancel-dispatch",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "await-native",
+                "name": "dispatch",
+                "count": 1
+              },
+              {
+                "kind": "cancel"
+              }
+            ]
+          }
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "cancelled",
+        "phase": "interaction",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [],
+        "connections": 1,
+        "closeCount": 1
+      }
+    },
+    {
+      "id": "M1-39-cancel-acknowledgement",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "await-native",
+                "name": "acknowledgement",
+                "count": 1
+              },
+              {
+                "kind": "cancel"
+              }
+            ]
+          }
+        }
+      ],
+      "response": "HTTP/1.1 100 Continue\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 100,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "cancelled",
+        "phase": "interaction",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          100
+        ],
+        "connections": 1,
+        "closeCount": 1
+      }
+    },
+    {
+      "id": "M1-40-local-reference",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/components",
+          "value": {
+            "operations": {
+              "saved": {
+                "action": "receive",
+                "channel": {
+                  "$ref": "#/channels/c"
+                },
+                "bindings": {
+                  "http": {}
+                }
+              }
+            }
+          }
+        },
+        {
+          "path": "/source/content/operations/op",
+          "value": {
+            "$ref": "#/components/operations/saved"
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-41-wrong-edition",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/asyncapi",
+          "value": "3.0.0"
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "load",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-42-interim-final",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [],
+      "response": "HTTP/1.1 100 Continue\r\n\r\nHTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 100,
+          "headers": []
+        },
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "acknowledgement",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "complete",
+        "phase": "completion",
+        "request": "POST /api/events HTTP/1.1\r\nHost: example.test\r\n\r\n",
+        "statuses": [
+          100,
+          204
+        ],
+        "connections": 1
+      }
+    },
+    {
+      "id": "M1-43-two-writes",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08",
+        "ASYNC31-P-09",
+        "ASYNC31-P-10",
+        "ASYNC31-P-11",
+        "ASYNC31-P-12"
+      ],
+      "changes": [
+        {
+          "path": "/invocation",
+          "value": {
+            "actions": [
+              {
+                "kind": "write",
+                "value": {}
+              },
+              {
+                "kind": "write",
+                "value": {}
+              }
+            ]
+          }
+        }
+      ],
+      "response": "HTTP/1.1 204 No Content\r\n\r\n",
+      "peerEvents": [
+        {
+          "kind": "response-head",
+          "after": {
+            "kind": "native",
+            "name": "dispatch",
+            "count": 1
+          },
+          "httpVersion": "1.1",
+          "status": 204,
+          "headers": []
+        }
+      ],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-44-null-bindings",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/channels/c/bindings",
+          "value": null
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    },
+    {
+      "id": "M1-45-null-bindings",
+      "group": "processor",
+      "rules": [
+        "ASYNC31-P-08"
+      ],
+      "changes": [
+        {
+          "path": "/source/content/servers/s/bindings",
+          "value": null
+        }
+      ],
+      "response": "",
+      "peerEvents": [],
+      "expected": {
+        "disposition": "refusal",
+        "phase": "pre-dispatch",
+        "request": "",
+        "statuses": [],
+        "connections": 0
+      }
+    }
+  ]
+}
