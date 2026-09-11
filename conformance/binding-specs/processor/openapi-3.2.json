@@ -674,18 +674,36 @@
                           "$ref": "#/components/schemas/Resource/properties/name"
                         }
                       }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
                     }
                   }
                 }
               }
-            }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
           }
         },
         "binding": {
           "selector": "#/paths/~1x/post"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
         }
       },
       "expected": [
@@ -781,7 +799,7 @@
         "OAPI32-P-01"
       ],
       "section": "5",
-      "description": "An unsupported $schema at a selected schema-resource root excludes the selected operation while the source itself remains admitted.",
+      "description": "An unsupported $schema in the only required request-body media alternative excludes the selected operation while the source itself remains admitted.",
       "given": {
         "source": {
           "content": {
@@ -790,6 +808,7 @@
               "title": "schema dialect",
               "version": "1"
             },
+            "servers": [{ "url": "https://api.example" }],
             "paths": {
               "/x": {
                 "post": {
@@ -801,7 +820,8 @@
                           "type": "object"
                         }
                       }
-                    }
+                    },
+                    "required": true
                   }
                 }
               }
@@ -812,7 +832,8 @@
           "selector": "#/paths/~1x/post"
         },
         "invocation": {
-          "inputPresent": false
+          "inputPresent": true,
+          "input": { "body": {} }
         }
       },
       "expected": [
@@ -4870,10 +4891,7 @@
                     "content": {
                       "text/plain": {
                         "schema": {
-                          "type": [
-                            "boolean",
-                            "number"
-                          ]
+                          "type": "boolean"
                         }
                       }
                     }
@@ -10961,7 +10979,7 @@
                 {
                   "n": 1
                 },
-                "second"
+                "c2Vjb25k"
               ]
             }
           ]
@@ -13926,7 +13944,7 @@
                 {
                   "n": 1
                 },
-                "second"
+                "c2Vjb25k"
               ]
             }
           ]
@@ -21036,6 +21054,5218 @@
         "invocation": { "inputPresent": true, "input": { "body": { "count": 7 } } }
       },
       "expected": [{ "disposition": "refusal", "phase": "pre-dispatch", "assertions": [{ "path": "/dispatch", "absent": true }] }]
+    },
+    {
+      "id": "OAPI32-PS-298",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole boolean declaration parses \"true\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "true"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                true
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-299",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole boolean declaration parses \" \\tfalse\\r\\n\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": " \tfalse\r\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                false
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-300",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole number declaration parses \"1\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-301",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole number declaration parses \"1.0\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-302",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole number declaration parses \"1e0\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1e0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-303",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole number declaration parses \"1E+2\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1E+2"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                100
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-304",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole number declaration parses \"-0\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "-0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-305",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole integer declaration parses \"1.5\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1.5
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-306",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole integer declaration parses \"1.0\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-307",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A sole integer declaration parses \"1e0\" using one complete lexical token; codec selection is not general schema validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1e0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-308",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"01\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "01"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-309",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"+1\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "+1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-310",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \".5\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": ".5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-311",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"1.\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1."
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-312",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"0x10\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "0x10"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-313",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"NaN\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "NaN"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-314",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"Infinity\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "Infinity"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-315",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"\\\"1\\\"\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "\"1\""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-316",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"1 2\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1 2"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-317",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"true\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "true"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-318",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"null\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "null"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-319",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \" 1\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": " 1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-320",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \"﻿1\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "﻿1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-321",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The numeric scalar lane rejects \" \\t\\r\\n\" as outside its complete RFC 8259 token and four-whitespace grammar.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": " \t\r\n"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-322",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"True\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "True"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-323",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"1\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-324",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"0\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "0"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-325",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"\\\"true\\\"\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "\"true\""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-326",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"true false\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "true false"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-327",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"null\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "null"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-328",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The boolean scalar lane rejects \"﻿true\" without coercion or a successful output.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "﻿true"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-329",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":[\"boolean\",\"number\"]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "boolean",
+                              "number"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-330",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":[\"number\",\"null\"]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-331",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":[\"integer\",\"null\"]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-332",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":[\"boolean\",\"null\"]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "boolean",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-333",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":[\"number\",\"integer\"]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "number",
+                              "integer"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-334",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"type\":\"null\"} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "null"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-335",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration false selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-336",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Declaration {\"allOf\":[{\"type\":\"number\"},{\"type\":\"integer\"}]} selects no unique scalar codec; supplied response data cannot resolve the declaration.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "allOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "integer"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-337",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Existing declaration inspection for {\"anyOf\":[{\"type\":\"number\"},{\"type\":\"null\"}]} selects the numeric codec without instance validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1.5
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-338",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Existing declaration inspection for {\"oneOf\":[{\"type\":\"null\"},{\"type\":\"integer\"}]} selects the numeric codec without instance validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "oneOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "integer"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1.5
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-339",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Existing declaration inspection for {\"allOf\":[{\"type\":[\"number\",\"integer\"]},{\"type\":\"number\"}]} selects the numeric codec without instance validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "allOf": [
+                              {
+                                "type": [
+                                  "number",
+                                  "integer"
+                                ]
+                              },
+                              {
+                                "type": "number"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1.5
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-340",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Existing declaration inspection for {\"allOf\":[{\"type\":[\"number\",\"integer\"]},{\"type\":\"integer\"}]} selects the numeric codec without instance validation.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "allOf": [
+                              {
+                                "type": [
+                                  "number",
+                                  "integer"
+                                ]
+                              },
+                              {
+                                "type": "integer"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "1.5"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                1.5
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-341",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Sole-string text remains a string; the scalar-token parser does not run.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "true"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "true"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-342",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The existing string/null exception remains a string lane, never a null token.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "null"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "null"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-343",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "A typeless text declaration retains raw-octet carriage instead of scalar sniffing.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "true"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "dHJ1ZQ=="
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-344",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "The existing zero-octet whole-response absence rule precedes scalar parsing.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "description": "ok",
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-345",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":\"boolean\"} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": true
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "dHJ1ZQ=="
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-346",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":\"number\"} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 1000
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "MWUz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-347",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":\"integer\"} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 1.5
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/bodyBase64",
+              "equals": "MS41"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-348",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":[\"boolean\",\"number\"]} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": [
+                            "boolean",
+                            "number"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": true
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-349",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":[\"boolean\",\"number\"]} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": [
+                            "boolean",
+                            "number"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 1000
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-350",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":[\"number\",\"null\"]} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 1
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-351",
+      "rules": [
+        "OAPI32-P-03",
+        "OAPI32-P-08"
+      ],
+      "section": "9.2",
+      "description": "Request {\"type\":[\"number\",\"integer\"]} selects its codec before inspecting caller data; the exact request writer and no-general-validation rule remain unchanged.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "Declaration-first scalar text",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "required": true,
+                    "content": {
+                      "text/plain": {
+                        "schema": {
+                          "type": [
+                            "number",
+                            "integer"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": 1
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-352",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "a valid Parameter-root secondary document with required:true is not a Schema Object root; its selected required-parameter reference is binding-excluded and refuses before dispatch.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-353",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "an other-root reference confined to an unselected sibling operation does not prevent the selected good operation from dispatching.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1good/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/good"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-354",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "an admitted OpenAPI-root secondary document supplies its selected Parameter Object normally.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json#/components/parameters/ID"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "OpenAPI root positive",
+              "version": "1"
+            },
+            "components": {
+              "parameters": {
+                "ID": {
+                  "name": "id",
+                  "in": "query",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?id=value"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-355",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "a Parameter-shaped root with no required member is also an admitted Schema Object with arbitrary keywords; interpretation at the Parameter reference context must not be rejected by field-name guessing.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x?id=value"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-356",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "an admitted Schema Object document root supplies a selected response schema and the existing string lane remains usable.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "text/plain": {
+                          "schema": {
+                            "$ref": "https://resources.example/string-schema.json"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://resources.example/string-schema.json": {
+            "type": "string"
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "hello"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                "hello"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-357",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "malformed secondary JSON remains an invalid/unresolvable selected reference, not an other-root exclusion or a new primary load-gate failure.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": "{\"name\":\"id\","
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-358",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "a retrieval-alias reference to an other-root document with a different declared $self preserves the independent invalid reference-form defect rather than relabeling it excluded. Native/provider tests separately inspect classification.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "$self": "https://identity.example/parameter.json"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-359",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "a missing fragment in an other-root secondary document remains an invalid reference defect; no root exclusion repairs the missing target. Native/provider tests separately inspect classification.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "parameters": [
+                    {
+                      "$ref": "https://resources.example/parameter.json#/missing"
+                    }
+                  ],
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "parameters": {
+              "id": "value"
+            }
+          }
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-360",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "an other-root Media Type reference removes only that response-media alternative; a valid JSON sibling still dispatches and emits its value.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "text/plain": {
+                          "$ref": "https://resources.example/parameter.json#/x-media"
+                        },
+                        "application/json": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-media": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "7"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "GET"
+            },
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": [
+                7
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-361",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-05"
+      ],
+      "section": "5.1",
+      "description": "an actual successful response selecting the other-root-excluded media alternative fails at the response phase without silently switching to its valid JSON sibling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "N2 root confinement",
+              "version": "1"
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ],
+            "paths": {
+              "/x": {
+                "get": {
+                  "responses": {
+                    "200": {
+                      "content": {
+                        "text/plain": {
+                          "$ref": "https://resources.example/parameter.json#/x-media"
+                        },
+                        "application/json": {
+                          "schema": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "/good": {
+                "get": {
+                  "responses": {
+                    "204": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/get"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "resources": {
+          "https://resources.example/parameter.json": {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-media": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "peer": {
+          "status": 200,
+          "headers": {
+            "Content-Type": "text/plain"
+          },
+          "body": "hello"
+        }
+      },
+      "expected": [
+        {
+          "disposition": "error",
+          "phase": "response",
+          "assertions": [
+            {
+              "path": "/dispatch/url",
+              "equals": "https://api.example/x"
+            },
+            {
+              "path": "/outputs",
+              "equals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-362",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect allows an omitted optional body without request content.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": false
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            },
+            {
+              "path": "/dispatch/headers/content-type",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-363",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect refuses a supplied optional body with no available media.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": false
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-364",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect excludes a required body with no available media.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": false
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "refusal",
+          "phase": "pre-dispatch",
+          "assertions": [
+            {
+              "path": "/dispatch",
+              "absent": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OAPI32-PS-365",
+      "rules": [
+        "OAPI32-P-01",
+        "OAPI32-P-03"
+      ],
+      "section": "9.1",
+      "description": "A media-confined identity defect preserves the usable JSON sibling.",
+      "given": {
+        "source": {
+          "content": {
+            "openapi": "3.2.0",
+            "info": {
+              "title": "schema identity",
+              "version": "1"
+            },
+            "components": {
+              "schemas": {
+                "Resource": {
+                  "$id": "https://schemas.example/resource",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "paths": {
+              "/x": {
+                "post": {
+                  "requestBody": {
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "string"
+                        }
+                      },
+                      "text/plain": {
+                        "schema": {
+                          "$ref": "#/components/schemas/Resource/properties/name"
+                        }
+                      }
+                    },
+                    "required": true
+                  },
+                  "responses": {
+                    "204": {
+                      "description": "ok"
+                    }
+                  }
+                }
+              }
+            },
+            "servers": [
+              {
+                "url": "https://api.example"
+              }
+            ]
+          }
+        },
+        "binding": {
+          "selector": "#/paths/~1x/post"
+        },
+        "invocation": {
+          "inputPresent": true,
+          "input": {
+            "body": "value"
+          }
+        },
+        "peer": {
+          "status": 204,
+          "body": ""
+        }
+      },
+      "expected": [
+        {
+          "disposition": "complete",
+          "phase": "completion",
+          "assertions": [
+            {
+              "path": "/dispatch/method",
+              "equals": "POST"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

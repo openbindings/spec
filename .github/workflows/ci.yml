@@ -183,7 +183,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: openbindings/openbindings-go
-          ref: release/0.2
+          # Coordinated candidate; restore release/0.2 after the SDK lands.
+          ref: d40244a74760ca289cff26def0c2dced5d72c659
           path: openbindings-go
       # A family whose module depends on a standalone client needs that client
       # checked out and `replace`d: the client repos are unreleased, so the
@@ -230,7 +231,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: openbindings/openbindings-ts
-          ref: release/0.2
+          # Coordinated candidate; restore release/0.2 after the SDK lands.
+          ref: 157d83a6b10f48ac40f752b4209aaa4b1bff92eb
           path: openbindings-ts
       - uses: actions/checkout@v7
         with:
