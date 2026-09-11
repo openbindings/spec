@@ -193,8 +193,7 @@ jobs:
         if: matrix.client != ''
         with:
           repository: openbindings/${{ matrix.client }}
-          # OpenAPI must execute the implementation matching this corpus.
-          ref: ${{ matrix.client == 'openapi-client' && 'e38055658c222118ddd65c0d2517a94b5da589ac' || 'main' }}
+          ref: main
           path: ${{ matrix.client }}
       - uses: actions/setup-go@v7
         with:
@@ -237,20 +236,19 @@ jobs:
           path: openbindings-ts
       - uses: actions/checkout@v7
         with:
+          repository: openbindings/jsonata
+          ref: e2a5e518e6b5bd247ab327d427c591dc72743f2d
+          path: jsonata
+      - uses: actions/checkout@v7
+        with:
           repository: openbindings/openapi-client
-          # Coordinated candidate; restore main after the client lands.
-          ref: e38055658c222118ddd65c0d2517a94b5da589ac
+          ref: main
           path: openapi-client
       - uses: actions/checkout@v7
         with:
           repository: openbindings/asyncapi-client
           ref: main
           path: asyncapi-client
-      - uses: actions/checkout@v7
-        with:
-          repository: openbindings/jsonata
-          ref: 119dc7dfba6e810f8f223e49aa9e3c7daadfe361
-          path: jsonata
       - uses: pnpm/action-setup@v6
         with:
           version: 10.15.0
@@ -259,15 +257,18 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: openbindings-ts/pnpm-lock.yaml
-      - name: Build the standalone runtime and neutral JSON prerequisites
+      # Match the SDK's prerequisite order: runtime, neutral JSON packages,
+      # standalone clients, then the full SDK. The clients consume the JSON
+      # packages, while the SDK links to the clients and standalone runtime.
+      - name: Build the qualified standalone runtime
         run: |
           npm --prefix jsonata/javascript ci --ignore-scripts
           npm --prefix jsonata/javascript run build
-          pnpm --dir openbindings-ts install --frozen-lockfile --ignore-scripts
-          pnpm --dir openbindings-ts --filter @openbindings/json --filter @openbindings/json-schema build
-      # openbindings-ts links both standalone clients by relative path
-      # (pnpm-lock.yaml: link:../../../<client>/typescript), so each has to be
-      # installed and built before the workspace build can resolve its dist.
+      - name: Build neutral JSON prerequisites
+        working-directory: openbindings-ts
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm --filter @openbindings/json --filter @openbindings/json-schema build
       - name: Build standalone artifact clients
         run: |
           pnpm --dir openapi-client install --frozen-lockfile
