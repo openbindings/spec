@@ -184,7 +184,10 @@ below may continue to change until the 0.2 release is cut.
 - JSONata 2.1 per-value transforms with a closed host environment and a
   pinned language-documentation snapshot, including inherited pages. Core
   incorporates the documented syntax and semantics, not a blanket runtime
-  behavioral tiebreak or an additional numerical-capacity policy.
+  behavioral tiebreak or an additional numerical-capacity policy. The
+  reference implementation is informative where it differs from that
+  documentation, and conformance requires no use, port, or reproduction of
+  it or any other implementation (§5.5 clauses 1 and 2).
 - The independently versioned HTTP Discovery companion specification.
 - A synthesis model that distinguishes represented, excluded, lossy, and
   failed upstream targets; exhaustive coverage is a qualified evidence claim,
