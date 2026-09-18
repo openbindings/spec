@@ -357,9 +357,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v2.0.html",
       "citedUrls": [],
-      "sha256": "46f356ad4dd434cdab1d467ba9db9d3568efa1aa4d8523d3942342d0d0573c86",
-      "bytes": 256976,
-      "retrievedAt": "2026-08-24T23:27:03Z",
+      "sha256": "74960840572e1dde9bd489b55853dd43abcc3f1b0ac0bd097084fe454ba1a07e",
+      "bytes": 258542,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
@@ -378,9 +378,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.0.0.html",
       "citedUrls": [],
-      "sha256": "22100101eb3afeaaa825ac6ce80ef6107b3e6f0e3decd30074983c09a7217080",
-      "bytes": 386549,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "1b5848180651c4e85c253c65881c77f2343e6f3b8d92709235eca7b68bfaafff",
+      "bytes": 388135,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -398,9 +398,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.0.1.html",
       "citedUrls": [],
-      "sha256": "4b61a152aba64f501f5cd1a8874404b253ff5c45edef0794c1f3b42069c8beb6",
-      "bytes": 382358,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "7a0bdddfce5a5971ae16ac7b22cf2dd4d7c3f51891d1080913ad8abdd127b74d",
+      "bytes": 383944,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -418,9 +418,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.0.2.html",
       "citedUrls": [],
-      "sha256": "d2a2e3c897fad0571bdc54a0158ea7cab5e47ecc85b76f3bf890469ab2da6d16",
-      "bytes": 391249,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "de4b7c7c135989e64e6dc15a8274f5f7ef78845535bace68fd1f6b62a4ef8ae6",
+      "bytes": 392835,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -438,9 +438,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.0.3.html",
       "citedUrls": [],
-      "sha256": "436d80127eafd6f831e42db7ecff3ba61c901b2447ccfbd90e4e6d9322623c95",
-      "bytes": 398758,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "aa44ce99fca57ea67e9943ab70305565dcf0ce97a516a56ff5bf758a19e7b4de",
+      "bytes": 400344,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -460,9 +460,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.0.4.html",
       "citedUrls": [],
-      "sha256": "67696a1c67dbba72f1b8aa2455915ec28178829b56f5c292116573c4357155ff",
-      "bytes": 537214,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "e034376b7ac488145be5b3cf5fb41e32ddbef3ebd22da6678e14beaa87c67f3a",
+      "bytes": 538916,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
@@ -482,9 +482,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.1.0.html",
       "citedUrls": [],
-      "sha256": "ca07378639431519731065e397fa4170c2ddfe501a4aa69db60d6a3a9bb669fe",
-      "bytes": 406582,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "156788f23f0e3be376b9635f70451535e4280c3227747dbdd1dd6a0e50f61f1b",
+      "bytes": 408180,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
@@ -502,9 +502,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.1.1.html",
       "citedUrls": [],
-      "sha256": "15fbd8e4e9ab6490d439f3e357afa8b0d43bfdabdbda12ae122034ef07fc3eff",
-      "bytes": 574412,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "95a797a55918e5c9278148ecc7c4a4bd571329f51fbcb5de12672c131c873463",
+      "bytes": 576103,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
@@ -525,9 +525,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.1.2.html",
       "citedUrls": [],
-      "sha256": "7ae322f88be070455e926d3a28ff46703870753f7ca34c58fc910b2554804a0d",
-      "bytes": 593002,
-      "retrievedAt": "2026-08-20T17:06:56Z",
+      "sha256": "841a0159f85f9eef53af691c6ef1f8714961564aefd72ed338eccb9bb145b143",
+      "bytes": 594687,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
@@ -575,9 +575,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/oas/v3.2.0.html",
       "citedUrls": [],
-      "sha256": "15f12e539a3ac811c5f18950bc9cff296b43a22ad4d50b4db8d533f37ebc1d23",
-      "bytes": 672716,
-      "retrievedAt": "2026-08-24T23:27:03Z",
+      "sha256": "c3b1e0700840af9734254884e9a4cd823868b9b5ecc1628cf48358c1052532a5",
+      "bytes": 674364,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
@@ -1427,9 +1427,9 @@
       "kind": "url",
       "url": "https://spec.openapis.org/registry/index.html",
       "citedUrls": [],
-      "sha256": "43fdac85950c892a4e4d2404bd4dbe6f07587c53b2792317bd74960f46e3a657",
-      "bytes": 14424,
-      "retrievedAt": "2026-09-10T17:47:23Z",
+      "sha256": "ce3a41ccfc1bee1acd6c1e82e55d7aa543f653a54d8cf67fd62723a88599dcdd",
+      "bytes": 14546,
+      "retrievedAt": "2026-09-18T18:52:16Z",
       "status": "reference-only",
       "reason": "Prepared from the OpenAPI 3.2 normative citation set for the registries its document fields reference. Rechecked 2026-09-10: publishing-generator/SEO metadata and equivalent relative API/RSS links changed; registry prose and resolved registry links are unchanged. Still reference-only, not incorporated by a binding specification.",
       "citedBy": [],
