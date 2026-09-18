@@ -89,6 +89,13 @@ protocol, callback name, or synthesis naming convention. It also does not turn
 a native status, header, trailer, frame, or other protocol observation into an
 operation value merely so the observation remains visible.
 
+Generation soundness is distinct from generation strategy. A family can
+require an emitted correspondence to preserve the meaning it claims without
+requiring generation, a particular contract shape, complete source coverage,
+or a reporting interface. The OpenAPI family makes that distinction in §12.2:
+selection and presentation are free; faithful correspondence and applicable
+Core schema-loss and conformance-reporting duties remain.
+
 The distinction is between **using** a native fact and **exposing** its native
 representation. A status or metadata field may select decoding, drive context
 resolution, distinguish normal from unsuccessful completion, or otherwise
@@ -550,9 +557,12 @@ ladder.
 
 **Arbitrary closure is not an escape hatch.** Where nothing favors
 either option, that is itself evidence the choice carries no portable
-meaning, so **declare the freedom rather than closing it** — unless the
-divergence would be visible to a peer on the wire, in which case close
-it and say plainly that the closure was arbitrary.
+meaning, so **declare the freedom rather than closing it**. Wire visibility
+alone does not establish that a difference must be closed: identify the
+promised interoperability invariant and justify either a single result or an
+explicit permitted set that preserves it. This guidance does not reopen any
+candidate's existing wire rule; a change still needs its own authority and
+compatibility review.
 
 But reaching that point is a finding requiring evidence, not a default
 to fall back on when the checking gets tiresome, and it is expected to
@@ -597,9 +607,10 @@ amortizing: **context is what an invocation flow resolves once and then
 runs on** (credentials, server selection, environment, session). A value
 that varies per invocation cannot amortize, so it was never context — it
 is **operation input**, whatever protocol position it rides (ruled
-2026-08-14; the contract's `durable: true` flag is this same amortization
-claim in requirement form). Applied: server selection and credentials are
-context; a parameterized channel address's per-invocation parameter (which
+2026-08-14). An optional interface may express amortization through a flag
+such as `durable: true`; that example imposes no binding-specification
+requirement on context storage, negotiation, or reporting. Applied: server
+selection and credentials are context; a parameterized channel address's per-invocation parameter (which
 user, which sensor) is operation input, on both directions — consumer
 configuration may still pre-fill an absent input parameter, which is
 amortized supply of an input, not a reclassification.

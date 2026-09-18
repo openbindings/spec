@@ -1,46 +1,45 @@
-# Transform differential-conformance corpus
+# Transform evidence and semantic conformance
 
-JSONata transforms ([§5.5](../../openbindings.md#55-transforms)) are pinned to
-**jsonata-js 2.1.1** as the normative behavioral tiebreak (OBI-D-18 /
-[§5.5](../../openbindings.md#55-transforms)). This corpus is the cross-SDK
-**parity gate**: it verifies that each SDK's transform engine reproduces that
-normative output, and it catalogs the residual places where an implementation
-engine deviates.
+Core [§5.5](../../openbindings.md#55-transforms) incorporates the documented
+JSONata 2.1 language. Core prose and those incorporated semantics govern
+conformance; neither a runtime nor these fixtures adds requirements.
 
-It is located via `OB_SPEC_CORPUS` (the conformance root); harnesses append the
-`transforms` subpath. The TypeScript SDK evaluates with jsonata-js directly; the
-Go path (ob) evaluates with **gnata** (a pure-Go JSONata 2.x engine), and this
-corpus is how that engine is held to the normative one.
+This is the Core binding-transform corpus. Operation Graph independently pins
+its graph-expression evaluator; its binding specification and execution corpus
+are not changed by this Core authority adjustment.
 
-## `agree/` — the gate
+## Authority-linked semantic cases
 
-Expressions that **every** conformant engine evaluates identically to
-jsonata-js. Each case carries the normative `expected` outcome. Both SDK test
-suites run these and assert a match:
+[`language/scenarios.json`](language/scenarios.json) ties each expected result
+to a documented language requirement or the OpenBindings integration boundary.
+Inputs and results are JSON text so loading the fixture does not itself round
+numbers. `failure` includes undefined, non-JSON results and evaluation errors
+at the OpenBindings boundary; it does not prescribe error codes or messages.
 
-- Go: `ob` runs them through its adopted engine (`internal/app`, the same
-  `evalTransform` path invocation uses).
-- TS: `@openbindings/sdk` runs them through jsonata-js.
+LANG-22 deliberately compares an untouched copied value with its original
+inside the expression. It does not require an exact numeric representation.
+The 2.1.1 reference fails this witness because its copy path rounds through
+string formatting. A reference mismatch is not automatically a defect in
+another evaluator, and a reference result cannot override documented meaning.
 
-A failure means an engine has drifted from the parity contract.
+`node scripts/verify-transform-authority.mjs` checks structure, authority links,
+IDs and the separation of normative text from implementation policy. It does
+not execute an evaluator. An evaluator harness executes the cases and applies
+the OpenBindings result/environment boundary. Passing this finite set is not
+whole-language or closed-environment certification.
 
-## `known-divergence/` — the catalog
+## Historical implementation observations
 
-The places the Go engine (gnata) deviates from normative jsonata-js **in ob's
-actual pipeline**. Each case records both the normative `expected` and the
-engine's `actual`, under a root-cause label. **None is reachable by any shipped
-OB transform** (verified against ob's production transforms and the conformance
-corpora). The catalog is regression-guarded: ob asserts each divergence still
-holds, so a future engine change that *closes* one fails the test, prompting the
-case to be re-verified and promoted to `agree/`.
+`agree/` and `known-divergence/` retain their file shapes, IDs and recorded
+outcomes for existing SDK harnesses. `expectedEngine` records provenance,
+not normative authority. These files are a historical compatibility lane,
+not a general conformance oracle or a statement about currently shipped SDKs.
 
-The four residual root causes (gnata 0.2.x): `$filter` returning one match
-yields `[x]` not `x`; `$match` returns `{match,start,end,groups}` where
-jsonata-js returns `{match,index,groups}`; wildcard-over-array nests rather than
-flattens; and RE2 (Go's `regexp`) rejects Perl lookahead/lookbehind/backreferences
-that jsonata-js evaluates. (The big-integer-precision difference gnata shows on
-raw bytes does **not** occur in ob — its pipeline rounds large integers to
-float64 before the transform runs, so ob and jsonata-js agree.)
+Review a mismatch against its governing language rule. A documented semantic
+violation remains a defect; a difference solely in an unspecified detail is
+not made nonconformant by the reference observation. Existing SDK harnesses may
+continue to use stricter parity gates as their own qualification policy.
+Do not silently reinterpret those harnesses as complete language conformance.
 
-**The spec's normative requirement remains full jsonata-js.** This corpus
-documents an implementation-engine residual, not a specification concession.
+Official-library numerical fidelity, precision choices and cross-SDK agreement
+are implementation qualification concerns, separate from this corpus.

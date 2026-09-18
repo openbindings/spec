@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.2@1",
   "family": "openapi-3.2",
-  "description": "OpenAPI 3.2 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "description": "Reference-tooling full-document OpenAPI 3.2 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI32-SS-01",
@@ -1490,8 +1490,7 @@
       "id": "OAPI32-SS-13",
       "rules": [
         "OAPI32-P-05",
-        "OAPI32-S-01",
-        "OAPI32-S-02"
+        "OAPI32-S-01"
       ],
       "description": "A valid 3.2 source whose root selects an unincorporated default Schema Object dialect is excluded at source scope rather than refused as defective or decomposed into target failures.",
       "source": {

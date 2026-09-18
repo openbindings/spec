@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/binding-specs/synthesis-scenario.schema.json",
   "title": "OpenBindings binding-specification synthesis scenarios",
-  "description": "Portable authoring scenarios that compare synthesized target identities and exhaustive source-artifact disposition evidence, or require whole-source refusal when faithful synthesis is impossible, without prescribing an SDK API. Revision 3 adds a closed companion-document set so a multi-document artifact can be expressed at all, and an optional assertion list so a scenario can pin an emitted value its finding is about. Revision 4 renames the binding identity member bindingRef to bindingSelector, tracking the core rename of the binding member ref to selector; sourceRef names a source-local unit, not the binding member, and is unchanged. Revision 5 adds targetless dependency coverage for source interactions synthesized as Core dependencies.",
+  "description": "Shared reference-authoring scenarios comparing synthesized identities and exhaustive disposition evidence, or whole-call refusal. For OpenAPI these test reference tooling's full-document generation and reporting promises in addition to portable binding semantics; matching their entire output is not required of every conforming generator. See the README and openapi-generation-correspondence.md assertion-scope map. Revision 3 adds companion resources and emitted-value assertions. Revision 4 renames bindingRef to bindingSelector; sourceRef remains a source-local unit. Revision 5 adds targetless dependency coverage. No report format is imposed on bindings by this schema.",
   "type": "object",
   "required": ["format", "bindingSpec", "family", "description", "scenarios"],
   "additionalProperties": false,
@@ -34,7 +34,7 @@
             "pattern": "^(USAGE|OAPI(20|30|31|32)|ASYNC|MCP|GRPC|CONN|GQL)-SS-[0-9]{2,}$"
           },
           "rules": {
-            "description": "Atomic processor or synthesizer rules exercised by this scenario. Optional for legacy scenarios; the verifier requires complete S-rule coverage for the OpenAPI family.",
+            "description": "Processor or generation rules exercised by semantic facts in this scenario, not blanket authority for every reference-strategy assertion it contains. Optional for legacy scenarios; the verifier requires citations covering active OpenAPI S-rules.",
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
@@ -109,7 +109,7 @@
                 }
               },
               "assertions": {
-                "description": "Optional pointer-addressed assertions evaluated against the emitted OBI document, reusing processor-scenario.schema.json's assertion object verbatim. Addressing rule: a path may traverse names Core, the binding specification, or an incorporated authority defines, plus names the artifact itself supplies (an operation identifier or declared property name). It MUST NOT traverse a name an implementation or a separately versioned project interface mints, such as a generated or qualified `$defs` cut-point key, because requiring a third-party implementation to reproduce a name no governing authority states makes conformance mean 'matches what we built'. Author an assertion only for a fact a finding is about; an assertion with no finding behind it is a golden file arriving by another route.",
+                "description": "Optional pointer-addressed assertions against the emitted OBI, reusing the processor assertion verbs. For OpenAPI, assertions through reference-selected operation keys, fields, or schema shapes retain reference-tooling regression expectations; their conditional semantic facts do not make those names or shapes binding requirements. For portable conformance, require only what a governing authority fixes. See the README and OpenAPI assertion-scope map. Author assertions for identified findings, not unexplained golden files.",
                 "type": "array",
                 "minItems": 1,
                 "items": {

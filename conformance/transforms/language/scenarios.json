@@ -1,0 +1,359 @@
+{
+  "kind": "language-semantics",
+  "language": "jsonata-2.1",
+  "sources": {
+    "numeric": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/numeric-functions.md",
+    "operators": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/numeric-operators.md",
+    "comparison": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/comparison-operators.md",
+    "boolean": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/boolean-functions.md",
+    "processing": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/processing.md",
+    "construction": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/construction.md",
+    "transform": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/other-operators.md",
+    "expressions": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/expressions.md",
+    "core": "../../../openbindings.md#55-transforms",
+    "object": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.8.0/object-functions.md",
+    "datetime": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/date-time-functions.md"
+  },
+  "cases": [
+    {
+      "id": "LANG-01",
+      "expr": "$number(5)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "A number passed to $number is unchanged.",
+      "expected": {
+        "status": "json",
+        "json": "5"
+      }
+    },
+    {
+      "id": "LANG-02",
+      "expr": "$number(\"5\")",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "A numeric string is converted to a number.",
+      "expected": {
+        "status": "json",
+        "json": "5"
+      }
+    },
+    {
+      "id": "LANG-03",
+      "expr": "1 = \"1\"",
+      "inputJSON": "{}",
+      "authority": [
+        "comparison"
+      ],
+      "reason": "Equality does not erase type differences.",
+      "expected": {
+        "status": "json",
+        "json": "false"
+      }
+    },
+    {
+      "id": "LANG-04",
+      "expr": "1 + \"2\"",
+      "inputJSON": "{}",
+      "authority": [
+        "operators",
+        "core"
+      ],
+      "reason": "Addition requires numeric operands; dynamic errors are evaluation failures.",
+      "expected": {
+        "status": "failure"
+      }
+    },
+    {
+      "id": "LANG-05",
+      "expr": "2 + 2",
+      "inputJSON": "{}",
+      "authority": [
+        "operators"
+      ],
+      "reason": "Addition computes the numerical sum.",
+      "expected": {
+        "status": "json",
+        "json": "4"
+      }
+    },
+    {
+      "id": "LANG-06",
+      "expr": "$round(2.5)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "Explicit halfway rounding uses ties to even.",
+      "expected": {
+        "status": "json",
+        "json": "2"
+      }
+    },
+    {
+      "id": "LANG-07",
+      "expr": "$round(3.5)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "The ties-to-even rule also rounds upward to an even candidate.",
+      "expected": {
+        "status": "json",
+        "json": "4"
+      }
+    },
+    {
+      "id": "LANG-08",
+      "expr": "$floor(-1.5)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "Floor selects the nearest integer below the operand.",
+      "expected": {
+        "status": "json",
+        "json": "-2"
+      }
+    },
+    {
+      "id": "LANG-09",
+      "expr": "$ceil(-1.5)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "Ceiling selects the nearest integer above the operand.",
+      "expected": {
+        "status": "json",
+        "json": "-1"
+      }
+    },
+    {
+      "id": "LANG-10",
+      "expr": "$boolean(0)",
+      "inputJSON": "{}",
+      "authority": [
+        "boolean"
+      ],
+      "reason": "Numeric zero casts to false.",
+      "expected": {
+        "status": "json",
+        "json": "false"
+      }
+    },
+    {
+      "id": "LANG-11",
+      "expr": "$boolean(1)",
+      "inputJSON": "{}",
+      "authority": [
+        "boolean"
+      ],
+      "reason": "A nonzero number casts to true.",
+      "expected": {
+        "status": "json",
+        "json": "true"
+      }
+    },
+    {
+      "id": "LANG-12",
+      "expr": "[1]",
+      "inputJSON": "{}",
+      "authority": [
+        "processing",
+        "construction"
+      ],
+      "reason": "An explicitly constructed singleton array remains an array.",
+      "expected": {
+        "status": "json",
+        "json": "[1]"
+      }
+    },
+    {
+      "id": "LANG-13",
+      "expr": "items.name",
+      "inputJSON": "{\"items\":[{\"name\":\"a\"}]}",
+      "authority": [
+        "processing"
+      ],
+      "reason": "A singleton result sequence collapses to its value.",
+      "expected": {
+        "status": "json",
+        "json": "\"a\""
+      }
+    },
+    {
+      "id": "LANG-14",
+      "expr": "items.name",
+      "inputJSON": "{\"items\":[{\"name\":\"a\"},{\"name\":\"b\"}]}",
+      "authority": [
+        "processing"
+      ],
+      "reason": "A multi-value result sequence is represented by an array.",
+      "expected": {
+        "status": "json",
+        "json": "[\"a\",\"b\"]"
+      }
+    },
+    {
+      "id": "LANG-15",
+      "expr": "null",
+      "inputJSON": "{}",
+      "authority": [
+        "core"
+      ],
+      "reason": "Null is a successful JSON value, not undefined.",
+      "expected": {
+        "status": "json",
+        "json": "null"
+      }
+    },
+    {
+      "id": "LANG-16",
+      "expr": "absent",
+      "inputJSON": "{}",
+      "authority": [
+        "processing",
+        "core"
+      ],
+      "reason": "An absent path produces undefined, which fails the OpenBindings result boundary.",
+      "expected": {
+        "status": "failure"
+      }
+    },
+    {
+      "id": "LANG-17",
+      "expr": "function($x){$x}",
+      "inputJSON": "{}",
+      "authority": [
+        "core"
+      ],
+      "reason": "A function is outside the successful OpenBindings JSON result domain.",
+      "expected": {
+        "status": "failure"
+      }
+    },
+    {
+      "id": "LANG-18",
+      "expr": "$hostSecret()",
+      "inputJSON": "{}",
+      "authority": [
+        "core"
+      ],
+      "reason": "No host extension may be supplied in the closed OpenBindings environment.",
+      "expected": {
+        "status": "failure"
+      }
+    },
+    {
+      "id": "LANG-19",
+      "expr": "{\"n\": absent}",
+      "inputJSON": "{}",
+      "authority": [
+        "processing"
+      ],
+      "reason": "An undefined property value is omitted, not converted to null.",
+      "expected": {
+        "status": "json",
+        "json": "{}"
+      }
+    },
+    {
+      "id": "LANG-20",
+      "expr": "{\"a\":1,\"b\":2} = {\"b\":2,\"a\":1}",
+      "inputJSON": "{}",
+      "authority": [
+        "comparison"
+      ],
+      "reason": "Object equality compares members without regard to order.",
+      "expected": {
+        "status": "json",
+        "json": "true"
+      }
+    },
+    {
+      "id": "LANG-21",
+      "expr": "[1,2] = [2,1]",
+      "inputJSON": "{}",
+      "authority": [
+        "comparison"
+      ],
+      "reason": "Array equality respects element order.",
+      "expected": {
+        "status": "json",
+        "json": "false"
+      }
+    },
+    {
+      "id": "LANG-22",
+      "expr": "($copy := $ ~> |$|{\"extra\":true}|; a = $copy.a)",
+      "inputJSON": "{\"a\":1.2345678901234567}",
+      "authority": [
+        "transform",
+        "comparison"
+      ],
+      "reason": "An untouched copied value remains equal to the admitted input, independent of its numerical representation.",
+      "expected": {
+        "status": "json",
+        "json": "true"
+      }
+    },
+    {
+      "id": "LANG-23",
+      "expr": "$type(a)",
+      "inputJSON": "{\"a\":5}",
+      "authority": [
+        "processing",
+        "object"
+      ],
+      "reason": "A numeric carrier remains a number in the language.",
+      "expected": {
+        "status": "json",
+        "json": "\"number\""
+      }
+    },
+    {
+      "id": "LANG-24",
+      "expr": "$type($now())",
+      "inputJSON": "{}",
+      "authority": [
+        "datetime",
+        "object"
+      ],
+      "reason": "The incorporated standard library includes $now, returning a string.",
+      "expected": {
+        "status": "json",
+        "json": "\"string\""
+      }
+    },
+    {
+      "id": "LANG-25",
+      "expr": "($m := $millis(); $m = $millis())",
+      "inputJSON": "{}",
+      "authority": [
+        "datetime"
+      ],
+      "reason": "The documented evaluation timestamp remains fixed within one expression.",
+      "expected": {
+        "status": "json",
+        "json": "true"
+      }
+    },
+    {
+      "id": "LANG-26",
+      "expr": "($r := $random(); $r >= 0 and $r < 1)",
+      "inputJSON": "{}",
+      "authority": [
+        "numeric"
+      ],
+      "reason": "The documented random function yields a number in its specified interval, not a fixed numerical sample.",
+      "expected": {
+        "status": "json",
+        "json": "true"
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-2.0@1",
   "family": "openapi-2.0",
-  "description": "OpenAPI 2.0 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "description": "Reference-tooling full-document OpenAPI 2.0 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI20-SS-01",
@@ -64,7 +64,7 @@
     },
     {
       "id": "OAPI20-SS-02",
-      "description": "A required query Parameter and required body Parameter synthesize as one flat protocol-neutral input contract. The body Parameter name remains documentary; the adapter-owned transform constructs the exact parameters/body invocation envelope, while the sole concrete consumes alternative self-selects (OAPI20-S-01, OAPI20-P-02, OAPI20-P-03).",
+      "description": "Reference-generator strategy (not mandatory contract shape): A required query Parameter and required body Parameter synthesize as one flat protocol-neutral input contract. The body Parameter name remains documentary; the adapter-owned transform constructs the exact parameters/body invocation envelope, while the sole concrete consumes alternative self-selects (OAPI20-S-01, OAPI20-P-02, OAPI20-P-03).",
       "source": {
         "bindingSpec": "openbindings.openapi-2.0@1",
         "content": {
@@ -1204,8 +1204,7 @@
       "id": "OAPI20-SS-13",
       "rules": [
         "OAPI20-P-05",
-        "OAPI20-S-01",
-        "OAPI20-S-02"
+        "OAPI20-S-01"
       ],
       "description": "A source whose sole addressable operation is upstream-invalid is still accepted and synthesized; the target is accounted invalid rather than being reclassified as a whole-source refusal.",
       "source": {

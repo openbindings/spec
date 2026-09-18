@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/transforms-conformance-fixture-0.2.0.json",
-  "title": "transform differential-conformance fixture file",
-  "description": "Describes a set of JSONata transform cases. Two kinds share this file shape: `agree` cases (the cross-SDK gate) pin the NORMATIVE jsonata-js output that every conformant engine MUST reproduce; `known-divergence` cases catalog, per root-cause pattern, where the implementation engine deviates from that normative output. An outcome is a small envelope so `undefined` stays distinct from a `null` value and error identity is a message substring rather than exact text.",
+  "title": "transform implementation-observation fixture file",
+  "description": "Historical JSONata implementation outcomes. These observations do not define language requirements or official-library fidelity guarantees. Authority-linked semantic cases live in language/. An outcome envelope distinguishes undefined from null.",
   "type": "object",
   "required": ["kind", "language", "expectedEngine", "cases"],
   "properties": {
@@ -10,7 +10,7 @@
     "language": { "const": "jsonata" },
     "expectedEngine": {
       "type": "string",
-      "description": "The engine that produced every `expected` outcome — the normative tiebreak the spec pins (jsonata-js@2.1.1)."
+      "description": "The engine that produced the recorded `expected` outcomes (jsonata-js@2.1.1); this is provenance, not normative authority."
     },
     "actualEngine": {
       "type": "string",

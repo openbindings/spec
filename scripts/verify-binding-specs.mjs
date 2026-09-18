@@ -623,8 +623,9 @@ for (const dir of fidelityTargets) {
   }
 }
 
-// Portable synthesis scenarios prove artifact-inventory accounting and
-// emitted target identity independently of either reference SDK's API.
+// Shared synthesis scenarios record target interpretation and authoring evidence.
+// OpenAPI's exhaustive inventories and chosen output strategy additionally test
+// reference-tooling promises, not requirements for every conforming generator.
 const synthesisScenarioIds = new Set();
 const synthesisRuleCoverage = new Map();
 let synthesisFiles = 0;
@@ -678,7 +679,7 @@ for (const dir of processorTargets) {
       continue;
     }
     if (!scenario.expected.coverage.exhaustive)
-      errors.push(`${at}: portable synthesis evidence must claim an exhaustive inventory`);
+      errors.push(`${at}: this full-document reference fixture must claim an exhaustive inventory`);
 
     const operations = new Set(scenario.expected.operations);
     const bindings = new Set(
@@ -986,7 +987,7 @@ console.log(
 );
 console.log(`Invocation-fidelity scenarios: ${fidelityScenarios} across ${fidelityTargets.length} active family slice(s)`);
 console.log(
-  `Portable synthesis scenarios: ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} standalone brownfield synthesis specifications`
+  `Synthesis scenarios (including reference-strategy evidence): ${synthesisScenarios} in ${synthesisFiles} files, covering ${synthesisFiles}/${processorTargets.length} standalone brownfield synthesis specifications`
 );
 console.log(`Conformance adjudications: ${adjudicationCount}`);
 console.log(`Abstraction-fidelity ledger entries: ${alignmentLedgerEntries}`);

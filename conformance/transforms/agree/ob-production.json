@@ -2,7 +2,7 @@
   "kind": "agree",
   "language": "jsonata",
   "expectedEngine": "jsonata-js@2.1.1",
-  "description": "Every distinct JSONata transform shipped in ob's own OBIs (ob.obi.json, ob.bound.obi.json, serve.obi.json, demo) \u2014 the CLI machine-lane arg mappers. All agree across both engines; this pins that guarantee.",
+  "description": "Historical expressions from the CLI OBIs at corpus capture. Outcomes record observed implementation agreement; they do not certify current CLI coverage or define additional Core requirements.",
   "cases": [
     {
       "id": "obp-01-sift-merge",

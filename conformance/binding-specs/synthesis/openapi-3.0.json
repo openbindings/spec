@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.0@1",
   "family": "openapi-3.0",
-  "description": "OpenAPI 3.0 path-operation coverage and exhaustive source-artifact disposition evidence.",
+  "description": "Reference-tooling full-document OpenAPI 3.0 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI30-SS-07",
@@ -2207,8 +2207,7 @@
       "id": "OAPI30-SS-49",
       "rules": [
         "OAPI30-P-05",
-        "OAPI30-S-01",
-        "OAPI30-S-02"
+        "OAPI30-S-01"
       ],
       "description": "A source whose sole addressable operation is upstream-invalid is still accepted and synthesized; the target is accounted invalid rather than being reclassified as a whole-source refusal.",
       "source": {
