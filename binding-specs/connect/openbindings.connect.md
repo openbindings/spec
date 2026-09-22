@@ -41,7 +41,7 @@ When `content` is present it is the artifact the processor interprets, per the c
 
 A binding's `selector` is REQUIRED — this family defines no whole-artifact invocation — and takes exactly `openbindings.grpc@1` [§7](../grpc/openbindings.grpc.md#7-selector)'s grammar (rule GRPC-D-03), incorporated: `<fully-qualified-service>/<method>`, package-qualified or bare for packageless schemas, matched **byte-exactly** in schema mode (**CONN-D-03**).
 
-In schema mode, resolution against the schema precedes dispatch, and a `selector` matching no method makes the binding unresolvable — offline-checkable, per the core's partial-verification posture. In descriptorless mode there is nothing to resolve against: the `selector` segments ride **verbatim** into the request URL (casing flows through to the server), and an unknown method surfaces as the server's own error — a failure outcome, a stated limit of the mode.
+In schema mode, resolution against the schema precedes dispatch, and a `selector` matching no method makes the binding unresolvable — offline-checkable, per the core's partial-validation posture. In descriptorless mode there is nothing to resolve against: the `selector` segments ride **verbatim** into the request URL (casing flows through to the server), and an unknown method surfaces as the server's own error — a failure outcome, a stated limit of the mode.
 
 ## 8. Target and interaction
 
@@ -85,7 +85,7 @@ This specification defines **no** context bindings at transform positions: a tra
 
 ## 10. Conformance
 
-Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Verification follows the core's partial-verification posture.
+Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Validation follows the core's partial-validation posture.
 
 - **CONN-D-01**: `content`, when present, is one of `openbindings.grpc@1`'s two embedded schema carriages under its parse pins and accepted range, per [§3](#3-accepted-source-representations) and [§5](#5-content).
 - **CONN-D-02**: `location` is present and is an absolute `http`/`https` base URL — optional path prefix, no query, fragment, or userinfo — per [§4](#4-location); a `content`-only source is not conformant.

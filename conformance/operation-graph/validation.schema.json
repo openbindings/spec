@@ -61,7 +61,7 @@
                 },
                 "document": {
                   "type": "object",
-                  "description": "An OBI document embedding an operation-graph source and binding, for document-shaped rules (OG-D-##). The named rule is judged against the document's operation-graph sources and bindings; documents are otherwise core-valid so only the named rule discriminates."
+                  "description": "An OBI document embedding an operation-graph source and binding, for document-shaped rules (OG-D-##). The named rule is judged against the document's operation-graph sources and bindings; documents otherwise conform to the core so only the named rule discriminates."
                 },
                 "valid": {
                   "type": "boolean",

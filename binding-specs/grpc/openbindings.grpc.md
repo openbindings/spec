@@ -52,7 +52,7 @@ Staleness is defined rather than surprising: the pin stays authoritative for int
 
 ## 7. `selector`
 
-A binding's `selector` is REQUIRED — this family defines no whole-artifact invocation — and MUST be `<fully-qualified-service>/<method>` (**GRPC-D-03**): the service's protobuf fully-qualified name (its package-qualified name, or its bare name when its file declares no package), one `/`, and the unqualified RPC name — `blend.CoffeeShop/GetMenu`, or `CoffeeShop/GetMenu` for a packageless schema. Matching against the schema's declared services is **byte-exact**, no case folding. A `selector` matching no method in the schema makes the binding unresolvable; with embedded `content` that is offline-checkable, and for a location-only source it is checkable only against the live reflection listing, per the core's partial-verification posture. Resolution precedes dispatch: a processor does not dial blind on the selector name.
+A binding's `selector` is REQUIRED — this family defines no whole-artifact invocation — and MUST be `<fully-qualified-service>/<method>` (**GRPC-D-03**): the service's protobuf fully-qualified name (its package-qualified name, or its bare name when its file declares no package), one `/`, and the unqualified RPC name — `blend.CoffeeShop/GetMenu`, or `CoffeeShop/GetMenu` for a packageless schema. Matching against the schema's declared services is **byte-exact**, no case folding. A `selector` matching no method in the schema makes the binding unresolvable; with embedded `content` that is offline-checkable, and for a location-only source it is checkable only against the live reflection listing, per the core's partial-validation posture. Resolution precedes dispatch: a processor does not dial blind on the selector name.
 
 ## 8. Target and interaction
 
@@ -108,7 +108,7 @@ This specification defines **no** context bindings at transform positions: a tra
 
 ## 10. Conformance
 
-Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Verification follows the core's partial-verification posture.
+Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Validation follows the core's partial-validation posture.
 
 - **GRPC-D-01**: `content`, when present, is single-file proto source text (string; `google/protobuf/*` imports only) or a `FileDescriptorSet` in canonical protobuf JSON (object; unknown members and bracket-keyed extension members refused), per [§3](#3-accepted-source-representations) and [§5](#5-content).
 - **GRPC-D-02**: `location` is present and is a dial address in the three port-explicit forms of [§4](#4-location), free of path, query, fragment, and userinfo components; a `content`-only source is not conformant.

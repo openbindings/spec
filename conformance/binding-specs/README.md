@@ -53,10 +53,10 @@ family rule. The verdict is defined precisely:
 - **`valid: true`** means: the document's family-scoped material gives such
   a processor **nothing to refuse**. Where resolution would require a live
   source (a location-only source), a grammar-valid document is a positive:
-  the unverified remainder falls under the core's partial-verification
+  the inconclusive remainder falls under the core's partial-verification
   posture (`openbindings.md` §10.2), not under refusal.
 
-Documents are otherwise valid 0.2.0 OBI documents (core-valid): in negative
+Documents otherwise conform to the 0.2.0 core (core-conformant): in negative
 cases the named family rule is the only thing at issue, except where an
 overlap with a core rule is inherent (a relative-in-form `location` also
 violates core OBI-D-05; such fixtures list both in `violates`).
@@ -65,14 +65,14 @@ Two boundaries keep the verdicts honest:
 
 - **Resolution-dependent tests always embed content.** A `selector`-resolution
   negative is only offline-decidable when the artifact rides in the
-  document; a location-only source leaves resolution unverified and is
+  document; a location-only source leaves resolution inconclusive and is
   never fixtured as a resolution negative (the operation-graph subcorpus's
   OG-D-03 precedent).
-- **Capability gaps are unverified, not failed.** Judging embedded-artifact
+- **Capability gaps are inconclusive, not failed.** Judging embedded-artifact
   tests takes the family's artifact processor — a KDL descriptor parser for
   usage, a protobuf compiler for grpc/connect, an OpenAPI/AsyncAPI processor
   for those families. A validator without the capability reports those tests
-  unverifiable rather than passing or failing them, mirroring the core
+  inconclusive rather than passing or failing them, mirroring the core
   corpus's posture for OBI-D-11/OBI-D-18. Type-level and grammar-level tests
   (content JSON type, address form, selector spelling) are decidable by any
   validator.

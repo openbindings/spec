@@ -60,7 +60,7 @@ type validateValuesScenario struct {
 	} `json:"expected"`
 }
 
-type concludeVerificationScenario struct {
+type concludeConformanceScenario struct {
 	Description string `json:"description"`
 	Given       struct {
 		Evidence map[string]openbindings.RuleEvidenceStatus `json:"evidence"`
@@ -68,7 +68,7 @@ type concludeVerificationScenario struct {
 	Expected struct {
 		Conclusion string   `json:"conclusion"`
 		Violated   []string `json:"violated"`
-		Unverified []string `json:"unverified"`
+		Inconclusive []string `json:"inconclusive"`
 	} `json:"expected"`
 }
 
@@ -99,8 +99,8 @@ func runAllToolScenarios(files []string) []Result {
 				result = runSchemaCycleScenario(file.Rule, raw)
 			case "validate-operation-values":
 				result = runValidateValuesScenario(file.Rule, raw)
-			case "conclude-verification":
-				result = runConcludeVerificationScenario(file.Rule, raw)
+			case "conclude-conformance":
+				result = runConcludeConformanceScenario(file.Rule, raw)
 			default:
 				result = failedScenario(file.Rule, header.Description, fmt.Errorf("unsupported action %q", header.Action))
 			}
@@ -115,7 +115,7 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable validate-values scenario", err)
 	}
-	iface, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
@@ -155,24 +155,24 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 	return passedScenario(rule, scenario.Description)
 }
 
-func runConcludeVerificationScenario(rule string, raw json.RawMessage) Result {
-	var scenario concludeVerificationScenario
+func runConcludeConformanceScenario(rule string, raw json.RawMessage) Result {
+	var scenario concludeConformanceScenario
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable conclusion scenario", err)
 	}
-	report := openbindings.ConcludeVerification(scenario.Given.Evidence)
+	report := openbindings.ConcludeConformance(scenario.Given.Evidence)
 	if string(report.Conclusion) != scenario.Expected.Conclusion {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("conclusion %q; expected %q", report.Conclusion, scenario.Expected.Conclusion))
 	}
 	expectedViolated := append([]string(nil), scenario.Expected.Violated...)
-	expectedUnverified := append([]string(nil), scenario.Expected.Unverified...)
+	expectedInconclusive := append([]string(nil), scenario.Expected.Inconclusive...)
 	sort.Strings(expectedViolated)
-	sort.Strings(expectedUnverified)
+	sort.Strings(expectedInconclusive)
 	if !equalStrings(report.Violated, expectedViolated) {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("violated rules %v; expected %v", report.Violated, expectedViolated))
 	}
-	if !equalStrings(report.Unverified, expectedUnverified) {
-		return failedScenario(rule, scenario.Description, fmt.Errorf("unverified rules %v; expected %v", report.Unverified, expectedUnverified))
+	if !equalStrings(report.Inconclusive, expectedInconclusive) {
+		return failedScenario(rule, scenario.Description, fmt.Errorf("inconclusive rules %v; expected %v", report.Inconclusive, expectedInconclusive))
 	}
 	return passedScenario(rule, scenario.Description)
 }
@@ -182,7 +182,7 @@ func runResolveOperationScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable resolve-operation scenario", err)
 	}
-	iface, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
@@ -219,7 +219,7 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable schema-cycle scenario", err)
 	}
-	iface, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}

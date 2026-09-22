@@ -493,7 +493,7 @@ seven items and a fixed observable. To fill one, ask in order:
    section and stop: this project spent six readers on a gap because an
    instruction named §5.4, and Core §10.5 answered half of it in
    matching words — an unavailable external resource makes rule-level
-   evidence `unverified` and is "not evidence of violation". Naming
+   evidence `inconclusive` and is "not evidence of violation". Naming
    where to look is not the same as saying what to establish.
 2. **Does the incorporated upstream authority answer it — in the edition
    this document actually accepts?** Not the newest edition, and not the
