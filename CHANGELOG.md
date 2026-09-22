@@ -203,6 +203,12 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- Core no longer names or references a particular discovery contract or
+  endpoint. The former OBI-T-13 (discovery serving) and OBI-T-14 (discovery
+  fetching) identifiers remain reserved; their requirements now belong to the
+  independently versioned HTTP Discovery specification. The repository README
+  links that document.
+
 - The OpenAPI 3.0 binding no longer routes number and boolean properties on
   content-based `text/plain` form or multipart lanes through the consumer's
   `parameterConversion` choice. All three 3.x siblings now keep that

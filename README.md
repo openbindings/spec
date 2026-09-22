@@ -63,7 +63,7 @@ operation-level overlay remains faithful and reusable across them.
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, dependency composition, provider and binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). HTTP discovery is an optional companion specification, not part of the core document model.
+The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, dependency composition, provider and binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
 
 Authentication in particular is **not** part of an OBI document. It is a
 runtime prerequisite negotiated by the binding invoker at call time and
@@ -84,6 +84,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | Path | What it is |
 | --- | --- |
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
+| [`http-discovery.md`](http-discovery.md) | Optional, independently versioned HTTP Discovery specification |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
 | [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
 | [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |

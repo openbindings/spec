@@ -151,8 +151,6 @@ Where this specification defers to "the binding specification" or to "implementa
 
 Acquisition and publication are outside this specification. An OBI may be obtained through local files, packages, standard input, embedded resources, network retrieval, or any other mechanism without changing its meaning; no reference in the document resolves against the location it was obtained from ([§7](#7-reference-resolution)).
 
-The optional **OpenBindings HTTP Discovery** companion specification (`http-discovery.md`) normatively defines configuration-free publication and retrieval at `/.well-known/openbindings` for services that want it. Implementing that companion is not required for document or processor conformance under this specification.
-
 ---
 
 ## 2. Core invariants
@@ -834,7 +832,7 @@ Rule-level evidence uses: **satisfied** (checked, holds), **violated** (checked,
 
 ### 10.6. Retired rule identifiers
 
-Identifiers are stable and never reused, so retirements leave permanent numbering gaps; the gaps are deliberate. The following identifiers, assigned in earlier revisions of this specification, are retired or relocated and remain reserved as historical references.
+Identifiers are stable and never reused, so retirements leave permanent numbering gaps. All previously assigned identifiers remain reserved. The table records dispositions relevant to current Core rules; other historical changes are in the changelog.
 
 | Identifier | Disposition                                                                                                                                                                                                   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -843,15 +841,13 @@ Identifiers are stable and never reused, so retirements leave permanent numberin
 | OBI-T-07   | Retired. Invoking does not trigger validation (invariant 2); validation claims are governed by [OBI-T-16](#103-tool-rules).                                                                                   |
 | OBI-T-08   | Retired. As OBI-T-07; classification of successful outcomes is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)).                                                                  |
 | OBI-T-09   | Retired. This specification defines no binding-selection algorithm; `preference` and `deprecated` are author signals ([§5.3](#53-bindings)).                                                                  |
-| OBI-T-13   | Moved. Discovery serving is defined by the OpenBindings HTTP Discovery companion specification.                                                                                                               |
-| OBI-T-14   | Moved. Discovery fetching is defined by the OpenBindings HTTP Discovery companion specification.                                                                                                              |
 | OBI-T-15   | Retired. `location`/`content` composition is binding-specification-defined within the content-primacy floor of [§5.4](#54-sources) ([OBI-B-02](#104-binding-specification-rules)).                            |
 
 ---
 
 ## 11. IANA considerations
 
-This specification defines the registration details for the OpenBindings JSON media type. The IANA registries are authoritative for current registration status. (The `openbindings` well-known URI suffix is registered by the OpenBindings HTTP Discovery companion specification, which defines the endpoint it names.)
+This specification defines the registration details for the OpenBindings JSON media type. The IANA registries are authoritative for current registration status.
 
 Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
@@ -899,7 +895,6 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 - **[RFC 7493]** T. Bray, Ed., "The I-JSON Message Format," RFC 7493, March 2015. <https://www.rfc-editor.org/rfc/rfc7493>. Cited by [OBI-D-01](#102-document-rules) and [Appendix A](#appendix-a-canonical-serialization-informative).
 - **[RFC 8785]** A. Rundgren, B. Jordan, S. Erdtman, "JSON Canonicalization Scheme (JCS)," RFC 8785, June 2020. <https://www.rfc-editor.org/rfc/rfc8785>. Cited by [Appendix A](#appendix-a-canonical-serialization-informative).
-- **OpenBindings HTTP Discovery** — companion specification (`http-discovery.md` in this repository) defining publication and retrieval at `/.well-known/openbindings`.
 - **openbindings reference tools**: `ob` CLI, `openbindings-go`, `openbindings-ts` (see project README). One implementation of this specification among potentially many.
 
 ---
@@ -907,7 +902,6 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 ## 14. See also
 
 - `openbindings.schema.json` — derived JSON Schema for structural document validity.
-- `http-discovery.md` — the OpenBindings HTTP Discovery companion specification.
 - The openbindings project's shared-contract interfaces — published at [openbindings.com/interfaces](https://openbindings.com/interfaces) (informational).
 - `binding-specs/` — this project's binding-specification candidates and authoring guidance for new ones; no project binding specification has yet been published.
 - `conformance/` — conformance test corpus keyed to OBI-D-##/OBI-T-##/OBI-B-## rule identifiers.
