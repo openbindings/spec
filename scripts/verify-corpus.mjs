@@ -178,7 +178,7 @@ const scenarioActions = new Map([
   ["OBI-T-11", "resolve-schema-cycle"],
   ["OBI-T-12", "resolve-operation"],
   ["OBI-T-16", "validate-operation-values"],
-  ["OBI-T-17", "conclude-verification"],
+  ["OBI-T-17", "conclude-conformance"],
 ]);
 
 function validateScenarioFileShape(file, label) {
@@ -279,16 +279,16 @@ function validateScenarioActionShape(rule, scenario, label) {
       return;
     }
     for (const [id, status] of Object.entries(evidence)) {
-      if (!/^OBI-D-[0-9]+$/.test(id) || !specRules.has(id) || !["satisfied", "violated", "unverified", "not-applicable"].includes(status)) {
+      if (!/^OBI-D-[0-9]+$/.test(id) || !specRules.has(id) || !["satisfied", "violated", "inconclusive", "not-applicable"].includes(status)) {
         err(`${label}: invalid evidence entry ${id}=${JSON.stringify(status)}`);
       }
     }
     const violated = Object.keys(evidence).filter((id) => evidence[id] === "violated").sort();
-    const unverified = Object.keys(evidence).filter((id) => evidence[id] === "unverified").sort();
-    const conclusion = violated.length > 0 ? "non-conformant" : unverified.length > 0 ? "conformance-undetermined" : "conformant";
+    const inconclusive = Object.keys(evidence).filter((id) => evidence[id] === "inconclusive").sort();
+    const conclusion = violated.length > 0 ? "non-conformant" : inconclusive.length > 0 ? "conformance-undetermined" : "conformant";
     const expectedViolated = Array.isArray(expected.violated) ? [...expected.violated].sort() : null;
-    const expectedUnverified = Array.isArray(expected.unverified) ? [...expected.unverified].sort() : null;
-    if (expected.conclusion !== conclusion || JSON.stringify(expectedViolated) !== JSON.stringify(violated) || JSON.stringify(expectedUnverified) !== JSON.stringify(unverified)) {
+    const expectedInconclusive = Array.isArray(expected.inconclusive) ? [...expected.inconclusive].sort() : null;
+    if (expected.conclusion !== conclusion || JSON.stringify(expectedViolated) !== JSON.stringify(violated) || JSON.stringify(expectedInconclusive) !== JSON.stringify(inconclusive)) {
       err(`${label}: expected conclusion/lists do not follow OBI-T-17 from the supplied evidence`);
     }
   }

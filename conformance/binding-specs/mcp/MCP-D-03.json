@@ -34,7 +34,7 @@
       "valid": true
     },
     {
-      "description": "grammar-valid tool selector on a location-only source remains unverifiable offline",
+      "description": "grammar-valid tool selector on a location-only source remains inconclusive offline",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getWeather": {} },

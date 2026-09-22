@@ -1,8 +1,8 @@
 {
   "format": "openbindings.operation-graph@1",
   "kind": "validation",
-  "description": "Document-shaped fixtures for the format's source rules (OG-D-01 through OG-D-03), which bind OBI content governed by openbindings.operation-graph@1: accepted content representations, location form, and selector addressing. Tests carry a full OBI document embedding an operation-graph source and binding; each document is otherwise core-valid so only the named rule discriminates.",
-  "notes": "OG-D-01/OG-D-03 judgments need embedded content, so every resolution-dependent test embeds it; a location-only source leaves resolution unverified (the core's partial-verification posture) and is not fixtured. The OG-D-02 negative cases are relative references, which also violate core OBI-D-05 — the overlap is inherent, since OG-D-02 restates absoluteness for this family and narrows the form to an absolute URI. content: null is a present member per core §5.4 presence semantics, and null is neither of this family's two accepted representations.",
+  "description": "Document-shaped fixtures for the format's source rules (OG-D-01 through OG-D-03), which bind OBI content governed by openbindings.operation-graph@1: accepted content representations, location form, and selector addressing. Tests carry a full OBI document embedding an operation-graph source and binding; each document otherwise conforms to the core so only the named rule discriminates.",
+  "notes": "OG-D-01/OG-D-03 judgments need embedded content, so every resolution-dependent test embeds it; a location-only source leaves resolution inconclusive (the core's partial-validation posture) and is not fixtured. The OG-D-02 negative cases are relative references, which also violate core OBI-D-05 — the overlap is inherent, since OG-D-02 restates absoluteness for this family and narrows the form to an absolute URI. content: null is a present member per core §5.4 presence semantics, and null is neither of this family's two accepted representations.",
   "rules": [
     {
       "rule": "OG-D-01",

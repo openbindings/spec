@@ -185,7 +185,7 @@ below may continue to change until the 0.2 release is cut.
   creating immutable, content-addressed defining bundles with portable
   conformance evidence and append-only errata when a candidate is actually
   released. No binding specification has yet been published.
-- Stable document and tool rule identifiers, honest partial-verification
+- Stable document and tool rule identifiers, honest partial-validation
   conclusions, and portable action/outcome conformance scenarios.
 - Operation-name resolution over one flat key-and-alias namespace.
 - Explicit version acceptance and refusal rules, including prereleases and
@@ -213,6 +213,17 @@ below may continue to change until the 0.2 release is cut.
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- The conformance vocabulary uses one verb. Checking a document against the
+  document rules is validation, done by a validator, and
+  [§10.5](openbindings.md#105-conformance-conclusions) is titled "Conformance
+  conclusions". Rule-level evidence that is neither satisfied nor violated is
+  **inconclusive** (the draft said *unverified*), and the rule notes on how to
+  check OBI-D-01, OBI-D-05, and OBI-D-18 are validation notes. "Verify" keeps
+  its integrity and signing sense, which the core leaves out of scope. The
+  core tool-scenario action `conclude-verification` is now
+  `conclude-conformance`, with `inconclusive` in place of `unverified` in its
+  evidence and expected sets. No rule's meaning changes.
 
 - Core no longer names or references a particular discovery contract or
   endpoint. The former OBI-T-13 (discovery serving) and OBI-T-14 (discovery
@@ -330,8 +341,8 @@ below may continue to change until the 0.2 release is cut.
 - Document authentication declarations moved out of the core. Credentials,
   configuration choices, approvals, and other prerequisites are supplied as
   invocation context and may be surfaced through context requirements.
-- Tool conformance is capability-scoped. A verifier that cannot decide a
-  binding-specific or external fact reports it as unverified rather than
+- Tool conformance is capability-scoped. A validator that cannot decide a
+  binding-specific or external fact reports it as inconclusive rather than
   claiming complete conformance.
 - The operation-graph specification was rebuilt around the direct-invocation
   identity law, cardinality-transparent frame flow, explicit completion and

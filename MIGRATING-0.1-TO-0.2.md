@@ -142,8 +142,8 @@ Before considering a document migrated:
    will invoke the document.
 
 The 0.2 conformance model permits an honest `conformance undetermined` result
-when a verifier lacks binding-specific or external schema knowledge. Partial
-verification must not be presented as unqualified conformance.
+when a validator lacks binding-specific or external schema knowledge. Partial
+validation must not be presented as unqualified conformance.
 
 ## Minimal shape comparison
 

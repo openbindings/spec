@@ -3,7 +3,7 @@
   "bindingSpec": "openbindings.grpc@1",
   "section": "7",
   "description": "`selector` is present and is `<fully-qualified-service>/<method>`: the service's protobuf fully-qualified name (package-qualified, or bare when its file declares no package), one `/`, and the unqualified RPC name, matched byte-exactly against the schema's declared services.",
-  "notes": "Resolution-dependent tests always embed the schema as content, so the verdict is offline-decidable; verifying them requires a protobuf compiler, and a validator without one reports those tests unverified rather than passing or failing them. For a location-only source, resolution is checkable only against the live reflection listing and is fixtured here only as a grammar-valid positive.",
+  "notes": "Resolution-dependent tests always embed the schema as content, so the verdict is offline-decidable; checking them requires a protobuf compiler, and a validator without one reports those tests inconclusive rather than passing or failing them. For a location-only source, resolution is checkable only against the live reflection listing and is fixtured here only as a grammar-valid positive.",
   "tests": [
     {
       "description": "package-qualified service and method resolving byte-exactly in the embedded schema",
@@ -50,7 +50,7 @@
       "valid": true
     },
     {
-      "description": "grammar-valid selector on a location-only source: resolution against live reflection is unverifiable offline, and the selector gives a validator nothing to refuse",
+      "description": "grammar-valid selector on a location-only source: resolution against live reflection is inconclusive offline, and the selector gives a validator nothing to refuse",
       "document": {
         "openbindings": "0.2.0",
         "operations": { "getMenu": {} },

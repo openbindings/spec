@@ -49,7 +49,7 @@ A binding's `selector`, when present, MUST be a non-empty **command path**: the 
 
 The spelling in `selector` is also the spelling emitted into argv: an alias is an artifact-declared alternative, not a hint to rewrite the segment to the command's primary name. A flag an ancestor command declares `global` accumulates onto the resolved command's effective surface. The incorporated usage specification defines the `global` attribute but does not state its scope of application; as a last-resort **OpenBindings convention**, this specification pins the ancestor-chain reading — a `global` flag reaches the declaring command and its descendants — so that one descriptor yields one effective surface in every implementation. A future upstream answer supersedes this convention only through a revision of this binding specification, never silently.
 
-The **root command** is addressed by omitting `selector`. An empty-string `selector` is not conformant — this specification gives each meaning one spelling. A `selector` that resolves to no command in the artifact makes the binding unresolvable; verifying resolution requires the artifact, and a validator without it leaves the check unverified per the core's partial-verification posture.
+The **root command** is addressed by omitting `selector`. An empty-string `selector` is not conformant — this specification gives each meaning one spelling. A `selector` that resolves to no command in the artifact makes the binding unresolvable; checking resolution requires the artifact, and a validator without it leaves the check inconclusive per the core's partial-validation posture.
 
 ## 8. Target and interaction
 
@@ -114,7 +114,7 @@ This specification defines **no** context bindings at transform positions: a tra
 
 ## 10. Conformance
 
-Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Verification follows the core's partial-verification posture.
+Rules carry stable identifiers under the same discipline as the core's: never reused, never renumbered. Source rules bind OBI content governed by this specification; processor rules test whether implementations preserve the specified meaning when acting on it, not whether they expose one invocation API. Validation follows the core's partial-validation posture.
 
 - **USAGE-D-01**: `content`, when present, is a JSON string carrying UTF-8 usage descriptor source text.
 - **USAGE-D-02**: `location`, when present, is a document address (absolute URI) or an exec address (`exec:` + space-separated argv vector), per [§4](#4-location).

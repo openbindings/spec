@@ -281,7 +281,7 @@ func runOne(rule string, t Test) Result {
 	documentBytes, inputErr := testDocumentBytes(t)
 	var parseErr, validateErr error
 	if inputErr == nil {
-		_, validateErr = openbindings.ValidateDocument(documentBytes)
+		_, _, validateErr = openbindings.ValidateDocument(documentBytes)
 	} else {
 		parseErr = inputErr
 	}

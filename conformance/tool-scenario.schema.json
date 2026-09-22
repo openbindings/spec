@@ -19,7 +19,7 @@
           { "$ref": "#/$defs/schemaCycle" },
           { "$ref": "#/$defs/resolveOperation" },
           { "$ref": "#/$defs/validateValues" },
-          { "$ref": "#/$defs/concludeVerification" }
+          { "$ref": "#/$defs/concludeConformance" }
         ]
       }
     }
@@ -39,7 +39,7 @@
     },
     {
       "if": { "properties": { "rule": { "const": "OBI-T-17" } }, "required": ["rule"] },
-      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/concludeVerification" } } } }
+      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/concludeConformance" } } } }
     }
   ],
   "$defs": {
@@ -163,14 +163,14 @@
         }
       }
     },
-    "concludeVerification": {
+    "concludeConformance": {
       "type": "object",
       "required": ["id", "description", "action", "given", "expected"],
       "additionalProperties": false,
       "properties": {
         "id": { "$ref": "#/$defs/scenarioId" },
         "description": { "$ref": "#/$defs/scenarioDescription" },
-        "action": { "const": "conclude-verification" },
+        "action": { "const": "conclude-conformance" },
         "given": {
           "type": "object",
           "required": ["evidence"],
@@ -181,14 +181,14 @@
               "minProperties": 1,
               "propertyNames": { "pattern": "^OBI-D-[0-9]+$" },
               "additionalProperties": {
-                "enum": ["satisfied", "violated", "unverified", "not-applicable"]
+                "enum": ["satisfied", "violated", "inconclusive", "not-applicable"]
               }
             }
           }
         },
         "expected": {
           "type": "object",
-          "required": ["conclusion", "violated", "unverified"],
+          "required": ["conclusion", "violated", "inconclusive"],
           "additionalProperties": false,
           "properties": {
             "conclusion": {
@@ -199,7 +199,7 @@
               "uniqueItems": true,
               "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }
             },
-            "unverified": {
+            "inconclusive": {
               "type": "array",
               "uniqueItems": true,
               "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }

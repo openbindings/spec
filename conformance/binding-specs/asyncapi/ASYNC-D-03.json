@@ -3,7 +3,7 @@
   "bindingSpec": "openbindings.asyncapi@1",
   "section": "7",
   "description": "`selector` is present and is a JSON Pointer `#/operations/<operation-key>` addressing an operations-map entry — the only conformant spelling; a bare operation key without the pointer prefix is not conformant, keys containing `/` or `~` carry RFC 6901 escaping, the spelling is verbatim (matched byte-for-byte, never percent-decoded), and an entry that is a Reference Object resolves through it before the operation-object test.",
-  "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; verifying them requires an AsyncAPI processor, and a validator without one reports those tests unverified rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the selector alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
+  "notes": "Resolution-dependent tests always embed the artifact as content, so the verdict is offline-decidable; checking them requires an AsyncAPI processor, and a validator without one reports those tests inconclusive rather than passing or failing them. Grammar tests (presence, pointer prefix, bare keys) are decidable from the selector alone. NOTE: both reference SDKs currently accept the bare-key spelling as a documented lenience; the rule text pins the pointer form as the only conformant spelling, and these fixtures encode the rule text.",
   "tests": [
     {
       "description": "pointer addressing a declared operations-map entry",

@@ -29,7 +29,7 @@
     },
     "notes": {
       "type": "string",
-      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. which test cases require a family artifact parser to verify. Informational; not consumed by harnesses."
+      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. which test cases require a family artifact parser to check. Informational; not consumed by harnesses."
     },
     "coverage": {
       "type": "string",
