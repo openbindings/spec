@@ -13,6 +13,17 @@ below may continue to change until the 0.2 release is cut.
 
 ### Added
 
+- **The binding-specification seam is named.** [§6](openbindings.md#6-binding-specifications)
+  now states the four provisions a binding specification stands on (carriage,
+  selection, sufficiency, and values), each by reference to where the document
+  model defines it, and states that nothing else in the core bears on a binding
+  specification's meaning. [§8.1](openbindings.md#81-openbindings-field-specification-version)
+  commits that only a change to those provisions reaches binding
+  specifications; any other core change leaves their meaning and identifiers
+  unaffected, and a document may declare a later core version while naming a
+  binding specification written against an earlier one. No rule is added or
+  changed; the passage names a boundary the existing provisions already draw.
+
 - **Named operation dependencies in the Core document model.** The optional
   `dependencies` map declares named consumption points that reference operation
   keys and may carry a nonempty, unique, unordered `bindingSpecs` any-of list of
