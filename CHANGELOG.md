@@ -14,8 +14,8 @@ below may continue to change until the 0.2 release is cut.
 ### Added
 
 - **The binding-specification seam is named.** [§6](openbindings.md#6-binding-specifications)
-  now states the four provisions a binding specification stands on (carriage,
-  selection, sufficiency, and values), each by reference to where the document
+  now states the three provisions a binding specification stands on
+  (carriage, selection, and values), each by reference to where the document
   model defines it, and states that nothing else in the core bears on a binding
   specification's meaning. [§8.1](openbindings.md#81-openbindings-field-specification-version)
   commits that only a change to those provisions reaches binding
@@ -213,6 +213,31 @@ below may continue to change until the 0.2 release is cut.
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- **Target identity belongs to the binding specification; OBI-D-13 is
+  retired.** The core no longer claims that a binding's target is
+  identifiable from the binding and its source alone. How a target is
+  identified, including any part the environment a processor runs in plays
+  (configuration, runtime naming, or other state), is the governing binding
+  specification's to define ([OBI-B-02](openbindings.md#104-binding-specification-rules)
+  item 6), and the core makes no claim that a target is identifiable,
+  reachable, or usable from the document alone
+  ([§5.4](openbindings.md#54-sources)). Invariant 2 states what a binding is
+  for (it enables action and obliges none) without a sufficiency claim, and
+  sufficiency leaves the provisions [§6](openbindings.md#6-binding-specifications)
+  hands a binding specification. This is a change to those provisions, which
+  [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
+  to be breaking for every binding specification; no binding specification is
+  published yet. OBI-D-05's `location` clause is now decided by form alone: a
+  colon-bearing location that is not a URI (a gRPC `host:port`) is absolute
+  and satisfies it, and whether it names an address is its binding
+  specification's concern. Every document rule is now decidable from the
+  document, given a duplicate-detecting parse (OBI-D-01) and a parser for the
+  pinned transform language (OBI-D-18); no rule takes binding-specification
+  knowledge, and OBI-T-01 no longer describes binding-specification-dependent
+  rules. The OBI-D-13 corpus fixtures are removed, OBI-D-05 gains a positive
+  `host:port` case, and the OBI-T-17 scenarios use OBI-D-19 as their
+  inapplicable rule.
 
 - The conformance vocabulary uses one verb. Checking a document against the
   document rules is validation, done by a validator, and

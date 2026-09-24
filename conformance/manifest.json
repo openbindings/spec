@@ -2,16 +2,16 @@
   "specVersion": "0.2.0",
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 25,
-    "fixtureFiles": 21,
+    "files": 24,
+    "fixtureFiles": 20,
     "scenarioFiles": 4,
-    "tests": 187,
+    "tests": 185,
     "scenarios": 21,
-    "positives": 87,
+    "positives": 85,
     "negatives": 100,
     "rulesCoveredDocument": 16,
     "rulesCoveredTool": 8,
-    "rulesPartialDocument": 1,
+    "rulesPartialDocument": 0,
     "rulesPartialTool": 0
   },
   "files": [
@@ -51,8 +51,8 @@
       "path": "document/OBI-D-05.json",
       "rule": "OBI-D-05",
       "section": "10.2",
-      "tests": 16,
-      "positives": 7,
+      "tests": 17,
+      "positives": 8,
       "negatives": 9
     },
     {
@@ -110,15 +110,6 @@
       "tests": 11,
       "positives": 3,
       "negatives": 8
-    },
-    {
-      "path": "document/OBI-D-13.json",
-      "rule": "OBI-D-13",
-      "section": "10.2",
-      "tests": 3,
-      "positives": 3,
-      "negatives": 0,
-      "coverage": "positive-only"
     },
     {
       "path": "document/OBI-D-16.json",
