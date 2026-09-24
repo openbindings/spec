@@ -1,6 +1,6 @@
 # Go reference runner
 
-Reference Go harness for the OpenBindings conformance corpus. Walks fixture files in `../../../conformance/{document,tool}/`, runs each embedded document through the `openbindings-go` SDK, and reports per-rule and overall pass/fail.
+Reference Go harness for the OpenBindings conformance corpus. Walks fixture files in `../../../conformance/{document,tool}/`, validates each embedded document with the `openbindings-go` SDK, runs the core tool scenarios in `../../../conformance/scenarios/`, and reports per-rule and overall pass/fail.
 
 This is exemplar code for SDK authors writing harnesses in other languages. The pattern is the same in any language; only the SDK invocation differs.
 
@@ -34,9 +34,13 @@ Flags:
 
 ## What "pass" means here
 
-For each test case, the runner unmarshals the embedded `document` into the SDK's `Interface` type and calls `Validate()`. It treats "no parse error AND no validate error" as the SDK's *valid* verdict. The SDK's verdict is then compared against the fixture's `valid` field.
+For each test case, the runner validates the embedded document's exact bytes with `ValidateDocument` and holds its report to the fixture:
 
-The runner does NOT verify the fixture's `violates` set against the SDK's reported errors, because the Go SDK does not currently emit OBI-D-## rule identifiers in its error output. SDKs that do report rule IDs SHOULD additionally verify the SDK's report contains at least the listed `violates` rules (minimum-set semantics per the corpus README).
+- A conforming case (`valid: true`) establishes no violation. The report may still conclude *conformance undetermined*: inconclusive is not non-conformant.
+- A violating case is refused under OBI-T-04 or concludes *non-conformant*, and every document rule the fixture's `violates` lists is violated in the report's evidence (minimum-set semantics per the corpus README). `OBI-T-04` in `violates` requires the refusal.
+- OBI-D-18 takes a transform parser, which the runner does not give validation, so the runner expects it inconclusive wherever a fixture expects it violated.
+
+Version annotations are applied to the SDK's support declaration, `SupportedVersions`: `requiresMinSupported` skips a test when the lowest version the SDK supports is below the annotation, and `requiresSupports` skips one whose version `IsSupportedVersion` refuses. Skips are reported separately, never as failures.
 
 ## Local SDK pinning
 

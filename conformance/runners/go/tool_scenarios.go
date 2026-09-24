@@ -66,8 +66,8 @@ type concludeConformanceScenario struct {
 		Evidence map[string]openbindings.RuleEvidenceStatus `json:"evidence"`
 	} `json:"given"`
 	Expected struct {
-		Conclusion string   `json:"conclusion"`
-		Violated   []string `json:"violated"`
+		Conclusion   string   `json:"conclusion"`
+		Violated     []string `json:"violated"`
 		Inconclusive []string `json:"inconclusive"`
 	} `json:"expected"`
 }
@@ -115,7 +115,7 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable validate-values scenario", err)
 	}
-	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document, openbindings.ValidateOptions{})
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
@@ -138,16 +138,7 @@ func runValidateValuesScenario(rule string, raw json.RawMessage) Result {
 		} else {
 			err = openbindings.ValidateOperationInput(value, iface, opKey)
 		}
-		if err == nil {
-			actual = append(actual, "valid")
-			continue
-		}
-		var unavailable *openbindings.SchemaGraphUnavailableError
-		if errors.As(err, &unavailable) {
-			actual = append(actual, "graph-unavailable")
-		} else {
-			actual = append(actual, "instance-mismatch")
-		}
+		actual = append(actual, contractOutcome(err, "graph-unavailable"))
 	}
 	if !equalStrings(actual, scenario.Expected.Results) {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("results %v; expected %v", actual, scenario.Expected.Results))
@@ -182,7 +173,7 @@ func runResolveOperationScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable resolve-operation scenario", err)
 	}
-	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document, openbindings.ValidateOptions{})
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
@@ -219,7 +210,7 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 	if err := json.Unmarshal(raw, &scenario); err != nil {
 		return failedScenario(rule, "unparseable schema-cycle scenario", err)
 	}
-	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document)
+	iface, _, err := openbindings.ValidateDocument(scenario.Given.Document, openbindings.ValidateOptions{})
 	if err != nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("scenario document: %w", err))
 	}
@@ -234,30 +225,36 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 	if schema == nil {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("operation side has no schema"))
 	}
-	outcome := "valid"
 	var validationErr error
 	if scenario.Given.Side == "output" {
 		validationErr = openbindings.ValidateOperationOutput(scenario.Given.Value, iface, opKey)
 	} else {
 		validationErr = openbindings.ValidateOperationInput(scenario.Given.Value, iface, opKey)
 	}
-	if validationErr != nil {
-		if contains(scenario.Expected.AllowedOutcomes, "instance-mismatch") && !contains(scenario.Expected.AllowedOutcomes, "resolver-error") {
-			outcome = "instance-mismatch"
-		} else if contains(scenario.Expected.AllowedOutcomes, "resolver-error") {
-			// T-11 deliberately permits either terminating with a resolver
-			// error or resolving the cycle. When both error outcomes are
-			// permitted, an adapter need not depend on validator-specific error
-			// text to distinguish them.
-			outcome = "resolver-error"
-		} else {
-			outcome = "instance-mismatch"
-		}
-	}
+	outcome := contractOutcome(validationErr, "resolver-error")
 	if !contains(scenario.Expected.AllowedOutcomes, outcome) {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("outcome %q not in permitted set %v", outcome, scenario.Expected.AllowedOutcomes))
 	}
 	return passedScenario(rule, scenario.Description)
+}
+
+// contractOutcome names the outcome of validating a value against an
+// operation's contract in the corpus's terms, read from the error's type
+// alone: OBI-T-16 keeps an instance mismatch and an unavailable graph
+// distinct, so what a scenario allows never decides which one an error is.
+// unavailable is the scenario's name for an unavailable graph.
+func contractOutcome(err error, unavailable string) string {
+	var mismatch *openbindings.SchemaValidationError
+	var graph *openbindings.SchemaGraphUnavailableError
+	switch {
+	case err == nil:
+		return "valid"
+	case errors.As(err, &mismatch):
+		return "instance-mismatch"
+	case errors.As(err, &graph):
+		return unavailable
+	}
+	return fmt.Sprintf("an unexpected error: %v", err)
 }
 
 func passedScenario(rule, test string) Result {
