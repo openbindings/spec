@@ -81,7 +81,7 @@
           "requiresMinSupported": {
             "type": "string",
             "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
-            "description": "When set, the test only applies to SDKs whose MinSupportedVersion is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the SDK's minimum MUST be refused), which are meaningless for an SDK whose supported range extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the SDK's MinSupportedVersion, reporting skips separately."
+            "description": "When set, the test only applies to tools whose lowest supported version is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the tool's lowest supported version MUST be refused), which are meaningless for a tool whose supported set extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the tool's lowest supported version, reporting skips separately."
           },
           "requiresSupports": {
             "type": "string",

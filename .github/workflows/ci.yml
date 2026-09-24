@@ -165,9 +165,11 @@ jobs:
           - family: OpenAPI
             module: formats/openapi
             client: openapi-client
+            client-ref: 7b15d57e960faa6a9e010eb9cbea80fd83f0d02e
           - family: AsyncAPI
             module: formats/asyncapi
             client: asyncapi-client
+            client-ref: 7326ce4e18c12e1dcb36c3587fbe0f7fe52ec749
           - family: GraphQL
             module: formats/graphql
           - family: gRPC
@@ -180,19 +182,23 @@ jobs:
             module: formats/usage
     steps:
       - uses: actions/checkout@v7
+      # The Go SDK's release line now carries only the core; its binding-format
+      # modules are being rebuilt outward from it. Until each returns, the
+      # families run on the preserved line, where every format module builds.
       - uses: actions/checkout@v7
         with:
           repository: openbindings/openbindings-go
-          ref: release/0.2
+          ref: legacy/pre-core-rebuild
           path: openbindings-go
       # A family whose module depends on a standalone client needs that client
       # checked out and `replace`d: the client repos are unreleased, so the
-      # version in go.mod resolves to no tag and the module fetch fails.
+      # version in go.mod resolves to no tag and the module fetch fails. The
+      # client is pinned to the commit the preserved line was verified with.
       - uses: actions/checkout@v7
         if: matrix.client != ''
         with:
           repository: openbindings/${{ matrix.client }}
-          ref: main
+          ref: ${{ matrix.client-ref }}
           path: ${{ matrix.client }}
       - uses: actions/setup-go@v7
         with:

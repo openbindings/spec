@@ -1,9 +1,11 @@
 // Reference Go runner for the OpenBindings conformance corpus.
 //
-// Walks fixture files under spec/conformance/{document,tool}/, parses each
-// embedded `document` with the openbindings-go SDK, calls Validate(), and
-// compares the SDK's verdict against the fixture's `valid` field. Reports
-// per-rule and overall pass/fail counts.
+// Walks fixture files under spec/conformance/{document,tool}/, validates each
+// embedded `document` with the openbindings-go SDK's ValidateDocument, and
+// holds its report to the fixture: a conforming case establishes no violation,
+// and a violating case is refused (OBI-T-04) or non-conformant with every rule
+// the fixture names violated. Also runs the core tool scenarios under
+// spec/conformance/scenarios/. Reports per-rule and overall pass/fail counts.
 //
 // This is reference code for SDK authors writing harnesses in other
 // languages. The pattern is the same; only the SDK invocation differs.
@@ -19,11 +21,13 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	openbindings "github.com/openbindings/openbindings-go"
@@ -44,7 +48,6 @@ type Test struct {
 	DocumentBase64       string          `json:"documentBase64,omitempty"`
 	Valid                bool            `json:"valid"`
 	Violates             []string        `json:"violates,omitempty"`
-	RequiresMaxTested    string          `json:"requiresMaxTested,omitempty"`
 	RequiresMinSupported string          `json:"requiresMinSupported,omitempty"`
 	RequiresSupports     string          `json:"requiresSupports,omitempty"`
 }
@@ -55,7 +58,7 @@ type Result struct {
 	Passed   bool
 	Skipped  bool
 	Expected bool   // what the fixture expected (test.Valid)
-	Actual   bool   // what the SDK produced (no parse/validate error)
+	Actual   bool   // what the SDK produced: no refusal and no violation established
 	Reason   string // populated when !Passed
 }
 
@@ -233,76 +236,145 @@ func runAll(files []string) []Result {
 }
 
 func runOne(rule string, t Test) Result {
-	if t.RequiresMaxTested != "" {
-		// Skip when the test depends on a future SDK MaxTestedVersion.
-		higher, err := openbindings.IsHigherMajorOrPre1MinorThanMaxTested(t.RequiresMaxTested)
-		if err == nil && higher {
-			return Result{
-				Rule:    rule,
-				Test:    t.Description,
-				Skipped: true,
-				Reason:  fmt.Sprintf("requires SDK MaxTested >= %s; current is %s", t.RequiresMaxTested, openbindings.MaxTestedVersion),
+	if reason, skip := versionGate(t); skip {
+		return Result{Rule: rule, Test: t.Description, Skipped: true, Reason: reason}
+	}
+	r := Result{Rule: rule, Test: t.Description, Expected: t.Valid}
+	documentBytes, err := testDocumentBytes(t)
+	if err != nil {
+		r.Reason = "fixture: " + err.Error()
+		return r
+	}
+	_, report, err := openbindings.ValidateDocument(documentBytes, openbindings.ValidateOptions{})
+	var refusal *openbindings.VersionRefusalError
+	refused := errors.As(err, &refusal)
+	var violation *openbindings.ValidationError
+	if err != nil && !refused && !errors.As(err, &violation) {
+		r.Reason = "validate: " + err.Error()
+		return r
+	}
+	r.Actual = !refused && report.Conclusion != openbindings.ConclusionNonConformant
+	r.Reason = disagreement(t, report, refused)
+	r.Passed = r.Reason == ""
+	return r
+}
+
+// capabilityRules are the document rules whose checking takes a capability
+// this runner does not give validation: OBI-D-18 takes a transform parser,
+// and the SDK carries none. A validator without the capability leaves such a
+// rule inconclusive (§10.2), so the runner expects it inconclusive wherever
+// the fixture expects it violated.
+var capabilityRules = map[string]bool{"OBI-D-18": true}
+
+// disagreement states how the SDK's report differs from what the fixture
+// expects, or returns "". A conforming case establishes no violation, though
+// the SDK may leave it undetermined (inconclusive is not non-conformant). A
+// violating case is refused (OBI-T-04) or non-conformant, with every
+// document rule the fixture names violated: the fixture's violates list is a
+// minimum set.
+func disagreement(t Test, report openbindings.ValidationReport, refused bool) string {
+	if t.Valid || onlyCapabilityRules(t) {
+		switch {
+		case refused:
+			return "the SDK refused a conforming case (OBI-T-04)"
+		case report.Conclusion == openbindings.ConclusionNonConformant:
+			return fmt.Sprintf("the SDK established violations of %v for a conforming case", report.Violated)
+		}
+		for _, rule := range t.Violates {
+			if report.Evidence[rule] != openbindings.EvidenceInconclusive {
+				return fmt.Sprintf("%s is %s; without its capability it is inconclusive", rule, report.Evidence[rule])
+			}
+		}
+		return ""
+	}
+	if !refused && report.Conclusion != openbindings.ConclusionNonConformant {
+		return fmt.Sprintf("the SDK concluded %s for a violating case", report.Conclusion)
+	}
+	for _, rule := range t.Violates {
+		switch {
+		case rule == "OBI-T-04":
+			if !refused {
+				return "expected an OBI-T-04 version refusal"
+			}
+		case refused:
+		case capabilityRules[rule]:
+			if report.Evidence[rule] != openbindings.EvidenceInconclusive {
+				return fmt.Sprintf("%s is %s; without its capability it is inconclusive", rule, report.Evidence[rule])
+			}
+		case strings.HasPrefix(rule, "OBI-D-"):
+			if report.Evidence[rule] != openbindings.EvidenceViolated {
+				return fmt.Sprintf("expected %s violated; its evidence is %s", rule, report.Evidence[rule])
 			}
 		}
 	}
-	if t.RequiresMinSupported != "" {
-		// Skip when the SDK's supported range extends below the version the
-		// downward-refusal test needs it to refuse (MinSupported < required).
-		// A required version below or equal to MinSupported means the test
-		// applies. Exact string equality suffices for the release-form
-		// versions the corpus uses.
-		lower, err := openbindings.IsLowerThanMinSupported(t.RequiresMinSupported)
-		if err == nil && !lower && t.RequiresMinSupported != openbindings.MinSupportedVersion {
-			return Result{
-				Rule:    rule,
-				Test:    t.Description,
-				Skipped: true,
-				Reason:  fmt.Sprintf("requires SDK MinSupported >= %s; current is %s", t.RequiresMinSupported, openbindings.MinSupportedVersion),
-			}
+	return ""
+}
+
+// onlyCapabilityRules reports whether every violation a case expects is of a
+// capability rule, so that without the capability it establishes none.
+func onlyCapabilityRules(t Test) bool {
+	if t.Valid || len(t.Violates) == 0 {
+		return false
+	}
+	for _, rule := range t.Violates {
+		if !capabilityRules[rule] {
+			return false
 		}
+	}
+	return true
+}
+
+// versionGate applies a test's version annotations to the SDK's support
+// declaration, SupportedVersions. Skips are reported separately, never as
+// failures.
+func versionGate(t Test) (string, bool) {
+	if t.RequiresMinSupported != "" && compareRelease(lowestSupported(), t.RequiresMinSupported) < 0 {
+		// A downward-refusal test applies only when the lowest version the
+		// SDK supports is at or above the annotation's value.
+		return fmt.Sprintf("requires the lowest supported version to be at least %s; this SDK supports %s", t.RequiresMinSupported, openbindings.SupportedVersions), true
 	}
 	if t.RequiresSupports != "" {
-		// Acceptance gate: administer the test only to tools whose OBI-T-04
-		// version-acceptance predicate accepts the annotation's version.
-		// IsSupportedVersion is that predicate for this SDK — the acceptance
-		// set, not the tested range (a 0.2.0-tested SDK accepts 0.2.1 via its
-		// own release-line declaration). Skips are reported separately, never
-		// as failures.
-		accepts, err := openbindings.IsSupportedVersion(t.RequiresSupports)
-		if err == nil && !accepts {
-			return Result{
-				Rule:    rule,
-				Test:    t.Description,
-				Skipped: true,
-				Reason:  fmt.Sprintf("requires an SDK whose OBI-T-04 acceptance predicate accepts %s; this SDK refuses it", t.RequiresSupports),
+		// Administer the test only to tools whose OBI-T-04 version-acceptance
+		// predicate accepts the annotation's version; for this SDK that
+		// predicate is IsSupportedVersion.
+		if accepts, err := openbindings.IsSupportedVersion(t.RequiresSupports); err == nil && !accepts {
+			return fmt.Sprintf("requires an SDK whose OBI-T-04 acceptance predicate accepts %s; this SDK refuses it", t.RequiresSupports), true
+		}
+	}
+	return "", false
+}
+
+// lowestSupported is the lowest version SupportedVersions declares: the first
+// release of the supported line ("0.2.x" is 0.2.0, "1.x" is 1.0.0).
+func lowestSupported() string {
+	line := strings.TrimSuffix(openbindings.SupportedVersions, ".x")
+	if !strings.Contains(line, ".") {
+		return line + ".0.0"
+	}
+	return line + ".0"
+}
+
+// compareRelease orders two SemVer versions by major, minor, and patch.
+func compareRelease(a, b string) int {
+	numbers := func(v string) [3]int {
+		v, _, _ = strings.Cut(v, "+")
+		v, _, _ = strings.Cut(v, "-")
+		var out [3]int
+		for i, part := range strings.SplitN(v, ".", 3) {
+			out[i], _ = strconv.Atoi(part)
+		}
+		return out
+	}
+	x, y := numbers(a), numbers(b)
+	for i := range x {
+		if x[i] != y[i] {
+			if x[i] < y[i] {
+				return -1
 			}
+			return 1
 		}
 	}
-	documentBytes, inputErr := testDocumentBytes(t)
-	var parseErr, validateErr error
-	if inputErr == nil {
-		_, _, validateErr = openbindings.ValidateDocument(documentBytes)
-	} else {
-		parseErr = inputErr
-	}
-	actualValid := parseErr == nil && validateErr == nil
-	r := Result{
-		Rule:     rule,
-		Test:     t.Description,
-		Passed:   actualValid == t.Valid,
-		Expected: t.Valid,
-		Actual:   actualValid,
-	}
-	if !r.Passed {
-		if parseErr != nil {
-			r.Reason = "parse: " + parseErr.Error()
-		} else if validateErr != nil {
-			r.Reason = "validate: " + validateErr.Error()
-		} else {
-			r.Reason = "SDK accepted; fixture expected reject"
-		}
-	}
-	return r
+	return 0
 }
 
 func testDocumentBytes(t Test) ([]byte, error) {
