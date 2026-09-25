@@ -46,9 +46,12 @@ reference SDKs.
 The doctrine itself adds no OBI document fields. The initial contract review is
 complete:
 
-1. **Core OBI-B-02 item 7** now requires correct classification, unsuccessful
-   completion, and treatment of prior outputs; raw native evidence remains
-   below the abstract boundary. No document-model field changed.
+1. **Core OBI-B-02 item 4** (item 7 before the carriage items merged)
+   requires a binding specification to say which values are successful output
+   values. Unsuccessful completion, the treatment of prior outputs, and raw
+   native evidence staying below the abstract boundary are binding-spec
+   authoring doctrine in `binding-specs/README.md`. No document-model field
+   changed.
 2. **Binding-invoker 0.1** now uses structural unsuccessful completion and an
    exact `{code,data?}` record. `data` is JSON-domain data defined by the rule
    that owns the code or opaque application-authored failure data admitted by

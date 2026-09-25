@@ -7,7 +7,7 @@ body:
     attributes:
       label: Section
       description: Which section of the spec does this relate to?
-      placeholder: "e.g., Schema Comparison Rules, Discovery, Transforms"
+      placeholder: "e.g., Bindings, Reference resolution, Versioning"
     validations:
       required: true
   - type: textarea

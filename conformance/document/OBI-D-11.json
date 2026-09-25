@@ -219,6 +219,24 @@
       },
       "valid": false,
       "violates": ["OBI-D-11"]
+    },
+    {
+      "description": "an example value that breaks a format constraint still validates: format is an annotation under the validation semantics of section 5.2",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createUser": {
+            "input": {
+              "type": "object",
+              "properties": { "email": { "type": "string", "format": "email" } }
+            },
+            "examples": {
+              "loose": { "input": { "email": "not-an-email" } }
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

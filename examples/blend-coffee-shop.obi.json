@@ -220,32 +220,44 @@
   "sources": {
     "rest": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://blend.openbindings.com/openapi.json",
+      "content": {
+        "location": "https://blend.openbindings.com/openapi.json"
+      },
       "description": "REST API for the ordering app"
     },
     "events": {
       "bindingSpec": "openbindings.asyncapi@1",
-      "location": "https://blend.openbindings.com/asyncapi.json",
+      "content": {
+        "location": "https://blend.openbindings.com/asyncapi.json"
+      },
       "description": "SSE event stream for the barista dashboard"
     },
     "mcp": {
       "bindingSpec": "openbindings.mcp@1",
-      "location": "https://blend.openbindings.com/mcp",
+      "content": {
+        "location": "https://blend.openbindings.com/mcp"
+      },
       "description": "MCP tools for AI assistants"
     },
     "grpc": {
       "bindingSpec": "openbindings.grpc@1",
-      "location": "blend.openbindings.com:9090",
+      "content": {
+        "location": "blend.openbindings.com:9090"
+      },
       "description": "gRPC service for backend microservices"
     },
     "connect": {
       "bindingSpec": "openbindings.connect@1",
-      "location": "https://blend.openbindings.com",
+      "content": {
+        "location": "https://blend.openbindings.com"
+      },
       "description": "Connect (Buf) — same protobuf service over HTTP/1.1 + JSON"
     },
     "graphql": {
       "bindingSpec": "openbindings.graphql@1",
-      "location": "https://blend.openbindings.com/graphql",
+      "content": {
+        "location": "https://blend.openbindings.com/graphql"
+      },
       "description": "GraphQL API — flexible queries and subscriptions"
     }
   },
@@ -253,117 +265,163 @@
     "getMenu.rest": {
       "operation": "getMenu",
       "source": "rest",
-      "selector": "#/paths/~1api~1menu/get"
+      "content": {
+        "target": "#/paths/~1api~1menu/get"
+      }
     },
     "getMenu.mcp": {
       "operation": "getMenu",
       "source": "mcp",
-      "selector": "tools/getMenu"
+      "content": {
+        "target": "tools/getMenu"
+      }
     },
     "getMenu.grpc": {
       "operation": "getMenu",
       "source": "grpc",
-      "selector": "blend.CoffeeShop/GetMenu"
+      "content": {
+        "target": "blend.CoffeeShop/GetMenu"
+      }
     },
     "getMenu.connect": {
       "operation": "getMenu",
       "source": "connect",
-      "selector": "blend.CoffeeShop/GetMenu"
+      "content": {
+        "target": "blend.CoffeeShop/GetMenu"
+      }
     },
     "placeOrder.rest": {
       "operation": "placeOrder",
       "source": "rest",
-      "selector": "#/paths/~1api~1orders/post"
+      "content": {
+        "target": "#/paths/~1api~1orders/post"
+      }
     },
     "placeOrder.mcp": {
       "operation": "placeOrder",
       "source": "mcp",
-      "selector": "tools/placeOrder"
+      "content": {
+        "target": "tools/placeOrder"
+      }
     },
     "placeOrder.grpc": {
       "operation": "placeOrder",
       "source": "grpc",
-      "selector": "blend.CoffeeShop/PlaceOrder"
+      "content": {
+        "target": "blend.CoffeeShop/PlaceOrder"
+      }
     },
     "placeOrder.connect": {
       "operation": "placeOrder",
       "source": "connect",
-      "selector": "blend.CoffeeShop/PlaceOrder"
+      "content": {
+        "target": "blend.CoffeeShop/PlaceOrder"
+      }
     },
     "getOrderStatus.rest": {
       "operation": "getOrderStatus",
       "source": "rest",
-      "selector": "#/paths/~1api~1orders~1{orderId}/get"
+      "content": {
+        "target": "#/paths/~1api~1orders~1{orderId}/get"
+      }
     },
     "getOrderStatus.mcp": {
       "operation": "getOrderStatus",
       "source": "mcp",
-      "selector": "tools/getOrderStatus"
+      "content": {
+        "target": "tools/getOrderStatus"
+      }
     },
     "getOrderStatus.grpc": {
       "operation": "getOrderStatus",
       "source": "grpc",
-      "selector": "blend.CoffeeShop/GetOrderStatus"
+      "content": {
+        "target": "blend.CoffeeShop/GetOrderStatus"
+      }
     },
     "getOrderStatus.connect": {
       "operation": "getOrderStatus",
       "source": "connect",
-      "selector": "blend.CoffeeShop/GetOrderStatus"
+      "content": {
+        "target": "blend.CoffeeShop/GetOrderStatus"
+      }
     },
     "cancelOrder.rest": {
       "operation": "cancelOrder",
       "source": "rest",
-      "selector": "#/paths/~1api~1orders~1{orderId}~1cancel/post"
+      "content": {
+        "target": "#/paths/~1api~1orders~1{orderId}~1cancel/post"
+      }
     },
     "cancelOrder.mcp": {
       "operation": "cancelOrder",
       "source": "mcp",
-      "selector": "tools/cancelOrder"
+      "content": {
+        "target": "tools/cancelOrder"
+      }
     },
     "cancelOrder.grpc": {
       "operation": "cancelOrder",
       "source": "grpc",
-      "selector": "blend.CoffeeShop/CancelOrder"
+      "content": {
+        "target": "blend.CoffeeShop/CancelOrder"
+      }
     },
     "cancelOrder.connect": {
       "operation": "cancelOrder",
       "source": "connect",
-      "selector": "blend.CoffeeShop/CancelOrder"
+      "content": {
+        "target": "blend.CoffeeShop/CancelOrder"
+      }
     },
     "orderUpdates.events": {
       "operation": "orderUpdates",
       "source": "events",
-      "selector": "#/operations/onOrderUpdate"
+      "content": {
+        "target": "#/operations/onOrderUpdate"
+      }
     },
     "orderUpdates.grpc": {
       "operation": "orderUpdates",
       "source": "grpc",
-      "selector": "blend.CoffeeShop/OrderUpdates"
+      "content": {
+        "target": "blend.CoffeeShop/OrderUpdates"
+      }
     },
     "getMenu.graphql": {
       "operation": "getMenu",
       "source": "graphql",
-      "selector": "Query/getMenu"
+      "content": {
+        "target": "Query/getMenu"
+      }
     },
     "placeOrder.graphql": {
       "operation": "placeOrder",
       "source": "graphql",
-      "selector": "Mutation/placeOrder"
+      "content": {
+        "target": "Mutation/placeOrder"
+      }
     },
     "getOrderStatus.graphql": {
       "operation": "getOrderStatus",
       "source": "graphql",
-      "selector": "Query/getOrderStatus"
+      "content": {
+        "target": "Query/getOrderStatus"
+      }
     },
     "cancelOrder.graphql": {
       "operation": "cancelOrder",
       "source": "graphql",
-      "selector": "Mutation/cancelOrder"
+      "content": {
+        "target": "Mutation/cancelOrder"
+      }
     },
     "orderUpdates.graphql": {
       "operation": "orderUpdates",
       "source": "graphql",
-      "selector": "Subscription/orderUpdates"
+      "content": {
+        "target": "Subscription/orderUpdates"
+      }
     }
   }
 }

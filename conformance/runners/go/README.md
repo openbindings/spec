@@ -38,7 +38,6 @@ For each test case, the runner validates the embedded document's exact bytes wit
 
 - A conforming case (`valid: true`) establishes no violation. The report may still conclude *conformance undetermined*: inconclusive is not non-conformant.
 - A violating case is refused under OBI-T-04 or concludes *non-conformant*, and every document rule the fixture's `violates` lists is violated in the report's evidence (minimum-set semantics per the corpus README). `OBI-T-04` in `violates` requires the refusal.
-- OBI-D-18 takes a transform parser, which the runner does not give validation, so the runner expects it inconclusive wherever a fixture expects it violated.
 
 Version annotations are applied to the SDK's support declaration, `SupportedVersions`: `requiresMinSupported` skips a test when the lowest version the SDK supports is below the annotation, and `requiresSupports` skips one whose version `IsSupportedVersion` refuses. Skips are reported separately, never as failures.
 

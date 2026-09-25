@@ -56,8 +56,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "example.openapi@1"
           }
         },
         "bindings": {
@@ -80,7 +79,7 @@
         },
         "sources": {
           "httpApi": {
-            "location": "https://api.example.com/openapi.json"
+            "description": "Task API"
           }
         }
       },
@@ -98,8 +97,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": ""
           }
         }
       },
@@ -109,7 +107,7 @@
       ]
     },
     {
-      "description": "source missing both `location` and `content`",
+      "description": "source with only `bindingSpec` (content is optional; whether a source needs it is its binding specification's to define)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -117,14 +115,108 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1"
+            "bindingSpec": "example.openapi@1"
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-02"
-      ]
+      "valid": true
+    },
+    {
+      "description": "source `content` is any JSON value, and `content: null` is a present member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "objectContent": {
+            "bindingSpec": "example.test@1",
+            "content": {
+              "location": "tasks.json"
+            }
+          },
+          "stringContent": {
+            "bindingSpec": "example.test@1",
+            "content": "openapi: 3.1.0"
+          },
+          "arrayContent": {
+            "bindingSpec": "example.test@1",
+            "content": [
+              1,
+              "two",
+              {
+                "three": 3
+              }
+            ]
+          },
+          "numberContent": {
+            "bindingSpec": "example.test@1",
+            "content": 7
+          },
+          "booleanContent": {
+            "bindingSpec": "example.test@1",
+            "content": false
+          },
+          "nullContent": {
+            "bindingSpec": "example.test@1",
+            "content": null
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding `content` is any JSON value, and `content: null` is a present member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "createTask.string": {
+            "operation": "createTask",
+            "source": "s",
+            "content": "tasks.create"
+          },
+          "createTask.object": {
+            "operation": "createTask",
+            "source": "s",
+            "content": {
+              "path": "/tasks",
+              "method": "post"
+            }
+          },
+          "createTask.array": {
+            "operation": "createTask",
+            "source": "s",
+            "content": [
+              "tasks",
+              "create"
+            ]
+          },
+          "createTask.number": {
+            "operation": "createTask",
+            "source": "s",
+            "content": 3
+          },
+          "createTask.boolean": {
+            "operation": "createTask",
+            "source": "s",
+            "content": true
+          },
+          "createTask.null": {
+            "operation": "createTask",
+            "source": "s",
+            "content": null
+          }
+        }
+      },
+      "valid": true
     },
     {
       "description": "operation deprecated flag is a string instead of boolean",
@@ -152,7 +244,7 @@
           "delivery": {
             "operation": "deliverEvent",
             "bindingSpecs": [
-              "openbindings.openapi-3.1@1"
+              "example.openapi@1"
             ]
           }
         }
@@ -197,7 +289,7 @@
         "dependencies": {
           "delivery": {
             "bindingSpecs": [
-              "openbindings.openapi-3.1@1"
+              "example.openapi@1"
             ]
           }
         }
@@ -235,7 +327,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": "openbindings.openapi-3.1@1"
+            "bindingSpecs": "example.openapi@1"
           }
         }
       },
@@ -274,8 +366,8 @@
           "delivery": {
             "operation": "deliverEvent",
             "bindingSpecs": [
-              "openbindings.openapi-3.1@1",
-              "openbindings.openapi-3.1@1"
+              "example.openapi@1",
+              "example.openapi@1"
             ]
           }
         }
@@ -326,6 +418,176 @@
       "violates": [
         "OBI-D-02"
       ]
+    },
+    {
+      "description": "an operation member the specification does not define and that lacks the x- prefix (outpt beside input)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object"
+            },
+            "outpt": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a case variant of a defined member is not that member (Content on a binding)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "b": {
+            "operation": "createTask",
+            "source": "s",
+            "Content": "x"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a 0.1 member left on a source (location)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1",
+            "location": "https://example.com/openapi.json"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "an undefined root member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "info": {
+          "title": "Tasks"
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a member this version removed from the root (transforms)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "transforms": {
+          "t": "$"
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "members this version removed from a binding (selector, inputTransform, outputTransform)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "b.selector": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": "#/paths/~1tasks/post"
+          },
+          "b.input": {
+            "operation": "createTask",
+            "source": "s",
+            "inputTransform": "$"
+          },
+          "b.output": {
+            "operation": "createTask",
+            "source": "s",
+            "outputTransform": {
+              "$ref": "#/transforms/t"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "x- members are extensions on every OBI-defined object, including examples and dependencies",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-owner": "tasks-team",
+        "operations": {
+          "createTask": {
+            "x-note": 1,
+            "examples": {
+              "e": {
+                "x-note": 1
+              }
+            }
+          }
+        },
+        "dependencies": {
+          "d": {
+            "operation": "createTask",
+            "x-note": 1
+          }
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1",
+            "x-note": 1
+          }
+        },
+        "bindings": {
+          "b": {
+            "operation": "createTask",
+            "source": "s",
+            "x-note": 1
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

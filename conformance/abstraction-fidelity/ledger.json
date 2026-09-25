@@ -4,7 +4,7 @@
     {
       "id": "AF-CORE-001",
       "layer": "core",
-      "scope": "OBI-B-02 item 7 and failure-vocabulary scope",
+      "scope": "OBI-B-02 item 4 (formerly item 7) and failure-vocabulary scope",
       "issue": "The completeness floor required every source-native unsuccessful observation to remain distinguishable, exceeding the protocol-blind operation boundary.",
       "classification": "mixed",
       "ordinaryCallerDependency": true,

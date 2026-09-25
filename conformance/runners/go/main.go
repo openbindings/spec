@@ -259,13 +259,6 @@ func runOne(rule string, t Test) Result {
 	return r
 }
 
-// capabilityRules are the document rules whose checking takes a capability
-// this runner does not give validation: OBI-D-18 takes a transform parser,
-// and the SDK carries none. A validator without the capability leaves such a
-// rule inconclusive (§10.2), so the runner expects it inconclusive wherever
-// the fixture expects it violated.
-var capabilityRules = map[string]bool{"OBI-D-18": true}
-
 // disagreement states how the SDK's report differs from what the fixture
 // expects, or returns "". A conforming case establishes no violation, though
 // the SDK may leave it undetermined (inconclusive is not non-conformant). A
@@ -273,17 +266,12 @@ var capabilityRules = map[string]bool{"OBI-D-18": true}
 // document rule the fixture names violated: the fixture's violates list is a
 // minimum set.
 func disagreement(t Test, report openbindings.ValidationReport, refused bool) string {
-	if t.Valid || onlyCapabilityRules(t) {
+	if t.Valid {
 		switch {
 		case refused:
 			return "the SDK refused a conforming case (OBI-T-04)"
 		case report.Conclusion == openbindings.ConclusionNonConformant:
 			return fmt.Sprintf("the SDK established violations of %v for a conforming case", report.Violated)
-		}
-		for _, rule := range t.Violates {
-			if report.Evidence[rule] != openbindings.EvidenceInconclusive {
-				return fmt.Sprintf("%s is %s; without its capability it is inconclusive", rule, report.Evidence[rule])
-			}
 		}
 		return ""
 	}
@@ -297,10 +285,6 @@ func disagreement(t Test, report openbindings.ValidationReport, refused bool) st
 				return "expected an OBI-T-04 version refusal"
 			}
 		case refused:
-		case capabilityRules[rule]:
-			if report.Evidence[rule] != openbindings.EvidenceInconclusive {
-				return fmt.Sprintf("%s is %s; without its capability it is inconclusive", rule, report.Evidence[rule])
-			}
 		case strings.HasPrefix(rule, "OBI-D-"):
 			if report.Evidence[rule] != openbindings.EvidenceViolated {
 				return fmt.Sprintf("expected %s violated; its evidence is %s", rule, report.Evidence[rule])
@@ -308,20 +292,6 @@ func disagreement(t Test, report openbindings.ValidationReport, refused bool) st
 		}
 	}
 	return ""
-}
-
-// onlyCapabilityRules reports whether every violation a case expects is of a
-// capability rule, so that without the capability it establishes none.
-func onlyCapabilityRules(t Test) bool {
-	if t.Valid || len(t.Violates) == 0 {
-		return false
-	}
-	for _, rule := range t.Violates {
-		if !capabilityRules[rule] {
-			return false
-		}
-	}
-	return true
 }
 
 // versionGate applies a test's version annotations to the SDK's support

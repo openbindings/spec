@@ -113,12 +113,12 @@
   "sources": {
     "publicApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://api.example.com/openapi.json",
+      "content": { "location": "https://api.example.com/openapi.json" },
       "description": "Public-facing REST API"
     },
     "adminApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://admin.example.com/openapi.json",
+      "content": { "location": "https://admin.example.com/openapi.json" },
       "description": "Internal admin REST API"
     }
   },
@@ -126,27 +126,27 @@
     "getUser.publicApi": {
       "operation": "getUser",
       "source": "publicApi",
-      "selector": "#/paths/~1users~1{userId}/get"
+      "content": { "target": "#/paths/~1users~1{userId}/get" }
     },
     "getUser.adminApi": {
       "operation": "getUser",
       "source": "adminApi",
-      "selector": "#/paths/~1admin~1users~1{userId}/get"
+      "content": { "target": "#/paths/~1admin~1users~1{userId}/get" }
     },
     "createUser.publicApi": {
       "operation": "createUser",
       "source": "publicApi",
-      "selector": "#/paths/~1users/post"
+      "content": { "target": "#/paths/~1users/post" }
     },
     "createUser.adminApi": {
       "operation": "createUser",
       "source": "adminApi",
-      "selector": "#/paths/~1admin~1users/post"
+      "content": { "target": "#/paths/~1admin~1users/post" }
     },
     "listUsers.adminApi": {
       "operation": "listUsers",
       "source": "adminApi",
-      "selector": "#/paths/~1admin~1users/get"
+      "content": { "target": "#/paths/~1admin~1users/get" }
     }
   }
 }

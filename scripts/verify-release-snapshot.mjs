@@ -72,7 +72,6 @@ try {
     const excluded = [
       "conformance/binding-specs",
       "conformance/operation-graph",
-      "conformance/transforms",
     ];
     const missing = required.filter((path) => !existsSync(join(snapshot, path)));
     const leaked = excluded.filter((path) => existsSync(join(snapshot, path)));

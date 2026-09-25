@@ -200,11 +200,11 @@
 
 **[incorporated]** A callback Path Item describes a request initiated by the service and expected responses, while a root webhook describes an incoming request the API consumer may implement; neither is an operation invocable through the addressed parent operation ([OAS 3.1.2 §§4.8.1.1, 4.8.10.1, 4.8.18](https://spec.openapis.org/oas/v3.1.2.html#oas-webhooks)).
 
-**[convention]** When generation represents a callback or webhook operation, it emits a Core dependency with a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.6](../../openbindings.md#56-dependencies)). Selecting a parent operation does not require generating its callbacks.
+**[convention]** When generation represents a callback or webhook operation, it emits a Core dependency with a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.5](../../openbindings.md#55-dependencies)). Selecting a parent operation does not require generating its callbacks.
 
 **[convention]** Dependency key spelling and contract shape are generation policy under §12.2. Each emitted dependency preserves the identity of its distinct source consumption point, its role-inverted input/output meaning, and consistent references; distinct consumption points are not merged merely to share a key. This specification requires no slot-derived naming algorithm.
 
-**[incorporated]** Such a dependency carries no concrete target (Core [§5.6](../../openbindings.md#56-dependencies)).
+**[incorporated]** Such a dependency carries no concrete target (Core [§5.5](../../openbindings.md#55-dependencies)).
 
 **[convention]** Such a dependency also carries no `bindingSpecs`, because the originating artifact has no authority to constrain the consumer's description format.
 
@@ -686,11 +686,11 @@
 
 ### 12.2 Generation correspondence and reporting
 
-**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§5.5](../../openbindings.md#55-transforms)).
+**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers)).
 
 **[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit Core `inputTransform` or `outputTransform` wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
 
-**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
+**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
 **[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond Core's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
 
@@ -702,7 +702,7 @@
 
 **[convention]** Every binding-specific configuration requirement remains a fact of its represented target or declared alternative and is supplied through invocation context; it MUST NOT enter the operation input schema. Whether generation reports that fact does not change its applicability, type, or declaration-derived discoverability under §12.1.
 
-**[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.6](../../openbindings.md#56-dependencies)).
+**[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.5](../../openbindings.md#55-dependencies)).
 
 ### 12.3 Conformance rules
 

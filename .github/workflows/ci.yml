@@ -55,15 +55,6 @@ jobs:
       - name: Verify binding-spec publication records
         run: node scripts/verify-binding-spec-publications.mjs
 
-      - name: Validate transform conformance corpus
-        run: |
-          for f in conformance/transforms/agree/*.json conformance/transforms/known-divergence/*.json; do
-            ajv validate -s conformance/transforms/transforms.schema.json -d "$f" --spec=draft2020
-          done
-          node scripts/verify-transform-corpus.mjs
-          ajv validate -s conformance/transforms/language/scenarios.schema.json -d conformance/transforms/language/scenarios.json --spec=draft2020
-          node scripts/verify-transform-authority.mjs
-
       - name: Validate binding-specification errata manifest
         run: ajv validate -s binding-specs/errata.schema.json -d binding-specs/errata.json --spec=draft2020
 
