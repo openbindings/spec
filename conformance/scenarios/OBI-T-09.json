@@ -1,87 +1,87 @@
 {
   "format": "openbindings.core-tool-scenarios@1",
-  "rule": "OBI-T-17",
+  "rule": "OBI-T-09",
   "section": "10.3",
   "description": "Conformance conclusions follow the document-rule evidence: violations are decisive, incomplete validation prevents a conformant conclusion, and reports identify both violated and inconclusive rules.",
   "scenarios": [
     {
-      "id": "T17-S-01",
+      "id": "T09-S-01",
       "description": "Satisfied applicable rules and inapplicable rules permit a conformant conclusion",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
           "OBI-D-02": "satisfied",
           "OBI-D-03": "satisfied",
-          "OBI-D-19": "not-applicable"
+          "OBI-D-14": "not-applicable"
         }
       },
       "expected": { "conclusion": "conformant", "violated": [], "inconclusive": [] }
     },
     {
-      "id": "T17-S-02",
+      "id": "T09-S-02",
       "description": "An inconclusive applicable rule prevents a conformant conclusion",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
           "OBI-D-02": "satisfied",
-          "OBI-D-11": "inconclusive"
+          "OBI-D-10": "inconclusive"
         }
       },
       "expected": {
         "conclusion": "conformance-undetermined",
         "violated": [],
-        "inconclusive": ["OBI-D-11"]
+        "inconclusive": ["OBI-D-10"]
       }
     },
     {
-      "id": "T17-S-03",
+      "id": "T09-S-03",
       "description": "A violation is decisive while incomplete checks remain visible",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
           "OBI-D-02": "satisfied",
           "OBI-D-03": "violated",
-          "OBI-D-17": "inconclusive"
+          "OBI-D-13": "inconclusive"
         }
       },
       "expected": {
         "conclusion": "non-conformant",
         "violated": ["OBI-D-03"],
-        "inconclusive": ["OBI-D-17"]
+        "inconclusive": ["OBI-D-13"]
       }
     },
     {
-      "id": "T17-S-04",
+      "id": "T09-S-04",
       "description": "A non-conformant report identifies every observed violation and every incomplete check",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-17": "inconclusive",
+          "OBI-D-13": "inconclusive",
           "OBI-D-09": "violated",
           "OBI-D-02": "violated",
-          "OBI-D-19": "not-applicable",
-          "OBI-D-11": "inconclusive"
+          "OBI-D-14": "not-applicable",
+          "OBI-D-10": "inconclusive"
         }
       },
       "expected": {
         "conclusion": "non-conformant",
         "violated": ["OBI-D-02", "OBI-D-09"],
-        "inconclusive": ["OBI-D-11", "OBI-D-17"]
+        "inconclusive": ["OBI-D-10", "OBI-D-13"]
       }
     },
     {
-      "id": "T17-S-05",
+      "id": "T09-S-05",
       "description": "A violated rule determines non-conformance even when all other considered rules are inapplicable",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-19": "not-applicable",
-          "OBI-D-16": "violated"
+          "OBI-D-14": "not-applicable",
+          "OBI-D-12": "violated"
         }
       },
       "expected": {
         "conclusion": "non-conformant",
-        "violated": ["OBI-D-16"],
+        "violated": ["OBI-D-12"],
         "inconclusive": []
       }
     }

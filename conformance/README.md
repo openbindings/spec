@@ -6,22 +6,22 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 ## Status
 
-**Document-validity coverage is complete for every OBI-D rule. Tool coverage includes validity fixtures for OBI-T-01, OBI-T-03, OBI-T-04, and OBI-T-18, plus portable action/outcome scenarios for OBI-T-11, OBI-T-12, OBI-T-16, and OBI-T-17. Independent Go and TypeScript adapters execute all four scenario sets. OBI-T-19 is discriminated by the OBI-D-11 negatives; the remaining gaps are SHOULD-level diagnostics or behavior covered by a dedicated subcorpus. See `manifest.json` for current counts.**
+**Document-validity coverage is complete for every OBI-D rule. Tool coverage includes validity fixtures for OBI-T-01, OBI-T-03, OBI-T-04, and OBI-T-10, plus portable action/outcome scenarios for OBI-T-06, OBI-T-07, OBI-T-08, and OBI-T-09. Independent Go and TypeScript adapters execute all four scenario sets. OBI-T-11 is discriminated by the OBI-D-10 negatives; the remaining gaps are SHOULD-level diagnostics or behavior covered by a dedicated subcorpus. See `manifest.json` for current counts.**
 
 | Rule range | Coverage |
 |---|---|
 | OBI-D-01 | Complete. The fixture format's mutually exclusive `documentText` and `documentBase64` carriages preserve exact input text/bytes, covering malformed JSON, malformed UTF-8, a leading UTF-8 BOM, and duplicate keys at root and nested positions in addition to ordinary positives. |
-| OBI-D-02 to OBI-D-09, OBI-D-11, OBI-D-12 | Complete |
-| OBI-D-17 | Complete. Schema well-formedness at every schema position (boolean or object form, meta-schema-valid, recursively through subschemas), including the rule's deliberate narrowness: unknown keywords, unparseable `pattern` values, and unresolvable external `$ref`s are positives. Validating tools need locally available 2020-12 meta-schemas; the rule itself forbids requiring a network fetch. |
-| OBI-D-19 | Complete. Dependency operation references resolve only against operation keys, not aliases; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
+| OBI-D-02 to OBI-D-11 | Complete |
+| OBI-D-13 | Complete. Schema well-formedness at every schema position (boolean or object form, meta-schema-valid, recursively through subschemas), including the rule's deliberate narrowness: unknown keywords, unparseable `pattern` values, and unresolvable external `$ref`s are positives. Validating tools need locally available 2020-12 meta-schemas; the rule itself forbids requiring a network fetch. |
+| OBI-D-14 | Complete. Dependency operation references resolve only against operation keys, not aliases; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
 | OBI-T-01, OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D). OBI-T-04's downward refusal (documents below the tool's minimum supported version) is fixtured with the `requiresMinSupported` annotation (below), which skips those tests for tools whose supported range extends down to the document's version. Its acceptance-presuming positives are gated with the `requiresSupports` annotation (below): each is administered only to tools whose own OBI-T-04 acceptance predicate accepts the annotation's version, since which versions a tool accepts is its own support declaration (§8.1), never a corpus assumption. |
-| OBI-T-18 | Complete. Anti-rejection rule fixtured like OBI-T-01: all-positive documents whose operation names tempt plausibility heuristics (a write-shaped name claiming `idempotent: true`, a read-shaped name claiming `false`). A conformant tool accepts them all — the claim's semantic truth is author-attested (§5.1), and structural validity is the only enforcement. |
-| OBI-T-19 | **Deferred as a rule-keyed fixture; covered by the existing OBI-D-11 negative fixtures.** A tool that resolved an example–schema mismatch by treating the example as an exception would accept those documents and fail the OBI-D-11 negatives, so the behavior is already discriminated; a separate fixture would duplicate them test-for-test. |
+| OBI-T-10 | Complete. Anti-rejection rule fixtured like OBI-T-01: all-positive documents whose operation names tempt plausibility heuristics (a write-shaped name claiming `idempotent: true`, a read-shaped name claiming `false`). A conformant tool accepts them all — the claim's semantic truth is author-attested (§5.1), and structural validity is the only enforcement. |
+| OBI-T-11 | **Deferred as a rule-keyed fixture; covered by the existing OBI-D-10 negative fixtures.** A tool that resolved an example–schema mismatch by treating the example as an exception would accept those documents and fail the OBI-D-10 negatives, so the behavior is already discriminated; a separate fixture would duplicate them test-for-test. |
 | OBI-T-02, OBI-T-05 | **Deferred.** Diagnostic-emission rules (ignore unknown fields; surface diagnostics for uninterpreted schema keywords) that SHOULD warn. The spec deliberately leaves diagnostic shape tool-defined; pinning it via fixtures would extend the spec by convention. Fixtures pending a normative diagnostic-emission contract. |
-| OBI-T-16 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Cases distinguish success, instance mismatch, and graph unavailability; require an unavailable reachable alternative to prevent success; exclude an unreferenced `$defs` entry from the reachable graph; treat `format` as annotation; apply schemas per value; and recognize an absolute `$ref` satisfied by an embedded `$id`. The scenario format defines semantic inputs/outcomes, not an SDK API or error serialization. |
-| OBI-T-17 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Evidence maps exercise all four rule-level states and pin the three conclusions, including the decisive-violation case where inconclusive rules remain reportable. Arrays are compared as rule-identifier sets; sorted output is only the adapters' deterministic presentation convention. |
-| OBI-T-11 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. The outcome vocabulary deliberately permits the alternatives the rule permits while requiring termination; direct and productive recursive cycles are covered. A harness timeout remains the enforcement mechanism for a non-terminating implementation. |
-| OBI-T-12 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Cases cover direct keys, aliases resolving to the canonical key and its bindings, unknown identifiers, a prototype-like unknown name, and an operation actually carrying that name. |
+| OBI-T-08 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Cases distinguish success, instance mismatch, and graph unavailability; require an unavailable reachable alternative to prevent success; exclude an unreferenced `$defs` entry from the reachable graph; treat `format` as annotation; apply schemas per value; and recognize an absolute `$ref` satisfied by an embedded `$id`. The scenario format defines semantic inputs/outcomes, not an SDK API or error serialization. |
+| OBI-T-09 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Evidence maps exercise all four rule-level states and pin the three conclusions, including the decisive-violation case where inconclusive rules remain reportable. Arrays are compared as rule-identifier sets; sorted output is only the adapters' deterministic presentation convention. |
+| OBI-T-06 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. The outcome vocabulary deliberately permits the alternatives the rule permits while requiring termination; direct and productive recursive cycles are covered. A harness timeout remains the enforcement mechanism for a non-terminating implementation. |
+| OBI-T-07 | Complete through portable tool scenarios, independently executed by the Go and TypeScript adapters. Cases cover direct keys, aliases resolving to the canonical key and its bindings, unknown identifiers, a prototype-like unknown name, and an operation actually carrying that name. |
 | OBI-B-01 to OBI-B-03 | **Not fixture-able.** These rules bind binding *specifications* — the semantic definitions sources name via `bindingSpec` — not documents or tool runs: there is no document to embed and no tool verdict to compare. Enforcement is editorial, at binding-specification promotion review (see `binding-specs/README.md`). |
 
 Per-family protocol rules (`…-P-…`, e.g. `GRPC-P-04`, `CONN-P-06`) are each family's binding-specification obligations and live in the [`binding-specs/`](binding-specs/README.md) subcorpus rather than the core rule format. Its portable processor scenarios cover every P-rule of the seven standalone brownfield synthesis families without prescribing an SDK configuration API. The repository verifier checks their shape and rule coverage; they become cross-implementation execution evidence only when family adapters run them against independent processors. The invocation-only Operation Graph binding has its own identity-law and execution corpus because its operation contracts come from the containing OBI rather than its source document. Mirrored reference-SDK behavioral suites remain additional implementation evidence, not a substitute for those portable scenarios.
@@ -56,17 +56,17 @@ conformance/
     OBI-D-01.json
     OBI-D-02.json
     ...
-    OBI-D-19.json
+    OBI-D-14.json
   tool/                (OBI-T-## rules; partial coverage)
     OBI-T-01.json
     OBI-T-03.json
     OBI-T-04.json
-    OBI-T-18.json
+    OBI-T-10.json
   scenarios/           (action/outcome cases that do not fit validity)
-    OBI-T-11.json
-    OBI-T-12.json
-    OBI-T-16.json
-    OBI-T-17.json
+    OBI-T-06.json
+    OBI-T-07.json
+    OBI-T-08.json
+    OBI-T-09.json
   runners/
     go/                (reference Go harness; exemplar for SDK authors)
   binding-specs/       (per-family D-rule fixtures and portable P-rule scenarios; own README + verifier)
@@ -120,7 +120,7 @@ Rules whose behavior is an action plus a semantic outcome rather than document v
 | `resolve-schema-cycle` | Document, operation side, and value; requires termination and permits only the rule's declared outcome set. |
 | `resolve-operation` | Document and identifier; expects the canonical operation key plus its binding keys, or not-found. |
 | `validate-operation-values` | Document, operation side, and JSON values; expects one of `valid`, `instance-mismatch`, or `graph-unavailable` for each value. |
-| `conclude-conformance` | Rule-evidence map; expects the T17 conclusion and the complete violated/inconclusive identifier sets. |
+| `conclude-conformance` | Rule-evidence map; expects the OBI-T-09 conclusion and the complete violated/inconclusive identifier sets. |
 
 The format does not standardize a public SDK method, exception type, diagnostic text, validation library, or report serialization. An adapter translates its implementation's native surface to these semantic inputs and outcomes. That boundary is deliberate: the corpus tests what the specification makes portable without turning either reference SDK's API into an undeclared part of the specification.
 
@@ -134,9 +134,9 @@ The corpus tracks the spec version it was authored against. Spec changes that af
 
 ## Coverage limits
 
-This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits: OBI-T-02/OBI-T-05 deliberately leave SHOULD-level diagnostic shape tool-defined, and OBI-T-19 is discriminated by the OBI-D-11 negatives rather than duplicated under a second rule key. Gaps are noted per rule above.
+This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits: OBI-T-02/OBI-T-05 deliberately leave SHOULD-level diagnostic shape tool-defined, and OBI-T-11 is discriminated by the OBI-D-10 negatives rather than duplicated under a second rule key. Gaps are noted per rule above.
 
-OBI-D-11 (example validation) fixtures depend on the tool under test having a JSON Schema 2020-12 validator wired into validation; tools without that capability will report mismatches on the negative cases. This is a capability gap in the tool under test — OBI-D-11 goes inconclusive for it, per the spec's partial-validation posture (§10.2) — not a corpus defect and not a conformance failure; runners should report such cases as inconclusive for that tool rather than as failures.
+OBI-D-10 (example validation) fixtures depend on the tool under test having a JSON Schema 2020-12 validator wired into validation; tools without that capability will report mismatches on the negative cases. This is a capability gap in the tool under test — OBI-D-10 goes inconclusive for it, per the spec's partial-validation posture (§10.2) — not a corpus defect and not a conformance failure; runners should report such cases as inconclusive for that tool rather than as failures.
 
 ## Version-gating annotations
 

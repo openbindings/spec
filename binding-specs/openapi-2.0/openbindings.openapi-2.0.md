@@ -100,7 +100,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[limit]** An **excluded** unit, and equally a unit removed as **invalid**, is removed from the effective declarations consumed below its owning boundary: no serialization, routing, or translation rule reads it as usable input. Removal does not erase a structurally addressable target slot. A selector naming an invalid or excluded target still resolves and invocation refuses before dispatch. A target whose remaining effective declarations no longer satisfy §8's path-template correspondence is itself excluded.
 
-**[limit]** A confined defect has the specified effect at its smallest owning unit regardless of how a processor presents it. This specification requires no public source-position diagnostic, defect-class taxonomy, per-class authority citation, or per-defect coverage entry. Diagnostic presentation is optional; the refusal, no-dispatch effect, and treatment of unaffected siblings are not. This does not waive applicable Core reporting duties ([OBI-T-05](../../openbindings.md#103-tool-rules), [OBI-T-17](../../openbindings.md#103-tool-rules)).
+**[limit]** A confined defect has the specified effect at its smallest owning unit regardless of how a processor presents it. This specification requires no public source-position diagnostic, defect-class taxonomy, per-class authority citation, or per-defect coverage entry. Diagnostic presentation is optional; the refusal, no-dispatch effect, and treatment of unaffected siblings are not. This does not waive applicable Core reporting duties ([OBI-T-05](../../openbindings.md#103-tool-rules), [OBI-T-09](../../openbindings.md#103-tool-rules)).
 
 **[incorporated]** The root `paths` field is required, while a present Paths Object and each Path Item Object may be empty, including when documentation is filtered by access control; a present empty Paths Object is upstream-valid and synthesizes zero operations ([OAS 2.0 Swagger, Paths, and Path Item Objects](https://spec.openapis.org/oas/v2.0.html#paths-object)).
 
@@ -456,7 +456,7 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 **[exclusion]** The form and multipart lanes are request-only: the incorporated authority's form and multipart sections are request-scoped by their own headings and supply no reverse mapping from those bytes to an application value, so a response selection of either lane is excluded at its smallest media owner. The exclusion reopens only if an incorporated authority defines that decoding.
 
-**[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; Core's operation-contract validation rule applies to a tool's separate claim of validation against an operation contract, not to a native OAS Schema Object validation claim (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-16](../../openbindings.md#103-tool-rules)). This rule does not reach the two declaration-reading checks this specification states in its own right — §5.2's `readOnly` request obligation and §8.1's inline non-body assertions — neither of which is validation of an application value against a governing Schema Object.
+**[convention]** Invoking this binding does not trigger validation of any application value against its governing Schema Object; Core's operation-contract validation rule applies to a tool's separate claim of validation against an operation contract, not to a native OAS Schema Object validation claim (Core [invariant 2](../../openbindings.md#2-core-invariants), [OBI-T-08](../../openbindings.md#103-tool-rules)). This rule does not reach the two declaration-reading checks this specification states in its own right — §5.2's `readOnly` request obligation and §8.1's inline non-body assertions — neither of which is validation of an application value against a governing Schema Object.
 
 ### 9.3 HTTP content codings
 
@@ -640,11 +640,11 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 ### 12.2 Generation correspondence and reporting
 
-**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers)).
+**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (the draft's core §5.5, since removed; see the [changelog](../../CHANGELOG.md)).
 
 **[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit Core `inputTransform` or `outputTransform` wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
 
-**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers), [OBI-T-10](../../openbindings.md#103-tool-rules)).
+**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (the draft's core §5.5 and transform-evaluation rule, since removed; see the [changelog](../../CHANGELOG.md)).
 
 **[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond Core's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
 

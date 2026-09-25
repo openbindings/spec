@@ -183,7 +183,7 @@ For every edition's W1 artifact, make the selected path parameter non-required. 
 
 For example, one tool may say “The selected target cannot be invoked”; another may identify the non-required `id` declaration at `#/paths/~1pets~1{id}/post/parameters/0`. Neither message here claims to report overall document conformance.
 
-A tool that dispatches anyway is not conforming. A tool that reports document conformance must still honor Core OBI-T-17; a tool whose schema translation loses meaning must still disclose the limitation required by OBI-T-05. Optional presentation does not waive either duty.
+A tool that dispatches anyway is not conforming. A tool that reports document conformance must still honor Core OBI-T-09; a tool whose schema translation loses meaning must still disclose the limitation required by OBI-T-05. Optional presentation does not waive either duty.
 
 ## W7: OpenAPI 3.2 streaming without a capability report
 

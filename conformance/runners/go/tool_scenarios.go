@@ -240,7 +240,7 @@ func runSchemaCycleScenario(rule string, raw json.RawMessage) Result {
 
 // contractOutcome names the outcome of validating a value against an
 // operation's contract in the corpus's terms, read from the error's type
-// alone: OBI-T-16 keeps an instance mismatch and an unavailable graph
+// alone: OBI-T-08 keeps an instance mismatch and an unavailable graph
 // distinct, so what a scenario allows never decides which one an error is.
 // unavailable is the scenario's name for an unavailable graph.
 func contractOutcome(err error, unavailable string) string {

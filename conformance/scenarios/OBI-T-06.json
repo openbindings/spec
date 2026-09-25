@@ -1,11 +1,11 @@
 {
   "format": "openbindings.core-tool-scenarios@1",
-  "rule": "OBI-T-11",
+  "rule": "OBI-T-06",
   "section": "10.3",
   "description": "Reference-cycle scenarios require termination while preserving the rule's permitted success-or-error handling.",
   "scenarios": [
     {
-      "id": "T11-S-01",
+      "id": "T06-S-01",
       "description": "A direct two-schema reference cycle terminates; the implementation may resolve it or report a resolver error.",
       "action": "resolve-schema-cycle",
       "given": {
@@ -27,7 +27,7 @@
       }
     },
     {
-      "id": "T11-S-02",
+      "id": "T06-S-02",
       "description": "A productive recursive object schema terminates on a finite mismatching value.",
       "action": "resolve-schema-cycle",
       "given": {

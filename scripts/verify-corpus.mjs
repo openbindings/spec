@@ -175,10 +175,10 @@ function validateFixtureShape(fixture, label) {
 }
 
 const scenarioActions = new Map([
-  ["OBI-T-11", "resolve-schema-cycle"],
-  ["OBI-T-12", "resolve-operation"],
-  ["OBI-T-16", "validate-operation-values"],
-  ["OBI-T-17", "conclude-conformance"],
+  ["OBI-T-06", "resolve-schema-cycle"],
+  ["OBI-T-07", "resolve-operation"],
+  ["OBI-T-08", "validate-operation-values"],
+  ["OBI-T-09", "conclude-conformance"],
 ]);
 
 function validateScenarioFileShape(file, label) {
@@ -239,7 +239,7 @@ function validateScenarioFileShape(file, label) {
 function validateScenarioActionShape(rule, scenario, label) {
   const given = scenario.given;
   const expected = scenario.expected;
-  if (rule === "OBI-T-11") {
+  if (rule === "OBI-T-06") {
     if (!("document" in given) || typeof given.operation !== "string" || !["input", "output"].includes(given.side) || !("value" in given)) {
       err(`${label}: schema-cycle given requires document, operation, input|output side, and value`);
     }
@@ -249,7 +249,7 @@ function validateScenarioActionShape(rule, scenario, label) {
     }
     return;
   }
-  if (rule === "OBI-T-12") {
+  if (rule === "OBI-T-07") {
     if (!("document" in given) || typeof given.name !== "string") {
       err(`${label}: operation-resolution given requires document and name`);
     }
@@ -262,7 +262,7 @@ function validateScenarioActionShape(rule, scenario, label) {
     }
     return;
   }
-  if (rule === "OBI-T-16") {
+  if (rule === "OBI-T-08") {
     if (!("document" in given) || typeof given.operation !== "string" || !["input", "output"].includes(given.side) || !Array.isArray(given.values) || given.values.length === 0) {
       err(`${label}: value-validation given requires document, operation, input|output side, and non-empty values`);
     }
@@ -272,7 +272,7 @@ function validateScenarioActionShape(rule, scenario, label) {
     }
     return;
   }
-  if (rule === "OBI-T-17") {
+  if (rule === "OBI-T-09") {
     const evidence = given.evidence;
     if (typeof evidence !== "object" || evidence === null || Array.isArray(evidence) || Object.keys(evidence).length === 0) {
       err(`${label}: conclusion given requires a non-empty evidence map`);
@@ -289,7 +289,7 @@ function validateScenarioActionShape(rule, scenario, label) {
     const expectedViolated = Array.isArray(expected.violated) ? [...expected.violated].sort() : null;
     const expectedInconclusive = Array.isArray(expected.inconclusive) ? [...expected.inconclusive].sort() : null;
     if (expected.conclusion !== conclusion || JSON.stringify(expectedViolated) !== JSON.stringify(violated) || JSON.stringify(expectedInconclusive) !== JSON.stringify(inconclusive)) {
-      err(`${label}: expected conclusion/lists do not follow OBI-T-17 from the supplied evidence`);
+      err(`${label}: expected conclusion/lists do not follow OBI-T-09 from the supplied evidence`);
     }
   }
 }

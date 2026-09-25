@@ -35,9 +35,9 @@ A release snapshot captures the normative core spec at the time of release:
 - `conformance/` — the **core** conformance test corpus only: `document/`,
   `tool/`, `scenarios/`, both core fixture/scenario meta-schemas, the manifest,
   README, and core runner. Snapshotted because the corpus is keyed to the
-  OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; the rule-
-  stability promise ([§10.6](openbindings.md#106-retired-rule-identifiers))
-  binds rule IDs to specific spec text, so the corpus and spec must be
+  OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; a rule
+  identifier means what the snapshotted spec says it means
+  ([§10](openbindings.md#10-conformance)), so the corpus and spec must be
   reachable together at the snapshot version. (The 0.1.0 snapshot predates
   this corpus layout; its `conformance/` holds that era's three flat fixture
   files, and stays as released.)
