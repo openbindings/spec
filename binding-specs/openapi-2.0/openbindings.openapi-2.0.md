@@ -640,11 +640,11 @@ The table below maps each item Core [OBI-B-02](../../openbindings.md#104-binding
 
 ### 12.2 Generation correspondence and reporting
 
-**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§5.5](../../openbindings.md#55-transforms)).
+**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers)).
 
 **[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit Core `inputTransform` or `outputTransform` wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
 
-**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§5.5 clause 5](../../openbindings.md#55-transforms), [OBI-T-10](../../openbindings.md#103-tool-rules)).
+**[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (Core [§10.6](../../openbindings.md#106-retired-rule-identifiers), [OBI-T-10](../../openbindings.md#103-tool-rules)).
 
 **[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond Core's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
 
