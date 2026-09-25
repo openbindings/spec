@@ -256,6 +256,24 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **Second cold-read corrections.** "Tool" is again any software that acts
+  on OBI documents, so no producer class is implied. §10 states OBI-D-02's
+  authority once: the published schema decides it, and a disagreement with
+  the prose is an erratum corrected in the schema. §3 defines Core,
+  caller-facing, realization, target, interaction, validator, and invoker. §7
+  defines when a reference matches an embedded `$id` (the same string once
+  both are absolute and unfragmented) and says any `%` in a same-document
+  fragment is non-conformant. A document with no valid `openbindings` value
+  is non-conformant under OBI-D-12, not refused (§8.1, OBI-T-04). §5's names
+  pattern is an ECMA-262 regular expression matching the whole name, and the
+  schema's version pattern writes `[0-9]` for `\d`. OBI-T-12 forbids
+  approximate name matching in place of a tautology, the tool-rule preamble
+  says a SHOULD inside a requirement stays a recommendation, and the posture
+  paragraph no longer groups OBI-T-04's refusal with rules that never fail a
+  document. §5.2 says only an external unresolvable `$ref` passes
+  well-formedness, §5.4's opening sentence no longer reads as a source naming
+  its bindings, and §4 notes that the list transform maps one array value.
+
 - **Cold-read corrections.** "OBI position" is defined in
   [§3](openbindings.md#3-terminology): the schema positions the document model
   names and the subschemas 2020-12 defines below them, stopping inside a
