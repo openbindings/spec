@@ -256,6 +256,19 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **Transform readings the JSONata documentation leaves to its host.** §5.5
+  clause 6 states them as JSONata has them: where the documentation counts or
+  orders characters, a character is a Unicode code point; objects carry no
+  member order, as in JSON, so an order-dependent result is the host's and an
+  expression that needs an order sorts; and regular expressions are ECMA-262
+  as JSONata constructs them, without the `u` flag, with the `i` and `m`
+  flags. Clause 2 adds no numeric model: where the documentation leaves the
+  precision, range, or text form of numbers open, each host's numbers decide,
+  a value passed through untouched keeps its exact value, and a failure is
+  owed for a number a host cannot hold without changing it, not for
+  arithmetic rounding. The language corpus gains LANG-27 (a code point's
+  length) and LANG-28 (a regular expression read without the `u` flag).
+
 - **OBI-D-18 is retired: expression syntax is not a document rule.** An
   expression that is not in the pinned transform language fails when a tool
   evaluates it (§5.5 clause 4), as it does wherever JSONata is used. JSONata

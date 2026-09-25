@@ -12,7 +12,9 @@
     "expressions": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/expressions.md",
     "core": "../../../openbindings.md#55-transforms",
     "object": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.8.0/object-functions.md",
-    "datetime": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/date-time-functions.md"
+    "datetime": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/date-time-functions.md",
+    "string": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-1.7.0/string-functions.md",
+    "regex": "https://github.com/jsonata-js/jsonata/blob/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0/regex.md"
   },
   "cases": [
     {
@@ -353,6 +355,34 @@
       "expected": {
         "status": "json",
         "json": "true"
+      }
+    },
+    {
+      "id": "LANG-27",
+      "expr": "$length(\"𝄞\")",
+      "inputJSON": "{}",
+      "authority": [
+        "string",
+        "core"
+      ],
+      "reason": "The documented function counts characters, and a character is a Unicode code point (section 5.5 clause 6).",
+      "expected": {
+        "status": "json",
+        "json": "1"
+      }
+    },
+    {
+      "id": "LANG-28",
+      "expr": "$contains(\"é\", /\\p{L}/)",
+      "inputJSON": "{}",
+      "authority": [
+        "regex",
+        "core"
+      ],
+      "reason": "Regular expressions are ECMA-262 as JSONata constructs them, without the u flag (section 5.5 clause 6), so \\p is an identity escape for the letter p and {L} is literal text.",
+      "expected": {
+        "status": "json",
+        "json": "false"
       }
     }
   ]
