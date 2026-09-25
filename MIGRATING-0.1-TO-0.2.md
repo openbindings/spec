@@ -24,6 +24,8 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
 | Relative schema and named-transform references | Make OBI-defined references absolute or same-document |
 
+A 0.1 member left in place (`format`, `priority`, `ref`, `location`, `security`, `roles`, `satisfies`) makes a 0.2 document non-conformant: an object the specification defines carries no unprefixed field it does not define (§12). Keep private data under an `x-` name.
+
 Do not translate `priority` to `preference` mechanically. The direction
 reversed and 0.2 defines no selection algorithm. Reconsider the intended
 author signal, place it on individual bindings, and negate/order values only

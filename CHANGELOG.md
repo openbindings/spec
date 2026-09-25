@@ -256,6 +256,21 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **Unprefixed names are reserved for the specification.** An object the
+  specification defines (the root; operation, example, dependency, source,
+  and binding objects; and a named-transform `$ref` object) carries no field
+  the specification does not define unless its name begins with `x-`: such a
+  field violates OBI-D-02, as the derived schema now closes those objects
+  (§12). A tool processing the document still ignores it (OBI-T-02), as
+  JSON:API pairs "must not contain" with "must ignore", and OpenAPI, AsyncAPI,
+  and Arazzo close the same objects in their schemas. The core cannot tell a
+  misspelling from intent; the reservation keeps unprefixed names free for
+  future fields, and new fields arrive only in minor versions (§8.1). A 0.1
+  member left in place, such as `location` on a source, is now
+  non-conformant. The corpus gains OBI-D-02 cases, and the OBI-T-16 scenario
+  that put a schema-shaped member on the document root is retired, since
+  that document can no longer be conformant.
+
 - **Transform readings the JSONata documentation leaves to its host.** §5.5
   clause 6 states them as JSONata has them: where the documentation counts or
   orders characters, a character is a Unicode code point; objects carry no

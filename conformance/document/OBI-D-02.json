@@ -418,6 +418,161 @@
       "violates": [
         "OBI-D-02"
       ]
+    },
+    {
+      "description": "an operation member the specification does not define and that lacks the x- prefix (outpt beside input)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object"
+            },
+            "outpt": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a case variant of a defined member is not that member (Selector on a binding)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "b": {
+            "operation": "createTask",
+            "source": "s",
+            "Selector": "x"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a 0.1 member left on a source (location)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1",
+            "location": "https://example.com/openapi.json"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "an undefined root member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "info": {
+          "title": "Tasks"
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "an undefined member on a named-transform $ref object",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "transforms": {
+          "t": "$"
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "b": {
+            "operation": "createTask",
+            "source": "s",
+            "inputTransform": {
+              "$ref": "#/transforms/t",
+              "note": "x"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "x- members are extensions on every OBI-defined object, including examples, dependencies, and a named-transform $ref object",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-owner": "tasks-team",
+        "operations": {
+          "createTask": {
+            "x-note": 1,
+            "examples": {
+              "e": {
+                "x-note": 1
+              }
+            }
+          }
+        },
+        "dependencies": {
+          "d": {
+            "operation": "createTask",
+            "x-note": 1
+          }
+        },
+        "transforms": {
+          "t": "$"
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1",
+            "x-note": 1
+          }
+        },
+        "bindings": {
+          "b": {
+            "operation": "createTask",
+            "source": "s",
+            "x-note": 1,
+            "inputTransform": {
+              "$ref": "#/transforms/t",
+              "x-note": 1
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }
