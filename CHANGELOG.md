@@ -256,6 +256,37 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **The core makes only rules it can decide.** OBI-T-06 is retired: what a
+  `selector` means, and how a tool acting on one follows it, belong to the
+  binding specification, and a support claim already means support for the
+  specification as published ([§10.4](openbindings.md#104-binding-specification-rules)).
+  Six passages no longer say that a binding is actionable, that the document
+  makes realizations available, or that several bindings reach different
+  targets. [§6](openbindings.md#6-binding-specifications) no longer sets what
+  a binding specification may cover; OBI-B-02 item 4's success requirement
+  narrows to which values are successful output values, which every
+  specification meeting the old item still meets, and the completeness
+  test's purpose is stated for the points the core hands over; and the §1.2 failure entry
+  no longer describes binding implementations or the project's invocation
+  interfaces. §6 and OBI-B-02 state that behavior an implementation chooses
+  where a specification is silent is implementation-defined and not the
+  identifier's meaning, without rules on how implementations describe their
+  support. The seam promise is stated as what it is: a change outside the
+  three provisions §6 names does not reach a binding specification that
+  stands on them alone
+  ([§8.1](openbindings.md#81-openbindings-field-specification-version)).
+  Normative keywords that addressed parties no conformance class covers
+  (publishers of adoptable operation names and of binding-specification
+  identifiers, consumers of `idempotent`, document authors choosing a
+  version, and `x-` field definers) are now statements of meaning. Within a
+  contract-validation claim, `format` is an annotation in every schema the
+  claim evaluates, external subschemas included, and a tool may check
+  `format` separately as its own check
+  ([§5.2](openbindings.md#52-schemas)); this removes a contradiction with the
+  statement that external schemas follow their own dialects. The
+  binding-specification authoring guidance already carries the material that
+  left the core. The corpus README and fixture schema drop OBI-T-06.
+
 - The conformance vocabulary uses one verb. Checking a document against the
   document rules is validation, done by a validator, and
   [§10.5](openbindings.md#105-conformance-conclusions) is titled "Conformance

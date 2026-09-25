@@ -35,7 +35,7 @@
       "enum": [
         "positive-only"
       ],
-      "description": "If present, marks this fixture as providing partial coverage of its rule. 'positive-only' means the fixture has no discriminating negative cases (typically because negative cases cannot be expressed in the document-level fixture format without per-format harness logic, cf. OBI-T-06). A fixture marked this way is counted separately in the manifest and does not contribute to a 'complete coverage' claim. Absence means complete coverage."
+      "description": "If present, marks this fixture as providing partial coverage of its rule. 'positive-only' means the fixture has no discriminating negative cases (typically because negative cases cannot be expressed in the document-level fixture format without per-format harness logic). A fixture marked this way is counted separately in the manifest and does not contribute to a 'complete coverage' claim. Absence means complete coverage."
     },
     "tests": {
       "type": "array",
