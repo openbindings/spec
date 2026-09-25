@@ -256,6 +256,16 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **The core's examples use illustrative binding-specification identifiers.**
+  The Abstract, §4, §5.6, and §6 examples name `example.openapi@1`,
+  `example.mcp@1`, and `example.grpc@1`, which name no published
+  specification, and the Abstract says so. §5.3 explains selectors by
+  protocol (a JSON Pointer into an OpenAPI document, a gRPC method name, an
+  MCP tool name) rather than by project identifier, §6 no longer lists the
+  project's identifiers, and §14 points to the project's binding-spec work
+  without a publication status. The core corpus and the schema's description
+  use the same illustrative identifiers. No rule changes.
+
 - **Unprefixed names are reserved for the specification.** An object the
   specification defines (the root; operation, example, dependency, source,
   and binding objects; and a named-transform `$ref` object) carries no field

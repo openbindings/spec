@@ -34,7 +34,7 @@
         },
         "sources": {
           "http": {
-            "bindingSpec": "openbindings.openapi-3.1@1"
+            "bindingSpec": "example.openapi@1"
           },
           "exotic": {
             "bindingSpec": "totally-fictional-format@9.9.9"

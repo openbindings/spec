@@ -22,7 +22,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "bindingSpec": "example.openapi@1",
       "content": { "location": "https://example.com/openapi.json" }
     }
   },
@@ -36,7 +36,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
 }
 ```
 
-What a source's `content` holds is defined by its binding specification; the `{ "location": … }` shape in this document's examples is illustrative.
+The binding-specification identifiers in this document's examples (`example.openapi@1`, `example.mcp@1`, `example.grpc@1`) name no published binding specification, and the `{ "location": … }` shape of their `content` is illustrative: what a source's `content` holds is defined by its binding specification.
 
 The body of this document defines the OBI shape, its reference-resolution rules, the obligations of binding specifications, and a conformance floor for documents and tools. New readers may prefer the [§4. Overview](#4-overview) walkthrough; the normative material starts at [§2. Core invariants](#2-core-invariants).
 
@@ -226,8 +226,8 @@ An operation's presence alone declares a contract, not availability. A binding d
     "customerDelivery": {
       "operation": "events.deliver",
       "bindingSpecs": [
-        "openbindings.openapi-3.1@1",
-        "openbindings.grpc@1"
+        "example.openapi@1",
+        "example.grpc@1"
       ]
     }
   }
@@ -254,7 +254,7 @@ An operation is the contract, a source names the binding specification that gove
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "bindingSpec": "example.openapi@1",
       "content": { "location": "https://example.com/openapi.json" }
     }
   },
@@ -288,11 +288,11 @@ The same operation can be realized over a second protocol by adding another bind
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "bindingSpec": "example.openapi@1",
       "content": { "location": "https://example.com/openapi.json" }
     },
     "mcpServer": {
-      "bindingSpec": "openbindings.mcp@1",
+      "bindingSpec": "example.mcp@1",
       "content": { "location": "https://example.com/mcp" }
     }
   },
@@ -349,11 +349,11 @@ A realistic OBI layers in shared schemas, a named transform bridging a source's 
   },
   "sources": {
     "httpApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "bindingSpec": "example.openapi@1",
       "content": { "location": "https://example.com/openapi.json" }
     },
     "mcpServer": {
-      "bindingSpec": "openbindings.mcp@1",
+      "bindingSpec": "example.mcp@1",
       "content": { "location": "https://example.com/mcp" }
     }
   },
@@ -496,7 +496,7 @@ And MAY contain:
 | `inputTransform`  | JSONata string or `$ref` | See [Transforms].                                                                                 |
 | `outputTransform` | JSONata string or `$ref` | See [Transforms].                                                                                 |
 
-`selector` selects the binding's target, as the source's binding specification defines. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. A `selector` is any JSON value. Its accepted values and meaning, and the meaning of its absence, are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)). For example: JSON Pointer fragments under `openbindings.openapi-3.1@1` and its siblings; fully-qualified method names for gRPC-family specifications; tool names for MCP-family specifications. As with a source's `content` ([§5.4](#54-sources)), presence is distinct from value: `selector: null` is a present selector, and only omitting the member is the absent-`selector` case.
+`selector` selects the binding's target, as the source's binding specification defines. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. A `selector` is any JSON value. Its accepted values and meaning, and the meaning of its absence, are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)). For example, a binding specification might define a selector as a JSON Pointer into an OpenAPI document, a fully-qualified gRPC method name, or an MCP tool name. As with a source's `content` ([§5.4](#54-sources)), presence is distinct from value: `selector: null` is a present selector, and only omitting the member is the absent-`selector` case.
 
 **Realizations.** Multiple bindings MAY reference the same operation. Each is an author-declared realization of the operation: attaching several bindings asserts that each realizes the same logical capability and that each honors every portable fact the operation represents — its per-value schemas after any declared transforms, and its operation-level claims such as `idempotent`. The assertion's truth is author-attested, like `idempotent` itself ([§5.1](#51-operations)): a binding that does not honor the represented facts makes the document's claim false, which no structural rule detects. A caller interacts with the operation through any one of its bindings; using one binding is a complete use of the operation. OpenBindings does not prove semantic equivalence or mechanical interchangeability among realizations beyond the represented facts (invariant 1); a caller that requires a particular interaction pattern constrains or inspects binding selection.
 
@@ -642,7 +642,7 @@ No authority polices namespace ownership, and requiring one would recreate the r
 
 **Formality and completeness.** A binding specification is governing rules under a stable identifier, at whatever formality its author chooses: a published normative document, an internal design page, or rules that exist only as an implementation's committed behavior. [OBI-B-02](#104-binding-specification-rules) is a completeness floor, not a condition of existence: an incomplete specification may exist, be named by a conformant OBI, and have useful implementations. Where a specification is silent, an implementation's choice is implementation-defined; repetition or adoption does not make it the identifier's meaning. What no formality or completeness level relaxes is the identifier contract: one identifier, one meaning where meaning is defined ([OBI-B-01](#104-binding-specification-rules)). A specification that exists only as an implementation's committed behavior is pinned to that behavior, and changed specified behavior is a new identifier ([OBI-B-03](#104-binding-specification-rules)), never a silent redefinition by deployment.
 
-**Project and third-party publication.** Publishers choose the spelling and versioning conventions of the binding-specification identifiers under their authority. The OpenBindings project currently uses identifiers such as `openbindings.openapi-3.1@1` and `openbindings.mcp@1`; that spelling is a project publishing convention, not identifier structure defined by Core. To Core, each complete string is opaque: Core assigns no meaning to any apparent namespace, family name, upstream line, dialect, revision, separator, or other segment, and imposes no rule about which of those a publisher may encode in the string. Third parties publish equally valid binding specifications under identifiers of their own choosing, with no project registration or approval. The project's authoring guidance for binding specifications (`binding-specs/README.md` in this repository) provides its own naming convention and an informative template derived from the normative floor of [OBI-B-02](#104-binding-specification-rules); neither is a Core conformance target.
+**Project and third-party publication.** Publishers choose the spelling and versioning conventions of the binding-specification identifiers under their authority. To Core, each complete string is opaque: Core assigns no meaning to any apparent namespace, family name, upstream line, dialect, revision, separator, or other segment, and imposes no rule about which of those a publisher may encode in the string. Third parties publish equally valid binding specifications under identifiers of their own choosing, with no project registration or approval. The project's authoring guidance for binding specifications (`binding-specs/README.md` in this repository) provides its own naming convention and an informative template derived from the normative floor of [OBI-B-02](#104-binding-specification-rules); neither is a Core conformance target.
 
 A publisher may assign one identifier to a specification that accepts one upstream artifact edition or several exact editions, or divide an upstream family among several identifiers. Core neither requires nor infers either choice. Whatever exact identifier the publisher assigns, the specification's accepted domain is part of its meaning: after publication, adding or removing an accepted upstream edition, source mode, or previously excluded feature or interaction changes that semantic definition even when behavior for every previously accepted input would remain unchanged, and therefore requires a new identifier under [OBI-B-03](#104-binding-specification-rules).
 
@@ -916,7 +916,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 - `openbindings.schema.json` — derived JSON Schema for structural document validity.
 - The openbindings project's shared-contract interfaces — published at [openbindings.com/interfaces](https://openbindings.com/interfaces) (informational).
-- `binding-specs/` — this project's binding-specification candidates and authoring guidance for new ones; no project binding specification has yet been published.
+- `binding-specs/` — this project's binding-specification work and authoring guidance.
 - `conformance/` — conformance test corpus keyed to OBI-D-##/OBI-T-##/OBI-B-## rule identifiers.
 - `CHANGELOG.md` — version history and diffs between specification versions.
 - `EDITORS.md` — current editor roster.

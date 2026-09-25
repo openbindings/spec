@@ -52,7 +52,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1"
+            "bindingSpec": "example.openapi@1"
           }
         },
         "bindings": {
@@ -175,7 +175,7 @@
         },
         "sources": {
           "http api": {
-            "bindingSpec": "openbindings.openapi-3.1@1"
+            "bindingSpec": "example.openapi@1"
           }
         }
       },
@@ -277,7 +277,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1"
+            "bindingSpec": "example.openapi@1"
           }
         },
         "bindings": {
