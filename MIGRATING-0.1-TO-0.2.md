@@ -15,13 +15,14 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | `sources.*.format` | `sources.*.bindingSpec` |
 | Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi-3.1@1`, selected to match the artifact’s edition line |
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
-| `bindings.*.ref` | `bindings.*.selector`; same meaning — the binding-specification-defined selector of a target within the governed source |
+| `bindings.*.ref` | `bindings.*.selector`: the binding-specification-defined selection of the binding's target, as whatever JSON value that specification accepts |
+| `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the governing binding specification defines; the core has no `location` member |
 | Transform objects such as `{ "language": "jsonata", "expression": "..." }` | A JSONata expression string |
 | `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
 | No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `bindingSpecs` |
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
-| Relative source locations and schema references | Make source locations binding-spec-valid absolute addresses; make OBI-governed references absolute or same-document |
+| Relative schema and named-transform references | Make OBI-defined references absolute or same-document |
 
 Do not translate `priority` to `preference` mechanically. The direction
 reversed and 0.2 defines no selection algorithm. Reconsider the intended
@@ -93,8 +94,8 @@ format. For every source:
 1. Select the binding specification that actually governs the source and its
    bindings.
 2. Replace `format` with that specification's exact identifier.
-3. Validate `location`, `content`, and every binding `selector` under that
-   specification.
+3. Carry what the source needs in `content`, in the shape that specification
+   defines, and validate `content` and every binding `selector` under it.
 4. Supply any required runtime choices through invocation context
    configuration; do not invent them in the OBI.
 5. Refuse or exclude interactions that the binding specification cannot
@@ -114,7 +115,9 @@ extension field merely to preserve the old shape.
 
 OBI documents are context-free in 0.2:
 
-- source locations cannot depend on the OBI retrieval URL;
+- what a source's `content` and a binding's `selector` mean, including any
+  address or reference within them, is their binding specification's to
+  define;
 - OBI-governed references are absolute or same-document;
 - named transform references have the form `#/transforms/<key>`;
 - schema reference behavior follows JSON Schema 2020-12 from the OBI document
@@ -188,7 +191,7 @@ validation must not be presented as unqualified conformance.
   "sources": {
     "api": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://api.example.com/openapi.json"
+      "content": { "location": "https://api.example.com/openapi.json" }
     }
   },
   "bindings": {
@@ -201,8 +204,10 @@ validation must not be presented as unqualified conformance.
 }
 ```
 
-The example shows document-shape changes only. Whether that `location` and
-`selector` pair identifies a target, and how to invoke it, is defined by
+The example shows document-shape changes only. The `content` shown is
+illustrative: its shape is the binding specification's to define. Whether
+that `content` and `selector` identify a target, and how to invoke it, is
+defined by
 the `openbindings.openapi-2.0@1`/`-3.0@1`/`-3.1@1`/`-3.2@1` family (see [binding-specs/README.md](binding-specs/README.md)), and
 the operation schemas still need to be checked against the actual upstream
 interaction.

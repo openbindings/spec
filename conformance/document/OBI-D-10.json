@@ -12,8 +12,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "bindings": {
@@ -34,8 +33,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "bindings": {
@@ -57,8 +55,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "transforms": {
@@ -85,8 +82,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "transforms": {
@@ -116,8 +112,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "transforms": {
@@ -147,8 +142,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "transforms": {

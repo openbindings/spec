@@ -123,15 +123,16 @@ conformance failure.
 ### Source
 
 A source names an exact, opaque binding-specification identifier in
-`bindingSpec` and supplies `location`, `content`, or both as that specification
-permits. The source may point at an artifact, embed one, address a live surface
-with no separate artifact, or combine an embedded artifact with a service
-address.
+`bindingSpec` and may carry `content`, any JSON value that specification wholly
+defines. Through `content` a source may embed an artifact, address one, address
+a live surface with no separate artifact, or combine these, as its binding
+specification defines; the core gives `content` no meaning of its own.
 
 ### Binding
 
-A binding connects one operation to one source and identifies a target through
-`selector` when the binding specification requires one. It may carry input and
+A binding connects one operation to one source and selects a target through
+`selector`, any JSON value the binding specification defines, when that
+specification requires one. It may carry input and
 output transforms that bridge value-shape differences. A transform does not
 redefine transport lifecycle or repair an interaction that the binding
 specification cannot represent.
@@ -139,10 +140,10 @@ specification cannot represent.
 ### Binding specification
 
 A binding specification gives one source family stable OpenBindings meaning.
-It owns accepted source representations, address semantics, `content`,
-composition of `content` and `location`, `selector` syntax and resolution, target
-identity, interaction mechanics, operation-boundary correspondence, and
-success classification.
+It owns a source's `content` (its accepted values, any artifact representations
+and addresses within it, and how they resolve), `selector` values and
+resolution, target identity, interaction mechanics, operation-boundary
+correspondence, and success classification.
 
 A binding specification is sovereign over the sources that name it. It may
 incorporate an upstream artifact or protocol on stated terms, subset, extend,
@@ -295,8 +296,8 @@ equivalent, or hiding protocol behavior that callers actually need to control.
 3. Select a binding using application policy; do not infer a universal
    preference from map order.
 4. Load the exact binding specification named by the source.
-5. Acquire and interpret the source using its `content`, `location`, and
-   composition rules.
+5. Acquire and interpret the source's `content` as its binding specification
+   defines.
 6. Resolve the binding's `selector` and any required interpretation choices.
 7. Obtain credentials or other prerequisites through runtime context without
    mutating them into the OBI. Context carries what the manifestation
@@ -355,8 +356,9 @@ boundaries. The SDK audit will determine the eventual dependency-oriented API.
 3. For each target, either emit an accurately identified operation and binding
    or report a specific exclusion/refusal. Never silently omit a target while
    claiming exhaustive coverage.
-4. Preserve the governed source artifact or its stable location as the binding
-   specification permits; do not rewrite it into a project-specific dialect.
+4. Preserve the governed source artifact, or its stable address, in the form
+   the binding specification defines; do not rewrite it into a project-specific
+   dialect.
 5. Derive only contracts and metadata justified by the source. Do not invent
    descriptions, schemas, equivalence claims, or protocol defaults.
 6. Emit diagnostics or coverage evidence that distinguishes represented,
@@ -476,7 +478,7 @@ captured.
   "sources": {
     "tasksApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://example.com/openapi.json"
+      "content": { "location": "https://example.com/openapi.json" }
     }
   },
   "bindings": {
@@ -489,8 +491,9 @@ captured.
 }
 ```
 
-The operation owns the caller-facing values. The OpenAPI source owns its HTTP
-declarations. `openbindings.openapi-3.1@1` explains how the `selector` resolves, how
+The `content` shape is illustrative; each binding specification defines its
+own. The operation owns the caller-facing values. The OpenAPI source owns its
+HTTP declarations. `openbindings.openapi-3.1@1` explains how the `selector` resolves, how
 values map to the HTTP exchange, and which outcomes produce successful output
 values. An invoker supplies runtime context and transport policy. None of those
 layers should silently take authority from another.

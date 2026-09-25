@@ -56,8 +56,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "openbindings.openapi-3.1@1",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": "openbindings.openapi-3.1@1"
           }
         },
         "bindings": {
@@ -80,7 +79,7 @@
         },
         "sources": {
           "httpApi": {
-            "location": "https://api.example.com/openapi.json"
+            "description": "Task API"
           }
         }
       },
@@ -98,8 +97,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "",
-            "location": "https://api.example.com/openapi.json"
+            "bindingSpec": ""
           }
         }
       },
@@ -109,7 +107,7 @@
       ]
     },
     {
-      "description": "source missing both `location` and `content`",
+      "description": "source with only `bindingSpec` (content is optional; whether a source needs it is its binding specification's to define)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -121,10 +119,104 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-02"
-      ]
+      "valid": true
+    },
+    {
+      "description": "source `content` is any JSON value, and `content: null` is a present member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "objectContent": {
+            "bindingSpec": "example.test@1",
+            "content": {
+              "location": "tasks.json"
+            }
+          },
+          "stringContent": {
+            "bindingSpec": "example.test@1",
+            "content": "openapi: 3.1.0"
+          },
+          "arrayContent": {
+            "bindingSpec": "example.test@1",
+            "content": [
+              1,
+              "two",
+              {
+                "three": 3
+              }
+            ]
+          },
+          "numberContent": {
+            "bindingSpec": "example.test@1",
+            "content": 7
+          },
+          "booleanContent": {
+            "bindingSpec": "example.test@1",
+            "content": false
+          },
+          "nullContent": {
+            "bindingSpec": "example.test@1",
+            "content": null
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "binding `selector` is any JSON value, and `selector: null` is a present member",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "s": {
+            "bindingSpec": "example.test@1"
+          }
+        },
+        "bindings": {
+          "createTask.string": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": "tasks.create"
+          },
+          "createTask.object": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": {
+              "path": "/tasks",
+              "method": "post"
+            }
+          },
+          "createTask.array": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": [
+              "tasks",
+              "create"
+            ]
+          },
+          "createTask.number": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": 3
+          },
+          "createTask.boolean": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": true
+          },
+          "createTask.null": {
+            "operation": "createTask",
+            "source": "s",
+            "selector": null
+          }
+        }
+      },
+      "valid": true
     },
     {
       "description": "operation deprecated flag is a string instead of boolean",

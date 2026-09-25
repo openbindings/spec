@@ -23,7 +23,7 @@ OpenBindings is a portable interface description format; its documents are OBIs 
   "sources": {
     "httpApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://example.com/openapi.json"
+      "content": { "location": "https://example.com/openapi.json" }
     }
   },
   "bindings": {
@@ -35,6 +35,8 @@ OpenBindings is a portable interface description format; its documents are OBIs 
   }
 }
 ```
+
+What a source's `content` holds is defined by its binding specification; the `{ "location": … }` shape in this document's examples is illustrative.
 
 The body of this document defines the OBI shape, its reference-resolution rules, the obligations of binding specifications, and a conformance floor for documents and tools. New readers may prefer the [§4. Overview](#4-overview) walkthrough; the normative material starts at [§2. Core invariants](#2-core-invariants).
 
@@ -122,7 +124,7 @@ Where a source carries or points at a binding artifact, an OBI does not replace 
 - **One operation, many bindings.** A single operation contract can be realized over multiple protocols simultaneously without duplicating the contract.
 - **One contract, either direction.** Bindings declare realizations the document makes available; named dependencies declare where the described component consumes realizations, without splitting the operation registry into provider and consumer copies.
 - **Vendor-independent correspondence.** An operation can adopt the name a shared contract publishes, so consumers recognize it by that shared name rather than by who runs the service (see [§5.1. Operations](#51-operations)).
-- **Context-free references.** Every OBI-defined document reference is absolute or same-document, so a document resolves identically wherever it was obtained (origin, cache, redirect, stdin, or memory). (`bindings[*].selector` is interpreted by the binding specification, not by this rule; see [§7. Reference resolution](#7-reference-resolution).)
+- **Context-free references.** Every OBI-defined document reference is absolute or same-document, so a document's references resolve identically wherever it was obtained (origin, cache, redirect, stdin, or memory). (A source's `content` and a binding's `selector` are interpreted by their binding specification, not by this rule; see [§7. Reference resolution](#7-reference-resolution).)
 - **Offline-decidable conformance.** Every document rule in [§10.2](#102-document-rules) is decidable from the document and locally available resources; no rule's outcome depends on network state. A validator that lacks a capability a rule requires leaves the rule inconclusive, which is not non-conformant ([§10.5](#105-conformance-conclusions)), and never reaches the network to decide it.
 
 ### 1.2. Out of scope
@@ -149,7 +151,7 @@ Where this specification defers to "the binding specification" or to "implementa
 
 ### 1.4. Obtaining an OBI
 
-Acquisition and publication are outside this specification. An OBI may be obtained through local files, packages, standard input, embedded resources, network retrieval, or any other mechanism without changing its meaning; no reference in the document resolves against the location it was obtained from ([§7](#7-reference-resolution)).
+Acquisition and publication are outside this specification. An OBI may be obtained through local files, packages, standard input, embedded resources, network retrieval, or any other mechanism without changing its meaning; no OBI-defined reference in the document resolves against the location it was obtained from ([§7](#7-reference-resolution)).
 
 ---
 
@@ -158,9 +160,9 @@ Acquisition and publication are outside this specification. An OBI may be obtain
 The rules in this specification instantiate six invariants. They are stated here once; document and tool rules cite them rather than restating them.
 
 1. **Per-value contract.** Operation `input` and `output` schemas govern each value that crosses the operation's caller-facing boundary — one value at a time. Interaction pattern, cardinality, framing, completion, and lifecycle are the selected binding's concern, defined by its binding specification.
-2. **Enabling, not invoking.** A binding enables acting on its operation under its governing binding specification, which defines how the target is identified and what acting on it requires; this specification makes no claim that the document alone suffices to identify, reach, or act on a target. A dependency carries no target and becomes actionable only through implementation-defined composition with a realization. No rule in this specification obligates a tool to invoke, satisfy a dependency, validate values at runtime because it invokes, or handle failures in a prescribed way. Rules about validation semantics apply to tools that claim the corresponding capability.
-3. **Split authority.** The operation owns the caller-facing value contract. The binding specification owns everything needed to act on a source: addresses, representations, references, interaction, and success classification. Neither layer overrides the other.
-4. **Context-free documents.** No OBI-defined reference resolves against the URI a document was fetched from. A document has no "home"; two copies mean the same thing everywhere. OBI assigns no document identity; `name` and `version` are labels.
+2. **Enabling, not invoking.** A binding enables acting on its operation under its source's binding specification, which defines how its target is identified; this specification makes no claim that the document alone suffices to identify, reach, or act on a target. A dependency carries no target and becomes actionable only through implementation-defined composition with a realization. No rule in this specification obligates a tool to invoke, satisfy a dependency, validate values at runtime because it invokes, or handle failures in a prescribed way. Rules about validation semantics apply to tools that claim the corresponding capability.
+3. **Split authority.** The operation owns the caller-facing value contract. The binding specification owns a source's `content`, a binding's `selector`, and everything needed to act on them: addresses, representations, references, interaction, and success classification. Neither layer overrides the other.
+4. **Context-free references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the document model means the same thing however a document was obtained. What a source's `content` and a binding's `selector` mean is their binding specification's to define (invariant 3). OBI assigns no document identity; `name` and `version` are labels.
 5. **Offline-decidable conformance.** Document conformance is an objective property of the document, decidable from the document plus locally available resources (bundled meta-schemas included). No document rule's outcome depends on network state, so conformance is stable over time. A rule whose check takes a capability a validator lacks follows the partial-validation posture of [§10.5](#105-conformance-conclusions): inconclusive is not non-conformant.
 6. **Decentralized extension.** Binding specifications, their identifiers, and shared correspondence names are governed by whoever publishes them. Nothing in the model requires a registry, and no identifier is dereferenced to be understood.
 
@@ -172,16 +174,16 @@ The rules in this specification instantiate six invariants. They are stated here
 - **Tool**: any software that acts on OBI documents. A tool's obligations follow the capabilities it exercises, not a fixed class ([§10.1](#101-tool-obligations)); the rules of [§10.3](#103-tool-rules) are addressed to "a conformant tool."
 - **Processor**: any tool that processes an OBI document. Its baseline capacity is reading — parsing, validating, indexing, or rendering — which it MAY extend with resolving references, evaluating transforms, and acting on sources. Rules marked "(all processors)" bind every processor, including one that does no more than read; a processor that exercises further capabilities owes the correspondingly scoped rules in addition.
 - **Operation**: a named protocol-independent capability contract with optional per-value input/output schemas. Stored under a key in the document's `operations` map. An operation is neutral as to whether the document binds it, depends on it, both, or neither. It is not a complete binding-independent invocation signature; it does not declare interaction pattern or cardinality.
-- **Binding**: an author-declared realization of an operation through a specific entry in a source. Stored under a key in the document's `bindings` map.
+- **Binding**: an author-declared realization of an operation through a source, optionally with a selector its source's binding specification defines. Stored under a key in the document's `bindings` map.
 - **Dependency**: a named declaration that the described component consumes a realization of an operation, optionally constrained to one of a declared set of binding specifications. Stored under a key in the document's `dependencies` map. A dependency is not itself a realization or target.
 - **Binding specification**: one stable semantic definition, under one defining authority, of how a family of sources and their bindings are interpreted and acted upon ([§6](#6-binding-specifications)). It may incorporate existing artifact or protocol standards by reference, define its own source-artifact model and interaction, or govern an artifactless live surface.
 - **Binding specification identifier**: an exact, opaque, non-empty string denoting one binding specification. A source carries one in `bindingSpec`; a dependency may list acceptable identifiers in `bindingSpecs`. A name, not a locator.
-- **Source**: the binding-specification-governed carrier or address through which bindings identify concrete targets, consisting of a binding specification identifier together with a location, embedded content, or both (see [§5.4. Sources](#54-sources)). A source may carry or point at an artifact, address a live surface without a separate artifact, or do both.
-- **Source artifact**: when a source family has one, a concrete representation accepted by its binding specification (an OpenAPI document, a `.proto` source, an operation graph, an MCP endpoint's tool listing), carried via `location`, `content`, or both. A binding specification may incorporate an existing artifact format, define the format itself, or accept no artifact for a source mode.
+- **Source**: a binding specification identifier together with optional content its binding specification defines (see [§5.4. Sources](#54-sources)). What a source carries or addresses (an artifact, a live surface, both, or something a processor's environment provides) is that specification's to define.
+- **Source artifact**: when a source family has one, a concrete representation accepted by its binding specification (an OpenAPI document, a `.proto` source, an operation graph, an MCP endpoint's tool listing), carried in or referenced from a source's `content`, or obtained otherwise, as its binding specification defines. A binding specification may incorporate an existing artifact format, define the format itself, or accept no artifact for a source mode.
 - **Transform**: a per-value shape mapping between an operation's contract and a source's expected value representation. Stored under a key in the document's `transforms` map, or inline on a binding.
 - **Alias**: an additional name under which an operation is recognized, beyond its key. An operation's key plus its aliases form one flat, document-unique namespace of names that all resolve to that operation.
 
-How these relate: an **operation** is the portable contract, independent of any protocol. A **source** names the **binding specification** that governs it and carries or addresses the concrete target information that specification defines; a source artifact is optional. A **binding** links one operation to one source and optionally attaches a **transform** that bridges shape differences. A **dependency** identifies a named point where the described component consumes an operation and may constrain the binding-specification families acceptable at that point. An operation is addressable by its key or any of its **aliases**; both are equally valid for name resolution, while binding and dependency references use its key.
+How these relate: an **operation** is the portable contract, independent of any protocol. A **source** names the **binding specification** that governs it and carries whatever `content` that specification defines; a source artifact is optional. A **binding** links one operation to one source and optionally attaches a **transform** that bridges shape differences. A **dependency** identifies a named point where the described component consumes an operation and may constrain the binding-specification families acceptable at that point. An operation is addressable by its key or any of its **aliases**; both are equally valid for name resolution, while binding and dependency references use its key.
 
 Whether one OBI is compatible with another is a matter of tool-defined comparison; this specification defines neither comparison nor matching semantics. Cross-document correspondence is claimed by name adoption: an operation **corresponds to** a shared contract's operation by carrying that contract's operation name as its key or an alias. Adoption is an author assertion of correspondence; it does not identify a particular contract document or version, and it does not establish compatibility, ownership, or substitutability. The mechanism is detailed in [§5.1. Operations](#51-operations).
 
@@ -245,7 +247,7 @@ An operation is the contract, a source carries or addresses a governed concrete 
   "sources": {
     "httpApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://example.com/openapi.json"
+      "content": { "location": "https://example.com/openapi.json" }
     }
   },
   "bindings": {
@@ -279,11 +281,11 @@ The same operation can be realized over a second protocol by adding another bind
   "sources": {
     "httpApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://example.com/openapi.json"
+      "content": { "location": "https://example.com/openapi.json" }
     },
     "mcpServer": {
       "bindingSpec": "openbindings.mcp@1",
-      "location": "https://example.com/mcp"
+      "content": { "location": "https://example.com/mcp" }
     }
   },
   "bindings": {
@@ -340,11 +342,11 @@ A realistic OBI layers in shared schemas, a named transform bridging a source's 
   "sources": {
     "httpApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://example.com/openapi.json"
+      "content": { "location": "https://example.com/openapi.json" }
     },
     "mcpServer": {
       "bindingSpec": "openbindings.mcp@1",
-      "location": "https://example.com/mcp"
+      "content": { "location": "https://example.com/mcp" }
     }
   },
   "bindings": {
@@ -475,14 +477,14 @@ And MAY contain:
 
 | Field             | Type                     | Purpose                                                                                           |
 | ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------- |
-| `selector`        | string                   | Selector identifying a specific target within the governed source. Binding-specification-defined. |
+| `selector`        | any JSON value           | Selection of the binding's target. Binding-specification-defined.                                 |
 | `preference`      | integer                  | Author preference signal among bindings of the same operation; see below.                         |
 | `description`     | string                   | Human-readable description.                                                                       |
 | `deprecated`      | boolean                  | Author recommends migration away from this binding.                                               |
 | `inputTransform`  | JSONata string or `$ref` | See [Transforms].                                                                                 |
 | `outputTransform` | JSONata string or `$ref` | See [Transforms].                                                                                 |
 
-`selector` identifies a specific target within the governed source. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. Its syntax and meaning — including the absent-`selector` case, which targets whatever source-level default the binding specification defines — are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)); tools that resolve or act on `selector` MUST honor those conventions ([OBI-T-06](#103-tool-rules)). For example: JSON Pointer fragments under `openbindings.openapi-3.1@1` and its siblings; fully-qualified method names for gRPC-family specifications; tool names for MCP-family specifications.
+`selector` selects the binding's target, as the source's binding specification defines. That target may be an entry in an artifact, a member of a live surface, or another target form the binding specification defines. A `selector` is any JSON value. Its accepted values and meaning, and the meaning of its absence, are the governing binding specification's concern ([OBI-B-02](#104-binding-specification-rules)); tools that resolve or act on `selector` MUST honor those conventions ([OBI-T-06](#103-tool-rules)). For example: JSON Pointer fragments under `openbindings.openapi-3.1@1` and its siblings; fully-qualified method names for gRPC-family specifications; tool names for MCP-family specifications. As with a source's `content` ([§5.4](#54-sources)), presence is distinct from value: `selector: null` is a present selector, and only omitting the member is the absent-`selector` case.
 
 **Realizations.** Multiple bindings MAY reference the same operation. Each is an author-declared realization of the operation: attaching several bindings asserts that each realizes the same logical capability through a different concrete target and that each honors every portable fact the operation represents — its per-value schemas after any declared transforms, and its operation-level claims such as `idempotent`. The assertion's truth is author-attested, like `idempotent` itself ([§5.1](#51-operations)): a binding that does not honor the represented facts makes the document's claim false, which no structural rule detects. A caller interacts with the operation through any one of its bindings; using one binding is a complete use of the operation. OpenBindings does not prove semantic equivalence or mechanical interchangeability among realizations beyond the represented facts (invariant 1); a caller that requires a particular interaction pattern constrains or inspects binding selection.
 
@@ -498,26 +500,16 @@ A source object MUST contain:
 | ------------- | ------ | ---------------------------------------------------------------------- |
 | `bindingSpec` | string | Binding specification identifier. See [§6](#6-binding-specifications). |
 
-And MUST contain at least one of:
-
-| Field      | Type           | Purpose                                                                    |
-| ---------- | -------------- | -------------------------------------------------------------------------- |
-| `location` | string         | Binding-specification-defined absolute address associated with the source. |
-| `content`  | any JSON value | Embedded source-artifact representation.                                   |
-
 And MAY contain:
 
-| Field         | Type   | Purpose                     |
-| ------------- | ------ | --------------------------- |
-| `description` | string | Human-readable description. |
+| Field         | Type           | Purpose                                                                  |
+| ------------- | -------------- | ------------------------------------------------------------------------ |
+| `content`     | any JSON value | What the source carries for its binding specification.                   |
+| `description` | string         | Human-readable description.                                              |
 
-`location` is an absolute address — an absolute URI, or another absolute form the binding specification defines (a gRPC `host:port`) — and never a relative reference ([OBI-D-05](#102-document-rules)). What it addresses is the binding specification's concern: depending on that specification it may identify the artifact, the live service, a discovery point, artifact provenance, or a combination. This specification assigns it no universal role and does not promise that a tool can retrieve or act on a source without understanding its binding specification.
+A source names the binding specification that governs it and the bindings that reference it, and carries in `content` whatever that specification needs. The binding specification defines everything about `content` ([OBI-B-02](#104-binding-specification-rules)): whether it may be absent; which values it accepts and what they mean; whether it embeds an artifact, addresses one, addresses a live service, names something a processor's environment provides, or any combination; and how anything within it is resolved. This specification assigns no universal meaning to any JSON type or member within `content` (an object is not generically "the parsed artifact," a string not generically "an address" or "UTF-8 source text"), and does not promise that a tool can retrieve, resolve, or act on a source without understanding its binding specification. JSON has no binary primitive; whether and how a binding specification encodes a binary artifact is its choice.
 
-`content`, when present, carries an embedded source-artifact representation as any JSON value — object, array, string, number, boolean, or `null`. The binding specification defines which values are accepted representations and what they mean; this specification assigns no universal encoding to a JSON type (an object is not generically "the parsed artifact," a string not generically "UTF-8 source text"). Member **presence** is distinct from member value: `content: null` carries the JSON value `null` and is a present member for the at-least-one-of rule; only omitting the member omits embedded content. Implementations therefore track presence rather than testing for nullish values. JSON has no binary primitive; whether and how a binding specification encodes binary artifacts (an ordinary string encoding, a structured value) or requires them to ride `location` is that specification's choice.
-
-**Composition.** When `content` is present, it is the artifact representation the processor interprets; a fetch from `location` does not silently replace it. This **content-primacy floor** is part of the composition semantics every binding specification defines ([OBI-B-02](#104-binding-specification-rules)): what a specification assigns a co-present `location` is its remaining role — invocation target, artifact identity, provenance, discovery address, or a reference base for content — never a silent replacement of embedded content.
-
-In particular, a binding specification MAY define a co-present absolute `location` as the base for resolving references internal to embedded `content`: the base then travels in the document, so every processor receives the same value and the document stays context-free. What never supplies a base is the URI the OBI document itself was obtained from (invariant 4).
+Member **presence** is distinct from member value: `content: null` carries the JSON value `null` and is a present member; only omitting the member omits content. Implementations therefore track presence rather than testing for nullish values.
 
 **Target identity.** How a binding's target is identified is its binding specification's to define ([OBI-B-02](#104-binding-specification-rules)), including any part the environment a processor runs in plays: a binding specification may identify a target entirely from the binding and its source, or from them together with configuration, runtime naming, or other state it defines. This specification makes no claim that a target is identifiable, reachable, or usable from the document alone; whether a processor can act on a binding depends on the binding specification and on what that processor has, not on document conformance.
 
@@ -597,7 +589,7 @@ The layers are distinct:
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Binding specification identifier     | The exact string a source carries or a dependency lists. A name, not a locator.                                                                                                                                       |
 | Binding specification                | One semantic definition of how its sources and bindings are interpreted and acted upon. May incorporate existing authorities, define its own artifact and interaction model, or govern an artifactless live surface. |
-| Source artifact                      | An optional concrete representation the binding specification accepts, carried via `location`, `content`, or both. Its format may be incorporated or defined by the binding specification itself.                    |
+| Source artifact                      | An optional concrete representation the binding specification accepts, carried in or referenced from a source's `content` or obtained otherwise, as it defines. Its format may be incorporated or defined by the binding specification itself. |
 | Binding-specification implementation | Tool code implementing the specification. Not what the identifier names.                                                                                                                                             |
 
 The binding specification is the governing semantic authority for the sources
@@ -614,8 +606,8 @@ A binding specification is therefore a semantic peer of this core specification,
 
 **What a binding specification stands on.** This specification hands a binding specification three things, each defined where the document model defines it. Nothing else in this specification bears on a binding specification's meaning.
 
-- **Carriage** ([§5.4](#54-sources)): a source is `location`, `content`, or both; `location` is an absolute address ([OBI-D-05](#102-document-rules)); `content` is any JSON value with no encoding assigned by this specification; when both are present, content has primacy.
-- **Selection** ([§5.3](#53-bindings)): a binding's optional `selector` string, identifying one target within its referenced source.
+- **Carriage** ([§5.4](#54-sources)): a source's optional `content`, any JSON value, to which this specification assigns no meaning.
+- **Selection** ([§5.3](#53-bindings)): a binding's optional `selector`, any JSON value, to which this specification assigns no meaning.
 - **Values** ([§5.1](#51-operations), [§5.5](#55-transforms)): each value crossing an operation boundary is one JSON value under a per-value contract; `output` describes successful values only; the binding specification sees the source-facing value, after `inputTransform` and before `outputTransform`; and it may supply context bindings at transform positions.
 
 [OBI-B-02](#104-binding-specification-rules) is the completion of that handoff: at each of these points, the meaning this specification leaves open is what a binding specification defines. The rest of this specification is the document's and the tools' business: the spelling of `bindingSpec`, selection signals, operation identifiers and aliases, dependencies, schema semantics, reference resolution, and the transform language. A binding specification's meaning neither depends on those provisions nor speaks to them. A binding specification that also describes how documents are synthesized from its artifacts writes whole documents and may reach any part of the model in doing so; that reach belongs to synthesis, not to binding meaning.
@@ -629,7 +621,7 @@ An unknown identifier does not make an otherwise conformant document non-conform
 ```json
 {
   "bindingSpec": "my-cli.usage-json@1",
-  "location": "file:///home/user/project/usage.kdl"
+  "content": { "location": "file:///home/user/project/usage.kdl" }
 }
 ```
 
@@ -645,26 +637,23 @@ A publisher may assign one identifier to a specification that accepts one upstre
 
 ## 7. Reference resolution
 
-OBI documents define no `id` field, and no reference in them resolves against the URI a document was fetched from, so a document resolves identically however it was obtained: from its origin, a cache, a redirect, stdin, or an in-memory object (invariant 4). OBI assigns no identity of its own; the `name` and `version` fields are labels, not identifiers.
+OBI documents define no `id` field, and no OBI-defined reference in them resolves against the URI a document was fetched from, so a document's references resolve identically however it was obtained: from its origin, a cache, a redirect, stdin, or an in-memory object (invariant 4). OBI assigns no identity of its own; the `name` and `version` fields are labels, not identifiers.
 
 Every **OBI-defined document reference** is absolute or same-document. For this section, an OBI-defined document reference is one of:
 
-1. **`sources[*].location`**: an absolute URI, or a binding-specification-defined absolute address that needs no base to interpret (a gRPC `host:port`). Never a relative reference.
-2. **A schema `$ref`** (on an operation `input`/`output`, in the `schemas` map, or nested as a subschema): a same-document fragment in JSON Pointer form (a bare `#`, or `#` followed by an [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) pointer) or an absolute URI.
+1. **A schema `$ref`** (on an operation `input`/`output`, in the `schemas` map, or nested as a subschema): a same-document fragment in JSON Pointer form (a bare `#`, or `#` followed by an [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) pointer) or an absolute URI.
    - **Literal form.** Same-document fragments are written with the pointer's characters unencoded, so every addressable location has exactly one conformant spelling and two references to the same location are byte-equal; a percent-encoded fragment (`#/schemas/T%61sk`) is not a conformant OBI-defined reference.
    - **RFC 6901 escaping** (`~0` for `~`, `~1` for `/`) is JSON Pointer syntax, not an encoding layer, and is permitted in literal form. It is never needed to address OBI-defined map keys, whose name grammar ([OBI-D-03](#102-document-rules)) excludes `~` and `/`; a pointer traversing property names inside schema content (which OBI-D-03 does not constrain) uses it normally.
    - **An accepted limit.** A location whose reference tokens contain characters that cannot appear literally in a URI fragment (a property name containing a space) is not addressable at an OBI position. The supported arrangement is to define that schema as a named entry in `schemas` and reference it _from_ the deep position — always available, because the document author controls both ends.
    - **Other fragment forms.** Plain-name (`$anchor`) fragments are not used as same-document references at OBI positions: the `schemas` map is the document's named-schema mechanism (`#/schemas/<name>`). The dynamic pair (`$dynamicRef`/`$dynamicAnchor`) does not appear at OBI positions: a `$dynamicRef` that engages no dynamic anchor behaves exactly as `$ref` (write `$ref`), and any form that does engage one resolves against the runtime dynamic scope — context-dependence this clause exists to exclude.
    - **`$id` scope.** A schema `$id` at an OBI position, when present, is absolute. A schema resource that declares its own `$id` is that resource's internal business: `$ref`s, nested `$id`s, anchors, and the dynamic pair within it resolve against that resource's base per JSON Schema 2020-12, exactly as for an externally fetched schema.
-3. **A named-transform `$ref`** in `bindings[*].inputTransform`/`bindings[*].outputTransform`: a same-document fragment in literal form resolving into the `transforms` map ([OBI-D-10](#102-document-rules)).
+2. **A named-transform `$ref`** in `bindings[*].inputTransform`/`bindings[*].outputTransform`: a same-document fragment in literal form resolving into the `transforms` map ([OBI-D-10](#102-document-rules)).
 
-`bindings[*].selector` is **not** an OBI-defined document reference. It is a selector within the governed source, interpreted by the governing binding specification ([§5.3](#53-bindings)), and is exempt from the absolute-or-same-document requirement.
+A source's `content` and a binding's `selector` are **not** OBI-defined document references. They are interpreted by the governing binding specification ([§5.3](#53-bindings), [§5.4](#54-sources)) and are exempt from the absolute-or-same-document requirement.
 
 Schema `$ref` and `$id` resolution follows [JSON Schema 2020-12](https://json-schema.org/draft/2020-12): a `$id`, when present, establishes the schema resource and the base URI for the `$ref`s inside it. OBI does not override that; it constrains the forms ([OBI-D-05](#102-document-rules)), which is what keeps schema resolution independent of where the OBI was fetched. For schemas embedded in an OBI document, the initial base for resolving same-document fragments is the OBI document root — JSON Schema 2020-12 leaves the resolution context of schemas embedded in a non-schema document to the embedding application, and OBI fixes it here so `#/schemas/...` resolves identically across tools. A same-document fragment `$ref` is evaluated as an RFC 6901 pointer from that root until resolution enters a schema declaring its own `$id`. Same-document fragments actually resolve in a conformant document ([OBI-D-16](#102-document-rules)), as binding, dependency, and transform key references do (OBI-D-08/09/10/19): internal references are document integrity, offline-decidable by any validator, while external resolution is an evaluation-time capability. A consequence (informative): a tool that extracts an operation's schema and resolves it through a JSON Schema implementation in isolation preserves the OBI document as the resolution scope (by bundling or registering it), or same-document fragments will not resolve.
 
 An absolute `$ref` resolves within the document when it matches the `$id` a schema embedded in the document declares (standard 2020-12 identity resolution — no fetching involved); otherwise it addresses an external schema resource. A tool MAY decline to obtain external resources; a document whose `$ref`s all resolve within it is evaluable with no network access at all, as the project's published interfaces are. The consequence of declining is fixed by [OBI-T-16](#103-tool-rules) for tools that claim validation: a governing graph that cannot be fully resolved validates nothing.
-
-References internal to embedded source `content` are the binding specification's concern ([§5.4](#54-sources)): it defines whether they must be self-contained or resolve against a base it designates — a co-present absolute `location`, or a base carried within the artifact — and the OBI document's own retrieval URI is never that base.
 
 Schema `$ref` cycles are permitted: recursive types (trees, linked lists, ASTs) are legitimate and widespread. Tools that resolve `$ref` MUST handle cycles without infinite loops ([OBI-T-11](#103-tool-rules)); the exact technique (memoization, bisimulation) is tool-defined. Comparing two URIs for identity (caching, deduplication) is a tool concern; this specification defines no canonical equality, and a tool that normalizes keeps "which document was fetched" distinct from "which schema a `$ref` targets" — `…#/$defs/A` and `…#/$defs/B` address different schemas.
 
@@ -704,7 +693,7 @@ Processing OBI documents involves parsing untrusted JSON, optionally obtaining e
 
 The document format creates the following exposure:
 
-- **URIs as attack vectors.** `sources[*].location` values and schema `$ref` values may resolve to arbitrary network endpoints, including internal or link-local addresses such as `http://169.254.169.254/...` or `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure.
+- **URIs as attack vectors.** Addresses a binding specification reads from a source's `content` or a binding's `selector`, and schema `$ref` values, may resolve to arbitrary network endpoints, including internal or link-local addresses such as `http://169.254.169.254/...` or `file:///etc/passwd`. Unrestricted dereferencing inherits SSRF and exfiltration exposure.
 - **Unbounded size.** The specification imposes no size cap on OBI documents or on the artifacts and schemas they reference. Untrusted input creates memory and processing-time exhaustion exposure.
 - **Schema `$ref` cycles.** Permitted by [§7](#7-reference-resolution); naive resolvers can exhaust the stack or loop indefinitely.
 - **Transforms as executable code.** Transforms are JSONata source. Untrusted documents can embed expressions designed to run without bound when evaluated. On a conforming tool the exposure is bounded to computation: the closed evaluation environment ([OBI-T-10](#103-tool-rules)) bars document-supplied expressions from host state. Closure is normative because host-reaching bindings would break transform portability before they broke security; bounding evaluation time and memory remains per-tool policy.
@@ -723,7 +712,7 @@ Non-normative categories of mitigation that tools processing OBI documents from 
 - **Timeouts** on fetches and on transform evaluation.
 - **JSONata resource isolation.** Host access is barred normatively; what remains per-tool is bounding evaluation time and memory.
 - **Transport security.** Enforcing TLS for non-loopback origins; distinguishing the URI a document was requested at from the URI a redirect resolved to when deriving any cache key (this specification defines no canonical identity, and resolution depends on neither URI).
-- **Reference-cycle detection.** Required by [OBI-T-11](#103-tool-rules) for `$ref` cycles; the same posture applies to transitive `location` traversal.
+- **Reference-cycle detection.** Required by [OBI-T-11](#103-tool-rules) for `$ref` cycles; the same posture applies to any transitive traversal a binding specification defines.
 
 ---
 
@@ -765,7 +754,7 @@ A conformant **OBI document**:
 - **OBI-D-02**: Validates against the JSON Schema at `openbindings.schema.json`.
 - **OBI-D-03**: Has every map key this specification defines (operation, dependency, binding, source, transform, schema, and example keys) and every operation alias matching `^[A-Za-z0-9_][A-Za-z0-9_.-]*$`. Property names inside JSON Schema objects are schema content, not map keys, and are unconstrained by this rule.
 - **OBI-D-04**: Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its `aliases` array.
-- **OBI-D-05**: Carries only absolute or same-document OBI-defined references, in the forms of [§7](#7-reference-resolution): every `sources[*].location` absolute (an absolute URI or another absolute form its binding specification defines, never a relative reference); every schema `$ref` a same-document JSON Pointer fragment in literal form or an absolute URI; every schema `$id` at an OBI position absolute; every named-transform `$ref` a same-document fragment in literal form; no `$anchor`-fragment references, `$dynamicRef`, or `$dynamicAnchor` at OBI positions (all per [§7](#7-reference-resolution), including the internal-business scope of schema resources declaring their own `$id`). Every URI-form reference is well-formed per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1. Validation note (informative): the `location` clause is decided by form alone. A `location` with no `:` before its first `/`, `?`, or `#` cannot carry a scheme and is relative in form (RFC 3986 §4.2), so `./openapi.json` and bare `example.com` fail everywhere. A colon-bearing `location` that is not a URI, such as a gRPC `10.0.0.1:50051`, is absolute in form and satisfies the clause; whether it names an address is its binding specification's concern ([§5.4](#54-sources)).
+- **OBI-D-05**: Carries only absolute or same-document OBI-defined references, in the forms of [§7](#7-reference-resolution): every schema `$ref` a same-document JSON Pointer fragment in literal form or an absolute URI; every schema `$id` at an OBI position absolute; every named-transform `$ref` a same-document fragment in literal form; no `$anchor`-fragment references, `$dynamicRef`, or `$dynamicAnchor` at OBI positions (all per [§7](#7-reference-resolution), including the internal-business scope of schema resources declaring their own `$id`). Every URI-form reference is well-formed per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1.
 - **OBI-D-06**: Has every `$schema` value, where present, equal to `https://json-schema.org/draft/2020-12/schema`.
 - **OBI-D-07**: Has no `$vocabulary` keyword in any schema within the document.
 - **OBI-D-08**: Has every `bindings[*].operation` value present as a key in the document's `operations` map.
@@ -809,13 +798,10 @@ A conformant **binding specification**:
 - **OBI-B-01**: Is denoted by an exact, opaque, non-empty string identifier under one defining authority, denoting one stable semantic definition. The identifier is never implicitly dereferenced, and no generic equivalence, normalization, or range semantics relate distinct identifiers.
 - **OBI-B-02**: Defines each of the following for the sources and bindings it governs:
 
-  1. whether a source mode accepts an artifact and, where it does, the source representations accepted, with deterministic discrimination when it accepts several, and the encoding for any non-JSON artifact;
-  2. the syntax and meaning of `location`;
-  3. the accepted values and meaning of `content`, including any source mode in which `content` is forbidden;
-  4. how `location` and `content` compose when both are present — within the content-primacy floor of [§5.4](#54-sources) — including whether `location` supplies a reference base for embedded content;
-  5. the syntax and meaning of `selector`, including the absent-`selector` case;
-  6. how the binding target and its interaction are identified;
-  7. how caller-facing input values and successful output values correspond to the source interaction, including which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings provided at transform positions. A binding specification defines any protocol-native facts an implementation must use to make those determinations, but does not require their native representations to become operation values or ordinary-caller dependencies. Diagnostic preservation and presentation are outside this completeness test.
+  1. the accepted values and meaning of a source's `content`, including whether it may be absent, how several accepted representations are told apart, the encoding of any artifact that is not JSON, and how any reference within `content` is resolved;
+  2. the accepted values and meaning of `selector`, and the meaning of its absence;
+  3. how the binding target and its interaction are identified, including any part a processor's environment plays;
+  4. how caller-facing input values and successful output values correspond to the source interaction, including which outcomes are successes, when the interaction instead completes unsuccessfully, how values emitted before that completion are treated, and any context bindings provided at transform positions. A binding specification defines any protocol-native facts an implementation must use to make those determinations, but does not require their native representations to become operation values or ordinary-caller dependencies. Diagnostic preservation and presentation are outside this completeness test.
 
   The enumerated items are the completeness test; their purpose is that two independent implementations agree on the meaning of every governed source and binding. An item left undefined means the specification does not satisfy OBI-B-02. It does not prevent implementations from choosing local behavior for the gap, but that behavior is implementation-defined, cannot support a portable conformance claim for the missing semantics, and must not be attributed to the binding-specification identifier ([§6](#6-binding-specifications)).
 
@@ -843,11 +829,11 @@ Identifiers are stable and never reused, so retirements leave permanent numberin
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | OBI-D-13   | Retired. How a binding's target is identified is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)); the core makes no claim that a target is identifiable, reachable, or usable from the document alone ([§5.4](#54-sources)). |
 | OBI-D-14   | Retired. `content` representations are binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)); the core no longer restricts `content` JSON types or prescribes a binary posture.        |
-| OBI-D-15   | Retired. Reference-base behavior for embedded content is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)); the OBI retrieval URI is never a base ([§7](#7-reference-resolution)). |
+| OBI-D-15   | Retired. Reference-base behavior for anything a source's `content` carries is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)). |
 | OBI-T-07   | Retired. Invoking does not trigger validation (invariant 2); validation claims are governed by [OBI-T-16](#103-tool-rules).                                                                                   |
 | OBI-T-08   | Retired. As OBI-T-07; classification of successful outcomes is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)).                                                                  |
 | OBI-T-09   | Retired. This specification defines no binding-selection algorithm; `preference` and `deprecated` are author signals ([§5.3](#53-bindings)).                                                                  |
-| OBI-T-15   | Retired. `location`/`content` composition is binding-specification-defined within the content-primacy floor of [§5.4](#54-sources) ([OBI-B-02](#104-binding-specification-rules)).                            |
+| OBI-T-15   | Retired. A source's `content` is wholly binding-specification-defined ([§5.4](#54-sources), [OBI-B-02](#104-binding-specification-rules)).                                                                      |
 
 ---
 

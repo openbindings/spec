@@ -58,7 +58,7 @@ operation-level overlay remains faithful and reusable across them.
 - **Operations** are neutral contracts: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples). Presence alone does not assert availability.
 - **Dependencies** are named consumption points that reference operations and may constrain acceptable binding-specification families. They carry no concrete target.
 - **Bindings** map an operation to a concrete protocol target without redefining the contract. One operation can carry many bindings.
-- **Sources** carry or address governed artifacts and live surfaces through an exact binding-specification identifier plus `content`, `location`, or both.
+- **Sources** name an exact binding-specification identifier and carry optional `content` that specification wholly defines: an embedded artifact, an address, a live surface, or whatever else it needs.
 - **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
 
 ## The specification

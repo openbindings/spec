@@ -175,7 +175,7 @@ below may continue to change until the 0.2 release is cut.
   (`processor-scenarios@2`, `synthesis-scenarios@5`).
 
 - A small, explicit set of core invariants: per-value contracts,
-  enabling-not-invoking, split authority, context-free documents,
+  enabling-not-invoking, split authority, context-free references,
   offline-decidable core conformance, and decentralized extension.
 - Exact `bindingSpec` identifiers and the `OBI-B-01` through `OBI-B-03`
   completeness and revision rules for binding specifications.
@@ -214,30 +214,47 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
-- **Target identity belongs to the binding specification; OBI-D-13 is
-  retired.** The core no longer claims that a binding's target is
-  identifiable from the binding and its source alone. How a target is
-  identified, including any part the environment a processor runs in plays
-  (configuration, runtime naming, or other state), is the governing binding
-  specification's to define ([OBI-B-02](openbindings.md#104-binding-specification-rules)
-  item 6), and the core makes no claim that a target is identifiable,
-  reachable, or usable from the document alone
-  ([§5.4](openbindings.md#54-sources)). Invariant 2 states what a binding is
-  for (it enables action and obliges none) without a sufficiency claim, and
-  sufficiency leaves the provisions [§6](openbindings.md#6-binding-specifications)
-  hands a binding specification. This is a change to those provisions, which
-  [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
-  to be breaking for every binding specification; no binding specification is
-  published yet. OBI-D-05's `location` clause is now decided by form alone: a
-  colon-bearing location that is not a URI (a gRPC `host:port`) is absolute
-  and satisfies it, and whether it names an address is its binding
-  specification's concern. Every document rule is now decidable from the
+- **A source is its binding specification's identifier plus content that
+  specification defines; `location` leaves the core; OBI-D-13 is retired.**
+  A source is now `bindingSpec` with optional `content` and `description`.
+  `content` is any JSON value, and its binding specification wholly defines
+  it: whether it may be absent, which values it accepts, whether it embeds an
+  artifact, addresses one, addresses a live service, or names something a
+  processor's environment provides, and how anything within it resolves
+  ([§5.4](openbindings.md#54-sources)). A binding's `selector` is likewise any
+  JSON value its source's binding specification defines
+  ([§5.3](openbindings.md#53-bindings)). The core gave `location` a meaning it
+  could not check, since an address is an address only under its binding
+  specification, so the member, the rule that a source carry `location` or
+  `content`, content primacy, and OBI-D-05's `location` clause are removed.
+  Nothing within `content` or `selector` is an OBI-defined reference, and
+  invariant 4, now titled "Context-free references", is stated for the
+  references the core defines. OBI-B-02's first four items, which assumed a
+  `location`/`content` pair, become one item on `content`, so the list is four
+  items: content, selector, target and interaction, and values. The core no
+  longer claims that a binding's target is identifiable from the binding and
+  its source alone: how a target is identified, including any part a
+  processor's environment plays, is the binding specification's to define
+  ([OBI-B-02](openbindings.md#104-binding-specification-rules) item 3), and
+  invariant 2 states what a binding is for without a sufficiency claim.
+  OBI-D-13 is retired. Every document rule is now decidable from the
   document, given a duplicate-detecting parse (OBI-D-01) and a parser for the
   pinned transform language (OBI-D-18); no rule takes binding-specification
   knowledge, and OBI-T-01 no longer describes binding-specification-dependent
-  rules. The OBI-D-13 corpus fixtures are removed, OBI-D-05 gains a positive
-  `host:port` case, and the OBI-T-17 scenarios use OBI-D-19 as their
-  inapplicable rule.
+  rules. These changes reach the carriage and selection provisions
+  [§6](openbindings.md#6-binding-specifications) hands a binding
+  specification, which
+  [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
+  to be breaking for every binding specification; none is published yet, and
+  the project's candidates are to be revised to define their `content`. The
+  document schema drops `location` and the `location`-or-`content`
+  requirement and accepts any JSON value as `selector`. In the corpus, the
+  OBI-D-13 fixtures and OBI-D-05's `location` cases are removed; OBI-D-02
+  gains positives for a source holding only `bindingSpec` and for `content`
+  and `selector` of every JSON type, `null` included; OBI-D-05 gains
+  positives showing that nothing within `content` or `selector` is judged as
+  a reference; sources in other fixtures no longer carry `location`; and the
+  OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
 - The conformance vocabulary uses one verb. Checking a document against the
   document rules is validation, done by a validator, and
@@ -299,7 +316,7 @@ below may continue to change until the 0.2 release is cut.
   vocabulary that every reference semantic actually lives in beside the
   validation vocabulary it already cited, and §7 no longer attributes its
   path-item `$ref` rule to "OAS reference resolution" — no accepted edition
-  states it, and the rule is this specification's under core OBI-B-02 item 5
+  states it, and the rule is this specification's under core OBI-B-02 item 2
   and RFC 6901 §7's delegation to an application of JSON Pointer. No Core OBI
   document-model field changed.
 
@@ -356,19 +373,21 @@ below may continue to change until the 0.2 release is cut.
 - Inline transforms are JSONata expression strings. Transforms operate once
   per value and never change cardinality.
 - The binding member `ref` was renamed `selector`: the
-  binding-specification-defined selector of a specific target within the
-  governed source. Only the member name changed — syntax, meaning, the
-  absent-`selector` case, and binding-specification ownership are unchanged,
-  and rule identifiers (OBI-*, family rules) are untouched.
-- Source `location`/`content` pairing and binding `selector` meaning are
-  governed by the exact binding specification. Relative,
-  retrieval-context-dependent OBI references are no longer portable.
+  binding-specification-defined selection of the binding's target. Its value
+  may be any JSON value the binding specification accepts, and the binding
+  specification also defines what its absence means.
+- A source is `bindingSpec` plus optional `content` that the binding
+  specification wholly defines. The core has no `location` member; whatever a
+  source addresses is carried in `content` as its binding specification
+  defines. Relative, retrieval-context-dependent OBI-defined references are
+  no longer portable.
 - Document authentication declarations moved out of the core. Credentials,
   configuration choices, approvals, and other prerequisites are supplied as
   invocation context and may be surfaced through context requirements.
-- Tool conformance is capability-scoped. A validator that cannot decide a
-  binding-specific or external fact reports it as inconclusive rather than
-  claiming complete conformance.
+- Tool conformance is capability-scoped. A validator that lacks a capability
+  a rule requires, such as a parser for the transform language, reports that
+  rule as inconclusive rather than claiming complete conformance. No document
+  rule takes binding-specification knowledge.
 - The operation-graph specification was rebuilt around the direct-invocation
   identity law, cardinality-transparent frame flow, explicit completion and
   cancellation, bounded cycles, lineage, deterministic portability claims,
@@ -380,6 +399,8 @@ below may continue to change until the 0.2 release is cut.
   binding-selection, security-method, and discovery models.
 - Literal `null` as a second spelling of an unspecified operation schema.
 - Retrieval-URI-relative OBI references.
+- The source `location` member and the rule that a source carry `location`,
+  `content`, or both.
 - YAML as an OBI serialization. A binding specification may still incorporate
   YAML or any other upstream artifact representation.
 - The experimental, unminted Workers RPC binding candidate. It is absent from

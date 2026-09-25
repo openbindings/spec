@@ -86,7 +86,7 @@
 
 **[incorporated]** Both member syntaxes are the authority's: the executable-document grammar is §2 of the governing edition, the type-system language is §3, and the introspection result shape is §4.2, whose listing defines the `__Schema`, `__Type`, `__Field`, `__InputValue`, `__EnumValue`, and `__Directive` types this specification consumes.
 
-**[convention]** `subscriptions` lives in the carried content and not in configuration because it is target identity, which this specification takes from the binding and its source alone, so no configuration point may supply or replace it (§11.1).
+**[convention]** `subscriptions` lives in the carried content and not in configuration because it is target identity, and Core [OBI-D-13](../../openbindings.md#102-document-rules) requires the information needed to identify a binding's target to be in the binding and its source alone, so no configuration point may supply or replace it (§11.1).
 
 ### 3.2 Closed load gates and confined defects
 

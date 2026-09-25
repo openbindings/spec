@@ -56,8 +56,7 @@
         },
         "sources": {
           "localDelivery": {
-            "bindingSpec": "example.delivery@1",
-            "content": {}
+            "bindingSpec": "example.delivery@1"
           }
         },
         "bindings": {
