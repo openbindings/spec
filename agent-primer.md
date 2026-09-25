@@ -2,6 +2,13 @@
 
 ## Status and purpose
 
+**Pending alignment with the core kind pass.** The current core draft uses
+`kind` and `kinds` and defines no binding-specification conformance rules.
+The orientation below still describes the earlier `bindingSpec` draft and
+should not be used to decide current core semantics. Read
+[`openbindings.md`](openbindings.md) for the current document and tool rules;
+binding-specification completeness and revision guidance is project policy.
+
 This is an informative orientation to OpenBindings for language models and
 other automated development agents. It explains the project's mental model,
 authority boundaries, and safe working rules. It is not a substitute for the

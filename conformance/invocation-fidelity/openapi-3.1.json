@@ -7,7 +7,6 @@
     {
       "id": "OAPI31-FI-01",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03"
       ],
       "section": "9.5",
@@ -83,7 +82,6 @@
     {
       "id": "OAPI31-FI-02",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03"
       ],
       "section": "9.5",
@@ -160,7 +158,6 @@
     {
       "id": "OAPI31-FI-03",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03"
       ],
       "section": "9.5",
@@ -231,7 +228,6 @@
     {
       "id": "OAPI31-FI-04",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03"
       ],
       "section": "9.5",
@@ -309,7 +305,6 @@
     {
       "id": "OAPI31-FI-07",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03",
         "OAPI31-S-01"
       ],
@@ -408,7 +403,6 @@
     {
       "id": "OAPI31-FI-08",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-03",
         "OAPI31-S-01"
       ],
@@ -499,7 +493,6 @@
     {
       "id": "OAPI31-FI-11",
       "rules": [
-        "OBI-B-02",
         "OAPI31-P-02",
         "OAPI31-P-03",
         "OAPI31-P-04",

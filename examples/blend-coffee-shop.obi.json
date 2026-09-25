@@ -219,42 +219,42 @@
   },
   "sources": {
     "rest": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "kind": "openbindings.openapi-3.1@1",
       "content": {
         "location": "https://blend.openbindings.com/openapi.json"
       },
       "description": "REST API for the ordering app"
     },
     "events": {
-      "bindingSpec": "openbindings.asyncapi@1",
+      "kind": "openbindings.asyncapi@1",
       "content": {
         "location": "https://blend.openbindings.com/asyncapi.json"
       },
       "description": "SSE event stream for the barista dashboard"
     },
     "mcp": {
-      "bindingSpec": "openbindings.mcp@1",
+      "kind": "openbindings.mcp@1",
       "content": {
         "location": "https://blend.openbindings.com/mcp"
       },
       "description": "MCP tools for AI assistants"
     },
     "grpc": {
-      "bindingSpec": "openbindings.grpc@1",
+      "kind": "openbindings.grpc@1",
       "content": {
         "location": "blend.openbindings.com:9090"
       },
       "description": "gRPC service for backend microservices"
     },
     "connect": {
-      "bindingSpec": "openbindings.connect@1",
+      "kind": "openbindings.connect@1",
       "content": {
         "location": "https://blend.openbindings.com"
       },
       "description": "Connect (Buf) — same protobuf service over HTTP/1.1 + JSON"
     },
     "graphql": {
-      "bindingSpec": "openbindings.graphql@1",
+      "kind": "openbindings.graphql@1",
       "content": {
         "location": "https://blend.openbindings.com/graphql"
       },

@@ -7,7 +7,6 @@
     {
       "id": "USAGE-FI-01",
       "rules": [
-        "OBI-B-02",
         "USAGE-P-05"
       ],
       "section": "9.3",
@@ -50,7 +49,6 @@
     {
       "id": "USAGE-FI-02",
       "rules": [
-        "OBI-B-02",
         "USAGE-P-05"
       ],
       "section": "9.3",
@@ -95,7 +93,6 @@
     {
       "id": "USAGE-FI-03",
       "rules": [
-        "OBI-B-02",
         "USAGE-P-05"
       ],
       "section": "9.3",
@@ -138,7 +135,6 @@
     {
       "id": "USAGE-FI-04",
       "rules": [
-        "OBI-B-02",
         "USAGE-P-05"
       ],
       "section": "9.3",

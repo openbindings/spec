@@ -1,11 +1,12 @@
 {
   "rule": "OBI-T-01",
   "section": "10.3",
-  "description": "Does not fail processing a document solely because the document contains an unsupported binding specification in a source or dependency. Tools MAY surface diagnostics; governed bindings and unsupported dependency families are unavailable to that tool.",
-  "notes": "All tests are positive (valid: true). The rule is anti-failure: it asserts the tool does NOT refuse to process these inputs. A tool that emits diagnostics while still processing the document is conformant (the rule says 'MAY surface diagnostics'). Tests only verify the SDK didn't refuse the document.",
+  "coverage": "positive-only",
+  "description": "Does not fail processing a document solely because it contains an unsupported kind. Kind comparisons are exact; processors infer no equivalence or version relation, and do not implicitly dereference a kind.",
+  "notes": "All tests are positive (valid: true) and exercise the anti-failure part of the rule: the tool does not refuse to process these inputs. A tool may emit diagnostics. Exact comparison and no implicit dereferencing are tool behavior not discriminated by this fixture format.",
   "tests": [
     {
-      "description": "document declares an unknown binding specification",
+      "description": "document declares an unknown kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -13,7 +14,7 @@
         },
         "sources": {
           "exotic": {
-            "bindingSpec": "totally-fictional-format@9.9.9"
+            "kind": "totally-fictional-format@9.9.9"
           }
         },
         "bindings": {
@@ -26,7 +27,7 @@
       "valid": true
     },
     {
-      "description": "document mixes a supported and an unsupported binding specification; processing does not fail because of the unsupported one",
+      "description": "document mixes a supported and an unsupported kind; processing does not fail because of the unsupported one",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -34,10 +35,10 @@
         },
         "sources": {
           "http": {
-            "bindingSpec": "example.openapi@1"
+            "kind": "example.openapi@1"
           },
           "exotic": {
-            "bindingSpec": "totally-fictional-format@9.9.9"
+            "kind": "totally-fictional-format@9.9.9"
           }
         },
         "bindings": {
@@ -57,7 +58,7 @@
       "valid": true
     },
     {
-      "description": "dependency lists only an unknown binding specification without making the document invalid",
+      "description": "dependency lists only an unknown kind without making the document invalid",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -66,7 +67,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": [
+            "kinds": [
               "totally-fictional-format@9.9.9"
             ]
           }

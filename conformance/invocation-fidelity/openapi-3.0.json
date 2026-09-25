@@ -7,7 +7,6 @@
     {
       "id": "OAPI30-FI-06",
       "rules": [
-        "OBI-B-02",
         "OAPI30-P-03",
         "OAPI30-S-01"
       ],
@@ -94,7 +93,6 @@
     {
       "id": "OAPI30-FI-10",
       "rules": [
-        "OBI-B-02",
         "OAPI30-P-02",
         "OAPI30-P-03",
         "OAPI30-P-04",
@@ -209,7 +207,6 @@
     {
       "id": "OAPI30-FI-12",
       "rules": [
-        "OBI-B-02",
         "OAPI30-P-03",
         "OAPI30-S-01"
       ],

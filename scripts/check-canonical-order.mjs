@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Verifies that typed objects in OBI documents emit their known fields in canonical order.
-// Canonical order is the order declared in the openbindings-go and openbindings-ts SDKs and
+// Canonical order follows the current spec's known field order and is
 // mirrored in openbindings.schema.json. Unknown and "x-" extension keys are skipped: they
 // MAY appear anywhere relative to known keys.
 //
@@ -25,13 +25,13 @@ const CANON = {
     "description", "deprecated", "tags", "aliases",
     "idempotent", "input", "output", "examples",
   ],
-  Source: ["bindingSpec", "content", "description"],
+  Source: ["kind", "content", "description"],
   BindingEntry: [
     "operation", "source", "content", "preference", "description",
     "deprecated",
   ],
   OperationExample: ["description", "input", "output"],
-  DependencyEntry: ["operation", "bindingSpecs"],
+  DependencyEntry: ["operation", "kinds"],
 };
 
 function checkOrder(typeName, obj, path, errors) {

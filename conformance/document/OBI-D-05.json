@@ -13,7 +13,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": {
               "location": "openapi.json"
             }
@@ -31,7 +31,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": {
               "$ref": "other.json#Task"
             }

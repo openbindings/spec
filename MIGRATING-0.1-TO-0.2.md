@@ -12,19 +12,19 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 
 | 0.1 | 0.2 draft |
 | --- | --- |
-| `sources.*.format` | `sources.*.bindingSpec` |
-| Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi-3.1@1`, selected to match the artifact’s edition line |
+| `sources.*.format` | `sources.*.kind` |
+| Informal format tokens such as `openapi@3.1` | Exact kind strings such as `openbindings.openapi-3.1@1`, selected for the tool behavior intended to handle the source |
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
-| `bindings.*.ref` | `bindings.*.content`: whatever the governing binding specification defines for the binding, such as which target realizes the operation, as whatever JSON value that specification accepts |
-| `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the governing binding specification defines; the core has no `location` member |
-| Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "language": "jsonata", "expression": "..." }` | Remove; value adaptation, where the governing binding specification defines it, goes in `bindings.*.content` in the form that specification defines |
+| `bindings.*.ref` | `bindings.*.content`: optional JSON content read under the source's kind; it may identify the target |
+| `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the intended tool behavior reads; the core has no `location` member |
+| Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "language": "jsonata", "expression": "..." }` | Remove; any value adaptation is read under the source's kind, possibly through `bindings.*.content` |
 | `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
-| No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `bindingSpecs` |
+| No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `kinds` |
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
 | Relative schema references | Make schema references absolute or same-document |
 
-A 0.1 member left in place (`format`, `priority`, `ref`, `location`, `security`, `roles`, `satisfies`, `transforms`, `inputTransform`, `outputTransform`) makes a 0.2 document non-conformant: an object the specification defines carries no unprefixed field it does not define (§12). Keep private data under an `x-` name.
+A 0.1 member left in place (`format`, `priority`, `ref`, `location`, `security`, `roles`, `satisfies`, `transforms`, `inputTransform`, `outputTransform`) makes a 0.2 document non-conformant: an object the specification defines carries no unprefixed field it does not define (§12). The intermediate draft's `bindingSpec` and `bindingSpecs` are likewise not members of the current 0.2 model. Keep private data under an `x-` name.
 
 Do not translate `priority` to `preference` mechanically. The direction
 reversed and 0.2 defines no selection algorithm. Reconsider the intended
@@ -35,8 +35,7 @@ if that faithfully expresses the original intent.
 
 In 0.2, operation `input` and `output` are contracts on **each value**, not
 declarations of unary, streaming, or other invocation shape. Cardinality and
-wire behavior remain under the governing binding specification and concrete
-protocol.
+wire behavior are read under the source's kind and concrete protocol.
 
 - An absent schema means unspecified.
 - `{}` or `true` accepts any JSON value.
@@ -63,7 +62,7 @@ that was written with the broader “safe to retry” description in mind.
 
 The 0.2 draft can describe operations the component consumes as named entries
 in `dependencies`. Each entry references an operation key in the same document
-and may list one or more exact binding-specification identifiers acceptable at
+and may list one or more exact kinds acceptable at
 that consumption point:
 
 ```json
@@ -75,7 +74,7 @@ that consumption point:
   "dependencies": {
     "customerDelivery": {
       "operation": "events.deliver",
-      "bindingSpecs": ["openbindings.openapi-3.1@1"]
+      "kinds": ["openbindings.openapi-3.1@1"]
     }
   }
 }
@@ -90,23 +89,17 @@ outside the document model.
 
 ## Rebind every source
 
-A 0.2 source names an exact binding specification, not merely an artifact
-format. For every source:
+A 0.2 source carries an exact kind. For every source:
 
-1. Select the binding specification that actually governs the source and its
-   bindings.
-2. Replace `format` with that specification's exact identifier.
-3. Carry what the source needs in `content`, in the shape that specification
-   defines, and validate that `content` and every binding's `content` under it.
-4. Supply any required runtime choices through invocation context
-   configuration; do not invent them in the OBI.
-5. Refuse or exclude interactions that the binding specification cannot
-   represent faithfully.
+1. Select a kind supported by the tool that will read or act on the source.
+2. Replace `format` with that exact kind string.
+3. Carry source and binding `content` in the shapes that tool expects for the kind. The core does not validate their kind-specific meaning.
+4. Supply any required runtime choices through invocation context configuration; do not invent them in the OBI.
+5. Check that the intended tool can faithfully perform the interactions the OBI claims.
 
-The project-published identifiers are catalogued in
-[`binding-specs/README.md`](binding-specs/README.md). Their revision number is
-the binding specification's revision, not the upstream artifact's version.
-Each binding specification states which upstream versions it incorporates.
+The project's candidate kinds and its own authoring policy are described in
+[`binding-specs/README.md`](binding-specs/README.md). The core imposes no
+definition, publication, or revision requirement on other kinds.
 
 Authentication is no longer modeled as document data. A binding invoker
 reports the context it requires, and a caller or context resolver supplies it
@@ -118,16 +111,16 @@ extension field merely to preserve the old shape.
 OBI documents are context-free in 0.2:
 
 - what a source's or binding's `content` means, including any address or
-  reference within it, is the binding specification's to define;
+  reference within it, is read under the source's kind and is outside the core;
 - OBI-governed references are absolute or same-document;
 - schema reference behavior follows JSON Schema 2020-12 from the OBI document
   root, subject to nested `$id` rebasing.
 
 The 0.2 core defines no transforms. A 0.1 transform adapted values between
-the operation's contract and the source; in 0.2 that adaptation belongs to the
-governing binding specification. Where it defines value adaptation, carry the
-mapping in the binding's `content`, in the form it defines. Where it does not,
-the operation's schemas must describe the values the source carries.
+the operation's contract and the source; in 0.2 any such adaptation is read
+under the source's kind. Carry a mapping in binding `content` only if the
+intended tool reads one there. The operation's schemas still describe the
+caller-facing values.
 
 ## Validation checklist
 
@@ -138,17 +131,18 @@ Before considering a document migrated:
 2. Validate it against [`openbindings.schema.json`](openbindings.schema.json)
    and the normative document rules in
    [`openbindings.md` §10](openbindings.md#10-conformance).
-3. Validate each source and binding against its exact binding specification.
+3. Check source and binding `content` with the intended kind-specific tool, if one is available; this is separate from document conformance.
 4. Exercise every named operation and alias through the 0.2 resolution rules.
 5. Validate representative values in both directions, through any value
-   adaptation the binding specification defines.
+   adaptation the intended tool performs.
 6. Confirm runtime context requirements, binding selection, errors,
    cancellation, ordering, and stream behavior with the implementation that
    will invoke the document.
 
 The 0.2 conformance model permits an honest `conformance undetermined` result
-when a validator lacks binding-specific or external schema knowledge. Partial
-validation must not be presented as unqualified conformance.
+when a validator lacks a capability needed for a document rule. Kind-specific
+behavior and external schema availability are not document-conformance checks.
+Partial validation must not be presented as unqualified conformance.
 
 ## Minimal shape comparison
 
@@ -192,7 +186,7 @@ validation must not be presented as unqualified conformance.
   },
   "sources": {
     "api": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "kind": "openbindings.openapi-3.1@1",
       "content": { "location": "https://api.example.com/openapi.json" }
     }
   },
@@ -207,9 +201,7 @@ validation must not be presented as unqualified conformance.
 ```
 
 The example shows document-shape changes only. The `content` shown on the
-source and the binding is illustrative: its shape is the binding
-specification's to define. Whether that `content` identifies a target, and how
-to invoke it, is defined by
-the `openbindings.openapi-2.0@1`/`-3.0@1`/`-3.1@1`/`-3.2@1` family (see [binding-specs/README.md](binding-specs/README.md)), and
-the operation schemas still need to be checked against the actual upstream
-interaction.
+source and binding is illustrative; the core does not interpret it. Check the
+operation schemas against the actual interaction performed by the intended
+kind-specific tool. The project's OpenAPI candidates are described in
+[binding-specs/README.md](binding-specs/README.md).

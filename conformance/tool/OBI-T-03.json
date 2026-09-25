@@ -31,7 +31,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "example.openapi@1",
+            "kind": "example.openapi@1",
             "x-cache-ttl-seconds": 300
           }
         },

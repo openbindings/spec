@@ -31,7 +31,7 @@
   },
   "sources": {
     "restApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "kind": "openbindings.openapi-3.1@1",
       "content": { "location": "https://api.example.com/openapi.json" }
     }
   },

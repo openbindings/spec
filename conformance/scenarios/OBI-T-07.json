@@ -12,7 +12,7 @@
         "document": {
           "openbindings": "0.2.0",
           "operations": { "createTask": {} },
-          "sources": { "s": { "bindingSpec": "example.test@1" } },
+          "sources": { "s": { "kind": "example.test@1" } },
           "bindings": {
             "primary": { "operation": "createTask", "source": "s" }
           }
@@ -35,7 +35,7 @@
           "operations": {
             "createTask": { "aliases": ["tasks.create", "addTask"] }
           },
-          "sources": { "s": { "bindingSpec": "example.test@1" } },
+          "sources": { "s": { "kind": "example.test@1" } },
           "bindings": {
             "canonical": { "operation": "createTask", "source": "s" }
           }

@@ -7,7 +7,6 @@
     {
       "id": "MCP-FI-01",
       "rules": [
-        "OBI-B-02",
         "MCP-P-04",
         "MCP-P-06"
       ],
@@ -102,7 +101,6 @@
     {
       "id": "MCP-FI-02",
       "rules": [
-        "OBI-B-02",
         "MCP-P-06"
       ],
       "section": "9.3",
@@ -183,7 +181,6 @@
     {
       "id": "MCP-FI-03",
       "rules": [
-        "OBI-B-02",
         "MCP-P-06"
       ],
       "section": "9.3",
@@ -250,7 +247,6 @@
     {
       "id": "MCP-FI-04",
       "rules": [
-        "OBI-B-02",
         "MCP-P-06"
       ],
       "section": "9.3",

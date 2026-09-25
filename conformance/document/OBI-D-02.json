@@ -56,7 +56,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "example.openapi@1"
+            "kind": "example.openapi@1"
           }
         },
         "bindings": {
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "description": "source missing required `bindingSpec` field",
+      "description": "source missing required `kind` field",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "description": "source `bindingSpec` is an empty string (violates minLength: 1)",
+      "description": "source `kind` is an empty string (violates minLength: 1)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -97,7 +97,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": ""
+            "kind": ""
           }
         }
       },
@@ -107,7 +107,7 @@
       ]
     },
     {
-      "description": "source with only `bindingSpec` (content is optional; whether a source needs it is its binding specification's to define)",
+      "description": "source with only `kind` (content is optional; the core does not require kind-specific behavior)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -115,7 +115,7 @@
         },
         "sources": {
           "httpApi": {
-            "bindingSpec": "example.openapi@1"
+            "kind": "example.openapi@1"
           }
         }
       },
@@ -130,17 +130,17 @@
         },
         "sources": {
           "objectContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": {
               "location": "tasks.json"
             }
           },
           "stringContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": "openapi: 3.1.0"
           },
           "arrayContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": [
               1,
               "two",
@@ -150,15 +150,15 @@
             ]
           },
           "numberContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": 7
           },
           "booleanContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": false
           },
           "nullContent": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": null
           }
         }
@@ -174,7 +174,7 @@
         },
         "sources": {
           "s": {
-            "bindingSpec": "example.test@1"
+            "kind": "example.test@1"
           }
         },
         "bindings": {
@@ -243,7 +243,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": [
+            "kinds": [
               "example.openapi@1"
             ]
           }
@@ -288,7 +288,7 @@
         },
         "dependencies": {
           "delivery": {
-            "bindingSpecs": [
+            "kinds": [
               "example.openapi@1"
             ]
           }
@@ -318,7 +318,7 @@
       ]
     },
     {
-      "description": "dependency bindingSpecs is not an array",
+      "description": "dependency kinds is not an array",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -327,7 +327,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": "example.openapi@1"
+            "kinds": "example.openapi@1"
           }
         }
       },
@@ -337,7 +337,7 @@
       ]
     },
     {
-      "description": "dependency bindingSpecs is empty",
+      "description": "dependency kinds is empty",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -346,7 +346,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": []
+            "kinds": []
           }
         }
       },
@@ -356,7 +356,7 @@
       ]
     },
     {
-      "description": "dependency bindingSpecs contains a duplicate identifier",
+      "description": "dependency kinds contains a duplicate kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -365,7 +365,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": [
+            "kinds": [
               "example.openapi@1",
               "example.openapi@1"
             ]
@@ -378,7 +378,7 @@
       ]
     },
     {
-      "description": "dependency bindingSpecs contains an empty identifier",
+      "description": "dependency kinds contains an empty kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -387,7 +387,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": [
+            "kinds": [
               ""
             ]
           }
@@ -399,7 +399,7 @@
       ]
     },
     {
-      "description": "dependency bindingSpecs contains a non-string identifier",
+      "description": "dependency kinds contains a non-string kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -408,7 +408,7 @@
         "dependencies": {
           "delivery": {
             "operation": "deliverEvent",
-            "bindingSpecs": [
+            "kinds": [
               1
             ]
           }
@@ -448,7 +448,7 @@
         },
         "sources": {
           "s": {
-            "bindingSpec": "example.test@1"
+            "kind": "example.test@1"
           }
         },
         "bindings": {
@@ -473,8 +473,44 @@
         },
         "sources": {
           "s": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "location": "https://example.com/openapi.json"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "the former source member bindingSpec is not a kind",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {},
+        "sources": {
+          "s": {
+            "kind": "example.test@1",
+            "bindingSpec": "example.test@1"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "the former dependency member bindingSpecs is not a kinds constraint",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {}
+        },
+        "dependencies": {
+          "d": {
+            "operation": "op",
+            "bindingSpecs": ["example.test@1"]
           }
         }
       },
@@ -524,7 +560,7 @@
         },
         "sources": {
           "s": {
-            "bindingSpec": "example.test@1"
+            "kind": "example.test@1"
           }
         },
         "bindings": {
@@ -575,7 +611,7 @@
         },
         "sources": {
           "s": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "x-note": 1
           }
         },

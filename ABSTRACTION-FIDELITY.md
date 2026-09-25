@@ -1,5 +1,10 @@
 # Abstraction fidelity doctrine
 
+**Pending alignment with the core kind pass.** The current core draft uses
+`kind` and `kinds` and defines no OBI-B binding-specification rules. References
+to those rules below describe an earlier working draft; the fidelity criteria
+are project guidance, not core document conformance.
+
 **Status:** informative project doctrine for design, synthesis, implementation,
 and conformance work. It does not add fields to the OBI document model, define
 a core failure vocabulary, or change the normative force of

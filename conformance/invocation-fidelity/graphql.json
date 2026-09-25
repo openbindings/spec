@@ -7,7 +7,6 @@
     {
       "id": "GQL-FI-01",
       "rules": [
-        "OBI-B-02",
         "GQL-P-03"
       ],
       "section": "3.3",
@@ -1488,7 +1487,6 @@
     {
       "id": "GQL-FI-02",
       "rules": [
-        "OBI-B-02",
         "GQL-P-04"
       ],
       "section": "4",
@@ -1542,7 +1540,6 @@
     {
       "id": "GQL-FI-03",
       "rules": [
-        "OBI-B-02",
         "GQL-P-02"
       ],
       "section": "3.3",
@@ -2793,7 +2790,6 @@
     {
       "id": "GQL-FI-04",
       "rules": [
-        "OBI-B-02",
         "GQL-P-09"
       ],
       "section": "8",
@@ -2860,7 +2856,6 @@
     {
       "id": "GQL-FI-05",
       "rules": [
-        "OBI-B-02",
         "GQL-P-08"
       ],
       "section": "8",

@@ -47,7 +47,7 @@
   "dependencies": {
     "completedExportDelivery": {
       "operation": "exports.deliver",
-      "bindingSpecs": [
+      "kinds": [
         "openbindings.openapi-3.1@1",
         "openbindings.grpc@1"
       ]
@@ -55,7 +55,7 @@
   },
   "sources": {
     "exportsApi": {
-      "bindingSpec": "openbindings.openapi-3.1@1",
+      "kind": "openbindings.openapi-3.1@1",
       "content": { "location": "https://exports.example.com/openapi.json" }
     }
   },

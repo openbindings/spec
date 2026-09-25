@@ -215,7 +215,7 @@
         "openbindings": "0.2.0",
         "sources": {
           "api": {
-            "bindingSpec": "example.test@1",
+            "kind": "example.test@1",
             "content": {
               "schema": {
                 "type": "object"

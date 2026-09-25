@@ -10,24 +10,23 @@ chronological record of work on the draft is preserved in
 
 Version 0.2.0 has not been released. The latest release is 0.1.0, and details
 below may continue to change until the 0.2 release is cut.
+Entries below retain the chronology of the working draft; the kind change in
+the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
+`bindingSpecs`, and OBI-B rules.
 
 ### Added
 
-- **The binding-specification seam is named.** [§6](openbindings.md#6-binding-specifications)
-  now states the three provisions a binding specification stands on
-  (source content, binding content, and values), each by reference to where the document
-  model defines it, and states that nothing else in the core bears on a binding
-  specification's meaning. [§8.1](openbindings.md#81-openbindings-field-specification-version)
-  commits that only a change to those provisions reaches binding
-  specifications; any other core change leaves their meaning and identifiers
-  unaffected, and a document may declare a later core version while naming a
-  binding specification written against an earlier one. No rule is added or
-  changed; the passage names a boundary the existing provisions already draw.
+- **The core's deferral boundary is explicit.** [§6](openbindings.md#6-kinds)
+  states what the document model defines about a kind and what it leaves to
+  tools that interpret sources and bindings. The core makes no claim that a
+  written definition or implementation exists for a kind. [§8.1](openbindings.md#81-openbindings-field-specification-version)
+  records changes to the core provisions for source content, binding content,
+  and caller-facing values as breaking for tools that interpret kinds.
 
 - **Named operation dependencies in the Core document model.** The optional
   `dependencies` map declares named consumption points that reference operation
-  keys and may carry a nonempty, unique, unordered `bindingSpecs` any-of list of
-  exact binding-specification identifiers. Operations are now explicitly neutral
+  keys and may carry a nonempty, unique, unordered `kinds` any-of list of
+  exact kinds. Operations are now explicitly neutral
   contracts: bindings attest concrete realizations, dependencies declare
   consumption, and either relationship may appear independently or together.
   Dependency satisfaction, provider matching and selection, registration,
@@ -207,6 +206,20 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- **Sources carry `kind`; dependencies constrain `kinds`.** The required
+  source field `bindingSpec` becomes `kind`, and the optional dependency field
+  `bindingSpecs` becomes `kinds`. Both use exact, opaque, non-empty strings.
+  Their values are not dereferenced or interpreted as versions. §6 and
+  OBI-T-01 now state the processing semantics. A kind need not have a written
+  definition or an implementation for its document to conform. The core gives
+  no meaning to source or binding `content`, target identification,
+  interaction, value adaptation, or success classification. The project may
+  publish binding specifications as separate guidance; the core no longer
+  defines that category or a conformance class for it. Former OBI-B-01,
+  OBI-B-02, and OBI-B-03 are removed, and the former §10.5 conformance
+  conclusions move to §10.4. The schema, core corpus, examples, and migration
+  guide use the new fields. OBI-D-02 gains negatives for the removed members.
+
 - **Rule identifiers belong to their version, and 0.2 numbers its rules
   without gaps.** A rule identifier means what the version of this
   specification that states it says it means: a rule is cited under a
@@ -235,8 +248,9 @@ below may continue to change until the 0.2 release is cut.
   | OBI-T-18 | OBI-T-10 | `idempotent` claims |
   | OBI-T-19 | OBI-T-11 | example mismatches |
 
-  OBI-D-01 through OBI-D-09, OBI-T-01 through OBI-T-05, and OBI-B-01
-  through OBI-B-03 keep their numbers. The corpus files and scenario
+  At that stage, OBI-D-01 through OBI-D-09, OBI-T-01 through OBI-T-05,
+  and OBI-B-01 through OBI-B-03 kept their numbers; the kind change above
+  subsequently removed the OBI-B rules. The corpus files and scenario
   identifiers follow (T16-S-01 is now T08-S-01). The binding-spec
   candidates cite core rules by the new numbers, and their citations of
   rules the draft retired point at this changelog.
@@ -265,7 +279,7 @@ below may continue to change until the 0.2 release is cut.
   binding specification's concern. JSON remains the document format for the
   reasons §4 gives, which no longer include a transform language, and
   Dependencies become §5.5. These changes reach two of the provisions
-  [§6](openbindings.md#6-binding-specifications) hands a binding
+  [§6](https://github.com/openbindings/spec/blob/4219c89/openbindings.md#6-binding-specifications) hands a binding
   specification, which
   [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
   to be breaking for every binding specification; none is published yet, and
@@ -298,14 +312,14 @@ below may continue to change until the 0.2 release is cut.
   longer claims that a binding's target is identifiable from the binding and
   its source alone: how a target is identified, including any part a
   processor's environment plays, is the binding specification's to define
-  ([OBI-B-02](openbindings.md#104-binding-specification-rules) item 3), and
+  ([OBI-B-02](https://github.com/openbindings/spec/blob/4219c89/openbindings.md#104-binding-specification-rules) item 3), and
   invariant 2 states what a binding is for without a sufficiency claim.
   OBI-D-13 is retired. Every document rule is now decidable from the
   document, given a duplicate-detecting parse (OBI-D-01); no rule takes
   binding-specification
   knowledge, and OBI-T-01 no longer describes binding-specification-dependent
   rules. These changes reach provisions
-  [§6](openbindings.md#6-binding-specifications) hands a binding
+  [§6](https://github.com/openbindings/spec/blob/4219c89/openbindings.md#6-binding-specifications) hands a binding
   specification, which
   [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
   to be breaking for every binding specification; none is published yet, and
@@ -400,10 +414,10 @@ below may continue to change until the 0.2 release is cut.
 - **The core makes only rules it can decide.** OBI-T-06 is retired: what a
   binding's `content` means, and how a tool acting on the binding follows it,
   belong to the binding specification, and a support claim already means support for the
-  specification as published ([§10.4](openbindings.md#104-binding-specification-rules)).
+  specification as published ([§10.4](https://github.com/openbindings/spec/blob/4219c89/openbindings.md#104-binding-specification-rules)).
   Six passages no longer say that a binding is actionable, that the document
   makes realizations available, or that several bindings reach different
-  targets. [§6](openbindings.md#6-binding-specifications) no longer sets what
+  targets. [§6](https://github.com/openbindings/spec/blob/4219c89/openbindings.md#6-binding-specifications) no longer sets what
   a binding specification may cover; OBI-B-02 item 4's success requirement
   narrows to which values are successful output values, which every
   specification meeting the old item still meets, and the completeness
