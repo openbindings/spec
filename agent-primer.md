@@ -42,8 +42,8 @@ The useful separation is:
 ```text
 what a capability means       what is consumed         how it is realized
 ──────────────────────────    ─────────────────────    ───────────────────────
-operation key, aliases,       dependency key,         source, bindingSpec, selector,
-per-value schemas             operation, bindingSpecs transforms, interaction
+operation key, aliases,       dependency key,         source, bindingSpec,
+per-value schemas             operation, bindingSpecs binding content, interaction
 ```
 
 One operation may have several bindings. Those bindings are author-declared
@@ -60,7 +60,7 @@ binding-governed source domain
                  │ governed by a binding specification
                  ▼
         OpenBindings interface document
- operations + dependencies + sources + bindings + transforms
+ operations + dependencies + sources + bindings
                  │
                  │ resolution and invocation
                  │ governed by the same binding specification
@@ -130,10 +130,11 @@ specification defines; the core gives `content` no meaning of its own.
 
 ### Binding
 
-A binding connects one operation to one source and selects a target through
-`selector`, any JSON value the binding specification defines, when that
-specification requires one. It may carry input and
-output transforms that bridge value-shape differences. A transform does not
+A binding connects one operation to one source and may carry `content`, any
+JSON value the source's binding specification defines: typically which target
+realizes the operation and how values are adapted between the operation's
+contract and that target. The core gives a binding's `content` no meaning of
+its own. Value adaptation, however a binding specification defines it, does not
 redefine transport lifecycle or repair an interaction that the binding
 specification cannot represent.
 
@@ -141,8 +142,8 @@ specification cannot represent.
 
 A binding specification gives one source family stable OpenBindings meaning.
 It owns a source's `content` (its accepted values, any artifact representations
-and addresses within it, and how they resolve), `selector` values and
-resolution, target identity, interaction mechanics, operation-boundary
+and addresses within it, and how they resolve), each binding's `content`,
+target identity, value adaptation, interaction mechanics, operation-boundary
 correspondence, and success classification.
 
 A binding specification is sovereign over the sources that name it. It may
@@ -190,7 +191,7 @@ Use this ownership model when specifications appear to overlap:
 | Is the OBI structurally conformant? How do OBI-defined references resolve? | Core OpenBindings specification |
 | What does an operation's input or output value mean at its caller-facing boundary? | The operation contract in the OBI |
 | Which operation does a dependency consume, and which binding-specification identifiers does it permit? | The dependency declaration in the OBI |
-| What source forms are accepted? What does `selector` identify? How is the interaction performed and classified? | The named binding specification |
+| What source forms are accepted? What does a binding's `content` identify, and how are values adapted? How is the interaction performed and classified? | The named binding specification |
 | What does an incorporated OpenAPI, protobuf, GraphQL, MCP, or other declaration mean? | The incorporated upstream authority, as scoped by the binding specification |
 | How is a dependency satisfied? Which provider or binding should be selected? Where are credentials stored? Should values be runtime-validated? How are retries, caching, and policy handled? | The implementation or consuming application |
 
@@ -240,7 +241,8 @@ OpenBindings provides:
 - named consumption points for operations, with optional binding-family constraints;
 - portable documents suitable for discovery, indexing, invocation, code
   generation, bridging, and comparison;
-- a place for shape transforms without absorbing protocol mechanics into the
+- a place, in each binding's `content`, for whatever value adaptation a
+  binding specification defines, without absorbing protocol mechanics into the
   operation contract; and
 - decentralized extension through independently governed binding
   specifications and shared interfaces.
@@ -298,14 +300,16 @@ equivalent, or hiding protocol behavior that callers actually need to control.
 4. Load the exact binding specification named by the source.
 5. Acquire and interpret the source's `content` as its binding specification
    defines.
-6. Resolve the binding's `selector` and any required interpretation choices.
+6. Interpret the binding's `content` as the binding specification defines,
+   including any required interpretation choices.
 7. Obtain credentials or other prerequisites through runtime context without
    mutating them into the OBI. Context carries what the manifestation
    requires, never what an operation is about: an operation whose subject
    matter is credentials or tokens takes them as ordinary inputs and
    outputs, not as context.
 8. Apply the binding specification's input mapping, interaction, success
-   classification, output mapping, and the binding's transforms.
+   classification, and output mapping, including any value adaptation the
+   binding's `content` declares.
 9. Refuse before dispatch if the target cannot be interpreted faithfully.
 
 ### Satisfying a declared operation dependency
@@ -485,15 +489,15 @@ captured.
     "createTask.http": {
       "operation": "createTask",
       "source": "tasksApi",
-      "selector": "#/paths/~1tasks/post"
+      "content": { "target": "#/paths/~1tasks/post" }
     }
   }
 }
 ```
 
-The `content` shape is illustrative; each binding specification defines its
+The `content` shapes are illustrative; each binding specification defines its
 own. The operation owns the caller-facing values. The OpenAPI source owns its
-HTTP declarations. `openbindings.openapi-3.1@1` explains how the `selector` resolves, how
+HTTP declarations. `openbindings.openapi-3.1@1` explains what the binding's `content` identifies, how
 values map to the HTTP exchange, and which outcomes produce successful output
 values. An invoker supplies runtime context and transport policy. None of those
 layers should silently take authority from another.

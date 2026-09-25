@@ -200,22 +200,6 @@
       "valid": true
     },
     {
-      "description": "transforms map key with hyphen-prefix",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {}
-        },
-        "transforms": {
-          "-normalize": "payload"
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-03"
-      ]
-    },
-    {
       "description": "empty string operation key (regex requires at least one character)",
       "document": {
         "openbindings": "0.2.0",

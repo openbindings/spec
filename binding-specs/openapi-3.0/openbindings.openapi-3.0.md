@@ -187,11 +187,11 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[incorporated]** A callback Path Item describes a request initiated by the API provider and the responses it expects; its runtime-expression key is evaluated against runtime request or response values to identify the callback URL, and the callback is not an operation invocable through the addressed parent operation. The destination is not characterized as service-chosen: the edition's worked example derives it from a consumer-supplied query parameter ([OAS 3.0.4 §§4.7.10.1, 4.7.18, 4.7.20.4](https://spec.openapis.org/oas/v3.0.4.html#callback-object)).
 
-**[convention]** When generation represents a supported callback operation, it emits a Core dependency with a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.6](../../openbindings.md#56-dependencies)). Selecting a parent operation does not require generating its callbacks.
+**[convention]** When generation represents a supported callback operation, it emits a Core dependency with a role-inverted consumed-operation contract: input is the request the service sends and output is the response the service expects (Core [§5.5](../../openbindings.md#55-dependencies)). Selecting a parent operation does not require generating its callbacks.
 
 **[convention]** Dependency key spelling and contract shape are generation policy under §12.2. Each emitted dependency preserves the identity of its distinct source consumption point, its role-inverted input/output meaning, and consistent references; distinct consumption points are not merged merely to share a key. This specification requires no slot-derived naming algorithm.
 
-**[incorporated]** Such a dependency carries no concrete target (Core [§5.6](../../openbindings.md#56-dependencies)).
+**[incorporated]** Such a dependency carries no concrete target (Core [§5.5](../../openbindings.md#55-dependencies)).
 
 **[convention]** Such a dependency also carries no `bindingSpecs`, because the originating artifact has no authority to constrain the consumer's description format.
 
@@ -685,7 +685,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** Every binding-specific configuration requirement remains a fact of its represented target or declared alternative and is supplied through invocation context; it MUST NOT enter the operation input schema. Whether generation reports that fact does not change its applicability, type, or declaration-derived discoverability under §12.1.
 
-**[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.6](../../openbindings.md#56-dependencies)).
+**[incorporated]** Dependencies are synthesis outputs only and add no invocation target or receiver behavior (Core [§1.2](../../openbindings.md#12-out-of-scope), [§5.5](../../openbindings.md#55-dependencies)).
 
 ### 12.3 Conformance rules
 

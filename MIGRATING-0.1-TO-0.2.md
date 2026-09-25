@@ -15,16 +15,16 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | `sources.*.format` | `sources.*.bindingSpec` |
 | Informal format tokens such as `openapi@3.1` | Exact governing identifiers such as `openbindings.openapi-3.1@1`, selected to match the artifact’s edition line |
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
-| `bindings.*.ref` | `bindings.*.selector`: the binding-specification-defined selection of the binding's target, as whatever JSON value that specification accepts |
+| `bindings.*.ref` | `bindings.*.content`: whatever the governing binding specification defines for the binding, such as which target realizes the operation, as whatever JSON value that specification accepts |
 | `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the governing binding specification defines; the core has no `location` member |
-| Transform objects such as `{ "language": "jsonata", "expression": "..." }` | A JSONata expression string |
+| Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "language": "jsonata", "expression": "..." }` | Remove; value adaptation, where the governing binding specification defines it, goes in `bindings.*.content` in the form that specification defines |
 | `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
 | No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `bindingSpecs` |
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
-| Relative schema and named-transform references | Make OBI-defined references absolute or same-document |
+| Relative schema references | Make schema references absolute or same-document |
 
-A 0.1 member left in place (`format`, `priority`, `ref`, `location`, `security`, `roles`, `satisfies`) makes a 0.2 document non-conformant: an object the specification defines carries no unprefixed field it does not define (§12). Keep private data under an `x-` name.
+A 0.1 member left in place (`format`, `priority`, `ref`, `location`, `security`, `roles`, `satisfies`, `transforms`, `inputTransform`, `outputTransform`) makes a 0.2 document non-conformant: an object the specification defines carries no unprefixed field it does not define (§12). Keep private data under an `x-` name.
 
 Do not translate `priority` to `preference` mechanically. The direction
 reversed and 0.2 defines no selection algorithm. Reconsider the intended
@@ -97,7 +97,7 @@ format. For every source:
    bindings.
 2. Replace `format` with that specification's exact identifier.
 3. Carry what the source needs in `content`, in the shape that specification
-   defines, and validate `content` and every binding `selector` under it.
+   defines, and validate that `content` and every binding's `content` under it.
 4. Supply any required runtime choices through invocation context
    configuration; do not invent them in the OBI.
 5. Refuse or exclude interactions that the binding specification cannot
@@ -117,18 +117,17 @@ extension field merely to preserve the old shape.
 
 OBI documents are context-free in 0.2:
 
-- what a source's `content` and a binding's `selector` mean, including any
-  address or reference within them, is their binding specification's to
-  define;
+- what a source's or binding's `content` means, including any address or
+  reference within it, is the binding specification's to define;
 - OBI-governed references are absolute or same-document;
-- named transform references have the form `#/transforms/<key>`;
 - schema reference behavior follows JSON Schema 2020-12 from the OBI document
   root, subject to nested `$id` rebasing.
 
-Every inline and named transform is a JSONata 2.1 expression string. Transforms
-operate once per input or output value and never change cardinality. A
-document-supplied expression cannot rely on host-reaching extensions such as
-filesystem, network, environment, or process access.
+The 0.2 core defines no transforms. A 0.1 transform adapted values between
+the operation's contract and the source; in 0.2 that adaptation belongs to the
+governing binding specification. Where it defines value adaptation, carry the
+mapping in the binding's `content`, in the form it defines. Where it does not,
+the operation's schemas must describe the values the source carries.
 
 ## Validation checklist
 
@@ -141,7 +140,8 @@ Before considering a document migrated:
    [`openbindings.md` §10](openbindings.md#10-conformance).
 3. Validate each source and binding against its exact binding specification.
 4. Exercise every named operation and alias through the 0.2 resolution rules.
-5. Evaluate transforms and validate representative values in both directions.
+5. Validate representative values in both directions, through any value
+   adaptation the binding specification defines.
 6. Confirm runtime context requirements, binding selection, errors,
    cancellation, ordering, and stream behavior with the implementation that
    will invoke the document.
@@ -200,16 +200,16 @@ validation must not be presented as unqualified conformance.
     "getPet.http": {
       "operation": "getPet",
       "source": "api",
-      "selector": "#/paths/~1pets~1{id}/get"
+      "content": { "target": "#/paths/~1pets~1{id}/get" }
     }
   }
 }
 ```
 
-The example shows document-shape changes only. The `content` shown is
-illustrative: its shape is the binding specification's to define. Whether
-that `content` and `selector` identify a target, and how to invoke it, is
-defined by
+The example shows document-shape changes only. The `content` shown on the
+source and the binding is illustrative: its shape is the binding
+specification's to define. Whether that `content` identifies a target, and how
+to invoke it, is defined by
 the `openbindings.openapi-2.0@1`/`-3.0@1`/`-3.1@1`/`-3.2@1` family (see [binding-specs/README.md](binding-specs/README.md)), and
 the operation schemas still need to be checked against the actual upstream
 interaction.

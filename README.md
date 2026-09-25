@@ -63,7 +63,7 @@ operation-level overlay remains faithful and reusable across them.
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. It specifies the transform language ([JSONata 2.1](https://docs.jsonata.org/)) for tools that evaluate transforms, but deliberately leaves higher-level tool behavior — beyond the [§10](openbindings.md#10-conformance) floor — to implementations: comparison and matching, dependency composition, provider and binding selection, credential and context resolution, and the transform runtime (sandboxing, error handling, resource limits). [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
+The spec defines what an OBI document **is**: its shape, reference resolution, and versioning, plus a thin conformance floor for tools. Higher-level tool behavior beyond the [§10](openbindings.md#10-conformance) floor is deliberately left to implementations: comparison and matching, dependency composition, provider and binding selection, and credential and context resolution. How a binding reaches its target and adapts values between the operation and that target belongs to its binding specification. [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
 
 Authentication in particular is **not** part of an OBI document. It is a
 runtime prerequisite negotiated by the binding invoker at call time and

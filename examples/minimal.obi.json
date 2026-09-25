@@ -32,14 +32,14 @@
   "sources": {
     "restApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://api.example.com/openapi.json"
+      "content": { "location": "https://api.example.com/openapi.json" }
     }
   },
   "bindings": {
     "echo.restApi": {
       "operation": "echo",
       "source": "restApi",
-      "selector": "#/paths/~1echo/post"
+      "content": { "target": "#/paths/~1echo/post" }
     }
   }
 }

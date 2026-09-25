@@ -27,9 +27,9 @@ What it does NOT snapshot:
     identified per family by integer revision (e.g. openbindings.usage@1),
     independent of the core spec's semver. Their immutable publication bundles
     already live under binding-specs/releases/ and are verified separately.
-  - conformance/binding-specs/, conformance/operation-graph/,
-    conformance/transforms/ — non-core corpora, keyed to binding-specification
-    identifiers and the transform language, not to the core rule identifiers
+  - conformance/binding-specs/, conformance/operation-graph/ — non-core
+    corpora, keyed to binding-specification identifiers, not to the core rule
+    identifiers
   - scripts/ — repo-wide tooling, not part of any specific release
 
 What it does NOT do:

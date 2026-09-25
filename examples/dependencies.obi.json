@@ -56,14 +56,14 @@
   "sources": {
     "exportsApi": {
       "bindingSpec": "openbindings.openapi-3.1@1",
-      "location": "https://exports.example.com/openapi.json"
+      "content": { "location": "https://exports.example.com/openapi.json" }
     }
   },
   "bindings": {
     "exports.create.http": {
       "operation": "exports.create",
       "source": "exportsApi",
-      "selector": "#/paths/~1exports/post"
+      "content": { "target": "#/paths/~1exports/post" }
     }
   }
 }

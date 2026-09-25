@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-05",
   "section": "10.2",
-  "description": "Carries only absolute or same-document OBI-defined references: every schema $ref is a same-document fragment in JSON Pointer form (plain-name $anchor fragments are not used at OBI positions) or an absolute URI; every schema $id at an OBI position is absolute (a nested $id within a schema declaring its own $id resolves against that resource's base per 2020-12 and is resource-internal); every named-transform $ref in bindings[*].inputTransform/outputTransform is a same-document fragment. $dynamicRef and $dynamicAnchor do not appear at OBI positions (dynamic resolution follows the runtime dynamic scope rather than the document); within a schema declaring its own $id both are that resource's internal business, per the same scope rule as $ref/$anchor. URI-form references are well-formed per RFC 3986 §4.1. A source's content and a binding's selector are interpreted by the governing binding specification and are out of scope for this rule.",
-  "notes": "Nothing within a source's content or a binding's selector is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is the binding specification's to define and resolve, and the positives below pin that no core rule judges it.",
+  "description": "Carries only absolute or same-document OBI-defined references: every schema $ref is a same-document fragment in JSON Pointer form (plain-name $anchor fragments are not used at OBI positions) or an absolute URI; every schema $id at an OBI position is absolute (a nested $id within a schema declaring its own $id resolves against that resource's base per 2020-12 and is resource-internal). $dynamicRef and $dynamicAnchor do not appear at OBI positions (dynamic resolution follows the runtime dynamic scope rather than the document); within a schema declaring its own $id both are that resource's internal business, per the same scope rule as $ref/$anchor. URI-form references are well-formed per RFC 3986 §4.1. A source's or binding's content is interpreted by the governing binding specification and is out of scope for this rule.",
+  "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is the binding specification's to define and resolve, and the positives below pin that no core rule judges it.",
   "tests": [
     {
       "description": "a relative address inside a source's content is the binding specification's to define (out of D-05's scope)",
@@ -23,7 +23,7 @@
       "valid": true
     },
     {
-      "description": "a member named $ref inside a source's content or a binding's selector is not a schema reference (out of D-05's scope)",
+      "description": "a member named $ref inside a source's or binding's content is not a schema reference (out of D-05's scope)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -41,7 +41,7 @@
           "createTask.http": {
             "operation": "createTask",
             "source": "httpApi",
-            "selector": {
+            "content": {
               "$ref": "#Task"
             }
           }

@@ -44,7 +44,9 @@
           "createTask.http": {
             "operation": "createTask",
             "source": "http",
-            "selector": "#/paths/~1tasks/post"
+            "content": {
+              "target": "#/paths/~1tasks/post"
+            }
           },
           "createTask.exotic": {
             "operation": "createTask",

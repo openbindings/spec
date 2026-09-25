@@ -166,7 +166,7 @@
       "valid": true
     },
     {
-      "description": "binding `selector` is any JSON value, and `selector: null` is a present member",
+      "description": "binding `content` is any JSON value, and `content: null` is a present member",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -181,12 +181,12 @@
           "createTask.string": {
             "operation": "createTask",
             "source": "s",
-            "selector": "tasks.create"
+            "content": "tasks.create"
           },
           "createTask.object": {
             "operation": "createTask",
             "source": "s",
-            "selector": {
+            "content": {
               "path": "/tasks",
               "method": "post"
             }
@@ -194,7 +194,7 @@
           "createTask.array": {
             "operation": "createTask",
             "source": "s",
-            "selector": [
+            "content": [
               "tasks",
               "create"
             ]
@@ -202,17 +202,17 @@
           "createTask.number": {
             "operation": "createTask",
             "source": "s",
-            "selector": 3
+            "content": 3
           },
           "createTask.boolean": {
             "operation": "createTask",
             "source": "s",
-            "selector": true
+            "content": true
           },
           "createTask.null": {
             "operation": "createTask",
             "source": "s",
-            "selector": null
+            "content": null
           }
         }
       },
@@ -440,7 +440,7 @@
       ]
     },
     {
-      "description": "a case variant of a defined member is not that member (Selector on a binding)",
+      "description": "a case variant of a defined member is not that member (Content on a binding)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -455,7 +455,7 @@
           "b": {
             "operation": "createTask",
             "source": "s",
-            "Selector": "x"
+            "Content": "x"
           }
         }
       },
@@ -500,7 +500,7 @@
       ]
     },
     {
-      "description": "an undefined member on a named-transform $ref object",
+      "description": "a member this version removed from the root (transforms)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -508,6 +508,19 @@
         },
         "transforms": {
           "t": "$"
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "members this version removed from a binding (selector, inputTransform, outputTransform)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
         },
         "sources": {
           "s": {
@@ -515,12 +528,21 @@
           }
         },
         "bindings": {
-          "b": {
+          "b.selector": {
             "operation": "createTask",
             "source": "s",
-            "inputTransform": {
-              "$ref": "#/transforms/t",
-              "note": "x"
+            "selector": "#/paths/~1tasks/post"
+          },
+          "b.input": {
+            "operation": "createTask",
+            "source": "s",
+            "inputTransform": "$"
+          },
+          "b.output": {
+            "operation": "createTask",
+            "source": "s",
+            "outputTransform": {
+              "$ref": "#/transforms/t"
             }
           }
         }
@@ -531,7 +553,7 @@
       ]
     },
     {
-      "description": "x- members are extensions on every OBI-defined object, including examples, dependencies, and a named-transform $ref object",
+      "description": "x- members are extensions on every OBI-defined object, including examples and dependencies",
       "document": {
         "openbindings": "0.2.0",
         "x-owner": "tasks-team",
@@ -551,9 +573,6 @@
             "x-note": 1
           }
         },
-        "transforms": {
-          "t": "$"
-        },
         "sources": {
           "s": {
             "bindingSpec": "example.test@1",
@@ -564,11 +583,7 @@
           "b": {
             "operation": "createTask",
             "source": "s",
-            "x-note": 1,
-            "inputTransform": {
-              "$ref": "#/transforms/t",
-              "x-note": 1
-            }
+            "x-note": 1
           }
         }
       },

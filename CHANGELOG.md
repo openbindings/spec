@@ -15,7 +15,7 @@ below may continue to change until the 0.2 release is cut.
 
 - **The binding-specification seam is named.** [§6](openbindings.md#6-binding-specifications)
   now states the three provisions a binding specification stands on
-  (carriage, selection, and values), each by reference to where the document
+  (source content, binding content, and values), each by reference to where the document
   model defines it, and states that nothing else in the core bears on a binding
   specification's meaning. [§8.1](openbindings.md#81-openbindings-field-specification-version)
   commits that only a change to those provisions reaches binding
@@ -191,14 +191,7 @@ below may continue to change until the 0.2 release is cut.
 - Explicit version acceptance and refusal rules, including prereleases and
   pre-1.0 minor-version boundaries.
 - Context-free OBI reference resolution, JSON Schema 2020-12 graph rules,
-  boolean schemas, and named transforms.
-- JSONata 2.1 per-value transforms with a closed host environment and a
-  pinned language-documentation snapshot, including inherited pages. Core
-  incorporates the documented syntax and semantics, not a blanket runtime
-  behavioral tiebreak or an additional numerical-capacity policy. The
-  reference implementation is informative where it differs from that
-  documentation, and conformance requires no use, port, or reproduction of
-  it or any other implementation (§5.5 clauses 1 and 2).
+  and boolean schemas.
 - The independently versioned HTTP Discovery companion specification.
 - A synthesis model that distinguishes represented, excluded, lossy, and
   failed upstream targets; exhaustive coverage is a qualified evidence claim,
@@ -214,6 +207,45 @@ below may continue to change until the 0.2 release is cut.
 
 ### Changed
 
+- **Transforms leave the core; a binding carries `content` its binding
+  specification defines; OBI-D-10 and OBI-T-10 are retired.** The core no
+  longer defines transforms or a transform language. §5.5 (Transforms), the
+  top-level `transforms` map, and the binding members `inputTransform`,
+  `outputTransform`, and `selector` are removed. A binding instead carries an
+  optional `content`, any JSON value, as its source does, and the source's
+  binding specification wholly defines it: typically which target realizes the
+  operation and how values are adapted between the operation's contract and
+  that target ([§5.3](openbindings.md#53-bindings)). A transform always sat on
+  one binding under one binding specification, which already defined the
+  source-side values it bridged, so the core could not decide what one meant;
+  it is now handed over with the rest of the binding. §6's three provisions
+  are source content, binding content, and values. OBI-B-02 item 2 covers a
+  binding's `content`, including any reference within it, and item 4 covers
+  any adaptation between caller-facing values and the source interaction,
+  with no variable bindings. The only OBI-defined references are schema
+  `$ref`s ([§7](openbindings.md#7-reference-resolution)), so OBI-D-05 loses
+  its named-transform clause; OBI-D-10 (named-transform resolution) and
+  OBI-T-10 (transform evaluation) are retired, and OBI-D-18, retired earlier
+  in this draft, stays retired because the core defines no expression
+  language. §9 treats expressions a binding's `content` may carry as that
+  binding specification's concern. JSON remains the document format for the
+  reasons §4 gives, which no longer include a transform language, and
+  Dependencies become §5.5. These changes reach two of the provisions
+  [§6](openbindings.md#6-binding-specifications) hands a binding
+  specification, which
+  [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
+  to be breaking for every binding specification; none is published yet, and
+  the project's candidates are to be revised to define binding `content`. The
+  document schema drops `transforms`, `selector`, `inputTransform`,
+  `outputTransform`, and the transform definitions, and accepts any JSON value
+  as a binding's `content`. In the corpus, the OBI-D-10 fixtures and the
+  OBI-D-03 `transforms` case are removed, OBI-D-02 gains negatives for the
+  removed members, and the other fixtures and the examples carry binding
+  `content`. The transform-language corpus (`conformance/transforms/`) and its
+  two verifiers leave the repository with the language they tested; a
+  binding-specification-level transform profile can recover them from
+  history.
+
 - **A source is its binding specification's identifier plus content that
   specification defines; `location` leaves the core; OBI-D-13 is retired.**
   A source is now `bindingSpec` with optional `content` and `description`.
@@ -221,17 +253,14 @@ below may continue to change until the 0.2 release is cut.
   it: whether it may be absent, which values it accepts, whether it embeds an
   artifact, addresses one, addresses a live service, or names something a
   processor's environment provides, and how anything within it resolves
-  ([§5.4](openbindings.md#54-sources)). A binding's `selector` is likewise any
-  JSON value its source's binding specification defines
-  ([§5.3](openbindings.md#53-bindings)). The core gave `location` a meaning it
+  ([§5.4](openbindings.md#54-sources)). The core gave `location` a meaning it
   could not check, since an address is an address only under its binding
   specification, so the member, the rule that a source carry `location` or
   `content`, content primacy, and OBI-D-05's `location` clause are removed.
-  Nothing within `content` or `selector` is an OBI-defined reference, and
+  Nothing within `content` is an OBI-defined reference, and
   invariant 4, now titled "Context-free references", is stated for the
   references the core defines. OBI-B-02's first four items, which assumed a
-  `location`/`content` pair, become one item on `content`, so the list is four
-  items: content, selector, target and interaction, and values. The core no
+  `location`/`content` pair, become one item on `content`. The core no
   longer claims that a binding's target is identifiable from the binding and
   its source alone: how a target is identified, including any part a
   processor's environment plays, is the binding specification's to define
@@ -241,25 +270,25 @@ below may continue to change until the 0.2 release is cut.
   document, given a duplicate-detecting parse (OBI-D-01); no rule takes
   binding-specification
   knowledge, and OBI-T-01 no longer describes binding-specification-dependent
-  rules. These changes reach the carriage and selection provisions
+  rules. These changes reach provisions
   [§6](openbindings.md#6-binding-specifications) hands a binding
   specification, which
   [§8.1](openbindings.md#81-openbindings-field-specification-version) holds
   to be breaking for every binding specification; none is published yet, and
   the project's candidates are to be revised to define their `content`. The
   document schema drops `location` and the `location`-or-`content`
-  requirement and accepts any JSON value as `selector`. In the corpus, the
+  requirement. In the corpus, the
   OBI-D-13 fixtures and OBI-D-05's `location` cases are removed; OBI-D-02
   gains positives for a source holding only `bindingSpec` and for `content`
-  and `selector` of every JSON type, `null` included; OBI-D-05 gains
-  positives showing that nothing within `content` or `selector` is judged as
+  of every JSON type, `null` included; OBI-D-05 gains
+  positives showing that nothing within `content` is judged as
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
 - **The core's examples use illustrative binding-specification identifiers.**
-  The Abstract, §4, §5.6, and §6 examples name `example.openapi@1`,
+  The Abstract, §4, §5.5, and §6 examples name `example.openapi@1`,
   `example.mcp@1`, and `example.grpc@1`, which name no published
-  specification, and the Abstract says so. §5.3 explains selectors by
+  specification, and the Abstract says so. §5.3 explains binding content by
   protocol (a JSON Pointer into an OpenAPI document, a gRPC method name, an
   MCP tool name) rather than by project identifier, §6 no longer lists the
   project's identifiers, and §14 points to the project's binding-spec work
@@ -268,7 +297,7 @@ below may continue to change until the 0.2 release is cut.
 
 - **Unprefixed names are reserved for the specification.** An object the
   specification defines (the root; operation, example, dependency, source,
-  and binding objects; and a named-transform `$ref` object) carries no field
+  and binding objects) carries no field
   the specification does not define unless its name begins with `x-`: such a
   field violates OBI-D-02, as the derived schema now closes those objects
   (§12). A tool processing the document still ignores it (OBI-T-02), as
@@ -280,29 +309,6 @@ below may continue to change until the 0.2 release is cut.
   non-conformant. The corpus gains OBI-D-02 cases, and the OBI-T-16 scenario
   that put a schema-shaped member on the document root is retired, since
   that document can no longer be conformant.
-
-- **Transform readings the JSONata documentation leaves to its host.** §5.5
-  clause 6 states them as JSONata has them: where the documentation counts or
-  orders characters, a character is a Unicode code point; objects carry no
-  member order, as in JSON, so an order-dependent result is the host's and an
-  expression that needs an order sorts; and regular expressions are ECMA-262
-  as JSONata constructs them, without the `u` flag, with the `i` and `m`
-  flags. Clause 2 adds no numeric model: where the documentation leaves the
-  precision, range, or text form of numbers open, each host's numbers decide,
-  a value passed through untouched keeps its exact value, and a failure is
-  owed for a number a host cannot hold without changing it, not for
-  arithmetic rounding. The language corpus gains LANG-27 (a code point's
-  length) and LANG-28 (a regular expression read without the `u` flag).
-
-- **OBI-D-18 is retired: expression syntax is not a document rule.** An
-  expression that is not in the pinned transform language fails when a tool
-  evaluates it (§5.5 clause 4), as it does wherever JSONata is used. JSONata
-  has no grammar apart from its implementations' parsers, and the reference
-  parser rejects numeric literals beyond its host's range, so no parser could
-  decide syntax for every host; the core no longer judges it. A tool may check
-  expressions ahead of evaluation as its own diagnostic. The OBI-D-18 fixtures
-  are removed, the OBI-T-17 scenario that used it as an inconclusive rule uses
-  OBI-D-17, and the Go runner no longer treats any rule as a capability rule.
 
 - **A schema `$ref` reaches only a schema, as JSON Schema defines one.** A
   schema `$ref` at an OBI position resolves to a schema the document model
@@ -319,16 +325,6 @@ below may continue to change until the 0.2 release is cut.
   declaring the same `$id` violate OBI-D-05, as JSON Schema lets a URI
   identify one schema (§9.1.2). This replaces the earlier text in this draft
   that judged any value a reference reached as a schema.
-- **Transforms evaluate over logical values.** §5.5 names the upstream 2.1.1
-  release its documentation snapshot belongs to, and says the language's
-  semantics apply to values of the JSON data model: a tool evaluates natively
-  over its own representation and need not serialize values to JSON text.
-  Where a host cannot compute what an expression means for the values given
-  (a number beyond its range or precision, a regular-expression feature its
-  engine lacks), the evaluation fails; it never succeeds with a different
-  value. §9 no longer says the closed environment bars all host state: the
-  standard library reads the evaluation's clock and pseudo-random numbers.
-
 - **Second cold-read corrections.** "Tool" is again any software that acts
   on OBI documents, so no producer class is implied. §10 states OBI-D-02's
   authority once: the published schema decides it, and a disagreement with
@@ -344,8 +340,8 @@ below may continue to change until the 0.2 release is cut.
   says a SHOULD inside a requirement stays a recommendation, and the posture
   paragraph no longer groups OBI-T-04's refusal with rules that never fail a
   document. §5.2 says only an external unresolvable `$ref` passes
-  well-formedness, §5.4's opening sentence no longer reads as a source naming
-  its bindings, and §4 notes that the list transform maps one array value.
+  well-formedness, and §5.4's opening sentence no longer reads as a source
+  naming its bindings.
 
 - **Cold-read corrections.** "OBI position" is defined in
   [§3](openbindings.md#3-terminology): the schema positions the document model
@@ -357,12 +353,9 @@ below may continue to change until the 0.2 release is cut.
   says: an `x-` field, understood or not, does not change the meaning of core
   fields. §6 says OBI-B-02's four items are what a binding specification owes,
   not further provisions. "Processor" is a tool that takes a document as
-  input; JSONata's named values are "variable bindings", including in the
-  values provision §6 names, an editorial change that reaches no binding
-  specification; and §5.3's heading is "Preference signals". OBI-T-13 and
+  input, and §5.3's heading is "Preference signals". OBI-T-13 and
   OBI-T-14 appear in the retired table. The examples no longer describe an MCP
-  tool's output, the list operation's binding carries the transform its
-  source needs, and the private identifier matches its file. OBI-D-02 applies
+  tool's output, and the private identifier matches its file. OBI-D-02 applies
   the schema as published, and a conflict with the prose is an erratum
   corrected in the schema. §10.5 defines the applicable rules, §7 says an
   absolute URI may carry a fragment, §5.3 says `1.0` and `1` are the same
@@ -371,8 +364,8 @@ below may continue to change until the 0.2 release is cut.
   matches OBI-D-02.
 
 - **The core makes only rules it can decide.** OBI-T-06 is retired: what a
-  `selector` means, and how a tool acting on one follows it, belong to the
-  binding specification, and a support claim already means support for the
+  binding's `content` means, and how a tool acting on the binding follows it,
+  belong to the binding specification, and a support claim already means support for the
   specification as published ([§10.4](openbindings.md#104-binding-specification-rules)).
   Six passages no longer say that a binding is actionable, that the document
   makes realizations available, or that several bindings reach different
@@ -515,12 +508,10 @@ below may continue to change until the 0.2 release is cut.
   is gone.
 - `idempotent` is a narrow author-attested effect claim, not permission to
   retry or cache and not a stable-output guarantee.
-- Inline transforms are JSONata expression strings. Transforms operate once
-  per value and never change cardinality.
-- The binding member `ref` was renamed `selector`: the
-  binding-specification-defined selection of the binding's target. Its value
-  may be any JSON value the binding specification accepts, and the binding
-  specification also defines what its absence means.
+- The binding member `ref` gave way to `content`, any JSON value the binding
+  specification defines, typically including which target realizes the
+  operation and how values are adapted to it. The binding specification also
+  defines what its absence means.
 - A source is `bindingSpec` plus optional `content` that the binding
   specification wholly defines. The core has no `location` member; whatever a
   source addresses is carried in `content` as its binding specification
@@ -530,7 +521,7 @@ below may continue to change until the 0.2 release is cut.
   configuration choices, approvals, and other prerequisites are supplied as
   invocation context and may be surfaced through context requirements.
 - Tool conformance is capability-scoped. A validator that lacks a capability
-  a rule requires, such as a parser for the transform language, reports that
+  a rule requires, such as a duplicate-detecting parser, reports that
   rule as inconclusive rather than claiming complete conformance. No document
   rule takes binding-specification knowledge.
 - The operation-graph specification was rebuilt around the direct-invocation
@@ -546,6 +537,9 @@ below may continue to change until the 0.2 release is cut.
 - Retrieval-URI-relative OBI references.
 - The source `location` member and the rule that a source carry `location`,
   `content`, or both.
+- Transforms and the core transform language: the `transforms` map and the
+  binding `inputTransform` and `outputTransform` members. A binding
+  specification defines any value adaptation, in a binding's `content`.
 - YAML as an OBI serialization. A binding specification may still incorporate
   YAML or any other upstream artifact representation.
 - The experimental, unminted Workers RPC binding candidate. It is absent from
