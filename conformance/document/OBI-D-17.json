@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-17",
   "section": "10.2",
-  "description": "Has every schema contained in the document — every specified operation input/output, every entry in schemas, and their subschemas as JSON Schema 2020-12 defines them — well-formed: valid against the JSON Schema 2020-12 meta-schemas and satisfying the constraints of §5.2. Validation uses locally available meta-schemas and MUST NOT require a network fetch. The rule does not require proving satisfiability, resolving external resources, or rejecting unknown keywords.",
+  "description": "Has every schema contained in the document — every specified operation input/output, every entry in schemas, and their subschemas as JSON Schema 2020-12 defines them — well-formed: valid against the JSON Schema 2020-12 meta-schemas and satisfying the constraints of §5.2. Validation uses locally available meta-schemas and MUST NOT require a network fetch. The rule does not require proving satisfiability, resolving external resources, or rejecting unknown keywords. The same holds for every value a schema $ref at an OBI position resolves to within the document under OBI-D-16, wherever that value sits.",
   "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; subschemas are covered recursively as JSON Schema 2020-12 defines them, so one meta-schema validation of each top-level position covers its whole subtree. 0.2.0 admits boolean schemas at every schema position (§5.2: true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is deliberately narrow: the positives include an unparseable `pattern` regular expression and an unresolvable external $ref, both of which pass the meta-schemas per the rule text and surface only when the schema is used. Negative cases list OBI-D-17 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
   "tests": [
     {
@@ -244,6 +244,75 @@
         "operations": {
           "getTask": {
             "output": { "anyOf": [{ "type": "string" }, 42] }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a schema $ref at an OBI position resolving to a string is read as a schema and is not a well-formed one",
+      "document": {
+        "openbindings": "0.2.0",
+        "name": "Task Manager",
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/name" }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a schema $ref at an OBI position resolving into x- data that holds a malformed schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-shapes": { "Broken": { "type": 42 } },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/x-shapes/Broken" }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a schema $ref at an OBI position resolving into x- data that holds a well-formed schema: the target is judged by its value, not its position",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-shapes": { "Task": { "type": "object" } },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/x-shapes/Task" }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a schema $ref at an OBI position resolving into x- data that holds a schema declaring another dialect: section 5.2's constraints apply to the target",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-shapes": { "Old": { "$schema": "https://json-schema.org/draft/2019-09/schema", "type": "object" } },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/x-shapes/Old" }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-17"]
+    },
+    {
+      "description": "a schema $ref at an OBI position resolving into x- data that holds a schema with a nested $vocabulary",
+      "document": {
+        "openbindings": "0.2.0",
+        "x-shapes": { "V": { "type": "object", "properties": { "a": { "$vocabulary": { "https://example.com/v": true } } } } },
+        "operations": {
+          "createTask": {
+            "input": { "$ref": "#/x-shapes/V" }
           }
         }
       },

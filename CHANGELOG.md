@@ -256,6 +256,34 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **Cold-read corrections.** "OBI position" is defined in
+  [§3](openbindings.md#3-terminology): the schema positions the document model
+  names and the subschemas 2020-12 defines below them, stopping inside a
+  resource that declares its own `$id`. OBI-D-17 also judges every value a
+  schema `$ref` at an OBI position resolves to within the document, wherever
+  it sits: a reference to the document's `name` string, or to a malformed
+  schema inside `x-` data, now violates it, while a reference to a well-formed
+  schema inside `x-` data does not. OBI-D-11 decides examples under the
+  validation semantics of §5.2, so `format` is an annotation there too. Every
+  item under "A conformant tool" is stated to be a requirement, and the list
+  that called some of them "MUST-level" is gone. OBI-T-03 now says what §12
+  says: an `x-` field, understood or not, does not change the meaning of core
+  fields. §6 says OBI-B-02's four items are what a binding specification owes,
+  not further provisions. "Processor" is a tool that takes a document as
+  input; JSONata's named values are "variable bindings", including in the
+  values provision §6 names, an editorial change that reaches no binding
+  specification; and §5.3's heading is "Preference signals". OBI-T-13 and
+  OBI-T-14 appear in the retired table. The examples no longer describe an MCP
+  tool's output, the list operation's binding carries the transform its
+  source needs, and the private identifier matches its file. OBI-D-02 applies
+  the schema as published, and a conflict with the prose is an erratum
+  corrected in the schema. §10.5 defines the applicable rules, §7 says an
+  absolute URI may carry a fragment, §5.3 says `1.0` and `1` are the same
+  preference, and §9 names regular-expression cost. The corpus gains five
+  OBI-D-17 cases, two of them for a target that declares another dialect or
+  holds `$vocabulary`, and one OBI-D-11 case. The schema's own description now
+  matches OBI-D-02.
+
 - **The core makes only rules it can decide.** OBI-T-06 is retired: what a
   `selector` means, and how a tool acting on one follows it, belong to the
   binding specification, and a support claim already means support for the
