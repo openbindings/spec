@@ -318,6 +318,29 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "two schema resources declaring the same $id (JSON Schema 2020-12 lets a URI identify one schema)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/task",
+            "type": "object"
+          },
+          "B": {
+            "$id": "https://example.com/task",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
     }
   ]
 }

@@ -256,6 +256,31 @@ below may continue to change until the 0.2 release is cut.
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
 
+- **A schema `$ref` reaches only a schema, as JSON Schema defines one.** A
+  schema `$ref` at an OBI position resolves to a schema the document model
+  places (OBI-D-16): a same-document fragment to a schema at an OBI position,
+  and an absolute reference through an embedded schema's `$id` to that schema
+  or a subschema below it. JSON Schema 2020-12 leaves a reference to anything
+  else undefined (§9.4.2), so a reference to the OBI document itself (`#`),
+  to a string, into `x-` data, into a source's `content`, into an
+  annotation, `const`, `enum`, or a legacy `definitions` or `dependencies`
+  entry now violates OBI-D-16, and a same-document pointer into a schema
+  resource that declares its own `$id` does too, since JSON Schema advises
+  against it (§9.2.1) and the resource's `$id` reaches it. A schemas entry
+  that declares `$id` is still named `#/schemas/<name>`. Two schema resources
+  declaring the same `$id` violate OBI-D-05, as JSON Schema lets a URI
+  identify one schema (§9.1.2). This replaces the earlier text in this draft
+  that judged any value a reference reached as a schema.
+- **Transforms evaluate over logical values.** §5.5 names the upstream 2.1.1
+  release its documentation snapshot belongs to, and says the language's
+  semantics apply to values of the JSON data model: a tool evaluates natively
+  over its own representation and need not serialize values to JSON text.
+  Where a host cannot compute what an expression means for the values given
+  (a number beyond its range or precision, a regular-expression feature its
+  engine lacks), the evaluation fails; it never succeeds with a different
+  value. §9 no longer says the closed environment bars all host state: the
+  standard library reads the evaluation's clock and pseudo-random numbers.
+
 - **Second cold-read corrections.** "Tool" is again any software that acts
   on OBI documents, so no producer class is implied. §10 states OBI-D-02's
   authority once: the published schema decides it, and a disagreement with
@@ -277,11 +302,7 @@ below may continue to change until the 0.2 release is cut.
 - **Cold-read corrections.** "OBI position" is defined in
   [§3](openbindings.md#3-terminology): the schema positions the document model
   names and the subschemas 2020-12 defines below them, stopping inside a
-  resource that declares its own `$id`. OBI-D-17 also judges every value a
-  schema `$ref` at an OBI position resolves to within the document, wherever
-  it sits: a reference to the document's `name` string, or to a malformed
-  schema inside `x-` data, now violates it, while a reference to a well-formed
-  schema inside `x-` data does not. OBI-D-11 decides examples under the
+  resource that declares its own `$id`. OBI-D-11 decides examples under the
   validation semantics of §5.2, so `format` is an annotation there too. Every
   item under "A conformant tool" is stated to be a requirement, and the list
   that called some of them "MUST-level" is gone. OBI-T-03 now says what §12
@@ -297,9 +318,8 @@ below may continue to change until the 0.2 release is cut.
   the schema as published, and a conflict with the prose is an erratum
   corrected in the schema. §10.5 defines the applicable rules, §7 says an
   absolute URI may carry a fragment, §5.3 says `1.0` and `1` are the same
-  preference, and §9 names regular-expression cost. The corpus gains five
-  OBI-D-17 cases, two of them for a target that declares another dialect or
-  holds `$vocabulary`, and one OBI-D-11 case. The schema's own description now
+  preference, and §9 names regular-expression cost. The corpus gains an
+  OBI-D-11 case. The schema's own description now
   matches OBI-D-02.
 
 - **The core makes only rules it can decide.** OBI-T-06 is retired: what a
