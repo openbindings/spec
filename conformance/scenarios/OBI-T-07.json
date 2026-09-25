@@ -1,11 +1,11 @@
 {
   "format": "openbindings.core-tool-scenarios@1",
-  "rule": "OBI-T-12",
+  "rule": "OBI-T-07",
   "section": "10.3",
   "description": "Portable operation-name resolution against the flat key-plus-alias namespace, including canonical-key binding selection.",
   "scenarios": [
     {
-      "id": "T12-S-01",
+      "id": "T07-S-01",
       "description": "A primary operation key resolves to itself and selects bindings by that key.",
       "action": "resolve-operation",
       "given": {
@@ -26,7 +26,7 @@
       }
     },
     {
-      "id": "T12-S-02",
+      "id": "T07-S-02",
       "description": "An alias has equal authority and resolves to the operation's canonical key; bindings are never selected by the alias spelling.",
       "action": "resolve-operation",
       "given": {
@@ -49,7 +49,7 @@
       }
     },
     {
-      "id": "T12-S-03",
+      "id": "T07-S-03",
       "description": "A name matching no key or alias does not resolve.",
       "action": "resolve-operation",
       "given": {
@@ -64,7 +64,7 @@
       "expected": { "outcome": "not-found" }
     },
     {
-      "id": "T12-S-04",
+      "id": "T07-S-04",
       "description": "A host-language prototype name is not an operation unless the document defines it.",
       "action": "resolve-operation",
       "given": {
@@ -77,7 +77,7 @@
       "expected": { "outcome": "not-found" }
     },
     {
-      "id": "T12-S-05",
+      "id": "T07-S-05",
       "description": "A document may genuinely define an operation with a host-language prototype name.",
       "action": "resolve-operation",
       "given": {

@@ -1,11 +1,11 @@
 {
   "format": "openbindings.core-tool-scenarios@1",
-  "rule": "OBI-T-16",
+  "rule": "OBI-T-08",
   "section": "10.3",
   "description": "Operation-boundary validation uses the complete statically reachable schema graph, treats format as annotation, applies schemas per value, and distinguishes graph unavailability from instance mismatch.",
   "scenarios": [
     {
-      "id": "T16-S-01",
+      "id": "T08-S-01",
       "description": "A value satisfying a complete governing schema validates successfully",
       "action": "validate-operation-values",
       "given": {
@@ -22,7 +22,7 @@
       "expected": { "results": ["valid"] }
     },
     {
-      "id": "T16-S-02",
+      "id": "T08-S-02",
       "description": "An available graph that rejects the instance reports instance mismatch",
       "action": "validate-operation-values",
       "given": {
@@ -39,7 +39,7 @@
       "expected": { "results": ["instance-mismatch"] }
     },
     {
-      "id": "T16-S-03",
+      "id": "T08-S-03",
       "description": "An unavailable statically reachable alternative prevents success even when another alternative matches",
       "action": "validate-operation-values",
       "given": {
@@ -63,7 +63,7 @@
       "expected": { "results": ["graph-unavailable", "graph-unavailable"] }
     },
     {
-      "id": "T16-S-04",
+      "id": "T08-S-04",
       "description": "An unreferenced definition is outside the governing schema's statically reachable graph",
       "action": "validate-operation-values",
       "given": {
@@ -87,7 +87,7 @@
       "expected": { "results": ["valid"] }
     },
     {
-      "id": "T16-S-05",
+      "id": "T08-S-05",
       "description": "Format remains annotation-only at the operation boundary",
       "action": "validate-operation-values",
       "given": {
@@ -104,7 +104,7 @@
       "expected": { "results": ["valid"] }
     },
     {
-      "id": "T16-S-06",
+      "id": "T08-S-06",
       "description": "A multi-value interaction validates each value independently rather than as one aggregate",
       "action": "validate-operation-values",
       "given": {
@@ -121,7 +121,7 @@
       "expected": { "results": ["valid", "instance-mismatch", "valid"] }
     },
     {
-      "id": "T16-S-07",
+      "id": "T08-S-07",
       "description": "An absolute reference satisfied by an embedded schema identifier is locally available",
       "action": "validate-operation-values",
       "given": {
@@ -148,7 +148,7 @@
       "expected": { "results": ["valid", "instance-mismatch"] }
     },
     {
-      "id": "T16-S-08",
+      "id": "T08-S-08",
       "description": "Same-document references resolve from the OBI document root when an operation schema is evaluated",
       "action": "validate-operation-values",
       "given": {

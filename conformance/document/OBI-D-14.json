@@ -1,5 +1,5 @@
 {
-  "rule": "OBI-D-19",
+  "rule": "OBI-D-14",
   "section": "10.2",
   "description": "Has every dependencies[*].operation value present as a key in the document's operations map.",
   "tests": [
@@ -83,7 +83,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-19"
+        "OBI-D-14"
       ]
     },
     {
@@ -105,7 +105,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-19"
+        "OBI-D-14"
       ]
     },
     {
@@ -123,7 +123,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-19"
+        "OBI-D-14"
       ]
     },
     {

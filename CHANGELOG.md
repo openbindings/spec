@@ -185,7 +185,7 @@ below may continue to change until the 0.2 release is cut.
   creating immutable, content-addressed defining bundles with portable
   conformance evidence and append-only errata when a candidate is actually
   released. No binding specification has yet been published.
-- Stable document and tool rule identifiers, honest partial-validation
+- Document and tool rule identifiers, honest partial-validation
   conclusions, and portable action/outcome conformance scenarios.
 - Operation-name resolution over one flat key-and-alias namespace.
 - Explicit version acceptance and refusal rules, including prereleases and
@@ -206,6 +206,40 @@ below may continue to change until the 0.2 release is cut.
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- **Rule identifiers belong to their version, and 0.2 numbers its rules
+  without gaps.** A rule identifier means what the version of this
+  specification that states it says it means: a rule is cited under a
+  version, as a document is interpreted under the version it declares
+  ([§10](openbindings.md#10-conformance)), and another version may number
+  its rules differently. The table of retired identifiers (§10.6) and the
+  note listing them in §10.2 are removed, and OBI-T-09 (conformance
+  conclusions) identifies rules by their identifiers in the version the
+  document is interpreted under. No earlier release defined rule
+  identifiers, so 0.2 numbers its rules from one without gaps. Rule
+  identifiers in the entries below this one use the draft's numbering, which
+  maps to 0.2 as follows; a draft identifier not listed was retired and has
+  no 0.2 number.
+
+  | Draft | 0.2 | Rule |
+  | --- | --- | --- |
+  | OBI-D-11 | OBI-D-10 | example values validate |
+  | OBI-D-12 | OBI-D-11 | `openbindings` is a SemVer version |
+  | OBI-D-16 | OBI-D-12 | schema `$ref` targets |
+  | OBI-D-17 | OBI-D-13 | schema well-formedness |
+  | OBI-D-19 | OBI-D-14 | dependency operation keys |
+  | OBI-T-11 | OBI-T-06 | `$ref` cycles |
+  | OBI-T-12 | OBI-T-07 | operation-name resolution |
+  | OBI-T-16 | OBI-T-08 | operation-value validation |
+  | OBI-T-17 | OBI-T-09 | conformance conclusions |
+  | OBI-T-18 | OBI-T-10 | `idempotent` claims |
+  | OBI-T-19 | OBI-T-11 | example mismatches |
+
+  OBI-D-01 through OBI-D-09, OBI-T-01 through OBI-T-05, and OBI-B-01
+  through OBI-B-03 keep their numbers. The corpus files and scenario
+  identifiers follow (T16-S-01 is now T08-S-01). The binding-spec
+  candidates cite core rules by the new numbers, and their citations of
+  rules the draft retired point at this changelog.
 
 - **Transforms leave the core; a binding carries `content` its binding
   specification defines; OBI-D-10 and OBI-T-10 are retired.** The core no

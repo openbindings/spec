@@ -177,7 +177,7 @@
             "jeffmikels/ProPresenter-API",
             "superheromeZzh/pi-mono-java-design"
           ],
-          "detail": "AsyncAPI 2.x Schema Objects are Draft-07-based. Copied verbatim they carry $schema: draft-07 (OBI-D-06) and draft tuple-form 'items' arrays (OBI-D-17, 2020-12 spells this prefixItems)."
+          "detail": "AsyncAPI 2.x Schema Objects are Draft-07-based. Copied verbatim they carry $schema: draft-07 (OBI-D-06) and draft tuple-form 'items' arrays (OBI-D-13, 2020-12 spells this prefixItems)."
         },
         "C-draft07-plain-name-id": {
           "artifacts": [
@@ -194,7 +194,7 @@
             "SENERGY-Platform/senergy-platform-connector",
             "RobinTail/zod-sockets"
           ],
-          "detail": "Schema $refs pointing into the AsyncAPI document's #/components/schemas were copied without being resolved or rewritten, so they dangle in the OBI (OBI-D-16). Observed at deep nested positions (inside allOf, inside properties chains). Same class as the reply-by-reference defect: reference resolution incomplete at a position the resolver does not traverse. \u00a76 of the binding spec assigns $ref resolution to the artifact processor.",
+          "detail": "Schema $refs pointing into the AsyncAPI document's #/components/schemas were copied without being resolved or rewritten, so they dangle in the OBI (OBI-D-12). Observed at deep nested positions (inside allOf, inside properties chains). Same class as the reply-by-reference defect: reference resolution incomplete at a position the resolver does not traverse. \u00a76 of the binding spec assigns $ref resolution to the artifact processor.",
           "finding": "F2"
         }
       },
@@ -212,7 +212,7 @@
       "maximumCallStackSizeExceeded": {
         "count": 3,
         "classification": "implementation-debt",
-        "detail": "TypeScript-only stack overflow where Go completes. Presumptive unguarded recursion on cyclic schemas; OBI-T-11 requires cycle handling without infinite loops for tools that resolve $ref. Distinct from F1/F2 and TS-lane only.",
+        "detail": "TypeScript-only stack overflow where Go completes. Presumptive unguarded recursion on cyclic schemas; OBI-T-06 requires cycle handling without infinite loops for tools that resolve $ref. Distinct from F1/F2 and TS-lane only.",
         "finding": "F3"
       }
     }

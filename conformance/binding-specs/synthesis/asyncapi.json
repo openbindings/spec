@@ -1445,7 +1445,7 @@
     },
     {
       "id": "ASYNC-SS-15",
-      "description": "A payload referencing a self-recursive components schema synthesizes with the cycle hoisted into the operation schema's $defs and every surviving reference rewritten to point there: the recursion the artifact declared survives the projection, the emitted interface is valid (OBI-D-16), and the artifact is fully represented \u2014 never a whole-artifact refusal.",
+      "description": "A payload referencing a self-recursive components schema synthesizes with the cycle hoisted into the operation schema's $defs and every surviving reference rewritten to point there: the recursion the artifact declared survives the projection, the emitted interface is valid (OBI-D-12), and the artifact is fully represented \u2014 never a whole-artifact refusal.",
       "source": {
         "bindingSpec": "openbindings.asyncapi@1",
         "content": {

@@ -65,8 +65,8 @@ try {
       "conformance/tool-scenario.schema.json",
       "conformance/document/OBI-D-01.json",
       "conformance/tool/OBI-T-01.json",
-      "conformance/scenarios/OBI-T-11.json",
-      "conformance/scenarios/OBI-T-17.json",
+      "conformance/scenarios/OBI-T-06.json",
+      "conformance/scenarios/OBI-T-09.json",
       "conformance/runners/go/main.go",
     ];
     const excluded = [
