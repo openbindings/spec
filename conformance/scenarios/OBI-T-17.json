@@ -56,7 +56,7 @@
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-18": "inconclusive",
+          "OBI-D-17": "inconclusive",
           "OBI-D-09": "violated",
           "OBI-D-02": "violated",
           "OBI-D-19": "not-applicable",
@@ -66,7 +66,7 @@
       "expected": {
         "conclusion": "non-conformant",
         "violated": ["OBI-D-02", "OBI-D-09"],
-        "inconclusive": ["OBI-D-11", "OBI-D-18"]
+        "inconclusive": ["OBI-D-11", "OBI-D-17"]
       }
     },
     {

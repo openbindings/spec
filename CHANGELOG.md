@@ -238,8 +238,8 @@ below may continue to change until the 0.2 release is cut.
   ([OBI-B-02](openbindings.md#104-binding-specification-rules) item 3), and
   invariant 2 states what a binding is for without a sufficiency claim.
   OBI-D-13 is retired. Every document rule is now decidable from the
-  document, given a duplicate-detecting parse (OBI-D-01) and a parser for the
-  pinned transform language (OBI-D-18); no rule takes binding-specification
+  document, given a duplicate-detecting parse (OBI-D-01); no rule takes
+  binding-specification
   knowledge, and OBI-T-01 no longer describes binding-specification-dependent
   rules. These changes reach the carriage and selection provisions
   [§6](openbindings.md#6-binding-specifications) hands a binding
@@ -255,6 +255,16 @@ below may continue to change until the 0.2 release is cut.
   positives showing that nothing within `content` or `selector` is judged as
   a reference; sources in other fixtures no longer carry `location`; and the
   OBI-T-17 scenarios use OBI-D-19 as their inapplicable rule.
+
+- **OBI-D-18 is retired: expression syntax is not a document rule.** An
+  expression that is not in the pinned transform language fails when a tool
+  evaluates it (§5.5 clause 4), as it does wherever JSONata is used. JSONata
+  has no grammar apart from its implementations' parsers, and the reference
+  parser rejects numeric literals beyond its host's range, so no parser could
+  decide syntax for every host; the core no longer judges it. A tool may check
+  expressions ahead of evaluation as its own diagnostic. The OBI-D-18 fixtures
+  are removed, the OBI-T-17 scenario that used it as an inconclusive rule uses
+  OBI-D-17, and the Go runner no longer treats any rule as a capability rule.
 
 - **A schema `$ref` reaches only a schema, as JSON Schema defines one.** A
   schema `$ref` at an OBI position resolves to a schema the document model
@@ -357,8 +367,8 @@ below may continue to change until the 0.2 release is cut.
   document rules is validation, done by a validator, and
   [§10.5](openbindings.md#105-conformance-conclusions) is titled "Conformance
   conclusions". Rule-level evidence that is neither satisfied nor violated is
-  **inconclusive** (the draft said *unverified*), and the rule notes on how to
-  check OBI-D-01, OBI-D-05, and OBI-D-18 are validation notes. "Verify" keeps
+  **inconclusive** (the draft said *unverified*), and the rule note on how to
+  check OBI-D-01 is a validation note. "Verify" keeps
   its integrity and signing sense, which the core leaves out of scope. The
   core tool-scenario action `conclude-verification` is now
   `conclude-conformance`, with `inconclusive` in place of `unverified` in its

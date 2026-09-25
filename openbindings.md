@@ -561,7 +561,7 @@ The binding's `outputTransform` bridges the two:
 
 Named transforms MAY be defined in the top-level `transforms` map and referenced by binding entries via `$ref` (e.g., `{"$ref": "#/transforms/apiToTask"}`); bindings MAY also inline a transform as the string value of `inputTransform`/`outputTransform`.
 
-A transform expression's parse-validity is a document rule ([OBI-D-18](#102-document-rules)): every transform expression in the document parses under the pinned language. As with schema well-formedness ([OBI-D-17](#102-document-rules)), a string at a transform position that is not in the pinned language at all is a document defect, not a latent runtime condition. The rule is syntactic only — membership in the language, not success of evaluation: dynamic errors and undefined results remain evaluation outcomes under clause 4, and a tool that evaluates a malformed expression anyway encounters it as a transform-evaluation failure (document rules bind documents, not a tool's inputs). Checking the rule takes a parser for the pinned language; a validator without one leaves it inconclusive rather than failing the document ([§10.5](#105-conformance-conclusions)).
+Expression syntax is not a document rule. A string at a transform position that is not in the pinned language fails when a tool evaluates it (clause 4), as it does wherever JSONata is used: the language has no grammar apart from its implementations' parsers, so this specification makes no document-level judgment of expression syntax. A tool may check expressions before evaluation and report what it finds as its own diagnostic.
 
 ### 5.6. Dependencies
 
@@ -733,7 +733,7 @@ Non-normative categories of mitigation that tools processing OBI documents from 
 
 ## 10. Conformance
 
-The normative shape of an OBI document is defined by this specification's prose. The accompanying `openbindings.schema.json` expresses the structural portion of that prose in JSON Schema form. It is derived from the prose, and OBI-D-02 applies it as published: for OBI-D-02 the published schema is the test, so every validator reaches the same verdict. A disagreement between the schema and the prose is an erratum, corrected in the schema; until it is corrected, the published schema decides OBI-D-02. Schema validation (OBI-D-02) is necessary but not sufficient for document conformance: some rules (the document-unique identifier namespace of OBI-D-04, binding and dependency referential integrity under OBI-D-08/09/19, the recursive prohibitions of OBI-D-06/07, well-formedness under OBI-D-17, parse-validity under OBI-D-18) require walking the document beyond what the derived schema expresses.
+The normative shape of an OBI document is defined by this specification's prose. The accompanying `openbindings.schema.json` expresses the structural portion of that prose in JSON Schema form. It is derived from the prose, and OBI-D-02 applies it as published: for OBI-D-02 the published schema is the test, so every validator reaches the same verdict. A disagreement between the schema and the prose is an erratum, corrected in the schema; until it is corrected, the published schema decides OBI-D-02. Schema validation (OBI-D-02) is necessary but not sufficient for document conformance: some rules (the document-unique identifier namespace of OBI-D-04, binding and dependency referential integrity under OBI-D-08/09/19, the recursive prohibitions of OBI-D-06/07, well-formedness under OBI-D-17) require walking the document beyond what the derived schema expresses.
 
 Each rule carries a stable identifier (`OBI-D-##` document rules, `OBI-T-##` tool rules, `OBI-B-##` binding-specification rules) so validators, test suites, and errata can cite it unambiguously. Identifiers are never reused or renumbered; rules removed by a revision retain their identifiers as historical references ([§10.6](#106-retired-rule-identifiers)).
 
@@ -749,19 +749,19 @@ A tool self-declares its capabilities in its documentation or metadata; there is
 | --------------------- | ---------------------- | -------------------- |
 | Accept document bytes or text | OBI-D-01 | Preserve the exact input through duplicate-key, UTF-8, and BOM checks; a normalized host object can no longer prove this rule. |
 | Decide whether this specification applies | OBI-D-12, OBI-T-04, [§8.1](#81-openbindings-field-specification-version) | Version refusal is distinct from document non-conformance and prohibits interpretation under a different version. |
-| Validate document conformance | OBI-D-02 through OBI-D-12 and OBI-D-16 through OBI-D-19, [§10.5](#105-conformance-conclusions) | Record unsupported checks as inconclusive; use OBI-T-17 only when reporting an overall conclusion. |
+| Validate document conformance | OBI-D-02 through OBI-D-12, OBI-D-16, OBI-D-17, and OBI-D-19, [§10.5](#105-conformance-conclusions) | Record unsupported checks as inconclusive; use OBI-T-17 only when reporting an overall conclusion. |
 | Resolve an operation identifier | OBI-T-12, [§5.1](#51-operations) | Resolve keys and aliases in one flat namespace, then use the canonical operation key to find bindings. |
 | Index a dependency declaration | OBI-D-03, OBI-D-19, [§5.6](#56-dependencies) | Preserve its local dependency key, resolve `operation` only as an operation key, and treat `bindingSpecs` as an optional exact-match any-of constraint. |
 | Resolve schema references | OBI-D-05, OBI-D-16, OBI-T-11, [§7](#7-reference-resolution) | Separate same-document integrity from external availability and terminate on cycles. |
 | Validate operation-boundary values | OBI-T-16, [§5.2](#52-schemas) | Validation is optional until claimed; once claimed, complete-graph, annotation-only `format`, per-value, and distinct-outcome semantics apply. |
-| Evaluate a transform | OBI-D-18, OBI-T-10, [§5.5](#55-transforms) | Parse-validity is document conformance; evaluation uses the pinned closed language environment. |
+| Evaluate a transform | OBI-T-10, [§5.5](#55-transforms) | Evaluation uses the pinned closed language environment; an expression that does not parse fails there. |
 | Resolve or act on a binding target | The source's governing binding specification ([§6](#6-binding-specifications)) | Core validates the envelope; `content`, `selector`, target identity, interaction mapping, and invocation behavior come from the binding specification. |
 
 Invocation is intentionally absent as a universal checkpoint: selecting or invoking a binding does not itself imply schema validation, transform evaluation, automatic selection, retry policy, or full document validation. Those obligations attach only when the corresponding capability is exercised or claim is made.
 
 ### 10.2. Document rules
 
-Document rules bind the document; deciding a clause takes capabilities. A validator that lacks a capability a clause requires (a duplicate-detecting parse for OBI-D-01, a parser for the pinned transform language for OBI-D-18) leaves that clause **inconclusive** rather than failing the document: conformance is a property of the document, not of any validator, and inconclusive is not non-conformant ([§10.5](#105-conformance-conclusions)).
+Document rules bind the document; deciding a clause takes capabilities. A validator that lacks a capability a clause requires (a duplicate-detecting parse for OBI-D-01) leaves that clause **inconclusive** rather than failing the document: conformance is a property of the document, not of any validator, and inconclusive is not non-conformant ([§10.5](#105-conformance-conclusions)).
 
 A conformant **OBI document**:
 
@@ -779,10 +779,9 @@ A conformant **OBI document**:
 - **OBI-D-12**: Has an `openbindings` field whose value is a valid [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string.
 - **OBI-D-16**: Has every schema `$ref` at an OBI position that resolves within the document resolving to a schema the document model places: a same-document fragment, read from the OBI document root per [§7](#7-reference-resolution), to a schema at an OBI position, and so never into a resource that declares its own `$id`; an absolute-URI `$ref` that matches an embedded schema's `$id` (as [§7](#7-reference-resolution) defines matching), to that schema or to a subschema JSON Schema 2020-12 defines below it. A `$ref` within a schema declaring its own `$id` resolves against that resource's base and is out of this rule's scope, as is an absolute-URI `$ref` that matches no embedded schema's `$id`. Together with OBI-D-08/09/10/19, this completes one posture: same-document references are document integrity, offline-decidable; only external resolution is deferred to evaluation.
 - **OBI-D-17**: Has every schema contained in the document — every specified operation `input`/`output`, every entry in `schemas`, and their subschemas as JSON Schema 2020-12 defines them — well-formed: valid against the JSON Schema 2020-12 meta-schemas and satisfying the constraints of [§5.2](#52-schemas). Validation uses locally available meta-schemas and MUST NOT require a network fetch. The rule does not require proving satisfiability, resolving external resources, or rejecting unknown keywords ([§5.2](#52-schemas)).
-- **OBI-D-18**: Has every transform expression in the document — every value in the `transforms` map and every inline string value of `bindings[*].inputTransform` and `bindings[*].outputTransform` — parsing as a syntactically valid expression of the pinned transform language ([§5.5](#55-transforms): JSONata 2.1). The rule is syntactic membership only: it does not establish that evaluation succeeds, that referenced data exists, or that dynamic errors will not occur — those remain evaluation outcomes under [§5.5](#55-transforms). Validation note (informative): checking requires a parser for the pinned language; a validator without one leaves the rule inconclusive.
 - **OBI-D-19**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
 
-(OBI-D-13, OBI-D-14, and OBI-D-15 are retired; see [§10.6](#106-retired-rule-identifiers).)
+(OBI-D-13, OBI-D-14, OBI-D-15, and OBI-D-18 are retired; see [§10.6](#106-retired-rule-identifiers).)
 
 ### 10.3. Tool rules
 
@@ -846,6 +845,7 @@ Identifiers are stable and never reused, so retirements leave permanent numberin
 | OBI-D-13   | Retired. How a binding's target is identified is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)); the core makes no claim that a target is identifiable, reachable, or usable from the document alone ([§5.4](#54-sources)). |
 | OBI-D-14   | Retired. `content` representations are binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)); the core no longer restricts `content` JSON types or prescribes a binary posture.        |
 | OBI-D-15   | Retired. Reference-base behavior for anything a source's `content` carries is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)). |
+| OBI-D-18   | Retired. An expression not in the pinned transform language fails when a tool evaluates it ([§5.5](#55-transforms) clause 4), as it does wherever JSONata is used; the language has no grammar apart from its implementations' parsers, so expression syntax is not a document rule. |
 | OBI-T-06   | Retired. What a `selector` means, and how a tool acting on one follows it, belong to the binding specification ([§5.3](#53-bindings), [OBI-B-02](#104-binding-specification-rules)); a tool claiming support for an identifier claims support for its specification as published ([§10.4](#104-binding-specification-rules)). |
 | OBI-T-07   | Retired. Invoking does not trigger validation (invariant 2); validation claims are governed by [OBI-T-16](#103-tool-rules).                                                                                   |
 | OBI-T-08   | Retired. As OBI-T-07; which values are successful is binding-specification-defined ([OBI-B-02](#104-binding-specification-rules)).                                                                  |

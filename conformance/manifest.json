@@ -2,14 +2,14 @@
   "specVersion": "0.2.0",
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 24,
-    "fixtureFiles": 20,
+    "files": 23,
+    "fixtureFiles": 19,
     "scenarioFiles": 4,
-    "tests": 195,
+    "tests": 180,
     "scenarios": 21,
-    "positives": 92,
-    "negatives": 103,
-    "rulesCoveredDocument": 16,
+    "positives": 84,
+    "negatives": 96,
+    "rulesCoveredDocument": 15,
     "rulesCoveredTool": 8,
     "rulesPartialDocument": 0,
     "rulesPartialTool": 0
@@ -126,14 +126,6 @@
       "tests": 17,
       "positives": 9,
       "negatives": 8
-    },
-    {
-      "path": "document/OBI-D-18.json",
-      "rule": "OBI-D-18",
-      "section": "10.2",
-      "tests": 15,
-      "positives": 8,
-      "negatives": 7
     },
     {
       "path": "document/OBI-D-19.json",
