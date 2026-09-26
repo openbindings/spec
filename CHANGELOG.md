@@ -31,7 +31,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   consumption, and either relationship may appear independently or together.
   Dependency satisfaction, provider matching and selection, registration,
   lifecycle/readiness, and unsatisfied-dependency behavior remain implementation
-  concerns. OBI-D-19 provides same-document dependency-to-operation integrity;
+  concerns. OBI-D-14 provides same-document dependency-to-operation integrity;
   the derived schema and core conformance corpus cover the new structure.
 
 - **`openbindings.binding-spec-synthesis-scenarios@4`**, replacing `@2` across
@@ -205,6 +205,15 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- **Kind constraints compare strings independently of tool support.** A
+  binding meets a dependency's `kinds` constraint exactly when its source's
+  `kind` equals a listed value; a processor's ability to act on that kind does
+  not change the comparison. OBI-T-01 separates unsupported-kind action from
+  this document-level test. Project publication completeness and identifier
+  stability now live in `binding-specs/PROJECT-POLICY.md`, outside Core. The
+  unrevised family candidate corpora and their green verifiers are explicitly
+  labeled pre-kind evidence, not current Core integration evidence.
 
 - **Sources carry `kind`; dependencies constrain `kinds`.** The required
   source field `bindingSpec` becomes `kind`, and the optional dependency field

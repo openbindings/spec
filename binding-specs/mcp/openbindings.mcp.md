@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.mcp@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.mcp@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); later incompatible changes will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" are interpreted as described in BCP 14 when, and only when, they appear in all capitals.
 
@@ -35,7 +37,7 @@ Present `content` MUST be the pinned-listing object defined in [§3](#3-accepted
 
 ## 6. Composition
 
-Present `content` is authoritative for listing interpretation under core content primacy. It displaces live list requests, while `location` remains the invocation target. The pin contains no references requiring a base, so `location` has no reference-base role.
+Present `content` is authoritative for listing interpretation under this candidate's content-first rule. It displaces live list requests, while `location` remains the invocation target. The pin contains no references requiring a base, so `location` has no reference-base role.
 
 The pin may be stale. Dispatch still proceeds against the addressed server; a server response showing that the declared target is no longer available is an unsuccessful invocation, not permission to substitute a live listing. A processor MAY compare the pin to live discovery diagnostically.
 

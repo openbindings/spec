@@ -2,11 +2,11 @@
 
 **Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
-**Pending revision against the core draft.** The core now uses `kind` on sources and `kinds` on dependencies, and it defines no binding-specification conformance class or OBI-B rules. The completeness and revision discipline below is this project's authoring policy, not a core requirement for any kind. Every candidate here also predates the core's removal of source `location` and transforms; it awaits revision to define source and binding `content` in its own terms. Candidate text and older citations that depend on `bindingSpec`, `selector`, `inputTransform`, `outputTransform`, or OBI-B rules describe an earlier working draft, not the current core. See the [changelog](../CHANGELOG.md) for the transition.
+**Pending revision against the core draft.** The core now uses `kind` on sources and `kinds` on dependencies, and it defines no binding-specification conformance class. The project's current completeness and revision requirements are in [PROJECT-POLICY.md](PROJECT-POLICY.md); they are not core requirements for other kinds. Every candidate here predates the removal of source `location` and core transforms. Its old field names and seven-item maps are migration material, not a claim that it satisfies the current policy or core. The adjacent candidate conformance corpora likewise are not evidence of current core conformance. See the [changelog](../CHANGELOG.md) for the transition.
 
 The key words MUST, SHOULD, and MAY in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals. Their force is scoped by this document's status: they carry no conformance weight here, but state the conventions a binding specification's own text adopts when it follows this guidance.
 
-These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI 3.1 candidate proposes `openbindings.openapi-3.1@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them. The binding specification is sovereign over the sources that name it; these project candidates choose to incorporate capable existing artifact and protocol authorities because doing so produces the most faithful and reusable brownfield bindings. An upstream community, or anyone else, may publish its own binding specification for the same family under its own identifier, with equal standing under the core and a different relationship to those upstream rules.
+These are the **openbindings project's candidate** binding specifications _for_ the named source families. For example, the OpenAPI 3.1 candidate proposes `openbindings.openapi-3.1@1` under this project's namespace and authority. It is not a publication of, nor endorsed by, the family's own authority (the OpenAPI Initiative, the gRPC project, and so on), and it does not speak for them. These project candidates choose to incorporate capable existing artifact and protocol authorities because doing so produces faithful and reusable brownfield bindings. An upstream community, or anyone else, may describe behavior for the same family under its own kind, with a different relationship to those upstream rules. Core judges neither description.
 
 ## Meaning first, action complete
 
@@ -17,7 +17,7 @@ operation-invoker interfaces define software requests, frames, context
 negotiation, and lifecycle APIs; SDKs define language-specific configuration
 and cancellation surfaces.
 
-Portable meaning that satisfies OBI-B-02 has to be **action complete**. A
+Portable meaning that satisfies the project's [PB-02 publication gate](PROJECT-POLICY.md#pb-02-publication-completeness) has to be **action complete**. A
 concrete binding denotes a target and interaction, so its portable meaning includes
 cardinality, value-to-protocol correspondence, successful outcomes, and any
 artifact-authorized choices or explicit exclusions needed to act on it without
@@ -37,35 +37,31 @@ the invocation-interface layer.
 
 ## Sovereignty, completeness, and implementation-defined behavior
 
-A binding specification is the governing authority for every source and
-binding that names its identifier. An external artifact or protocol has no
-automatic OpenBindings authority. The binding specification may incorporate
-it on stated terms, accept only a subset, add extensions, override parts of it,
-use it only as a representation syntax, define the artifact and interaction
-itself, or govern a live surface with no artifact. Those choices may be more or
-less interoperable, reusable, or surprising, but Core permits all of them.
+A project's published kind document states the behavior it defines for sources
+and bindings using that kind. An external artifact or protocol has no automatic
+OpenBindings authority. A publisher may incorporate it on stated terms, accept
+only a subset, add extensions, override parts of it, use it only as a
+representation syntax, define the artifact and interaction itself, or govern a
+live surface with no artifact. These are choices outside the core document
+model.
 
-Three states must not be collapsed:
+Three project concerns must not be collapsed:
 
-1. A binding specification **exists** when an authority gives an identifier
-   governing rules. A conformant OBI may name it regardless of its formality or
-   completeness.
-2. A binding specification satisfies the **OBI-B-02 portability floor** only
-   when it answers the complete source, target, interaction, value, and outcome
-   boundary. The OpenBindings project additionally requires that floor before
-   publishing an `openbindings.*` identifier.
-3. An **implementation** may supply local behavior where a specification is
-   silent. That completion can make an otherwise underdefined binding useful,
-   but it remains implementation-defined. It does not become portable meaning
-   under the identifier merely because one or many implementations choose it.
+1. A conformant OBI may name a kind regardless of whether anyone has written
+   down behavior for it.
+2. The OpenBindings project publishes an `openbindings.*` kind only after its
+   defining document meets [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness).
+3. An **implementation** may supply local behavior where a document is silent.
+   That can make a binding useful, but it does not by itself establish shared
+   meaning under a kind across independent implementations.
 
 Implementations document such completions as their own behavior and do not
 attribute them to the binding specification in support or conformance claims.
 If implementations diverge materially, that is ordinary ecosystem feedback:
 the specification community can publish a more complete revision, preserve an
 explicit permitted set, or introduce a named interpretation choice. A released
-revision that narrows or changes observable behavior uses a new identifier
-under OBI-B-03.
+project revision that narrows or changes observable behavior uses a new
+identifier under [PB-03](PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
 
 ## The minimal abstraction-fidelity floor
 
@@ -133,19 +129,19 @@ schema is not a faithful substitute for a missing application contract.
 
 When published, project binding specifications are identified as `openbindings.<name>@<rev>`, where `<rev>` is an integer revision of the binding specification itself. Every current family candidate proposes revision `1`.
 
-**Project naming convention.** When a versioned upstream family is divided by upstream line, `<name>` is `<family>-<upstream-line>`, with the line spelled exactly as the upstream spells it. The OpenAPI siblings therefore propose `openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`, `openbindings.openapi-3.1@1`, and `openbindings.openapi-3.2@1`. The `@<rev>` component remains the revision of this project's binding specification, not an upstream version. A family whose specification spans all upstream versions omits the upstream-line segment. Artifact patch editions and dialect versions do not appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section enumerates the exact artifact editions it accepts (core [§6](../openbindings.md#6-binding-specifications)). The publication manifest's family key and the permanent URL's `<family>` segment use that same slug; for example, `openapi-3.1` yields `/binding-specs/openapi-3.1/1` and `/raw/binding-specs/openapi-3.1/1.md` for revision `1`.
+**Project naming convention.** When a versioned upstream family is divided by upstream line, `<name>` is `<family>-<upstream-line>`, with the line spelled exactly as the upstream spells it. The OpenAPI siblings therefore propose `openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`, `openbindings.openapi-3.1@1`, and `openbindings.openapi-3.2@1`. The `@<rev>` component remains the revision of this project's binding specification, not an upstream version. A family whose specification spans all upstream versions omits the upstream-line segment. Artifact patch editions and dialect versions do not appear in the identifier: the artifact self-identifies where its format provides for that, and the specification's accepted-representations section enumerates the exact artifact editions it accepts ([PB-02](PROJECT-POLICY.md#pb-02-publication-completeness)). The publication manifest's family key and the permanent URL's `<family>` segment use that same slug; for example, `openapi-3.1` yields `/binding-specs/openapi-3.1/1` and `/raw/binding-specs/openapi-3.1/1.md` for revision `1`.
 
-- Identifiers are exact, opaque strings ([OBI-B-01](../openbindings.md#104-binding-specification-rules)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
-- An incompatible change publishes the next revision — a different identifier ([OBI-B-03](../openbindings.md#104-binding-specification-rules)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
+- Identifiers are exact, opaque strings ([PB-01](PROJECT-POLICY.md#pb-01-exact-project-identifiers)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
+- An incompatible change publishes the next revision — a different identifier ([PB-03](PROJECT-POLICY.md#pb-03-published-meaning-and-revisions)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
 - **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. An unqualified support claim covers that complete domain; an implementation with narrower coverage reports partial support rather than presenting the identifier as fully supported.
-- **The OpenBindings project publishes an `openbindings.*` identifier only when its specification meets the OBI-B-02 floor.** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on the existence or local use of identifiers governed by other authorities.
+- **The OpenBindings project publishes an `openbindings.*` identifier only when its defining document meets [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness).** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on other kinds.
 - **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
 - **Core dependencies are exact.** A project binding specification that normatively incorporates the OpenBindings Specification names one exact Core version in its scope-and-authorities section and repeats that version in its normative references. At publication, the declared version MUST equal both the publication record's `coreRelease` and the version of `openbindings.md` preserved in the immutable bundle. Core is a repository-internal authority carried in that bundle, not an external authority recorded in [`AUTHORITY-PINS.json`](AUTHORITY-PINS.json).
 
 ### A revision is not a roadmap
 
 Ratified by Matt, 2026-08-20. The `@<rev>` token is part of an identifier
-matched exactly and opaquely (OBI-B-01). It is not a version number with an
+matched exactly and opaquely (PB-01). It is not a version number with an
 ordering, and publishing `@2` does not upgrade `@1`: it mints a second
 identifier, so documents bound to the first and tools speaking the second no
 longer meet. **A revision therefore advances for exactly one reason — to break
@@ -173,7 +169,7 @@ and the text says which:
 
 Reaching a trigger does not make the resulting change compatible. Where an
 exclusion reopens and binding it changes observable behavior, that is
-[OBI-B-03](../openbindings.md#104-binding-specification-rules)'s new
+[PB-03](PROJECT-POLICY.md#pb-03-published-meaning-and-revisions)'s new
 identifier — arrived at honestly when the condition actually holds, rather than
 promised in advance to whoever reads the gap today.
 
@@ -215,7 +211,13 @@ A binding specification governs a family of sources and bindings; it is not requ
 2. A specification may define the artifact format and interaction model itself. `openbindings.operation-graph@1` defines the graph artifact, its nodes, and its execution semantics; there is no external artifact authority for it to incorporate.
 3. A specification may accept an artifactless source mode. `openbindings.connect@1`'s descriptorless mode uses a service `location` and binding `selector` without schema `content`; the Connect protocol and the binding specification completely define the narrower interaction. A specification may also define absent `selector` to target `location` itself, leaving `bindingSpec` plus `location` as the complete concrete address.
 
-The **source** remains required in every case. An artifactless source is location-only: the binding specification defines what the location addresses, what `selector` means or whether it is absent, and every interaction and operation-boundary rule an artifact would otherwise have supplied. Calling the mode artifactless does not relax [OBI-B-02](../openbindings.md#104-binding-specification-rules); it makes more of that semantic burden the binding specification's own.
+The **source** remains required in every case. In these pre-kind candidates,
+an artifactless source is location-only. Under the current core, an address
+would instead be carried in source `content` if the kind's behavior uses one.
+The project's [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness) gate
+requires the defining document to explain what that content addresses and how
+the interaction works; an artifactless mode leaves more of that answer to the
+project's own definition.
 
 ## Implementation layering
 
@@ -224,9 +226,7 @@ not add a conformance requirement or prescribe one internal API. In a processor
 that follows the project's invocation pattern, responsibilities should normally
 separate into three layers:
 
-1. The general OpenBindings processor or SDK handles the core document model,
-   operation lookup, binding selection policy, transforms, context negotiation,
-   and the protocol-independent invocation surface.
+1. The general OpenBindings processor or SDK handles the core document model and operation lookup; its own binding selection, value adaptation, context negotiation, and invocation surface are implementation concerns.
 2. A binding-specification implementation forms the smallest semantic adapter
    needed to translate between that surface and the domain governed by its exact
    `bindingSpec` identifier.
@@ -291,8 +291,8 @@ binding specification is not one of them. It is the **gap pillar**: the
 text that states a definite answer exactly where those two are silent.
 Consult in order, and stop at the first that answers:
 
-1. **The core OpenBindings specification.** The abstraction boundary, the
-   document model, and the invocation contract.
+1. **The core OpenBindings specification.** The document model and the
+   caller-facing operation contract.
 2. **The incorporated upstream artifact authority** — the artifact
    specification this family defers to, *and everything that authority
    itself incorporates*: the RFCs it cites, the media-type registrations
@@ -308,11 +308,11 @@ authorities it defers to by having been written first. **Where a binding
 specification conflicts with the core or with the incorporated upstream
 authority, the binding specification is what gets revised** — its prior
 text is a draft position, not a precedent to be preserved. This is a
-property of the project's chosen close-deference policy, not of Core:
-Core permits a binding specification to override an upstream rule under
-its own identifier, and these candidates decline that freedom because
-duplicating or contradicting a capable authority reduces brownfield
-fidelity.
+property of the project's chosen close-deference policy, not of Core. Core
+assigns no authority to an upstream artifact or to a defining document for a
+kind. A publisher can describe different behavior under its own kind; these
+project candidates choose to preserve capable upstream rules because
+duplicating or contradicting them reduces brownfield fidelity.
 
 Five corollaries carry most of the practical weight.
 
@@ -469,7 +469,7 @@ where a defect has a defensible owning unit, it confines.
 
 ## The deference order
 
-A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the OBI-B-02 completeness floor is unchanged.
+A binding specification is free to define a different relationship to an existing artifact. The OpenBindings project's brownfield specifications deliberately choose a more reusable policy: where an artifact or protocol they incorporate speaks, they avoid normalizing it into one preferred wire behavior and apply the following deference order. Where a project binding specification defines the artifact or interaction itself, those definitions are first-order rules rather than fallback defaults, and the PB-02 completeness floor is unchanged.
 
 1. **Incorporate** what the artifact or protocol defines. Restate only the OpenBindings consequence; do not replace an upstream rule with a locally convenient equivalent.
 2. **Preserve alternatives** when the artifact permits several valid choices. Conformance may be a permitted set rather than one byte-identical request; a binding specification does not invent preference merely to make implementations choose alike.
@@ -487,13 +487,13 @@ when none does. An author of these specifications is the expert on
 OpenBindings; the incorporated authorities are the experts on
 themselves.
 
-A gap is a missing link between one of [OBI-B-02](../openbindings.md#104-binding-specification-rules)'s
+A gap is a missing link between one of [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness)'s
 seven items and a fixed observable. To fill one, ask in order:
 
 1. **Does the core specification answer it?** Sweep the WHOLE core
    document and record the search terms you used. Do not grep one named
    section and stop: this project spent six readers on a gap because an
-   instruction named §5.4, and Core §10.5 answered half of it in
+   instruction named §5.4, and Core §10.4 answered half of it in
    matching words — an unavailable external resource makes rule-level
    evidence `inconclusive` and is "not evidence of violation". Naming
    where to look is not the same as saying what to establish.
@@ -658,7 +658,7 @@ Use one repeatable loop for a new specification and for every release audit of
 an existing one. A polished document is not the exit condition; the exit is a
 complete, upstream-deferential contract with adversarial evidence.
 
-1. **Grade from evidence.** Score authority/pinning, OBI-B-02 completeness,
+1. **Grade from evidence.** Score authority/pinning, project PB-02 completeness,
    deference, abstraction preservation, diagnostic separation, determinism,
    implementability, conformance evidence, and teaching quality. Record every
    deduction as a concrete scenario, not a general impression.
@@ -692,7 +692,7 @@ complete, upstream-deferential contract with adversarial evidence.
 
 The release exit gates for a **published** binding specification are:
 
-- every OBI-B-02 item has one definite, internally consistent answer;
+- every PB-02 item has one definite, internally consistent answer;
 - every incorporated authority is immutable or versioned, with conflict
   precedence stated when several authorities overlap;
 - every application-facing choice follows the deference order, with no silent
@@ -728,7 +728,7 @@ A binding specification answers three recurring **interaction questions** per op
 
 Complete artifacts answer all three natively (OpenAPI: parameter locations, response content types, status codes). Incomplete ones leave gaps — a [jdx usage](https://usage.jdx.dev) CLI descriptor declares flags and args but cannot declare stdout decoding, exit-code meaning, or a field's stdin routing. **The binding specification exposes the gap as a named configuration point, never by authoring missing coverage into the artifact and never by making the OBI absorb format conventions.** An effective consumer choice completes that point when one is required. The OBI stays abstract; the artifact stays pristine.
 
-Within the completeness floor this maps as follows: an OBI-B-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would misstate source intent; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. An undefined choice does not prevent the specification from existing or an implementation from completing it locally, but it means the specification has not satisfied OBI-B-02 for that boundary. A required choice or an explicitly unsupported aspect is a portable definition, not a gap.
+Within the completeness floor this maps as follows: a PB-02 item — most often item 7, boundary correspondence — may be satisfied by a fixed rule or by a **named configuration point**: a normatively defined set of admissible choices and the exact semantic effect of each. A point may have a content-independent fallback, or it may be **required** where any fallback would misstate source intent; in the latter case the binding denotes no actionable interaction until an effective choice is supplied. An undefined choice does not prevent the specification from existing or an implementation from completing it locally, but it means the specification has not satisfied PB-02 for that boundary. A required choice or an explicitly unsupported aspect is a portable definition, not a gap.
 
 A specification defines only the **effective choice**, not a hierarchy of
 configuration scopes. Per-call versus standing configuration, callback decline
@@ -783,22 +783,27 @@ Credentials and other runtime prerequisites are **not** part of an OBI document 
 
 Many source families present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a source can be represented with unique field names across its effective input/output surface.
 
-When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. The four current OpenAPI `@1` candidates use a binding-private routed source value: synthesis preserves protocol-neutral application fields and carries the concrete name-plus-location correspondence in a core `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
+When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. The four current OpenAPI `@1` candidates use a binding-private routed source value: synthesis preserves protocol-neutral application fields and carries the concrete name-plus-location correspondence in the pre-kind draft's `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
 
 ## Authoring a new binding specification
 
-A complete binding specification makes a family of sources and bindings mean the same thing to every independent implementation wherever it requires one behavior, and identifies any permitted alternatives explicitly. The core states that portability floor normatively ([OBI-B-02](../openbindings.md#104-binding-specification-rules)); the template below is the section-by-section shape project specifications use to meet it. Third parties publish under their own collision-resistant namespace (`com.example.<name>@<rev>` fits the same shape) with no project registration. They may use this template, publish a less complete experimental specification, or deliberately make different authority choices; the resulting identifier carries only the portable meaning its governing rules actually define.
+The template below records the pre-kind candidate layout. For a new or
+promoted project kind, apply [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness)
+using the current core's source `kind` and source/binding `content`; migrate the
+older `location`, `selector`, and transform sections before publication.
+
+A complete project kind document aims to give independent implementations the same required behavior and identify permitted alternatives explicitly. [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness) is this project's publication gate; the template below is its authoring guide. Third parties may use the template, describe a less complete private kind, or make different authority choices without project registration. The core attaches no completeness or publication status to their kind strings.
 
 Apply the [deference order](#the-deference-order) to every answer in the template. In particular, “complete” does not mean “choose one OpenBindings behavior whenever the artifact permits several”: preserve the permitted set, expose a choice when action needs one, or narrow coverage explicitly.
 
 ### The template
 
-1. **Status and identifier** — the exact identifier this document defines, its defining authority, and the revision discipline (OBI-B-01, OBI-B-03). The document may carry its own edition label; that label is not the identifier.
+1. **Status and identifier** — the exact identifier this document defines, its defining authority, and the revision discipline (PB-01, PB-03). The document may carry its own edition label; that label is not the identifier.
 2. **Scope and authorities** — the exact OpenBindings Core version incorporated, when Core is a normative dependency; every upstream specification incorporated by reference (the OpenAPI specification, the protobuf language, the MCP revision); and the boundary between those authorities and this specification's overlay. The exact Core version also appears in the normative-reference list and, at publication, matches the bundled Core text and `coreRelease` record. Where no external artifact authority exists, state the artifact and interaction semantics this specification defines itself. A candidate MAY also incorporate a **sibling candidate** by its proposed exact identifier, scoped to named sections and rule identifiers (`openbindings.connect@1`'s schema layer, cited from the `openbindings.grpc@1` candidate, is the pattern). Both candidates must be reviewed together before either is published. After publication, the "citations denote revisions" discipline above governs.
-3. **Accepted source representations** (OBI-B-02 item 1) — whether each source mode accepts an artifact; the exact upstream edition envelope and every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly. Every accepted edition receives conformance coverage for its edition-specific branches.
+3. **Accepted source representations** (PB-02 item 1) — whether each source mode accepts an artifact; the exact upstream edition envelope and every representation accepted where one exists; deterministic discrimination when it accepts several; and the encoding for any non-JSON artifact. An artifactless mode states that fact explicitly. Every accepted edition receives conformance coverage for its edition-specific branches.
 4. **`location`** (item 2) — the accepted absolute-address syntax and what it addresses. **Acquisition-failure semantics follow the address scheme:** where `location` is a URI, whether a dereference succeeded is the scheme's own affair (an HTTP status, a `file://` open error, a TLS failure), and a specification need say nothing — the terseness is deference, not an omission. A specification that mints an address form with no incorporating scheme (an executable address, say) owes the success condition itself, because none is inherited (`openbindings.usage@1`'s `exec:` requires exit 0, its stdout otherwise not an artifact, is the pattern).
 5. **`content`** (item 3) — the accepted JSON values and their meaning, including any mode in which `content` is forbidden.
-6. **Composition** (item 4) — the role of a co-present `location`, including whether it supplies a reference base for embedded content, within the content-primacy floor of core [§5.4](../openbindings.md#54-sources). Service-addressed families additionally define their pin's **staleness** posture (dispatch proceeds against the pin; the live server's own error is a failure outcome) — a drift question artifact-located families do not have.
+6. **Composition** (item 4) — the role of a co-present `location`, including whether it supplies a reference base for embedded content, under the pre-kind candidate's content-first rule. Service-addressed families additionally define their pin's **staleness** posture (dispatch proceeds against the pin; the live server's own error is a failure outcome) — a drift question artifact-located families do not have.
 7. **`selector`** (item 5) — syntax, resolution into an artifact or live surface, and the absent-`selector` case.
 8. **Target and interaction** (item 6) — how the bound target and its interaction pattern are identified.
 9. **Operation-boundary correspondence** (item 7) — how caller-facing input values map to the interaction, which outcomes are successes and how their values are produced, any context bindings provided at transform positions, and the named configuration points for anything incorporated authorities do not answer (see _Portable actionability_).
@@ -834,7 +839,7 @@ Where a specification labels the provenance of each normative paragraph, this pr
 
 ### Promotion
 
-A draft is promoted when every OBI-B-02 item has a definite answer under the template — a rule, a named configuration point, an explicit exclusion, or a scoped incorporation of another published binding specification by exact identifier. Promotion mints the identifier, and reference tooling adopts it — replacing the pre-bindingSpec token — in the same change. Conformance fixtures for the specification's own rules are recommended at promotion, alongside correcting the page's core citations to the current core text.
+A draft is promoted when every PB-02 item has a definite answer under the template — a rule, a named configuration point, an explicit exclusion, or a scoped incorporation of another published binding specification by exact identifier. Promotion mints the identifier, and reference tooling adopts it — replacing the earlier development token — in the same change. Conformance fixtures for the specification's own rules are recommended at promotion, alongside correcting the page's core citations to the current core text.
 
 Promotion is **spec-first**: it designs the ideal specification for the family, not a codification of current reference-implementation behavior. Where shipped code and the promoted specification diverge, the code changes — each divergence is recorded as implementation work at promotion, and a specification is never weakened, nor an item left open, because an implementation has not caught up. An implementation's partial coverage is the implementation's own declaration, exactly as tools declare partial core support; it is never the specification's content.
 
@@ -844,7 +849,7 @@ When an accepted artifact is itself a JSON document (rather than a wire-protocol
 
 - **The specification defines the addressable binding unit** (the value a `selector` resolves to), not the enclosing document.
 - **The binding unit declares its own format version**, embedded on the unit itself, so one host document can carry units at different versions and the version travels with the unit when moved or copied. Under the identifier discipline this unit version is artifact self-identification — which unit versions a given revision accepts belongs in its _accepted source representations_ section; it is not the specification's `<rev>`.
-- **`selector` is a JSON Pointer ([RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).** Concretely, selectors look like `"#/graphs/foo"` rather than `"foo"`. The empty pointer `"#"` resolves to the document root, so a document whose root _is_ a binding unit can be addressed without a name. This convention exists to prevent addressing sprawl across JSON-based sources: one shared scheme keeps selectors self-describing and lets tools share resolution machinery. Authors with a concrete reason to deviate are free to do so — `selector` syntax is each binding specification's own to define (core [§5.3](../openbindings.md#53-bindings), OBI-B-02 item 5).
+- **`selector` is a JSON Pointer ([RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)).** Concretely, selectors look like `"#/graphs/foo"` rather than `"foo"`. The empty pointer `"#"` resolves to the document root, so a document whose root _is_ a binding unit can be addressed without a name. This convention exists to prevent addressing sprawl across JSON-based sources: one shared scheme keeps selectors self-describing and lets tools share resolution machinery. Authors with a concrete reason to deviate are free to do so — `selector` syntax is each binding specification's own to define (core [§5.3](../openbindings.md#53-bindings), PB-02 item 5).
 - **The enclosing document's shape is the author's concern.** Units may be embedded in a dedicated file, alongside units of other specifications, or at an `x-`-prefixed location inside an unrelated host document.
 
 [`openbindings.operation-graph`](operation-graph/openbindings.operation-graph.md) follows this pattern: the specification defines a graph definition (its `nodes`, `edges`, validation rules, and required version field); the enclosing JSON document has no prescribed shape. A conventional `graphs` map at the root is documented for ergonomics but is non-normative.

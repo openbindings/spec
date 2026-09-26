@@ -116,7 +116,7 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-02", "OBI-D-05"]
+      "violates": ["MCP-D-02"]
     },
     {
       "description": "authority-looking string without a scheme is relative in form",
@@ -138,7 +138,7 @@
         }
       },
       "valid": false,
-      "violates": ["MCP-D-02", "OBI-D-05"]
+      "violates": ["MCP-D-02"]
     }
   ]
 }

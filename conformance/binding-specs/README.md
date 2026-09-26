@@ -1,5 +1,13 @@
 # Binding-specification conformance subcorpus
 
+**Status: pre-kind candidate corpus.** The fixture formats and family rules in
+this subtree target the unpublished binding-specification candidates, which
+still use the earlier `bindingSpec`, `location`, and `selector` source shape.
+The dedicated verifier checks consistency with those candidates. A passing run
+does not establish that a synthesized or embedded OBI conforms to the current
+core `kind` model. The candidates and this corpus must be migrated together
+before they can serve as current Core integration evidence.
+
 Source fixtures (D-rules) and portable processor scenarios (P-rules) for the
 ten standalone brownfield synthesis binding specifications, keyed to each specification under
 [`binding-specs/`](../../binding-specs/):
@@ -53,13 +61,13 @@ family rule. The verdict is defined precisely:
 - **`valid: true`** means: the document's family-scoped material gives such
   a processor **nothing to refuse**. Where resolution would require a live
   source (a location-only source), a grammar-valid document is a positive:
-  the inconclusive remainder falls under the core's partial-verification
-  posture (`openbindings.md` §10.2), not under refusal.
+  the inconclusive remainder follows the candidate family's validation
+  posture, not a current core document-conformance verdict.
 
-Documents otherwise conform to the 0.2.0 core (core-conformant): in negative
-cases the named family rule is the only thing at issue, except where an
-overlap with a core rule is inherent (a relative-in-form `location` also
-violates core OBI-D-05; such fixtures list both in `violates`).
+These embedded documents use the pre-kind draft shape and are not current
+0.2.0 core-conformance examples. In this candidate corpus, `valid` reports
+only the named family rule; any listed former core-rule overlaps are historical
+fixture metadata to remove during migration.
 
 Two boundaries keep the verdicts honest:
 
@@ -353,8 +361,9 @@ Selecting all inbound slots and exposing these records are reference-tooling
 promises; dependency identity and role direction remain binding meaning.
 Revision-4 files for other families remain valid and unchanged.
 
-A scenario's `source` uses Core's binding-source model: `location`, `content`,
-or both. Its artifact representations do not depend on a project interface.
+A scenario's `source` is a legacy synthesis-request payload: `location`,
+`content`, or both. It is not a current core Source object. Its artifact
+representations do not depend on a project interface.
 Its required output ledger still scopes these OpenAPI fixtures to tooling
 offering the full-document reporting behavior described above.
 
@@ -420,7 +429,7 @@ by this subtree's own [`fixture.schema.json`](fixture.schema.json):
 - `rule` matches the published rule prefixes (`USAGE`, `OAPI20`, `OAPI30`,
   `OAPI31`, `OAPI32`, `MCP`, `GRPC`, `CONN`, `ASYNC`, or `GQL`).
 - `bindingSpec` (required) carries the exact governing identifier
-  (`"openbindings.usage@1"`), exact and opaque per core OBI-B-01.
+  (`"openbindings.usage@1"`), exact and opaque under project [PB-01](../../binding-specs/PROJECT-POLICY.md#pb-01-exact-project-identifiers).
 - `section` cites the **family** specification's section — the section the
   rule is substantively defined in (`"5"` for content rules, `"4"` for
   location rules, `"7"` for selector rules; the family specs share this
@@ -429,9 +438,9 @@ by this subtree's own [`fixture.schema.json`](fixture.schema.json):
 `violates` keeps the core corpus's **minimum-set semantics** verbatim: for
 a negative fixture, a tool that reports violated rules at all must report
 at least the listed set; supersets are never a defect, and exact-set
-checking is not a valid strictness. Core OBI rules appear in `violates`
-only where the overlap is inherent (OBI-D-05 on relative-in-form
-locations). The optional file-level `notes` field documents authoring
+checking is not a valid strictness. A current Core rule appears in `violates` only when it truly applies
+to a current Core field; the former OBI-D-05 overlap for candidate `location`
+was removed because Core no longer defines that member. The optional file-level `notes` field documents authoring
 intent, exactly as in the core corpus.
 
 ## Coverage

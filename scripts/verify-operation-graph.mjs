@@ -12,10 +12,9 @@
 //      valid:true graph validates against the op-graph JSON Schema. For rules
 //      marked schemaEnforced:true, every valid:false graph is rejected by the
 //      schema (the JSON Schema alone is sufficient to catch the violation).
-//      Document-shaped tests (the OG-D source rules, which carry an OBI
-//      `document` instead of a `graph`) are self-checked: the verifier judges
-//      the named rule against the document's operation-graph sources and
-//      bindings and compares its own verdict with the fixture's `valid`.
+//      Document-shaped tests (the OG-D source rules, which carry a pre-kind
+//      candidate `document` instead of a `graph`) are self-checked only against
+//      the named family rule. They are not current Core-conformance evidence.
 //
 // JSON Schema validation shells out to ajv-cli, the same validator the CI uses
 // for the core schema. Exits 0 on success, 1 on any failure, 2 on IO/usage.
@@ -358,4 +357,4 @@ if (errors.length) {
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log("\nOK");
+console.log("\nCandidate corpus internal consistency: OK (not current Core conformance)");

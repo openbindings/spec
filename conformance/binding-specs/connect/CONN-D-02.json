@@ -241,7 +241,7 @@
         }
       },
       "valid": false,
-      "violates": ["CONN-D-02", "OBI-D-05"]
+      "violates": ["CONN-D-02"]
     }
   ]
 }

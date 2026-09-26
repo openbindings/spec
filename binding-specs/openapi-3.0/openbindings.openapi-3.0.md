@@ -2,13 +2,15 @@
 
 **Status: unreleased `@1` candidate.** This mutable page does not mint `openbindings.openapi-3.0@1`. Its remaining publication gate is the explicit promotion and reference-tooling adoption change required by the [binding-specification lifecycle](../README.md#publication-lifecycle); until then, implementations may cite it only as a candidate, not as a published OpenBindings identifier.
 
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
+
 ## 1. Identifier and rule labels
 
 **[convention]** The opaque binding-specification identifier has exactly the spelling **`openbindings.openapi-3.0@1`**.
 
 **[convention]** OpenBindings Project publication mints §1's proposed identifier; before that project lifecycle event, this page is a mutable candidate and the identifier is not project-published.
 
-**[incorporated]** Once minted, the identifier is exact and stable under Core [OBI-B-01](../../openbindings.md#104-binding-specification-rules), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Core [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**[incorporated]** Once minted, the identifier is exact and stable under Project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers), and an incompatible change to the accepted domain or portable meaning requires a different identifier under Project [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
 
 **[incorporated]** The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** in this document are interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals.
 
@@ -32,9 +34,9 @@
 
 **[incorporated]** This document defines portable binding meaning, not an invocation API: request objects, retry and redirect APIs, cancellation, credential acquisition, receiver deployment, and dependency composition remain runtime or application concerns under Core [§1.2](../../openbindings.md#12-out-of-scope).
 
-The table below indexes this specification against the seven things Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) requires a binding specification to define. It carries no provenance label because it states no rule: every entry points at labelled rules stated elsewhere in this document, and where an entry and a rule differ the rule governs. OBI-B-02 is a floor and not a partition, so a section this table does not name is not thereby surplus; the last row records what this document fixes above that floor. The third column names what this specification does not cover at that item: a point at which it states no portable meaning. It does not claim that no rule in this document reaches the surrounding subject. Such a point is a different thing from the exclusions and limits §12.4 enumerates, because those are declared and this is not.
+**Pre-kind completeness map (pending migration).** The table below records where this candidate answered the earlier draft's seven-item checklist. Its field names and citations have not been remapped to the current core model or the project's [PB-02 publication gate](../PROJECT-POLICY.md#pb-02-publication-completeness). It is review material, not a current completeness or conformance claim. Where a table cell and a numbered candidate rule disagree, the rule governs.
 
-| OBI-B-02 item | Where this specification discharges it | what this specification does not cover there |
+| Earlier draft item | Where this specification discharges it | what this specification does not cover there |
 | --- | --- | --- |
 | 1 — whether a source mode accepts an artifact, the representations accepted, deterministic discrimination, and the encoding of a non-JSON artifact | §2 (the closed accepted-edition set), §3.1, §3.2, §4, §5.1 (the retrieval decode) | nothing recorded: §4's limit states the acquisition-failure disposition and defers the success condition to the address scheme. |
 | 2 — the syntax and meaning of `location` | §3.1, §4, §10 (`location` plays one further role, supplying the base for a relative Server URL, and §10 states the missing-`location` consequence at that point of use) | nothing recorded: §4's limit states the acquisition-failure disposition and defers the success condition to the address scheme. |
@@ -45,7 +47,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 | 7 — how caller-facing input and successful output values correspond to the source interaction, which outcomes are successes, how values emitted before an unsuccessful completion are treated, and any context bindings at transform positions | §3.2, §5.1, §5.2, §6.1, §7, §8.1, §8.2, §8.3, §9.1, §9.2, §9.3, §9.4, §9.5, §10, §12.1, §12.2 (the context-bindings rule) | nothing recorded. |
 | supporting wire detail | §11's credential-construction rules: the `Basic` construction, `apiKey` emission, `Bearer` carriage, destination collisions, and the cookie join | These define concrete credential carriage supporting the interaction and correspondence in items 6–7; they do not prescribe a reporting interface. |
 
-**[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-binding-specifications) and is not attributed to this identifier.
+**[convention]** Where §2's item map records that a chain is not completed in this revision, that record licenses nothing. It is not a permitted variation, and this specification states no portable meaning there. An implementation may complete such a point locally; that completion is implementation-defined under Core [§6](../../openbindings.md#6-kinds) and is not attributed to this identifier.
 
 ## 3. Source carriage and refusal architecture
 
@@ -77,7 +79,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** For generation correspondence, a target or subordinate projection is **represented** when its portable meaning is preserved; **invalid** when its owning declaration is upstream-invalid; **excluded** when this specification removes an upstream-valid unit under a stated exclusion; **lossy** when translation loses declared meaning; or **implementation-unsupported** when the specification defines the behavior but the synthesizer lacks the capability. A represented target MAY have a separately invalid, excluded, or lossy subordinate projection. Every invalid, excluded, lossy, or unsupported unit is **coverage loss** at that unit.
 
-**[convention]** An addressable target that requires a missing choice or unsupported alternative is **unusable** and **refuses before dispatch** when invoked. A **context-required** refusal names a configuration point or credential that can make the same invocation proceed; a plain **refusal** names a condition no supplied context can change. Neither dispatches the requested operation nor produces its output or observable operation effects. Description retrieval and connection setup may precede that boundary; they do not establish that the operation was dispatched. An operation request made to discover requirements cannot claim this refusal guarantee merely from its response status. Presentation of either refusal is context negotiation outside this specification (Core [§6](../../openbindings.md#6-binding-specifications)).
+**[convention]** An addressable target that requires a missing choice or unsupported alternative is **unusable** and **refuses before dispatch** when invoked. A **context-required** refusal names a configuration point or credential that can make the same invocation proceed; a plain **refusal** names a condition no supplied context can change. Neither dispatches the requested operation nor produces its output or observable operation effects. Description retrieval and connection setup may precede that boundary; they do not establish that the operation was dispatched. An operation request made to discover requirements cannot claim this refusal guarantee merely from its response status. Presentation of either refusal is context negotiation outside this specification (Core [§6](../../openbindings.md#6-kinds)).
 
 **[convention]** A wire fact this specification cannot represent faithfully is a **loud protocol error**; *refuses loudly*, *fails loudly*, and *reported loudly* are synonyms. An interaction that reaches the wire and whose outcome §9.5 does not admit as successful **completes unsuccessfully**; so does one that reaches an admitted final status and then fails loudly. Values already emitted before an unsuccessful streaming completion remain successful values where a streaming rule says so.
 
@@ -107,7 +109,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 ## 4. `location`, `content`, and composition
 
-**[incorporated]** A present `location` MUST be an absolute URI addressing the OpenAPI document itself; a bare filesystem path is not conformant (Core [OBI-D-05](../../openbindings.md#102-document-rules)).
+**[convention]** Under this pre-kind candidate, a present `location` MUST be an absolute URI addressing the OpenAPI document itself; a bare filesystem path is not accepted. Current Core has no source `location` field.
 
 **[convention]** For a location-only source the dereference is required and MUST yield an accepted representation; a representation outside §3.1's two refuses at load, at the accepted-representation gate. Where `content` is co-present a processor MAY retrieve from `location` and MAY decline to; `content` remains the interpreted artifact and is never silently replaced, and a failed, unreachable, or non-conforming retrieval has no effect on the interpreted artifact and no outcome of its own. Retrieval is therefore never observable on a content-carrying source, and the two processors differ in no result this specification defines (Core [§5.4](../../openbindings.md#54-sources)).
 
@@ -115,11 +117,11 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A present `content` MUST be one of §3.1's two representations, and no other JSON type is accepted.
 
-**[convention]** No source mode this specification governs forbids `content`: Core [§5.4](../../openbindings.md#54-sources) admits `location` alone, `content` alone, and both co-present, the location-only mode is one in which `content` is absent rather than prohibited, and the set of `content`-forbidding modes Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) item 3 asks for is empty by decision.
+**[convention]** No source mode this specification governs forbids `content`: This pre-kind candidate admits `location` alone, `content` alone, and both co-present, the location-only mode is one in which `content` is absent rather than prohibited, and the set of `content`-forbidding modes Project [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness) item 3 asks for is empty by decision.
 
 **[incorporated]** A relative `$ref` resolves under JSON Reference against the URL of the document containing it; other relative URL fields use their own OAS-defined base rules ([OAS 3.0.4 §4.6](https://spec.openapis.org/oas/v3.0.4.html#relative-references-in-urls)).
 
-**[convention]** Embedded content without a co-present `location` MUST be self-contained; a location-only source uses its location as the entry-document base (Core [§7](../../openbindings.md#7-reference-resolution)).
+**[convention]** Embedded content without a co-present `location` MUST be self-contained; a location-only source uses its location as the entry-document base under this candidate. Internal source references are outside current Core §7.
 
 ## 5. References, schema dialect, and confinement
 
@@ -669,13 +671,13 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 ### 12.2 Generation correspondence and reporting
 
-**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); Core's transform positions relate operation values to binding-facing values (the draft's core §5.5, since removed; see the [changelog](../../CHANGELOG.md)).
+**[incorporated]** Operation contracts remain protocol-neutral (Core [§5.1](../../openbindings.md#51-operations), [invariant 1](../../openbindings.md#2-core-invariants)); the pre-kind draft's transform positions relate operation values to binding-facing values (the draft's core §5.5, since removed; see the [changelog](../../CHANGELOG.md)).
 
-**[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit Core `inputTransform` or `outputTransform` wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
+**[convention]** Generation MAY choose flat or nested protocol-neutral operation contracts. An emitted correspondence uses an explicit `inputTransform` or `outputTransform` from the pre-kind draft wherever its chosen contract requires a mapping to or from this binding's values. No transform is required when no mapping is needed. Transforms construct values; this specification, not a transform, routes the binding-facing input to HTTP locations.
 
 **[convention]** This binding defines no status, header, selected-media, or other context bindings at `inputTransform` or `outputTransform` positions; evaluation uses Core's closed environment unaugmented (the draft's core §5.5 and transform-evaluation rule, since removed; see the [changelog](../../CHANGELOG.md)).
 
-**[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond Core's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
+**[limit]** The §7 envelope is the binding-facing input, not a required operation-contract shape. Protocol location keys belong to that envelope, not to the protocol-neutral operation vocabulary. Operation and dependency key spelling, contract structure, output-schema choice, and Schema Object translation are generation policy, subject to faithful correspondence. This binding adds no input-restructuring mechanism beyond the pre-kind draft's `inputTransform` and `outputTransform` positions and provides no hidden mapping.
 
 **[convention]** Schema Object translation preserves the declared value domain up to representability. A lossy or non-equivalent translation is coverage loss at its owning position and MUST NOT be presented as faithful representation of that meaning. When generated output cannot represent schema meaning, the tool surfaces that limitation under Core [OBI-T-05](../../openbindings.md#103-tool-rules); this requires no particular report format. Output-schema choice carries no further soundness latitude.
 
@@ -693,7 +695,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A binding conforms to **OAPI30-D-02** when it names `openbindings.openapi-3.0@1`, carries the literal selector of §6.1, and identifies a source that passes the exact edition gate. That verdict is decided over the interpreted artifact, never over the binding's text alone: for a location-only source it follows §4's required dereference, so conformance to this rule is not a property of the OBI document in isolation.
 
-**[convention]** Where a location-only source's dereference does not yield a representation, this rule is **inconclusive** rather than violated, and a validator reporting an overall conclusion reports **conformance undetermined** absent an established violation elsewhere; an unavailable or policy-declined external resource is not evidence of violation. This extends, by this specification's own convention, the treatment Core [§10.5](../../openbindings.md#105-conformance-conclusions) gives its own rules over network-inaccessible resources.
+**[convention]** Where a location-only source's dereference does not yield a representation, this rule is **inconclusive** rather than violated, and a validator reporting an overall conclusion reports **conformance undetermined** absent an established violation elsewhere; an unavailable or policy-declined external resource is not evidence of violation. This extends, by this specification's own convention, the treatment Core [§10.4](../../openbindings.md#104-conformance-conclusions) gives its own rules over network-inaccessible resources.
 
 **[convention]** A processor conforms to **OAPI30-P-01** when it implements the closed load gates, smallest-owner confinement, Schema Object subset, reference closure, and selector semantics of §§3–6.
 
@@ -815,7 +817,7 @@ The table below indexes this specification against the seven things Core [OBI-B-
 
 **[convention]** A processor conforms to **OAPI30-P-60** when §8.1 and §9.3 keep scalar conversion on the RFC 6570-style path separate from content-based media serialization: a number or boolean selected as content-based `text/plain` uses the binding-fixed lexical form without `parameterConversion`, while the same value on an explicitly style-selected Encoding path still requires that configuration.
 
-**[convention]** The generation rules below apply to correspondences derived from the affected source material, not to a mandatory selection or reporting scope (§12.2). Core [OBI-B-02](../../openbindings.md#104-binding-specification-rules) tests completeness of this binding specification, not coverage of a generator's output.
+**[convention]** The generation rules below apply to correspondences derived from the affected source material, not to a mandatory selection or reporting scope (§12.2). Project [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness) tests completeness of this binding specification, not coverage of a generator's output.
 
 **[convention]** A synthesizer conforms to **OAPI30-S-01** when its emitted correspondences preserve §12.2's operation/binding/transform boundary and schema-translation soundness, including truthful generation claims, and its emitted dependencies preserve §6.2's role-inverted, targetless, unconstrained correspondence.
 

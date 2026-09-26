@@ -95,6 +95,7 @@ const OPENAPI_FAMILIES = new Set([
 ]);
 const PUBLICATION_CATALOG_ENTRIES = new Set([
   "README.md",
+  "PROJECT-POLICY.md",
   "errata.json",
   "errata",
   ...Object.keys(FAMILIES),

@@ -3,7 +3,7 @@
   "bindingSpec": "openbindings.asyncapi@1",
   "section": "4",
   "description": "`location`, when present, is an absolute URI addressing the AsyncAPI document itself. A bare filesystem path is a relative reference in form and is not a conformant location. This family is artifact-located: connection targets come from the artifact's servers, not from location.",
-  "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness for this family's document address, so the fixtures list both.",
+  "notes": "Relative-in-form location values violate this candidate family rule. Current Core has no source location field; the former OBI-D-05 overlap has been removed from these fixtures.",
   "tests": [
     {
       "description": "https document address",
@@ -67,7 +67,7 @@
         }
       },
       "valid": false,
-      "violates": ["ASYNC-D-02", "OBI-D-05"]
+      "violates": ["ASYNC-D-02"]
     },
     {
       "description": "bare absolute filesystem path carries no scheme and is relative in form",
@@ -89,7 +89,7 @@
         }
       },
       "valid": false,
-      "violates": ["ASYNC-D-02", "OBI-D-05"]
+      "violates": ["ASYNC-D-02"]
     },
     {
       "description": "bare file name carries no scheme and is relative in form",
@@ -111,7 +111,7 @@
         }
       },
       "valid": false,
-      "violates": ["ASYNC-D-02", "OBI-D-05"]
+      "violates": ["ASYNC-D-02"]
     }
   ]
 }

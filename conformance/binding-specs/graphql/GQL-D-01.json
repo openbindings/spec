@@ -111,8 +111,7 @@
       },
       "valid": false,
       "violates": [
-        "GQL-D-01",
-        "OBI-D-05"
+        "GQL-D-01"
       ]
     },
     {

@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.connect@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.connect@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); later incompatible changes will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
@@ -35,7 +37,7 @@ A source's `content`, when present, MUST be one of the two **embedded** schema c
 
 ## 6. Composition
 
-When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)); `location` remains the invocation target — the service-addressed pairing. Embedded schemas are self-contained by construction; this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_). Staleness is defined rather than surprising: the pin stays authoritative for interpretation, dispatch proceeds against it, and a drifted server answers with its own error — a failure outcome under [§9.5](#95-classification), not a resolution failure.
+When `content` is present it is the artifact the processor interprets, under this pre-kind candidate's content-first rule; `location` remains the invocation target — the service-addressed pairing. Embedded schemas are self-contained by construction; this specification defines no reference-base role for `location` (earlier checklist item 4: the answer is _none_). Staleness is defined rather than surprising: the pin stays authoritative for interpretation, dispatch proceeds against it, and a drifted server answers with its own error — a failure outcome under [§9.5](#95-classification), not a resolution failure.
 
 ## 7. `selector`
 

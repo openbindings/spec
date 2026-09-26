@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.grpc@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules). Because the Connect candidate incorporates this candidate by exact-identifier citation, changes MUST be evaluated in both contexts before either is published.
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.grpc@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); later incompatible changes will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions). Because the Connect candidate incorporates this candidate by exact-identifier citation, changes MUST be evaluated in both contexts before either is published.
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
@@ -46,7 +48,7 @@ A source's `content`, when present, MUST be one of the two embedded carriages of
 
 ## 6. Composition
 
-When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)): descriptors are built from the embedded schema and **reflection is never consulted**. `location` remains the dial target — the service-addressed pairing. Embedded schemas are self-contained by construction ([§3](#3-accepted-source-representations)); this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_).
+When `content` is present it is the artifact the processor interprets, under this pre-kind candidate's content-first rule: descriptors are built from the embedded schema and **reflection is never consulted**. `location` remains the dial target — the service-addressed pairing. Embedded schemas are self-contained by construction ([§3](#3-accepted-source-representations)); this specification defines no reference-base role for `location` (earlier checklist item 4: the answer is _none_).
 
 Staleness is defined rather than surprising: the pin stays authoritative for interpretation, dispatch proceeds against it, and a server whose actual schema has drifted answers with its own status — a failure outcome under [§9.4](#94-classification), not a resolution failure. A processor MAY compare an embedded schema against the live reflection listing as a freshness diagnostic; the pin stays authoritative.
 

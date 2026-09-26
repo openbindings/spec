@@ -45,7 +45,7 @@
           },
           "description": { "type": "string", "minLength": 1 },
           "source": {
-            "description": "One Core binding source. It must carry `location` or `content`, so every scenario describes a source admitted by the OpenBindings document model without depending on any project interface contract.",
+            "description": "Legacy synthesis-request source payload for the pre-kind family candidates. This is harness input, not a current Core Source object. Its bindingSpec and location/content presence rules describe the old candidate interface while those families await migration to kind and source content.",
             "type": "object",
             "required": ["bindingSpec"],
             "anyOf": [

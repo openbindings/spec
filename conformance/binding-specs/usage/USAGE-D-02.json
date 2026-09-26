@@ -3,7 +3,7 @@
   "bindingSpec": "openbindings.usage@1",
   "section": "4",
   "description": "`location`, when present, is a document address (absolute URI) or an exec address (`exec:` + space-separated argv vector). A bare filesystem path is a relative reference in form and is not a conformant location; exec-address tokens are separated by single spaces and carry no quoting mechanism.",
-  "notes": "Relative-in-form location negatives inherently also violate core OBI-D-05; the family rule restates absoluteness and narrows the accepted forms, so the fixtures list both.",
+  "notes": "Relative-in-form location values violate this candidate family rule. Current Core has no source location field; the former OBI-D-05 overlap has been removed from these fixtures.",
   "tests": [
     {
       "description": "https document address",
@@ -83,7 +83,7 @@
         }
       },
       "valid": false,
-      "violates": ["USAGE-D-02", "OBI-D-05"]
+      "violates": ["USAGE-D-02"]
     },
     {
       "description": "bare absolute filesystem path carries no scheme and is relative in form; local descriptors ride file:// URIs or embedded content",
@@ -101,7 +101,7 @@
         }
       },
       "valid": false,
-      "violates": ["USAGE-D-02", "OBI-D-05"]
+      "violates": ["USAGE-D-02"]
     },
     {
       "description": "bare file name carries no scheme and is relative in form",
@@ -116,7 +116,7 @@
         }
       },
       "valid": false,
-      "violates": ["USAGE-D-02", "OBI-D-05"]
+      "violates": ["USAGE-D-02"]
     },
     {
       "description": "exec address with a double space produces an empty token: tokens are separated by single spaces",

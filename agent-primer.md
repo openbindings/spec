@@ -234,7 +234,7 @@ requires a definite portable answer for every part of the binding boundary: an
 incorporated rule, a rule defined by the binding specification, a named
 configuration point, or an explicit exclusion. A silent answer does not stop
 the specification from existing or being implemented; it means the
-specification has not met the OBI-B-02 completeness floor for that boundary.
+specification has not met the project [PB-02](binding-specs/PROJECT-POLICY.md#pb-02-publication-completeness) publication checklist for that boundary.
 See the
 [binding-specification guide](binding-specs/README.md) for the full
 completeness test and authoring template.

@@ -172,7 +172,7 @@
         }
       },
       "valid": false,
-      "violates": ["GRPC-D-02", "OBI-D-05"]
+      "violates": ["GRPC-D-02"]
     },
     {
       "description": "scheme form without an explicit port is equally non-conformant",

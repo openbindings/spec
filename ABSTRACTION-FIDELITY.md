@@ -104,8 +104,9 @@ operation value "abstraction."
 
 ## Project binding-specification responsibility
 
-To meet this project's abstraction-fidelity goal and OBI-B-02 publication
-floor, an `openbindings.*` binding specification does the minimum necessary to
+To meet this project's abstraction-fidelity goal and its
+[PB-02 publication checklist](binding-specs/PROJECT-POLICY.md#pb-02-publication-completeness),
+an `openbindings.*` binding specification does the minimum necessary to
 make a governed binding portable and actionable without private implementation
 policy. It defines:
 

@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.usage@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.usage@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); later incompatible changes will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
@@ -26,12 +28,12 @@ Usage's **configuration-file and external-parse lanes are likewise excluded** fr
 
 ## 4. `location`
 
-A source's `location`, when present, is one of two absolute address forms (**USAGE-D-02**). Both are binding-specification-defined absolute addresses in the sense of core [OBI-D-05](../../openbindings.md#102-document-rules): neither takes a base, and each means the same thing wherever the document travels.
+A source's `location`, when present, is one of two absolute address forms (**USAGE-D-02**). Both are binding-specification-defined absolute addresses under this candidate's USAGE-D-02: neither takes a base, and each means the same thing wherever the document travels.
 
 1. **Document address** — an absolute URI addressing the descriptor document itself: `https://example.com/tool/usage.kdl`, `file:///opt/tool/usage.kdl`. Dereferencing it yields the descriptor source text.
 2. **Exec address** — the scheme-like prefix `exec:` followed by an argv vector: one command token and zero or more argument tokens, separated by single spaces (`exec:mytool usage`). The addressed artifact is the standard output of executing that vector **directly** — never through a shell. **The dereference succeeds only when the process exits 0**; any other termination — a non-zero exit, a signal — is a loud dereference failure, and the standard-output bytes are **not** an artifact (a generator that emits a partial descriptor and then fails must never be read as a smaller valid one). Standard error is diagnostic, never the artifact. Unlike the document-address forms, `exec:` has no incorporated address scheme to supply this success condition — it is minted by this specification, so this specification states it. Tokens carry no quoting mechanism; a command whose arguments contain spaces is outside this form, and its generated descriptor is embedded as `content` instead. This form exists for tools whose descriptors are generated live; it is an absolute address by construction.
 
-A bare filesystem path (`./usage.kdl`, `/opt/tool/usage.kdl`) is a relative reference in form and is not a conformant `location` (core OBI-D-05); local descriptors ride `file://` URIs or embedded `content` — embedding is the recommended lane for emitted documents, keeping them self-contained.
+A bare filesystem path (`./usage.kdl`, `/opt/tool/usage.kdl`) is a relative reference in form and is not an accepted `location` under this candidate (USAGE-D-02); local descriptors ride `file://` URIs or embedded `content` — embedding is the recommended lane for emitted documents, keeping them self-contained.
 
 **Security.** Dereferencing an exec address executes a document-supplied command. A processor MUST NOT dereference an exec address without explicit prior authorization from its operator or configuration for that command (**USAGE-P-02**); the default is refusal. This is the one normative security floor this specification adds; all other mitigation posture follows core [§9](../../openbindings.md#9-security-considerations).
 
@@ -41,7 +43,7 @@ A source's `content`, when present, MUST be a JSON string carrying the UTF-8 sou
 
 ## 6. Composition
 
-When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)). A co-present `location` is the descriptor's provenance — its document address, or the exec recipe that regenerates it — and MAY be used to refresh or compare, never as a competing artifact. Because revision 1 refuses usage's external `include` and dynamic `mount` composition features ([§3](#3-accepted-source-representations)), every accepted descriptor is self-contained and this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_).
+When `content` is present it is the artifact the processor interprets, under this pre-kind candidate's content-first rule. A co-present `location` is the descriptor's provenance — its document address, or the exec recipe that regenerates it — and MAY be used to refresh or compare, never as a competing artifact. Because revision 1 refuses usage's external `include` and dynamic `mount` composition features ([§3](#3-accepted-source-representations)), every accepted descriptor is self-contained and this specification defines no reference-base role for `location` (earlier checklist item 4: the answer is _none_).
 
 ## 7. `selector`
 
@@ -110,7 +112,7 @@ Which outcomes of an invocation are successes is decided by the **classify** poi
 
 ### 9.4. Transform positions
 
-This specification defines **no** context bindings at transform positions: a transform on a usage binding evaluates in the core's closed environment, unaugmented (OBI-B-02 item 7: the answer is _none_).
+This specification defines **no** context bindings at transform positions: a transform on a usage binding evaluates in the core's closed environment, unaugmented (earlier checklist item 7: the answer is _none_).
 
 ## 10. Conformance
 
@@ -133,6 +135,6 @@ Conformance fixtures keyed to these identifiers are maintained in the project's 
 ## 11. References
 
 - **[usage]** jdx, “usage — a specification for CLIs,” immutable release [`v3.5.6` (`84719de261e2cbd2db83d149bb7511c29f95206a`)](https://github.com/jdx/usage/tree/84719de261e2cbd2db83d149bb7511c29f95206a). Incorporated authority for the descriptor format ([§2](#2-scope-and-incorporated-authorities)); the rendered documentation at <https://usage.jdx.dev> is informative when it differs from that release.
-- **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository — the OBI-B rules this document answers, OBI-D-05's address posture, and the content-primacy floor.
+- **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository — the pre-kind draft's former binding-specification rules, address posture, and content-primacy floor.
 - **[BCP 14]** RFC 2119 / RFC 8174 (key words).
 - The [catalog README](../README.md) (informative) — completeness doctrine, configuration-point hooks, and recommended defaults this specification instantiates.

@@ -61,7 +61,7 @@
                 },
                 "document": {
                   "type": "object",
-                  "description": "An OBI document embedding an operation-graph source and binding, for document-shaped rules (OG-D-##). The named rule is judged against the document's operation-graph sources and bindings; documents otherwise conform to the core so only the named rule discriminates."
+                  "description": "A pre-kind candidate document embedding an operation-graph source and binding, for document-shaped rules (OG-D-##). The named family rule is judged against its source and binding; this fixture makes no current Core-conformance claim."
                 },
                 "valid": {
                   "type": "boolean",

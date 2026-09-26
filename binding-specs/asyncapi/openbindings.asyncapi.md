@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.asyncapi@1`** as the first project identifier for this family. No AsyncAPI binding specification has been published by the OpenBindings project. This candidate remains mutable until its first release. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); a later incompatible change will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.asyncapi@1`** as the first project identifier for this family. No AsyncAPI binding specification has been published by the OpenBindings project. This candidate remains mutable until its first release. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); a later incompatible change will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" are interpreted as described in [BCP 14](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) only when they appear in all capitals.
 
@@ -36,7 +38,7 @@ Discrimination uses the artifact's own `asyncapi` field. Internal normalization 
 
 ## 4. `location`
 
-A source's `location`, when present, is an **absolute URI addressing the AsyncAPI document itself** (**ASYNC-D-02**), such as `https://example.com/asyncapi.yaml` or `file:///srv/api/asyncapi.yaml`. A bare filesystem path is relative in form and is not a conformant `location` under core [OBI-D-05](../../openbindings.md#102-document-rules). Connection targets come from the artifact's servers, not from `location`.
+A source's `location`, when present, is an **absolute URI addressing the AsyncAPI document itself** (**ASYNC-D-02**), such as `https://example.com/asyncapi.yaml` or `file:///srv/api/asyncapi.yaml`. A bare filesystem path is relative in form and is not an accepted `location` under this candidate (ASYNC-D-02). Connection targets come from the artifact's servers, not from `location`.
 
 ## 5. `content`
 
@@ -44,7 +46,7 @@ A source's `content`, when present, MUST be one of the two representations in [Â
 
 ## 6. Composition and reference resolution
 
-When `content` is present it is the artifact the processor interprets, following Core's content-primacy rule. A co-present `location` is that content's origin and base URI. Relative references resolve exactly as the governing AsyncAPI edition specifies. Embedded content without a co-present `location` MUST be self-contained; location-only sources use their location as the artifact base.
+When `content` is present it is the artifact the processor interprets, under this pre-kind candidate's content-first rule. A co-present `location` is that content's origin and base URI. Relative references resolve exactly as the governing AsyncAPI edition specifies. Embedded content without a co-present `location` MUST be self-contained; location-only sources use their location as the artifact base.
 
 The artifact processor, not the OBI processor, owns AsyncAPI `$ref`, trait, component, and protocol-binding resolution. Resolution MUST retain enough native identity for diagnostics, coverage, and exact `selector` round trips.
 

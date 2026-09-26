@@ -37,7 +37,7 @@ guesswork.
 
 ## Subcorpora
 
-Two subcorpora live alongside the core corpus, each with its own fixture format. The core tooling below scans `document/`, `tool/` and `scenarios/`; the subcorpora have separate repository verifiers and execution harnesses:
+Two pre-kind candidate subcorpora live alongside the current core corpus, each with its own fixture format. Their verifiers check consistency against unpublished family candidates, not conformance of embedded or generated OBIs to the current core `kind` model. The core tooling below scans `document/`, `tool/` and `scenarios/`; the subcorpora have separate repository verifiers and execution harnesses:
 
 | Subcorpus | Covers | Verifier |
 |---|---|---|

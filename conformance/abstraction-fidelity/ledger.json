@@ -4,7 +4,7 @@
     {
       "id": "AF-CORE-001",
       "layer": "core",
-      "scope": "OBI-B-02 item 4 (formerly item 7) and failure-vocabulary scope",
+      "scope": "project PB-02 item 4 (pre-kind candidate map) and failure-vocabulary scope",
       "issue": "The completeness floor required every source-native unsuccessful observation to remain distinguishable, exceeding the protocol-blind operation boundary.",
       "classification": "mixed",
       "ordinaryCallerDependency": true,
@@ -294,7 +294,7 @@
         "../../../openbindings-ts/packages/openapi/src/native-differential.test.ts",
         "../../../ob/internal/app/openapi_v2_fidelity_test.go"
       ],
-      "notes": "The first @1 candidate uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by a Core inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No Core or OBI document-model change was required."
+      "notes": "The first @1 candidate uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by the pre-kind draft's inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No Core or OBI document-model change was required."
     },
     {
       "id": "AF-BINDING-005",

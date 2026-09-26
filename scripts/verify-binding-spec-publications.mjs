@@ -514,6 +514,13 @@ for (const [publication, recordPath] of publicationRecords) {
   if (!recordFiles.some((file) => file?.path === "root/openbindings.md")) {
     errors.push(`${publication}: publication record does not hash root/openbindings.md`);
   }
+  const archivedProjectPolicy = "root/binding-specs/PROJECT-POLICY.md";
+  if (!existsSync(join(dirname(recordPath), archivedProjectPolicy))) {
+    errors.push(`${publication}: immutable bundle is missing ${archivedProjectPolicy}`);
+  }
+  if (!recordFiles.some((file) => file?.path === archivedProjectPolicy)) {
+    errors.push(`${publication}: publication record does not hash ${archivedProjectPolicy}`);
+  }
   const declaredIds = new Set(recordIdentifiers);
   const manifestIds = new Set(
     manifestEntries.map((entry) => entry.identifier)

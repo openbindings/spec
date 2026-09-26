@@ -219,8 +219,7 @@
       },
       "valid": false,
       "violates": [
-        "OAPI31-D-01",
-        "OBI-D-05"
+        "OAPI31-D-01"
       ]
     },
     {
@@ -246,8 +245,7 @@
       },
       "valid": false,
       "violates": [
-        "OAPI31-D-01",
-        "OBI-D-05"
+        "OAPI31-D-01"
       ]
     },
     {
@@ -273,8 +271,7 @@
       },
       "valid": false,
       "violates": [
-        "OAPI31-D-01",
-        "OBI-D-05"
+        "OAPI31-D-01"
       ]
     }
   ]

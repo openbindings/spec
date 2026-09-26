@@ -2,7 +2,9 @@
 
 ## 1. Status and identifier
 
-**Status: unreleased first-revision candidate.** This document proposes **`openbindings.operation-graph@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under core [OBI-B-01](../../openbindings.md#104-binding-specification-rules); later incompatible changes will require a different identifier under [OBI-B-03](../../openbindings.md#104-binding-specification-rules).
+**Status: unreleased first-revision candidate.** This document proposes **`openbindings.operation-graph@1`** as the first project identifier for this family. The identifier has not been published and this candidate remains mutable. Publication will mint the exact, opaque identifier under project [PB-01](../PROJECT-POLICY.md#pb-01-exact-project-identifiers); later incompatible changes will require a different identifier under [PB-03](../PROJECT-POLICY.md#pb-03-published-meaning-and-revisions).
+
+**Core-model migration pending.** This candidate still uses fields from the pre-kind 0.2 draft, including `bindingSpec`, `location`, or `selector`. Its source and binding examples and conformance fixtures are candidate evidence only; they do not assert conformance to the current core `kind` model. Project publication requires revision against the current core and [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness).
 
 The identifier appears in the `bindingSpec` field of an OpenBindings `sources` entry:
 
@@ -60,7 +62,7 @@ This is a convention, not a requirement (see [§3](#3-accepted-source-representa
 
 ## 4. `location`
 
-A source's `location`, when present, is an **absolute URI addressing the source document itself** — `https://example.com/graphs.json`, `file:///srv/graphs.json`. Dereferencing it yields an accepted representation ([§3](#3-accepted-source-representations)); a bare filesystem path is a relative reference in form and is not a conformant `location` (core [OBI-D-05](../../openbindings.md#102-document-rules)). This family is artifact-located: graphs execute wherever their operations' own bindings point, and `location` names only the document that holds them.
+A source's `location`, when present, is an **absolute URI addressing the source document itself** — `https://example.com/graphs.json`, `file:///srv/graphs.json`. Dereferencing it yields an accepted representation ([§3](#3-accepted-source-representations)); a bare filesystem path is a relative reference in form and is not an accepted `location` under this candidate (OG-D-02). This family is artifact-located: graphs execute wherever their operations' own bindings point, and `location` names only the document that holds them.
 
 ## 5. `content`
 
@@ -68,7 +70,7 @@ A source's `content`, when present, MUST be one of the two representations of [�
 
 ## 6. Composition
 
-When `content` is present it is the artifact the processor interprets, per the core's content-primacy floor ([§5.4](../../openbindings.md#54-sources)); a co-present `location` is the document's origin — provenance and refresh, never a competing artifact. Operation-graph documents are **self-contained by construction**: embedded schemas reference nothing outside themselves ([OG-V-18](#19-validation-rules)) and no URI-bearing cross-document reference exists — operation keys resolve against the containing OBI's operations map ([OG-V-11](#19-validation-rules)), never against a base — so this specification defines no reference-base role for `location` (OBI-B-02 item 4: the answer is _none_).
+When `content` is present it is the artifact the processor interprets, under this pre-kind candidate's content-first rule; a co-present `location` is the document's origin — provenance and refresh, never a competing artifact. Operation-graph documents are **self-contained by construction**: embedded schemas reference nothing outside themselves ([OG-V-18](#19-validation-rules)) and no URI-bearing cross-document reference exists — operation keys resolve against the containing OBI's operations map ([OG-V-11](#19-validation-rules)), never against a base — so this specification defines no reference-base role for `location` (earlier checklist item 4: the answer is _none_).
 
 ## 7. `selector`
 
@@ -106,7 +108,7 @@ Boundary correspondence is this specification's own deep content, defined normat
 
 **Transform positions.** The graph's own `$input` context binding is defined for the graph's internal expressions ([Runtime context](#18-runtime-context), [Transforms](#transforms)) by this specification's semantics chapters — as the draft's core §5.5 and transform-evaluation rule anticipated for a governing specification's own expression positions (both since removed; see the [changelog](../../CHANGELOG.md)).
 
-At the core's **binding-level** transform positions — `inputTransform`/`outputTransform` on a binding selecting a graph source — this specification defines **no** context bindings: those transforms evaluate in the core's closed environment, unaugmented. The `$input` binding exists only at this specification's own node-expression positions.
+At the pre-kind draft's **binding-level** transform positions — `inputTransform`/`outputTransform` on a binding selecting a graph source — this specification defines **no** context bindings: those transforms evaluate in the core's closed environment, unaugmented. The `$input` binding exists only at this specification's own node-expression positions.
 
 ## 10. Overview
 
@@ -458,7 +460,7 @@ When a graph-bound operation is invoked, the implementation first opens the one 
 
 The graph binding then surfaces the invocation through the boundary nodes: each value the caller writes is accepted (subject to [Input-side closure](#input-side-closure-back-closure)) and emitted as one event at the `input` node, in write order, each rooting a lineage; each event reaching the `output` node is emitted to the caller as one output. The caller closing the input side completes the `input` node's output stream.
 
-A binding that selects an operation-graph source MAY carry the core specification's binding-level `inputTransform`/`outputTransform`. Per the core, they apply per item at the operation boundary, outside the graph: `inputTransform` reshapes each caller write before it becomes an event at the `input` node, and `outputTransform` reshapes each event the `output` node emits before output validation (core [§5.2](../../openbindings.md#52-schemas), [OBI-T-08](../../openbindings.md#103-tool-rules)). The graph itself never sees untransformed input or emits untransformed output when those fields are declared.
+A binding that selects an operation-graph source MAY carry the pre-kind draft's binding-level `inputTransform`/`outputTransform`. In that draft, they apply per item at the operation boundary, outside the graph: `inputTransform` reshapes each caller write before it becomes an event at the `input` node, and `outputTransform` reshapes each event the `output` node emits before output validation (core [§5.2](../../openbindings.md#52-schemas), [OBI-T-08](../../openbindings.md#103-tool-rules)). The graph itself never sees untransformed input or emits untransformed output when those fields are declared.
 
 ### Per-event processing
 
@@ -907,7 +909,7 @@ The specification repository carries a conformance corpus for this format under 
 
 ## 25. References
 
-- **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository. Incorporated authority for the concepts this specification builds on — operations, bindings, sources, transforms, invocations ([§2](#2-scope-and-incorporated-authorities)) — and the OBI-B rules this document answers.
+- **[OpenBindings]** The OpenBindings core specification, `openbindings.md` in this repository. Current authority for operations, bindings, and sources; this pre-kind candidate's transform and former binding-specification citations require migration before publication.
 - **[JSONata]** "JSONata documentation," [`version-2.1.0` source snapshot](https://github.com/jsonata-js/jsonata/tree/5d1473277e0022d8580e00f891b12080eb3edd74/website/versioned_docs/version-2.1.0), with jsonata-js 2.1.1 at official tag commit `5d1473277e0022d8580e00f891b12080eb3edd74` as the normative behavioral tiebreak. Incorporated authority for graph-embedded expression evaluation ([Transforms](#transforms)); the [rendered documentation](https://docs.jsonata.org/) is informative if it differs.
 - **[RFC 8259]** "The JavaScript Object Notation (JSON) Data Interchange Format." <https://www.rfc-editor.org/rfc/rfc8259>. Cited for string-content parsing ([§3](#3-accepted-source-representations)).
 - **[JSON Schema]** "JSON Schema 2020-12." <https://json-schema.org/draft/2020-12>. Incorporated authority for graph-embedded schemas ([Embedded schemas](#embedded-schemas)).

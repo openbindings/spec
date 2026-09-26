@@ -15,7 +15,7 @@
     "bindingSpec": {
       "type": "string",
       "pattern": "^openbindings\\.[a-z][a-z0-9.-]*@[0-9]+$",
-      "description": "The exact binding specification identifier whose rule this fixture covers (e.g., openbindings.usage@1). Exact and opaque per core OBI-B-01; the verifier cross-checks it against the fixture's family directory."
+      "description": "The exact binding specification identifier whose rule this fixture covers (e.g., openbindings.usage@1). Exact and opaque under project PB-01; this fixture metadata is not an OBI source field; the verifier cross-checks it against the fixture's family directory."
     },
     "section": {
       "type": "string",
@@ -59,7 +59,7 @@
           },
           "violates": {
             "type": "array",
-            "description": "When valid is false, the set of rules the document is intended to test as violated — family D-rules, plus core OBI rules where an overlap is inherent (e.g. a relative-in-form location also violates OBI-D-05). Minimum-set semantics, exactly as the core corpus defines them: a tool that reports violated rules at all must report at least these; supersets are never a defect.",
+            "description": "When valid is false, the set of rules the document is intended to test as violated — family D-rules and only genuine current-core overlaps; the former location/OBI-D-05 overlap no longer applies. Minimum-set semantics, exactly as the core corpus defines them: a tool that reports violated rules at all must report at least these; supersets are never a defect.",
             "items": {
               "type": "string",
               "pattern": "^((USAGE|OAPI(20|30|31|32)|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+|OBI-[DT]-[0-9]+)$"

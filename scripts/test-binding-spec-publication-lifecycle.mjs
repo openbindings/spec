@@ -83,6 +83,7 @@ try {
   write(join(temp, "openbindings.schema.json"), "{}\n");
   write(join(temp, "EDITORS.md"), "# Editors\n");
   write(join(temp, "binding-specs", "README.md"), "# Binding specs\n");
+  write(join(temp, "binding-specs", "PROJECT-POLICY.md"), "# Project policy\n");
   write(
     join(temp, "conformance", "binding-specs", "adjudication-fixture.md"),
     "# Lifecycle-test adjudication record\n"

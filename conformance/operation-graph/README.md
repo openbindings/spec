@@ -1,5 +1,13 @@
 # openbindings.operation-graph conformance subcorpus
 
+**Status: pre-kind candidate corpus.** The document-shaped OG-D fixtures still
+exercise the unpublished operation-graph candidate's earlier `bindingSpec`,
+`location`, and `selector` shape. Their `valid` flags judge the named family
+rule only. Passing this verifier does not establish that those documents
+conform to the current core `kind` model. The candidate, fixtures, and checker
+must be migrated together before they serve as current Core integration
+evidence.
+
 Fixtures for the `openbindings.operation-graph` binding specification, keyed to its
 companion specification at
 [`binding-specs/operation-graph/openbindings.operation-graph.md`](../../binding-specs/operation-graph/openbindings.operation-graph.md).
@@ -217,7 +225,7 @@ support). Their coverage:
 | Rule    | Coverage                                                                                                                                                                                                                                                                                                                                                                                       |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | OG-D-01 | `validation/OG-DR.json`. Document-shaped tests: `content`, when present, is the parsed source document (object) or its JSON source text (string); number, array, and present-but-`null` content are negatives.                                                                                                                                                                                 |
-| OG-D-02 | `validation/OG-DR.json`. `location`, when present, is an absolute URI; relative-in-form values are negatives (they also violate core OBI-D-05 — the overlap is inherent, OG-D-02 restates absoluteness and narrows the form for this family).                                                                                                                                                  |
+| OG-D-02 | `validation/OG-DR.json`. `location`, when present, is an absolute URI; relative-in-form values are negatives (this is a candidate family rule, not an OBI-D-05 violation under current Core).                                                                                                                                                  |
 | OG-D-03 | `validation/OG-DR.json`. `selector` present, a JSON Pointer fragment, resolving to a graph definition — including `"#"` for a root-level graph and resolution inside string content; absent selector, bare graph keys, dangling pointers, and non-graph targets are negatives. Resolution-dependent tests always embed content; a location-only source leaves resolution inconclusive and is not fixtured. |
 | OG-T-01 | `validation/OG-TR.json`, representative cases (a graph a tool may act on; beyond-schema OG-V violations that must fail the binding before any action). The full obligation is the entire OG-V negative set in `OG-VR.json`: every `valid: false` graph there is one a conformant tool refuses to act on.                                                                                       |
 | OG-T-02 | `validation/OG-TR.json`. Exact-version refusal on the graph's own `openbindings.operation-graph` field: this revision accepts `0.2.0` only and refuses build-decorated, higher-patch, prerelease, and other declarations until incorporated by revision.                                                                                                                                       |

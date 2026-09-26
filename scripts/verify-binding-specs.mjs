@@ -30,8 +30,8 @@
 //   9. The abstraction-fidelity alignment ledger validates against its schema.
 //  10. The scenario counts the subcorpus README states in prose equal the
 //      counts derived from the corpus by count-binding-spec-scenarios.mjs.
-//  11. The synthesis scenario schema still enforces Core's binding-source
-//      presence floor without depending on a project interface contract.
+//  11. The legacy synthesis-request schema retains its own source-payload
+//      presence gate; this is not a check against the current Core Source.
 //
 // The verifier does not judge verdicts — that is the job of family
 // processors consuming the corpus (see conformance/binding-specs/README.md).
@@ -823,11 +823,10 @@ try {
   }
 }
 
-// --- 11. The synthesis source shape still matches Core ----------------------
-// Core requires a binding source to carry location or content. A constraint
-// nothing exercises is not a constraint: every live scenario satisfies it, so
-// the corpus alone cannot show the schema still carries it. These probes do —
-// removing the `anyOf` turns the third one red.
+// --- 11. Legacy synthesis-request payload gate ------------------------------
+// These candidates predate the Core kind field. Their request payload still
+// requires location or content as a harness rule, not as Core conformance.
+// The probes check that legacy gate until the candidate corpus is migrated.
 {
   const synthesisSchema = JSON.parse(readFileSync(SYNTHESIS_SCHEMA, "utf8"));
   const probeFile = (source) => ({
@@ -858,8 +857,8 @@ try {
     if (probe.ok === shouldValidate) continue;
     errors.push(
       shouldValidate
-        ? `synthesis-scenario.schema.json rejects a scenario source ${what}, which Core admits\n${probe.out}`
-        : `synthesis-scenario.schema.json accepts a scenario source ${what}; Core requires location or content (restore the 'anyOf' on the source object)`
+        ? `synthesis-scenario.schema.json rejects a legacy request source ${what}\n${probe.out}`
+        : `synthesis-scenario.schema.json accepts a legacy request source ${what}; this candidate harness requires location or content (restore its 'anyOf')`
     );
   }
 }
@@ -997,4 +996,4 @@ if (errors.length) {
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log("\nOK");
+console.log("\nCandidate corpus internal consistency: OK (not current Core conformance)");
