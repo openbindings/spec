@@ -5,10 +5,10 @@
     "files": 22,
     "fixtureFiles": 18,
     "scenarioFiles": 4,
-    "tests": 183,
+    "tests": 184,
     "scenarios": 20,
     "positives": 83,
-    "negatives": 100,
+    "negatives": 101,
     "rulesCoveredDocument": 14,
     "rulesCoveredTool": 7,
     "rulesPartialDocument": 0,
@@ -91,9 +91,9 @@
       "path": "document/OBI-D-10.json",
       "rule": "OBI-D-10",
       "section": "10.2",
-      "tests": 12,
+      "tests": 13,
       "positives": 7,
-      "negatives": 5
+      "negatives": 6
     },
     {
       "path": "document/OBI-D-11.json",

@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Has every example's provided input validating against its operation's input schema, and every example's provided output validating against its operation's output schema, when the respective schema is specified.",
+  "description": "Has every provided example value validating against its operation's corresponding specified schema when that schema's statically reachable graph resolves entirely within the document; unused $defs entries do not make the graph external.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -237,6 +237,27 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "an unused $defs entry with an external reference does not exempt a mismatched example from document conformance",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "output": {
+              "type": "string",
+              "$defs": {
+                "unused": { "$ref": "https://schemas.example.invalid/unused.json" }
+              }
+            },
+            "examples": {
+              "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
     }
   ]
 }
