@@ -249,6 +249,39 @@
       },
       "valid": false,
       "violates": ["OBI-D-13"]
+    },
+    {
+      "description": "contentSchema remains a schema position for well-formedness despite being annotation-only for validation",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": { "input": { "type": "string", "contentSchema": { "type": 42 } } }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-13"]
+    },
+    {
+      "description": "then without if remains a schema position for well-formedness",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": { "input": { "type": "string", "then": { "type": 42 } } }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-13"]
+    },
+    {
+      "description": "else without if remains a schema position for well-formedness",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": { "input": { "type": "string", "else": { "type": 42 } } }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-13"]
     }
   ]
 }

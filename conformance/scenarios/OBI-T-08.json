@@ -180,6 +180,107 @@
         ]
       },
       "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T08-S-09",
+      "description": "The annotation-only contentSchema does not make its external reference reachable",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": {
+                "type": "string",
+                "contentMediaType": "application/json",
+                "contentSchema": { "$ref": "https://schemas.example.invalid/unused.json" }
+              }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T08-S-10",
+      "description": "then without a sibling if does not make its external reference reachable",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": { "type": "string", "then": { "$ref": "https://schemas.example.invalid/unused.json" } }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T08-S-11",
+      "description": "else without a sibling if does not make its external reference reachable",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": { "type": "string", "else": { "$ref": "https://schemas.example.invalid/unused.json" } }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T08-S-12",
+      "description": "An explicit reference to contentSchema reaches that schema position",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Annotated": { "contentSchema": { "type": "string" } }
+          },
+          "operations": {
+            "echo": { "input": { "$ref": "#/schemas/Annotated/contentSchema" } }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
+    },
+    {
+      "id": "T08-S-13",
+      "description": "An explicit reference to orphan then reaches that schema position",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Conditional": { "then": { "type": "string" } }
+          },
+          "operations": {
+            "echo": { "input": { "$ref": "#/schemas/Conditional/then" } }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": ["hello", 42]
+      },
+      "expected": { "results": ["valid", "instance-mismatch"] }
     }
   ]
 }

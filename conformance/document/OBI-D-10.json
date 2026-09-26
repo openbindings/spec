@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Has every provided example value validating against its operation's corresponding specified schema when that schema's statically reachable graph resolves entirely within the document; unused $defs entries do not make the graph external.",
+  "description": "Has every provided example value validating against its operation's corresponding specified schema when that schema's statically reachable graph resolves entirely within the document; unused $defs and non-applicable schema positions do not make the graph external.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -85,6 +85,52 @@
             "examples": {
               "broken": { "input": {} }
             }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "contentSchema is annotation-only, so its external reference does not exempt a mismatched example",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "input": {
+              "type": "string",
+              "contentMediaType": "application/json",
+              "contentSchema": { "$ref": "https://schemas.example.invalid/unused.json" }
+            },
+            "examples": { "broken": { "input": 42 } }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "then without if is not applied, so its external reference does not exempt a mismatched example",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "input": { "type": "string", "then": { "$ref": "https://schemas.example.invalid/unused.json" } },
+            "examples": { "broken": { "input": 42 } }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "else without if is not applied, so its external reference does not exempt a mismatched example",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "input": { "type": "string", "else": { "$ref": "https://schemas.example.invalid/unused.json" } },
+            "examples": { "broken": { "input": 42 } }
           }
         }
       },

@@ -16,6 +16,12 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Added
 
+- **Reachability examples for operation validation.** §5.2 now spells out that
+  annotation-only `contentSchema` and `then`/`else` without `if` add no implicit
+  validation edge. Direct references can still reach those schema positions,
+  and OBI-D-13 still checks their well-formedness. The OBI-D-10, OBI-D-13, and
+  OBI-T-08 corpus cases cover both behaviors.
+
 - **The core's deferral boundary is explicit.** [§6](openbindings.md#6-kinds)
   states what the document model defines about a kind and what it leaves to
   tools that interpret sources and bindings. The core makes no claim that a
