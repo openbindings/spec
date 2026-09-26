@@ -234,7 +234,7 @@
       ]
     },
     {
-      "description": "dependency with one exact binding specification identifier",
+      "description": "dependency with one exact kind",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -354,6 +354,27 @@
       "violates": [
         "OBI-D-02"
       ]
+    },
+    {
+      "description": "dependency kinds differing by case or Unicode normalization are distinct strings",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent",
+            "kinds": [
+              "Example.openapi@1",
+              "example.openapi@1",
+              "caf\u00e9",
+              "cafe\u0301"
+            ]
+          }
+        }
+      },
+      "valid": true
     },
     {
       "description": "dependency kinds contains a duplicate kind",
