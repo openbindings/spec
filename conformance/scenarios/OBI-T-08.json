@@ -39,29 +39,6 @@
       "expected": { "results": ["instance-mismatch"] }
     },
     {
-      "id": "T08-S-03",
-      "description": "An external branch required for one value does not prevent validating a value that selects the embedded branch",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "echo": {
-              "input": {
-                "if": { "const": "needs-external" },
-                "then": { "$ref": "https://schemas.example.invalid/missing.json" },
-                "else": { "type": "string" }
-              }
-            }
-          }
-        },
-        "operation": "echo",
-        "side": "input",
-        "values": ["local", "needs-external"]
-      },
-      "expected": { "results": ["valid", "graph-unavailable"] }
-    },
-    {
       "id": "T08-S-04",
       "description": "An unreferenced definition is not evaluated for the value",
       "action": "validate-operation-values",

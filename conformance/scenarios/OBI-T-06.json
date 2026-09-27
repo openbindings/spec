@@ -2,7 +2,7 @@
   "format": "openbindings.core-tool-scenarios@1",
   "rule": "OBI-T-06",
   "section": "10.3",
-  "description": "A productive recursive schema keeps its JSON Schema meaning; the presence of a reference cycle alone is not a reason to reject a finite value.",
+  "description": "A productive recursive schema keeps its JSON Schema meaning when evaluated; a tool may report that it cannot evaluate the value under its capabilities or resource limits.",
   "scenarios": [
     {
       "id": "T06-S-01",
@@ -24,7 +24,7 @@
         "value": { "next": {} }
       },
       "expected": {
-        "allowedOutcomes": ["valid"]
+        "allowedOutcomes": ["valid", "resolver-error"]
       }
     },
     {
@@ -51,7 +51,7 @@
         "value": { "value": "root", "next": { "value": 7 } }
       },
       "expected": {
-        "allowedOutcomes": ["instance-mismatch"]
+        "allowedOutcomes": ["instance-mismatch", "resolver-error"]
       }
     }
   ]

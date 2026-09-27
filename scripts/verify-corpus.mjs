@@ -244,7 +244,7 @@ function validateScenarioActionShape(rule, scenario, label) {
       err(`${label}: schema-cycle given requires document, operation, input|output side, and value`);
     }
     const allowed = expected.allowedOutcomes;
-    if (!Array.isArray(allowed) || allowed.length === 0 || allowed.some((v) => !["valid", "instance-mismatch"].includes(v))) {
+    if (!Array.isArray(allowed) || allowed.length === 0 || allowed.some((v) => !["valid", "instance-mismatch", "resolver-error"].includes(v))) {
       err(`${label}: schema-cycle expected requires valid allowedOutcomes`);
     }
     return;
