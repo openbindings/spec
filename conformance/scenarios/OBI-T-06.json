@@ -2,33 +2,34 @@
   "format": "openbindings.core-tool-scenarios@1",
   "rule": "OBI-T-06",
   "section": "10.3",
-  "description": "Reference-cycle scenarios require termination while preserving the rule's permitted success-or-error handling.",
+  "description": "A productive recursive schema keeps its JSON Schema meaning; the presence of a reference cycle alone is not a reason to reject a finite value.",
   "scenarios": [
     {
       "id": "T06-S-01",
-      "description": "A direct two-schema reference cycle terminates; the implementation may resolve it or report a resolver error.",
+      "description": "A productive recursive schema accepts a finite matching value.",
       "action": "resolve-schema-cycle",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "cycle": { "input": { "$ref": "#/schemas/A" } } },
+          "operations": { "cycle": { "input": { "$ref": "#/schemas/Node" } } },
           "schemas": {
-            "A": { "$ref": "#/schemas/B" },
-            "B": { "$ref": "#/schemas/A" }
+            "Node": {
+              "type": "object",
+              "properties": { "next": { "$ref": "#/schemas/Node" } }
+            }
           }
         },
         "operation": "cycle",
         "side": "input",
-        "value": null
+        "value": { "next": {} }
       },
       "expected": {
-        "terminates": true,
-        "allowedOutcomes": ["valid", "resolver-error"]
+        "allowedOutcomes": ["valid"]
       }
     },
     {
       "id": "T06-S-02",
-      "description": "A productive recursive object schema terminates on a finite mismatching value.",
+      "description": "A productive recursive object schema rejects a finite mismatching value.",
       "action": "resolve-schema-cycle",
       "given": {
         "document": {
@@ -50,8 +51,7 @@
         "value": { "value": "root", "next": { "value": 7 } }
       },
       "expected": {
-        "terminates": true,
-        "allowedOutcomes": ["instance-mismatch", "resolver-error"]
+        "allowedOutcomes": ["instance-mismatch"]
       }
     }
   ]

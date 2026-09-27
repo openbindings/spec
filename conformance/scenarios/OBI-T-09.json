@@ -2,7 +2,7 @@
   "format": "openbindings.core-tool-scenarios@1",
   "rule": "OBI-T-09",
   "section": "10.3",
-  "description": "Conformance conclusions follow the document-rule evidence: violations are decisive, incomplete validation prevents a conformant conclusion, and reports identify both violated and inconclusive rules.",
+  "description": "A claimed overall conformance conclusion follows the document-rule evidence; the scenario terms are corpus-normalized outcomes, not a required report format.",
   "scenarios": [
     {
       "id": "T09-S-01",
@@ -15,7 +15,7 @@
           "OBI-D-14": "not-applicable"
         }
       },
-      "expected": { "conclusion": "conformant", "violated": [], "inconclusive": [] }
+      "expected": { "conclusion": "conformant" }
     },
     {
       "id": "T09-S-02",
@@ -28,14 +28,12 @@
         }
       },
       "expected": {
-        "conclusion": "conformance-undetermined",
-        "violated": [],
-        "inconclusive": ["OBI-D-10"]
+        "conclusion": "conformance-undetermined"
       }
     },
     {
       "id": "T09-S-03",
-      "description": "A violation is decisive while incomplete checks remain visible",
+      "description": "A known violation establishes non-conformance even if other checks remain incomplete",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
@@ -45,14 +43,12 @@
         }
       },
       "expected": {
-        "conclusion": "non-conformant",
-        "violated": ["OBI-D-03"],
-        "inconclusive": ["OBI-D-13"]
+        "conclusion": "non-conformant"
       }
     },
     {
       "id": "T09-S-04",
-      "description": "A non-conformant report identifies every observed violation and every incomplete check",
+      "description": "More than one known violation still establishes non-conformance",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
@@ -64,9 +60,7 @@
         }
       },
       "expected": {
-        "conclusion": "non-conformant",
-        "violated": ["OBI-D-02", "OBI-D-09"],
-        "inconclusive": ["OBI-D-10", "OBI-D-13"]
+        "conclusion": "non-conformant"
       }
     },
     {
@@ -80,9 +74,7 @@
         }
       },
       "expected": {
-        "conclusion": "non-conformant",
-        "violated": ["OBI-D-12"],
-        "inconclusive": []
+        "conclusion": "non-conformant"
       }
     }
   ]

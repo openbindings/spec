@@ -108,7 +108,7 @@
       ]
     },
     {
-      "description": "percent-encoded same-document fragment $ref is not in literal form (the target Task exists once the fragment is decoded, so the sole violation is the literal-form rule: same-document fragments are written with the pointer's characters unencoded)",
+      "description": "a percent-encoded same-document fragment identifies the same schema after URI-fragment decoding and JSON Pointer evaluation",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -124,10 +124,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
+      "valid": true
     },
     {
       "description": "same-document JSON Pointer fragment $ref",

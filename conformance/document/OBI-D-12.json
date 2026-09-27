@@ -1,10 +1,10 @@
 {
   "rule": "OBI-D-12",
   "section": "10.2",
-  "description": "Every schema $ref at an OBI position that resolves within the document resolves to a schema the document model places: a same-document fragment, read from the OBI document root, to a schema at an OBI position, and so never into a resource that declares its own $id; an absolute-URI $ref that matches an embedded schema's $id, to that schema or a subschema JSON Schema 2020-12 defines below it. Same-document fragments are in literal form (section 7): the pointer's characters are written unencoded and evaluated as an RFC 6901 pointer directly. A $ref within a schema declaring its own $id is out of scope, as is an absolute-URI $ref that matches no embedded schema's $id.",
+  "description": "Every schema $ref at an OBI position that resolves within the document resolves to a schema the document model places: a same-document fragment, read from the OBI document root, to a schema at an OBI position, and so never into a resource that declares its own $id; an absolute-URI $ref that matches an embedded schema's $id, to that schema or a subschema JSON Schema 2020-12 defines below it. Same-document URI fragments use RFC 6901 JSON Pointer evaluation after percent-decoding. A $ref within a schema declaring its own $id is out of scope, as is an absolute-URI $ref that matches no embedded schema's $id.",
   "tests": [
     {
-      "description": "percent-encoded fragment is not in literal form: #/schemas/T%61sk is rejected at OBI-D-05 (it is not decoded and resolved to the schemas key Task)",
+      "description": "percent-encoded fragment #/schemas/T%61sk resolves to the schemas key Task",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -20,10 +20,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
+      "valid": true
     },
     {
       "description": "same-document $ref resolving to a schemas-map entry",

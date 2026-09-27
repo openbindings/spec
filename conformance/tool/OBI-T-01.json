@@ -2,8 +2,8 @@
   "rule": "OBI-T-01",
   "section": "10.3",
   "coverage": "positive-only",
-  "description": "Does not fail processing a document solely because it contains an unsupported kind. Kind comparisons are exact; processors infer no equivalence or version relation, and do not implicitly dereference a kind.",
-  "notes": "All tests are positive (valid: true) and exercise the anti-failure part of the rule: the tool does not refuse to process these inputs. A tool may emit diagnostics. Exact comparison and no implicit dereferencing are tool behavior not discriminated by this fixture format.",
+  "description": "Kind comparisons are exact and kinds are not implicitly dereferenced. An unfamiliar kind has no effect on core document validity.",
+  "notes": "These positive documents show that unfamiliar kinds are valid. The fixture format cannot distinguish exact support comparison or implicit dereferencing; a tool may decline a kind-dependent action.",
   "tests": [
     {
       "description": "document declares an unknown kind",
@@ -27,7 +27,7 @@
       "valid": true
     },
     {
-      "description": "document mixes a supported and an unsupported kind; processing does not fail because of the unsupported one",
+      "description": "document mixes familiar and unfamiliar kinds without a core validity defect",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

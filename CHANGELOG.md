@@ -206,6 +206,17 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Focused core tool-policy pruning.** Core rules now state document meaning and
+  the truth conditions of claims under the specification without prescribing
+  processing continuation, diagnostic lists, or report vocabulary. OBI-T-01,
+  T-02, T-05, T-06, T-07, T-09, and T-10 have narrower obligations. OBI-T-08
+  applies the governing JSON Schema dialect to each value without requiring
+  a statically complete schema graph; OBI-D-10 checks examples whose actual
+  evaluation needs only embedded resources. External schemas retain their own
+  dialect semantics, including `format`. Same-document JSON Pointer URI
+  fragments accept standard percent encoding. The core conformance corpus
+  follows these rules.
+
 - **Kind constraints compare strings independently of tool support.** A
   binding meets a dependency's `kinds` constraint exactly when its source's
   `kind` equals a listed value; a processor's ability to act on that kind does

@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Has every provided example value validating against its operation's corresponding specified schema when that schema's statically reachable graph resolves entirely within the document; unused $defs entries do not make the graph external.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when evaluation of that example requires only schema resources embedded in the OBI; unevaluated alternatives and unused $defs entries do not make the check external.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -249,6 +249,26 @@
               "$defs": {
                 "unused": { "$ref": "https://schemas.example.invalid/unused.json" }
               }
+            },
+            "examples": {
+              "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "a branch not evaluated for the example does not exempt a local mismatch from document conformance",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "output": {
+              "if": { "const": "needs-external" },
+              "then": { "$ref": "https://schemas.example.invalid/missing.json" },
+              "else": { "type": "string" }
             },
             "examples": {
               "broken": { "output": 42 }

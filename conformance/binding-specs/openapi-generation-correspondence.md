@@ -183,7 +183,7 @@ For every edition's W1 artifact, make the selected path parameter non-required. 
 
 For example, one tool may say “The selected target cannot be invoked”; another may identify the non-required `id` declaration at `#/paths/~1pets~1{id}/post/parameters/0`. Neither message here claims to report overall document conformance.
 
-A tool that dispatches anyway is not conforming. A tool that reports document conformance must still honor Core OBI-T-09; a tool whose schema translation loses meaning must still disclose the limitation required by OBI-T-05. Optional presentation does not waive either duty.
+A tool that dispatches anyway is not conforming. A tool that claims overall document conformance must honor Core OBI-T-09; a tool whose schema translation loses meaning cannot claim a faithful derivation under OBI-T-05. Optional presentation does not waive either rule.
 
 ## W7: OpenAPI 3.2 streaming without a capability report
 
@@ -197,7 +197,7 @@ Both a URI-template-style calculation and a direct character encoder must yield 
 
 ## W9: selection is not schema-loss permission
 
-For each edition's W1 artifact, the generated output schema `{"type":"string"}` agrees with the declared successful string response. Selecting only this operation is not itself translation loss. If a generator instead claims that `{"type":"integer"}` faithfully represents that successful response, the claim is false (§12.2; Core §5.3). A surfaced representability limitation is distinct from a claim of faithful representation and is governed by Core OBI-T-05. A warning does not make an incompatible realization's contract true.
+For each edition's W1 artifact, the generated output schema `{"type":"string"}` agrees with the declared successful string response. Selecting only this operation is not itself translation loss. If a generator instead claims that `{"type":"integer"}` faithfully represents that successful response, the claim is false (§12.2; Core §5.3). Core OBI-T-05 does not prescribe how a generator presents a representability limitation. A warning does not make an incompatible realization's contract true.
 
 ## Before/after verdicts and evidence limits
 

@@ -2,7 +2,7 @@
   "format": "openbindings.core-tool-scenarios@1",
   "rule": "OBI-T-08",
   "section": "10.3",
-  "description": "Operation-boundary validation uses the complete statically reachable schema graph, treats format as annotation, applies schemas per value, and distinguishes graph unavailability from instance mismatch.",
+  "description": "Operation-boundary validation follows applicable JSON Schema semantics for each value and distinguishes an unavailable needed resource from an instance mismatch.",
   "scenarios": [
     {
       "id": "T08-S-01",
@@ -40,7 +40,7 @@
     },
     {
       "id": "T08-S-03",
-      "description": "An unavailable statically reachable alternative prevents success even when another alternative matches",
+      "description": "An external branch required for one value does not prevent validating a value that selects the embedded branch",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -48,23 +48,22 @@
           "operations": {
             "echo": {
               "input": {
-                "anyOf": [
-                  { "type": "string" },
-                  { "$ref": "https://schemas.example.invalid/missing.json" }
-                ]
+                "if": { "const": "needs-external" },
+                "then": { "$ref": "https://schemas.example.invalid/missing.json" },
+                "else": { "type": "string" }
               }
             }
           }
         },
         "operation": "echo",
         "side": "input",
-        "values": ["already-matches", 42]
+        "values": ["local", "needs-external"]
       },
-      "expected": { "results": ["graph-unavailable", "graph-unavailable"] }
+      "expected": { "results": ["valid", "graph-unavailable"] }
     },
     {
       "id": "T08-S-04",
-      "description": "An unreferenced definition is outside the governing schema's statically reachable graph",
+      "description": "An unreferenced definition is not evaluated for the value",
       "action": "validate-operation-values",
       "given": {
         "document": {

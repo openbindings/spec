@@ -73,15 +73,14 @@
         },
         "expected": {
           "type": "object",
-          "required": ["terminates", "allowedOutcomes"],
+          "required": ["allowedOutcomes"],
           "additionalProperties": false,
           "properties": {
-            "terminates": { "const": true },
             "allowedOutcomes": {
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
-              "items": { "enum": ["valid", "instance-mismatch", "resolver-error"] }
+              "items": { "enum": ["valid", "instance-mismatch"] }
             }
           }
         }
@@ -188,21 +187,11 @@
         },
         "expected": {
           "type": "object",
-          "required": ["conclusion", "violated", "inconclusive"],
+          "required": ["conclusion"],
           "additionalProperties": false,
           "properties": {
             "conclusion": {
               "enum": ["conformant", "non-conformant", "conformance-undetermined"]
-            },
-            "violated": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }
-            },
-            "inconclusive": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": { "type": "string", "pattern": "^OBI-D-[0-9]+$" }
             }
           }
         }
