@@ -211,8 +211,8 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   processing continuation, diagnostic lists, or report vocabulary. OBI-T-01,
   T-02, T-05, T-06, T-07, T-09, and T-10 have narrower obligations. OBI-T-08
   applies the governing JSON Schema dialect to each value without requiring
-  a statically complete schema graph; OBI-D-10 checks examples whose actual
-  evaluation needs only embedded resources. External schemas retain their own
+  a statically complete schema graph; OBI-D-10 checks examples whose match or
+  mismatch is determined by embedded resources. External schemas retain their own
   dialect semantics, including `format`. Same-document JSON Pointer URI
   fragments accept standard percent encoding. The core conformance corpus
   follows these rules.

@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Each provided example value satisfies its operation's corresponding schema when evaluation of that example requires only schema resources embedded in the OBI; unevaluated alternatives and unused $defs entries do not make the check external.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when its match or mismatch is determined solely by schema resources embedded in the OBI; unevaluated alternatives and an external branch that cannot change a locally established mismatch do not exempt the example.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -272,6 +272,24 @@
             },
             "examples": {
               "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "an external allOf branch cannot change a mismatch established by embedded false",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "echo": {
+            "output": {
+              "allOf": [false, { "$ref": "https://schemas.example.invalid/missing.json" }]
+            },
+            "examples": {
+              "broken": { "output": "any value" }
             }
           }
         }
