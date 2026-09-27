@@ -136,7 +136,7 @@ The corpus tracks the spec version it was authored against. Spec changes that af
 
 This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits: OBI-T-02/OBI-T-05 leave diagnostic shape tool-defined, and OBI-T-11 is discriminated by the OBI-D-10 negatives rather than duplicated under a second rule key. Gaps are noted per rule above.
 
-OBI-D-10 (example validation) fixtures depend on the tool under test having a JSON Schema 2020-12 validator wired into validation; tools without that capability will report mismatches on the negative cases. This is a capability gap in the tool under test — OBI-D-10 goes inconclusive for it, per the spec's partial-validation posture (§10.2) — not a corpus defect and not a conformance failure; runners should report such cases as inconclusive for that tool rather than as failures.
+OBI-D-10 (example validation) fixtures depend on the tool under test having a JSON Schema 2020-12 validator wired into validation. A validator that cannot decide a negative case may report OBI-D-10 as inconclusive instead of establishing its violation. That is a capability gap, not proof that the document conforms and not a conformance failure; runners should record the case as undetermined for that tool rather than failed. Claiming overall conformance without deciding an applicable OBI-D-10 case still violates OBI-T-09.
 
 ## Version-gating annotations
 
