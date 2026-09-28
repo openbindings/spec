@@ -12,10 +12,12 @@
         "evidence": {
           "OBI-D-02": "satisfied",
           "OBI-D-03": "satisfied",
-          "OBI-D-14": "not-applicable"
+          "OBI-D-11": "not-applicable"
         }
       },
-      "expected": { "conclusion": "conformant" }
+      "expected": {
+        "conclusion": "conformant"
+      }
     },
     {
       "id": "T09-S-02",
@@ -24,7 +26,7 @@
       "given": {
         "evidence": {
           "OBI-D-02": "satisfied",
-          "OBI-D-10": "inconclusive"
+          "OBI-D-01": "inconclusive"
         }
       },
       "expected": {
@@ -39,7 +41,7 @@
         "evidence": {
           "OBI-D-02": "satisfied",
           "OBI-D-03": "violated",
-          "OBI-D-13": "inconclusive"
+          "OBI-D-10": "inconclusive"
         }
       },
       "expected": {
@@ -52,11 +54,11 @@
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-13": "inconclusive",
-          "OBI-D-09": "violated",
+          "OBI-D-10": "inconclusive",
+          "OBI-D-08": "violated",
           "OBI-D-02": "violated",
-          "OBI-D-14": "not-applicable",
-          "OBI-D-10": "inconclusive"
+          "OBI-D-11": "not-applicable",
+          "OBI-D-01": "inconclusive"
         }
       },
       "expected": {
@@ -69,8 +71,8 @@
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-14": "not-applicable",
-          "OBI-D-12": "violated"
+          "OBI-D-11": "not-applicable",
+          "OBI-D-05": "violated"
         }
       },
       "expected": {

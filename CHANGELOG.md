@@ -206,6 +206,36 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Document conformance no longer evaluates or resolves schemas.** The core
+  now says only what an operation signature needs from JSON Schema: schemas
+  are JSON Schema 2020-12 and valid against its meta-schemas; `$schema`, where
+  present, names 2020-12; and, for context-free references (invariant 4),
+  schema references at OBI positions are absolute or same-document and `$id`s
+  there are absolute. JSON Schema governs everything else, including how
+  references resolve and how values are evaluated. Examples become author
+  claims, like `idempotent`: a tool that checks one reports a mismatch as a
+  false claim, not a document-rule violation (OBI-T-11). Removed with this:
+  example validity and its static reachability, integrity of references
+  between schemas, `$schema`/`$vocabulary` placement, the regex, Unicode, and
+  in-place recursion requirements, the document-scope resolution model, and
+  identifier comparison. This supersedes the entries below that describe
+  those rules. Document rules are renumbered, following the rule that an
+  identifier means what its line says it means:
+
+  | Before | Now | Rule |
+  | --- | --- | --- |
+  | OBI-D-07 | (removed) | `$schema` and `$vocabulary` placement |
+  | OBI-D-08 | OBI-D-07 | binding `operation` keys |
+  | OBI-D-09 | OBI-D-08 | binding `source` keys |
+  | OBI-D-10 | (removed) | example values validate |
+  | OBI-D-11 | OBI-D-09 | `openbindings` is a SemVer version |
+  | OBI-D-12 | (removed) | schema references resolve within the document |
+  | OBI-D-13 | OBI-D-10 | schemas are valid against the meta-schemas |
+  | OBI-D-14 | OBI-D-11 | dependency `operation` keys |
+
+  OBI-D-01 through OBI-D-06 and every tool rule keep their numbers. Entries
+  below use the numbers of their time.
+
 - **The JSON Schema seam binds JSON Schema's own preferences where tools would
   otherwise disagree or fail to decide.** A same-document JSON Pointer may no
   longer land on or pass through a schema that declares `$id`; such a schema

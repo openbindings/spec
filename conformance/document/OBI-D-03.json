@@ -253,7 +253,7 @@
       "valid": true
     },
     {
-      "description": "multi-violation isolation: document violates both OBI-D-03 (bad identifier: a leading hyphen is rejected) and OBI-D-08 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
+      "description": "multi-violation isolation: document violates both OBI-D-03 (bad identifier: a leading hyphen is rejected) and OBI-D-07 (binding references missing operation). Demonstrates the README's violates minimum-set contract: a conformant validator MUST report at least these rules.",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -274,7 +274,7 @@
       "valid": false,
       "violates": [
         "OBI-D-03",
-        "OBI-D-08"
+        "OBI-D-07"
       ]
     },
     {

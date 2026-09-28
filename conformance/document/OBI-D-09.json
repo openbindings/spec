@@ -1,47 +1,40 @@
 {
   "rule": "OBI-D-09",
   "section": "10.2",
-  "description": "Has every bindings[*].source value present as a key in the document's sources map.",
+  "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
+  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §8.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected.",
   "tests": [
     {
-      "description": "binding references an existing source key",
+      "description": "current released spec version",
       "document": {
         "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {}
-        },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
-        "bindings": {
-          "createTask.http": {
-            "operation": "createTask",
-            "source": "httpApi"
-          }
-        }
+        "operations": {}
       },
       "valid": true
     },
     {
-      "description": "binding references source \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "description": "1.0.0 release version",
       "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {}
-        },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
-        "bindings": {
-          "createTask.http": {
-            "operation": "createTask",
-            "source": "constructor"
-          }
-        }
+        "openbindings": "1.0.0",
+        "operations": {}
+      },
+      "valid": true,
+      "requiresSupports": "1.0.0"
+    },
+    {
+      "description": "version with build metadata",
+      "document": {
+        "openbindings": "1.0.0+build.123",
+        "operations": {}
+      },
+      "valid": true,
+      "requiresSupports": "1.0.0"
+    },
+    {
+      "description": "two-component version is not SemVer 2.0.0",
+      "document": {
+        "openbindings": "0.2",
+        "operations": {}
       },
       "valid": false,
       "violates": [
@@ -49,23 +42,76 @@
       ]
     },
     {
-      "description": "binding references a non-existent source key",
+      "description": "four-component version is not SemVer 2.0.0",
       "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {}
-        },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
-        "bindings": {
-          "createTask.http": {
-            "operation": "createTask",
-            "source": "missingSource"
-          }
-        }
+        "openbindings": "0.2.0.0",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "non-numeric version label",
+      "document": {
+        "openbindings": "latest",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "version with v prefix",
+      "document": {
+        "openbindings": "v0.2.0",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "empty string",
+      "document": {
+        "openbindings": "",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "openbindings value is a number, not a string",
+      "document": {
+        "openbindings": 0.2,
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "openbindings value is null",
+      "document": {
+        "openbindings": null,
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "leading-zero pre-release identifier (forbidden by SemVer 2.0.0 §9)",
+      "document": {
+        "openbindings": "1.0.0-01",
+        "operations": {}
       },
       "valid": false,
       "violates": [

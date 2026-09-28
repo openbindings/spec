@@ -79,7 +79,7 @@
   "additionalProperties": false,
   "$defs": {
     "JSONSchema": {
-      "description": "JSON Schema 2020-12 schema: object or boolean form. The $schema value is pinned on the object form here; enforcement at nested positions (OBI-D-06), keyword placement (OBI-D-07), and well-formedness (OBI-D-13) are prose rules beyond this schema.",
+      "description": "JSON Schema 2020-12 schema: object or boolean form. The $schema value is pinned on the object form here; enforcement at nested positions (OBI-D-06) and meta-schema validity (OBI-D-10) are prose rules beyond this schema.",
       "anyOf": [
         {
           "type": "object",
@@ -153,7 +153,7 @@
     },
     "OperationExample": {
       "type": "object",
-      "description": "An example input/output pair for an operation. Positive contract claims: provided values must validate against the corresponding specified schemas when every schema reachable from them is embedded in the document (OBI-D-10, §5.1). Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
+      "description": "An example input/output pair for an operation. Positive contract claims: the author asserts that provided values validate against the corresponding specified schemas (§5.1); the claim's truth is not a document rule. Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
       "properties": {
         "description": {
           "type": "string",

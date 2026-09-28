@@ -6,18 +6,18 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 ## Status
 
-**Document-validity coverage is complete for every OBI-D rule. Tool coverage includes validity fixtures for OBI-T-01, OBI-T-03, OBI-T-04, and OBI-T-10, plus portable action/outcome scenarios for OBI-T-06, OBI-T-07, OBI-T-08, and OBI-T-09. Go and TypeScript adapters exist, but their conformance to the revised value-validation cases requires a separate implementation check. OBI-T-01 fixtures show that unknown kinds do not invalidate an OBI; exact support comparison and implicit dereferencing need behavioral tests. OBI-T-11 is discriminated by the OBI-D-10 negatives. See `manifest.json` for current counts.**
+**Document-validity coverage is complete for every OBI-D rule. Tool coverage includes validity fixtures for OBI-T-01, OBI-T-03, OBI-T-04, and OBI-T-10, plus portable action/outcome scenarios for OBI-T-06, OBI-T-07, OBI-T-08, and OBI-T-09. Go and TypeScript adapters exist, but their conformance to the revised value-validation cases requires a separate implementation check. OBI-T-01 fixtures show that unknown kinds do not invalidate an OBI; exact support comparison and implicit dereferencing need behavioral tests. OBI-T-11 is deferred until the scenario format can exercise example checking. See `manifest.json` for current counts.**
 
 | Rule range | Coverage |
 |---|---|
 | OBI-D-01 | Complete. The fixture format's mutually exclusive `documentText` and `documentBase64` carriages preserve exact input text/bytes, covering malformed JSON, malformed UTF-8, a leading UTF-8 BOM, and duplicate keys at root and nested positions in addition to ordinary positives. |
-| OBI-D-02 to OBI-D-11 | Complete |
-| OBI-D-13 | Complete. Schema well-formedness for every schema the document contains (boolean or object form, meta-schema-valid, recursively through subschemas), with regular expressions valid ECMA-262 under the `u` flag and no in-place recursion. Unknown keywords and unresolvable external `$ref`s are positives; invalid patterns, including an escaped hyphen outside a character class, and schemas that apply themselves in place are negatives. The embedded dialect's pinned 2020-12 meta-schema makes this document rule decidable offline. |
-| OBI-D-14 | Complete. Dependency operation references resolve only against operation keys, not aliases; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
+| OBI-D-02 to OBI-D-09 | Complete |
+| OBI-D-10 | Complete. Meta-schema validity for every operation input and output and every `schemas` entry (boolean or object form, recursively through subschemas). Unknown keywords, unparseable patterns, unresolvable references, and in-place recursion are positives: whether a schema can be evaluated is JSON Schema's, not a document rule. The pinned 2020-12 meta-schemas make this document rule decidable offline. |
+| OBI-D-11 | Complete. Dependency operation references resolve only against operation keys, not aliases; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
 | OBI-T-01 | Partial. Validity fixtures show that an unknown kind does not create a core document defect. Exact support comparison and no implicit kind dereferencing need a behavioral scenario; this fixture format cannot observe them. |
 | OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D). OBI-T-04's downward refusal (documents below the tool's minimum supported version) is fixtured with the `requiresMinSupported` annotation (below), which skips those tests for tools whose supported range extends down to the document's version. Its acceptance-presuming positives are gated with the `requiresSupports` annotation (below): each is administered only to tools whose own OBI-T-04 acceptance predicate accepts the annotation's version, since which versions a tool accepts is its own support declaration (§8.1), never a corpus assumption. |
 | OBI-T-10 | Complete for document validity. All-positive documents whose operation names tempt plausibility heuristics show that apparent inaccuracy of an `idempotent` claim does not create a core document defect. |
-| OBI-T-11 | **Deferred as a rule-keyed fixture; covered by the existing OBI-D-10 negative fixtures.** A tool that resolved an example–schema mismatch by treating the example as an exception would accept those documents and fail the OBI-D-10 negatives, so the behavior is already discriminated; a separate fixture would duplicate them test-for-test. |
+| OBI-T-11 | **Deferred.** The rule governs how a tool that checks examples treats a mismatch, which this corpus's scenario actions do not yet exercise. Examples are author claims (§5.1), not a document rule, so no validity fixture can discriminate it. |
 | OBI-T-02, OBI-T-05 | **Deferred.** Unknown fields have no core meaning, and a tool must not claim fidelity when unsupported semantics could change its derived contract. These claims need behavioral scenarios; neither rule prescribes diagnostic text or serialization. |
 | OBI-T-08 | Portable scenarios distinguish success, instance mismatch, and unavailable needed resources; exclude an unused `$defs` reference from evaluation; treat embedded 2020-12 `format` as annotation; apply schemas per value; and recognize an absolute `$ref` satisfied by an embedded `$id`. A value with a dormant external branch is not given a fixed outcome here: a tool may establish its result or report that it could not validate it. The scenario format defines normalized inputs/outcomes, not an SDK API or error serialization. Both adapters need execution against the revised cases. |
 | OBI-T-09 | Portable scenarios exercise the truth condition for a claimed overall conformance verdict. `conclusion` is a corpus-normalized outcome; rule-level report lists are no longer tested because the specification does not require a report format. |
@@ -56,7 +56,7 @@ conformance/
     OBI-D-01.json
     OBI-D-02.json
     ...
-    OBI-D-14.json
+    OBI-D-11.json
   tool/                (OBI-T-## rules; partial coverage)
     OBI-T-01.json
     OBI-T-03.json
@@ -134,9 +134,7 @@ The corpus tracks the spec version it was authored against. Spec changes that af
 
 ## Coverage limits
 
-This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits: OBI-T-02/OBI-T-05 leave diagnostic shape tool-defined, and OBI-T-11 is discriminated by the OBI-D-10 negatives rather than duplicated under a second rule key. Gaps are noted per rule above.
-
-OBI-D-10 (example validation) fixtures depend on the tool under test having a JSON Schema 2020-12 validator wired into validation. A validator that cannot decide a negative case may report OBI-D-10 as inconclusive instead of establishing its violation. That is a capability gap, not proof that the document conforms and not a conformance failure; runners should record the case as undetermined for that tool rather than failed. Claiming overall conformance without deciding an applicable OBI-D-10 case still violates OBI-T-09.
+This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Some rules have inherent testability limits: OBI-T-02/OBI-T-05 leave diagnostic shape tool-defined, and OBI-T-11 awaits a scenario action for checking examples. Gaps are noted per rule above.
 
 ## Version-gating annotations
 

@@ -81,7 +81,7 @@ Two boundaries keep the verdicts honest:
   usage, a protobuf compiler for grpc/connect, an OpenAPI/AsyncAPI processor
   for those families. A validator without the capability reports those tests
   inconclusive rather than passing or failing them, mirroring the core
-  corpus's posture for OBI-D-10. Type-level and grammar-level tests
+  posture that an undecided rule is undetermined, not violated (§10.4). Type-level and grammar-level tests
   (content JSON type, address form, selector spelling) are decidable by any
   validator.
 
