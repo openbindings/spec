@@ -223,7 +223,9 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   document contains; OBI-D-06 and OBI-D-05's URI-reference clause say where
   they apply; an empty `$ref` is a same-document reference; and a fragment
   outside the JSON Pointer syntax is a plain name for OBI-D-12 to resolve,
-  not a form violation. This supersedes the pointer allowance and root schema
+  not a form violation. §5.2 no longer reads as forbidding the opt-in format
+  assertion JSON Schema Validation §7.2.1 allows; example validity keeps the
+  annotation default. This supersedes the pointer allowance and root schema
   objects described in the next entry.
 
 - **Schemas follow JSON Schema 2020-12 wherever an OBI goal does not need
