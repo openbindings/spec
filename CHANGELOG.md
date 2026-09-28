@@ -206,6 +206,26 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OBI-D-10 decides its scope statically, and the reference rules say what
+  they mean.** An example is checked when every schema reachable from its
+  governing schema is embedded in the document; reachability follows keywords
+  that apply subschemas, `$ref` and `$dynamicRef` included, whether or not the
+  example would take a branch, and containment alone (an unreferenced `$defs`
+  entry) does not count. This replaces the draft's test of whether an external
+  schema could change the outcome, which needed evaluation with unknowns that
+  standard JSON Schema libraries do not provide. OBI-D-05's plain-name
+  restriction applies to same-document references, so an absolute URI may
+  carry a named fragment, and its `$ref` clause applies at OBI positions. §3
+  and §7 place the keywords of a schema object that declares `$id` inside the
+  resource it declares, as JSON Schema does. OBI-D-12 names the references it
+  covers and says a same-document fragment that resolves to nothing violates
+  it. Invariant 5 says conformance changes only when a patch corrects the
+  text, §5.2's keyword statement names its exceptions, OBI-D-02 reads the
+  schema's patterns as ECMA-262, §10.4's Conformant means every rule was
+  decided, and ECMA-262 joins the normative references. The OBI-D-10 fixtures
+  follow the static rule, OBI-D-05 gains positives for both clarified
+  readings, and the schema's example description matches OBI-D-10.
+
 - **Editorial pass.** Em dashes are gone, repeated statements of the core's
   boundary are shortened where §1.3 already carries them, §1.3 states once
   that "read under the source's kind" marks that boundary wherever it appears,

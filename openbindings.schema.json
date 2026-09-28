@@ -151,7 +151,7 @@
     },
     "OperationExample": {
       "type": "object",
-      "description": "An example input/output pair for an operation. Positive contract claims: provided values must validate against the corresponding specified schemas where the governing schema graph is document-internal (OBI-D-10). Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
+      "description": "An example input/output pair for an operation. Positive contract claims: provided values must validate against the corresponding specified schemas when every schema reachable from them is embedded in the document (OBI-D-10, §5.1). Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
       "properties": {
         "description": {
           "type": "string",

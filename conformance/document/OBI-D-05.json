@@ -338,6 +338,40 @@
       "violates": [
         "OBI-D-05"
       ]
+    },
+    {
+      "description": "an absolute-URI $ref with a plain-name fragment addresses an external schema and is allowed at an OBI position (the plain-name restriction applies to same-document references)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "https://schemas.example.invalid/task.json#Task"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a relative $ref on the schema object that declares an $id resolves against that $id: the declaring object's own keywords are resource-internal",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "$ref": "base.schema.json"
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

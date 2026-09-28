@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Each provided example value satisfies its operation's corresponding schema when its match or mismatch is determined solely by schema resources embedded in the OBI; unevaluated alternatives and an external branch that cannot change a locally established mismatch do not exempt the example.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, and containment alone (an unreferenced $defs entry) does not make a schema reachable.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -260,7 +260,7 @@
       "violates": ["OBI-D-10"]
     },
     {
-      "description": "a branch not evaluated for the example does not exempt a local mismatch from document conformance",
+      "description": "an external schema in a branch the example would not take is still reachable, so the example is outside the rule",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -276,11 +276,10 @@
           }
         }
       },
-      "valid": false,
-      "violates": ["OBI-D-10"]
+      "valid": true
     },
     {
-      "description": "an external allOf branch cannot change a mismatch established by embedded false",
+      "description": "an external allOf branch is reachable, so the example is outside the rule even though embedded false alone would decide it",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -294,8 +293,28 @@
           }
         }
       },
-      "valid": false,
-      "violates": ["OBI-D-10"]
+      "valid": true
+    },
+    {
+      "description": "an external schema reached transitively through the schemas map places the example outside the rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Wrapper": {
+            "type": "object",
+            "properties": { "detail": { "$ref": "https://schemas.example.invalid/detail.json" } }
+          }
+        },
+        "operations": {
+          "echo": {
+            "output": { "$ref": "#/schemas/Wrapper" },
+            "examples": {
+              "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }
