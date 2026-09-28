@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-12",
   "section": "10.2",
-  "description": "Has every schema $ref and $dynamicRef at an OBI position that is empty or whose fragment is a JSON Pointer pointing at a schema at an OBI position. The check is a lookup in the document; it resolves no other reference and evaluates no value.",
+  "description": "Has every same-document schema $ref and $dynamicRef at an OBI position that is empty or has a JSON Pointer fragment pointing at a schema at an OBI position; \"\" and \"#\" never do. Absolute URIs, plain-name fragments, and references within a schema resource that declares $id are outside this rule. The check is a lookup in the document.",
   "notes": "# and an empty reference name the OBI document itself. Locations that hold no schema (operation objects, maps, strings, x- data, source content, example values) and locations inside a schema that declares $id are not schemas at OBI positions. Plain-name fragments, references within a schema resource that declares $id, and absolute URIs are outside the rule; positives pin that.",
   "tests": [
     {
@@ -203,7 +203,7 @@
       "valid": true
     },
     {
-      "description": "an absolute reference is outside this rule",
+      "description": "an absolute reference is outside this rule, even when its fragment is a JSON Pointer",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

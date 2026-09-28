@@ -680,7 +680,7 @@ A conformant **OBI document**:
 - **OBI-D-09**: Has an `openbindings` field whose value is a valid [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string.
 - **OBI-D-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn, with `format` as an annotation, JSON Schema's default (Validation §7.2.1) ([§5.2](#52-schemas)). The pinned meta-schemas make the rule decidable offline; it does not require resolving references or evaluating any value.
 - **OBI-D-11**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
-- **OBI-D-12**: Has every schema `$ref` and `$dynamicRef` at an OBI position that is empty or whose fragment is a JSON Pointer pointing at a schema at an OBI position ([§3](#3-terminology), [§7](#7-reference-resolution)). The check is a lookup in the document; it resolves no other reference and evaluates no value.
+- **OBI-D-12**: Has every same-document schema `$ref` and `$dynamicRef` at an OBI position that is empty or has a JSON Pointer fragment pointing at a schema at an OBI position; `""` and `"#"` never do ([§3](#3-terminology), [§7](#7-reference-resolution)). Absolute URIs, plain-name fragments, and references within a schema resource that declares `$id` are outside this rule. The check is a lookup in the document; it resolves no other reference and evaluates no value.
 
 ### 10.3. Tool rules
 
