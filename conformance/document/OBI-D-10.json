@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, containment alone (an unreferenced $defs entry) does not make a schema reachable, and a $dynamicRef whose initial target declares the $dynamicAnchor reaches every same-named $dynamicAnchor in a schema resource holding a reachable schema.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, containment alone (an unreferenced $defs entry) does not make a schema reachable, and a $dynamicRef whose initial target declares the $dynamicAnchor reaches every same-named $dynamicAnchor in a schema resource holding a reachable schema. Regular expressions are read as ECMA-262 with the u flag.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -335,7 +335,7 @@
         },
         "operations": {
           "sum": {
-            "input": { "$ref": "#/schemas/NumberList" },
+            "input": { "$ref": "https://example.com/number-list.schema.json" },
             "examples": {
               "numbers": { "input": [1, 2] }
             }
@@ -363,7 +363,7 @@
         },
         "operations": {
           "sum": {
-            "input": { "$ref": "#/schemas/NumberList" },
+            "input": { "$ref": "https://example.com/number-list.schema.json" },
             "examples": {
               "strings": { "input": ["a"] }
             }
@@ -394,7 +394,7 @@
         },
         "operations": {
           "sum": {
-            "input": { "$ref": "#/schemas/NumberList" },
+            "input": { "$ref": "https://example.com/number-list.schema.json" },
             "examples": {
               "numbers": { "input": [1, 2] }
             }
@@ -402,6 +402,77 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "patterns are read as ECMA-262 with the u flag, where \\d matches only ASCII digits, so a non-ASCII digit fails",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "type": "string",
+              "pattern": "^\\d$"
+            },
+            "examples": {
+              "e": {
+                "input": "٣"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "under the u flag, . matches one character outside the Basic Multilingual Plane",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "type": "string",
+              "pattern": "^.$"
+            },
+            "examples": {
+              "e": {
+                "input": "😀"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a reference that matches an embedded $id after RFC 3986 normalization reaches that schema, so the example is inside the rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "T": {
+            "$id": "https://example.com/t",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://EXAMPLE.com/t"
+            },
+            "examples": {
+              "e": {
+                "input": 5
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
     }
   ]
 }

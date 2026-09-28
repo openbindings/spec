@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-07",
   "section": "10.2",
-  "description": "Has $schema and $vocabulary only where JSON Schema 2020-12 permits them: $schema only on a root schema object (a schema at an OBI position that no other schema contains, or a schema that declares $id), and $vocabulary only on a root schema object that no other schema contains.",
-  "notes": "JSON Schema 2020-12 section 8.1.1 bars $schema from schema objects that are not resource roots, and section 8.1.2 bars $vocabulary from subschemas; section 5.2 names the root schema objects of an OBI document. Where $vocabulary may appear it has no effect, since no schema in an OBI document is processed as a meta-schema. Placement is a prose rule: the derived JSON Schema does not enforce it. Walking is keyword-position aware: a property named $vocabulary or $schema under properties is schema content, not the keyword.",
+  "description": "Has $schema only on a schema that declares $id, the root of a schema resource, and $vocabulary only on a schema at an OBI position that no other schema contains.",
+  "notes": "JSON Schema 2020-12 section 8.1.1 bars $schema from schema objects that are not the root of a schema resource, and section 8.1.2 bars $vocabulary from subschemas. In an OBI document the schemas at OBI positions that declare no $id share the document scope (section 7), so only a schema that declares $id is a resource root. Where $vocabulary may appear it has no effect, since no schema in an OBI document is processed as a meta-schema. Placement is a prose rule: the derived JSON Schema does not enforce it. Walking is keyword-position aware: a property named $vocabulary or $schema under properties is schema content, not the keyword.",
   "tests": [
     {
       "description": "schemas with neither $schema nor $vocabulary",
@@ -25,7 +25,7 @@
       "valid": true
     },
     {
-      "description": "$vocabulary on a schemas entry, a root schema object no other schema contains (it has no effect outside a meta-schema)",
+      "description": "$vocabulary on a schemas entry, which no other schema contains (it has no effect outside a meta-schema)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -43,7 +43,7 @@
       "valid": true
     },
     {
-      "description": "$vocabulary on an operation input schema, a root schema object no other schema contains",
+      "description": "$vocabulary on an operation input schema, which no other schema contains",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -139,7 +139,7 @@
       ]
     },
     {
-      "description": "$schema on a schemas entry and on an operation input schema, root schema objects",
+      "description": "$schema on a schemas entry and an operation input that declare no $id, which are not resource roots",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -153,6 +153,30 @@
             "input": {
               "$schema": "https://json-schema.org/draft/2020-12/schema",
               "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-07"
+      ]
+    },
+    {
+      "description": "$schema on a schemas entry that declares $id, the root of a schema resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "https://example.com/task.schema.json"
             }
           }
         }

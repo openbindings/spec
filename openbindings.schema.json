@@ -79,7 +79,7 @@
   "additionalProperties": false,
   "$defs": {
     "JSONSchema": {
-      "description": "JSON Schema 2020-12 schema: object or boolean form. The $schema value is pinned on the object form here; enforcement at nested positions (OBI-D-06), keyword placement (OBI-D-07), and meta-schema well-formedness (OBI-D-13) are prose rules beyond this schema.",
+      "description": "JSON Schema 2020-12 schema: object or boolean form. The $schema value is pinned on the object form here; enforcement at nested positions (OBI-D-06), keyword placement (OBI-D-07), and well-formedness (OBI-D-13) are prose rules beyond this schema.",
       "anyOf": [
         {
           "type": "object",

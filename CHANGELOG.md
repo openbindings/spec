@@ -206,6 +206,26 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **The JSON Schema seam binds JSON Schema's own preferences where tools would
+  otherwise disagree or fail to decide.** A same-document JSON Pointer may no
+  longer land on or pass through a schema that declares `$id`; such a schema
+  is referenced through its `$id`, as JSON Schema §9.2.1 advises and OpenAPI
+  3.2 requires. `$schema` appears only on a schema that declares `$id`, the
+  root of a schema resource (§8.1.1). Patterns are ECMA-262 read with the `u`
+  flag (§6.4), for well-formedness and for example validity. OBI-D-13 now
+  counts an invalid pattern and in-place recursion (§9.4.1) as ill-formed,
+  and no longer restates OBI-D-06 and OBI-D-07. Schema identifiers compare
+  resolved, without fragment, after RFC 3986 syntax-based normalization, and
+  an embedded `$id` may not claim a JSON Schema 2020-12 meta-schema's
+  identifier. §7's document resource is now the document scope, grounded in
+  JSON Schema §9.1.1, with its dynamic-scope consequence stated; §3 stops OBI
+  positions at a schema that declares `$id` and defines the schemas a
+  document contains; OBI-D-06 and OBI-D-05's URI-reference clause say where
+  they apply; an empty `$ref` is a same-document reference; and a fragment
+  outside the JSON Pointer syntax is a plain name for OBI-D-12 to resolve,
+  not a form violation. This supersedes the pointer allowance and root schema
+  objects described in the next entry.
+
 - **Schemas follow JSON Schema 2020-12 wherever an OBI goal does not need
   otherwise.** The core now decides only what JSON Schema leaves to an
   embedding format and what context-free references and offline-decidable

@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-05",
   "section": "10.2",
-  "description": "Carries only absolute or same-document OBI-defined references: every schema $ref and $dynamicRef at an OBI position is an absolute URI or a same-document fragment (a JSON Pointer or a plain name); every $id at an OBI position is absolute; no two embedded schema resources declare the same $id; and no schema resource, the document resource included, declares one fragment name more than once.",
+  "description": "Carries only absolute or same-document OBI-defined references and unambiguous schema identifiers: every schema $ref and $dynamicRef at an OBI position is an absolute URI or a same-document reference; every $id at an OBI position is absolute; no two embedded schema resources declare the same identifier (compared resolved, without fragment, after RFC 3986 syntax-based normalization), and none declares the identifier of a JSON Schema 2020-12 meta-schema; no schema resource, the document scope included, declares one plain name more than once; and every $ref, $dynamicRef, and $id in a schema the document contains is an RFC 3986 URI-reference.",
   "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is the binding specification's to define and resolve, and the positives below pin that no core rule judges it.",
   "tests": [
     {
@@ -146,7 +146,7 @@
       "valid": true
     },
     {
-      "description": "a same-document plain-name fragment at an OBI position names the schema in the document resource that declares it",
+      "description": "a same-document plain-name fragment at an OBI position names the schema in the document scope that declares it",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -172,7 +172,7 @@
         "operations": {
           "getTask": {
             "output": {
-              "$ref": "#/schemas/Task"
+              "$ref": "https://example.com/task.schema.json"
             }
           }
         },
@@ -217,7 +217,7 @@
       "valid": true
     },
     {
-      "description": "$dynamicAnchor at an OBI position declares a plain name in the document resource",
+      "description": "$dynamicAnchor at an OBI position declares a plain name in the document scope",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -243,7 +243,7 @@
         "operations": {
           "getTask": {
             "output": {
-              "$ref": "#/schemas/Tree"
+              "$ref": "https://example.com/tree.schema.json"
             }
           }
         },
@@ -272,7 +272,7 @@
         "operations": {
           "getTask": {
             "output": {
-              "$ref": "#/schemas/Task"
+              "$ref": "https://example.com/task.schema.json"
             }
           }
         },
@@ -363,7 +363,7 @@
         "operations": {
           "createTask": {
             "input": {
-              "$ref": "#/schemas/Task"
+              "$ref": "https://example.com/task.schema.json"
             }
           }
         }
@@ -388,24 +388,7 @@
       ]
     },
     {
-      "description": "a same-document fragment that is neither a JSON Pointer nor a plain name in $anchor syntax",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "getTask": {
-            "output": {
-              "$ref": "#1task"
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
-    },
-    {
-      "description": "two schemas in the document resource declare the same fragment name",
+      "description": "two schemas in the document scope declare the same fragment name",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -438,7 +421,7 @@
         "operations": {
           "getTree": {
             "output": {
-              "$ref": "#/schemas/Tree"
+              "$ref": "https://example.com/tree.schema.json"
             }
           }
         },
@@ -484,6 +467,140 @@
             "$id": "https://example.com/remote.schema.json",
             "$anchor": "task",
             "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "two embedded resources whose $id values differ only by an empty fragment declare the same identifier (JSON Schema 2020-12 treats the absolute form as canonical)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/t",
+            "type": "string"
+          },
+          "B": {
+            "$id": "https://example.com/t#",
+            "type": "number"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://example.com/t"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "two embedded resources whose $id values differ only by host case declare the same identifier after RFC 3986 syntax-based normalization",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/t",
+            "type": "string"
+          },
+          "B": {
+            "$id": "https://EXAMPLE.com/t",
+            "type": "number"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "an embedded schema declares the identifier of the JSON Schema 2020-12 dialect meta-schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "M": {
+            "$id": "https://json-schema.org/draft/2020-12/schema",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://json-schema.org/draft/2020-12/schema"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "an embedded schema declares the identifier of a JSON Schema 2020-12 vocabulary meta-schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "M": {
+            "$id": "https://json-schema.org/draft/2020-12/meta/core",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "a $ref inside an embedded resource that is not an RFC 3986 URI-reference",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "T": {
+            "$id": "https://example.com/t",
+            "type": "object",
+            "properties": {
+              "a": {
+                "$ref": "a b.json"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://example.com/t"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "an absolute $ref to an external schema carries whatever fragment its target defines",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://schemas.example.invalid/task.json#1task"
+            }
           }
         }
       },
