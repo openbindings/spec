@@ -135,7 +135,7 @@
         },
         "output": {
           "$ref": "#/$defs/JSONSchema",
-          "description": "Contract on each successful caller-facing output value. Omit to leave unspecified; literal null is not valid at this position."
+          "description": "Contract on each caller-facing output value. Omit to leave unspecified; literal null is not valid at this position."
         },
         "examples": {
           "type": "object",

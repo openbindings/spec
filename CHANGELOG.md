@@ -206,6 +206,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **An operation's signature is its name and per-value schemas, and `output`
+  is whatever the operation returns.** §3 no longer calls the operation an
+  incomplete signature: interaction pattern and cardinality belong to each
+  binding, which is what keeps the operation binding-independent. `output`
+  describes every value the operation returns, error shapes included where
+  the author wants them; the core no longer distinguishes successful from
+  unsuccessful values, and §1.2 no longer lists a failure vocabulary as a
+  deliberate omission. Which results of an interaction a binding returns as
+  output values stays with the source's kind.
+
 - **Document conformance no longer evaluates or resolves schemas.** The core
   now says only what an operation signature needs from JSON Schema: schemas
   are JSON Schema 2020-12 and valid against its meta-schemas; `$schema`, where
