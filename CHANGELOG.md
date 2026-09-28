@@ -206,6 +206,36 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Editorial consolidation, clarifications, and duplicate names.** From a
+  review that judged the specification against its own design:
+  - §1 states the division of responsibility once (core, kind, tools) and
+    merges the former §1.3 into §1.2; §4 is marked informative and no longer
+    repeats the Abstract's example; §7 is split into reference forms, the
+    document as embedding, same-document pointers, other references, and
+    informative notes with a table of what each rule walks and a worked `$id`
+    example; §6 lists what a kind decides and the core provisions a kind
+    stands on, which scope §8.1's breaking-change promise.
+  - Clarified: what `input` "accepts" (answering with an error value in
+    `output` still accepts); which facts a binding vouches for (`input`,
+    `output`, `idempotent`); that the kind decides which interaction data
+    forms one caller-facing value; that credentials are not caller-facing
+    values unless the operation is about them; how to write "no input"; that
+    presence is distinct from value for every optional member; and how
+    document rules read names and numbers.
+  - Corrected overclaims: conformance does not establish the facts a
+    document represents, and the tool rules fix what claims assert, not
+    their truth.
+  - New OBI-D-13: no plain name is declared twice in the document's own
+    resource, and no `$id` twice in the document (exact comparison after
+    resolution). The shared resource makes the first possible; both are
+    lookups.
+  - OBI-D-02's schema `$id` is line-scoped
+    (`https://openbindings.com/schema/openbindings-0.2.json`) and republished
+    by patch releases. OBI-D-04 counts occurrences, so an alias equal to its
+    own key is plainly a violation. OBI-T-10 covers every author claim.
+    OBI-T-06 names `$dynamicRef`. JSON Schema section citations name JSON
+    Schema Core or Validation, now separate references.
+
 - **OBI-D-12 checks same-document pointers.** A `$ref` or `$dynamicRef` at an
   OBI position that is empty or carries a JSON Pointer fragment must point at
   a schema at an OBI position. It is a lookup in the document: it catches a

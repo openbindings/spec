@@ -1,0 +1,263 @@
+{
+  "rule": "OBI-D-13",
+  "section": "10.2",
+  "description": "Has no plain name declared more than once, by $anchor or $dynamicAnchor in any combination, among the schemas at OBI positions that declare no $id, and no $id declared by two schemas the document contains, each $id resolved to an absolute URI with any empty fragment removed and compared character for character.",
+  "notes": "The schemas at OBI positions that declare no $id share the document's resource (section 7.2), so a plain name declared in two schemas entries collides there, where separate schema files would not. A plain name inside a schema that declares $id belongs to that schema's resource. $id values are compared as strings after resolution, so spellings a URI library might normalize to one identifier are distinct here.",
+  "tests": [
+    {
+      "description": "distinct plain names in the document's resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "a",
+            "type": "string"
+          },
+          "B": {
+            "$anchor": "b",
+            "type": "number"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#a"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "the same plain name in the document's resource and inside a schema that declares $id belongs to two resources",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "node",
+            "type": "string"
+          },
+          "B": {
+            "$id": "https://example.com/b.json",
+            "$defs": {
+              "n": {
+                "$anchor": "node",
+                "type": "number"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#node"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "the same plain name inside two schemas that each declare $id belongs to two resources",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/a.json",
+            "$anchor": "node"
+          },
+          "B": {
+            "$id": "https://example.com/b.json",
+            "$anchor": "node"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "distinct $id values",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/a.json"
+          },
+          "B": {
+            "$id": "https://example.com/b.json"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$id values that differ in host case are different strings under this rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/t"
+          },
+          "B": {
+            "$id": "https://EXAMPLE.com/t"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "two schemas entries declare the same plain name in the document's resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "node",
+            "type": "string"
+          },
+          "B": {
+            "$anchor": "node",
+            "type": "number"
+          }
+        },
+        "operations": {
+          "f": {
+            "output": {
+              "$ref": "#node"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "one name declared by $anchor and by $dynamicAnchor in the document's resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "node"
+          },
+          "B": {
+            "$dynamicAnchor": "node"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "an operation input and a schemas entry declare the same plain name",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "item",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$anchor": "item",
+              "type": "number"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "two schemas entries declare the same $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/t",
+            "type": "string"
+          },
+          "B": {
+            "$id": "https://example.com/t",
+            "type": "number"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://example.com/t"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "$id values that differ only by an empty fragment are the same identifier",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/t"
+          },
+          "B": {
+            "$id": "https://example.com/t#"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a nested relative $id resolves to the same identifier as another schema's $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/a.json",
+            "$defs": {
+              "x": {
+                "$id": "b.json"
+              }
+            }
+          },
+          "B": {
+            "$id": "https://example.com/b.json"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    }
+  ]
+}

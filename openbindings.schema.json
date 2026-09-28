@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://openbindings.com/schema/openbindings-0.2.0.json",
+  "$id": "https://openbindings.com/schema/openbindings-0.2.json",
   "title": "OpenBindings Interface Document (v0.2.0)",
   "description": "Derived JSON Schema for the OpenBindings interface document. Expresses the structural portion of the specification; OBI-D-02 applies it as published, and a conflict with the prose is an erratum corrected in this schema (see openbindings.md §10).",
   "type": "object",
@@ -153,7 +153,7 @@
     },
     "OperationExample": {
       "type": "object",
-      "description": "An example input/output pair for an operation. Positive contract claims: the author asserts that provided values validate against the corresponding specified schemas (§5.1); the claim's truth is not a document rule. Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
+      "description": "An operation example: each of its input and output members is one caller-facing value. Positive contract claims: the author asserts that provided values validate against the corresponding specified schemas (§5.1); the claim's truth is not a document rule. Member presence is distinct from value: an explicitly null member is a provided JSON null value.",
       "properties": {
         "description": {
           "type": "string",
@@ -223,7 +223,7 @@
         "operation": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$",
-          "description": "Operation key referenced by this binding."
+          "description": "Operation key referenced by this binding. Aliases are not valid here."
         },
         "source": {
           "type": "string",
