@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-13",
   "section": "10.2",
-  "description": "Has every schema the document contains (the schemas at OBI positions and every subschema within the resources declared there) well-formed: valid against the pinned JSON Schema 2020-12 meta-schemas, with every regular expression valid ECMA-262 under the u flag, and with no schema applying itself in place through a chain of in-place applications. This document rule is decidable offline. It does not require proving satisfiability, resolving external resources, or rejecting unknown keywords; the dialect and placement of $schema and $vocabulary belong to OBI-D-06 and OBI-D-07.",
-  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; subschemas are covered recursively as JSON Schema 2020-12 defines them, so one meta-schema validation of each top-level position covers its whole subtree. 0.2.0 admits boolean schemas at every schema position (§5.2: true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. An unresolvable external $ref passes and surfaces only when the schema is used. An invalid regular expression and in-place recursion are violations, binding JSON Schema 2020-12's own preferences (sections 6.4 and 9.4.1), because stock libraries refuse to compile such schemas and an example under one could not be decided. Negative cases list OBI-D-13 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
+  "description": "Has every schema the document contains (the schemas at OBI positions and every subschema within the resources declared there) well-formed: valid against the pinned JSON Schema 2020-12 meta-schemas with format as an annotation, with every $vocabulary member name a normalized absolute URI, every regular expression valid ECMA-262 (11th edition) under the u flag, and no schema applying itself in place through a chain of in-place applications. This document rule is decidable offline. It does not require proving satisfiability, resolving external resources, or rejecting unknown keywords; the dialect and placement of $schema and $vocabulary belong to OBI-D-06 and OBI-D-07.",
+  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; subschemas are covered recursively as JSON Schema 2020-12 defines them, so one meta-schema validation of each top-level position covers its whole subtree. 0.2.0 admits boolean schemas at every schema position (§5.2: true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. An unresolvable external $ref passes and surfaces only when the schema is used. An invalid regular expression and in-place recursion are violations, binding JSON Schema 2020-12's own preferences (sections 6.4 and 9.4.1), because an example under such a schema could not be decided. then and else are in-place applications only when if is present, since JSON Schema never evaluates them otherwise. Negative cases list OBI-D-13 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
   "tests": [
     {
       "description": "object schemas with nested subschemas at operation input and output are well-formed",
@@ -390,6 +390,104 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "then without if is never evaluated, so a then that refers back to its own schema is not in-place recursion",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "then": {
+              "$ref": "#/schemas/A"
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/A"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $dynamicRef applies same-named $dynamicAnchor schemas in place, not a schema that declares the name with $anchor",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "n",
+            "allOf": [
+              {
+                "$ref": "https://example.com/p"
+              }
+            ]
+          },
+          "P": {
+            "$id": "https://example.com/p",
+            "$defs": {
+              "d": {
+                "$dynamicAnchor": "n"
+              }
+            },
+            "allOf": [
+              {
+                "$dynamicRef": "#n"
+              }
+            ]
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/A"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $vocabulary member name that is not a URI",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "$vocabulary": {
+                "not a uri": true
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a $vocabulary member name that is not in normalized form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "$vocabulary": {
+                "HTTPS://Example.com/vocab": true
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
     }
   ]
 }

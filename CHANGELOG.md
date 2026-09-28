@@ -225,8 +225,15 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   outside the JSON Pointer syntax is a plain name for OBI-D-12 to resolve,
   not a form violation. §5.2 no longer reads as forbidding the opt-in format
   assertion JSON Schema Validation §7.2.1 allows; example validity keeps the
-  annotation default. This supersedes the pointer allowance and root schema
-  objects described in the next entry.
+  annotation default. A second review round then scoped the document scope's
+  dynamic-scope role to evaluations that begin in it (JSON Schema §7.1); pinned
+  ECMA-262 to the 11th edition JSON Schema cites and scoped the `u` reading to
+  the document rules; listed the reserved meta-schema identifiers; limited
+  in-place recursion to `$dynamicAnchor` targets and to `then`/`else` beside
+  `if`; required normalized URI names in `$vocabulary`; compared plain names
+  after percent-decoding; accepted `$schema` with an empty fragment; and
+  described the compound document a tool gives its library. This supersedes
+  the pointer allowance and root schema objects described in the next entry.
 
 - **Schemas follow JSON Schema 2020-12 wherever an OBI goal does not need
   otherwise.** The core now decides only what JSON Schema leaves to an

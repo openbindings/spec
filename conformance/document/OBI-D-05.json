@@ -605,6 +605,26 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "an $id under the meta-schema path that names no JSON Schema 2020-12 meta-schema is an ordinary identifier",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "M": {
+            "$id": "https://json-schema.org/draft/2020-12/meta/custom",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "https://json-schema.org/draft/2020-12/meta/custom"
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

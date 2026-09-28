@@ -85,7 +85,10 @@
           "type": "object",
           "properties": {
             "$schema": {
-              "const": "https://json-schema.org/draft/2020-12/schema"
+              "enum": [
+                "https://json-schema.org/draft/2020-12/schema",
+                "https://json-schema.org/draft/2020-12/schema#"
+              ]
             }
           },
           "additionalProperties": true

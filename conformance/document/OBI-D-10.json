@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, containment alone (an unreferenced $defs entry) does not make a schema reachable, and a $dynamicRef whose initial target declares the $dynamicAnchor reaches every same-named $dynamicAnchor in a schema resource holding a reachable schema. Regular expressions are read as ECMA-262 with the u flag.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, containment alone (an unreferenced $defs entry) does not make a schema reachable, and a $dynamicRef whose initial target declares the $dynamicAnchor reaches every same-named $dynamicAnchor in a schema resource, or the document scope, holding a reachable schema. Regular expressions are read as ECMA-262 with the u flag.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -473,6 +473,38 @@
       "violates": [
         "OBI-D-10"
       ]
+    },
+    {
+      "description": "an evaluation that begins at an operation schema declaring $id begins in that resource, so a $dynamicAnchor in the document scope takes no part",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "X": {
+            "$dynamicAnchor": "node",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$id": "https://example.com/in",
+              "$dynamicRef": "#node",
+              "$defs": {
+                "n": {
+                  "$dynamicAnchor": "node",
+                  "type": "number"
+                }
+              }
+            },
+            "examples": {
+              "e": {
+                "input": 5
+              }
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

@@ -756,6 +756,26 @@
       "violates": [
         "OBI-D-12"
       ]
+    },
+    {
+      "description": "a plain name is compared after percent-decoding, so #%74ask reaches the schema declaring task",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#%74ask"
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ],
   "notes": "JSON Schema 2020-12 leaves a reference to anything that is not a schema undefined (section 9.4.2), so the OBI document root, x- data, a source's content, and legacy definitions entries are not reference targets. It advises against JSON Pointers that identify an embedded resource or locations within it and lets an implementation decline them (section 9.2.1), and OpenAPI 3.2 requires such schemas to be referenced through their nearest $id, so a pointer that lands on or passes through a schema declaring $id, other than the root it is read from, violates this rule. Within an embedded resource, references resolve against that resource's base as JSON Schema 2020-12 defines, and those whose targets lie within the document must resolve, as standard JSON Schema libraries require when they compile the resource."
