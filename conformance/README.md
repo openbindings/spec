@@ -14,6 +14,7 @@ The corpus is reference material, not part of the specification (per `openbindin
 | OBI-D-02 to OBI-D-09 | Complete |
 | OBI-D-10 | Complete. Meta-schema validity for every operation input and output and every `schemas` entry (boolean or object form, recursively through subschemas). Unknown keywords, unparseable patterns, unresolvable references, and in-place recursion are positives: whether a schema can be evaluated is JSON Schema's, not a document rule. The pinned 2020-12 meta-schemas make this document rule decidable offline. |
 | OBI-D-11 | Complete. Dependency operation references resolve only against operation keys, not aliases; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
+| OBI-D-12 | Complete. Same-document pointers at OBI positions: typos, `#` and the empty reference, pointers to operation objects, maps, strings, `x-` data, source content, and example values, and pointers inside an `$id` schema are negatives; plain names, references within an `$id` resource, absolute URIs, `definitions` targets, and recursion are positives. |
 | OBI-T-01 | Partial. Validity fixtures show that an unknown kind does not create a core document defect. Exact support comparison and no implicit kind dereferencing need a behavioral scenario; this fixture format cannot observe them. |
 | OBI-T-03, OBI-T-04 | Complete (parse/load-shaped rules, same fixture format as OBI-D). OBI-T-04's downward refusal (documents below the tool's minimum supported version) is fixtured with the `requiresMinSupported` annotation (below), which skips those tests for tools whose supported range extends down to the document's version. Its acceptance-presuming positives are gated with the `requiresSupports` annotation (below): each is administered only to tools whose own OBI-T-04 acceptance predicate accepts the annotation's version, since which versions a tool accepts is its own support declaration (§8.1), never a corpus assumption. |
 | OBI-T-10 | Complete for document validity. All-positive documents whose operation names tempt plausibility heuristics show that apparent inaccuracy of an `idempotent` claim does not create a core document defect. |
@@ -56,7 +57,7 @@ conformance/
     OBI-D-01.json
     OBI-D-02.json
     ...
-    OBI-D-11.json
+    OBI-D-12.json
   tool/                (OBI-T-## rules; partial coverage)
     OBI-T-01.json
     OBI-T-03.json

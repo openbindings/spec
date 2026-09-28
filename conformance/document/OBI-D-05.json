@@ -398,13 +398,13 @@
       ]
     },
     {
-      "description": "a same-document reference is judged only for its form: whether it resolves is JSON Schema's, surfacing when a tool uses the schema",
+      "description": "a plain-name reference is judged only for its form: whether a schema declares the name is JSON Schema's, surfacing when a tool uses the schema",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "f": {
             "input": {
-              "$ref": "#/schemas/Missing"
+              "$ref": "#missing"
             }
           }
         }

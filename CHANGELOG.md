@@ -206,6 +206,14 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OBI-D-12 checks same-document pointers.** A `$ref` or `$dynamicRef` at an
+  OBI position that is empty or carries a JSON Pointer fragment must point at
+  a schema at an OBI position. It is a lookup in the document: it catches a
+  typo such as `#/schemas/Taks`, `#` (which names the OBI document, not the
+  enclosing schema), pointers into data that is not a schema, and pointers
+  inside a schema that declares `$id`. Plain names, references within an
+  `$id` resource, and absolute URIs stay JSON Schema's.
+
 - **An operation's signature is its name and per-value schemas, and `output`
   is whatever the operation returns.** §3 no longer calls the operation an
   incomplete signature: interaction pattern and cardinality belong to each
@@ -241,7 +249,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   | OBI-D-09 | OBI-D-08 | binding `source` keys |
   | OBI-D-10 | (removed) | example values validate |
   | OBI-D-11 | OBI-D-09 | `openbindings` is a SemVer version |
-  | OBI-D-12 | (removed) | schema references resolve within the document |
+  | OBI-D-12 | OBI-D-12 | narrowed: an empty or JSON Pointer same-document `$ref` at an OBI position points at a schema at an OBI position |
   | OBI-D-13 | OBI-D-10 | meta-schema validity, with `format` as an annotation (narrowed: no regex or recursion checks) |
   | OBI-D-14 | OBI-D-11 | dependency `operation` keys |
 
