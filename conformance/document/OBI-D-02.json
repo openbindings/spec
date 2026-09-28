@@ -252,6 +252,41 @@
       "valid": true
     },
     {
+      "description": "dependency with a description",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent",
+            "description": "Where completed events are delivered."
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dependency description is not a string",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent",
+            "description": 7
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ]
+    },
+    {
       "description": "dependencies is an array instead of an object map",
       "document": {
         "openbindings": "0.2.0",

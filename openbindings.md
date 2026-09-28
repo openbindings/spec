@@ -520,9 +520,10 @@ A dependency object MUST contain:
 
 And MAY contain:
 
-| Field   | Type             | Purpose                                     |
-| ------- | ---------------- | ------------------------------------------- |
-| `kinds` | array of strings | Kinds acceptable at this consumption point. |
+| Field         | Type             | Purpose                                     |
+| ------------- | ---------------- | ------------------------------------------- |
+| `kinds`       | array of strings | Kinds acceptable at this consumption point. |
+| `description` | string           | Human-readable description.                 |
 
 `operation` references an operation by its key, not by an alias ([OBI-D-14](#102-document-rules)). This is the same key-reference posture bindings use: aliases support name resolution and cross-document correspondence, while same-document relationships carry the canonical key.
 

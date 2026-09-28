@@ -31,7 +31,7 @@ const CANON = {
     "deprecated",
   ],
   OperationExample: ["description", "input", "output"],
-  DependencyEntry: ["operation", "kinds"],
+  DependencyEntry: ["operation", "kinds", "description"],
 };
 
 function checkOrder(typeName, obj, path, errors) {

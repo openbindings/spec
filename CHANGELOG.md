@@ -26,7 +26,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 - **Named operation dependencies in the Core document model.** The optional
   `dependencies` map declares named consumption points that reference operation
   keys and may carry a nonempty, unique, unordered `kinds` any-of list of
-  exact kinds. Operations are now explicitly neutral
+  exact kinds and a human-readable `description`. Operations are now explicitly neutral
   contracts: bindings attest concrete realizations, dependencies declare
   consumption, and either relationship may appear independently or together.
   Dependency satisfaction, provider matching and selection, registration,
