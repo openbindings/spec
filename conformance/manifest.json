@@ -5,9 +5,9 @@
     "files": 22,
     "fixtureFiles": 18,
     "scenarioFiles": 4,
-    "tests": 186,
+    "tests": 187,
     "scenarios": 19,
-    "positives": 85,
+    "positives": 86,
     "negatives": 101,
     "rulesCoveredDocument": 14,
     "rulesCoveredTool": 7,
@@ -148,8 +148,8 @@
       "path": "tool/OBI-T-04.json",
       "rule": "OBI-T-04",
       "section": "10.3",
-      "tests": 10,
-      "positives": 3,
+      "tests": 11,
+      "positives": 4,
       "negatives": 7
     },
     {

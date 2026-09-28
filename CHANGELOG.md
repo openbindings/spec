@@ -206,6 +206,26 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **A document is read under its `major.minor` line; the patch number carries
+  no meaning.** [§8.1](openbindings.md#81-openbindings-field-specification-version)
+  now treats each line as one document model: a patch release corrects errors
+  in the text without adding fields or changing what documents mean, so
+  documents declaring `0.2.0` and `0.2.1` are read alike, under the line's
+  current text, and a patch's corrections apply to the whole line. Processors
+  support lines, not individual patches, and OBI-T-04 keys acceptance on the
+  line; a prerelease remains outside its line. This matches OpenAPI, AsyncAPI,
+  and Arazzo, whose tooling does not consider the patch version, and the
+  reference Go SDK, which already supports the 0.2 line. Rule identifiers are
+  cited under a line, since a patch adds or renumbers no rule. In the corpus,
+  the OBI-T-04 higher-patch case now asserts acceptance for any tool that
+  supports the 0.2 line, and a new case checks a patch published after the
+  tool.
+
+- **§6 states what a kind is instead of what the core leaves open.** The
+  section defines comparison, what supporting a kind means, and how a kind's
+  meaning is shared, and relies on §1.3 for the boundary rather than
+  restating it. No rule changes.
+
 - **Focused core tool-policy pruning.** Core rules now state document meaning and
   the truth conditions of claims under the specification without prescribing
   processing continuation, diagnostic lists, or report vocabulary. OBI-T-01,
