@@ -224,17 +224,25 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
   | Before | Now | Rule |
   | --- | --- | --- |
+  | OBI-D-05 | OBI-D-05 | reference forms at OBI positions (narrowed: no identifier or name uniqueness, no resource-internal URI check) |
+  | OBI-D-06 | OBI-D-06 | `$schema` names 2020-12 (widened: an empty fragment is accepted) |
   | OBI-D-07 | (removed) | `$schema` and `$vocabulary` placement |
   | OBI-D-08 | OBI-D-07 | binding `operation` keys |
   | OBI-D-09 | OBI-D-08 | binding `source` keys |
   | OBI-D-10 | (removed) | example values validate |
   | OBI-D-11 | OBI-D-09 | `openbindings` is a SemVer version |
   | OBI-D-12 | (removed) | schema references resolve within the document |
-  | OBI-D-13 | OBI-D-10 | schemas are valid against the meta-schemas |
+  | OBI-D-13 | OBI-D-10 | meta-schema validity, with `format` as an annotation (narrowed: no regex or recursion checks) |
   | OBI-D-14 | OBI-D-11 | dependency `operation` keys |
 
-  OBI-D-01 through OBI-D-06 and every tool rule keep their numbers. Entries
-  below use the numbers of their time.
+  OBI-D-01 through OBI-D-04 and every tool rule keep their numbers and
+  meaning. Entries below use the numbers of their time. What JSON Schema
+  leaves to the embedding format stays in §7: `$id`-less schemas at OBI
+  positions share the document's resource, `#` there names the OBI document,
+  and OBI positions follow what the 2020-12 meta-schema validates as schemas,
+  including `definitions`. §5.2 says the document rules test only meta-schema
+  validity, reference forms, and dialect, and §7 says plainly which
+  references JSON Schema leaves undefined.
 
 - **The JSON Schema seam binds JSON Schema's own preferences where tools would
   otherwise disagree or fail to decide.** A same-document JSON Pointer may no

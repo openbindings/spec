@@ -6,12 +6,20 @@
   "scenarios": [
     {
       "id": "T09-S-01",
-      "description": "Satisfied applicable rules and inapplicable rules permit a conformant conclusion",
+      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
+          "OBI-D-01": "satisfied",
           "OBI-D-02": "satisfied",
           "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
           "OBI-D-11": "not-applicable"
         }
       },

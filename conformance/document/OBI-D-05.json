@@ -2,10 +2,10 @@
   "rule": "OBI-D-05",
   "section": "10.2",
   "description": "Has every schema $ref and $dynamicRef at an OBI position an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI, each a URI-reference per RFC 3986. Within a schema resource that declares $id, references take any form JSON Schema allows.",
-  "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is the binding specification's to define and resolve, and the positives below pin that no core rule judges it.",
+  "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the source's kind, and the positives below pin that no core rule judges it.",
   "tests": [
     {
-      "description": "a relative address inside a source's content is the binding specification's to define (out of D-05's scope)",
+      "description": "a relative address inside a source's content is read under the source's kind (out of D-05's scope)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -146,7 +146,7 @@
       "valid": true
     },
     {
-      "description": "a same-document plain-name fragment at an OBI position is a same-document reference; JSON Schema resolves the name",
+      "description": "a same-document plain-name fragment at an OBI position is a same-document reference; the name belongs to the document's resource",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -410,6 +410,27 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "a relative $ref under the legacy definitions keyword is at an OBI position, since the 2020-12 meta-schema validates it as a schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "definitions": {
+                "X": {
+                  "$ref": "relative.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
     }
   ]
 }

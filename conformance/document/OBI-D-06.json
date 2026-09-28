@@ -150,6 +150,29 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "a draft-07 $schema under the legacy definitions keyword is in a schema the document contains",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "definitions": {
+              "B": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-06"
+      ]
     }
   ]
 }
