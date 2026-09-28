@@ -242,7 +242,10 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   and OBI positions follow what the 2020-12 meta-schema validates as schemas,
   including `definitions`. §5.2 says the document rules test only meta-schema
   validity, reference forms, and dialect, and §7 says plainly which
-  references JSON Schema leaves undefined.
+  references JSON Schema leaves undefined. The OBI-T-08 scenario that fixed a
+  `valid` result for a value beside an unused external definition is removed,
+  as the dormant-branch scenario was: the rule prescribes no evaluation
+  strategy, so an eager compiler may report that it cannot validate.
 
 - **The JSON Schema seam binds JSON Schema's own preferences where tools would
   otherwise disagree or fail to decide.** A same-document JSON Pointer may no

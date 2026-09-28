@@ -6,7 +6,7 @@
     "fixtureFiles": 15,
     "scenarioFiles": 4,
     "tests": 163,
-    "scenarios": 19,
+    "scenarios": 18,
     "positives": 80,
     "negatives": 83,
     "rulesCoveredDocument": 11,
@@ -154,7 +154,7 @@
       "path": "scenarios/OBI-T-08.json",
       "rule": "OBI-T-08",
       "section": "10.3",
-      "scenarios": 7
+      "scenarios": 6
     },
     {
       "path": "scenarios/OBI-T-09.json",

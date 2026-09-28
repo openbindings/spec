@@ -12,14 +12,25 @@
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "echo": { "input": { "type": "string", "minLength": 1 } }
+            "echo": {
+              "input": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         },
         "operation": "echo",
         "side": "input",
-        "values": ["hello"]
+        "values": [
+          "hello"
+        ]
       },
-      "expected": { "results": ["valid"] }
+      "expected": {
+        "results": [
+          "valid"
+        ]
+      }
     },
     {
       "id": "T08-S-02",
@@ -29,38 +40,24 @@
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "echo": { "output": { "type": "string" } }
-          }
-        },
-        "operation": "echo",
-        "side": "output",
-        "values": [42]
-      },
-      "expected": { "results": ["instance-mismatch"] }
-    },
-    {
-      "id": "T08-S-04",
-      "description": "An unreferenced definition is not evaluated for the value",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
             "echo": {
-              "input": {
-                "type": "string",
-                "$defs": {
-                  "unused": { "$ref": "https://schemas.example.invalid/unused.json" }
-                }
+              "output": {
+                "type": "string"
               }
             }
           }
         },
         "operation": "echo",
-        "side": "input",
-        "values": ["available"]
+        "side": "output",
+        "values": [
+          42
+        ]
       },
-      "expected": { "results": ["valid"] }
+      "expected": {
+        "results": [
+          "instance-mismatch"
+        ]
+      }
     },
     {
       "id": "T08-S-05",
@@ -70,14 +67,25 @@
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "acceptContact": { "input": { "type": "string", "format": "email" } }
+            "acceptContact": {
+              "input": {
+                "type": "string",
+                "format": "email"
+              }
+            }
           }
         },
         "operation": "acceptContact",
         "side": "input",
-        "values": ["not-an-email"]
+        "values": [
+          "not-an-email"
+        ]
       },
-      "expected": { "results": ["valid"] }
+      "expected": {
+        "results": [
+          "valid"
+        ]
+      }
     },
     {
       "id": "T08-S-06",
@@ -87,14 +95,28 @@
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "events": { "output": { "type": "string" } }
+            "events": {
+              "output": {
+                "type": "string"
+              }
+            }
           }
         },
         "operation": "events",
         "side": "output",
-        "values": ["first", 2, "third"]
+        "values": [
+          "first",
+          2,
+          "third"
+        ]
       },
-      "expected": { "results": ["valid", "instance-mismatch", "valid"] }
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch",
+          "valid"
+        ]
+      }
     },
     {
       "id": "T08-S-07",
@@ -107,21 +129,41 @@
             "Contact": {
               "$id": "https://schemas.example.test/contact.json",
               "type": "object",
-              "required": ["name"],
-              "properties": { "name": { "type": "string" } }
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
             }
           },
           "operations": {
             "acceptContact": {
-              "input": { "$ref": "https://schemas.example.test/contact.json" }
+              "input": {
+                "$ref": "https://schemas.example.test/contact.json"
+              }
             }
           }
         },
         "operation": "acceptContact",
         "side": "input",
-        "values": [{ "name": "Ada" }, { "name": 7 }]
+        "values": [
+          {
+            "name": "Ada"
+          },
+          {
+            "name": 7
+          }
+        ]
       },
-      "expected": { "results": ["valid", "instance-mismatch"] }
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     },
     {
       "id": "T08-S-08",
@@ -137,10 +179,16 @@
                 "$defs": {
                   "Node": {
                     "type": "object",
-                    "required": ["value"],
+                    "required": [
+                      "value"
+                    ],
                     "properties": {
-                      "value": { "type": "string" },
-                      "next": { "$ref": "#/operations/tree/output/$defs/Node" }
+                      "value": {
+                        "type": "string"
+                      },
+                      "next": {
+                        "$ref": "#/operations/tree/output/$defs/Node"
+                      }
                     }
                   }
                 }
@@ -151,11 +199,26 @@
         "operation": "tree",
         "side": "output",
         "values": [
-          { "value": "root", "next": { "value": "leaf" } },
-          { "value": "root", "next": { "value": 7 } }
+          {
+            "value": "root",
+            "next": {
+              "value": "leaf"
+            }
+          },
+          {
+            "value": "root",
+            "next": {
+              "value": 7
+            }
+          }
         ]
       },
-      "expected": { "results": ["valid", "instance-mismatch"] }
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     }
   ]
 }
