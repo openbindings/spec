@@ -223,9 +223,11 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   document, including references inside embedded `$id` resources, which
   standard libraries refuse to compile when they dangle. OBI-D-10's
   reachability follows a `$dynamicRef` to every same-named `$dynamicAnchor` it
-  could select. This supersedes the plain-name and dynamic-pair restrictions
-  described in the next entry. Fixtures for OBI-D-05, OBI-D-07, OBI-D-10, and
-  OBI-D-12 follow.
+  could select. A JSON Pointer may pass into an embedded `$id` resource,
+  which JSON Schema advises against (§9.2.1) but defines. This supersedes the
+  plain-name and dynamic-pair restrictions described in the next entry and the
+  pointer restriction described in an earlier one. Fixtures for OBI-D-05,
+  OBI-D-07, OBI-D-10, and OBI-D-12 follow.
 
 - **OBI-D-10 decides its scope statically, and the reference rules say what
   they mean.** An example is checked when every schema reachable from its
