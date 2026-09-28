@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, and containment alone (an unreferenced $defs entry) does not make a schema reachable.",
+  "description": "Each provided example value satisfies its operation's corresponding schema when every schema reachable from that schema is embedded in the OBI. Reachability is static: a branch counts whether or not the example would take it, containment alone (an unreferenced $defs entry) does not make a schema reachable, and a $dynamicRef whose initial target declares the $dynamicAnchor reaches every same-named $dynamicAnchor in a schema resource holding a reachable schema.",
   "tests": [
     {
       "description": "example input validates against specified input schema",
@@ -310,6 +310,93 @@
             "output": { "$ref": "#/schemas/Wrapper" },
             "examples": {
               "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $dynamicRef selects the outermost same-named $dynamicAnchor in its dynamic scope, so numbers validate against the extending resource's item schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "List": {
+            "$id": "https://example.com/list.schema.json",
+            "type": "array",
+            "items": { "$dynamicRef": "#item" },
+            "$defs": { "item": { "$dynamicAnchor": "item", "type": "string" } }
+          },
+          "NumberList": {
+            "$id": "https://example.com/number-list.schema.json",
+            "$ref": "list.schema.json",
+            "$defs": { "item": { "$dynamicAnchor": "item", "type": "number" } }
+          }
+        },
+        "operations": {
+          "sum": {
+            "input": { "$ref": "#/schemas/NumberList" },
+            "examples": {
+              "numbers": { "input": [1, 2] }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a value the dynamically selected item schema rejects violates the rule when every candidate $dynamicAnchor is embedded",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "List": {
+            "$id": "https://example.com/list.schema.json",
+            "type": "array",
+            "items": { "$dynamicRef": "#item" },
+            "$defs": { "item": { "$dynamicAnchor": "item", "type": "string" } }
+          },
+          "NumberList": {
+            "$id": "https://example.com/number-list.schema.json",
+            "$ref": "list.schema.json",
+            "$defs": { "item": { "$dynamicAnchor": "item", "type": "number" } }
+          }
+        },
+        "operations": {
+          "sum": {
+            "input": { "$ref": "#/schemas/NumberList" },
+            "examples": {
+              "strings": { "input": ["a"] }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": ["OBI-D-10"]
+    },
+    {
+      "description": "a $dynamicRef reaches every same-named $dynamicAnchor in a resource holding a reachable schema, so an external schema reached that way places the example outside the rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "List": {
+            "$id": "https://example.com/list.schema.json",
+            "type": "array",
+            "items": { "$dynamicRef": "#item" },
+            "$defs": { "item": { "$dynamicAnchor": "item", "type": "string" } }
+          },
+          "NumberList": {
+            "$id": "https://example.com/number-list.schema.json",
+            "$ref": "list.schema.json",
+            "$defs": {
+              "item": { "$dynamicAnchor": "item", "$ref": "https://schemas.example.invalid/number.json" }
+            }
+          }
+        },
+        "operations": {
+          "sum": {
+            "input": { "$ref": "#/schemas/NumberList" },
+            "examples": {
+              "numbers": { "input": [1, 2] }
             }
           }
         }

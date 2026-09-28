@@ -1,11 +1,11 @@
 {
   "rule": "OBI-D-07",
   "section": "10.2",
-  "description": "Has no $vocabulary keyword in any schema within the document.",
-  "notes": "Recursive enforcement: $vocabulary is forbidden at any nesting depth, not only at the top level of a schema. Per §10.2, the spec's JSON Schema artifact only enforces this at top level; recursive enforcement is an implementer obligation under OBI-D-07 prose.",
+  "description": "Has $schema and $vocabulary only where JSON Schema 2020-12 permits them: $schema only on a root schema object (a schema at an OBI position that no other schema contains, or a schema that declares $id), and $vocabulary only on a root schema object that no other schema contains.",
+  "notes": "JSON Schema 2020-12 section 8.1.1 bars $schema from schema objects that are not resource roots, and section 8.1.2 bars $vocabulary from subschemas; section 5.2 names the root schema objects of an OBI document. Where $vocabulary may appear it has no effect, since no schema in an OBI document is processed as a meta-schema. Placement is a prose rule: the derived JSON Schema does not enforce it. Walking is keyword-position aware: a property named $vocabulary or $schema under properties is schema content, not the keyword.",
   "tests": [
     {
-      "description": "schemas with no $vocabulary anywhere",
+      "description": "schemas with neither $schema nor $vocabulary",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -25,7 +25,7 @@
       "valid": true
     },
     {
-      "description": "top-level schema declares $vocabulary",
+      "description": "$vocabulary on a schemas entry, a root schema object no other schema contains (it has no effect outside a meta-schema)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -40,13 +40,10 @@
           "createTask": {}
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-07"
-      ]
+      "valid": true
     },
     {
-      "description": "operation input schema declares $vocabulary",
+      "description": "$vocabulary on an operation input schema, a root schema object no other schema contains",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -60,10 +57,7 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-07"
-      ]
+      "valid": true
     },
     {
       "description": "$vocabulary in a nested property subschema",
@@ -118,7 +112,125 @@
       ]
     },
     {
-      "description": "a property NAMED $vocabulary under `properties` is schema content, not the keyword (keyword-position-aware walking; a grep-style walker false-positives here)",
+      "description": "$vocabulary on a nested schema that declares $id is still in a subschema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$vocabulary": {
+                  "https://json-schema.org/draft/2020-12/vocab/core": true
+                },
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-07"
+      ]
+    },
+    {
+      "description": "$schema on a schemas entry and on an operation input schema, root schema objects",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$schema on a nested schema that declares $id, the root of an embedded schema resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "$schema on a nested property subschema that declares no $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-07"
+      ]
+    },
+    {
+      "description": "$schema in a $defs entry that declares no $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-07"
+      ]
+    },
+    {
+      "description": "a property NAMED $vocabulary or $schema under `properties` is schema content, not the keyword (keyword-position-aware walking; a grep-style walker false-positives here)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

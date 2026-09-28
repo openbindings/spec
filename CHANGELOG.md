@@ -206,6 +206,27 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Schemas follow JSON Schema 2020-12 wherever an OBI goal does not need
+  otherwise.** The core now decides only what JSON Schema leaves to an
+  embedding format and what context-free references and offline-decidable
+  conformance require. [§7](openbindings.md#7-reference-resolution) names the
+  document resource, which holds the schemas at OBI positions; same-document
+  plain-name fragments and the `$dynamicRef`/`$dynamicAnchor` pair are allowed
+  at OBI positions, with `$dynamicRef` held to the same absolute-or-same-document
+  forms as `$ref`. OBI-D-05 forbids declaring one fragment name twice in a
+  schema resource, which JSON Schema leaves undefined. OBI-D-07 no longer bans
+  `$vocabulary`, which has no effect outside a meta-schema; it now keeps
+  `$schema` and `$vocabulary` where JSON Schema permits them (§8.1.1, §8.1.2),
+  with [§5.2](openbindings.md#52-schemas) naming the root schema objects of an
+  OBI document, and the derived schema no longer rejects a top-level
+  `$vocabulary`. OBI-D-12 covers every reference whose target lies within the
+  document, including references inside embedded `$id` resources, which
+  standard libraries refuse to compile when they dangle. OBI-D-10's
+  reachability follows a `$dynamicRef` to every same-named `$dynamicAnchor` it
+  could select. This supersedes the plain-name and dynamic-pair restrictions
+  described in the next entry. Fixtures for OBI-D-05, OBI-D-07, OBI-D-10, and
+  OBI-D-12 follow.
+
 - **OBI-D-10 decides its scope statically, and the reference rules say what
   they mean.** An example is checked when every schema reachable from its
   governing schema is embedded in the document; reachability follows keywords

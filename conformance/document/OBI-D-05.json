@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-05",
   "section": "10.2",
-  "description": "Carries only absolute or same-document OBI-defined references: every schema $ref is a same-document fragment in JSON Pointer form (plain-name $anchor fragments are not used at OBI positions) or an absolute URI; every schema $id at an OBI position is absolute (a nested $id within a schema declaring its own $id resolves against that resource's base per 2020-12 and is resource-internal). $dynamicRef and $dynamicAnchor do not appear at OBI positions (dynamic resolution follows the runtime dynamic scope rather than the document); within a schema declaring its own $id both are that resource's internal business, per the same scope rule as $ref/$anchor. URI-form references are well-formed per RFC 3986 §4.1. A source's or binding's content is interpreted by the governing binding specification and is out of scope for this rule.",
+  "description": "Carries only absolute or same-document OBI-defined references: every schema $ref and $dynamicRef at an OBI position is an absolute URI or a same-document fragment (a JSON Pointer or a plain name); every $id at an OBI position is absolute; no two embedded schema resources declare the same $id; and no schema resource, the document resource included, declares one fragment name more than once.",
   "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is the binding specification's to define and resolve, and the positives below pin that no core rule judges it.",
   "tests": [
     {
@@ -146,7 +146,7 @@
       "valid": true
     },
     {
-      "description": "plain-name ($anchor) fragment $ref is not JSON Pointer form",
+      "description": "a same-document plain-name fragment at an OBI position names the schema in the document resource that declares it",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -163,13 +163,10 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
+      "valid": true
     },
     {
-      "description": "plain-name fragment inside an embedded $id-declaring schema is resource-internal (out of D-05's scope)",
+      "description": "a plain-name fragment inside an embedded $id-declaring schema resolves against that resource (the form constraints apply at OBI positions)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -200,7 +197,7 @@
       "valid": true
     },
     {
-      "description": "$dynamicRef at an OBI position (dynamic resolution follows the runtime dynamic scope, not the document)",
+      "description": "$dynamicRef at an OBI position whose initial target declares the $dynamicAnchor (JSON Schema 2020-12 dynamic resolution; the dynamic scope is fixed by the document, not by where it was obtained)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -209,15 +206,18 @@
               "$dynamicRef": "#node"
             }
           }
+        },
+        "schemas": {
+          "Node": {
+            "$dynamicAnchor": "node",
+            "type": "object"
+          }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
+      "valid": true
     },
     {
-      "description": "$dynamicAnchor at an OBI position (a second named-schema mechanism competing with the schemas map, as $anchor would be)",
+      "description": "$dynamicAnchor at an OBI position declares a plain name in the document resource",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -234,13 +234,10 @@
           }
         }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-05"
-      ]
+      "valid": true
     },
     {
-      "description": "dynamic pair inside an embedded $id-declaring schema is resource-internal (out of D-05's scope; full 2020-12 semantics, e.g. recursive extension)",
+      "description": "dynamic pair inside an embedded $id-declaring schema resolves against that resource (full 2020-12 semantics, e.g. recursive extension)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -269,7 +266,7 @@
       "valid": true
     },
     {
-      "description": "a nested relative $id inside an embedded $id-declaring schema is resource-internal (resolves against the resource base per 2020-12; out of D-05's scope)",
+      "description": "a nested relative $id inside an embedded $id-declaring schema resolves against the resource base per 2020-12 (the form constraints apply at OBI positions)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -340,7 +337,7 @@
       ]
     },
     {
-      "description": "an absolute-URI $ref with a plain-name fragment addresses an external schema and is allowed at an OBI position (the plain-name restriction applies to same-document references)",
+      "description": "an absolute-URI $ref with a plain-name fragment addresses an external schema and is allowed at an OBI position",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -368,6 +365,125 @@
             "input": {
               "$ref": "#/schemas/Task"
             }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a relative $dynamicRef at an OBI position would resolve against the retrieval URI",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTree": {
+            "output": {
+              "$dynamicRef": "tree.schema.json#node"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "a same-document fragment that is neither a JSON Pointer nor a plain name in $anchor syntax",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#1task"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "two schemas in the document resource declare the same fragment name",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          },
+          "Draft": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "one embedded resource declares a fragment name by both $anchor and $dynamicAnchor (JSON Schema 2020-12 leaves the effect undefined)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTree": {
+            "output": {
+              "$ref": "#/schemas/Tree"
+            }
+          }
+        },
+        "schemas": {
+          "Tree": {
+            "$id": "https://example.com/tree.schema.json",
+            "type": "object",
+            "$defs": {
+              "a": {
+                "$anchor": "node",
+                "type": "object"
+              },
+              "b": {
+                "$dynamicAnchor": "node",
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
+    },
+    {
+      "description": "one fragment name declared in two different schema resources names two different schemas",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          },
+          "Remote": {
+            "$id": "https://example.com/remote.schema.json",
+            "$anchor": "task",
+            "type": "object"
           }
         }
       },

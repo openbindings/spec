@@ -79,15 +79,14 @@
   "additionalProperties": false,
   "$defs": {
     "JSONSchema": {
-      "description": "JSON Schema 2020-12 schema: object or boolean form. Top-level constraints from §5.2 are enforced on the object form here ($schema value pinned, $vocabulary forbidden); recursive enforcement (OBI-D-06/07) and meta-schema well-formedness (OBI-D-13) are prose rules beyond this schema.",
+      "description": "JSON Schema 2020-12 schema: object or boolean form. The $schema value is pinned on the object form here; enforcement at nested positions (OBI-D-06), keyword placement (OBI-D-07), and meta-schema well-formedness (OBI-D-13) are prose rules beyond this schema.",
       "anyOf": [
         {
           "type": "object",
           "properties": {
             "$schema": {
               "const": "https://json-schema.org/draft/2020-12/schema"
-            },
-            "$vocabulary": false
+            }
           },
           "additionalProperties": true
         },

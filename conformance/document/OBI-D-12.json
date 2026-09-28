@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-12",
   "section": "10.2",
-  "description": "Every schema $ref at an OBI position that resolves within the document resolves to a schema the document model places: a same-document fragment, read from the OBI document root, to a schema at an OBI position, and so never into a resource that declares its own $id; an absolute-URI $ref that matches an embedded schema's $id, to that schema or a subschema JSON Schema 2020-12 defines below it. Same-document URI fragments use RFC 6901 JSON Pointer evaluation after percent-decoding. A $ref within a schema declaring its own $id is out of scope, as is an absolute-URI $ref that matches no embedded schema's $id.",
+  "description": "Has every schema reference whose target lies within the document resolving to a schema: every $ref, and the initial target of every $dynamicRef, in any schema the document contains, including within an embedded resource that declares its own $id. A JSON Pointer fragment reaches a schema of the resource it addresses, and one read from the OBI document root never passes beyond the root of a resource that declares $id; a plain name reaches the schema that declares it in the addressed resource. A reference whose target is external is out of scope.",
   "tests": [
     {
       "description": "percent-encoded fragment #/schemas/T%61sk resolves to the schemas key Task",
@@ -102,7 +102,7 @@
       ]
     },
     {
-      "description": "$ref under a nested $id is out of scope (resource-internal)",
+      "description": "a $ref inside an embedded $id resource resolves against that resource's base to a subschema of it",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -375,7 +375,325 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "a dangling JSON Pointer $ref inside an embedded $id resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "parent": {
+                "$ref": "#/$defs/missing"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a relative $ref inside an embedded resource resolves to another embedded resource through its $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "owner": {
+                "$ref": "user.schema.json"
+              }
+            }
+          },
+          "User": {
+            "$id": "https://example.com/user.schema.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a relative $ref inside an embedded resource matches another embedded resource's $id, but its fragment reaches nothing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "owner": {
+                "$ref": "user.schema.json#/$defs/missing"
+              }
+            }
+          },
+          "User": {
+            "$id": "https://example.com/user.schema.json",
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a relative $ref inside an embedded resource that matches no embedded $id is external and out of scope",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "owner": {
+                "$ref": "user.schema.json"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an absolute $ref matching an embedded resource's $id whose fragment reaches nothing",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "https://example.com/task#/properties/missing"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a same-document plain name at an OBI position reaches the schema in the document resource that declares it",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a same-document plain name that no schema in the document resource declares",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a same-document plain name declared only by a schema that declares its own $id belongs to that resource, not the document resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "$anchor": "task",
+            "type": "object"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a plain name inside an embedded resource naming an anchor that only the document resource declares",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "$ref": "#kind"
+              }
+            }
+          },
+          "Kind": {
+            "$anchor": "kind",
+            "type": "string"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a JSON Pointer inside an embedded resource may reach the root of a nested resource that declares $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/Inner"
+              }
+            },
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a JSON Pointer inside an embedded resource may pass beyond the root of a nested resource that declares $id: JSON Schema advises against it but defines it, and the OBI-root restriction does not reach inside resources",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        },
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "x": {
+                "$ref": "#/$defs/Inner/$defs/Leaf"
+              }
+            },
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$defs": {
+                  "Leaf": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $dynamicRef at an OBI position whose initial target resolves to nothing",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTree": {
+            "output": {
+              "$dynamicRef": "#node"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     }
   ],
-  "notes": "JSON Schema 2020-12 leaves a reference to anything that is not a schema undefined (section 9.4.2) and advises against JSON Pointers into an embedded resource (section 9.2.1), so the OBI document root, x- data, a source's content, legacy definitions entries, and locations inside a resource declaring its own $id are not same-document targets; a resource's contents are reached through its $id."
+  "notes": "JSON Schema 2020-12 leaves a reference to anything that is not a schema undefined (section 9.4.2) and advises against JSON Pointers into an embedded resource (section 9.2.1), so the OBI document root, x- data, a source's content, legacy definitions entries, and, for a pointer read from the OBI document root, locations beyond the root of a resource declaring its own $id are not reference targets; a resource's contents are reached through its $id. Within an embedded resource, references resolve against that resource's base as JSON Schema 2020-12 defines, and those whose targets lie within the document must resolve, as standard JSON Schema libraries require when they compile the resource."
 }
