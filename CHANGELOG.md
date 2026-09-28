@@ -206,6 +206,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Editorial pass.** Em dashes are gone, repeated statements of the core's
+  boundary are shortened where §1.3 already carries them, §1.3 states once
+  that "read under the source's kind" marks that boundary wherever it appears,
+  and the §12 extension bullets are merged. No field, rule, rule scope,
+  normative keyword, schema, or corpus outcome changes; two independent audits
+  and a blind question set confirmed the meaning is unchanged.
+
 - **A document is read under its `major.minor` line; the patch number carries
   no meaning.** [§8.1](openbindings.md#81-openbindings-field-specification-version)
   now treats each line as one document model: a patch release corrects errors
