@@ -206,6 +206,23 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Each requirement is stated once; tools honor defined meanings.**
+  - OBI-T-02 now requires a tool that interprets OBI-defined fields to give
+    each defined field its defined meaning, presence included, as well as
+    giving unknown fields none. Without it, a tool could render an omitted
+    `idempotent` as `false` and still conform. OBI-D-03 states that its
+    pattern is ECMA-262, matched against the whole name.
+  - The numbered rules of §10 are the single statement of each requirement.
+    The body explains the model and points to them without BCP 14 MUSTs;
+    §10 opens by saying conformance is judged by those rules alone.
+    Binding, source, and dependency member tables each become one table with
+    a Required column. "Author claims" gets one home in §5 and §3.
+  - Economy pass: repeated statements reduced to one home plus a
+    cross-reference, sentences shortened, negations turned positive where a
+    misreading is unlikely. The text is about 8 percent shorter; rules,
+    invariants, tables, and examples are unchanged apart from the two rule
+    edits above.
+
 - **Fourth review round: determinism and claim precision.** No design
   change.
   - A text declares a version only when it is UTF-8 JSON without a
