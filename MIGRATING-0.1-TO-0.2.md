@@ -53,10 +53,14 @@ name must be unique. A qualified alias may assert correspondence with a shared
 contract operation, but OpenBindings does not verify the semantic truth of
 that author claim.
 
-The 0.2 `idempotent` field is an author-attested claim about intended
-operation-level effects under equivalent input and relevant context. It is not
-authorization to retry, cache, or assume stable output. Recheck any 0.1 value
-that was written with the broader “safe to retry” description in mind.
+In 0.2, `idempotent` is a binding field: each binding's author-attested
+claim about repeating the operation through that binding, with equivalent
+input and equivalent context, adding no intended operation-level effects.
+Realizations of one operation can differ (one deduplicates retried requests,
+another does not), so move an operation-level value onto each binding it holds
+for. It is not authorization to retry, cache, or assume stable output. Recheck
+any 0.1 value that was written with the broader “safe to retry” description in
+mind.
 
 ## Declare consumed operations where applicable
 

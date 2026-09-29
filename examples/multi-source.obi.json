@@ -85,7 +85,6 @@
   "operations": {
     "getUser": {
       "description": "Retrieve a user by ID.",
-      "idempotent": true,
       "input": {
         "$ref": "#/schemas/GetUserInput"
       },
@@ -104,7 +103,6 @@
     },
     "listUsers": {
       "description": "List all users. Only available through the admin API.",
-      "idempotent": true,
       "output": {
         "$ref": "#/schemas/ListUsersOutput"
       }
@@ -126,12 +124,14 @@
     "getUser.publicApi": {
       "operation": "getUser",
       "source": "publicApi",
-      "content": { "target": "#/paths/~1users~1{userId}/get" }
+      "content": { "target": "#/paths/~1users~1{userId}/get" },
+      "idempotent": true
     },
     "getUser.adminApi": {
       "operation": "getUser",
       "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users~1{userId}/get" }
+      "content": { "target": "#/paths/~1admin~1users~1{userId}/get" },
+      "idempotent": true
     },
     "createUser.publicApi": {
       "operation": "createUser",
@@ -146,7 +146,8 @@
     "listUsers.adminApi": {
       "operation": "listUsers",
       "source": "adminApi",
-      "content": { "target": "#/paths/~1admin~1users/get" }
+      "content": { "target": "#/paths/~1admin~1users/get" },
+      "idempotent": true
     }
   }
 }

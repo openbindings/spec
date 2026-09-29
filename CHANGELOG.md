@@ -206,6 +206,24 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **`input` and `output` describe shape; `idempotent` moves to bindings.**
+  - `input` describes the values an operation takes and `output` the values
+    it returns, like a function signature: shape, not behavior. The "accepts"
+    and "failure" definitions are removed; no document can promise which
+    values a realization succeeds on or that it is available. What a binding
+    or dependency asserts is an author claim.
+  - A binding's claim is that its target realizes the operation as the
+    document describes it, including the operation's correspondence claims.
+  - `idempotent` is now a binding field (moved from operations, schema
+    included): each binding's author claim about repeating the operation
+    through it. Realizations of one operation can differ. The examples, the
+    OBI-T-10 fixtures, the canonical-order script, and the migration guide
+    follow.
+  - OBI-D-13 counts every `$anchor` and `$dynamicAnchor` declaration of a
+    plain name, as JSON Schema Core §8.2.2 does, so one schema declaring a
+    name with both keywords is a duplicate (the fixture that allowed it now
+    rejects it).
+
 - **Sixth review round: precision fixes.** OBI-D-10 reads the meta-schemas'
   `pattern` values as ECMA-262, the dialect JSON Schema names, so an
   `$anchor` ending in a newline fails on every validator (new fixture).

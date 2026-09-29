@@ -125,10 +125,6 @@
             "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
           }
         },
-        "idempotent": {
-          "type": "boolean",
-          "description": "Author-attested effect claim: true asserts repetition with equivalent input and equivalent context adds no intended operation-level effects; false asserts some valid repetition, through some binding, can; absent claims nothing. Not a retry-safety or cacheability authorization (§5.1)."
-        },
         "input": {
           "$ref": "#/$defs/JSONSchema",
           "description": "Contract on each caller-facing input value. Omit to leave unspecified; literal null is not valid at this position."
@@ -232,6 +228,10 @@
         },
         "content": {
           "description": "Optional binding content, as any JSON value, read under its source's kind. It might identify a target or describe value adaptation; the core assigns no meaning to its presence, absence, type, or members. Member presence is distinct from value: content carrying JSON null is a present member."
+        },
+        "idempotent": {
+          "type": "boolean",
+          "description": "Author claim about repeating the operation through this binding: true asserts repetition with equivalent input and equivalent context adds no intended operation-level effects after the first; false asserts some valid repetition through it can; absent claims nothing. Not a retry-safety or cacheability authorization (§5.3)."
         },
         "preference": {
           "type": "integer",

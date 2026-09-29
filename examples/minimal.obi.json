@@ -6,7 +6,6 @@
   "operations": {
     "echo": {
       "description": "Echo a message back unchanged.",
-      "idempotent": true,
       "input": {
         "type": "object",
         "properties": {
@@ -39,7 +38,8 @@
     "echo.restApi": {
       "operation": "echo",
       "source": "restApi",
-      "content": { "target": "#/paths/~1echo/post" }
+      "content": { "target": "#/paths/~1echo/post" },
+      "idempotent": true
     }
   }
 }
