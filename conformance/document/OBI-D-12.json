@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-12",
   "section": "10.2",
-  "description": "Has every same-document schema $ref and $dynamicRef at an OBI position that is empty or has a JSON Pointer fragment pointing at a schema at an OBI position; \"\" and \"#\" never do. Absolute URIs, plain-name fragments, and references within a schema resource that declares $id are outside this rule. The check is a lookup in the document.",
-  "notes": "# and an empty reference name the OBI document itself. Locations that hold no schema (operation objects, maps, strings, x- data, source content, example values) and locations inside a schema that declares $id are not schemas at OBI positions. Plain-name fragments, references within a schema resource that declares $id, and absolute URIs are outside the rule; positives pin that.",
+  "description": "Has every same-document schema $ref and $dynamicRef at an OBI position identifying a schema at an OBI position, its fragment percent-decoded: an empty reference or one with a JSON Pointer fragment points at such a schema, and \"\" and \"#\" never do; any other fragment is a plain name declared with $anchor or $dynamicAnchor by a schema at an OBI position that declares no $id. Absolute URIs and references within a schema resource that declares $id are outside this rule. The check is a lookup in the document.",
+  "notes": "# and an empty reference name the OBI document itself. Locations that hold no schema (operation objects, maps, strings, x- data, source content, example values) and locations inside a schema that declares $id are not schemas at OBI positions. A plain name qualifies only when a schema in the document's own resource declares it; a name declared only inside a schema that declares $id belongs to that resource. References within a schema resource that declares $id and absolute URIs are outside the rule; positives pin that.",
   "tests": [
     {
       "description": "a same-document pointer to a schemas entry",
@@ -189,20 +189,6 @@
       "valid": true
     },
     {
-      "description": "a plain-name reference is outside this rule, whether or not a schema declares the name",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "f": {
-            "input": {
-              "$ref": "#undeclared"
-            }
-          }
-        }
-      },
-      "valid": true
-    },
-    {
       "description": "an absolute reference is outside this rule, even when its fragment is a JSON Pointer",
       "document": {
         "openbindings": "0.2.0",
@@ -240,6 +226,158 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "a plain name declared with $anchor by a schemas entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#task"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a plain name declared with $anchor below a schemas entry",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$anchor": "taskId",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "getTaskId": {
+            "output": {
+              "$ref": "#taskId"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a plain name declared by an operation's input schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "a": {
+            "input": {
+              "$anchor": "shared",
+              "type": "string"
+            }
+          },
+          "b": {
+            "input": {
+              "$ref": "#shared"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $dynamicRef naming a plain name declared with $dynamicAnchor in the document's resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Node": {
+            "$dynamicAnchor": "node",
+            "type": "object",
+            "properties": {
+              "children": {
+                "type": "array",
+                "items": {
+                  "$dynamicRef": "#node"
+                }
+              }
+            }
+          }
+        },
+        "operations": {
+          "getTree": {
+            "output": {
+              "$ref": "#/schemas/Node"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a percent-encoded plain name matches the declared name after decoding (#t%61sk names task)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "#t%61sk"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a plain-name reference within a schema resource that declares $id resolves against that resource and is outside this rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "properties": {
+              "parent": {
+                "$ref": "#missing"
+              }
+            }
+          }
+        },
+        "operations": {
+          "getTask": {
+            "output": {
+              "$ref": "https://example.com/task.schema.json"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a plain name that no schema declares",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#undeclared"
+            }
+          }
+        }
+      },
+      "valid": false
     },
     {
       "description": "a typo: the pointer reaches no location",
@@ -524,6 +662,76 @@
       "violates": [
         "OBI-D-12"
       ]
+    },
+    {
+      "description": "a plain name declared only inside a schema that declares $id belongs to that schema's resource",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "$defs": {
+              "id": {
+                "$anchor": "taskId",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "getTaskId": {
+            "output": {
+              "$ref": "#taskId"
+            }
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "a plain name declared only in x- data, which holds no schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#hidden"
+            },
+            "x-notes": {
+              "$anchor": "hidden",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "valid": false
+    },
+    {
+      "description": "a $dynamicRef with a plain name that no schema declares",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Node": {
+            "type": "object",
+            "properties": {
+              "children": {
+                "type": "array",
+                "items": {
+                  "$dynamicRef": "#node"
+                }
+              }
+            }
+          }
+        },
+        "operations": {
+          "getTree": {
+            "output": {
+              "$ref": "#/schemas/Node"
+            }
+          }
+        }
+      },
+      "valid": false
     }
   ]
 }

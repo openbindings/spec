@@ -1,8 +1,8 @@
 {
   "rule": "OBI-D-13",
   "section": "10.2",
-  "description": "Has no plain name declared more than once, by $anchor or $dynamicAnchor in any combination, among the schemas at OBI positions that declare no $id, and no $id declared by two schemas the document contains, each $id resolved to an absolute URI with any empty fragment removed and compared character for character.",
-  "notes": "The schemas at OBI positions that declare no $id share the document's resource (section 7.2), so a plain name declared in two schemas entries collides there, where separate schema files would not. A plain name inside a schema that declares $id belongs to that schema's resource. $id values are compared as strings after resolution, so spellings a URI library might normalize to one identifier are distinct here.",
+  "description": "Has no plain name declared, by $anchor or $dynamicAnchor in any combination, by more than one of the schemas at OBI positions that declare no $id, and no $id declared by two schemas the document contains, each $id resolved to an absolute URI with any empty fragment removed and compared character for character. An $id that cannot be so resolved, because it or an $id it resolves against is not a well-formed URI-reference, is left out of the comparison.",
+  "notes": "The schemas at OBI positions that declare no $id share the document's resource (section 7.2), so a plain name declared in two schemas entries collides there, where separate schema files would not. A plain name inside a schema that declares $id belongs to that schema's resource. $id values are compared as strings after resolution, so spellings a URI library might normalize to one identifier are distinct here. A single schema that declares one name with both $anchor and $dynamicAnchor declares it once. A malformed nested $id has no resolved value to compare, so repeating one is not a collision under this rule; JSON Schema governs it when the schema is used.",
   "tests": [
     {
       "description": "distinct plain names in the document's resource",
@@ -105,6 +105,50 @@
           },
           "B": {
             "$id": "https://EXAMPLE.com/t"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "one schema that declares the same name with $anchor and $dynamicAnchor declares it once",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Node": {
+            "$anchor": "node",
+            "$dynamicAnchor": "node",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#node"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a nested $id that is not a well-formed URI-reference is left out of the comparison, so repeating it is no collision",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/a.json",
+            "$defs": {
+              "x": {
+                "$id": "bad id"
+              },
+              "y": {
+                "$id": "bad id"
+              }
+            }
           }
         },
         "operations": {

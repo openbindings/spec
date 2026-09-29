@@ -206,6 +206,36 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Plain names join OBI-D-12, and a conformance conclusion names its patch
+  text.** From a second review of the specification against its own design:
+  - OBI-D-12 now covers every same-document reference at an OBI position:
+    a plain-name fragment such as `#task` must be declared with `$anchor` or
+    `$dynamicAnchor` by a schema in the document's own resource, the same
+    lookup OBI-D-13 already makes. `{"$ref": "#Missing"}` is now a violation,
+    as `#/schemas/Missing` already was. Fragments are percent-decoded before
+    either test. §7.3 is retitled "Same-document references".
+  - OBI-D-13 counts a plain name once per declaring schema, so one schema
+    that declares a name with both `$anchor` and `$dynamicAnchor` declares it
+    once, and leaves out of its `$id` comparison an `$id` that cannot be
+    resolved because it, or one it resolves against, is not a well-formed
+    URI-reference.
+  - OBI-T-09 applies to any conclusion about overall conformance and
+    requires it to name the patch release whose text it applied; invariant 5
+    and §8.1 say so. The patch number a document declares still carries no
+    meaning.
+  - OBI-T-08's resolution context covers every resource an `$id` declares in
+    the schemas the document contains, not only those at OBI positions.
+  - Clarified: omitting `input` is the portable way to write an operation
+    that takes no input, and `input: false` and `output: false` weigh
+    differently; a binding claims to carry out the operation it names (the
+    undefined "logical capability" is gone); correspondence is defined once,
+    with one list of what the claim does not establish; §10 names the rules
+    the derived schema also expresses; a schema given its own `$id` cannot
+    refer to the document's schemas that lack one; §1.3 no longer says
+    obtaining a document cannot change its meaning, only that the core reads
+    it the same way; §11's plain-name fragments are those of the document's
+    own resource.
+
 - **Editorial consolidation, clarifications, and duplicate names.** From a
   review that judged the specification against its own design:
   - §1 states the division of responsibility once (core, kind, tools) and

@@ -398,13 +398,19 @@
       ]
     },
     {
-      "description": "a plain-name reference is judged only for its form: whether a schema declares the name is JSON Schema's, surfacing when a tool uses the schema",
+      "description": "a plain-name fragment alone is a same-document reference in a permitted form",
       "document": {
         "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$anchor": "task",
+            "type": "object"
+          }
+        },
         "operations": {
           "f": {
             "input": {
-              "$ref": "#missing"
+              "$ref": "#task"
             }
           }
         }
