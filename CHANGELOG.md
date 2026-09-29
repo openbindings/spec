@@ -206,6 +206,21 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **The empty-object contract says "takes nothing"; dependencies make a
+  caller's claim.**
+  - §5.1 now names `{"type": "object", "maxProperties": 0}` as the portable
+    contract for an operation that takes no meaningful input, since it holds
+    whether a kind carries an empty value or none, and says the same for an
+    operation that returns nothing. Omission means unspecified, and `false`
+    means no value. This supersedes the earlier guidance that omission was
+    the portable choice.
+  - Declaring a dependency asserts that the described component, as a
+    caller, sends only values valid under `input` and handles any value
+    valid under `output`. OBI-T-10 lists it among the author claims that are
+    not document-rule violations.
+  - §4's `listTasks` uses the empty-object `input`; the dependency example
+    adopts a published alias.
+
 - **Third review round: precision and authoring notes.** No design change.
   - "Document resource" is a defined term; OBI-D-05 and OBI-D-12 scope their
     reference checks to it, so a schema that declares `$id` keeps its own

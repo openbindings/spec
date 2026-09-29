@@ -164,7 +164,7 @@ The rules in this specification instantiate six invariants; other sections cite 
 - **Correspondence**: an operation **corresponds to** a shared contract's operation when it carries that operation's name as its key or an alias. The claim is the author's alone ([§5.1](#51-operations)).
 - **Caller-facing**: on the operation's side of a binding. Caller-facing values are the ones a caller of the operation sends and receives under its `input` and `output` contracts; how they correspond to the source interaction, including any adaptation between them, is read under the source's kind. Which values are caller-facing is set out in [§5](#5-document-model).
 - **Binding**: an author-declared realization of an operation through a source, stored under a key in the document's `bindings` map ([§5.3](#53-bindings)).
-- **Realization**: a concrete way of carrying out an operation's contract through a target. A binding declares one, as its author's claim ([§5.3](#53-bindings)); a dependency consumes one supplied from elsewhere ([§5.5](#55-dependencies)).
+- **Realization**: a concrete way of carrying out an operation's contract through a target. A binding declares one, as its author's claim ([§5.3](#53-bindings)); a dependency, also by its author's claim, consumes one supplied from elsewhere ([§5.5](#55-dependencies)).
 - **Target**: what a binding is intended to act on under its source's kind: an entry in an artifact, a member of a live surface, or another form ([§5.4](#54-sources)).
 - **Interaction**: the exchange with a target that acting on a binding involves, such as a request and response, a stream, or a subscription. Its mechanics are read under the source's kind ([§6](#6-kinds)).
 - **Source**: a kind together with optional content read under that kind, stored under a key in the document's `sources` map ([§5.4](#54-sources)).
@@ -220,6 +220,7 @@ An operation is the contract, a source carries the kind under which it and its b
     },
     "listTasks": {
       "description": "List all tasks.",
+      "input": { "type": "object", "maxProperties": 0 },
       "output": {
         "type": "array",
         "items": { "$ref": "#/schemas/Task" }
@@ -271,7 +272,9 @@ An operation's presence alone declares a contract, not availability. A binding d
   "openbindings": "0.2.0",
   "operations": {
     "events.deliver": {
-      "input": { "type": "object" }
+      "aliases": ["acme.events.deliver"],
+      "input": { "type": "object" },
+      "output": { "type": "object", "maxProperties": 0 }
     }
   },
   "dependencies": {
@@ -285,6 +288,8 @@ An operation's presence alone declares a contract, not availability. A binding d
   }
 }
 ```
+
+The alias adopts a published name, so a tool composing the component can look for a provider whose operation carries the same name; how it finds and judges one is its own ([§1.2](#12-out-of-scope)).
 
 ---
 
@@ -340,9 +345,9 @@ An operation object MAY contain:
 
 Absence makes no portable claim at that boundary: it says neither that the interaction carries no values nor that every value is accepted. `false` is a **value** contract that no value satisfies. It is not a cardinality declaration, though the contract directions below give it consequences: since every value a realization produces must satisfy `output`, a realization of `output: false` produces no output value; since no value satisfies `input: false`, a caller has no value it can send within the contract, and a binding that delivers no caller-facing input values can realize it.
 
-An operation that takes no meaningful input can omit `input`, describe the empty value callers send (`{"type": "object", "maxProperties": 0}`), or use `false`. Omission is the portable choice. Kinds differ on whether such a call carries an empty value (an MCP tool's `{}` arguments, a gRPC `Empty` message) or no value at all; absence suits both, while `false` leaves a caller of the first kind nothing it may send.
+For an operation that takes no meaningful input, the portable contract is the empty object, `{"type": "object", "maxProperties": 0}`. Kinds differ on whether such a call carries an empty value (an MCP tool's `{}` arguments, a gRPC `Empty` message) or no value at all, and this contract suits both: the empty value satisfies it, and where no value crosses there is nothing to validate. Omitting `input` would leave the input unspecified, and `false` leaves a caller of the first kind nothing it may send. An operation that returns no value on any outcome, error-shaped or not, is written the same way: the empty-object `output` suits a kind that surfaces an empty result as `{}` and one that returns no value, omission leaves the output unspecified, and `output: false` states that a realization never produces a value, which no realization can honor under a kind that surfaces `{}`.
 
-**Contract directions.** The two schemas are caller-facing contracts running in opposite directions. `input` states that a realization accepts at minimum every value validating against it, and it may accept more; a caller sending such a value honors the input contract. To accept a value is to handle it as input to the operation within the contract. Returning any value that `output` describes, error-shaped or not, completing without returning one, and failing for reasons the value does not determine (state, authorization, availability) all accept it; refusing the value for what it is, other than by returning a value `output` describes, does not. `output` states that every value a realization produces validates against it, and a realization may produce a narrower set; a caller relies on that exactly as far as it trusts the document's claims. A binding attests that its target realizes this contract, and a dependency declares that the described component consumes a realization of it; the operation by itself makes no claim that any realization is available.
+**Contract directions.** The two schemas are caller-facing contracts running in opposite directions. `input` states that a realization accepts at minimum every value validating against it, and it may accept more; a caller sending such a value honors the input contract. To accept a value is to handle it as input to the operation within the contract. Returning any value that `output` describes, error-shaped or not, completing without returning one, and failing for reasons the value does not determine (state, authorization, availability) all accept it; refusing the value for what it is, other than by returning a value `output` describes, does not. `output` states that every value a realization produces validates against it, and a realization may produce a narrower set; a caller relies on that exactly as far as it trusts the document's claims. A binding attests that its target realizes this contract, and a dependency asserts that the described component consumes a realization of it within this contract ([§5.5](#55-dependencies)); the operation by itself makes no claim that any realization is available.
 
 **Aliases.** An operation's **identifiers** are its key and its aliases, one flat namespace in which every identifier resolves the operation equally. The key is the operation's primary name, used for display, logging, and the references bindings and dependencies carry in their `operation` fields; beyond that, choosing a key or an alias carries no meaning. No string occurs more than once among all operations' keys and aliases taken together ([OBI-D-04](#102-document-rules)): an alias never equals its own operation's key, another operation's identifier, or another of its aliases. A name therefore resolves to at most one operation, identically in every tool ([OBI-T-07](#103-tool-rules)). Aliases commonly keep a prior name after a rename, carry a vendor-specific name some consumers look up by, or adopt a shared contract's operation name.
 
@@ -443,6 +448,8 @@ And MAY contain:
 | `description` | string           | Human-readable description.                 |
 
 `operation` holds an operation's key, not an alias, as a binding's does ([OBI-D-11](#102-document-rules), [§5.1](#51-operations)).
+
+**Consumption.** Declaring a dependency asserts that the described component, as a caller of the operation, sends only values that validate against its `input` and handles any value that validates against its `output`, error-shaped values included, each where that schema is specified; an omitted schema carries no claim at that boundary. The assertion is the author's, like a binding's, and no document rule detects a false one ([OBI-T-10](#103-tool-rules)).
 
 When `kinds` is present, it MUST contain one or more unique kinds ([§6](#6-kinds), [OBI-D-02](#102-document-rules)), in no meaningful order. The list is an **any-of constraint**: a binding considered for the dependency meets it if and only if its referenced source's `kind` exactly equals at least one listed kind. Without `kinds`, the dependency declares no kind constraint. Whether a processor supports a kind does not change the comparison, and neither the presence nor the absence of `kinds` says anything about support: a processor may be unable to act on a binding that meets the constraint ([OBI-T-01](#103-tool-rules)).
 
@@ -550,7 +557,10 @@ Schemas pasted in from standalone files are the usual source of mistakes. Such a
     }
   },
   "operations": {
-    "getTree": { "output": { "$ref": "https://example.com/schemas/tree.json" } }
+    "getTree": {
+      "input": { "type": "object", "maxProperties": 0 },
+      "output": { "$ref": "https://example.com/schemas/tree.json" }
+    }
   }
 }
 ```
@@ -683,7 +693,7 @@ A conformant **tool** meets each of the following that applies to it. Each item 
 - **OBI-T-07** (applies when resolving operation names): Resolves a name against the flat namespace of operation identifiers (each operation's key together with its `aliases`), treating key and alias matches as equally authoritative. OBI-D-04 makes the namespace document-unique, so a name resolves to at most one operation; a tool MUST NOT privilege key matches over alias matches, and MUST NOT resolve a name to an operation unless the name exactly equals one of that operation's identifiers (no trimming, case-folding, or approximate matching). The bindings for a resolved operation are found by the operation's key (the value in `bindings[*].operation`), not by the alias used to reach it.
 - **OBI-T-08** (applies when claiming to validate a value against an operation's `input` or `output` schema): Evaluates the value under the schema's applicable JSON Schema dialect, with the OBI document as the resolution context for embedded schemas: its own resource and every resource an `$id` declares in the schemas it contains ([§5.2](#52-schemas), [§7](#7-reference-resolution)). The operation schema applies separately to each value crossing that boundary. A required reference or capability that is unavailable cannot establish either validation success or instance mismatch. This rule does not require a whole-graph readiness check or prescribe evaluation strategy, resource acquisition, or report shape; invoking, rendering, or indexing alone does not trigger validation.
 - **OBI-T-09** (applies when reporting a conclusion about overall document conformance): Claims conformance only when every applicable document rule has been established with no violation. A known violation establishes non-conformance; absence of a found violation alone does not establish conformance. The conclusion names the release of this specification whose text it applied (a patch release, or an explicitly supported prerelease), since a patch release can correct the text a conclusion rests on ([§8.1](#81-openbindings-field-specification-version)). A tool may report a narrower scope or an inability to reach an overall conclusion in its own form ([§10.4](#104-conformance-conclusions)).
-- **OBI-T-10** (applies when reporting document conformance): Does not treat the apparent inaccuracy of an author claim as a document-rule violation: an operation's `idempotent` or `examples` ([§5.1](#51-operations)), a binding's claim to realize its operation ([§5.3](#53-bindings)), or a correspondence claim ([§5.1](#51-operations)). Tools may independently decide whether to rely on such a claim or act on the document.
+- **OBI-T-10** (applies when reporting document conformance): Does not treat the apparent inaccuracy of an author claim as a document-rule violation: an operation's `idempotent` or `examples` ([§5.1](#51-operations)), a binding's claim to realize its operation ([§5.3](#53-bindings)), a dependency's claim to consume its operation within the contract ([§5.5](#55-dependencies)), or a correspondence claim ([§5.1](#51-operations)). Tools may independently decide whether to rely on such a claim or act on the document.
 - **OBI-T-11** (applies when checking examples): Does not resolve an example–schema mismatch by treating the example as an exception ([§5.1](#51-operations)): the schema is authoritative, and an example never widens, narrows, or overrides it. A mismatch it finds is a false example claim, not a document-rule violation.
 
 These rules fix the meaning of core fields and what the claims made under them assert. Whether to act on a valid document or continue with a non-conformant one, and how to diagnose and how to serialize reports, are the tool's, with the other tool concerns of [§1.2](#12-out-of-scope).
