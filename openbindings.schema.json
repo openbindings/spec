@@ -36,7 +36,7 @@
     },
     "operations": {
       "type": "object",
-      "description": "Protocol-independent operation contract registry keyed by operation name. Presence alone does not assert that a realization is available.",
+      "description": "Protocol-independent operation contracts, keyed by operation name. Presence alone does not assert that a realization is available.",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -118,7 +118,7 @@
         },
         "aliases": {
           "type": "array",
-          "description": "Additional names for this operation, equal in standing to its key. The key plus aliases form one flat, document-unique namespace; every name resolves to this operation. A shared contract's qualified name here claims correspondence with that contract's operation.",
+          "description": "Additional names for this operation, equal in standing to its key. The key plus aliases form one flat, document-unique namespace; every name resolves to this operation. Carrying a shared contract's operation name here claims correspondence with that operation.",
           "uniqueItems": true,
           "items": {
             "type": "string",

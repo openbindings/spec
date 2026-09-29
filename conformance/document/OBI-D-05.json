@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-05",
   "section": "10.2",
-  "description": "Has every schema $ref and $dynamicRef at an OBI position an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI, each a URI-reference per RFC 3986. Within a schema resource that declares $id, references take any form JSON Schema allows.",
+  "description": "Has every schema $ref and $dynamicRef in the document resource an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI, all of them well-formed URI-references per RFC 3986 §4.1.",
   "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the source's kind, and the positives below pin that no core rule judges it.",
   "tests": [
     {

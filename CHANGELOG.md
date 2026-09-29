@@ -206,6 +206,42 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Third review round: precision and authoring notes.** No design change.
+  - "Document resource" is a defined term; OBI-D-05 and OBI-D-12 scope their
+    reference checks to it, so a schema that declares `$id` keeps its own
+    relative references as before, now stated in the rule text.
+  - OBI-D-12 reads as three cases (empty reference or fragment; JSON
+    Pointer, which must be valid; plain name). A pointer with an invalid
+    escape, a pointer into a binding's `content`, and a fragment that does
+    not decode to UTF-8 are pinned as violations.
+  - Conformance is judged by the numbered rules alone. The prose defines the
+    model; the derived schema decides structural conformance through
+    OBI-D-02, published with the patch release a conclusion names.
+  - Judging a document against a line's rules is interpretation, so version
+    refusal comes first; a prerelease is identified by its full version and
+    read under its own text and schema; an unparseable text is reported like
+    one that declares no version.
+  - Clarified: input acceptance is interaction-neutral (any value `output`
+    describes, or none, accepts); a binding claims the capability its name and
+    description convey; `$schema` belongs at a resource root, per JSON
+    Schema; a `$dynamicRef` can reach the document resource through dynamic
+    scope; `$id`s are compared as written; non-consuming reference cycles are
+    undefined under JSON Schema; tools' matching freedom stops at OBI-T-01 and
+    OBI-T-07; "shared contract" is defined; the credential note moves to §5.
+  - Added: an example-object field table, notes on schemas from other
+    dialects and on one contract across several bindings, a library
+    recipe in §7.5, the full RFC 6838 template in §11, and an OpenAPI
+    reference.
+  - §10.1's table drops its restating column and lists every tool rule,
+    marking the rows every processor performs.
+  - A conformance conclusion names the release whose text it applied, a
+    patch release or an explicitly supported prerelease (invariant 5,
+    OBI-D-02, OBI-T-09, §10.4); OBI-T-04 names OBI-D-01 beside OBI-D-09 for a
+    document that declares no readable version.
+  - Name equality is defined (two names are the same only when their
+    strings are exactly equal), so every rule that compares names compares
+    them exactly; §5.5 cites OBI-D-02 for the `kinds` array constraints.
+
 - **Voice and economy pass.** No requirement changes. Each boundary and
   clarification is stated once, at its home, with cross-references
   elsewhere; §3 entries are short definitions that point to their sections;
