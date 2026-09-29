@@ -212,6 +212,9 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   both informative. §7.2 evaluates a decoded pointer per RFC 6901 §4 (not
   §6, which describes the encoded form); invariant 5 cites OBI-D-02 for the
   derived schema; relative paths name files in the specification repository.
+  Five OBI-D-12 fixtures pin the table's contested cases: a percent-encoded
+  property name, an encoded leading slash, a fragment decoded only once, and
+  a schema value and an array value of the legacy dependencies.
 
 - **Second calibrated round.** OBI-T-08 gives no verdict on an evaluation
   JSON Schema leaves undefined, on a keyword value invalid under its readings,
