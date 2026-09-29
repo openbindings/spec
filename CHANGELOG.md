@@ -206,6 +206,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Second calibrated round.** OBI-T-08 gives no verdict on an evaluation
+  JSON Schema leaves undefined, on a keyword value invalid under its readings,
+  or against an absent schema (moved from its Note into the rule). §7.2
+  resolves same-document references in the document resource as OBI-D-12
+  looks them up. The §4 key also claims correspondence; an operation's
+  `description` states the capability its bindings claim; "takes" is
+  glossed; §8.1 separates display from interpretation; OBI-T-04's Note no
+  longer speaks for other lines; §2 states the invariants' role; OBI-D-06
+  says keyword.
+
 - **Economy pass.** No requirement changes. Restated boundaries keep one home
   with cross-references elsewhere: tool discretion, the objects that carry
   fields, naming the text a conclusion applies, and §7.3 and §7.4's

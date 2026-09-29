@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/schema/openbindings-0.2.json",
   "title": "OpenBindings Interface Document (v0.2.0)",
-  "description": "Derived JSON Schema for the OpenBindings interface document. Expresses the structural portion of the specification; OBI-D-02 applies it as published, and a conflict with the prose is an erratum, and this schema decides OBI-D-02 until a patch release corrects it (see openbindings.md OBI-D-02).",
+  "description": "Derived JSON Schema for the OpenBindings interface document. It expresses the structural portion of the specification, and OBI-D-02 applies it as published. A conflict with the prose is an erratum; this schema decides OBI-D-02 until a patch release corrects it (see openbindings.md OBI-D-02).",
   "type": "object",
   "required": ["openbindings", "operations"],
   "properties": {
@@ -103,7 +103,7 @@
       "properties": {
         "description": {
           "type": "string",
-          "description": "Human-readable description of the operation."
+          "description": "Human-readable description of the operation's capability, which its bindings claim to carry out (§5.3)."
         },
         "deprecated": {
           "type": "boolean",
