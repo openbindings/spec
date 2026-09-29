@@ -1,40 +1,85 @@
 {
   "rule": "OBI-D-11",
   "section": "10.2",
-  "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
-  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §8.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected.",
+  "description": "Has every dependencies[*].operation value present as a key in the document's operations map.",
   "tests": [
     {
-      "description": "current released spec version",
+      "description": "dependency references an existing operation key with no binding-family constraint",
       "document": {
         "openbindings": "0.2.0",
-        "operations": {}
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent"
+          }
+        }
       },
       "valid": true
     },
     {
-      "description": "1.0.0 release version",
+      "description": "multiple named dependencies reference the same operation with different binding-family constraints",
       "document": {
-        "openbindings": "1.0.0",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "customerDelivery": {
+            "operation": "deliverEvent",
+            "kinds": [
+              "example.openapi@1"
+            ]
+          },
+          "internalDelivery": {
+            "operation": "deliverEvent",
+            "kinds": [
+              "example.grpc@1"
+            ]
+          }
+        }
       },
-      "valid": true,
-      "requiresSupports": "1.0.0"
+      "valid": true
     },
     {
-      "description": "version with build metadata",
+      "description": "the same operation is both realized by a binding and consumed through a dependency",
       "document": {
-        "openbindings": "1.0.0+build.123",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "forwardDelivery": {
+            "operation": "deliverEvent"
+          }
+        },
+        "sources": {
+          "localDelivery": {
+            "kind": "example.delivery@1"
+          }
+        },
+        "bindings": {
+          "deliverEvent.local": {
+            "operation": "deliverEvent",
+            "source": "localDelivery"
+          }
+        }
       },
-      "valid": true,
-      "requiresSupports": "1.0.0"
+      "valid": true
     },
     {
-      "description": "two-component version is not SemVer 2.0.0",
+      "description": "dependency references a non-existent operation key",
       "document": {
-        "openbindings": "0.2",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "missingOperation"
+          }
+        }
       },
       "valid": false,
       "violates": [
@@ -42,10 +87,21 @@
       ]
     },
     {
-      "description": "four-component version is not SemVer 2.0.0",
+      "description": "dependency operation value matches an alias rather than a key in the operations map",
       "document": {
-        "openbindings": "0.2.0.0",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {
+            "aliases": [
+              "events.deliver"
+            ]
+          }
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "events.deliver"
+          }
+        }
       },
       "valid": false,
       "violates": [
@@ -53,10 +109,17 @@
       ]
     },
     {
-      "description": "non-numeric version label",
+      "description": "dependency references operation constructor, a valid identifier and built-in object property name, with no such operation defined",
       "document": {
-        "openbindings": "latest",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "constructor"
+          }
+        }
       },
       "valid": false,
       "violates": [
@@ -64,59 +127,19 @@
       ]
     },
     {
-      "description": "version with v prefix",
+      "description": "document may genuinely define and depend on an operation named constructor",
       "document": {
-        "openbindings": "v0.2.0",
-        "operations": {}
+        "openbindings": "0.2.0",
+        "operations": {
+          "constructor": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "constructor"
+          }
+        }
       },
-      "valid": false,
-      "violates": [
-        "OBI-D-11"
-      ]
-    },
-    {
-      "description": "empty string",
-      "document": {
-        "openbindings": "",
-        "operations": {}
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-11"
-      ]
-    },
-    {
-      "description": "openbindings value is a number, not a string",
-      "document": {
-        "openbindings": 0.2,
-        "operations": {}
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-11"
-      ]
-    },
-    {
-      "description": "openbindings value is null",
-      "document": {
-        "openbindings": null,
-        "operations": {}
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-11"
-      ]
-    },
-    {
-      "description": "leading-zero pre-release identifier (forbidden by SemVer 2.0.0 §9)",
-      "document": {
-        "openbindings": "1.0.0-01",
-        "operations": {}
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-11"
-      ]
+      "valid": true
     }
   ]
 }

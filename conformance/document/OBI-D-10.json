@@ -1,40 +1,47 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Has every provided example value validating against its operation's corresponding specified schema when that schema's statically reachable graph resolves entirely within the document; unused $defs entries do not make the graph external.",
+  "description": "Has every operation input and output and every entry in schemas valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn, with format as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1), and the meta-schemas' pattern values read as ECMA-262 regular expressions, the dialect JSON Schema names (JSON Schema Core §6.4). Note: the pinned meta-schemas make the rule decidable offline; it resolves none of the document's references and evaluates no value against the document's schemas.",
+  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; the meta-schemas validate subschemas recursively. 0.2.0 admits boolean schemas at every schema position (true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is meta-schema validity only: an unparseable pattern, an unresolvable reference, and in-place recursion pass, because whether a schema can be evaluated is JSON Schema's and surfaces when a tool uses it. Negative cases list OBI-D-10 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
   "tests": [
     {
-      "description": "example input validates against specified input schema",
+      "description": "object schemas with nested subschemas at operation input and output are valid schemas",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
           "createTask": {
             "input": {
               "type": "object",
-              "properties": { "title": { "type": "string" } },
-              "required": ["title"]
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "title"
+              ]
             },
-            "examples": {
-              "happy": { "input": { "title": "Buy milk" } }
-            }
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "example output validates against specified output schema",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {
             "output": {
-              "type": "object",
-              "properties": { "id": { "type": "string" } },
-              "required": ["id"]
-            },
-            "examples": {
-              "happy": { "output": { "id": "abc123" } }
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         }
@@ -42,222 +49,346 @@
       "valid": true
     },
     {
-      "description": "example with neither input nor output present (no validation required)",
+      "description": "boolean schema true at operation input is a valid schema (contract specified, every value satisfies it)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": {
-            "input": { "type": "object" },
-            "output": { "type": "object" },
-            "examples": {
-              "minimal": { "description": "purely descriptive example" }
-            }
+          "ping": {
+            "input": true
           }
         }
       },
       "valid": true
     },
     {
-      "description": "example input present but operation input schema unspecified (no validation required)",
+      "description": "boolean schema false at operation output is a valid schema (contract specified, no value satisfies it)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": {
-            "examples": {
-              "raw": { "input": { "anything": "goes" } }
-            }
+          "fireAndForget": {
+            "output": false
           }
         }
       },
       "valid": true
     },
     {
-      "description": "example input violates required field of operation input schema",
+      "description": "empty object schema {} at operation input is a valid schema (the equivalent spelling of true)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
-          "createTask": {
-            "input": {
-              "type": "object",
-              "properties": { "title": { "type": "string" } },
-              "required": ["title"]
-            },
-            "examples": {
-              "broken": { "input": {} }
-            }
+          "ping": {
+            "input": {}
           }
         }
       },
-      "valid": false,
-      "violates": ["OBI-D-10"]
+      "valid": true
     },
     {
-      "description": "example output type does not match operation output schema",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {
-            "output": {
-              "type": "object",
-              "properties": { "id": { "type": "string" } },
-              "required": ["id"]
-            },
-            "examples": {
-              "broken": { "output": { "id": 123 } }
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-10"]
-    },
-    {
-      "description": "example input wrong type for operation input schema",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {
-            "input": {
-              "type": "object",
-              "properties": { "title": { "type": "string" } }
-            },
-            "examples": {
-              "broken": { "input": { "title": 42 } }
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-10"]
-    },
-    {
-      "description": "example input matches operation input schema reached via $ref into the schemas map",
+      "description": "boolean schema as an entry in the top-level schemas map is a valid schema",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
-          "TaskInput": {
-            "type": "object",
-            "properties": { "title": { "type": "string" } },
-            "required": ["title"]
-          }
+          "Anything": true
         },
-        "operations": {
-          "createTask": {
-            "input": { "$ref": "#/schemas/TaskInput" },
-            "examples": {
-              "happy": { "input": { "title": "Buy milk" } }
-            }
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "example output matches operation output schema reached via $ref into the schemas map",
-      "document": {
-        "openbindings": "0.2.0",
-        "schemas": {
-          "Task": {
-            "type": "object",
-            "properties": { "id": { "type": "string" } },
-            "required": ["id"]
-          }
-        },
-        "operations": {
-          "createTask": {
-            "output": { "$ref": "#/schemas/Task" },
-            "examples": {
-              "happy": { "output": { "id": "abc123" } }
-            }
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "example input violates required field of operation input schema reached via $ref",
-      "document": {
-        "openbindings": "0.2.0",
-        "schemas": {
-          "TaskInput": {
-            "type": "object",
-            "properties": { "title": { "type": "string" } },
-            "required": ["title"]
-          }
-        },
-        "operations": {
-          "createTask": {
-            "input": { "$ref": "#/schemas/TaskInput" },
-            "examples": {
-              "broken": { "input": {} }
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-10"]
-    },
-    {
-      "description": "example output type does not match operation output schema reached via $ref",
-      "document": {
-        "openbindings": "0.2.0",
-        "schemas": {
-          "Task": {
-            "type": "object",
-            "properties": { "id": { "type": "string" } },
-            "required": ["id"]
-          }
-        },
-        "operations": {
-          "createTask": {
-            "output": { "$ref": "#/schemas/Task" },
-            "examples": {
-              "broken": { "output": { "id": 123 } }
-            }
-          }
-        }
-      },
-      "valid": false,
-      "violates": ["OBI-D-10"]
-    },
-    {
-      "description": "an example value that breaks a format constraint still validates: format is an annotation under the validation semantics of section 5.2",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createUser": {
-            "input": {
-              "type": "object",
-              "properties": { "email": { "type": "string", "format": "email" } }
-            },
-            "examples": {
-              "loose": { "input": { "email": "not-an-email" } }
-            }
-          }
-        }
-      },
-      "valid": true
-    },
-    {
-      "description": "an unused $defs entry with an external reference does not exempt a mismatched example from document conformance",
-      "document": {
-        "openbindings": "0.2.0",
         "operations": {
           "echo": {
-            "output": {
-              "type": "string",
-              "$defs": {
-                "unused": { "$ref": "https://schemas.example.invalid/unused.json" }
+            "input": {
+              "$ref": "#/schemas/Anything"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "boolean schemas at nested subschema positions (properties value, additionalProperties, items) are valid schemas",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "configure": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "locked": false,
+                "values": {
+                  "type": "array",
+                  "items": true
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "unknown keywords are legitimate annotations, not meta-schema violations",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "x-internal": true,
+              "futureKeyword": {
+                "arbitrary": "annotation"
               }
-            },
-            "examples": {
-              "broken": { "output": 42 }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an unparseable pattern passes the meta-schemas: whether an engine compiles it is JSON Schema's, surfacing when a tool uses the schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "([unclosed"
+                }
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an unresolvable external $ref passes: meta-schema validity does not require resolving external resources",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "https://schemas.example.com/never-published/task.json"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "type keyword with a number value at operation input is not a schema in the pinned dialect",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": 42
             }
           }
         }
       },
       "valid": false,
-      "violates": ["OBI-D-10"]
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "type keyword naming an unknown simple type fails the meta-schemas",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "input": {
+              "type": "str"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a string at operation output is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "output": "not-a-schema"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a number as an entry in the top-level schemas map is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": 42
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a keyword value of the wrong JSON type at a nested subschema position (minLength as a string) fails recursively",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": "3"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "#/schemas/Task"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "required as a string instead of an array inside an items subschema at operation input",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTasks": {
+            "input": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": "title"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "oneOf as an object instead of an array at operation output",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "oneOf": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a number as a subschema inside an anyOf array is neither object nor boolean form",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "getTask": {
+            "output": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                42
+              ]
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a schema that applies itself in place passes the meta-schemas: JSON Schema leaves such recursion undefined at evaluation (section 9.4.1), not a document rule",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$ref": "#/schemas/A"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/A"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "recursion that moves to another instance location, through properties and items, is a valid schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Tree": {
+            "type": "object",
+            "properties": {
+              "children": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/schemas/Tree"
+                }
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/Tree"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a meta-schema pattern is an ECMA-262 regular expression, so an $anchor ending in a newline fails the anchor pattern",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "a": {
+            "input": {
+              "$anchor": "a\n"
+            }
+          }
+        }
+      },
+      "valid": false
     }
   ]
 }

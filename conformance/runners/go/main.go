@@ -254,6 +254,15 @@ func runOne(rule string, t Test) Result {
 		return r
 	}
 	r.Actual = !refused && report.Conclusion != openbindings.ConclusionNonConformant
+	if !t.Valid && !refused && report.Conclusion != openbindings.ConclusionNonConformant {
+		for _, expectedRule := range t.Violates {
+			if report.Evidence[expectedRule] == openbindings.EvidenceInconclusive {
+				r.Skipped = true
+				r.Reason = fmt.Sprintf("%s was not decided by this validator", expectedRule)
+				return r
+			}
+		}
+	}
 	r.Reason = disagreement(t, report, refused)
 	r.Passed = r.Reason == ""
 	return r

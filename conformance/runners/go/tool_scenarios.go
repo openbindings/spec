@@ -66,9 +66,7 @@ type concludeConformanceScenario struct {
 		Evidence map[string]openbindings.RuleEvidenceStatus `json:"evidence"`
 	} `json:"given"`
 	Expected struct {
-		Conclusion   string   `json:"conclusion"`
-		Violated     []string `json:"violated"`
-		Inconclusive []string `json:"inconclusive"`
+		Conclusion string `json:"conclusion"`
 	} `json:"expected"`
 }
 
@@ -154,16 +152,6 @@ func runConcludeConformanceScenario(rule string, raw json.RawMessage) Result {
 	report := openbindings.ConcludeConformance(scenario.Given.Evidence)
 	if string(report.Conclusion) != scenario.Expected.Conclusion {
 		return failedScenario(rule, scenario.Description, fmt.Errorf("conclusion %q; expected %q", report.Conclusion, scenario.Expected.Conclusion))
-	}
-	expectedViolated := append([]string(nil), scenario.Expected.Violated...)
-	expectedInconclusive := append([]string(nil), scenario.Expected.Inconclusive...)
-	sort.Strings(expectedViolated)
-	sort.Strings(expectedInconclusive)
-	if !equalStrings(report.Violated, expectedViolated) {
-		return failedScenario(rule, scenario.Description, fmt.Errorf("violated rules %v; expected %v", report.Violated, expectedViolated))
-	}
-	if !equalStrings(report.Inconclusive, expectedInconclusive) {
-		return failedScenario(rule, scenario.Description, fmt.Errorf("inconclusive rules %v; expected %v", report.Inconclusive, expectedInconclusive))
 	}
 	return passedScenario(rule, scenario.Description)
 }

@@ -177,7 +177,6 @@
   "operations": {
     "getMenu": {
       "description": "Returns the full menu with drinks, sizes, and prices.",
-      "idempotent": true,
       "output": {
         "$ref": "#/schemas/Menu"
       }
@@ -193,7 +192,6 @@
     },
     "getOrderStatus": {
       "description": "Check the current status of an order by ID.",
-      "idempotent": true,
       "input": {
         "$ref": "#/schemas/OrderStatusInput"
       },
@@ -267,28 +265,32 @@
       "source": "rest",
       "content": {
         "target": "#/paths/~1api~1menu/get"
-      }
+      },
+      "idempotent": true
     },
     "getMenu.mcp": {
       "operation": "getMenu",
       "source": "mcp",
       "content": {
         "target": "tools/getMenu"
-      }
+      },
+      "idempotent": true
     },
     "getMenu.grpc": {
       "operation": "getMenu",
       "source": "grpc",
       "content": {
         "target": "blend.CoffeeShop/GetMenu"
-      }
+      },
+      "idempotent": true
     },
     "getMenu.connect": {
       "operation": "getMenu",
       "source": "connect",
       "content": {
         "target": "blend.CoffeeShop/GetMenu"
-      }
+      },
+      "idempotent": true
     },
     "placeOrder.rest": {
       "operation": "placeOrder",
@@ -323,28 +325,32 @@
       "source": "rest",
       "content": {
         "target": "#/paths/~1api~1orders~1{orderId}/get"
-      }
+      },
+      "idempotent": true
     },
     "getOrderStatus.mcp": {
       "operation": "getOrderStatus",
       "source": "mcp",
       "content": {
         "target": "tools/getOrderStatus"
-      }
+      },
+      "idempotent": true
     },
     "getOrderStatus.grpc": {
       "operation": "getOrderStatus",
       "source": "grpc",
       "content": {
         "target": "blend.CoffeeShop/GetOrderStatus"
-      }
+      },
+      "idempotent": true
     },
     "getOrderStatus.connect": {
       "operation": "getOrderStatus",
       "source": "connect",
       "content": {
         "target": "blend.CoffeeShop/GetOrderStatus"
-      }
+      },
+      "idempotent": true
     },
     "cancelOrder.rest": {
       "operation": "cancelOrder",
@@ -393,7 +399,8 @@
       "source": "graphql",
       "content": {
         "target": "Query/getMenu"
-      }
+      },
+      "idempotent": true
     },
     "placeOrder.graphql": {
       "operation": "placeOrder",
@@ -407,7 +414,8 @@
       "source": "graphql",
       "content": {
         "target": "Query/getOrderStatus"
-      }
+      },
+      "idempotent": true
     },
     "cancelOrder.graphql": {
       "operation": "cancelOrder",

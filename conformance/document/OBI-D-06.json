@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-06",
   "section": "10.2",
-  "description": "Has every $schema value, where present, equal to https://json-schema.org/draft/2020-12/schema.",
+  "description": "Has every $schema in a schema the document contains identifying the 2020-12 meta-schema: https://json-schema.org/draft/2020-12/schema, with or without an empty fragment. A $schema member of an example value or of a source's or binding's content is data, not a schema keyword.",
   "tests": [
     {
       "description": "schema with explicit 2020-12 $schema",
@@ -9,6 +9,7 @@
         "openbindings": "0.2.0",
         "schemas": {
           "Task": {
+            "$id": "https://example.com/task.schema.json",
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "type": "object"
           }
@@ -32,6 +33,7 @@
         "openbindings": "0.2.0",
         "schemas": {
           "Task": {
+            "$id": "https://example.com/task.schema.json",
             "$schema": "https://json-schema.org/draft/2019-09/schema",
             "type": "object"
           }
@@ -47,6 +49,7 @@
         "openbindings": "0.2.0",
         "schemas": {
           "Task": {
+            "$id": "https://example.com/task.schema.json",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object"
           }
@@ -63,6 +66,7 @@
         "operations": {
           "createTask": {
             "input": {
+              "$id": "https://example.com/create-task.schema.json",
               "$schema": "https://json-schema.org/draft/2019-09/schema",
               "type": "object"
             }
@@ -71,6 +75,104 @@
       },
       "valid": false,
       "violates": ["OBI-D-06"]
+    },
+    {
+      "description": "a $schema member inside an example value or a source's content is data, not a schema keyword",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "lint": {
+            "input": {
+              "type": "object"
+            },
+            "examples": {
+              "e": {
+                "input": {
+                  "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+              }
+            }
+          }
+        },
+        "sources": {
+          "s": {
+            "kind": "example.test@1",
+            "content": {
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a wrong $schema on a nested schema that declares $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-06"
+      ]
+    },
+    {
+      "description": "$schema naming the 2020-12 meta-schema with an empty fragment identifies the same meta-schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema#",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "createTask": {
+            "input": {
+              "$ref": "https://example.com/task.schema.json"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a draft-07 $schema under the legacy definitions keyword is in a schema the document contains",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "definitions": {
+              "B": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-06"
+      ]
     }
   ]
 }

@@ -26,7 +26,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 - **Named operation dependencies in the Core document model.** The optional
   `dependencies` map declares named consumption points that reference operation
   keys and may carry a nonempty, unique, unordered `kinds` any-of list of
-  exact kinds. Operations are now explicitly neutral
+  exact kinds and a human-readable `description`. Operations are now explicitly neutral
   contracts: bindings attest concrete realizations, dependencies declare
   consumption, and either relationship may appear independently or together.
   Dependency satisfaction, provider matching and selection, registration,
@@ -205,6 +205,448 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- **Worked tables.** §7.5 tabulates same-document references in one example
+  document with their OBI-D-12 (or OBI-D-05) outcomes, and §8.1 tabulates
+  version-declaration cases with what a processor supporting only 0.2 does,
+  both informative. §7.2 evaluates a decoded pointer per RFC 6901 §4 (not
+  §6, which describes the encoded form); invariant 5 cites OBI-D-02 for the
+  derived schema; relative paths name files in the specification repository.
+  Five OBI-D-12 fixtures pin the table's contested cases: a percent-encoded
+  property name, an encoded leading slash, a fragment decoded only once, and
+  a schema value and an array value of the legacy dependencies.
+
+- **Second calibrated round.** OBI-T-08 gives no verdict on an evaluation
+  JSON Schema leaves undefined, on a keyword value invalid under its readings,
+  or against an absent schema (moved from its Note into the rule). §7.2
+  resolves same-document references in the document resource as OBI-D-12
+  looks them up. The §4 key also claims correspondence; an operation's
+  `description` states the capability its bindings claim; "takes" is
+  glossed; §8.1 separates display from interpretation; OBI-T-04's Note no
+  longer speaks for other lines; §2 states the invariants' role; OBI-D-06
+  says keyword.
+
+- **Economy pass.** No requirement changes. Restated boundaries keep one home
+  with cross-references elsewhere: tool discretion, the objects that carry
+  fields, naming the text a conclusion applies, and §7.3 and §7.4's
+  restatements of OBI-D-12 and OBI-D-13. Long sentences, including some
+  inside rules, are split without moving a keyword; the *Note* convention is
+  stated once in §10 and covers a note to its rule's end; §3 defines "shared
+  contract"; §5 labels context and §5.2 the dialect; §5.3 lists the binding
+  claim's two parts. The text is about 4% shorter.
+
+- **Calibrated review round: version decoding, claim quantifiers, and value
+  validation readings.**
+  - OBI-T-04 locates the declared version in the text decoded as UTF-8 from
+    left to right, each byte outside a well-formed sequence replaced by
+    U+FFFD; OBI-D-01 still judges the bytes.
+    A processor whose parser cannot tell whether the `openbindings` member is
+    repeated decides the line from the value it reads, so the latitude falls
+    only on texts no line accepts; the escape that let a validator leave the
+    line undecided is gone, as is §10.4's clause for it.
+  - A binding claims its target takes any value `input` describes, without
+    promising success on each, and returns only values `output` describes,
+    mirroring the dependency claim. Correspondence claims the operation a name
+    identifies in each shared contract that publishes it.
+  - OBI-T-08 reads `format` as an annotation where the dialect leaves its
+    assertion optional, and patterns as ECMA-262 with Unicode semantics (JSON
+    Schema Core §6.4); an absent schema gives no verdict.
+  - Smaller: `$schema` is written only beside `$id`, and the derived schema
+    checks its value, not its placement; the meta-schemas are identified; §9
+    notes `$id` shadowing across documents; §7.5's library recipe covers
+    dynamic scope, references into non-schema documents, and a worked
+    boundary example; idempotency's context equivalence is stated; OBI-T-03
+    is labeled by its trigger; OBI-T-09 names the working-draft case; §6's
+    kind foundations include exact kind identity; RFC 3629 is a normative
+    reference.
+
+- **`input` and `output` describe shape; `idempotent` moves to bindings.**
+  - `input` describes the values an operation takes and `output` the values
+    it returns, like a function signature: shape, not behavior. The "accepts"
+    and "failure" definitions are removed; no document can promise which
+    values a realization succeeds on or that it is available. What a binding
+    or dependency asserts is an author claim.
+  - A binding's claim is that its target realizes the operation as the
+    document describes it, including the operation's correspondence claims.
+  - `idempotent` is now a binding field (moved from operations, schema
+    included): each binding's author claim about repeating the operation
+    through it. Realizations of one operation can differ. The examples, the
+    OBI-T-10 fixtures, the canonical-order script, and the migration guide
+    follow.
+  - OBI-D-13 counts every `$anchor` and `$dynamicAnchor` declaration of a
+    plain name, as JSON Schema Core §8.2.2 does, so one schema declaring a
+    name with both keywords is a duplicate (the fixture that allowed it now
+    rejects it).
+
+- **Sixth review round: precision fixes.** OBI-D-10 reads the meta-schemas'
+  `pattern` values as ECMA-262, the dialect JSON Schema names, so an
+  `$anchor` ending in a newline fails on every validator (new fixture).
+  OBI-T-04 states the version-declaration test by position (no byte-order
+  mark, JSON grammar, one `openbindings` string) and says a validator that
+  cannot see a repeated member may still report a violation it establishes.
+  OBI-T-03 applies when a processor interprets a document. OBI-T-01 applies
+  whenever a kind string is interpreted. A binding's assertion covers
+  `idempotent: true`; `false` warns about the operation. `$schema`
+  placement is JSON Schema's prohibition. §3 defines "field"; §5 states that
+  objects are closed except for `x-` fields. §4's `listTasks` carries the
+  error shape. Correspondence's publishing advice is its own informative
+  paragraph.
+
+- **Fifth review round: tool-rule voice, resolver obligation, and claim
+  definitions.**
+  - Every tool rule states its requirements with BCP 14 keywords, and
+    explanation moves into sentences marked *Note*, as in OBI-D-01, OBI-D-10,
+    and OBI-D-12. OBI-T-06 now requires reference resolution as §5.2 and §7
+    define. OBI-T-04 admits an explicitly included prerelease by its full
+    version and carries the definition of a declared version. OBI-T-01 names
+    the comparisons it governs. OBI-T-10 cites §5's list of author claims.
+    OBI-D-02 carries its ECMA-262 and erratum clauses. OBI-D-13 resolves
+    `$id`s per RFC 3986 §5.2, which removes dot segments (a new fixture pins
+    the case).
+  - A correspondence claim asserts that the operation is the one the adopted
+    name identifies in the shared contract. A failure is an outcome its kind
+    reports as ending without an output value. `idempotent: false` is an
+    operation-level warning every binding honors.
+  - Context has one definition (§5). §6's list of what a kind stands on
+    includes the binding's full claim. Invariant 5 names the derived schema
+    and meta-schemas as its local resources. §10.4 places version refusal and
+    an undecided line.
+  - Notes on `$schema` placement, cross-document references, dynamic-anchor
+    capture, unencoded plain names, and JCS number rendering; §4's example
+    says how its error shape surfaces.
+
+- **Each requirement is stated once; tools honor defined meanings.**
+  - OBI-T-02 now requires a tool that interprets OBI-defined fields to give
+    each defined field its defined meaning, presence included, as well as
+    giving unknown fields none. Without it, a tool could render an omitted
+    `idempotent` as `false` and still conform. OBI-D-03 states that its
+    pattern is ECMA-262, matched against the whole name.
+  - The numbered rules of §10 are the single statement of each requirement.
+    The body explains the model and points to them without BCP 14 MUSTs;
+    §10 opens by saying conformance is judged by those rules alone.
+    Binding, source, and dependency member tables each become one table with
+    a Required column. "Author claims" gets one home in §5 and §3.
+  - Economy pass: repeated statements reduced to one home plus a
+    cross-reference, sentences shortened, negations turned positive where a
+    misreading is unlikely. The text is about 8 percent shorter; rules,
+    invariants, tables, and examples are unchanged apart from the two rule
+    edits above.
+
+- **Fourth review round: determinism and claim precision.** No design
+  change.
+  - A text declares a version only when it is UTF-8 JSON without a
+    byte-order mark whose root has exactly one `openbindings` member that is
+    a SemVer string, so the line decision no longer depends on a parser's
+    leniency. Interpreting a document is defined, and OBI-T-04 requires a
+    version refusal only when interpretation of an unsupported line is asked
+    for.
+  - The schemas the document contains are reached through the same keyword
+    list inside `$id` resources, and nothing else counts. OBI-D-13 compares
+    only an `$id` that is absolute or resolves against an enclosing compared
+    `$id`. OBI-D-12 states the UTF-8 clause §7.3 already had.
+  - A binding asserts that its target carries out the operation it
+    references, as the description conveys it; identifiers, keys and aliases
+    alike, are not part of the assertion.
+  - Acceptance applies wherever an interaction carries an input value,
+    counts any returned value when `output` is absent, and turns on reasons
+    the value alone determines. "Context" is defined in §3, and idempotency
+    uses it.
+  - `$schema` belongs only on a schema that declares `$id`; an external
+    schema without `$schema` is implementation-defined under JSON Schema.
+    Tool-rule items are MUST-level; the capability table lists tool rules;
+    no document rule evaluates a value (§10.2). Working-draft conclusions
+    name the draft and revision. §4's `createTask` describes an error shape
+    beside its result.
+
+- **The empty-object contract says "takes nothing"; dependencies make a
+  caller's claim.**
+  - §5.1 now names `{"type": "object", "maxProperties": 0}` as the portable
+    contract for an operation that takes no meaningful input, since it holds
+    whether a kind carries an empty value or none, and says the same for an
+    operation that returns nothing. Omission means unspecified, and `false`
+    means no value. This supersedes the earlier guidance that omission was
+    the portable choice.
+  - Declaring a dependency asserts that the described component, as a
+    caller, sends only values valid under `input` and handles any value
+    valid under `output`. OBI-T-10 lists it among the author claims that are
+    not document-rule violations.
+  - §4's `listTasks` uses the empty-object `input`; the dependency example
+    adopts a published alias.
+
+- **Third review round: precision and authoring notes.** No design change.
+  - "Document resource" is a defined term; OBI-D-05 and OBI-D-12 scope their
+    reference checks to it, so a schema that declares `$id` keeps its own
+    relative references as before, now stated in the rule text.
+  - OBI-D-12 reads as three cases (empty reference or fragment; JSON
+    Pointer, which must be valid; plain name). A pointer with an invalid
+    escape, a pointer into a binding's `content`, and a fragment that does
+    not decode to UTF-8 are pinned as violations.
+  - Conformance is judged by the numbered rules alone. The prose defines the
+    model; the derived schema decides structural conformance through
+    OBI-D-02, published with the patch release a conclusion names.
+  - Judging a document against a line's rules is interpretation, so version
+    refusal comes first; a prerelease is identified by its full version and
+    read under its own text and schema; an unparseable text is reported like
+    one that declares no version.
+  - Clarified: input acceptance is interaction-neutral (any value `output`
+    describes, or none, accepts); a binding claims the capability its name and
+    description convey; `$schema` belongs at a resource root, per JSON
+    Schema; a `$dynamicRef` can reach the document resource through dynamic
+    scope; `$id`s are compared as written; non-consuming reference cycles are
+    undefined under JSON Schema; tools' matching freedom stops at OBI-T-01 and
+    OBI-T-07; "shared contract" is defined; the credential note moves to §5.
+  - Added: an example-object field table, notes on schemas from other
+    dialects and on one contract across several bindings, a library
+    recipe in §7.5, the full RFC 6838 template in §11, and an OpenAPI
+    reference.
+  - §10.1's table drops its restating column and lists every tool rule,
+    marking the rows every processor performs.
+  - A conformance conclusion names the release whose text it applied, a
+    patch release or an explicitly supported prerelease (invariant 5,
+    OBI-D-02, OBI-T-09, §10.4); OBI-T-04 names OBI-D-01 beside OBI-D-09 for a
+    document that declares no readable version.
+  - Name equality is defined (two names are the same only when their
+    strings are exactly equal), so every rule that compares names compares
+    them exactly; §5.5 cites OBI-D-02 for the `kinds` array constraints.
+
+- **Voice and economy pass.** No requirement changes. Each boundary and
+  clarification is stated once, at its home, with cross-references
+  elsewhere; §3 entries are short definitions that point to their sections;
+  "OBI position" is defined at the start of §7 with the explicit list of JSON
+  Schema 2020-12 keywords whose values are schemas; dependencies, sources,
+  names, `version`, and `false` are defined positively; §4 drops one of its
+  three `createTask` examples; §10.1 merges its prose and implementer map
+  into one capability table; §12 is condensed and no longer implies that
+  every map's keys enter the operation identifier namespace.
+
+- **Plain names join OBI-D-12, and a conformance conclusion names its patch
+  text.** From a second review of the specification against its own design:
+  - OBI-D-12 now covers every same-document reference at an OBI position:
+    a plain-name fragment such as `#task` must be declared with `$anchor` or
+    `$dynamicAnchor` by a schema in the document's own resource, the same
+    lookup OBI-D-13 already makes. `{"$ref": "#Missing"}` is now a violation,
+    as `#/schemas/Missing` already was. Fragments are percent-decoded before
+    either test. §7.3 is retitled "Same-document references".
+  - OBI-D-13 counts a plain name once per declaring schema, so one schema
+    that declares a name with both `$anchor` and `$dynamicAnchor` declares it
+    once, and leaves out of its `$id` comparison an `$id` that cannot be
+    resolved because it, or one it resolves against, is not a well-formed
+    URI-reference.
+  - OBI-T-09 applies to any conclusion about overall conformance and
+    requires it to name the patch release whose text it applied; invariant 5
+    and §8.1 say so. The patch number a document declares still carries no
+    meaning.
+  - OBI-T-08's resolution context covers every resource an `$id` declares in
+    the schemas the document contains, not only those at OBI positions.
+  - Clarified: omitting `input` is the portable way to write an operation
+    that takes no input, and `input: false` and `output: false` weigh
+    differently; a binding claims to carry out the operation it names (the
+    undefined "logical capability" is gone); correspondence is defined once,
+    with one list of what the claim does not establish; §10 names the rules
+    the derived schema also expresses; a schema given its own `$id` cannot
+    refer to the document's schemas that lack one; §1.3 no longer says
+    obtaining a document cannot change its meaning, only that the core reads
+    it the same way; §11's plain-name fragments are those of the document's
+    own resource.
+
+- **Editorial consolidation, clarifications, and duplicate names.** From a
+  review that judged the specification against its own design:
+  - §1 states the division of responsibility once (core, kind, tools) and
+    merges the former §1.3 into §1.2; §4 is marked informative and no longer
+    repeats the Abstract's example; §7 is split into reference forms, the
+    document as embedding, same-document pointers, other references, and
+    informative notes with a table of what each rule walks and a worked `$id`
+    example; §6 lists what a kind decides and the core provisions a kind
+    stands on, which scope §8.1's breaking-change promise.
+  - Clarified: what `input` "accepts" (answering with an error value in
+    `output` still accepts); which facts a binding vouches for (`input`,
+    `output`, `idempotent`); that the kind decides which interaction data
+    forms one caller-facing value; that credentials are not caller-facing
+    values unless the operation is about them; how to write "no input"; that
+    presence is distinct from value for every optional member; and how
+    document rules read names and numbers.
+  - Corrected overclaims: conformance does not establish the facts a
+    document represents, and the tool rules fix what claims assert, not
+    their truth.
+  - New OBI-D-13: no plain name is declared twice in the document's own
+    resource, and no `$id` twice in the document (exact comparison after
+    resolution). The shared resource makes the first possible; both are
+    lookups.
+  - OBI-D-02's schema `$id` is line-scoped
+    (`https://openbindings.com/schema/openbindings-0.2.json`) and republished
+    by patch releases. OBI-D-04 counts occurrences, so an alias equal to its
+    own key is plainly a violation. OBI-T-10 covers every author claim.
+    OBI-T-06 names `$dynamicRef`. JSON Schema section citations name JSON
+    Schema Core or Validation, now separate references.
+
+- **OBI-D-12 checks same-document pointers.** A `$ref` or `$dynamicRef` at an
+  OBI position that is empty or carries a JSON Pointer fragment must point at
+  a schema at an OBI position. It is a lookup in the document: it catches a
+  typo such as `#/schemas/Taks`, `#` (which names the OBI document, not the
+  enclosing schema), pointers into data that is not a schema, and pointers
+  inside a schema that declares `$id`. Plain names, references within an
+  `$id` resource, and absolute URIs stay JSON Schema's.
+
+- **An operation's signature is its name and per-value schemas, and `output`
+  is whatever the operation returns.** §3 no longer calls the operation an
+  incomplete signature: interaction pattern and cardinality belong to each
+  binding, which is what keeps the operation binding-independent. `output`
+  describes every value the operation returns, error shapes included where
+  the author wants them; the core no longer distinguishes successful from
+  unsuccessful values, and §1.2 no longer lists a failure vocabulary as a
+  deliberate omission. Which results of an interaction a binding returns as
+  output values stays with the source's kind.
+
+- **Document conformance no longer evaluates or resolves schemas.** The core
+  now says only what an operation signature needs from JSON Schema: schemas
+  are JSON Schema 2020-12 and valid against its meta-schemas; `$schema`, where
+  present, names 2020-12; and, for context-free references (invariant 4),
+  schema references at OBI positions are absolute or same-document and `$id`s
+  there are absolute. JSON Schema governs everything else, including how
+  references resolve and how values are evaluated. Examples become author
+  claims, like `idempotent`: a tool that checks one reports a mismatch as a
+  false claim, not a document-rule violation (OBI-T-11). Removed with this:
+  example validity and its static reachability, integrity of references
+  between schemas, `$schema`/`$vocabulary` placement, the regex, Unicode, and
+  in-place recursion requirements, the document-scope resolution model, and
+  identifier comparison. This supersedes the entries below that describe
+  those rules. Document rules are renumbered, following the rule that an
+  identifier means what its line says it means:
+
+  | Before | Now | Rule |
+  | --- | --- | --- |
+  | OBI-D-05 | OBI-D-05 | reference forms at OBI positions (narrowed: no identifier or name uniqueness, no resource-internal URI check) |
+  | OBI-D-06 | OBI-D-06 | `$schema` names 2020-12 (widened: an empty fragment is accepted) |
+  | OBI-D-07 | (removed) | `$schema` and `$vocabulary` placement |
+  | OBI-D-08 | OBI-D-07 | binding `operation` keys |
+  | OBI-D-09 | OBI-D-08 | binding `source` keys |
+  | OBI-D-10 | (removed) | example values validate |
+  | OBI-D-11 | OBI-D-09 | `openbindings` is a SemVer version |
+  | OBI-D-12 | OBI-D-12 | narrowed: an empty or JSON Pointer same-document `$ref` at an OBI position points at a schema at an OBI position |
+  | OBI-D-13 | OBI-D-10 | meta-schema validity, with `format` as an annotation (narrowed: no regex or recursion checks) |
+  | OBI-D-14 | OBI-D-11 | dependency `operation` keys |
+
+  OBI-D-01 through OBI-D-04 and every tool rule keep their numbers and
+  meaning. Entries below use the numbers of their time. What JSON Schema
+  leaves to the embedding format stays in §7: `$id`-less schemas at OBI
+  positions share the document's resource, `#` there names the OBI document,
+  and OBI positions follow what the 2020-12 meta-schema validates as schemas,
+  including `definitions`. §5.2 says the document rules test only meta-schema
+  validity, reference forms, and dialect, and §7 says plainly which
+  references JSON Schema leaves undefined. The OBI-T-08 scenario that fixed a
+  `valid` result for a value beside an unused external definition is removed,
+  as the dormant-branch scenario was: the rule prescribes no evaluation
+  strategy, so an eager compiler may report that it cannot validate.
+
+- **The JSON Schema seam binds JSON Schema's own preferences where tools would
+  otherwise disagree or fail to decide.** A same-document JSON Pointer may no
+  longer land on or pass through a schema that declares `$id`; such a schema
+  is referenced through its `$id`, as JSON Schema §9.2.1 advises and OpenAPI
+  3.2 requires. `$schema` appears only on a schema that declares `$id`, the
+  root of a schema resource (§8.1.1). Patterns are ECMA-262 read with the `u`
+  flag (§6.4), for well-formedness and for example validity. OBI-D-13 now
+  counts an invalid pattern and in-place recursion (§9.4.1) as ill-formed,
+  and no longer restates OBI-D-06 and OBI-D-07. Schema identifiers compare
+  resolved, without fragment, after RFC 3986 syntax-based normalization, and
+  an embedded `$id` may not claim a JSON Schema 2020-12 meta-schema's
+  identifier. §7's document resource is now the document scope, grounded in
+  JSON Schema §9.1.1, with its dynamic-scope consequence stated; §3 stops OBI
+  positions at a schema that declares `$id` and defines the schemas a
+  document contains; OBI-D-06 and OBI-D-05's URI-reference clause say where
+  they apply; an empty `$ref` is a same-document reference; and a fragment
+  outside the JSON Pointer syntax is a plain name for OBI-D-12 to resolve,
+  not a form violation. §5.2 no longer reads as forbidding the opt-in format
+  assertion JSON Schema Validation §7.2.1 allows; example validity keeps the
+  annotation default. A second review round then scoped the document scope's
+  dynamic-scope role to evaluations that begin in it (JSON Schema §7.1); pinned
+  ECMA-262 to the 11th edition JSON Schema cites and scoped the `u` reading to
+  the document rules; listed the reserved meta-schema identifiers; limited
+  in-place recursion to `$dynamicAnchor` targets and to `then`/`else` beside
+  `if`; required normalized URI names in `$vocabulary`; compared plain names
+  after percent-decoding; accepted `$schema` with an empty fragment; and
+  described the compound document a tool gives its library. This supersedes
+  the pointer allowance and root schema objects described in the next entry.
+
+- **Schemas follow JSON Schema 2020-12 wherever an OBI goal does not need
+  otherwise.** The core now decides only what JSON Schema leaves to an
+  embedding format and what context-free references and offline-decidable
+  conformance require. [§7](openbindings.md#7-reference-resolution) names the
+  document resource, which holds the schemas at OBI positions; same-document
+  plain-name fragments and the `$dynamicRef`/`$dynamicAnchor` pair are allowed
+  at OBI positions, with `$dynamicRef` held to the same absolute-or-same-document
+  forms as `$ref`. OBI-D-05 forbids declaring one fragment name twice in a
+  schema resource, which JSON Schema leaves undefined. OBI-D-07 no longer bans
+  `$vocabulary`, which has no effect outside a meta-schema; it now keeps
+  `$schema` and `$vocabulary` where JSON Schema permits them (§8.1.1, §8.1.2),
+  with [§5.2](openbindings.md#52-schemas) naming the root schema objects of an
+  OBI document, and the derived schema no longer rejects a top-level
+  `$vocabulary`. OBI-D-12 covers every reference whose target lies within the
+  document, including references inside embedded `$id` resources, which
+  standard libraries refuse to compile when they dangle. OBI-D-10's
+  reachability follows a `$dynamicRef` to every same-named `$dynamicAnchor` it
+  could select. A JSON Pointer may pass into an embedded `$id` resource,
+  which JSON Schema advises against (§9.2.1) but defines. This supersedes the
+  plain-name and dynamic-pair restrictions described in the next entry and the
+  pointer restriction described in an earlier one. Fixtures for OBI-D-05,
+  OBI-D-07, OBI-D-10, and OBI-D-12 follow.
+
+- **OBI-D-10 decides its scope statically, and the reference rules say what
+  they mean.** An example is checked when every schema reachable from its
+  governing schema is embedded in the document; reachability follows keywords
+  that apply subschemas, `$ref` and `$dynamicRef` included, whether or not the
+  example would take a branch, and containment alone (an unreferenced `$defs`
+  entry) does not count. This replaces the draft's test of whether an external
+  schema could change the outcome, which needed evaluation with unknowns that
+  standard JSON Schema libraries do not provide. OBI-D-05's plain-name
+  restriction applies to same-document references, so an absolute URI may
+  carry a named fragment, and its `$ref` clause applies at OBI positions. §3
+  and §7 place the keywords of a schema object that declares `$id` inside the
+  resource it declares, as JSON Schema does. OBI-D-12 names the references it
+  covers and says a same-document fragment that resolves to nothing violates
+  it. Invariant 5 says conformance changes only when a patch corrects the
+  text, §5.2's keyword statement names its exceptions, OBI-D-02 reads the
+  schema's patterns as ECMA-262, §10.4's Conformant means every rule was
+  decided, and ECMA-262 joins the normative references. The OBI-D-10 fixtures
+  follow the static rule, OBI-D-05 gains positives for both clarified
+  readings, and the schema's example description matches OBI-D-10.
+
+- **Editorial pass.** Em dashes are gone, repeated statements of the core's
+  boundary are shortened where §1.3 already carries them, §1.3 states once
+  that "read under the source's kind" marks that boundary wherever it appears,
+  and the §12 extension bullets are merged. No field, rule, rule scope,
+  normative keyword, schema, or corpus outcome changes; two independent audits
+  and a blind question set confirmed the meaning is unchanged.
+
+- **A document is read under its `major.minor` line; the patch number carries
+  no meaning.** [§8.1](openbindings.md#81-openbindings-field-specification-version)
+  now treats each line as one document model: a patch release corrects errors
+  in the text without adding fields or changing what documents mean, so
+  documents declaring `0.2.0` and `0.2.1` are read alike, under the line's
+  current text, and a patch's corrections apply to the whole line. Processors
+  support lines, not individual patches, and OBI-T-04 keys acceptance on the
+  line; a prerelease remains outside its line. This matches OpenAPI, AsyncAPI,
+  and Arazzo, whose tooling does not consider the patch version, and the
+  reference Go SDK, which already supports the 0.2 line. Rule identifiers are
+  cited under a line, since a patch adds or renumbers no rule. In the corpus,
+  the OBI-T-04 higher-patch case now asserts acceptance for any tool that
+  supports the 0.2 line, and a new case checks a patch published after the
+  tool.
+
+- **§6 states what a kind is instead of what the core leaves open.** The
+  section defines comparison, what supporting a kind means, and how a kind's
+  meaning is shared, and relies on §1.3 for the boundary rather than
+  restating it. No rule changes.
+
+- **Focused core tool-policy pruning.** Core rules now state document meaning and
+  the truth conditions of claims under the specification without prescribing
+  processing continuation, diagnostic lists, or report vocabulary. OBI-T-01,
+  T-02, T-05, T-06, T-07, T-09, and T-10 have narrower obligations. OBI-T-08
+  applies the governing JSON Schema dialect to each value without requiring
+  a statically complete schema graph; OBI-D-10 checks examples whose match or
+  mismatch is determined by embedded resources. External schemas retain their own
+  dialect semantics, including `format`. Same-document JSON Pointer URI
+  fragments accept standard percent encoding. The core conformance corpus
+  follows these rules.
 
 - **Kind constraints compare strings independently of tool support.** A
   binding meets a dependency's `kinds` constraint exactly when its source's

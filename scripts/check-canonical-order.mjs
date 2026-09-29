@@ -23,15 +23,15 @@ const CANON = {
   ],
   Operation: [
     "description", "deprecated", "tags", "aliases",
-    "idempotent", "input", "output", "examples",
+    "input", "output", "examples",
   ],
   Source: ["kind", "content", "description"],
   BindingEntry: [
-    "operation", "source", "content", "preference", "description",
-    "deprecated",
+    "operation", "source", "content", "idempotent", "preference",
+    "description", "deprecated",
   ],
   OperationExample: ["description", "input", "output"],
-  DependencyEntry: ["operation", "kinds"],
+  DependencyEntry: ["operation", "kinds", "description"],
 };
 
 function checkOrder(typeName, obj, path, errors) {

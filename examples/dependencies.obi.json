@@ -50,7 +50,8 @@
       "kinds": [
         "openbindings.openapi-3.1@1",
         "openbindings.grpc@1"
-      ]
+      ],
+      "description": "Where completed exports are sent for delivery."
     }
   },
   "sources": {

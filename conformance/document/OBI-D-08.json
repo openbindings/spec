@@ -1,10 +1,10 @@
 {
   "rule": "OBI-D-08",
   "section": "10.2",
-  "description": "Has every bindings[*].operation value present as a key in the document's operations map.",
+  "description": "Has every bindings[*].source value present as a key in the document's sources map.",
   "tests": [
     {
-      "description": "binding references an existing operation key",
+      "description": "binding references an existing source key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -25,7 +25,7 @@
       "valid": true
     },
     {
-      "description": "binding references a non-existent operation key",
+      "description": "binding references source \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -38,8 +38,8 @@
         },
         "bindings": {
           "createTask.http": {
-            "operation": "nonexistentOp",
-            "source": "httpApi"
+            "operation": "createTask",
+            "source": "constructor"
           }
         }
       },
@@ -49,7 +49,7 @@
       ]
     },
     {
-      "description": "binding references operation \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such operation defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "description": "binding references a non-existent source key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -62,36 +62,8 @@
         },
         "bindings": {
           "createTask.http": {
-            "operation": "constructor",
-            "source": "httpApi"
-          }
-        }
-      },
-      "valid": false,
-      "violates": [
-        "OBI-D-08"
-      ]
-    },
-    {
-      "description": "binding operation value matches an alias rather than a key in the operations map",
-      "document": {
-        "openbindings": "0.2.0",
-        "operations": {
-          "createTask": {
-            "aliases": [
-              "addTask"
-            ]
-          }
-        },
-        "sources": {
-          "httpApi": {
-            "kind": "example.openapi@1"
-          }
-        },
-        "bindings": {
-          "addTask.http": {
-            "operation": "addTask",
-            "source": "httpApi"
+            "operation": "createTask",
+            "source": "missingSource"
           }
         }
       },

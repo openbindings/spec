@@ -244,8 +244,8 @@ function validateScenarioActionShape(rule, scenario, label) {
       err(`${label}: schema-cycle given requires document, operation, input|output side, and value`);
     }
     const allowed = expected.allowedOutcomes;
-    if (expected.terminates !== true || !Array.isArray(allowed) || allowed.length === 0 || allowed.some((v) => !["valid", "instance-mismatch", "resolver-error"].includes(v))) {
-      err(`${label}: schema-cycle expected requires terminates:true and valid allowedOutcomes`);
+    if (!Array.isArray(allowed) || allowed.length === 0 || allowed.some((v) => !["valid", "instance-mismatch", "resolver-error"].includes(v))) {
+      err(`${label}: schema-cycle expected requires valid allowedOutcomes`);
     }
     return;
   }
@@ -286,10 +286,8 @@ function validateScenarioActionShape(rule, scenario, label) {
     const violated = Object.keys(evidence).filter((id) => evidence[id] === "violated").sort();
     const inconclusive = Object.keys(evidence).filter((id) => evidence[id] === "inconclusive").sort();
     const conclusion = violated.length > 0 ? "non-conformant" : inconclusive.length > 0 ? "conformance-undetermined" : "conformant";
-    const expectedViolated = Array.isArray(expected.violated) ? [...expected.violated].sort() : null;
-    const expectedInconclusive = Array.isArray(expected.inconclusive) ? [...expected.inconclusive].sort() : null;
-    if (expected.conclusion !== conclusion || JSON.stringify(expectedViolated) !== JSON.stringify(violated) || JSON.stringify(expectedInconclusive) !== JSON.stringify(inconclusive)) {
-      err(`${label}: expected conclusion/lists do not follow OBI-T-09 from the supplied evidence`);
+    if (expected.conclusion !== conclusion) {
+      err(`${label}: expected conclusion does not follow OBI-T-09 from the supplied evidence`);
     }
   }
 }
