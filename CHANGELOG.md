@@ -206,6 +206,20 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Sixth review round: precision fixes.** OBI-D-10 reads the meta-schemas'
+  `pattern` values as ECMA-262, the dialect JSON Schema names, so an
+  `$anchor` ending in a newline fails on every validator (new fixture).
+  OBI-T-04 states the version-declaration test by position (no byte-order
+  mark, JSON grammar, one `openbindings` string) and says a validator that
+  cannot see a repeated member may still report a violation it establishes.
+  OBI-T-03 applies when a processor interprets a document. OBI-T-01 applies
+  whenever a kind string is interpreted. A binding's assertion covers
+  `idempotent: true`; `false` warns about the operation. `$schema`
+  placement is JSON Schema's prohibition. §3 defines "field"; §5 states that
+  objects are closed except for `x-` fields. §4's `listTasks` carries the
+  error shape. Correspondence's publishing advice is its own informative
+  paragraph.
+
 - **Fifth review round: tool-rule voice, resolver obligation, and claim
   definitions.**
   - Every tool rule states its requirements with BCP 14 keywords, and
