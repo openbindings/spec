@@ -206,6 +206,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Voice and economy pass.** No requirement changes. Each boundary and
+  clarification is stated once, at its home, with cross-references
+  elsewhere; §3 entries are short definitions that point to their sections;
+  "OBI position" is defined at the start of §7 with the explicit list of JSON
+  Schema 2020-12 keywords whose values are schemas; dependencies, sources,
+  names, `version`, and `false` are defined positively; §4 drops one of its
+  three `createTask` examples; §10.1 merges its prose and implementer map
+  into one capability table; §12 is condensed and no longer implies that
+  every map's keys enter the operation identifier namespace.
+
 - **Plain names join OBI-D-12, and a conformance conclusion names its patch
   text.** From a second review of the specification against its own design:
   - OBI-D-12 now covers every same-document reference at an OBI position:
