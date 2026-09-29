@@ -56,7 +56,7 @@ This specification is published under the Apache 2.0 License (see `LICENSE`).
 Apache 2.0 defines the copyright and contribution-scoped patent grants
 currently in force. The project has no separately executed
 standards-essential-claims commitment; implementers must not infer one from
-the absence of a disclosure. [`IPR.md`](IPR.md) records the precise current
+the absence of a disclosure. `IPR.md` records the precise current
 posture, received-disclosure status, and the additional decision required
 before the final 0.2 release.
 
@@ -64,7 +64,7 @@ before the final 0.2 release.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals.
 
-JSON shown inline in this document is illustrative unless the surrounding prose explicitly states a requirement.
+JSON shown inline in this document is illustrative unless the surrounding prose explicitly states a requirement. A file or directory named by a relative path, such as `CHANGELOG.md` or `binding-specs/`, is in the specification repository, <https://github.com/openbindings/spec>.
 
 ## Table of contents
 
@@ -147,7 +147,7 @@ The rules in this specification instantiate six invariants: design constraints t
 2. **Enabling, not invoking.** A binding declares a realization of its operation through a source; the document alone need not suffice to identify, reach, or act on a target. A dependency carries no target and becomes actionable only through tool-defined composition with a realization. No rule in this specification obligates a tool to invoke, satisfy a dependency, validate values at runtime because it invokes, or handle failures in a prescribed way. Rules about validation semantics apply to tools that claim the corresponding capability.
 3. **Bounded interpretation.** The operation carries the caller-facing value contract. This specification defines neither the meaning of source or binding `content` nor the addresses, representations, references, value adaptation, and interaction a tool may use when acting on them. A kind does not change the meaning of core fields.
 4. **Context-free references.** No OBI-defined reference ([§7](#7-reference-resolution)) resolves against the URI a document was fetched from, so the document model means the same thing however a document was obtained. Source and binding `content` are outside that reference rule (invariant 3). OBI assigns no document identity; `name` and `version` are labels.
-5. **Offline-decidable conformance.** Document conformance is an objective property of the document under the text it is judged against, decidable from the document plus locally available resources (the derived schema and the JSON Schema 2020-12 meta-schemas, [OBI-D-10](#102-document-rules)). No document rule's outcome depends on network state, so a document's conformance changes only when a correction changes that text ([§8.1](#81-openbindings-field-specification-version), [OBI-T-09](#103-tool-rules)). A validator's inability to decide a rule is not itself evidence of non-conformance.
+5. **Offline-decidable conformance.** Document conformance is an objective property of the document under the text it is judged against, decidable from the document plus locally available resources (the derived schema, [OBI-D-02](#102-document-rules), and the JSON Schema 2020-12 meta-schemas, [OBI-D-10](#102-document-rules)). No document rule's outcome depends on network state, so a document's conformance changes only when a correction changes that text ([§8.1](#81-openbindings-field-specification-version), [OBI-T-09](#103-tool-rules)). A validator's inability to decide a rule is not itself evidence of non-conformance.
 6. **Decentralized extension.** Kinds and shared correspondence names are author-assigned: this specification assigns no authority over them, the model requires no registry, and no kind is implicitly dereferenced to be understood.
 
 ---
@@ -515,13 +515,13 @@ The **OBI-defined document references** are the `$ref` and `$dynamicRef` keyword
 
 JSON Schema lets the format that embeds a schema determine its initial base URI (JSON Schema Core §9.1.1) and leaves open how such schemas fit its resource model (JSON Schema Core §4.3.5). OBI settles both:
 
-- The document is its schemas' embedding document, with a base URI unique to it and drawn from nowhere else (RFC 3986 §5.1.4). In the document resource, a same-document reference is initially resolved exactly as [OBI-D-12](#102-document-rules) looks it up, with dynamic resolution then following JSON Schema ([§7.4](#74-other-references)). An empty reference or empty fragment, such as `#`, names the OBI document itself, not the schema that contains it. A non-empty fragment is percent-decoded first: one that then begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer read per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §6 from the document root, and any other is a plain name.
+- The document is its schemas' embedding document, with a base URI unique to it and drawn from nowhere else (RFC 3986 §5.1.4). In the document resource, a same-document reference is initially resolved exactly as [OBI-D-12](#102-document-rules) looks it up, with dynamic resolution then following JSON Schema ([§7.4](#74-other-references)). An empty reference or empty fragment, such as `#`, names the OBI document itself, not the schema that contains it. A non-empty fragment is percent-decoded first: one that then begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer, evaluated per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §4 from the document root, and any other is a plain name.
 - The schemas at OBI positions that declare no `$id` are subschemas of one schema resource, the **document resource**; the plain names they declare with `$anchor` or `$dynamicAnchor` belong to it. A same-document plain-name reference in it resolves to the schema that declares the name, and an evaluation that begins at one of those schemas begins in it, making the document resource the outermost in the evaluation's dynamic scope.
 - A schema that declares `$id` begins a resource of its own, as does a schema nested in it that declares `$id`. The references, anchors, and nested `$id`s within it, including its own keywords other than `$id`, take any form JSON Schema allows and resolve against its base.
 
 ### 7.3. Same-document references
 
-[OBI-D-12](#102-document-rules) decides each same-document reference in the document resource by a lookup in the document, not by evaluation. A JSON Pointer fails when it is not a valid RFC 6901 pointer, or reaches no location or a location holding no schema (an operation object, a map, a string, `x-` data, a source's or binding's `content`, an example value). It also fails when it reaches inside a schema that declares `$id`, whose contents are reached through that `$id`. A plain name fails unless a schema in the document resource declares it ([§7.2](#72-the-document-as-embedding)).
+[OBI-D-12](#102-document-rules) decides each same-document reference in the document resource by a lookup in the document, not by evaluation. A JSON Pointer fails when it is not a valid RFC 6901 pointer, or reaches no location or a location holding no schema (an operation object, a map, a string, `x-` data, a source's or binding's `content`, an example value). It also fails when it reaches inside a schema that declares `$id`, whose contents are reached through that `$id`. A plain name fails unless a schema in the document resource declares it ([§7.2](#72-the-document-as-embedding)). [§7.5](#75-notes-for-authors-and-tools-informative) tabulates examples.
 
 ### 7.4. Other references
 
@@ -540,6 +540,55 @@ Which schemas each document rule walks:
 | OBI-D-10 | Each operation `input`/`output` and `schemas` entry, with its subschemas, against the meta-schemas | Continues inside the resource |
 | OBI-D-12 | Same-document references in the document resource | Skips that schema's own references; a pointer may land on it, not inside it, and a plain name declared inside it does not count |
 | OBI-D-13 | Plain names in the document resource; `$id` in every schema the document contains | Plain names inside it belong to its resource |
+
+**Same-document references (example).** Given this document:
+
+```json
+{
+  "openbindings": "0.2.0",
+  "schemas": {
+    "Task": {
+      "$anchor": "task",
+      "type": "object",
+      "properties": { "my type": { "type": "string" } }
+    },
+    "Tree": {
+      "$id": "https://example.com/schemas/tree.json",
+      "$anchor": "tree",
+      "type": "object",
+      "properties": {
+        "children": { "type": "array", "items": { "$ref": "#" } }
+      }
+    }
+  },
+  "operations": {}
+}
+```
+
+each reference below, written in the document resource (as the `$ref` of an operation added to it, `{"output": {"$ref": "…"}}`), has the outcome shown:
+
+| Reference | Read as | Outcome |
+| --------- | ------- | ------- |
+| `#` or the empty reference | The OBI document itself | Fails OBI-D-12: an empty reference or fragment never qualifies |
+| `#/schemas/Task` | A pointer to `Task` | Holds |
+| `#/schemas/Task/properties/my%20type` | A pointer, decoded to `/schemas/Task/properties/my type` | Holds |
+| `#/schemas/Task/properties/my type` | Not a well-formed URI-reference | Fails OBI-D-05 |
+| `#/schemas/Task/properties/my%2520type` | Decoded once, to `/schemas/Task/properties/my%20type`, which reaches nothing | Fails OBI-D-12 |
+| `#%2Fschemas%2FTask` | Decoded to `/schemas/Task`, a pointer | Holds |
+| `#/schemas/Task/type` | A pointer to the string `"object"` | Fails OBI-D-12: not a schema |
+| `#/operations` | A pointer to a map | Fails OBI-D-12: not a schema |
+| `#/schemas/Missing` | A pointer that reaches nothing | Fails OBI-D-12 |
+| `#/schemas/~2` | Not a valid JSON Pointer (`~2` is no escape) | Fails OBI-D-12 |
+| `#/schemas/Tree` | A pointer landing on `Tree`, which declares `$id` | Holds (JSON Schema Core §9.2.1 prefers the `$id` form) |
+| `#/schemas/Tree/properties/children` | A pointer into Tree's resource | Fails OBI-D-12: reach it through the `$id` |
+| `#task` | A plain name declared in the document resource | Holds |
+| `#t%61sk` | Decoded to the plain name `task` | Holds |
+| `#tree` | A plain name declared only inside Tree's resource | Fails OBI-D-12 |
+| `#%FF` | A fragment that does not decode to UTF-8 | Fails OBI-D-12 |
+| `tree.json#/properties/children` | A relative reference that is not same-document | Fails OBI-D-05 |
+| `https://example.com/schemas/tree.json#/properties/children` | An absolute URI | Outside OBI-D-12; JSON Schema resolves it |
+
+The `{"$ref": "#"}` inside `Tree` resolves against Tree's `$id`, names `Tree` itself, and is outside OBI-D-12.
 
 Schemas pasted in from standalone files are the usual source of mistakes. Such a schema often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`; embedded without an `$id`, both resolve from the OBI document root (the first names the OBI document, the second a location that does not exist) and violate OBI-D-12. There are two remedies:
 
@@ -569,7 +618,7 @@ The second remedy looks like this:
 }
 ```
 
-In this document, a reference `#/schemas/Tree` written in the document resource would land on `Tree` and meet OBI-D-12 (JSON Schema Core §9.2.1 recommends the `$id` form, which `getTree` uses), while `#/schemas/Tree/properties/children` would land inside Tree's resource and violate it. Inside `Tree`, `#` resolves against its `$id` and names `Tree` itself, and an `$anchor` declared there belongs to Tree's resource, not the document resource. The operation reaches `Tree` through its `$id`.
+Inside `Tree`, `#` resolves against its `$id` and names `Tree` itself, and an `$anchor` declared there belongs to Tree's resource, not the document resource. The operation reaches `Tree` through its `$id`.
 
 Addressing works in one direction: a schema with its own `$id` cannot address by URI the schemas that belong to the document resource, since the document's base URI is drawn from nowhere a reference can name ([§7.2](#72-the-document-as-embedding)). Any shared schema it references must therefore be reachable through an identified resource: its own `$id`, or a pointer or anchor within a resource that has one. The same holds across documents: `$id` is the portable handle for a schema meant to be referenced from elsewhere. A reference into a document that is not a schema, such as `#/components/schemas/Task` in an OpenAPI document or `#/schemas/Task` in another OBI, lands in a structure JSON Schema does not recognize, where its behavior is undefined (JSON Schema Core §9.4.2). An author instead copies such a schema in, translating it as [§5.2](#52-schemas) describes, or references a schema published as a schema document of its own.
 
@@ -596,6 +645,29 @@ The `openbindings` field identifies the version of this specification the docume
 - Interpreting a document means giving any member other than `openbindings` the meaning a line assigns, as resolving names, comparing kinds, following references, validating values, and judging conformance do. A **version refusal** prohibits only that: a processor MAY still parse, preserve, display, or route an unsupported document, which may conform to the version it declares. Showing an unsupported document's members as JSON is display; presenting its `operations` entries as operations, or its bindings under their operations, is interpretation.
 - [OBI-T-04](#103-tool-rules) defines when a text declares a version and how a processor treats one that declares none; a validator that establishes that a text declares none reports its non-conformance under any line it supports ([OBI-T-09](#103-tool-rules)).
 - Unknown fields have no core meaning under a supported line ([OBI-T-02](#103-tool-rules)); that rule does not authorize interpreting an unsupported line by ignoring its additions.
+
+**Version declaration examples (informative).** When a processor that supports only the 0.2 line, and explicitly includes no prerelease, is asked to interpret each text below, where `<FF>` stands for a single byte 0xFF and `<BOM>` for the UTF-8 byte-order mark:
+
+| Text | Declared version | Outcome |
+| ---- | ---------------- | ----------------------- |
+| `{"openbindings":"0.2.0","operations":{}}` | 0.2.0 | It may interpret the text under 0.2. |
+| `{"openbindings":"0.2.7","operations":{}}` | 0.2.7 | It may interpret the text under 0.2; the patch number carries no meaning. |
+| `{"openbindings":"0.2.0+build.5","operations":{}}` | 0.2.0+build.5 | It may interpret the text under 0.2; build metadata is ignored. |
+| `{"openbindings":"0.3.0","operations":{}}` | 0.3.0 | Version refusal. |
+| `{"openbindings":"0.2.0-rc.1","operations":{}}` | 0.2.0-rc.1 | Version refusal. |
+| `{"openbindings":"0.3.0","description":"x<FF>","operations":{}}` | 0.3.0 | Version refusal; the ill-formed byte is OBI-D-01's, which only a supported line judges. |
+| `{"openbindings":"0.3.0","operations":{},"operations":{}}` | 0.3.0 | Version refusal; the repeated `operations` member is likewise OBI-D-01's. |
+| `{"openbindings":"0.2.0","description":"x<FF>","operations":{}}` | 0.2.0 | It may interpret the text under 0.2, where it is non-conformant under OBI-D-01. |
+| `<BOM>{"openbindings":"0.3.0","operations":{}}` | None | No refusal; non-conformant under OBI-D-01. |
+| `{"openbindings":"0.3.0","operations":{}}` encoded as UTF-16 without a byte-order mark | None: its zero bytes break the grammar | No refusal; non-conformant under OBI-D-01. |
+| `{"openbindings":"0.3.<FF>0","operations":{}}` | None: the value is not SemVer after replacement | No refusal; non-conformant under OBI-D-01. |
+| `{"openbindings":"0.3.0","description":"\u12<FF>4","operations":{}}` | None: the broken escape breaks the grammar | No refusal; non-conformant under OBI-D-01. |
+| `{"openbindings":"0.3","operations":{}}` | None | No refusal; non-conformant under OBI-D-02 and OBI-D-09. |
+| `{"openbindings":2,"operations":{}}` | None | No refusal; non-conformant under OBI-D-02 and OBI-D-09. |
+| `{"operations":{}}` | None | No refusal; non-conformant under OBI-D-02 and OBI-D-09. |
+| `{"openbindings":"0.2.0","openbindings":"0.3.0","operations":{}}` | None: the member is repeated | One that sees the repetition makes no refusal; the text is non-conformant under OBI-D-01. One whose parser cannot tell may decide from the value it reads, interpreting under 0.2 or refusing. |
+
+Where the table says a text is non-conformant, that is what a validator applying the 0.2 line reports.
 
 **Release policy.** While pre-1.0, minor versions MAY include breaking changes, per pre-1.0 SemVer convention. Changes to the provisions [§6](#6-kinds) lists as those a kind stands on are recorded in the changelog as breaking: a commitment about this specification's own provisions, not a compatibility judgment about external behavior. Declaring the earliest line sufficient for a document's content maximizes the processors able to interpret it.
 

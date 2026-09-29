@@ -206,6 +206,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Worked tables.** §7.5 tabulates same-document references in one example
+  document with their OBI-D-12 (or OBI-D-05) outcomes, and §8.1 tabulates
+  version-declaration cases with what a processor supporting only 0.2 does,
+  both informative. §7.2 evaluates a decoded pointer per RFC 6901 §4 (not
+  §6, which describes the encoded form); invariant 5 cites OBI-D-02 for the
+  derived schema; relative paths name files in the specification repository.
+
 - **Second calibrated round.** OBI-T-08 gives no verdict on an evaluation
   JSON Schema leaves undefined, on a keyword value invalid under its readings,
   or against an absent schema (moved from its Note into the rule). §7.2
