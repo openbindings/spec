@@ -231,11 +231,6 @@ jobs:
           path: openbindings-ts
       - uses: actions/checkout@v7
         with:
-          repository: openbindings/jsonata
-          ref: e2a5e518e6b5bd247ab327d427c591dc72743f2d
-          path: jsonata
-      - uses: actions/checkout@v7
-        with:
           repository: openbindings/openapi-client
           ref: main
           path: openapi-client
@@ -252,13 +247,9 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: openbindings-ts/pnpm-lock.yaml
-      # Match the SDK's prerequisite order: runtime, neutral JSON packages,
-      # standalone clients, then the full SDK. The clients consume the JSON
-      # packages, while the SDK links to the clients and standalone runtime.
-      - name: Build the qualified standalone runtime
-        run: |
-          npm --prefix jsonata/javascript ci --ignore-scripts
-          npm --prefix jsonata/javascript run build
+      # Match the SDK's prerequisite order: neutral JSON packages, standalone
+      # clients, then the full SDK. The clients consume the JSON packages,
+      # while the SDK links to the clients.
       - name: Build neutral JSON prerequisites
         working-directory: openbindings-ts
         run: |
