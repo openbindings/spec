@@ -206,6 +206,32 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Fourth review round: determinism and claim precision.** No design
+  change.
+  - A text declares a version only when it is UTF-8 JSON without a
+    byte-order mark whose root has exactly one `openbindings` member that is
+    a SemVer string, so the line decision no longer depends on a parser's
+    leniency. Interpreting a document is defined, and OBI-T-04 requires a
+    version refusal only when interpretation of an unsupported line is asked
+    for.
+  - The schemas the document contains are reached through the same keyword
+    list inside `$id` resources, and nothing else counts. OBI-D-13 compares
+    only an `$id` that is absolute or resolves against an enclosing compared
+    `$id`. OBI-D-12 states the UTF-8 clause §7.3 already had.
+  - A binding asserts that its target carries out the operation it
+    references, as the description conveys it; identifiers, keys and aliases
+    alike, are not part of the assertion.
+  - Acceptance applies wherever an interaction carries an input value,
+    counts any returned value when `output` is absent, and turns on reasons
+    the value alone determines. "Context" is defined in §3, and idempotency
+    uses it.
+  - `$schema` belongs only on a schema that declares `$id`; an external
+    schema without `$schema` is implementation-defined under JSON Schema.
+    Tool-rule items are MUST-level; the capability table lists tool rules;
+    no document rule evaluates a value (§10.2). Working-draft conclusions
+    name the draft and revision. §4's `createTask` describes an error shape
+    beside its result.
+
 - **The empty-object contract says "takes nothing"; dependencies make a
   caller's claim.**
   - §5.1 now names `{"type": "object", "maxProperties": 0}` as the portable
