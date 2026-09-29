@@ -206,6 +206,15 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Economy pass.** No requirement changes. Restated boundaries keep one home
+  with cross-references elsewhere: tool discretion, the objects that carry
+  fields, naming the text a conclusion applies, and §7.3 and §7.4's
+  restatements of OBI-D-12 and OBI-D-13. Long sentences, including some
+  inside rules, are split without moving a keyword; the *Note* convention is
+  stated once in §10 and covers a note to its rule's end; §3 defines "shared
+  contract"; §5 labels context and §5.2 the dialect; §5.3 lists the binding
+  claim's two parts. The text is about 4% shorter.
+
 - **Calibrated review round: version decoding, claim quantifiers, and value
   validation readings.**
   - OBI-T-04 locates the declared version in the text decoded as UTF-8 from
