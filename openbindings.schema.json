@@ -26,7 +26,7 @@
     },
     "schemas": {
       "type": "object",
-      "description": "Named JSON Schemas referenced by operations.",
+      "description": "Named JSON Schemas, reusable through same-document references.",
       "propertyNames": {
         "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]*$"
       },
@@ -127,7 +127,7 @@
         },
         "idempotent": {
           "type": "boolean",
-          "description": "Author-attested effect claim: true asserts repetition with equivalent input under the same relevant context adds no intended operation-level effects; false asserts some repetition can; absent claims nothing. Not a retry-safety or cacheability authorization (§5.1)."
+          "description": "Author-attested effect claim: true asserts repetition with equivalent input and equivalent context adds no intended operation-level effects; false asserts some valid repetition, through some binding, can; absent claims nothing. Not a retry-safety or cacheability authorization (§5.1)."
         },
         "input": {
           "$ref": "#/$defs/JSONSchema",

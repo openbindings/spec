@@ -403,8 +403,8 @@
             "kinds": [
               "Example.openapi@1",
               "example.openapi@1",
-              "caf\u00e9",
-              "cafe\u0301"
+              "café",
+              "café"
             ]
           }
         }
@@ -566,7 +566,9 @@
         "dependencies": {
           "d": {
             "operation": "op",
-            "bindingSpecs": ["example.test@1"]
+            "bindingSpecs": [
+              "example.test@1"
+            ]
           }
         }
       },

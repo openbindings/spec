@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-10",
   "section": "10.2",
-  "description": "Has every operation input and output and every entry in schemas valid against the pinned JSON Schema 2020-12 meta-schemas, which validate subschemas in turn. Decidable offline; the rule resolves no reference and evaluates no value.",
+  "description": "Has every operation input and output and every entry in schemas valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn, with format as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). Note: the pinned meta-schemas make the rule decidable offline; it resolves none of the document's references and evaluates no value against the document's schemas.",
   "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; the meta-schemas validate subschemas recursively. 0.2.0 admits boolean schemas at every schema position (true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is meta-schema validity only: an unparseable pattern, an unresolvable reference, and in-place recursion pass, because whether a schema can be evaluated is JSON Schema's and surfaces when a tool uses it. Negative cases list OBI-D-10 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
   "tests": [
     {

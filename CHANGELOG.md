@@ -206,6 +206,29 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Fifth review round: tool-rule voice, resolver obligation, and claim
+  definitions.**
+  - Every tool rule states its requirements with BCP 14 keywords, and
+    explanation moves into sentences marked *Note*, as in OBI-D-01, OBI-D-10,
+    and OBI-D-12. OBI-T-06 now requires reference resolution as §5.2 and §7
+    define. OBI-T-04 admits an explicitly included prerelease by its full
+    version and carries the definition of a declared version. OBI-T-01 names
+    the comparisons it governs. OBI-T-10 cites §5's list of author claims.
+    OBI-D-02 carries its ECMA-262 and erratum clauses. OBI-D-13 resolves
+    `$id`s per RFC 3986 §5.2, which removes dot segments (a new fixture pins
+    the case).
+  - A correspondence claim asserts that the operation is the one the adopted
+    name identifies in the shared contract. A failure is an outcome its kind
+    reports as ending without an output value. `idempotent: false` is an
+    operation-level warning every binding honors.
+  - Context has one definition (§5). §6's list of what a kind stands on
+    includes the binding's full claim. Invariant 5 names the derived schema
+    and meta-schemas as its local resources. §10.4 places version refusal and
+    an undecided line.
+  - Notes on `$schema` placement, cross-document references, dynamic-anchor
+    capture, unencoded plain names, and JCS number rendering; §4's example
+    says how its error shape surfaces.
+
 - **Each requirement is stated once; tools honor defined meanings.**
   - OBI-T-02 now requires a tool that interprets OBI-defined fields to give
     each defined field its defined meaning, presence included, as well as
