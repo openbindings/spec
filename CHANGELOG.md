@@ -206,6 +206,31 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Calibrated review round: version decoding, claim quantifiers, and value
+  validation readings.**
+  - OBI-T-04 locates the declared version in the text decoded as UTF-8 from
+    left to right, each byte outside a well-formed sequence replaced by
+    U+FFFD; OBI-D-01 still judges the bytes.
+    A processor whose parser cannot tell whether the `openbindings` member is
+    repeated decides the line from the value it reads, so the latitude falls
+    only on texts no line accepts; the escape that let a validator leave the
+    line undecided is gone, as is §10.4's clause for it.
+  - A binding claims its target takes any value `input` describes, without
+    promising success on each, and returns only values `output` describes,
+    mirroring the dependency claim. Correspondence claims the operation a name
+    identifies in each shared contract that publishes it.
+  - OBI-T-08 reads `format` as an annotation where the dialect leaves its
+    assertion optional, and patterns as ECMA-262 with Unicode semantics (JSON
+    Schema Core §6.4); an absent schema gives no verdict.
+  - Smaller: `$schema` is written only beside `$id`, and the derived schema
+    checks its value, not its placement; the meta-schemas are identified; §9
+    notes `$id` shadowing across documents; §7.5's library recipe covers
+    dynamic scope, references into non-schema documents, and a worked
+    boundary example; idempotency's context equivalence is stated; OBI-T-03
+    is labeled by its trigger; OBI-T-09 names the working-draft case; §6's
+    kind foundations include exact kind identity; RFC 3629 is a normative
+    reference.
+
 - **`input` and `output` describe shape; `idempotent` moves to bindings.**
   - `input` describes the values an operation takes and `output` the values
     it returns, like a function signature: shape, not behavior. The "accepts"
