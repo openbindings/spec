@@ -741,7 +741,7 @@ The table below (informative) maps each capability to the tool rules it brings, 
 
 ### 10.2. Document rules
 
-Document rules bind the document, and none evaluates a value against the document's schemas. A validator that lacks the capability a clause needs has not decided that clause ([§10.4](#104-conformance-conclusions)).
+Document rules bind the document, and none evaluates a value against the document's schemas. A validator that lacks the capability a clause needs leaves that clause inconclusive, which is not a violation ([§10.4](#104-conformance-conclusions)).
 
 A conformant **OBI document**:
 
@@ -784,10 +784,10 @@ A document is objectively conformant or non-conformant under this specification 
 | Conclusion                   | Exact meaning                                                                      |
 | ---------------------------- | ---------------------------------------------------------------------------------- |
 | **Conformant**               | Every applicable document rule was decided and no violation established.           |
-| **Non-conformant**           | At least one violation of an applicable document rule was established, whatever remains undecided. |
-| **Conformance undetermined** | No violation established, but one or more applicable rules have not been decided.  |
+| **Non-conformant**           | At least one violation of an applicable document rule was established, whatever remains inconclusive. |
+| **Conformance undetermined** | No violation established, but one or more applicable rules remain inconclusive.    |
 
-A version refusal ([OBI-T-04](#103-tool-rules)) is reported instead of a conclusion. The applicable rules are those of [§10.2](#102-document-rules) for the line or prerelease the document is interpreted under, as stated in the release the conclusion names ([OBI-T-09](#103-tool-rules)); a rule with nothing to govern in a particular document holds vacuously. A tool may describe rule-level evidence as satisfied, violated, undecided, or holding vacuously, and may name the governing rule identifiers; an unavailable resource, missing capability, or exceeded resource limit is not by itself evidence of a violation. Scoped claims such as "valid against the derived structural schema" are possible when their scope is clear, and a tool defines its own API, report vocabulary, serialization, and any ladder of validation levels.
+A version refusal ([OBI-T-04](#103-tool-rules)) is reported instead of a conclusion. The applicable rules are those of [§10.2](#102-document-rules) for the line or prerelease the document is interpreted under, as stated in the release the conclusion names ([OBI-T-09](#103-tool-rules)); a rule with nothing to govern in a particular document holds vacuously, and a tool may record it as satisfied or as not applicable. A tool may describe rule-level evidence as **satisfied** (the rule was established to hold), **violated** (established not to hold), **inconclusive** (neither established), or **not applicable**, and may name the governing rule identifiers; an unavailable resource, missing capability, or exceeded resource limit is not by itself evidence of a violation. Scoped claims such as "valid against the derived structural schema" are possible when their scope is clear, and a tool defines its own API, report vocabulary, serialization, and any ladder of validation levels.
 
 ---
 

@@ -61,6 +61,9 @@ A release snapshot captures the normative core spec at the time of release:
    - Ensure any binding specifications under `binding-specs/` that ship with this change set are ready. They are not snapshotted, but a core release that cites a specification still being drafted publishes a dangling citation.
    - Run `node scripts/verify-binding-spec-publications.mjs`. Every binding-specification identifier cited as published must already be present in `binding-specs/publications.json`, with its immutable bundle and permanent URLs.
    - Regenerate `conformance/manifest.json` (`node scripts/generate-conformance-manifest.mjs`) and run `node scripts/verify-corpus.mjs` to confirm the corpus is in sync with the spec.
+   - Confirm [release readiness](#release-readiness): every row is met, or
+     the editors waive it with a reason. Record each row's final state, and
+     any waiver, in the release's CHANGELOG entry.
 
 2. Cut a release snapshot
 
@@ -95,6 +98,43 @@ A release snapshot captures the normative core spec at the time of release:
      `(working draft)`.
    - When the first breaking change lands, bump the draft's self-declared
      version in `openbindings.md` and the examples' `openbindings` fields.
+
+## Release readiness
+
+A release is judged by these rows, each met or not on evidence, rather than
+by a grade. Every row is met before a release is tagged, unless the editors
+waive it with a reason recorded in the release's CHANGELOG entry.
+
+| Row | Met when |
+|---|---|
+| Scope | Every rule governs the OBI document or a claim a tool makes about one. The core defines no invocation, synthesis, discovery, or protocol interpretation; those belong to companion specifications and tools. |
+| Tested rules | Every document rule and tool rule has fixtures or scenarios that tell a conforming tool from a non-conforming one: `conformance/README.md` lists no rule as partial or deferred. |
+| Two implementations | Two implementations with separate code bases pass the whole core corpus at the release's revision. |
+| Implementable from the text | Someone who has not worked on the specification builds a document validator from the text alone, and every disagreement between it and the corpus is resolved. |
+| No open defects | No known contradiction, ambiguity, or error in the text is unresolved. |
+| One vocabulary | The core's terms are used the same way across the core text, the conformance corpus, and the project's reference SDKs. |
+
+Peer rankings are recorded beside the rows, not as one of them: reviewers
+rank the core specification among successful interface-description
+specifications (OpenAPI, AsyncAPI, Smithy, TypeSpec, GraphQL, Protocol
+Buffers with gRPC, WSDL 2.0) on named criteria, and the release's CHANGELOG
+entry states the result.
+
+### Readiness of the 0.2.0 working draft (2026-09-30)
+
+| Row | State |
+|---|---|
+| Scope | Met. |
+| Tested rules | Not met: OBI-T-01 and OBI-T-10 are partial; OBI-T-02, OBI-T-05, and OBI-T-11 are deferred. |
+| Two implementations | Not met: the Go SDK passes the corpus; the TypeScript SDK's alignment with the 0.2 text is pending. |
+| Implementable from the text | Not met: the last blind implementation run predates the kind, pruning, and value-contract changes. |
+| No open defects | Met: none known. |
+| One vocabulary | Met: rule-level evidence is satisfied, violated, inconclusive, or not applicable throughout. |
+
+Peer ranking (2026-09-30, core text at de2c20b, two reviewers): 3rd of 8 from
+both, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, AsyncAPI 3.1,
+Protocol Buffers with gRPC, TypeSpec, and WSDL 2.0. Strongest on scope
+discipline and the conformance model; weakest on economy and evolution.
 
 ## Errata
 

@@ -206,6 +206,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Rule-level evidence uses one vocabulary again.** [§10.2](openbindings.md#102-document-rules)
+  and [§10.4](openbindings.md#104-conformance-conclusions) say
+  **inconclusive** for a rule neither established to hold nor established
+  not to hold, as the rest of the specification, the binding
+  specifications, and the conformance corpus's scenario format already did;
+  the working draft had briefly said "undecided". Rule-level evidence is
+  **satisfied**, **violated**, **inconclusive**, or **not applicable**, and a
+  rule with nothing to govern holds vacuously, recorded as satisfied or as
+  not applicable. The conclusions and their truth conditions are unchanged.
+
 - **Value contracts named.** [§3](openbindings.md#3-terminology) defines a
   **value contract**: the part of an operation's contract that governs each
   caller-facing value crossing the boundary in one direction, the **input
