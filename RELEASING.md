@@ -131,6 +131,11 @@ entry states the result.
 | No open defects | Met: none known. |
 | One vocabulary | Met: rule-level evidence is satisfied, violated, inconclusive, or not applicable throughout. |
 
+Peer ranking (2026-09-30, core text at de2c20b, two reviewers): 3rd of 8 from
+both, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, AsyncAPI 3.1,
+Protocol Buffers with gRPC, TypeSpec, and WSDL 2.0. Strongest on scope
+discipline and the conformance model; weakest on economy and evolution.
+
 ## Errata
 
 Errors discovered in released snapshots are tracked via GitHub issues labeled `errata:<version>` and corrected in the next patch release. Released snapshots are never modified in place.
