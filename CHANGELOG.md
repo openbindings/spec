@@ -173,7 +173,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   with the conformance corpus partitioned per family
   (`processor-scenarios@2`, `synthesis-scenarios@5`).
 
-- A small, explicit set of core invariants: per-value contracts,
+- A small, explicit set of core invariants: value contracts,
   enabling-not-invoking, split authority, context-free references,
   offline-decidable core conformance, and decentralized extension.
 - Exact `bindingSpec` identifiers and the `OBI-B-01` through `OBI-B-03`
@@ -205,6 +205,24 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   practical 0.1-to-0.2 migration guide.
 
 ### Changed
+
+- **Value contracts named.** [§3](openbindings.md#3-terminology) defines a
+  **value contract**: the part of an operation's contract that governs each
+  caller-facing value crossing the boundary in one direction, the **input
+  contract** stated by `input` or the **output contract** stated by
+  `output`; an absent field states none. Unqualified, *contract* means an
+  operation's whole contract, and a shared contract is a set of operations.
+  §1.2, §2, §3, §4, §5, §5.1, §5.2, §5.3, §5.5, §6, §10.1, §14, and
+  Appendix A now say "value contract" or "shared contract" where they meant
+  one, and the caller-facing boundary stays the operation's one boundary. OBI-T-05's trigger is restated as deriving another form from a
+  schema, such as a type or a comparison model, in place of the undefined
+  "contract"; its obligation is unchanged. OBI-T-08 names its two
+  schema-side grounds for withholding a verdict together as an **undefined
+  result**, keeping each ground as it was, and §7.4 names it; an undefined
+  result withholds a verdict from every tool, a missing reference or
+  capability only from the tool that lacks it. The migration guide and the
+  agent primer follow, and the migration guide stops describing `output` as
+  covering only successful values.
 
 - **Worked tables.** §7.5 tabulates same-document references in one example
   document with their OBI-D-12 (or OBI-D-05) outcomes, and §8.1 tabulates

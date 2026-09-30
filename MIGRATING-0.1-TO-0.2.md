@@ -18,7 +18,7 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | `bindings.*.ref` | `bindings.*.content`: optional JSON content read under the source's kind; it may identify the target |
 | `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the intended tool behavior reads; the core has no `location` member |
 | Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "language": "jsonata", "expression": "..." }` | Remove; any value adaptation is read under the source's kind, possibly through `bindings.*.content` |
-| `operation.input: null` or `operation.output: null` for unspecified | Omit the member |
+| `operation.input: null` or `operation.output: null` for no value contract | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
 | No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `kinds` |
 | Root `security` and `bindings.*.security` | Remove; provide credentials and other prerequisites as invocation context |
@@ -33,15 +33,18 @@ if that faithfully expresses the original intent.
 
 ## Re-evaluate the contract
 
-In 0.2, operation `input` and `output` are contracts on **each value**, not
-declarations of unary, streaming, or other invocation shape. Cardinality and
+In 0.2, operation `input` and `output` state input and output contracts, which
+govern **each value**; they are not declarations of unary, streaming, or other
+invocation shape. Cardinality and
 wire behavior are read under the source's kind and concrete protocol.
 
-- An absent schema means unspecified.
+- An absent schema states no value contract.
 - `{}` or `true` accepts any JSON value.
 - `false` accepts no value.
 - `{ "type": "null" }` accepts only the JSON value `null`.
-- `output` constrains successful output values, not protocol error envelopes.
+- `output` constrains every caller-facing output value, error-shaped ones
+  included; the source's kind determines which interaction results become
+  those values.
 
 Boolean JSON Schemas are valid at every schema position. If a 0.1 document or
 consumer inferred invocation cardinality from schema presence, that inference
@@ -121,7 +124,7 @@ OBI documents are context-free in 0.2:
   root, subject to nested `$id` rebasing.
 
 The 0.2 core defines no transforms. A 0.1 transform adapted values between
-the operation's contract and the source; in 0.2 any such adaptation is read
+the operation's value contracts and the source; in 0.2 any such adaptation is read
 under the source's kind. Carry a mapping in binding `content` only if the
 intended tool reads one there. The operation's schemas still describe the
 caller-facing values.

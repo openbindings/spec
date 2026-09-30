@@ -36,7 +36,7 @@ For any task, establish three facts before acting:
 
 OpenBindings is a portable interface description format. An OpenBindings
 interface document (OBI) describes protocol-independent operations, with
-optional JSON Schema contracts for each input and output value. It connects
+optional value contracts, stated in JSON Schema, for each input and output value. It connects
 operations to concrete realizations through sources and bindings and declares
 named consumption points through dependencies. A
 binding specification governs how a source family such as OpenAPI, AsyncAPI,
@@ -140,7 +140,7 @@ specification defines; the core gives `content` no meaning of its own.
 A binding connects one operation to one source and may carry `content`, any
 JSON value the source's binding specification defines: typically which target
 realizes the operation and how values are adapted between the operation's
-contract and that target. The core gives a binding's `content` no meaning of
+value contracts and that target. The core gives a binding's `content` no meaning of
 its own. Value adaptation, however a binding specification defines it, does not
 redefine transport lifecycle or repair an interaction that the binding
 specification cannot represent.
@@ -196,7 +196,7 @@ Use this ownership model when specifications appear to overlap:
 | Question | Authority |
 | --- | --- |
 | Is the OBI structurally conformant? How do OBI-defined references resolve? | Core OpenBindings specification |
-| What does an operation's input or output value mean at its caller-facing boundary? | The operation contract in the OBI |
+| What does an operation's input or output value mean at its caller-facing boundary? | The operation's value contracts in the OBI |
 | Which operation does a dependency consume, and which binding-specification identifiers does it permit? | The dependency declaration in the OBI |
 | What source forms are accepted? What does a binding's `content` identify, and how are values adapted? How is the interaction performed and classified? | The named binding specification |
 | What does an incorporated OpenAPI, protobuf, GraphQL, MCP, or other declaration mean? | The incorporated upstream authority, as scoped by the binding specification |
