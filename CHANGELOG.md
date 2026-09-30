@@ -206,6 +206,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Correspondence is read from the consumer's side.** [§5.1](openbindings.md#51-operations)
+  states that an operation carrying a published name claims correspondence
+  as a consumer holding a shared contract that publishes the name reads it:
+  the claim is read against the shared contract the consumer holds, never
+  against every contract that publishes the name. Carrying the name is still
+  the claim, whatever the author intended, and it is still unverified and
+  demonstrates no compatibility. [§3](openbindings.md#3-terminology), the
+  [§4](openbindings.md#4-overview-informative) example, and the realization
+  claim of [§5.3](openbindings.md#53-bindings) say the same.
+
 - **Rule-level evidence uses one vocabulary again.** [§10.2](openbindings.md#102-document-rules)
   and [§10.4](openbindings.md#104-conformance-conclusions) say
   **inconclusive** for a rule neither established to hold nor established
