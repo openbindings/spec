@@ -1,86 +1,287 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/tool-scenario.schema.json",
-  "title": "OpenBindings core tool scenarios",
-  "description": "Portable action-and-outcome scenarios for core rules whose behavior cannot be expressed as an inline document-validity verdict.",
+  "title": "OpenBindings core tool scenarios, format @2",
+  "description": "Portable action-and-outcome scenarios for the core tool rules (openbindings.md section 10.3). Each scenario names the clauses it tests (clause IDs are defined in clauses.json). Value outcomes use the specification's three: valid, instance mismatch, and no verdict. Three things are kept apart: the verdict the specification allows for a case; the profile features a case depends on, which a tool declares supported or unsupported (a declaration, not a list of every permitted limitation); and the reason a run gave no verdict, which an adapter may report as an observation. These are corpus terms, never SDK API or report shapes: an adapter translates its implementation's native surface to them.",
   "type": "object",
-  "required": ["format", "rule", "section", "description", "scenarios"],
+  "required": [
+    "format",
+    "rule",
+    "section",
+    "description",
+    "scenarios"
+  ],
   "additionalProperties": false,
   "properties": {
-    "format": { "const": "openbindings.core-tool-scenarios@1" },
-    "rule": { "enum": ["OBI-T-06", "OBI-T-07", "OBI-T-08", "OBI-T-09"] },
-    "section": { "const": "10.3" },
-    "description": { "type": "string", "minLength": 1 },
+    "format": {
+      "const": "openbindings.core-tool-scenarios@2"
+    },
+    "rule": {
+      "type": "string",
+      "pattern": "^OBI-T-[0-9]{2}$"
+    },
+    "section": {
+      "const": "10.3"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
     "scenarios": {
       "type": "array",
       "minItems": 1,
       "items": {
         "oneOf": [
-          { "$ref": "#/$defs/schemaCycle" },
-          { "$ref": "#/$defs/resolveOperation" },
-          { "$ref": "#/$defs/validateValues" },
-          { "$ref": "#/$defs/concludeConformance" }
+          {
+            "$ref": "#/$defs/checkDependencyKind"
+          },
+          {
+            "$ref": "#/$defs/resolveOperation"
+          },
+          {
+            "$ref": "#/$defs/validateDocument"
+          },
+          {
+            "$ref": "#/$defs/validateValues"
+          },
+          {
+            "$ref": "#/$defs/concludeConformance"
+          },
+          {
+            "$ref": "#/$defs/checkExamples"
+          },
+          {
+            "$ref": "#/$defs/deriveForm"
+          }
         ]
       }
     }
   },
-  "allOf": [
-    {
-      "if": { "properties": { "rule": { "const": "OBI-T-06" } }, "required": ["rule"] },
-      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/schemaCycle" } } } }
-    },
-    {
-      "if": { "properties": { "rule": { "const": "OBI-T-07" } }, "required": ["rule"] },
-      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/resolveOperation" } } } }
-    },
-    {
-      "if": { "properties": { "rule": { "const": "OBI-T-08" } }, "required": ["rule"] },
-      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/validateValues" } } } }
-    },
-    {
-      "if": { "properties": { "rule": { "const": "OBI-T-09" } }, "required": ["rule"] },
-      "then": { "properties": { "scenarios": { "items": { "$ref": "#/$defs/concludeConformance" } } } }
-    }
-  ],
   "$defs": {
-    "scenarioId": {
-      "type": "string",
-      "pattern": "^T(06|07|08|09)-S-[0-9]{2}$"
-    },
-    "scenarioDescription": { "type": "string", "minLength": 1 },
-    "side": { "enum": ["input", "output"] },
-    "validationOutcome": {
-      "enum": ["valid", "instance-mismatch", "graph-unavailable"]
-    },
-    "schemaCycle": {
+    "common": {
       "type": "object",
-      "required": ["id", "description", "action", "given", "expected"],
+      "required": [
+        "id",
+        "clauses",
+        "description",
+        "action",
+        "given",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^T[0-9]{2}-S-[0-9]{2}$",
+          "description": "T<rule>-S-<n>: the file's rule number and a number never reused within the corpus (clauses.json, caseIdentity)."
+        },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^OBI-T-[0-9]{2}/c[0-9]+[a-z]?(\\.[pi][0-9]+)?$"
+          },
+          "description": "The clause IDs (clauses.json) this case tests; at least one is a clause of the file's rule."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requiresSupports": {
+          "$ref": "#/$defs/semver",
+          "description": "Administer the case only to tools whose declared support set includes this version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The set comes from the tool's declaration, never from its acceptance or refusal code."
+        },
+        "requiresUnsupported": {
+          "$ref": "#/$defs/semver",
+          "description": "Administer the case only to tools whose declared support set excludes this version, judged by the same declaration."
+        },
+        "requiresMinSupported": {
+          "$ref": "#/$defs/semver",
+          "description": "Administer the case only to tools whose declared lowest supported version (the first release of the lowest declared line) is at least this version."
+        }
+      }
+    },
+    "semver": {
+      "description": "Semantic Versioning 2.0.0, the official grammar (no leading zero in a numeric prerelease identifier, no empty identifier).",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "documentRule": {
+      "type": "string",
+      "pattern": "^OBI-D-[0-9]{2}$"
+    },
+    "nonConformant": {
+      "description": "The document rules the given document violates. A tool that does not continue with a non-conformant document omits the scenario, reporting that reason; continuation is never required.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/documentRule"
+      }
+    },
+    "feature": {
+      "description": "A profile feature a case depends on. An adapter declares each feature its runs depend on as supported or unsupported. This is the set of features the corpus's cases depend on, not the set of limitations a conforming tool may have: resource limits and evaluation strategy remain the tool's (OBI-T-06, OBI-T-08 notes).",
+      "enum": [
+        "recursive-references",
+        "document-resource-dynamic-scope",
+        "supplied-resources",
+        "ecma262-unicode-property-escapes",
+        "repeated-member-detection",
+        "draft-07-dialect",
+        "exact-numbers"
+      ]
+    },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    },
+    "noVerdictReason": {
+      "description": "Optional observation an adapter may attach to a no-verdict; never a verdict.",
+      "enum": [
+        "no-contract",
+        "undefined-result",
+        "missing-reference",
+        "missing-capability",
+        "resource-limit",
+        "invalid-reference"
+      ]
+    },
+    "refusal": {
+      "type": "object",
+      "required": [
+        "outcome"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "$ref": "#/$defs/scenarioId" },
-        "description": { "$ref": "#/$defs/scenarioDescription" },
-        "action": { "const": "resolve-schema-cycle" },
-        "given": {
+        "outcome": {
+          "const": "version-refusal"
+        }
+      }
+    },
+    "valueResult": {
+      "oneOf": [
+        {
+          "description": "valid or instance-mismatch: the verdict a tool supporting every feature the case depends on gives; a tool declaring one of those features unsupported must give no verdict. no-verdict: required of every tool.",
+          "enum": [
+            "valid",
+            "instance-mismatch",
+            "no-verdict"
+          ]
+        },
+        {
+          "description": "The verdict, or no verdict, for every tool: the result does not depend on what is missing, and the rule prescribes no evaluation strategy.",
           "type": "object",
-          "required": ["document", "operation", "side", "value"],
+          "required": [
+            "verdict",
+            "orNoVerdict"
+          ],
           "additionalProperties": false,
           "properties": {
-            "document": { "type": "object" },
-            "operation": { "type": "string" },
-            "side": { "$ref": "#/$defs/side" },
-            "value": {}
+            "verdict": {
+              "enum": [
+                "valid",
+                "instance-mismatch"
+              ]
+            },
+            "orNoVerdict": {
+              "const": true
+            }
+          }
+        },
+        {
+          "description": "A per-value dependence that differs from the scenario's dependsOn (an empty array: this value's result depends on no feature).",
+          "type": "object",
+          "required": [
+            "verdict",
+            "dependsOn"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "verdict": {
+              "enum": [
+                "valid",
+                "instance-mismatch"
+              ]
+            },
+            "dependsOn": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/feature"
+              },
+              "description": "The features this value's result depends on; an empty array states it depends on none, overriding the scenario's dependsOn."
+            }
+          }
+        }
+      ]
+    },
+    "obiDocument": {
+      "type": "object"
+    },
+    "checkDependencyKind": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "check-dependency-kind"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "dependency",
+            "binding"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "nonConformant": {
+              "$ref": "#/$defs/nonConformant"
+            },
+            "dependency": {
+              "type": "string"
+            },
+            "binding": {
+              "type": "string"
+            },
+            "retrievalSentinels": {
+              "description": "The harness replaces each '{retrieval-sentinel:<channel>}' in the document's strings with an address on that channel that it observes for the whole action, loading included, and fails the case on any observed retrieval attempt.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "file",
+                  "http"
+                ]
+              }
+            }
           }
         },
         "expected": {
           "type": "object",
-          "required": ["allowedOutcomes"],
+          "required": [
+            "outcome"
+          ],
           "additionalProperties": false,
           "properties": {
-            "allowedOutcomes": {
-              "type": "array",
-              "minItems": 1,
-              "uniqueItems": true,
-              "items": { "enum": ["valid", "instance-mismatch", "resolver-error"] }
+            "outcome": {
+              "enum": [
+                "meets",
+                "does-not-meet"
+              ]
             }
           }
         }
@@ -88,42 +289,213 @@
     },
     "resolveOperation": {
       "type": "object",
-      "required": ["id", "description", "action", "given", "expected"],
-      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
       "properties": {
-        "id": { "$ref": "#/$defs/scenarioId" },
-        "description": { "$ref": "#/$defs/scenarioDescription" },
-        "action": { "const": "resolve-operation" },
+        "action": {
+          "const": "resolve-operation"
+        },
         "given": {
           "type": "object",
-          "required": ["document", "name"],
+          "required": [
+            "document",
+            "name"
+          ],
           "additionalProperties": false,
           "properties": {
-            "document": { "type": "object" },
-            "name": { "type": "string" }
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "nonConformant": {
+              "$ref": "#/$defs/nonConformant"
+            },
+            "name": {
+              "type": "string"
+            }
           }
         },
         "expected": {
           "oneOf": [
             {
               "type": "object",
-              "required": ["outcome", "operationKey", "bindingKeys"],
+              "required": [
+                "outcome",
+                "operationKey",
+                "bindingKeys"
+              ],
               "additionalProperties": false,
               "properties": {
-                "outcome": { "const": "resolved" },
-                "operationKey": { "type": "string" },
+                "outcome": {
+                  "const": "resolved"
+                },
+                "operationKey": {
+                  "type": "string"
+                },
                 "bindingKeys": {
                   "type": "array",
                   "uniqueItems": true,
-                  "items": { "type": "string" }
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             },
             {
               "type": "object",
-              "required": ["outcome"],
+              "required": [
+                "outcome"
+              ],
               "additionalProperties": false,
-              "properties": { "outcome": { "const": "not-found" } }
+              "properties": {
+                "outcome": {
+                  "const": "not-found"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/refusal"
+            },
+            {
+              "description": "ADVISORY: a name that is one operation's key and another operation's alias (an OBI-D-04 violation). The harness records the role of each document's result (key match, alias match, or no single resolution) and never fails a tool on it: no finite document set tells key preference from a role-neutral choice that happens to pick key matches, so OBI-T-07/c2 is not portably testable.",
+              "type": "object",
+              "required": [
+                "outcome",
+                "keyMatch",
+                "aliasMatch",
+                "group"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "const": "collision"
+                },
+                "keyMatch": {
+                  "type": "string"
+                },
+                "aliasMatch": {
+                  "type": "string"
+                },
+                "group": {
+                  "type": "string",
+                  "pattern": "^T[0-9]{2}-G-[0-9]{2}$"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "validateDocument": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "validate-document"
+        },
+        "given": {
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "document"
+              ]
+            },
+            {
+              "required": [
+                "documentText"
+              ]
+            },
+            {
+              "required": [
+                "documentBase64"
+              ]
+            }
+          ],
+          "properties": {
+            "document": {},
+            "documentText": {
+              "type": "string"
+            },
+            "documentBase64": {
+              "type": "string",
+              "contentEncoding": "base64"
+            }
+          }
+        },
+        "expected": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/refusal"
+            },
+            {
+              "type": "object",
+              "required": [
+                "outcome"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "description": "conformant permits conformance-undetermined (a validator lacking evidence); interpreted means any conclusion, refusal excluded, with no conclusion asserted.",
+                  "enum": [
+                    "conformant",
+                    "non-conformant",
+                    "conformance-undetermined",
+                    "interpreted"
+                  ]
+                },
+                "violates": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/documentRule"
+                  }
+                },
+                "namesAppliedText": {
+                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test.",
+                  "const": true
+                },
+                "duplicateBlind": {
+                  "description": "For a tool declaring repeated-member-detection unsupported, and the occurrence its parser reads: the outcome required for each value it may read.",
+                  "type": "object",
+                  "minProperties": 2,
+                  "propertyNames": {
+                    "$ref": "#/$defs/semver"
+                  },
+                  "additionalProperties": {
+                    "enum": [
+                      "version-refusal",
+                      "conformance-undetermined"
+                    ]
+                  }
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "required": [
+                      "violates"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "outcome": {
+                        "const": "non-conformant"
+                      }
+                    }
+                  }
+                }
+              ]
             }
           ]
         }
@@ -131,67 +503,278 @@
     },
     "validateValues": {
       "type": "object",
-      "required": ["id", "description", "action", "given", "expected"],
-      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
       "properties": {
-        "id": { "$ref": "#/$defs/scenarioId" },
-        "description": { "$ref": "#/$defs/scenarioDescription" },
-        "action": { "const": "validate-operation-values" },
+        "action": {
+          "const": "validate-operation-values"
+        },
         "given": {
           "type": "object",
-          "required": ["document", "operation", "side", "values"],
+          "required": [
+            "document",
+            "operation",
+            "side",
+            "values"
+          ],
           "additionalProperties": false,
           "properties": {
-            "document": { "type": "object" },
-            "operation": { "type": "string" },
-            "side": { "$ref": "#/$defs/side" },
-            "values": { "type": "array", "minItems": 1 }
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "nonConformant": {
+              "$ref": "#/$defs/nonConformant"
+            },
+            "operation": {
+              "type": "string"
+            },
+            "side": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "values": {
+              "type": "array",
+              "minItems": 1
+            },
+            "resources": {
+              "description": "Schema documents the harness offers. A tool may decline them; declining makes the referenced schemas unavailable to it, so dependsOn supplied-resources applies.",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "uri",
+                  "document"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "uri": {
+                    "type": "string"
+                  },
+                  "document": {}
+                }
+              }
+            }
           }
         },
         "expected": {
-          "type": "object",
-          "required": ["results"],
-          "additionalProperties": false,
-          "properties": {
-            "results": {
-              "type": "array",
-              "minItems": 1,
-              "items": { "$ref": "#/$defs/validationOutcome" }
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "$ref": "#/$defs/valueResult"
+                  }
+                },
+                "dependsOn": {
+                  "$ref": "#/$defs/features"
+                },
+                "forbidReasons": {
+                  "description": "No-verdict reasons the tool must not report for these values, where it reports reasons at all.",
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/noVerdictReason"
+                  }
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/refusal"
             }
-          }
+          ]
         }
       }
     },
     "concludeConformance": {
       "type": "object",
-      "required": ["id", "description", "action", "given", "expected"],
-      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
       "properties": {
-        "id": { "$ref": "#/$defs/scenarioId" },
-        "description": { "$ref": "#/$defs/scenarioDescription" },
-        "action": { "const": "conclude-conformance" },
+        "action": {
+          "const": "conclude-conformance"
+        },
         "given": {
           "type": "object",
-          "required": ["evidence"],
+          "required": [
+            "evidence"
+          ],
           "additionalProperties": false,
           "properties": {
             "evidence": {
+              "description": "The evidence a tool has for the line's document rules, each rule satisfied, violated, inconclusive, or not applicable. A rule the map omits has not been established: the expected conclusion treats it as inconclusive (OBI-T-09), and the verifier checks that the conclusion follows from the map on that reading.",
               "type": "object",
               "minProperties": 1,
-              "propertyNames": { "pattern": "^OBI-D-[0-9]+$" },
+              "propertyNames": {
+                "$ref": "#/$defs/documentRule"
+              },
               "additionalProperties": {
-                "enum": ["satisfied", "violated", "inconclusive", "not-applicable"]
+                "enum": [
+                  "satisfied",
+                  "violated",
+                  "inconclusive",
+                  "not-applicable"
+                ]
               }
             }
           }
         },
         "expected": {
           "type": "object",
-          "required": ["conclusion"],
+          "required": [
+            "conclusion"
+          ],
           "additionalProperties": false,
           "properties": {
             "conclusion": {
-              "enum": ["conformant", "non-conformant", "conformance-undetermined"]
+              "enum": [
+                "conformant",
+                "non-conformant",
+                "conformance-undetermined"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "checkExamples": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "check-examples"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "operation"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "operation": {
+              "type": "string"
+            }
+          }
+        },
+        "expected": {
+          "description": "One entry per example of the operation, with one member per side the example supplies (the verifier checks completeness).",
+          "type": "object",
+          "required": [
+            "examples"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "examples": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "input": {
+                    "$ref": "#/$defs/exampleResult"
+                  },
+                  "output": {
+                    "$ref": "#/$defs/exampleResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "exampleResult": {
+      "enum": [
+        "holds",
+        "false-claim",
+        "no-claim",
+        "no-verdict"
+      ]
+    },
+    "deriveForm": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "derive-form"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "operation",
+            "side",
+            "probes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "operation": {
+              "type": "string"
+            },
+            "side": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "probes": {
+              "type": "array",
+              "minItems": 1
+            }
+          }
+        },
+        "expected": {
+          "description": "The schema's verdict on each probe (one per probe). A tool claiming its derived form preserves the schema's meaning must have a form agreeing with every probe; disagreement refutes the claim, agreement never establishes it. A tool making no such claim passes; a tool that derives no forms omits the case.",
+          "type": "object",
+          "required": [
+            "probeVerdicts"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "probeVerdicts": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "enum": [
+                  "valid",
+                  "instance-mismatch"
+                ]
+              }
             }
           }
         }

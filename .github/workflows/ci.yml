@@ -78,6 +78,9 @@ jobs:
       - name: Verify conformance corpus consistency
         run: node scripts/verify-corpus.mjs
 
+      - name: Exercise the corpus verifier's controls
+        run: node scripts/test-verify-corpus.mjs
+
       - name: Check conformance manifest is up-to-date
         run: |
           node scripts/generate-conformance-manifest.mjs

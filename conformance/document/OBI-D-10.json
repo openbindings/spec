@@ -389,6 +389,25 @@
         }
       },
       "valid": false
+    },
+    {
+      "description": "count keywords take a non-negative integer, judged by exact value (section 10), so minLength 1.0 and maxProperties 0 are valid",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "type": "string",
+              "minLength": 1.0
+            },
+            "output": {
+              "type": "object",
+              "maxProperties": 0
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

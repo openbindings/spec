@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/fixture.schema.json",
   "title": "OpenBindings Conformance Fixture",
-  "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file).",
+  "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file). Document fixtures (document/) are keyed by rule. Tool fixtures (tool/) may name the clauses each test exercises (clauses.json). violates names document rules only: a tool rule is never a document violation.",
   "type": "object",
   "required": [
     "rule",
@@ -72,27 +72,49 @@
           },
           "violates": {
             "type": "array",
-            "description": "When valid is false, the minimum set of OBI-D-## or OBI-T-## rules the document is intended to exercise as violated. Lists semantic rules only; OBI-D-02 is omitted when a more specific rule names the violation. Because the core does not standardize a diagnostic surface, a runner MAY check that a tool which reports rule identifiers includes this set; the field does not require every conformant tool to report identifiers.",
+            "description": "When valid is false, the minimum set of OBI-D-## rules the document is intended to exercise as violated. A tool rule is never a document violation.",
             "items": {
               "type": "string",
-              "pattern": "^OBI-[DT]-[0-9]+$"
+              "pattern": "^OBI-D-[0-9]+$"
             }
           },
           "requiresMinSupported": {
             "type": "string",
-            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
-            "description": "When set, the test only applies to tools whose lowest supported version is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal scenarios (a document declaring a version below the tool's lowest supported version MUST be refused), which are meaningless for a tool whose supported set extends down to the fixture's document version. Runners SHOULD skip tests whose requiresMinSupported exceeds the tool's lowest supported version, reporting skips separately."
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+            "description": "When set, the test applies only to tools whose declared lowest supported version (the first release of the lowest declared line) is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal tests. Derived from the declaration, never from refusal code; runners skip otherwise, reporting skips separately."
           },
           "requiresSupports": {
             "type": "string",
-            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
-            "description": "When set, administer this test only to tools whose OBI-T-04 version-acceptance predicate accepts this SemVer 2.0.0 version; otherwise runners SHOULD skip it, reporting the skip separately (skips are never failures). An acceptance gate keyed to the tool's own declared acceptance set (for the reference SDKs, IsSupportedVersion / isSupportedVersion), not to the tested-range declarations: a tool's acceptance set and its tested range are distinct declarations — per §8.1, a release-line support declaration is the tool's own, not an inference the specification imposes. Used for OBI-T-04 positives whose verdict presumes acceptance of a specific version."
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+            "description": "When set, administer this test only to tools whose declared support set includes this SemVer 2.0.0 version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The harness derives the set from the tool's declaration (for the Go SDK, the exported SupportedVersions constant), never from the tool's acceptance or refusal code, so a defect in that code cannot gate its own tests out. Otherwise runners skip the test, reporting the skip separately (skips are never failures)."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^OBI-T-[0-9]{2}/c[0-9]+[a-z]?(\\.[pi][0-9]+)?$"
+            },
+            "description": "Tool-rule clause IDs (corpus-owned, defined in clauses.json) this test exercises. Allowed only in tool/ fixtures, where every test names at least one clause of the file's rule (the verifier checks both)."
           }
         },
         "oneOf": [
-          { "required": ["document"] },
-          { "required": ["documentText"] },
-          { "required": ["documentBase64"] }
+          {
+            "required": [
+              "document"
+            ]
+          },
+          {
+            "required": [
+              "documentText"
+            ]
+          },
+          {
+            "required": [
+              "documentBase64"
+            ]
+          }
         ]
       }
     }

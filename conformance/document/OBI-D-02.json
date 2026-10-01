@@ -682,6 +682,76 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "document declares an unknown kind",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "exotic": {
+            "kind": "totally-fictional-format@9.9.9"
+          }
+        },
+        "bindings": {
+          "createTask.exotic": {
+            "operation": "createTask",
+            "source": "exotic"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "document mixes familiar and unfamiliar kinds without a core validity defect",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "http": {
+            "kind": "example.openapi@1"
+          },
+          "exotic": {
+            "kind": "totally-fictional-format@9.9.9"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "http",
+            "content": {
+              "target": "#/paths/~1tasks/post"
+            }
+          },
+          "createTask.exotic": {
+            "operation": "createTask",
+            "source": "exotic"
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "dependency lists only an unknown kind without making the document invalid",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deliverEvent": {}
+        },
+        "dependencies": {
+          "delivery": {
+            "operation": "deliverEvent",
+            "kinds": [
+              "totally-fictional-format@9.9.9"
+            ]
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

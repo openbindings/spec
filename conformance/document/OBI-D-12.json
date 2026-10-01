@@ -929,6 +929,50 @@
       "violates": [
         "OBI-D-12"
       ]
+    },
+    {
+      "description": "an $anchor whose value is outside the JSON Schema Core section 8.2.2 grammar declares no plain name, so #bad/name identifies nothing (section 7.3)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "bad/name",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#bad/name"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10",
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a pointer to an operation input holding null reaches no schema: only an object or a boolean at an OBI position is a schema (section 7)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "a": {
+            "input": null
+          },
+          "b": {
+            "input": {
+              "$ref": "#/operations/a/input"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     }
   ]
 }

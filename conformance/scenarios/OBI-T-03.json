@@ -1,0 +1,205 @@
+{
+  "format": "openbindings.core-tool-scenarios@2",
+  "rule": "OBI-T-03",
+  "section": "10.3",
+  "description": "x- fields are extensions and change no core field's meaning, whether or not the tool understands them.",
+  "scenarios": [
+    {
+      "id": "T03-S-01",
+      "clauses": [
+        "OBI-T-03/c2"
+      ],
+      "description": "An x-aliases extension adds no operation identifier.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "x-aliases": [
+                "tasks.create"
+              ]
+            }
+          }
+        },
+        "name": "tasks.create"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T03-S-02",
+      "clauses": [
+        "OBI-T-03/c2"
+      ],
+      "description": "An x-operation extension on a binding does not move the binding to another operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {},
+            "other": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "k@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "createTask",
+              "source": "s",
+              "x-operation": "other"
+            }
+          }
+        },
+        "name": "other"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "other",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "T03-S-03",
+      "clauses": [
+        "OBI-T-03/c2"
+      ],
+      "description": "An x-openbindings extension does not change the version decision (supported declared, unsupported extension).",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "x-openbindings": "999.0.0",
+          "operations": {}
+        }
+      },
+      "requiresSupports": "0.2.0",
+      "requiresUnsupported": "999.0.0",
+      "expected": {
+        "outcome": "conformant"
+      }
+    },
+    {
+      "id": "T03-S-04",
+      "clauses": [
+        "OBI-T-03/c2",
+        "OBI-T-04/c2"
+      ],
+      "description": "An x-openbindings extension does not change the version decision (unsupported declared, supported extension).",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "999.0.0",
+          "x-openbindings": "0.2.0",
+          "operations": {}
+        }
+      },
+      "requiresUnsupported": "999.0.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T03-S-05",
+      "clauses": [
+        "OBI-T-03/c2"
+      ],
+      "description": "Extension members on an operation do not change its input contract.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string"
+              },
+              "x-input": true,
+              "x-nullable": true
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          null,
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "instance-mismatch",
+          "instance-mismatch",
+          "valid"
+        ]
+      }
+    },
+    {
+      "id": "T03-S-06",
+      "clauses": [
+        "OBI-T-03/c2"
+      ],
+      "description": "An x-kinds extension on a dependency imposes no kind constraint.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "x-kinds": [
+                "a@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T03-S-07",
+      "clauses": [
+        "OBI-T-03/c1"
+      ],
+      "description": "A map key beginning with x- names an ordinary operation, not an extension field (section 12).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "x-internal": {}
+          }
+        },
+        "name": "x-internal"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "x-internal",
+        "bindingKeys": []
+      }
+    }
+  ]
+}

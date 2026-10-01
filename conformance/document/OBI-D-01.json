@@ -72,6 +72,22 @@
       "violates": [
         "OBI-D-01"
       ]
+    },
+    {
+      "description": "a leading byte-order mark makes the text non-conformant through OBI-D-01 alone; the other rules impose no further requirement on it, so the dependency on a missing operation adds no violation (section 10, The document and its data)",
+      "documentBase64": "77u/eyJvcGVuYmluZGluZ3MiOiIwLjIuMCIsIm9wZXJhdGlvbnMiOnt9LCJkZXBlbmRlbmNpZXMiOnsiZCI6eyJvcGVyYXRpb24iOiJtaXNzaW5nIn19fQ==",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "a repeated operations member makes the text non-conformant through OBI-D-01 alone, whichever value a parser keeps; the other rules impose no further requirement on it (section 10, The document and its data)",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{\"a\":{}},\"operations\":{\"b\":{}},\"dependencies\":{\"d\":{\"operation\":\"a\"}}}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
     }
   ]
 }

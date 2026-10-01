@@ -1,8 +1,8 @@
 {
   "rule": "OBI-T-10",
   "section": "10.3",
-  "description": "A seemingly inaccurate author-attested `idempotent` claim on a binding is not a core document defect; truth of the claim is outside document conformance.",
-  "notes": "All tests are positive (valid: true). Operation names tempt plausibility heuristics, but such heuristics cannot establish a document-rule violation. Tools remain free to use the claim in their own decisions.",
+  "description": "A tool does not treat the apparent inaccuracy of an author claim, as section 5 lists them (examples, a binding's claim to realize its operation and its idempotent, a dependency's claim to consume its operation, and correspondence), as a document-rule violation.",
+  "notes": "All tests are positive (valid: true). Each document carries a claim that a plausibility heuristic would doubt; such heuristics cannot establish a document-rule violation. The fixtures discriminate only heuristics over the document: a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture. Tools remain free to use the claims in their own decisions.",
   "tests": [
     {
       "description": "write-shaped binding claims idempotent: true — plausibility cannot determine document validity",
@@ -24,7 +24,10 @@
           }
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-10/c1c"
+      ]
     },
     {
       "description": "read-shaped binding claims idempotent: false — apparent inaccuracy in the other direction",
@@ -46,7 +49,10 @@
           }
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-10/c1c"
+      ]
     },
     {
       "description": "mass-delete operation’s binding claims idempotent: true — bait for a method-name heuristic, though §5.3 itself notes repeated deletion can be idempotent; either way the attestation stands",
@@ -65,6 +71,123 @@
             "operation": "deleteAllRecords",
             "source": "api",
             "idempotent": true
+          }
+        }
+      },
+      "valid": true,
+      "clauses": [
+        "OBI-T-10/c1c"
+      ]
+    },
+    {
+      "description": "an example whose input does not satisfy the input schema is a false claim, not a document-rule violation",
+      "clauses": [
+        "OBI-T-10/c1a"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "type": "string"
+            },
+            "examples": {
+              "bad": {
+                "input": 42
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an explicitly null example output against a string output is a false claim, not a violation",
+      "clauses": [
+        "OBI-T-10/c1a"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "output": {
+              "type": "string"
+            },
+            "examples": {
+              "nil": {
+                "output": null
+              }
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a binding whose opaque content looks, to a heuristic, like another operation's target is an unverified realization claim",
+      "clauses": [
+        "OBI-T-10/c1b"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "deleteTask": {
+            "description": "Delete a task."
+          }
+        },
+        "sources": {
+          "api": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "deleteTask.api": {
+            "operation": "deleteTask",
+            "source": "api",
+            "content": {
+              "target": "#/paths/~1tasks/post"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a dependency on an operation whose description its consumption seems to contradict is an unverified claim",
+      "clauses": [
+        "OBI-T-10/c1d"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "notify": {
+            "input": {
+              "type": "integer"
+            }
+          }
+        },
+        "dependencies": {
+          "alerts": {
+            "operation": "notify",
+            "description": "Sends free-form text messages."
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "an alias adopting a published name the description seems to contradict is an unverified correspondence claim",
+      "clauses": [
+        "OBI-T-10/c1e"
+      ],
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "description": "Create a task.",
+            "aliases": [
+              "acme.tasks.deleteTask"
+            ]
           }
         }
       },
