@@ -4,13 +4,14 @@
 //
 // Results (written by the runner's -json mode):
 //   {"pin": "<full commit SHA of the implementation run>",
+//    "applied": "<the -applied the runner was given>", "appliedSHA256": "<its -applied-sha256>",
 //    "reconciliation": ["<a problem the runner found reconciling its cases with the manifest>"],
 //    "cases": [{"id": "<case ID or fixture path#/tests/N>",
 //               "status": "pass" | "FAIL" | "SHORTFALL" | "OMITTED" | "ADVISORY" | "UNVERIFIED",
 //               "signature": "<a stable one-line description of a failure or omission>"}]}
 //
 // Expected results (conformance/runners/go/expected-failures.json):
-//   {"pin": "<the same SHA>",
+//   {"pin": "<the same SHA>", "applied": "<the same>", "appliedSHA256": "<the same>",
 //    "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" | "UNVERIFIED" (default FAIL),
 //                  "signature": "...", "reason": "..."}],
 //    "omissions": [{"case": "...", "signature": "...", "reason": "..."}]}
@@ -19,11 +20,14 @@
 // from the manifest's files, each holding the number of cases the manifest
 // counts, and its collision cases (an expected outcome of "collision").
 //
-// It fails when the pins differ; when the runner reported a reconciliation
-// problem; when the corpus's case set and the reported one differ; when a
-// case is reported twice; when a status is absent or not one of the six run
-// categories; when ADVISORY is reported for a case that is not a collision
-// case; when a case is not a pass and gives no reason; when a case fails,
+// It fails when the pins differ, or the declared applied texts (a changed
+// declaration forces the keyed failures and omissions to be re-justified);
+// when the runner reported a reconciliation problem; when the corpus's case
+// set and the reported one differ; when a case is reported twice; when a
+// status is absent or not one of the six run categories; when ADVISORY is
+// reported for a case that is not a collision case, or pass for one that is
+// (a collision case allows only ADVISORY, or a keyed failure or omission);
+// when a case is not a pass and gives no reason; when a case fails,
 // falls short, is unverified, or is omitted and is not keyed to that status;
 // when a keyed case has another status or is not run; and when a keyed
 // signature differs. A case is identified by its ID, never by a whole job,
@@ -96,6 +100,10 @@ export function compare(results, expected, corpus) {
   const problems = [...corpus.problems];
   if (!/^[0-9a-f]{40}$/.test(results.pin ?? "")) problems.push(`the results name no full commit SHA (pin ${JSON.stringify(results.pin)})`);
   if (results.pin !== expected.pin) problems.push(`the results are for ${results.pin}; the expected failures are keyed to ${expected.pin}`);
+  for (const field of ["applied", "appliedSHA256"]) {
+    if (!expected[field]) problems.push(`the expected results record no ${field}`);
+    else if (results[field] !== expected[field]) problems.push(`the results declare ${field} ${JSON.stringify(results[field])}; the expected results are keyed to ${JSON.stringify(expected[field])}`);
+  }
   if (!Array.isArray(results.reconciliation)) problems.push("the results carry no reconciliation");
   for (const r of results.reconciliation || []) problems.push(`reconciliation: ${r}`);
   const byCase = new Map();
@@ -123,6 +131,7 @@ export function compare(results, expected, corpus) {
       continue;
     }
     if (c.status === "ADVISORY" && !collisions.has(c.id)) problems.push(`${c.id}: ADVISORY on a case that is not a collision case`);
+    if (c.status === "pass" && collisions.has(c.id)) problems.push(`${c.id}: pass on a collision case, whose expectation allows only ADVISORY`);
     if (c.status !== "pass" && !c.signature) problems.push(`${c.id}: ${c.status} with no reason`);
     if (!KEYED.has(c.status)) continue;
     const f = expectedByCase.get(c.id);

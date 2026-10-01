@@ -13,7 +13,7 @@ cd spec/conformance/runners/go
 go run . $(go run ./declared -sdk ../../../../openbindings-go -spec ../..) -strict
 ```
 
-`./declared` prints the applied text the SDK declares, as `-applied` and `-applied-sha256`, by parsing the SDK's source: `appliedRelease` and `appliedRevision` (`version.go`) and the hash its corpus adapter pins for that revision (`appliedTextRevision`, `appliedTextSHA256`). It refuses, with exit status 1, a missing or non-literal constant, a release that is not SemVer, a revision that is not a full 40-hex commit of the spec history, and a hash pinned for another revision. `go test ./...` here runs the controls for both programs.
+`./declared` prints the applied text the SDK declares, as `-applied` and `-applied-sha256`, by parsing the SDK's source: `appliedRelease` and `appliedRevision` (`version.go`) and the hash its corpus adapter pins for that revision (`appliedTextRevision`, `appliedTextSHA256`). It refuses, with exit status 1, a missing or non-literal constant, a release that is not SemVer, a revision that is not a full 40-hex commit of the spec history, and a hash pinned for another revision. `go test ./...` here runs the controls for both programs: the applied-text parsing and verification, and the runner's judges, held to a small synthetic corpus with one deliberately wrong expectation per action and judging branch, each of which must fail.
 
 Inside the `openbindings/` monorepo, the project's `go.work` may exclude this directory; if so, set `GOWORK=off`.
 
@@ -23,7 +23,8 @@ Flags:
   -corpus PATH      the conformance/ directory (found from the working directory by default)
   -rule RULE        run one rule's cases, e.g. OBI-T-08 (skips the reconciliation)
   -verbose          print every case's category
-  -json             print {"pin", "reconciliation", "cases": [{"id", "status", "signature"}]} for scripts/check-runner-results.mjs
+  -json             print {"pin", "applied", "appliedSHA256", "reconciliation", "cases": [{"id", "status", "signature"}]}
+                    for scripts/check-runner-results.mjs
   -pin SHA          the SDK commit under test, recorded in the JSON results
   -applied R@REV    the release and full 40-hex revision whose text the SDK declares it applies,
                     or a release alone (reported unverified: no release-snapshot verification exists)
@@ -48,4 +49,4 @@ Flags:
 
 ## Spec CI
 
-The `reference-go-core` job in `.github/workflows/ci.yml` runs this runner with the SDK pinned to one commit and compares its `-json` results with the corpus's complete case set and with [`expected-failures.json`](expected-failures.json), whose failures and omissions are keyed by case, pin, status, and signature (`scripts/check-runner-results.mjs`): an unexpected failure, shortfall, unverified case, or omission, a status outside the six run categories, ADVISORY on a case that is not a collision case, an expected failure or omission that is executed or not run, a changed signature, a missing, extra, or unexplained case, and a reconciliation problem all fail. The pin is the Go commit the runner was repaired against; the job stays disabled until integration publishes it, or the commit that adopts this corpus, and keys the pin and the expected failures to it.
+The `reference-go-core` job in `.github/workflows/ci.yml` runs this runner with the SDK pinned to one commit and compares its `-json` results with the corpus's complete case set and with [`expected-failures.json`](expected-failures.json), whose failures and omissions are keyed by case, pin, declared applied text, status, and signature (`scripts/check-runner-results.mjs`): an unexpected failure, shortfall, unverified case, or omission, a status outside the six run categories, ADVISORY on a case that is not a collision case or pass on one that is, an applied text other than the one the expected results record, an expected failure or omission that is executed or not run, a changed signature, a missing, extra, or unexplained case, and a reconciliation problem all fail. The pin is the Go commit the runner was repaired against; the job stays disabled until integration publishes it, or the commit that adopts this corpus, and keys the pin and the expected failures to it.

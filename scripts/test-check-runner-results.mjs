@@ -16,12 +16,13 @@ const pass = (id) => ({ id, status: "pass", signature: "" });
 const fail = (id, signature) => ({ id, status: "FAIL", signature });
 const as = (id, status, signature) => ({ id, status, signature });
 const SIG = "got conformant; expected conformance-undetermined";
-const expected = { pin: PIN, failures: [{ case: "T09-S-11", signature: SIG, reason: "control" }] };
+const APPLIED = { applied: "0.2.0@98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f", appliedSHA256: "e70cbc8b3b6d4096fd83f694dc093d3ce6d6c87319aeb97b8ae9ec12ebe63a4f" };
+const expected = { pin: PIN, ...APPLIED, failures: [{ case: "T09-S-11", signature: SIG, reason: "control" }] };
 const corpus = { ids: [FIXTURE, "T08-S-01", "T09-S-11", "T07-S-12"], collisions: ["T07-S-12"], problems: [] };
-const results = (cases, extra = {}) => ({ pin: PIN, reconciliation: [], cases, ...extra });
+const results = (cases, extra = {}) => ({ pin: PIN, ...APPLIED, reconciliation: [], cases, ...extra });
 const ordinary = [pass(FIXTURE), pass("T08-S-01"), as("T07-S-12", "ADVISORY", "no single resolution")];
 const without = (id) => ordinary.filter((c) => c.id !== id);
-const omitted = { pin: PIN, failures: expected.failures, omissions: [{ case: "T08-S-01", signature: "gate: requires 9.9.9", reason: "control" }] };
+const omitted = { pin: PIN, ...APPLIED, failures: expected.failures, omissions: [{ case: "T08-S-01", signature: "gate: requires 9.9.9", reason: "control" }] };
 
 // A corpus whose manifest miscounts a file.
 const dir = mkdtempSync(join(tmpdir(), "check-runner-results-"));
@@ -60,11 +61,16 @@ const controls = [
   ["ADVISORY on a case that is not a collision case", results([...without("T08-S-01"), as("T08-S-01", "ADVISORY", "key match"), fail("T09-S-11", SIG)]), corpus, ["not a collision case"]],
   ["an unkeyed SHORTFALL", results([...without("T08-S-01"), as("T08-S-01", "SHORTFALL", "value 0: no verdict"), fail("T09-S-11", SIG)]), corpus, ["unexpected SHORTFALL"]],
   ["a keyed SHORTFALL", results([...without("T08-S-01"), as("T08-S-01", "SHORTFALL", "value 0: no verdict"), fail("T09-S-11", SIG)]),
-    corpus, [], { pin: PIN, failures: [...expected.failures, { case: "T08-S-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
+    corpus, [], { pin: PIN, ...APPLIED, failures: [...expected.failures, { case: "T08-S-01", status: "SHORTFALL", signature: "value 0: no verdict", reason: "control" }] }],
   ["a keyed failure that falls short instead", results([...ordinary, as("T09-S-11", "SHORTFALL", SIG)]), corpus, ["expected FAIL, got SHORTFALL"]],
   ["an unkeyed UNVERIFIED", results([...without("T08-S-01"), as("T08-S-01", "UNVERIFIED", "no applied text"), fail("T09-S-11", SIG)]), corpus, ["unexpected UNVERIFIED"]],
   ["a reconciliation problem", results([...ordinary, fail("T09-S-11", SIG)], { reconciliation: ["scenarios/OBI-T-08.json: the manifest counts 64 cases, the file holds 63"] }), corpus, ["reconciliation: scenarios/OBI-T-08.json"]],
-  ["results without a reconciliation", { pin: PIN, cases: [...ordinary, fail("T09-S-11", SIG)] }, corpus, ["carry no reconciliation"]],
+  ["results without a reconciliation", { pin: PIN, ...APPLIED, cases: [...ordinary, fail("T09-S-11", SIG)] }, corpus, ["carry no reconciliation"]],
+  ["a changed declaration with an unchanged expected list", results([...ordinary, fail("T09-S-11", SIG)], { applied: "0.2.0@b19f2540b89b873933de2ce080225e81897a71eb" }), corpus, ["declare applied"]],
+  ["a changed applied-text hash with an unchanged expected list", results([...ordinary, fail("T09-S-11", SIG)], { appliedSHA256: "0".repeat(64) }), corpus, ["declare appliedSHA256"]],
+  ["results declaring no applied text", results([...ordinary, fail("T09-S-11", SIG)], { applied: "", appliedSHA256: "" }), corpus, ["declare applied ", "declare appliedSHA256"]],
+  ["expected results keyed to no applied text", results([...ordinary, fail("T09-S-11", SIG)]), corpus, ["record no applied", "record no appliedSHA256"], { pin: PIN, failures: expected.failures }],
+  ["pass on a collision case", results([pass(FIXTURE), pass("T08-S-01"), pass("T07-S-12"), fail("T09-S-11", SIG)]), corpus, ["pass on a collision case"]],
 ];
 
 let bad = 0;

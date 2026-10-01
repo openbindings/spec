@@ -16,7 +16,8 @@
 //	go run .                                   # every case, human summary
 //	go run . -rule OBI-T-08                    # one rule's cases
 //	go run . -verbose                          # every case's category
-//	go run . -json -pin <SDK commit SHA>       # results for scripts/check-runner-results.mjs
+//	go run . -json -pin <SDK commit SHA>       # results for scripts/check-runner-results.mjs,
+//	                                           # with the declared applied text
 //	go run . -applied 0.2.0@<revision> -applied-sha256 <hex> -strict
 //	                                           # verify the text conclusions name
 //
@@ -117,9 +118,11 @@ func main() {
 	if jsonOutput {
 		out, _ := json.MarshalIndent(struct {
 			Pin            string   `json:"pin"`
+			Applied        string   `json:"applied"`
+			AppliedSHA256  string   `json:"appliedSHA256"`
 			Reconciliation []string `json:"reconciliation"`
 			Cases          []Result `json:"cases"`
-		}{pin, problems, results}, "", "  ")
+		}{pin, applied, appliedSum, problems, results}, "", "  ")
 		fmt.Println(string(out))
 	} else {
 		printSummary(results, problems, verbose)
