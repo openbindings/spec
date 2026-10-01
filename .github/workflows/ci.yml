@@ -243,7 +243,7 @@ jobs:
     if: ${{ false }}
     runs-on: ubuntu-latest
     env:
-      GO_CORE_PIN: "6c79f301af983bbc0992a7d5a55b5ad6485760e8"
+      GO_CORE_PIN: "430561a082ec41b12d4fd4c7bdd6d9b24190a714"
     steps:
       # The spec at path: spec and the SDK at path: openbindings-go, so the
       # runner's go.mod replace directives (../../../../openbindings-go)
