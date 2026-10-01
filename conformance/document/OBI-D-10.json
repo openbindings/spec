@@ -176,7 +176,7 @@
       "valid": true
     },
     {
-      "description": "type keyword with a number value at operation input is not a schema in the pinned dialect",
+      "description": "type keyword with a number value at operation input makes an invalid schema: the pinned meta-schemas reject it",
       "document": {
         "openbindings": "0.2.0",
         "operations": {

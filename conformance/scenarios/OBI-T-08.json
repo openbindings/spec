@@ -2028,6 +2028,370 @@
           "instance-mismatch"
         ]
       }
+    },
+    {
+      "id": "T08-S-55",
+      "clauses": [
+        "OBI-T-08/c7",
+        "OBI-T-08/c6"
+      ],
+      "description": "A malformed reference has an undefined result only for an evaluation that depends on it (section 7.1): type fails 5 whatever #%zz would yield, so a mismatch is permitted, and so is declining.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "$ref": "#%zz"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          5
+        ],
+        "nonConformant": [
+          "OBI-D-05"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "verdict": "instance-mismatch",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "T08-S-56",
+      "clauses": [
+        "OBI-T-08/c7",
+        "OBI-T-08/c6"
+      ],
+      "description": "anyOf with true holds for any value whatever a malformed sibling reference would yield (section 7.1): valid is permitted, and so is declining.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "anyOf": [
+                  true,
+                  {
+                    "$ref": "#%zz"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ],
+        "nonConformant": [
+          "OBI-D-05"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "verdict": "valid",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "T08-S-57",
+      "clauses": [
+        "OBI-T-08/c7",
+        "OBI-T-06/c1b"
+      ],
+      "description": "Inside an $id resource, a $ref that is not a URI-reference (a raw space) has no defined target (JSON Schema Core section 8.2.3.1): no verdict for a value that needs it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.com/t"
+              }
+            }
+          },
+          "schemas": {
+            "T": {
+              "$id": "https://e.com/t",
+              "$ref": "#/$defs/a b",
+              "$defs": {
+                "a b": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-58",
+      "clauses": [
+        "OBI-T-08/c1"
+      ],
+      "description": "A $schema in the document resource declares no dialect (section 5.2), so a foreign one there leaves the schema read as 2020-12: a tool that continues reports the mismatch or declines.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          5
+        ],
+        "nonConformant": [
+          "OBI-D-06"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "verdict": "instance-mismatch",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "T08-S-59",
+      "clauses": [
+        "OBI-T-08/c1"
+      ],
+      "description": "A $schema in the document resource declares no dialect (section 5.2), even one that is not a string: a tool that continues reports the 2020-12 verdict or declines.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$schema": 5,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ],
+        "nonConformant": [
+          "OBI-D-06",
+          "OBI-D-10"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "verdict": "valid",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "T08-S-60",
+      "clauses": [
+        "OBI-T-08/c8",
+        "OBI-T-08/c3a"
+      ],
+      "description": "\\p{EBase} names no property in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 section 21.2.1.1, Table 56): the pattern is invalid, so no verdict.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "pattern": "\\p{EBase}"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-61",
+      "clauses": [
+        "OBI-T-08/c8",
+        "OBI-T-08/c3a"
+      ],
+      "description": "Script=Kawi is not a script value in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 Table 58): the pattern is invalid, so no verdict.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "pattern": "\\p{Script=Kawi}"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-62",
+      "clauses": [
+        "OBI-T-08/c7",
+        "OBI-T-08/c4"
+      ],
+      "description": "Two schemas declaring one $id leave a reference to it with no defined target (JSON Schema Core section 9.1.2): no verdict.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.com/s"
+              }
+            }
+          },
+          "schemas": {
+            "A": {
+              "$id": "https://e.com/s",
+              "type": "string"
+            },
+            "B": {
+              "$id": "https://e.com/s",
+              "type": "number"
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ],
+        "nonConformant": [
+          "OBI-D-13"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-63",
+      "clauses": [
+        "OBI-T-08/c7",
+        "OBI-T-08/c4"
+      ],
+      "description": "With the document resource outermost in the dynamic scope (section 7.2), a $dynamicRef the document resource captures through a $dynamicAnchor it declares twice has no defined target (JSON Schema Core sections 8.2.3.2, 8.2.2): no verdict.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://example.com/tree"
+              }
+            }
+          },
+          "schemas": {
+            "Tree": {
+              "$id": "https://example.com/tree",
+              "$dynamicAnchor": "node",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$dynamicRef": "#node"
+                  }
+                }
+              }
+            },
+            "Str": {
+              "$dynamicAnchor": "node",
+              "type": "string"
+            },
+            "Num": {
+              "$dynamicAnchor": "node",
+              "type": "number"
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "children": [
+              1
+            ]
+          }
+        ],
+        "nonConformant": [
+          "OBI-D-13"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict"
+        ]
+      }
     }
   ]
 }

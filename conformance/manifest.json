@@ -10,7 +10,7 @@
     "fixtureFiles": 15,
     "scenarioFiles": 10,
     "tests": 223,
-    "scenarios": 155,
+    "scenarios": 164,
     "positives": 107,
     "negatives": 116,
     "rulesCoveredDocument": 13,
@@ -39,7 +39,7 @@
     "derive-form": 4,
     "resolve-operation": 22,
     "validate-document": 39,
-    "validate-operation-values": 59,
+    "validate-operation-values": 68,
     "validity fixture": 223
   },
   "files": [
@@ -248,10 +248,10 @@
       "rule": "OBI-T-08",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 52,
+      "scenarios": 61,
       "actions": {
         "check-examples": 2,
-        "validate-operation-values": 50
+        "validate-operation-values": 59
       }
     },
     {
@@ -651,7 +651,8 @@
         "T06-S-04",
         "T08-S-34",
         "T08-S-35",
-        "T08-S-37"
+        "T08-S-37",
+        "T08-S-57"
       ]
     },
     "OBI-T-06/c2a": {
@@ -740,7 +741,9 @@
         "T08-S-44",
         "T08-S-45",
         "T08-S-46",
-        "T08-S-50"
+        "T08-S-50",
+        "T08-S-58",
+        "T08-S-59"
       ]
     },
     "OBI-T-08/c2": {
@@ -765,7 +768,9 @@
         "T08-S-24",
         "T08-S-25",
         "T08-S-27",
-        "T08-S-52"
+        "T08-S-52",
+        "T08-S-60",
+        "T08-S-61"
       ]
     },
     "OBI-T-08/c3b": {
@@ -790,7 +795,9 @@
         "T08-S-34",
         "T08-S-35",
         "T08-S-49",
-        "T08-S-54"
+        "T08-S-54",
+        "T08-S-62",
+        "T08-S-63"
       ]
     },
     "OBI-T-08/c5": {
@@ -808,7 +815,9 @@
       "status": "tested through its alternatives",
       "cases": [
         "T08-S-42",
-        "T08-S-43"
+        "T08-S-43",
+        "T08-S-55",
+        "T08-S-56"
       ]
     },
     "OBI-T-08/c6a": {
@@ -848,7 +857,12 @@
         "T08-S-17",
         "T08-S-48",
         "T08-S-51",
-        "T08-S-53"
+        "T08-S-53",
+        "T08-S-55",
+        "T08-S-56",
+        "T08-S-57",
+        "T08-S-62",
+        "T08-S-63"
       ]
     },
     "OBI-T-08/c8": {
@@ -861,7 +875,9 @@
         "T08-S-20",
         "T08-S-42",
         "T08-S-43",
-        "T08-S-52"
+        "T08-S-52",
+        "T08-S-60",
+        "T08-S-61"
       ]
     },
     "OBI-T-08/c9": {
