@@ -1,12 +1,266 @@
 {
-  "format": "openbindings.core-tool-scenarios@1",
+  "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-09",
   "section": "10.3",
-  "description": "A claimed overall conformance conclusion follows the document-rule evidence; the scenario terms are corpus-normalized outcomes, not a required report format.",
+  "description": "An overall conclusion follows the document-rule evidence and names the text it applied.",
   "scenarios": [
     {
       "id": "T09-S-01",
-      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion",
+      "clauses": [
+        "OBI-T-09/c4"
+      ],
+      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion, and establish no violation: a non-conformant conclusion is prohibited.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "conformant"
+      }
+    },
+    {
+      "id": "T09-S-02",
+      "clauses": [
+        "OBI-T-09/c1",
+        "OBI-T-09/c4"
+      ],
+      "description": "An inconclusive applicable rule, with no violation established, prevents a conformant conclusion and a non-conformant one alike.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "inconclusive",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "satisfied",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "conformance-undetermined"
+      }
+    },
+    {
+      "id": "T09-S-03",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "A known violation establishes non-conformance even if other checks remain incomplete.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "violated",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "inconclusive",
+          "OBI-D-11": "satisfied",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
+      }
+    },
+    {
+      "id": "T09-S-04",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "More than one known violation still establishes non-conformance.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "inconclusive",
+          "OBI-D-02": "violated",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "violated",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "inconclusive",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
+      }
+    },
+    {
+      "id": "T09-S-05",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "A violated rule determines non-conformance whatever the other rules' evidence.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "violated",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
+      }
+    },
+    {
+      "id": "T09-S-06",
+      "clauses": [
+        "OBI-T-09/c3a",
+        "OBI-T-09/c3c"
+      ],
+      "description": "A conformance conclusion names the text applied: exactly the identity the tool declares for the line.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {}
+        }
+      },
+      "requiresSupports": "0.2.0",
+      "expected": {
+        "outcome": "conformant",
+        "namesAppliedText": true
+      }
+    },
+    {
+      "id": "T09-S-07",
+      "clauses": [
+        "OBI-T-09/c3a",
+        "OBI-T-09/c3c"
+      ],
+      "description": "The text named is the text applied, not the patch the document declares.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.5",
+          "operations": {}
+        }
+      },
+      "requiresSupports": "0.2.0",
+      "expected": {
+        "outcome": "conformant",
+        "namesAppliedText": true
+      }
+    },
+    {
+      "id": "T09-S-08",
+      "clauses": [
+        "OBI-T-09/c2",
+        "OBI-T-09/c3a",
+        "OBI-T-09/c3c"
+      ],
+      "description": "A non-conformance conclusion names the text applied too.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "bindings": {
+            "b": {
+              "operation": "missing",
+              "source": "missing"
+            }
+          },
+          "operations": {}
+        }
+      },
+      "requiresSupports": "0.2.0",
+      "expected": {
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-D-07",
+          "OBI-D-08"
+        ],
+        "namesAppliedText": true
+      }
+    },
+    {
+      "id": "T09-S-09",
+      "clauses": [
+        "OBI-T-09/c3b"
+      ],
+      "description": "A conclusion on a document declaring an explicitly included prerelease names that prerelease. No conclusion is asserted.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0-rc.1",
+          "operations": {}
+        }
+      },
+      "requiresSupports": "0.2.0-rc.1",
+      "expected": {
+        "outcome": "interpreted",
+        "namesAppliedText": true
+      }
+    },
+    {
+      "id": "T09-S-10",
+      "clauses": [
+        "OBI-T-09/c3a",
+        "OBI-T-09/c3c",
+        "OBI-T-09/c1",
+        "OBI-T-09/c4"
+      ],
+      "description": "A conclusion names the text applied even when it is undetermined; here a validator that cannot read an escaped lone surrogate concludes undetermined.",
+      "action": "validate-document",
+      "given": {
+        "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud800\",\"operations\":{}}"
+      },
+      "requiresSupports": "0.2.0",
+      "expected": {
+        "outcome": "conformant",
+        "namesAppliedText": true
+      }
+    },
+    {
+      "id": "T09-S-11",
+      "clauses": [
+        "OBI-T-09/c1",
+        "OBI-T-09/c4"
+      ],
+      "description": "Evidence that leaves an applicable rule unestablished permits neither a conformant nor a non-conformant conclusion: OBI-D-12 and OBI-D-13 are missing here (the evidence T09-S-01 carried before it was completed).",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
@@ -24,32 +278,20 @@
         }
       },
       "expected": {
-        "conclusion": "conformant"
-      }
-    },
-    {
-      "id": "T09-S-02",
-      "description": "An inconclusive applicable rule prevents a conformant conclusion",
-      "action": "conclude-conformance",
-      "given": {
-        "evidence": {
-          "OBI-D-02": "satisfied",
-          "OBI-D-01": "inconclusive"
-        }
-      },
-      "expected": {
         "conclusion": "conformance-undetermined"
       }
     },
     {
-      "id": "T09-S-03",
-      "description": "A known violation establishes non-conformance even if other checks remain incomplete",
+      "id": "T09-S-12",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "A violation establishes non-conformance even when the evidence omits other rules: only OBI-D-05 and OBI-D-11 are considered here (the evidence T09-S-05 carried before it was completed).",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
-          "OBI-D-02": "satisfied",
-          "OBI-D-03": "violated",
-          "OBI-D-10": "inconclusive"
+          "OBI-D-11": "not-applicable",
+          "OBI-D-05": "violated"
         }
       },
       "expected": {
@@ -57,8 +299,11 @@
       }
     },
     {
-      "id": "T09-S-04",
-      "description": "More than one known violation still establishes non-conformance",
+      "id": "T09-S-13",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "Violations establish non-conformance whatever remains inconclusive or unconsidered (the evidence T09-S-04 carried before it was completed).",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
@@ -67,20 +312,6 @@
           "OBI-D-02": "violated",
           "OBI-D-11": "not-applicable",
           "OBI-D-01": "inconclusive"
-        }
-      },
-      "expected": {
-        "conclusion": "non-conformant"
-      }
-    },
-    {
-      "id": "T09-S-05",
-      "description": "A violated rule determines non-conformance even when all other considered rules are inapplicable",
-      "action": "conclude-conformance",
-      "given": {
-        "evidence": {
-          "OBI-D-11": "not-applicable",
-          "OBI-D-05": "violated"
         }
       },
       "expected": {

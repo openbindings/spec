@@ -310,6 +310,23 @@
       "violates": [
         "OBI-D-03"
       ]
+    },
+    {
+      "description": "a non-string entry of an operation's aliases array violates OBI-D-03 as well as OBI-D-02",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": [
+              5
+            ]
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
     }
   ]
 }

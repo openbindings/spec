@@ -1,7 +1,7 @@
 {
   "rule": "OBI-D-01",
   "section": "10.2",
-  "description": "Is valid UTF-8 encoded JSON per RFC 8259. Duplicate JSON object keys within any object make the document non-conformant. A leading byte-order mark makes the document non-conformant. Note: RFC 8259 §8.1 forbids adding a byte-order mark, interoperable-JSON practice (RFC 7493) excludes it, and tolerating it would let two parsers disagree over the same bytes; most JSON parsers silently keep one duplicate value, so checking the duplicate clause requires a duplicate-detecting parse; a validator whose parser cannot surface duplicates cannot establish whether the clause holds.",
+  "description": "Is valid UTF-8 encoded JSON per RFC 8259. Duplicate JSON object keys within any object make the document non-conformant. A leading byte-order mark makes the document non-conformant. Note: RFC 8259 section 8.1 forbids adding a byte-order mark, and tolerating one would let two parsers disagree over the same bytes. Rejecting duplicate names follows interoperable-JSON practice (RFC 7493 section 2.3); most JSON parsers silently keep one duplicate value, so checking the duplicate clause requires a duplicate-detecting parse.",
   "notes": "Inline documents cover ordinary parsed values; documentText preserves duplicate keys and malformed JSON; documentBase64 carries exact bytes for invalid UTF-8 and a forbidden leading byte-order mark. Runners must hand the selected carriage to the strict document parser without pre-normalizing it.",
   "tests": [
     {
@@ -39,6 +39,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     },
     {
@@ -47,6 +61,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     },
     {
@@ -55,6 +83,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     },
     {
@@ -63,6 +105,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     },
     {
@@ -71,6 +127,64 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a leading byte-order mark makes the text non-conformant through OBI-D-01 alone: OBI-D-02 to OBI-D-13 impose no further requirement on it and hold vacuously (a tool records them as satisfied or not applicable), so the dependency on a missing operation adds no violation (section 10, The document and its data)",
+      "documentBase64": "77u/eyJvcGVuYmluZGluZ3MiOiIwLjIuMCIsIm9wZXJhdGlvbnMiOnt9LCJkZXBlbmRlbmNpZXMiOnsiZCI6eyJvcGVyYXRpb24iOiJtaXNzaW5nIn19fQ==",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a repeated operations member makes the text non-conformant through OBI-D-01 alone, whichever value a parser keeps: OBI-D-02 to OBI-D-13 impose no further requirement on it and hold vacuously (a tool records them as satisfied or not applicable) (section 10, The document and its data)",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{\"a\":{}},\"operations\":{\"b\":{}},\"dependencies\":{\"d\":{\"operation\":\"a\"}}}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     }
   ]

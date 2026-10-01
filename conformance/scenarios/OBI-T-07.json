@@ -1,20 +1,32 @@
 {
-  "format": "openbindings.core-tool-scenarios@1",
+  "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-07",
   "section": "10.3",
-  "description": "Portable operation-name resolution against the flat key-plus-alias namespace, including canonical-key binding selection.",
+  "description": "Operation-name resolution against the flat key-plus-alias namespace, exact and unprivileged, with bindings found by the canonical key.",
   "scenarios": [
     {
       "id": "T07-S-01",
+      "clauses": [
+        "OBI-T-07/c1"
+      ],
       "description": "A primary operation key resolves to itself and selects bindings by that key.",
       "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "createTask": {} },
-          "sources": { "s": { "kind": "example.test@1" } },
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
-            "primary": { "operation": "createTask", "source": "s" }
+            "primary": {
+              "operation": "createTask",
+              "source": "s"
+            }
           }
         },
         "name": "createTask"
@@ -22,22 +34,40 @@
       "expected": {
         "outcome": "resolved",
         "operationKey": "createTask",
-        "bindingKeys": ["primary"]
+        "bindingKeys": [
+          "primary"
+        ]
       }
     },
     {
       "id": "T07-S-02",
+      "clauses": [
+        "OBI-T-07/c1",
+        "OBI-T-07/c4"
+      ],
       "description": "An alias has equal authority and resolves to the operation's canonical key; bindings are never selected by the alias spelling.",
       "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "createTask": { "aliases": ["tasks.create", "addTask"] }
+            "createTask": {
+              "aliases": [
+                "tasks.create",
+                "addTask"
+              ]
+            }
           },
-          "sources": { "s": { "kind": "example.test@1" } },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
           "bindings": {
-            "canonical": { "operation": "createTask", "source": "s" }
+            "canonical": {
+              "operation": "createTask",
+              "source": "s"
+            }
           }
         },
         "name": "tasks.create"
@@ -45,51 +75,338 @@
       "expected": {
         "outcome": "resolved",
         "operationKey": "createTask",
-        "bindingKeys": ["canonical"]
+        "bindingKeys": [
+          "canonical"
+        ]
       }
     },
     {
       "id": "T07-S-03",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
       "description": "A name matching no key or alias does not resolve.",
       "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "createTask": { "aliases": ["tasks.create"] }
+            "createTask": {
+              "aliases": [
+                "tasks.create"
+              ]
+            }
           }
         },
         "name": "tasks.delete"
       },
-      "expected": { "outcome": "not-found" }
+      "expected": {
+        "outcome": "not-found"
+      }
     },
     {
       "id": "T07-S-04",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
       "description": "A host-language prototype name is not an operation unless the document defines it.",
       "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "ordinary": {} }
+          "operations": {
+            "ordinary": {}
+          }
         },
         "name": "constructor"
       },
-      "expected": { "outcome": "not-found" }
+      "expected": {
+        "outcome": "not-found"
+      }
     },
     {
       "id": "T07-S-05",
+      "clauses": [
+        "OBI-T-07/c1"
+      ],
       "description": "A document may genuinely define an operation with a host-language prototype name.",
       "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "constructor": {} }
+          "operations": {
+            "constructor": {}
+          }
         },
         "name": "constructor"
       },
       "expected": {
         "outcome": "resolved",
         "operationKey": "constructor",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "T07-S-06",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "No case folding: a lower-cased key does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "createtask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-07",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "No trimming: surrounding white space is part of the name.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": " createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-08",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "No trimming: a trailing newline is part of the name.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "createTask\n"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-09",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "No approximate matching: a prefix of a key does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "create"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-10",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "Dots carry no structure: a trailing segment of a qualified alias does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "aliases": [
+                "acme.tasks.createTask"
+              ]
+            }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-11",
+      "clauses": [
+        "OBI-T-07/c3",
+        "OBI-T-07/c1"
+      ],
+      "description": "An alias that differs only in case from another operation's key resolves to the alias's operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "Task": {},
+            "other": {
+              "aliases": [
+                "task"
+              ]
+            }
+          }
+        },
+        "name": "task"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "other",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "T07-S-12",
+      "clauses": [
+        "OBI-T-07/c2",
+        "OBI-T-07/c1"
+      ],
+      "description": "Advisory group T07-G-01, document 1: the key match (a) is the shorter, lexically smaller, earlier candidate. Every result is allowed; the harness records which candidate a tool chooses in each document and never fails it.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "a": {},
+            "bb": {
+              "aliases": [
+                "a"
+              ]
+            }
+          }
+        },
+        "name": "a",
+        "nonConformant": [
+          "OBI-D-04"
+        ]
+      },
+      "expected": {
+        "outcome": "collision",
+        "keyMatch": "a",
+        "aliasMatch": "bb",
+        "group": "T07-G-01"
+      }
+    },
+    {
+      "id": "T07-S-13",
+      "clauses": [
+        "OBI-T-07/c4"
+      ],
+      "description": "A binding whose operation member spells the alias is not the resolved operation's binding (an OBI-D-07 violation).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "aliases": [
+                "tasks.create"
+              ]
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "canonical": {
+              "operation": "createTask",
+              "source": "s"
+            },
+            "byAlias": {
+              "operation": "tasks.create",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.create",
+        "nonConformant": [
+          "OBI-D-07"
+        ]
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "canonical"
+        ]
+      }
+    },
+    {
+      "id": "T07-S-14",
+      "clauses": [
+        "OBI-T-07/c2",
+        "OBI-T-07/c1"
+      ],
+      "description": "Advisory group T07-G-01, document 2: the key match (zz) is the longer, lexically larger, later candidate.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "a": {
+              "aliases": [
+                "zz"
+              ]
+            },
+            "zz": {}
+          }
+        },
+        "name": "zz",
+        "nonConformant": [
+          "OBI-D-04"
+        ]
+      },
+      "expected": {
+        "outcome": "collision",
+        "keyMatch": "zz",
+        "aliasMatch": "a",
+        "group": "T07-G-01"
+      }
+    },
+    {
+      "id": "T07-S-15",
+      "clauses": [
+        "OBI-T-07/c1"
+      ],
+      "description": "A map key beginning with x- names an ordinary operation in the flat operation namespace, not an extension field (section 12).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "x-internal": {}
+          }
+        },
+        "name": "x-internal"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "x-internal",
         "bindingKeys": []
       }
     }

@@ -1,57 +1,390 @@
 {
-  "format": "openbindings.core-tool-scenarios@1",
+  "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-06",
   "section": "10.3",
-  "description": "A productive recursive schema keeps its JSON Schema meaning when evaluated; a tool may report that it cannot evaluate the value under its capabilities or resource limits.",
+  "description": "References resolve as sections 5.2 and 7 define, same-document references in the document resource against the OBI document, and a cycle alone is neither an invalid reference nor a mismatch.",
   "scenarios": [
     {
       "id": "T06-S-01",
+      "clauses": [
+        "OBI-T-06/c2a",
+        "OBI-T-06/c2b"
+      ],
       "description": "A productive recursive schema accepts a finite matching value.",
-      "action": "resolve-schema-cycle",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "cycle": { "input": { "$ref": "#/schemas/Node" } } },
+          "operations": {
+            "cycle": {
+              "input": {
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
           "schemas": {
             "Node": {
               "type": "object",
-              "properties": { "next": { "$ref": "#/schemas/Node" } }
+              "properties": {
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
+              }
             }
           }
         },
         "operation": "cycle",
         "side": "input",
-        "value": { "next": {} }
+        "values": [
+          {
+            "next": {}
+          }
+        ]
       },
       "expected": {
-        "allowedOutcomes": ["valid", "resolver-error"]
+        "results": [
+          "valid"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
       }
     },
     {
       "id": "T06-S-02",
+      "clauses": [
+        "OBI-T-06/c2a",
+        "OBI-T-06/c2b"
+      ],
       "description": "A productive recursive object schema rejects a finite mismatching value.",
-      "action": "resolve-schema-cycle",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": { "walk": { "input": { "$ref": "#/schemas/Node" } } },
+          "operations": {
+            "walk": {
+              "input": {
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
           "schemas": {
             "Node": {
               "type": "object",
-              "required": ["value"],
+              "required": [
+                "value"
+              ],
               "properties": {
-                "value": { "type": "string" },
-                "next": { "$ref": "#/schemas/Node" }
+                "value": {
+                  "type": "string"
+                },
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
               }
             }
           }
         },
         "operation": "walk",
         "side": "input",
-        "value": { "value": "root", "next": { "value": 7 } }
+        "values": [
+          {
+            "value": "root",
+            "next": {
+              "value": 7
+            }
+          }
+        ]
       },
       "expected": {
-        "allowedOutcomes": ["instance-mismatch", "resolver-error"]
+        "results": [
+          "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-03",
+      "clauses": [
+        "OBI-T-06/c2a",
+        "OBI-T-06/c2b"
+      ],
+      "description": "Mutual recursion between two schemas keeps its meaning.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "type": "object",
+              "properties": {
+                "b": {
+                  "$ref": "#/schemas/B"
+                }
+              }
+            },
+            "B": {
+              "type": "object",
+              "properties": {
+                "a": {
+                  "$ref": "#/schemas/A"
+                }
+              }
+            }
+          },
+          "operations": {
+            "m": {
+              "input": {
+                "$ref": "#/schemas/A"
+              }
+            }
+          }
+        },
+        "operation": "m",
+        "side": "input",
+        "values": [
+          {
+            "b": {
+              "a": {}
+            }
+          },
+          {
+            "b": {
+              "a": 5
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-04",
+      "clauses": [
+        "OBI-T-06/c1b",
+        "OBI-T-06/c2a",
+        "OBI-T-06/c2b"
+      ],
+      "description": "Inside a schema that declares $id, # names that schema (section 7.5), so a tree recurses through it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "https://e.example.test/tree.json"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": [
+              {
+                "children": []
+              }
+            ]
+          },
+          {
+            "children": [
+              5
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-05",
+      "clauses": [
+        "OBI-T-06/c1a",
+        "OBI-T-08/c7"
+      ],
+      "description": "In the document resource, # names the OBI document, not the containing schema; the result is undefined, so no verdict.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "r": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "next": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "r",
+        "side": "input",
+        "values": [
+          {
+            "next": {}
+          },
+          {
+            "next": 5
+          }
+        ],
+        "nonConformant": [
+          "OBI-D-12"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict",
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-06",
+      "clauses": [
+        "OBI-T-06/c1a",
+        "OBI-T-06/c2a"
+      ],
+      "description": "A pointer that lands on a schema declaring $id resolves to that schema; its recursion, never evaluated here, is no invalid reference.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "#/schemas/Tree"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": []
+          },
+          {
+            "children": 5
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-07",
+      "clauses": [
+        "OBI-T-06/c1a",
+        "OBI-T-08/c7"
+      ],
+      "description": "Only an $anchor matching the JSON Schema Core section 8.2.2 grammar declares a plain name (section 7.3), so #bad/name identifies no schema and no verdict is defined.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "$anchor": "bad/name",
+              "type": "string"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#bad/name"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          5
+        ],
+        "nonConformant": [
+          "OBI-D-10",
+          "OBI-D-12"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict",
+          "no-verdict"
+        ]
       }
     }
   ]

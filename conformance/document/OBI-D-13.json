@@ -320,6 +320,34 @@
         }
       },
       "valid": false
+    },
+    {
+      "description": "an object at a schema position is a schema even when the meta-schemas reject it, so its $anchor counts and duplicates another entry's (section 7)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "type": 42,
+            "$anchor": "node"
+          },
+          "B": {
+            "$anchor": "node",
+            "type": "string"
+          }
+        },
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#/schemas/B"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10",
+        "OBI-D-13"
+      ]
     }
   ]
 }

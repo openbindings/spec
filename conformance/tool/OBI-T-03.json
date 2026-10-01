@@ -1,8 +1,8 @@
 {
   "rule": "OBI-T-03",
   "section": "10.3",
-  "description": "Treats x- prefixed fields as extensions. Unknown x- fields MUST NOT change the meaning of core fields for conformance purposes.",
-  "notes": "These fixtures test the acceptance side of OBI-T-03: that a tool processes documents containing x- extension fields without refusing them. The 'MUST NOT change the meaning of core fields' clause is not directly testable in this single-document format because verifying it would require comparing tool behavior with and without x- fields present (a comparative test out of scope for this fixture shape). Acceptance tests below establish the necessary baseline; the no-meaning-change clause is a per-tool behavioral guarantee best verified through the SDK's own implementation tests.",
+  "description": "A processor treats fields whose names begin with x- as extensions, and an x- field changes the meaning of no core field.",
+  "notes": "These validity fixtures exercise OBI-T-03/c1 for validators: a document carrying x- members is judged as the same document without them, so it stays conformant. OBI-T-03/c2 (no x- field changes a core field's meaning) is exercised by the scenarios in scenarios/OBI-T-03.json, which observe resolution, the version decision, value validation, and kind comparison.",
   "tests": [
     {
       "description": "document with x- extension at the root level",
@@ -18,7 +18,10 @@
           "createTask": {}
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-03/c1"
+      ]
     },
     {
       "description": "document with x- extensions on operation, binding, and source",
@@ -43,10 +46,13 @@
           }
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-03/c1"
+      ]
     },
     {
-      "description": "document with x- field whose key resembles a core field name",
+      "description": "an x- member named like a core field (x-operations) is an extension, so the document stays conformant",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -56,7 +62,10 @@
           "spurious": "should be ignored as extension, not interpreted as the operations map"
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-03/c1"
+      ]
     },
     {
       "description": "x- extension nested deeply inside an operation",
@@ -76,7 +85,10 @@
           }
         }
       },
-      "valid": true
+      "valid": true,
+      "clauses": [
+        "OBI-T-03/c1"
+      ]
     }
   ]
 }

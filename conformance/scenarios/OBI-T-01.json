@@ -1,0 +1,657 @@
+{
+  "format": "openbindings.core-tool-scenarios@2",
+  "rule": "OBI-T-01",
+  "section": "10.3",
+  "description": "Kind comparison for a dependency's kinds constraint is exact, with no normalization, case folding, decomposition, inferred compatibility or order, or retrieval.",
+  "scenarios": [
+    {
+      "id": "T01-S-01",
+      "clauses": [
+        "OBI-T-01/c1"
+      ],
+      "description": "An identical kind string meets the constraint.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-02",
+      "clauses": [
+        "OBI-T-01/c2b"
+      ],
+      "description": "A kind differing only in letter case does not meet it.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "Example.OpenAPI@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-03",
+      "clauses": [
+        "OBI-T-01/c2a"
+      ],
+      "description": "Trailing white space is part of the kind; no trimming.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1 "
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-04",
+      "clauses": [
+        "OBI-T-01/c2a"
+      ],
+      "description": "Canonically equivalent Unicode spellings (NFC and NFD) are different kinds.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "caf\u00e9@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "cafe\u0301@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-05",
+      "clauses": [
+        "OBI-T-01/c2c",
+        "OBI-T-01/c3a"
+      ],
+      "description": "A finer version spelling is a different kind, not a compatible one.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@1.0"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-06",
+      "clauses": [
+        "OBI-T-01/c3b",
+        "OBI-T-01/c3a"
+      ],
+      "description": "A version suffix read as higher is not thereby compatible.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi@2"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-07",
+      "clauses": [
+        "OBI-T-01/c2c"
+      ],
+      "description": "The kind is not decomposed into a base name that could match.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.openapi"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "example.openapi@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-08",
+      "clauses": [
+        "OBI-T-01/c2a"
+      ],
+      "description": "URI-shaped kinds are not URI-normalized (trailing slash).",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "https://kinds.example.test/openapi"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "https://kinds.example.test/openapi/"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-09",
+      "clauses": [
+        "OBI-T-01/c2a",
+        "OBI-T-01/c2b"
+      ],
+      "description": "URI-shaped kinds are not case-normalized in scheme or host.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "HTTPS://KINDS.EXAMPLE.TEST/openapi"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "https://kinds.example.test/openapi"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-10",
+      "clauses": [
+        "OBI-T-01/c4"
+      ],
+      "description": "An http-URI-shaped kind is compared, never retrieved; the harness observes the http channel for the whole action.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "{retrieval-sentinel:http}"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "{retrieval-sentinel:http}"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b",
+        "retrievalSentinels": [
+          "http"
+        ]
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-11",
+      "clauses": [
+        "OBI-T-01/c2a",
+        "OBI-T-01/c2b"
+      ],
+      "description": "A URN-shaped kind is not normalized by URN rules (NID case).",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "urn:example:kind:openapi"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "URN:example:kind:openapi"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "T01-S-12",
+      "clauses": [
+        "OBI-T-01/c1"
+      ],
+      "description": "An unfamiliar kind compares exactly like any other; support plays no part.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "totally-fictional-format@9.9.9"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "totally-fictional-format@9.9.9"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-13",
+      "clauses": [
+        "OBI-T-01/c1",
+        "OBI-T-02/c2"
+      ],
+      "description": "An absent kinds member states no constraint.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "anything@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op"
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-14",
+      "clauses": [
+        "OBI-T-01/c1"
+      ],
+      "description": "kinds is an any-of constraint: one exact match suffices.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "a@1",
+                "b@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-15",
+      "clauses": [
+        "OBI-T-01/c4"
+      ],
+      "description": "A file-URI-shaped kind is compared, never opened; the harness observes the file channel for the whole action.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "file://{retrieval-sentinel:file}"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "file://{retrieval-sentinel:file}"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b",
+        "retrievalSentinels": [
+          "file"
+        ]
+      },
+      "expected": {
+        "outcome": "meets"
+      }
+    },
+    {
+      "id": "T01-S-16",
+      "clauses": [
+        "OBI-T-01/c3b"
+      ],
+      "description": "A version suffix read as lower is not thereby compatible (no backward-compatibility order).",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "x@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "kinds": [
+                "x@2"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "does-not-meet"
+      }
+    }
+  ]
+}

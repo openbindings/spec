@@ -1,0 +1,1218 @@
+{
+  "description": "Clause inventory of the tool rules OBI-T-01 to OBI-T-11 (openbindings.md section 10.3) for the 0.2 line, and the corpus's identity records. Clause IDs are owned by this corpus: the specification numbers no clauses (README, \"Clause IDs\"). Each rule's segments partition its normalized rule body, in order, with only white space and punctuation between them; each incorporation's segments partition the passage its anchor starts. scripts/verify-corpus.mjs checks both against openbindings.md. Normalization: markdown links reduced to their text, '**' removed, '*Note:*' read as 'Note:', white space runs collapsed. Classes: obligation (a MUST or MUST NOT), specialization (restates part of another obligation for a narrower case; 'of' names it), alternative (one of several conditions an obligation is met by or applies under; 'of' names it), definition (fixes a term; no conduct of its own), permission (a MAY or an exception granting latitude), incorporation (brings other text under the rule). Statuses are the ones the README defines.",
+  "line": "0.2",
+  "statuses": {
+    "tested": "A discriminating case that the designated executor runs, demonstrated by a deliberately wrong tool that fails it.",
+    "tested (adapter)": "As tested, but the executor's part is adapter code, not the implementation's own API.",
+    "tested through its alternatives": "A parent obligation met through alternatives, each of which is tested.",
+    "tested through its specializations": "A parent obligation whose specializations are each tested.",
+    "tested through its exercised alternative": "A parent obligation whose alternatives apply by the tool's declaration; the alternative the designated executor exercises is tested.",
+    "composition only": "Cases exist and run, but only through a composition of the executor's API; no implementation code of its own executes them.",
+    "contrast tools only": "Cases exist; no executor can run them, so only deliberately built contrast tools exercise them.",
+    "expressible, no executor": "Cases are written out; no implementation executes them.",
+    "not portably testable": "No finite set of cases tells a conforming tool from a violating one; the clause stays normative.",
+    "definition": "Not a coverage unit: fixes a term other clauses use.",
+    "permission": "Not a coverage unit: grants latitude.",
+    "incorporation": "Not a coverage unit: brings other text under the rule; its incorporated items carry their own statuses."
+  },
+  "rules": [
+    {
+      "rule": "OBI-T-01",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when interpreting a kind string, including deciding whether a binding meets a dependency's `kinds` constraint or reporting whether two kinds are the same)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST compare complete kind strings by exact equality.",
+          "clauses": [
+            "OBI-T-01/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST NOT normalize, case-fold, or decompose kinds",
+          "clauses": [
+            "OBI-T-01/c2a",
+            "OBI-T-01/c2b",
+            "OBI-T-01/c2c"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "or infer compatibility or version order from their spelling",
+          "clauses": [
+            "OBI-T-01/c3a",
+            "OBI-T-01/c3b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and MUST NOT dereference a kind merely because it resembles a URI.",
+          "clauses": [
+            "OBI-T-01/c4"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: whether a processor supports a kind or acts on a source is its own capability and policy; lack of support changes neither document conformance nor the result of a `kinds` comparison (§5.5)."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-01/c1",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-01/c2a",
+          "class": "specialization",
+          "of": "OBI-T-01/c1",
+          "part": "normalize",
+          "remark": "Also governs kind interpretation other than comparison (choosing an interpretation).",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-01/c2b",
+          "class": "specialization",
+          "of": "OBI-T-01/c1",
+          "part": "case-fold",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-01/c2c",
+          "class": "specialization",
+          "of": "OBI-T-01/c1",
+          "part": "decompose",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-01/c3a",
+          "class": "obligation",
+          "part": "infer compatibility",
+          "remark": "Observable only where the inference changes an outcome (a constraint met, an interpretation chosen).",
+          "status": "tested",
+          "limits": "Tested for the kinds constraint. A kind-support decision has no action in the corpus (no action selected)."
+        },
+        {
+          "id": "OBI-T-01/c3b",
+          "class": "obligation",
+          "part": "infer version order",
+          "remark": "Inferring an order that changes no outcome is unobservable; the observable part is an order-based outcome.",
+          "status": "tested",
+          "limits": "Tested where an inferred order changes an outcome; an inferred order that changes none is not testable."
+        },
+        {
+          "id": "OBI-T-01/c4",
+          "class": "obligation",
+          "status": "tested",
+          "limits": "Observed for the whole action on the http channel, through a TCP listener bound to an ephemeral local port whose address the kind names (every accepted connection counts, whatever client made it), and on the file channel through a FIFO sentinel; other channels are not observed."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-02",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when interpreting OBI-defined fields)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST give each field this specification defines the meaning defined for it",
+          "clauses": [
+            "OBI-T-02/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "presence included (§5)",
+          "clauses": [
+            "OBI-T-02/c2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and MUST give an unknown field no core meaning.",
+          "clauses": [
+            "OBI-T-02/c3"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: \"field\" is defined in §3. An unknown field whose name does not begin with `x-` makes the document non-conformant under OBI-D-02 (§12)."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-02/c1",
+          "class": "obligation",
+          "remark": "Universal over every defined field; tested only through fields some action observes.",
+          "status": "tested",
+          "limits": "Tested through the fields an action observes (version, a binding's operation, name). preference, deprecated, and content presence: no action selected. description and tags: not testable (no behavior)."
+        },
+        {
+          "id": "OBI-T-02/c2",
+          "class": "specialization",
+          "of": "OBI-T-02/c1",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-02/c3",
+          "class": "obligation",
+          "status": "tested",
+          "limits": "For tools that continue with a document non-conformant under OBI-D-02."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-03",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when interpreting a document)"
+        },
+        {
+          "kind": "clause",
+          "text": "A processor MUST treat fields whose names begin with `x-` as extensions,",
+          "clauses": [
+            "OBI-T-03/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and MUST NOT let an `x-` field, whether or not it understands it, change the meaning of core fields.",
+          "clauses": [
+            "OBI-T-03/c2"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: a processor may act on an `x-` field it understands in ways that leave that meaning intact."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-03/c1",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-03/c2",
+          "class": "obligation",
+          "status": "tested",
+          "limits": "Limited to the x- names the cases use."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-04",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(all processors)"
+        },
+        {
+          "kind": "clause",
+          "text": "A processor MUST NOT interpret a document that declares a version under this specification's semantics unless it supports that version: the `major.minor` line of a release version,",
+          "clauses": [
+            "OBI-T-04/c1",
+            "OBI-T-04/c1a"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "or a prerelease the processor explicitly includes.",
+          "clauses": [
+            "OBI-T-04/c1b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "Asked to interpret a document whose declared version it does not support, it MUST produce a version refusal instead,",
+          "clauses": [
+            "OBI-T-04/c2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "reported distinctly from document non-conformance.",
+          "clauses": [
+            "OBI-T-04/c3"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "A text declares a version exactly when it has no byte-order mark",
+          "clauses": [
+            "OBI-T-04/c4",
+            "OBI-T-04/c4.p1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and parses under the JSON grammar (RFC 8259 §2) as an object",
+          "clauses": [
+            "OBI-T-04/c4.p2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "with exactly one `openbindings` member,",
+          "clauses": [
+            "OBI-T-04/c4.p3"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "whose value is a string that is a SemVer version.",
+          "clauses": [
+            "OBI-T-04/c4.p4"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "For that test the text is decoded as UTF-8 (RFC 3629) from left to right, each well-formed sequence read as its character and each other byte replaced by U+FFFD.",
+          "clauses": [
+            "OBI-T-04/c5"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "A processor MUST NOT produce a version refusal for a text that declares no version, which is non-conformant under OBI-D-01 or OBI-D-09,",
+          "clauses": [
+            "OBI-T-04/c6"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "except that a processor whose parser cannot tell whether the `openbindings` member is repeated MAY, when every other condition holds, treat the text as declaring the version its parser reads.",
+          "clauses": [
+            "OBI-T-04/c7"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "A processor MUST make the line decision for a text that declares a version even when the text's encoding or repeated names elsewhere violate OBI-D-01, which only a supported line's rules judge.",
+          "clauses": [
+            "OBI-T-04/c8"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "§8.1 governs prerelease and build-metadata handling and what a refusal prohibits and permits.",
+          "clauses": [
+            "OBI-T-04/c9"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: the replacement only locates the version, and OBI-D-01 still judges the bytes: a replacement among the unescaped characters of a string other than the `openbindings` member's name or value leaves the decision unchanged, while one in that name or value, within an escape, or between tokens leaves the text declaring no version. Any decoder that replaces ill-formed input without consuming an ASCII byte, such as one following the Unicode Standard's maximal-subpart practice, reaches the same decision. A repeated member makes a text non-conformant under this line (OBI-D-01), so the parser latitude falls only on texts this line rejects."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-04/c1",
+          "class": "obligation",
+          "remark": "Interpret only under a supported version; met by either alternative c1a or c1b.",
+          "status": "tested through its alternatives"
+        },
+        {
+          "id": "OBI-T-04/c1a",
+          "class": "alternative",
+          "of": "OBI-T-04/c1",
+          "part": "a release version's major.minor line",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-04/c1b",
+          "class": "alternative",
+          "of": "OBI-T-04/c1",
+          "part": "an explicitly included prerelease",
+          "status": "tested",
+          "limits": "The default refusal is tested; interpreting an included prerelease (T04-S-28) runs on contrast tools only, since the Go core includes no prerelease."
+        },
+        {
+          "id": "OBI-T-04/c2",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-04/c3",
+          "class": "obligation",
+          "remark": "Qualifies the refusal c2 requires.",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-04/c4",
+          "class": "definition",
+          "remark": "Conjunction of predicates p1 to p4.",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c4.p1",
+          "class": "definition",
+          "of": "OBI-T-04/c4",
+          "part": "no byte-order mark",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c4.p2",
+          "class": "definition",
+          "of": "OBI-T-04/c4",
+          "part": "parses as a JSON object",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c4.p3",
+          "class": "definition",
+          "of": "OBI-T-04/c4",
+          "part": "exactly one openbindings member",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c4.p4",
+          "class": "definition",
+          "of": "OBI-T-04/c4",
+          "part": "a string value that is SemVer",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c5",
+          "class": "definition",
+          "of": "OBI-T-04/c4",
+          "status": "definition"
+        },
+        {
+          "id": "OBI-T-04/c6",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-04/c7",
+          "class": "permission",
+          "of": "OBI-T-04/c6",
+          "remark": "Conditional exception: only for a parser that cannot tell repetition, and only when every other condition of c4 holds.",
+          "status": "permission",
+          "limits": "Exercised as latitude: T04-S-18 and T04-S-29 admit a duplicate-blind reading."
+        },
+        {
+          "id": "OBI-T-04/c8",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-04/c9",
+          "class": "incorporation",
+          "incorporates": [
+            "OBI-T-04/c9.i1",
+            "OBI-T-04/c9.i2",
+            "OBI-T-04/c9.i3",
+            "OBI-T-04/c9.i4",
+            "OBI-T-04/c9.i5",
+            "OBI-T-04/c9.i6"
+          ],
+          "status": "incorporation"
+        }
+      ],
+      "incorporations": [
+        {
+          "source": "§8.1, Processing, first bullet",
+          "passage": "A prerelease (`0.2.0-rc.1`) is a distinct, potentially incompatible draft outside its line, identified by its full version; a processor that explicitly includes it interprets the document under the draft's text and derived schema.",
+          "segments": [
+            {
+              "text": "A prerelease (`0.2.0-rc.1`) is a distinct, potentially incompatible draft outside its line, identified by its full version;",
+              "id": "OBI-T-04/c9.i1",
+              "class": "definition",
+              "status": "definition"
+            },
+            {
+              "text": "a processor that explicitly includes it interprets the document under the draft's text and derived schema.",
+              "id": "OBI-T-04/c9.i2",
+              "class": "specialization",
+              "of": "OBI-T-04/c1b",
+              "status": "contrast tools only",
+              "limits": "No executor in the Go core, which includes no prerelease."
+            }
+          ],
+          "anchor": "- A prerelease (",
+          "description": "The designated passage is the complete block found by anchor; segments must partition it."
+        },
+        {
+          "source": "§8.1, Processing, second bullet",
+          "passage": "Build metadata is permitted, has no OpenBindings semantics, and is ignored when determining support: `0.2.0+build.1` denotes the same line as `0.2.0`.",
+          "segments": [
+            {
+              "text": "Build metadata is permitted, has no OpenBindings semantics, and is ignored when determining support: `0.2.0+build.1` denotes the same line as `0.2.0`.",
+              "id": "OBI-T-04/c9.i3",
+              "class": "specialization",
+              "of": "OBI-T-04/c1a",
+              "status": "tested"
+            }
+          ],
+          "anchor": "- Build metadata is permitted",
+          "description": "The designated passage is the complete block found by anchor; segments must partition it."
+        },
+        {
+          "source": "§8.1, Processing, third bullet",
+          "passage": "Interpreting a document means giving any member other than `openbindings` the meaning a line assigns, as resolving names, comparing kinds, following references, validating values, and judging conformance do. A version refusal prohibits only that: a processor MAY still parse, preserve, display, or route an unsupported document, which may conform to the version it declares. Showing an unsupported document's members as JSON is display; presenting its `operations` entries as operations, or its bindings under their operations, is interpretation.",
+          "segments": [
+            {
+              "text": "Interpreting a document means giving any member other than `openbindings` the meaning a line assigns, as resolving names, comparing kinds, following references, validating values, and judging conformance do.",
+              "id": "OBI-T-04/c9.i4",
+              "class": "definition",
+              "status": "definition"
+            },
+            {
+              "text": "A version refusal prohibits only that: a processor MAY still parse, preserve, display, or route an unsupported document, which may conform to the version it declares.",
+              "id": "OBI-T-04/c9.i5",
+              "class": "permission",
+              "status": "permission",
+              "limits": "Not testable: it grants latitude and requires nothing."
+            },
+            {
+              "text": "Showing an unsupported document's members as JSON is display; presenting its `operations` entries as operations, or its bindings under their operations, is interpretation.",
+              "id": "OBI-T-04/c9.i6",
+              "class": "definition",
+              "status": "definition"
+            }
+          ],
+          "anchor": "- Interpreting a document means",
+          "description": "The designated passage is the complete block found by anchor; segments must partition it."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-05",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when claiming to derive another form from a schema, such as a type through code generation or a model for comparison)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST NOT claim that the derived form preserves the schema's meaning when semantically significant keywords or values it cannot represent could change that meaning.",
+          "clauses": [
+            "OBI-T-05/c1"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: whether and how it reports a narrower result or an unsupported feature is its own concern."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-05/c1",
+          "class": "obligation",
+          "remark": "'could change': finite probes refute a preservation claim; they never establish preservation.",
+          "status": "expressible, no executor",
+          "limits": "Assertion keywords only: finite probes refute a preservation claim and never establish one."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-06",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when resolving `$ref` or `$dynamicRef` values)"
+        },
+        {
+          "kind": "clause",
+          "text": "When it resolves a schema reference, a tool MUST resolve it as §5.2 and §7 define: a same-document reference in the document resource against the OBI document,",
+          "clauses": [
+            "OBI-T-06/c1",
+            "OBI-T-06/c1a"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and every other reference as JSON Schema defines (§7.4).",
+          "clauses": [
+            "OBI-T-06/c1b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST NOT treat a reference cycle alone as an invalid reference or a schema mismatch.",
+          "clauses": [
+            "OBI-T-06/c2a",
+            "OBI-T-06/c2b"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: implementation strategy and resource limits are its own concerns."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-06/c1",
+          "class": "obligation",
+          "status": "tested through its alternatives"
+        },
+        {
+          "id": "OBI-T-06/c1a",
+          "class": "alternative",
+          "of": "OBI-T-06/c1",
+          "part": "same-document references in the document resource",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-06/c1b",
+          "class": "alternative",
+          "of": "OBI-T-06/c1",
+          "part": "every other reference",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-06/c2a",
+          "class": "obligation",
+          "part": "not an invalid reference",
+          "status": "tested",
+          "limits": "Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. That reason is forbidden there because each cycle consumes the instance as it recurses: §7.4 and OBI-T-08's definition of an undefined result (OBI-T-08/c7, JSON Schema Core §9.4.1) make only a cycle that recurses without consuming any of the instance undefined. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported."
+        },
+        {
+          "id": "OBI-T-06/c2b",
+          "class": "obligation",
+          "part": "not a schema mismatch",
+          "status": "tested"
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-07",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when resolving operation names)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST resolve a name against the flat namespace of operation identifiers (each operation's key together with its `aliases`), treating key and alias matches as equally authoritative.",
+          "clauses": [
+            "OBI-T-07/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST NOT privilege key matches over alias matches,",
+          "clauses": [
+            "OBI-T-07/c2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and MUST NOT resolve a name to an operation unless the name exactly equals one of that operation's identifiers (no trimming, case-folding, or approximate matching).",
+          "clauses": [
+            "OBI-T-07/c3"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "When finding a resolved operation's bindings, it MUST find them by the operation's key (the value in `bindings[*].operation`), not by the alias used to reach it.",
+          "clauses": [
+            "OBI-T-07/c4"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: OBI-D-04 makes the namespace document-unique, so a name resolves to at most one operation."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-07/c1",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-07/c2",
+          "class": "specialization",
+          "of": "OBI-T-07/c1",
+          "remark": "Observable only on a document violating OBI-D-04. The rule fixes no policy for an ambiguous name; Go's 'resolves to none' is SDK policy (resolve_operation.go:10-13).",
+          "status": "not portably testable",
+          "limits": "T07-G-01 (T07-S-12, T07-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy."
+        },
+        {
+          "id": "OBI-T-07/c3",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-07/c4",
+          "class": "obligation",
+          "status": "tested"
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-08",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when claiming to validate a value against an operation's `input` or `output` schema)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST evaluate the value under the schema's applicable JSON Schema dialect,",
+          "clauses": [
+            "OBI-T-08/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "treating `format` as an annotation where the dialect leaves its assertion optional, as OBI-D-10 does,",
+          "clauses": [
+            "OBI-T-08/c2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and reading `pattern` values and `patternProperties` names as ECMA-262 regular expressions with Unicode semantics (the `u` flag or equivalent, JSON Schema Core §6.4),",
+          "clauses": [
+            "OBI-T-08/c3a",
+            "OBI-T-08/c3b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "with the OBI document as the resolution context for embedded schemas: its own resource and every resource an `$id` declares in the schemas it contains (§5.2, §7).",
+          "clauses": [
+            "OBI-T-08/c4"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST apply the operation schema to each value it validates separately, never to a sequence of values as a whole.",
+          "clauses": [
+            "OBI-T-08/c5"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST NOT report either validation success or an instance mismatch that depends on a required reference or capability it does not have,",
+          "clauses": [
+            "OBI-T-08/c6",
+            "OBI-T-08/c6a",
+            "OBI-T-08/c6b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "or on an undefined result: one JSON Schema leaves undefined (such as the result of evaluating a cycle that recurses without consuming any of the instance, §7.4, JSON Schema Core §9.4.1),",
+          "clauses": [
+            "OBI-T-08/c7"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "or one the readings this rule fixes leave undefined, because it depends on a keyword value they make invalid (such as a pattern that is not a valid ECMA-262 regular expression with Unicode semantics).",
+          "clauses": [
+            "OBI-T-08/c8"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST NOT report any verdict, success included, for a value checked against an absent `input` or `output`, which states no value contract (§5.1).",
+          "clauses": [
+            "OBI-T-08/c9"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: an undefined result withholds a verdict from every tool; a missing reference or capability, only from a tool that lacks it. This rule does not require a whole-graph readiness check or prescribe evaluation strategy, resource acquisition, or report shape; invoking, rendering, or indexing alone does not trigger validation. A tool may check formats as a report of its own, apart from this rule's verdict."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-08/c1",
+          "class": "obligation",
+          "remark": "'Applicable dialect' includes an externally reached schema's own dialect (§5.2), not only embedded 2020-12.",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c2",
+          "class": "specialization",
+          "of": "OBI-T-08/c1",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c3a",
+          "class": "specialization",
+          "of": "OBI-T-08/c1",
+          "part": "pattern values",
+          "status": "tested",
+          "limits": "Representative divergences between ECMA-262 with the u flag and other engines: white space, digits, word characters and boundaries, the dot and line terminators, code points outside the Basic Multilingual Plane, escaped surrogate pairs, anchors, inline modifiers, identity escapes, and property escapes. Others are not enumerated."
+        },
+        {
+          "id": "OBI-T-08/c3b",
+          "class": "specialization",
+          "of": "OBI-T-08/c1",
+          "part": "patternProperties names",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c4",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c5",
+          "class": "obligation",
+          "status": "tested (adapter)",
+          "limits": "Holds by construction for the Go core, whose value API takes one value per call; the executor's part a deliberately wrong tool can break is the harness's composition of those calls."
+        },
+        {
+          "id": "OBI-T-08/c6",
+          "class": "obligation",
+          "remark": "Prohibits only a verdict that depends on the missing reference or capability; c7 and c8 extend its object ('depends on ... or on ...').",
+          "status": "tested through its alternatives"
+        },
+        {
+          "id": "OBI-T-08/c6a",
+          "class": "alternative",
+          "of": "OBI-T-08/c6",
+          "part": "a required reference",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c6b",
+          "class": "alternative",
+          "of": "OBI-T-08/c6",
+          "part": "a capability",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c7",
+          "class": "alternative",
+          "of": "OBI-T-08/c6",
+          "part": "an undefined result JSON Schema leaves undefined",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c8",
+          "class": "alternative",
+          "of": "OBI-T-08/c6",
+          "part": "an undefined result the rule's readings leave undefined",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-08/c9",
+          "class": "obligation",
+          "status": "tested"
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-09",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when reporting a conclusion about overall document conformance)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST NOT claim conformance unless every applicable document rule has been established with no violation,",
+          "clauses": [
+            "OBI-T-09/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "MUST NOT claim non-conformance unless it has established a violation of an applicable document rule,",
+          "clauses": [
+            "OBI-T-09/c4"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "and MUST report non-conformance when it has established one.",
+          "clauses": [
+            "OBI-T-09/c2"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "It MUST name the release of this specification whose text it applied:",
+          "clauses": [
+            "OBI-T-09/c3"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "a patch release,",
+          "clauses": [
+            "OBI-T-09/c3a"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "a prerelease it explicitly includes,",
+          "clauses": [
+            "OBI-T-09/c3b"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "or, before a version's first release, its working draft and the source-control revision of the text applied.",
+          "clauses": [
+            "OBI-T-09/c3c"
+          ]
+        },
+        {
+          "kind": "note",
+          "text": "Note: absence of a found violation alone does not establish conformance (§10.4); the release is named because a patch release can correct the text a conclusion rests on (§8.1)."
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-09/c1",
+          "class": "obligation",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-09/c4",
+          "class": "obligation",
+          "remark": "Added in the 0.2.0 working draft (CHANGELOG): overall conclusions only. It takes the next unused number in the rule, so the IDs of the other clauses stay.",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-09/c2",
+          "class": "obligation",
+          "remark": "Reworded when c4 was added (\"when it has established one\"): the obligation is unchanged.",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-09/c3",
+          "class": "obligation",
+          "remark": "One identification obligation; c3a to c3c are conditional alternatives by the kind of text applied.",
+          "status": "tested through its exercised alternative",
+          "limits": "A tool names one kind of text; the Go core declares a working draft and its revision (c3c)."
+        },
+        {
+          "id": "OBI-T-09/c3a",
+          "class": "alternative",
+          "of": "OBI-T-09/c3",
+          "part": "a patch release",
+          "status": "expressible, no executor",
+          "limits": "Applies to a tool that declares a patch release; none does before 0.2.0 is released."
+        },
+        {
+          "id": "OBI-T-09/c3b",
+          "class": "alternative",
+          "of": "OBI-T-09/c3",
+          "part": "a prerelease it explicitly includes",
+          "remark": "Reworded to OBI-T-04's term (formerly \"an explicitly supported prerelease\"): the obligation is unchanged.",
+          "status": "contrast tools only",
+          "limits": "No executor in the Go core, which includes no prerelease."
+        },
+        {
+          "id": "OBI-T-09/c3c",
+          "class": "alternative",
+          "of": "OBI-T-09/c3",
+          "part": "a working draft and its revision",
+          "status": "tested",
+          "limits": "Credited only when the applied text is verified: the named identity is compared first, then the text at the named revision, read from the specification repository's history, against the hash the tool declares."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-10",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when reporting document conformance)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST NOT treat the apparent inaccuracy of an author claim, as §5 lists them, as a document-rule violation.",
+          "clauses": [
+            "OBI-T-10/c1",
+            "OBI-T-10/c1a",
+            "OBI-T-10/c1b",
+            "OBI-T-10/c1c",
+            "OBI-T-10/c1d",
+            "OBI-T-10/c1e"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-10/c1",
+          "class": "obligation",
+          "incorporates": [
+            "OBI-T-10/c1.i1",
+            "OBI-T-10/c1.i2",
+            "OBI-T-10/c1.i3",
+            "OBI-T-10/c1.i4",
+            "OBI-T-10/c1.i5",
+            "OBI-T-10/c1.i6"
+          ],
+          "status": "tested through its specializations"
+        },
+        {
+          "id": "OBI-T-10/c1a",
+          "class": "specialization",
+          "of": "OBI-T-10/c1",
+          "part": "examples",
+          "status": "tested",
+          "limits": "The fixtures discriminate plausibility heuristics over the document only."
+        },
+        {
+          "id": "OBI-T-10/c1b",
+          "class": "specialization",
+          "of": "OBI-T-10/c1",
+          "part": "realization",
+          "status": "tested",
+          "limits": "The fixtures discriminate plausibility heuristics over the document only."
+        },
+        {
+          "id": "OBI-T-10/c1c",
+          "class": "specialization",
+          "of": "OBI-T-10/c1",
+          "part": "idempotent",
+          "status": "tested",
+          "limits": "The fixtures discriminate plausibility heuristics over the document only."
+        },
+        {
+          "id": "OBI-T-10/c1d",
+          "class": "specialization",
+          "of": "OBI-T-10/c1",
+          "part": "consumption",
+          "status": "tested",
+          "limits": "The fixtures discriminate plausibility heuristics over the document only."
+        },
+        {
+          "id": "OBI-T-10/c1e",
+          "class": "specialization",
+          "of": "OBI-T-10/c1",
+          "part": "correspondence",
+          "status": "tested",
+          "limits": "The fixtures discriminate plausibility heuristics over the document only."
+        }
+      ],
+      "incorporations": [
+        {
+          "source": "§5, Author claims",
+          "passage": "Author claims. Some of what a document says is its author's claim: an operation's `examples` (§5.1), a binding's claim to realize its operation and the binding's `idempotent` (§5.3), a dependency's claim to consume its operation within its value contracts (§5.5), and correspondence (§5.1). This specification defines what each asserts; whether it is true is outside document conformance (OBI-T-10), and a tool decides for itself whether to rely on it.",
+          "segments": [
+            {
+              "text": "Author claims.",
+              "kind": "context"
+            },
+            {
+              "text": "Some of what a document says is its author's claim:",
+              "id": "OBI-T-10/c1.i1",
+              "class": "definition",
+              "status": "definition"
+            },
+            {
+              "text": "an operation's `examples` (§5.1),",
+              "id": "OBI-T-10/c1.i2",
+              "class": "definition",
+              "claim": "OBI-T-10/c1a",
+              "status": "definition"
+            },
+            {
+              "text": "a binding's claim to realize its operation",
+              "id": "OBI-T-10/c1.i3",
+              "class": "definition",
+              "claim": "OBI-T-10/c1b",
+              "status": "definition"
+            },
+            {
+              "text": "and the binding's `idempotent` (§5.3),",
+              "id": "OBI-T-10/c1.i4",
+              "class": "definition",
+              "claim": "OBI-T-10/c1c",
+              "status": "definition"
+            },
+            {
+              "text": "a dependency's claim to consume its operation within its value contracts (§5.5),",
+              "id": "OBI-T-10/c1.i5",
+              "class": "definition",
+              "claim": "OBI-T-10/c1d",
+              "status": "definition"
+            },
+            {
+              "text": "and correspondence (§5.1).",
+              "id": "OBI-T-10/c1.i6",
+              "class": "definition",
+              "claim": "OBI-T-10/c1e",
+              "status": "definition"
+            },
+            {
+              "text": "This specification defines what each asserts; whether it is true is outside document conformance (OBI-T-10), and a tool decides for itself whether to rely on it.",
+              "kind": "context",
+              "remark": "Not incorporated by OBI-T-10's 'as §5 lists them'; listed so the paragraph is wholly accounted for."
+            }
+          ],
+          "anchor": "Author claims.",
+          "description": "The designated passage is the complete block found by anchor; segments must partition it."
+        }
+      ]
+    },
+    {
+      "rule": "OBI-T-11",
+      "segments": [
+        {
+          "kind": "trigger",
+          "text": "(applies when checking examples)"
+        },
+        {
+          "kind": "clause",
+          "text": "A tool MUST NOT resolve an example–schema mismatch by treating the example as an exception:",
+          "clauses": [
+            "OBI-T-11/c1"
+          ]
+        },
+        {
+          "kind": "clause",
+          "text": "the schema is authoritative, and an example never widens, narrows, or overrides it (§5.1).",
+          "clauses": [
+            "OBI-T-11/c2a",
+            "OBI-T-11/c2b",
+            "OBI-T-11/c2c"
+          ]
+        }
+      ],
+      "clauses": [
+        {
+          "id": "OBI-T-11/c1",
+          "class": "obligation",
+          "status": "composition only",
+          "limits": "The Go core has no example checker; the cases run through a composition of its value validation."
+        },
+        {
+          "id": "OBI-T-11/c2a",
+          "class": "specialization",
+          "of": "OBI-T-11/c1",
+          "part": "widens",
+          "status": "composition only"
+        },
+        {
+          "id": "OBI-T-11/c2b",
+          "class": "specialization",
+          "of": "OBI-T-11/c1",
+          "part": "narrows",
+          "status": "composition only"
+        },
+        {
+          "id": "OBI-T-11/c2c",
+          "class": "specialization",
+          "of": "OBI-T-11/c1",
+          "part": "overrides",
+          "status": "composition only"
+        }
+      ]
+    }
+  ],
+  "retiredClauses": [],
+  "caseIdentity": {
+    "retired": [
+      {
+        "id": "T08-S-03",
+        "reason": "Retired before 0.2.0's first corpus revision; never reused."
+      },
+      {
+        "id": "T08-S-04",
+        "reason": "Retired before 0.2.0's first corpus revision; never reused."
+      },
+      {
+        "id": "T11-S-02",
+        "reason": "Never used in a published corpus (the cases were numbered T02-S-06 and T08-S-39 to T08-S-41 instead); withheld so it is never reused."
+      },
+      {
+        "id": "T11-S-03",
+        "reason": "As T11-S-02."
+      },
+      {
+        "id": "T11-S-04",
+        "reason": "As T11-S-02."
+      },
+      {
+        "id": "T11-S-05",
+        "reason": "As T11-S-02."
+      },
+      {
+        "id": "T03-S-07",
+        "reason": "Moved to T07-S-15 before this corpus revision: it tests OBI-T-07/c1, not OBI-T-03/c1. Never reused."
+      }
+    ],
+    "migrated": [
+      {
+        "from": "tool/OBI-T-04.json#/tests/0",
+        "fromDescription": "document declares the current spec version (administered only to tools that support the 0.2 line)",
+        "to": "scenarios/OBI-T-04.json#T04-S-01"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/1",
+        "fromDescription": "build metadata is ignored in comparison; `0.2.0+build.1` is treated as `0.2.0` (administered only to tools that support the 0.2 line)",
+        "to": "scenarios/OBI-T-04.json#T04-S-03"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/2",
+        "fromDescription": "a tool that supports the 0.2 line accepts a higher patch within it: the patch number carries no meaning (administered only to tools that support the 0.2 line)",
+        "to": "scenarios/OBI-T-04.json#T04-S-02"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/3",
+        "fromDescription": "a tool that supports the 0.2 line accepts a patch published after the tool: the document is read under the line (administered only to tools that support the 0.2 line)",
+        "to": "scenarios/OBI-T-04.json#T04-S-31"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/4",
+        "fromDescription": "a prerelease is not accepted unless the tool declares support for that specific prerelease (default rejection)",
+        "to": "scenarios/OBI-T-04.json#T04-S-06"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/5",
+        "fromDescription": "document declares a major version higher than any plausible SDK supports",
+        "to": "scenarios/OBI-T-04.json#T04-S-04"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/6",
+        "fromDescription": "document declares a far-future major version with non-zero minor",
+        "to": "scenarios/OBI-T-04.json#T04-S-32"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/7",
+        "fromDescription": "pre-1.0 document declares a higher minor than any plausible SDK's supported set",
+        "to": "scenarios/OBI-T-04.json#T04-S-05"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/8",
+        "fromDescription": "pre-1.0 document declares a higher minor with a patch component",
+        "to": "scenarios/OBI-T-04.json#T04-S-33"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/9",
+        "fromDescription": "downward refusal: pre-1.0 document declares a lower minor outside the SDK's supported set (refused rather than processed under the wrong rules)",
+        "to": "scenarios/OBI-T-04.json#T04-S-34"
+      },
+      {
+        "from": "tool/OBI-T-04.json#/tests/10",
+        "fromDescription": "downward refusal: a higher patch on an unsupported lower minor is still outside the set (patch never rescues a refused minor)",
+        "to": "scenarios/OBI-T-04.json#T04-S-07"
+      },
+      {
+        "from": "tool/OBI-T-01.json#/tests/0",
+        "fromDescription": "document declares an unknown kind",
+        "to": "document/OBI-D-02.json#/tests/33"
+      },
+      {
+        "from": "tool/OBI-T-01.json#/tests/1",
+        "fromDescription": "document mixes familiar and unfamiliar kinds without a core validity defect",
+        "to": "document/OBI-D-02.json#/tests/34"
+      },
+      {
+        "from": "tool/OBI-T-01.json#/tests/2",
+        "fromDescription": "dependency lists only an unknown kind without making the document invalid",
+        "to": "document/OBI-D-02.json#/tests/35"
+      }
+    ]
+  }
+}

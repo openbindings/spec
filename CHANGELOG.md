@@ -204,7 +204,136 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 - Informative binding-spec authoring doctrine, an AI-agent primer, and a
   practical 0.1-to-0.2 migration guide.
 
+- **`openbindings.core-tool-scenarios@2`**, replacing `@1` for the core tool
+  rules' scenarios. Each scenario names the clauses of `conformance/clauses.json`
+  it tests. The actions are `validate-document`, `resolve-operation`,
+  `conclude-conformance`, `check-dependency-kind`, `validate-operation-values`,
+  `check-examples`, and `derive-form`. Value results use the specification's
+  three outcomes (`valid`, `instance-mismatch`, `no-verdict`), with
+  `orNoVerdict` where a result does not depend on what may be missing,
+  `dependsOn` naming the capability-profile features a verdict needs, and
+  `forbidReasons` for no-verdict reasons a tool must not report. Version
+  gates are judged against a tool's declaration, never its version decision.
+  `namesAppliedText` checks that a conclusion names the applied text, verified
+  against the bytes at the named revision. Each case is reported in one run
+  category (pass, FAIL, SHORTFALL, OMITTED, ADVISORY, UNVERIFIED), and a
+  collision group is advisory. `@1` is retired rather than extended because a
+  runner reading `@1` would run none of the new actions and report green.
+
+- **`notViolated` in validity fixtures**: the document rules a negative
+  fixture's document does not violate, the mirror of `violates`. A tool that
+  reports violated rules must not report these, so a rule that holds, holds
+  vacuously, or does not govern the document is checked too.
+
+- **`conformance/clauses.json`**, the clause inventory of the tool rules
+  OBI-T-01 to OBI-T-11: each rule's text partitioned into clauses with
+  corpus-owned IDs, each clause's class and coverage status, and the corpus's
+  case-identity records (retired case IDs and migrated cases).
+  `scripts/verify-corpus.mjs` checks the partition against `openbindings.md`,
+  the README's clause table against the inventory, and every case's clause
+  tags; `manifest.json` counts cases per clause.
+
 ### Changed
+
+- **OBI-T-09 forbids an unestablished non-conformance claim.** OBI-T-09's
+  first sentence gains the clause "MUST NOT claim non-conformance unless it
+  has established a violation of an applicable document rule", and its last
+  clause now reads "MUST report non-conformance when it has established
+  one"; the rest of the rule and its Note are unchanged. It governs overall
+  conclusions only, not rule-level reports, and OBI-T-10 stays separate.
+  No document's conformance or rule-level outcome changes. For tools it
+  states explicitly what [§10.4](openbindings.md#104-conformance-conclusions)'s
+  meaning of non-conformant implies; read as new, a tool that reports
+  non-conformance without an established violation, such as for an
+  unobtainable reference or a regular expression it cannot compile, now
+  violates OBI-T-09.
+
+- **One term for prerelease inclusion.** OBI-T-09 says "a prerelease it
+  explicitly includes", the wording of OBI-T-04 and
+  [§8.1](openbindings.md#81-openbindings-field-specification-version), in
+  place of "an explicitly supported prerelease". Clarification: no
+  conformance change.
+
+- **What the other document rules say about a text OBI-D-01 rejects.**
+  [§10](openbindings.md#10-conformance), under "The document and its data",
+  states that OBI-D-02 through OBI-D-13 govern the JSON value only when
+  OBI-D-01 holds. If OBI-D-01 is violated, those rules impose no further
+  requirements and are not applicable in the vacuous sense of
+  [§10.4](openbindings.md#104-conformance-conclusions); the OBI-D-01
+  violation alone establishes non-conformance. A validator that has not
+  decided OBI-D-01 may check the value it parsed, provided the data used by
+  the check would be exact if OBI-D-01 held; a failed check establishes that
+  OBI-D-01 or the checked rule is violated, and so non-conformance, without
+  necessarily establishing which. OBI-T-04's version-declaration test is
+  unchanged. Changes rule-level outcomes only
+  for documents already non-conformant under OBI-D-01; no document's
+  conformance changes.
+
+- **An invalid schema is still a schema.** [§7](openbindings.md#7-reference-resolution)
+  defines a schema at an OBI position, or a schema the document contains,
+  as any JSON object or boolean there, whether or not it is valid against
+  the meta-schemas, as JSON Schema Core §4.3 does. Any other value there is
+  not a schema: the walks do not enter it and OBI-D-12 rejects it as a
+  target. OBI-D-10 judges each operation `input` and `output` and each
+  `schemas` entry whatever its type. [§5.2](openbindings.md#52-schemas)
+  calls `{"type": 42}` "an invalid schema" in place of "a non-schema".
+  Changes rule-level outcomes only for documents already non-conformant
+  under OBI-D-10: a same-document reference to an invalid object schema at
+  an OBI position satisfies OBI-D-12, and OBI-D-06 and OBI-D-13 walk into
+  invalid object schemas. No document's conformance changes.
+
+- **Only a grammatical anchor declares a plain name.**
+  [§7.3](openbindings.md#73-same-document-references) states that an
+  `$anchor` or `$dynamicAnchor` declares a plain name only when its value
+  is a string matching, as a whole, the grammar of JSON Schema Core §8.2.2.
+  Any other value declares no name for OBI-D-12, OBI-D-13, or the
+  resolution [§7.2](openbindings.md#72-the-document-as-embedding) bases on
+  OBI-D-12; OBI-D-10 reports it. OBI-D-13 cites §7.3. Changes rule-level
+  outcomes only for documents already non-conformant under OBI-D-10: a
+  plain-name reference to such a value violates OBI-D-12, and two such
+  values no longer violate OBI-D-13. No document's conformance changes.
+
+- **A schema resource without `$schema` inherits its dialect.**
+  [§5.2](openbindings.md#52-schemas) reads each schema the document
+  contains under its resource's dialect, as JSON Schema Core §9.3.2 does.
+  The document resource's dialect is 2020-12, and a `$schema` in it
+  declares none. A resource an `$id` declares takes the dialect its
+  `$schema` names, or without one that of its enclosing resource, which for
+  a schema at an OBI position is the document resource. A tool that still
+  evaluates under a `$schema` other than 2020-12, which violates OBI-D-06,
+  follows OBI-T-08 under that dialect and gives no verdict where it lacks
+  it. Schemas reached by external URI keep their rule, and the informative
+  note on schemas from other dialects now defers to this paragraph: a copied
+  schema is read under the dialect it assigns, 2020-12 in the document
+  resource even where a misplaced `$schema` names another. No conformance
+  change and no rule-level outcome change: only the
+  dialect a tool applies when evaluating against a document already
+  non-conformant under OBI-D-06 changes.
+
+- **OBI-D-03 checks every `aliases` entry.** OBI-D-03 requires every entry
+  of an operation's `aliases` array to be a string matching the name
+  pattern, so a non-string entry violates it as well as OBI-D-02; an
+  `aliases` member that is not an array is OBI-D-02's alone. The derived
+  schema already expressed this and is unchanged. Changes rule-level
+  outcomes only for documents already non-conformant under OBI-D-02; no
+  document's conformance changes.
+
+- **A malformed reference string is not a reference.**
+  [§7.1](openbindings.md#71-reference-forms) states that a string that is
+  not a well-formed URI-reference is not a reference of any form: OBI-D-05
+  reports it, OBI-D-12 does not govern it, and a value whose evaluation
+  depends on it has an undefined result (OBI-T-08), so no tool gives a
+  verdict through it. Changes rule-level outcomes only for documents
+  already non-conformant under OBI-D-05: OBI-D-12 no longer judges a
+  string such as `#%ZZ` or `#/schemas/Task/properties/my type`. No
+  document's conformance changes.
+
+- **OBI-D-01's note cites RFC 7493 for duplicate names only.** RFC 7493
+  does not mention a byte-order mark; it does forbid duplicate names
+  (§2.3). The note now rests the byte-order-mark rejection on RFC 8259
+  §8.1 and on two parsers' agreement over the same bytes, and cites RFC
+  7493 §2.3 for rejecting duplicate names. Editorial: a note adds no
+  requirement, so nothing normative changes.
 
 - **Correspondence is read from the consumer's side.** [§5.1](openbindings.md#51-operations)
   states that an operation carrying a published name claims correspondence
@@ -1066,6 +1195,18 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   cancellation, bounded cycles, lineage, deterministic portability claims,
   and stable validation/error identifiers.
 
+- **The reference Go runner (`conformance/runners/go`) was repaired against
+  the 0.2 Go core.** It executes every case the manifest counts, through the
+  core's API and its `schemaeval` evaluator, reports each in one run category
+  with every omission's reason, and reconciles its cases with the manifest. A
+  shortfall against the capability profile it declares for the core fails. It
+  verifies the applied text a conclusion names against the bytes at that
+  revision in the specification repository's history, and observes kind
+  retrieval through a local listener. Its `-json` results, reconciliation
+  included, are compared with the corpus's complete case set and with keyed
+  expected failures by `scripts/check-runner-results.mjs`; a CI job, pinned
+  to one Go commit, is prepared for the release line's integration.
+
 ### Removed
 
 - The 0.1 in-core schema-comparison, normalization, operation-matching,
@@ -1081,6 +1222,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   YAML or any other upstream artifact representation.
 - The experimental, unminted Workers RPC binding candidate. It is absent from
   the active catalog and implementations.
+- `conformance/tool/OBI-T-01.json` and `conformance/tool/OBI-T-04.json`.
+  The OBI-T-01 fixtures, which showed only that an unfamiliar kind is valid,
+  moved to `conformance/document/OBI-D-02.json` (tests 33 to 35); the OBI-T-04
+  fixtures became `scenarios/OBI-T-04.json` scenarios, where a version refusal
+  is its own outcome. `clauses.json` records each migrated case's earlier
+  identity.
+- Scenario format `openbindings.core-tool-scenarios@1`, replaced by `@2`.
 
 ### Repository and publication
 
