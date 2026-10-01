@@ -1,6 +1,6 @@
 {
   "description": "Cases the reference Go runner is expected to fail or to omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, unverified case, or omission, an unknown status, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, a pin other than the one the job checked out, and an applied text other than the one recorded here all fail CI: a changed declaration forces the failures and omissions to be re-justified. The pin is the Go commit the runner was repaired against; the job that reads this file stays disabled until integration publishes that commit, or the commit that adopts this corpus, and the pin, the failures, and the omissions are keyed to it.",
-  "pin": "8cb6d37757039a183d5315e207281b908caf7a0f",
+  "pin": "aa738fee1cae6ed70419161841ba09ce90947d0f",
   "applied": "0.2.0@98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
   "appliedSHA256": "e70cbc8b3b6d4096fd83f694dc093d3ce6d6c87319aeb97b8ae9ec12ebe63a4f",
   "failures": [
