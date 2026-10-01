@@ -1123,7 +1123,7 @@
       },
       {
         "id": "T11-S-02",
-        "reason": "Proposal IDs that never landed (renumbered to T02-S-06 and T08-S-39 to T08-S-41 before this corpus revision); withheld so the design records that cite them stay unambiguous."
+        "reason": "Never used in a published corpus (the cases were numbered T02-S-06 and T08-S-39 to T08-S-41 instead); withheld so it is never reused."
       },
       {
         "id": "T11-S-03",
@@ -1139,7 +1139,7 @@
       },
       {
         "id": "T03-S-07",
-        "reason": "Moved to T07-S-15 before this corpus revision: it tests OBI-T-07/c1, not OBI-T-03/c1. Withheld so the review records that cite it stay unambiguous."
+        "reason": "Moved to T07-S-15 before this corpus revision: it tests OBI-T-07/c1, not OBI-T-03/c1. Never reused."
       }
     ],
     "migrated": [

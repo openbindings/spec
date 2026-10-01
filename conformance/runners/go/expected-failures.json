@@ -7,12 +7,12 @@
     {
       "case": "document/OBI-D-10.json#/tests/22",
       "signature": "OBI-D-13 reported violated; the fixture lists it notViolated (violated: [OBI-D-10 OBI-D-13])",
-      "reason": "Needs G: S3 says only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares a plain name (section 7.3). The core at the pin counts any string. Under a stand-in that applies the grammar, the case passes."
+      "reason": "The Go core at the pin counts any string as a plain name, but only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares one (section 7.3). A core that applies the grammar passes the case."
     },
     {
       "case": "document/OBI-D-12.json#/tests/40",
       "signature": "OBI-D-12 is \"satisfied\", not violated (violated: [OBI-D-10])",
-      "reason": "Needs G: S3 says only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares a plain name (section 7.3). The core at the pin counts any string. Under a stand-in that applies the grammar, the case passes."
+      "reason": "The Go core at the pin counts any string as a plain name, but only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares one (section 7.3). A core that applies the grammar passes the case."
     }
   ],
   "omissions": [

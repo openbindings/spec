@@ -303,8 +303,10 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   evaluates under a `$schema` other than 2020-12, which violates OBI-D-06,
   follows OBI-T-08 under that dialect and gives no verdict where it lacks
   it. Schemas reached by external URI keep their rule, and the informative
-  note on schemas from other dialects names the one copy not read as
-  2020-12. No conformance change and no rule-level outcome change: only the
+  note on schemas from other dialects now defers to this paragraph: a copied
+  schema is read under the dialect it assigns, 2020-12 in the document
+  resource even where a misplaced `$schema` names another. No conformance
+  change and no rule-level outcome change: only the
   dialect a tool applies when evaluating against a document already
   non-conformant under OBI-D-06 changes.
 
