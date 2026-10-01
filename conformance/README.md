@@ -294,11 +294,11 @@ The corpus README once required adapters for two independent implementations bef
 
 | Action | Designated executor | Second executors |
 |---|---|---|
-| validity fixtures (`document/`, `tool/`) | Go core (`ValidateDocument`) | Two implementations written from the text alone, in TypeScript and Python, through a harness that maps the action to their commands |
-| `validate-document` | Go core (`ValidateDocument`) | As above |
-| `resolve-operation` | Go core (`ResolveOperation` and `OperationBindings`) | As above |
-| `validate-operation-values` | Go core with `schemaeval` (value contracts) | As above |
-| `conclude-conformance` | Go core (`ConcludeConformance`) | As above |
+| validity fixtures (`document/`, `tool/`) | Go core (`ValidateDocument`) | None published |
+| `validate-document` | Go core (`ValidateDocument`) | None published |
+| `resolve-operation` | Go core (`ResolveOperation` and `OperationBindings`) | None published |
+| `validate-operation-values` | Go core with `schemaeval` (value contracts) | None published |
+| `conclude-conformance` | Go core (`ConcludeConformance`) | None published |
 | `check-dependency-kind` | Go core (the dependency's kind constraint) | None: single executor |
 | `check-examples` | A composition of the Go core's value validation; the core has no example checker | None: single executor |
 | `derive-form` | None: the Go core derives no forms | None |
