@@ -206,6 +206,103 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OBI-T-09 forbids an unestablished non-conformance claim.** OBI-T-09's
+  first sentence gains the clause "MUST NOT claim non-conformance unless it
+  has established a violation of an applicable document rule", and its last
+  clause now reads "MUST report non-conformance when it has established
+  one"; the rest of the rule and its Note are unchanged. It governs overall
+  conclusions only, not rule-level reports, and OBI-T-10 stays separate.
+  No document's conformance or rule-level outcome changes. For tools it
+  states explicitly what [§10.4](openbindings.md#104-conformance-conclusions)'s
+  meaning of non-conformant implies; read as new, a tool that reports
+  non-conformance without an established violation, such as for an
+  unobtainable reference or a regular expression it cannot compile, now
+  violates OBI-T-09.
+
+- **One term for prerelease inclusion.** OBI-T-09 says "a prerelease it
+  explicitly includes", the wording of OBI-T-04 and
+  [§8.1](openbindings.md#81-openbindings-field-specification-version), in
+  place of "an explicitly supported prerelease". Clarification: no
+  conformance change.
+
+- **What the other document rules say about a text OBI-D-01 rejects.**
+  [§10](openbindings.md#10-conformance), under "The document and its data",
+  states that OBI-D-02 through OBI-D-13 read the JSON value the text
+  denotes. A text that violates OBI-D-01 denotes no single value: with a
+  byte-order mark, ill-formed UTF-8, or broken syntax it is not a JSON text
+  (RFC 8259 §2), and with repeated names its value is unpredictable (RFC
+  8259 §4). For it those rules are neither satisfied nor violated, and the
+  OBI-D-01 violation alone makes it non-conformant. A validator that has not
+  decided OBI-D-01 may judge the other rules on the value it parsed, and a
+  violation found there establishes non-conformance. OBI-T-04's
+  version-declaration test is unchanged. Changes rule-level outcomes only
+  for documents already non-conformant under OBI-D-01; no document's
+  conformance changes.
+
+- **An invalid schema is still a schema.** [§7](openbindings.md#7-reference-resolution)
+  defines a schema at an OBI position, or a schema the document contains,
+  as any JSON object or boolean there, whether or not it is valid against
+  the meta-schemas, as JSON Schema Core §4.3 does. Any other value there is
+  not a schema: the walks do not enter it and OBI-D-12 rejects it as a
+  target. OBI-D-10 judges each operation `input` and `output` and each
+  `schemas` entry whatever its type. [§5.2](openbindings.md#52-schemas)
+  calls `{"type": 42}` "an invalid schema" in place of "a non-schema".
+  Changes rule-level outcomes only for documents already non-conformant
+  under OBI-D-10: a same-document reference to an invalid object schema at
+  an OBI position satisfies OBI-D-12, and OBI-D-06 and OBI-D-13 walk into
+  invalid object schemas. No document's conformance changes.
+
+- **Only a grammatical anchor declares a plain name.**
+  [§7.3](openbindings.md#73-same-document-references) states that an
+  `$anchor` or `$dynamicAnchor` declares a plain name only when its value
+  is a string matching, as a whole, the grammar of JSON Schema Core §8.2.2.
+  Any other value declares no name for OBI-D-12, OBI-D-13, or the
+  resolution [§7.2](openbindings.md#72-the-document-as-embedding) bases on
+  OBI-D-12; OBI-D-10 reports it. OBI-D-13 cites §7.3. Changes rule-level
+  outcomes only for documents already non-conformant under OBI-D-10: a
+  plain-name reference to such a value violates OBI-D-12, and two such
+  values no longer violate OBI-D-13. No document's conformance changes.
+
+- **A schema resource without `$schema` inherits its dialect.**
+  [§5.2](openbindings.md#52-schemas) reads each schema the document
+  contains under its resource's dialect, as JSON Schema Core §9.3.2 does.
+  The document resource's dialect is 2020-12, and a `$schema` in it
+  declares none. A resource an `$id` declares takes the dialect its
+  `$schema` names, or without one that of its enclosing resource, which for
+  a schema at an OBI position is the document resource. A tool that still
+  evaluates under a `$schema` other than 2020-12, which violates OBI-D-06,
+  follows OBI-T-08 under that dialect and gives no verdict where it lacks
+  it. Schemas reached by external URI keep their rule, and the informative
+  note on schemas from other dialects names the one copy not read as
+  2020-12. No conformance change and no rule-level outcome change: only the
+  dialect a tool applies when evaluating against a document already
+  non-conformant under OBI-D-06 changes.
+
+- **OBI-D-03 checks every `aliases` entry.** OBI-D-03 requires every entry
+  of an operation's `aliases` array to be a string matching the name
+  pattern, so a non-string entry violates it as well as OBI-D-02; an
+  `aliases` member that is not an array is OBI-D-02's alone. The derived
+  schema already expressed this and is unchanged. Changes rule-level
+  outcomes only for documents already non-conformant under OBI-D-02; no
+  document's conformance changes.
+
+- **A malformed reference string is not a reference.**
+  [§7.1](openbindings.md#71-reference-forms) states that a string that is
+  not a well-formed URI-reference is not a reference of any form: OBI-D-05
+  reports it, OBI-D-12 does not govern it, and a value whose evaluation
+  depends on it has an undefined result (OBI-T-08), so no tool gives a
+  verdict through it. Changes rule-level outcomes only for documents
+  already non-conformant under OBI-D-05: OBI-D-12 no longer judges a
+  string such as `#%ZZ` or `#/schemas/Task/properties/my type`. No
+  document's conformance changes.
+
+- **OBI-D-01's note cites RFC 7493 for duplicate names only.** RFC 7493
+  does not mention a byte-order mark; it does forbid duplicate names
+  (§2.3). The note now rests the byte-order-mark rejection on RFC 8259
+  §8.1 and on two parsers' agreement over the same bytes, and cites RFC
+  7493 §2.3 for rejecting duplicate names. Editorial: a note adds no
+  requirement, so nothing normative changes.
+
 - **Correspondence is read from the consumer's side.** [§5.1](openbindings.md#51-operations)
   states that an operation carrying a published name claims correspondence
   as a consumer holding a shared contract that publishes the name reads it:
