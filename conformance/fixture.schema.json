@@ -72,11 +72,21 @@
           },
           "violates": {
             "type": "array",
-            "description": "When valid is false, the minimum set of OBI-D-## rules the document is intended to exercise as violated. A tool rule is never a document violation.",
+            "description": "When valid is false, the minimum set of document rules the document is intended to exercise as violated: a tool that reports violated rules reports at least these. A tool rule is never a document violation. Harness semantics, not a report shape.",
             "items": {
               "type": "string",
               "pattern": "^OBI-D-[0-9]+$"
             }
+          },
+          "notViolated": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^OBI-D-[0-9]+$"
+            },
+            "description": "When valid is false, document rules a tool must not report violated, where it reports violated rules at all: the mirror of violates. It records where a rule holds, holds vacuously, or does not govern the document, so a tool that reports it violated misreads the rule. Harness semantics, not a report shape. Disjoint from violates."
           },
           "requiresMinSupported": {
             "type": "string",

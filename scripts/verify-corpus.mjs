@@ -11,9 +11,10 @@
 //   2. The README's clause table lists exactly the inventory's clauses, with
 //      the same class and status.
 //   3. Every fixture and scenario file validates against its published JSON
-//      Schema (scenario files by their declared format: @2, or @1 for the
-//      transition) and passes the semantic checks below: rule and section
-//      references, case IDs (unique, of the file's rule, never a retired
+//      Schema (scenario files must declare format @2) and passes the
+//      semantic checks below: rule and section
+//      references, violates and notViolated (document rules only, disjoint,
+//      only on a negative fixture), case IDs (unique, of the file's rule, never a retired
 //      one), clause tags (defined, never retired, at least one of the file's
 //      rule), version gates (consistent by support unit, §8.1), per-action
 //      consistency (one result per value, one verdict per probe, named
@@ -55,7 +56,6 @@ const CLAUSES = join(CONFORMANCE_ROOT, "clauses.json");
 const FIXTURE_SCHEMA = join(CONFORMANCE_ROOT, "fixture.schema.json");
 const SCENARIO_SCHEMAS = {
   "openbindings.core-tool-scenarios@2": join(CONFORMANCE_ROOT, "tool-scenario.schema.json"),
-  "openbindings.core-tool-scenarios@1": join(CONFORMANCE_ROOT, "tool-scenario.v1.schema.json"),
 };
 
 const errors = [];
@@ -392,47 +392,21 @@ function verifyFixture(fixture, relPath, ctx) {
     if ("documentBase64" in t && !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(t.documentBase64)) {
       err(`${label}: documentBase64 is not canonical base64 text`);
     }
-    if ("violates" in t) {
-      if (t.valid !== false) err(`${label}: violates is meaningful only when valid is false`);
-      for (const v of t.violates || []) {
-        if (!/^OBI-D-\d+$/.test(v)) err(`${label}: violates names ${v}; a tool rule is never a document violation`);
-        else if (!ctx.specRules.has(v)) err(`${label}: violates names ${v}, which openbindings.md §10 does not define`);
+    for (const member of ["violates", "notViolated"]) {
+      if (!(member in t)) continue;
+      if (t.valid !== false) err(`${label}: ${member} is meaningful only when valid is false`);
+      for (const v of t[member] || []) {
+        if (!/^OBI-D-\d+$/.test(v)) err(`${label}: ${member} names ${v}; a tool rule is never a document violation`);
+        else if (!ctx.specRules.has(v)) err(`${label}: ${member} names ${v}, which openbindings.md §10 does not define`);
       }
     }
+    const both = (t.violates || []).filter((v) => (t.notViolated || []).includes(v));
+    if (both.length) err(`${label}: ${both.join(", ")} is listed both in violates and in notViolated`);
     checkGates(t, label);
     if (isTool) checkClauseTags(t.clauses, fixture.rule, label, ctx);
     else if ("clauses" in t) err(`${label}: clauses are tool-rule tags; document fixtures are keyed by rule`);
     ctx.fixtureCases.set(label, t);
   });
-}
-
-// ---- @1 (transitional) -------------------------------------------------------
-
-const V1_ACTIONS = new Map([
-  ["OBI-T-06", "resolve-schema-cycle"],
-  ["OBI-T-07", "resolve-operation"],
-  ["OBI-T-08", "validate-operation-values"],
-  ["OBI-T-09", "conclude-conformance"],
-]);
-
-function verifyScenarioV1(file, relPath, ctx) {
-  if (!V1_ACTIONS.has(file.rule)) {
-    err(`${relPath}: rule '${file.rule}' has no format @1 action`);
-    return;
-  }
-  const expectedAction = V1_ACTIONS.get(file.rule);
-  for (const [i, s] of (file.scenarios || []).entries()) {
-    const label = `${relPath}#${s.id ?? i}`;
-    recordCaseId(s.id, file.rule, label, ctx);
-    if (s.action !== expectedAction) err(`${label}: action '${s.action}' does not match ${file.rule}'s '${expectedAction}'`);
-    const g = s.given || {};
-    const e = s.expected || {};
-    if (file.rule === "OBI-T-08" && (!Array.isArray(e.results) || e.results.length !== (g.values || []).length)) {
-      err(`${label}: results must contain one outcome per input value`);
-    }
-    if (file.rule === "OBI-T-09") checkConclusion(g.evidence || {}, e.conclusion, label, ctx);
-    ctx.scenarioCases.set(s.id, { scenario: s, file: relPath, format: "@1" });
-  }
 }
 
 // ---- @2 ------------------------------------------------------------------------
@@ -603,8 +577,7 @@ for (const { relPath, absPath } of scenarioFiles) {
     err(`${relPath}: scenarios must be a non-empty array`);
     continue;
   }
-  if (file.format.endsWith("@1")) verifyScenarioV1(file, relPath, ctx);
-  else verifyScenarioV2(file, relPath, ctx);
+  verifyScenarioV2(file, relPath, ctx);
 }
 
 for (const [group, members] of ctx.groups) if (members.length < 2) err(`collision group ${group} has ${members.length} member`);

@@ -437,6 +437,56 @@
       "violates": [
         "OBI-D-05"
       ]
+    },
+    {
+      "description": "a string that is not a well-formed URI-reference (a raw space) is not a reference of any form: OBI-D-05 reports it and OBI-D-12 does not govern it (section 7.1)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "my type": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#/schemas/Task/properties/my type"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ],
+      "notViolated": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a fragment with a broken percent escape (#%ZZ) is not a well-formed URI-reference, so OBI-D-12 does not govern it (section 7.1)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#%ZZ"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ],
+      "notViolated": [
+        "OBI-D-12"
+      ]
     }
   ]
 }

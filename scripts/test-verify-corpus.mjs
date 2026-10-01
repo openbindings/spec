@@ -26,7 +26,6 @@ const COPIED = [
   "conformance/clauses.json",
   "conformance/fixture.schema.json",
   "conformance/tool-scenario.schema.json",
-  "conformance/tool-scenario.v1.schema.json",
   "conformance/document",
   "conformance/tool",
   "conformance/scenarios",
@@ -101,6 +100,18 @@ const NEGATIVE = [
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[1].violates = ["OBI-T-04"]; })],
   ["violates on a positive fixture", "violates is meaningful only when valid is false",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].violates = ["OBI-D-02"]; })],
+  ["notViolated on a positive fixture", "notViolated is meaningful only when valid is false",
+    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].notViolated = ["OBI-D-07"]; })],
+  ["a rule both in violates and in notViolated", "listed both in violates and in notViolated",
+    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-07", "OBI-D-02"]; })],
+  ["notViolated naming a tool rule", "notViolated names OBI-T-07",
+    (root) => {
+      editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-T-07"]; })(root);
+    }],
+  ["notViolated naming a rule the spec does not define", "notViolated names OBI-D-14",
+    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-14"]; })],
+  ["an empty notViolated", "does not match fixture.schema.json",
+    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = []; })],
   ["a tool fixture test with no clause", "names no clause",
     editJSON("conformance/tool/OBI-T-10.json", (f) => { delete f.tests[0].clauses; })],
   ["clause tags on a document fixture", "clauses are tool-rule tags",
@@ -137,8 +148,8 @@ const NEGATIVE = [
     }],
 ];
 
-// The landed format @1 file for OBI-T-09, as it stood before this corpus
-// moved to @2: valid @1, with T09-S-01's incomplete evidence corrected.
+// The landed format @1 file for OBI-T-09 (its first case): format @1 is
+// retired, so the verifier must reject it.
 const V1_T09 = {
   format: "openbindings.core-tool-scenarios@1",
   rule: "OBI-T-09",
@@ -154,21 +165,10 @@ const V1_T09 = {
     },
   ],
 };
+NEGATIVE.push(["a retired format @1 scenario file", "unsupported format",
+  (root) => writeJSON(root, "conformance/scenarios/OBI-T-09.json", V1_T09)]);
 
-const POSITIVE = [
-  ["the unmodified corpus passes", null, () => {}],
-  ["a format @1 file is still read and checked; its untagged cases support no clause status",
-    /no case cites it/,
-    (root) => writeJSON(root, "conformance/scenarios/OBI-T-09.json", V1_T09)],
-];
-const NEGATIVE_V1 = [
-  ["a format @1 conclusion that does not follow from its evidence", "does not follow from the evidence",
-    (root) => {
-      const v = structuredClone(V1_T09);
-      v.scenarios[0].expected.conclusion = "conformant";
-      writeJSON(root, "conformance/scenarios/OBI-T-09.json", v);
-    }],
-];
+const POSITIVE = [["the unmodified corpus passes", null, () => {}]];
 
 function run(root) {
   const r = spawnSync(process.execPath, [VERIFIER, "--spec-root", root], { encoding: "utf8" });
@@ -181,7 +181,7 @@ const report = (ok, label, detail) => {
   console.log(`${ok ? "ok  " : "FAIL"} ${label}${detail ? `: ${detail}` : ""}`);
 };
 
-for (const [label, needle, mutate] of [...NEGATIVE, ...NEGATIVE_V1]) {
+for (const [label, needle, mutate] of NEGATIVE) {
   const root = freshRoot();
   try {
     mutate(root);
@@ -208,5 +208,5 @@ for (const [label, allowed, mutate] of POSITIVE) {
     rmSync(root, { recursive: true, force: true });
   }
 }
-console.log(`\n${NEGATIVE.length + NEGATIVE_V1.length} negative and ${POSITIVE.length} positive controls; ${failures} misbehaved`);
+console.log(`\n${NEGATIVE.length} negative and ${POSITIVE.length} positive controls; ${failures} misbehaved`);
 process.exit(failures ? 1 : 0);

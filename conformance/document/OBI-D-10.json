@@ -408,6 +408,53 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "an object at a schema position is a schema whether or not the meta-schemas accept it, so a pointer to one satisfies OBI-D-12 while OBI-D-10 reports the schema (section 7)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "type": 42
+          }
+        },
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#/schemas/A"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ],
+      "notViolated": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "an $anchor value outside the JSON Schema Core section 8.2.2 grammar declares no plain name, so two of them declare nothing twice and OBI-D-13 holds (section 7.3)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$anchor": "bad/name"
+          },
+          "B": {
+            "$anchor": "bad/name"
+          }
+        },
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ],
+      "notViolated": [
+        "OBI-D-13"
+      ]
     }
   ]
 }

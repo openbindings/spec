@@ -68,6 +68,9 @@
       "valid": false,
       "violates": [
         "OBI-D-02"
+      ],
+      "notViolated": [
+        "OBI-D-07"
       ]
     },
     {
@@ -332,6 +335,9 @@
       "valid": false,
       "violates": [
         "OBI-D-02"
+      ],
+      "notViolated": [
+        "OBI-D-11"
       ]
     },
     {

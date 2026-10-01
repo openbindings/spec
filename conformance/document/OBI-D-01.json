@@ -79,6 +79,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     },
     {
@@ -87,6 +101,20 @@
       "valid": false,
       "violates": [
         "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
       ]
     }
   ]

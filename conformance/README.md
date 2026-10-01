@@ -47,7 +47,6 @@ conformance/
   clauses.json                  (tool-rule clause inventory, clause statuses, and case identity records)
   fixture.schema.json           (validity fixture format)
   tool-scenario.schema.json     (tool scenario format @2)
-  tool-scenario.v1.schema.json  (tool scenario format @1, accepted during the transition only)
   document/                     (OBI-D-## rules; one validity fixture file per rule)
     OBI-D-01.json ... OBI-D-13.json
   tool/                         (validity fixtures for tool rules a validity verdict can observe)
@@ -96,6 +95,7 @@ Field semantics:
 - `tests[*].document`, `tests[*].documentText`, or `tests[*].documentBase64`: exactly one input carriage. `document` embeds parsed JSON for ordinary cases. `documentText` preserves exact Unicode text for malformed-JSON and duplicate-key cases. `documentBase64` preserves exact bytes for encoding and BOM cases. A runner decodes the selected carriage and passes that input to the tool without normalizing it first.
 - `tests[*].valid`: `true` if the document conforms, so a validator establishes no violation; `false` if it does not.
 - `tests[*].violates` (optional, only with `valid: false`): the document rules the document is intended to exercise as violated. It names document rules only: a tool rule is never a document violation. By convention, OBI-D-02 is not listed when a more specific rule already names the violation, even though the derived schema would also catch it. **Semantics: minimum set.** For a negative fixture to pass, the tool's verdict is invalid and, where the tool reports violated rules at all, its report includes at least the listed rules. The spec defines no violation-reporting surface; this is harness semantics for consuming the corpus, not a conformance rule. Reporting a superset is never a defect, and a runner must not require the report to be exactly the listed set.
+- `tests[*].notViolated` (optional, only with `valid: false`): document rules a tool must not report violated, the mirror of `violates`. It records where a rule holds, holds vacuously, or does not govern the document although another rule is violated: for example, on a text that violates OBI-D-01, OBI-D-02 to OBI-D-13 impose no further requirement (§10, "The document and its data"). Where a tool reports violated rules at all, its report includes none of the listed rules; a tool that reports no rule-level evidence is judged by `valid` alone. Like `violates`, it is harness semantics, not a report shape, and it names document rules only. The two lists are disjoint.
 - `tests[*].clauses` (tool fixtures only, required there): the tool-rule clauses the test exercises ([Clause IDs](#clause-ids)). Document fixtures are keyed by rule and carry no clause tags.
 - `tests[*].requiresSupports`, `tests[*].requiresMinSupported` (optional): version gates ([Version gates](#version-gates)).
 
@@ -171,9 +171,9 @@ The verifier rejects gates that contradict each other by support unit (a version
 
 **Retired: `requiresMaxTested`.** Fixtures once gated acceptance-presuming positives on the SDK's tested range, a tested declaration rather than an acceptance declaration. Those positives moved to `requiresSupports`, and the forward-compatibility fixtures retired: across lines there is no forward-compatibility behavior to assert, and within a line the OBI-T-04 patch cases assert acceptance directly.
 
-### Format @1 (transitional)
+### Retired format @1 and migrated fixtures
 
-Format `openbindings.core-tool-scenarios@1` (`tool-scenario.v1.schema.json`) admitted OBI-T-06 to OBI-T-09 only, with the outcome tokens `graph-unavailable` and `resolver-error`, which the specification's vocabulary does not have. The corpus is written in `@2`. The verifier still accepts `@1` files beside `@2` ones while implementations migrate; `@1` is retired, schema and verifier support included, once the reference SDK's corpus adapter reads `@2`. An `@1` reader maps both old tokens to no verdict.
+The corpus once carried format `openbindings.core-tool-scenarios@1`, which admitted OBI-T-06 to OBI-T-09 only, with the outcome tokens `graph-unavailable` and `resolver-error` that the specification's vocabulary does not have. It is retired: every scenario file is `@2`, the cases it held keep their IDs, and the verifier rejects any other format. An implementation that needs to read both corpora while it migrates does so in its own adapter.
 
 The corpus's earlier OBI-T-04 validity fixtures (`tool/OBI-T-04.json`) migrated to scenarios, where a version refusal is its own outcome instead of `violates: ["OBI-T-04"]`; the OBI-T-01 fixtures, which showed only that an unfamiliar kind is valid, moved to `document/OBI-D-02.json`. `clauses.json` records each migrated case's earlier identity (`caseIdentity.migrated`), and the verifier checks that each record points at a case that exists.
 
@@ -305,7 +305,7 @@ The corpus README once required adapters for two independent implementations bef
 
 ## Usage
 
-A conformance test runner walks each validity fixture, passes the selected input carriage to the tool under test, and compares the tool's verdict against `valid`, honoring the version gates. It separately walks the scenario files, invokes each case's action through an implementation adapter, and reports each case in one run category. For negative fixtures with `violates`, a runner MAY additionally verify that the tool's reported violations include the listed set (minimum-set semantics; supersets are never a defect). Every manifest case is executed or omitted with a stated reason.
+A conformance test runner walks each validity fixture, passes the selected input carriage to the tool under test, and compares the tool's verdict against `valid`, honoring the version gates. It separately walks the scenario files, invokes each case's action through an implementation adapter, and reports each case in one run category. For negative fixtures, where the tool reports violated rules, a runner checks that the report includes every rule in `violates` (minimum-set semantics; other violations are never a defect) and none in `notViolated`. Every manifest case is executed or omitted with a stated reason.
 
 ## Versioning
 
@@ -315,7 +315,7 @@ The corpus tracks the spec version it was authored against: `openbindings.md` v0
 
 This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Known limits:
 
-- **Rule-level absence is not expressible.** `violates` is a minimum set, so no case can require that a rule is not reported violated. Where a rule-level reading rests on absence, the corpus asserts only what is expressible: a text that violates OBI-D-01 is non-conformant through OBI-D-01 alone, but that OBI-D-02 to OBI-D-13 impose no further requirement on it is not asserted; likewise that OBI-D-12 holds for a reference to an invalid object schema and does not govern a string that is not a URI-reference, that two identical invalid anchors do not violate OBI-D-13, and that a binding without `operation` violates OBI-D-02 and not OBI-D-07.
+- **Rule-level reports are checked only where a tool gives them.** `violates` and `notViolated` bind a tool that reports violated rules; a tool that reports only a conclusion is judged by `valid` alone, and `notViolated` never forbids a rule the case does not list.
 - **Plausibility heuristics only.** The OBI-T-10 fixtures discriminate heuristics over the document; a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture.
 - **Observed channels.** OBI-T-01/c4 is observed on the http channel and on the file channel through a FIFO sentinel; other retrieval channels are not observed.
 - **Representative fields.** OBI-T-02/c1 covers every defined field; the cases test the fields an action observes.
