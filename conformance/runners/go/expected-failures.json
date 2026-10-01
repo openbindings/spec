@@ -1,20 +1,9 @@
 {
-  "description": "Cases the reference Go runner is expected to fail or to omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, unverified case, or omission, an unknown status, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, a pin other than the one the job checked out, and an applied text other than the one recorded here all fail CI: a changed declaration forces the failures and omissions to be re-justified. The pin is the Go commit the runner was repaired against; the job that reads this file stays disabled until integration publishes that commit, or the commit that adopts this corpus, and the pin, the failures, and the omissions are keyed to it.",
-  "pin": "aa738fee1cae6ed70419161841ba09ce90947d0f",
-  "applied": "0.2.0@98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
-  "appliedSHA256": "e70cbc8b3b6d4096fd83f694dc093d3ce6d6c87319aeb97b8ae9ec12ebe63a4f",
-  "failures": [
-    {
-      "case": "document/OBI-D-10.json#/tests/22",
-      "signature": "OBI-D-13 reported violated; the fixture lists it notViolated (violated: [OBI-D-10 OBI-D-13])",
-      "reason": "The Go core at the pin counts any string as a plain name, but only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares one (section 7.3). A core that applies the grammar passes the case."
-    },
-    {
-      "case": "document/OBI-D-12.json#/tests/40",
-      "signature": "OBI-D-12 is \"satisfied\", not violated (violated: [OBI-D-10])",
-      "reason": "The Go core at the pin counts any string as a plain name, but only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares one (section 7.3). A core that applies the grammar passes the case."
-    }
-  ],
+  "description": "Cases the reference Go runner is expected to fail or to omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, unverified case, or omission, an unknown status, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, a pin other than the one the job checked out, and an applied text other than the one recorded here all fail CI: a changed declaration forces the failures and omissions to be re-justified. The pin is the Go commit that adopts this text, and the applied text is the one it names; the failures and omissions are keyed to both, and a later Go commit reaches CI only by re-keying this file with the job's pin.",
+  "pin": "67d561d4374310c3838e2aac34b38978ff3b9db5",
+  "applied": "0.2.0@99f8acd5a4490bbb9d1de51e90d032b31feeff30",
+  "appliedSHA256": "958461372e761311a12e3f33bab112876032ffa14d776f39be31f83bebfe0198",
+  "failures": [],
   "omissions": [
     {
       "case": "T04-S-28",

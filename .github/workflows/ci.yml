@@ -225,25 +225,20 @@ jobs:
           OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
           OB_CORPUS_REQUIRED: "1"
 
-  # DISABLED UNTIL INTEGRATION PUBLISHES THE PINNED GO COMMIT (it lands with
-  # the corpus's integration into the release line). Runs the reference Go runner
-  # (conformance/runners/go) against this corpus, blocking, with the Go core
-  # pinned to one exact commit. The runner's results are compared with the
-  # corpus's complete case set and with
-  # conformance/runners/go/expected-failures.json, keyed by case, pin, status,
-  # and signature: an unexpected failure, shortfall, or omission, an unknown
-  # status, an expected failure that passes, a missing or unexplained case,
-  # and a reconciliation problem all fail.
-  # The pin is the Go commit the runner was repaired against, not yet published;
-  # integration enables the job with the pin and the expected failures keyed to
-  # the published commit. A later Go commit reaches this job only by changing
-  # the pin here, in a spec change.
+  # Runs the reference Go runner (conformance/runners/go) against this corpus,
+  # blocking, with the Go core pinned to one exact commit, the one that adopts
+  # this text. The runner's results are compared with the corpus's complete
+  # case set and with conformance/runners/go/expected-failures.json, keyed by
+  # case, pin, declared applied text, status, and signature: an unexpected
+  # failure, shortfall, or omission, an unknown status, an expected failure
+  # that passes, a missing or unexplained case, and a reconciliation problem
+  # all fail. A later Go commit reaches this job only by changing the pin
+  # here, in a spec change.
   reference-go-core:
     name: Go core conformance runner (pinned)
-    if: ${{ false }}
     runs-on: ubuntu-latest
     env:
-      GO_CORE_PIN: "aa738fee1cae6ed70419161841ba09ce90947d0f"
+      GO_CORE_PIN: "67d561d4374310c3838e2aac34b38978ff3b9db5"
     steps:
       # The spec at path: spec and the SDK at path: openbindings-go, so the
       # runner's go.mod replace directives (../../../../openbindings-go)

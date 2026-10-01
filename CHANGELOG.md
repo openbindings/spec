@@ -1203,9 +1203,11 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   verifies the applied text a conclusion names against the bytes at that
   revision in the specification repository's history, and observes kind
   retrieval through a local listener. Its `-json` results, reconciliation
-  included, are compared with the corpus's complete case set and with keyed
-  expected failures by `scripts/check-runner-results.mjs`; a CI job, pinned
-  to one Go commit, is prepared for the release line's integration.
+  included, are compared with the corpus's complete case set and with the
+  expected failures and omissions, keyed by Go commit and applied text, by
+  `scripts/check-runner-results.mjs`. The blocking `reference-go-core` CI job
+  is enabled: it runs the runner against the Go commit that adopts this text,
+  pinned in `ci.yml`, and fails on any result those keys do not expect.
 
 ### Removed
 
