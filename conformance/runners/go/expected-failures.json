@@ -1,0 +1,5 @@
+{
+  "description": "Cases the reference Go runner is expected to fail against the Go core commit named by pin, each with the failure signature the runner prints and the reason. Spec CI compares the runner's results with this file (scripts/check-runner-results.mjs): an unexpected failure, an expected failure that passes or is not run, a changed signature, and a pin other than the one the job checked out all fail CI. The job that reads this file is disabled, and pin empty, until the runner is repaired against the Go commit that adopts this corpus; that commit's SHA then becomes the pin.",
+  "pin": "",
+  "failures": []
+}
