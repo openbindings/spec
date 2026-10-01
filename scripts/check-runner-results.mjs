@@ -9,23 +9,29 @@
 //               "status": "pass" | "FAIL" | "SHORTFALL" | "OMITTED" | "ADVISORY" | "UNVERIFIED",
 //               "signature": "<a stable one-line description of a failure or omission>"}]}
 //
-// Expected failures (conformance/runners/go/expected-failures.json):
-//   {"pin": "<the same SHA>", "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" | "UNVERIFIED" (default FAIL),
-//                                          "signature": "...", "reason": "..."}]}
+// Expected results (conformance/runners/go/expected-failures.json):
+//   {"pin": "<the same SHA>",
+//    "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" | "UNVERIFIED" (default FAIL),
+//                  "signature": "...", "reason": "..."}],
+//    "omissions": [{"case": "...", "signature": "...", "reason": "..."}]}
 //
-// The corpus (its conformance/ directory) gives the complete set of case IDs:
-// the manifest's files, each holding the number of cases the manifest counts.
+// The corpus (its conformance/ directory) gives the complete set of case IDs,
+// from the manifest's files, each holding the number of cases the manifest
+// counts, and its collision cases (an expected outcome of "collision").
 //
 // It fails when the pins differ; when the runner reported a reconciliation
 // problem; when the corpus's case set and the reported one differ; when a
-// case is reported twice; when a case is not a pass and gives no reason;
-// when a case fails, falls short, or is unverified and is not keyed to that
-// status; when an expected failure has another status or is not run; and
-// when a keyed signature differs. A case is identified by its ID, never by a
-// whole job, so an unrelated failure cannot hide behind a known one. A
-// SHORTFALL is no verdict where the profile the implementation declares
-// supports every feature the case depends on: the declaration is the
-// implementation's own, so falling short of it is unexpected unless keyed.
+// case is reported twice; when a status is absent or not one of the six run
+// categories; when ADVISORY is reported for a case that is not a collision
+// case; when a case is not a pass and gives no reason; when a case fails,
+// falls short, is unverified, or is omitted and is not keyed to that status;
+// when a keyed case has another status or is not run; and when a keyed
+// signature differs. A case is identified by its ID, never by a whole job,
+// so an unrelated failure cannot hide behind a known one. A SHORTFALL is no
+// verdict where the profile the implementation declares supports every
+// feature the case depends on: the declaration is the implementation's own,
+// so falling short of it is unexpected unless keyed. Omissions are keyed per
+// pin as failures are, so a run that stops executing cases cannot pass.
 //
 // Exits 0 when the results match, 1 on a mismatch, 2 on usage or IO error.
 //
@@ -34,7 +40,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const KEYED = new Set(["FAIL", "SHORTFALL", "UNVERIFIED"]);
+const CATEGORIES = new Set(["pass", "FAIL", "SHORTFALL", "OMITTED", "ADVISORY", "UNVERIFIED"]);
+const KEYED = new Set(["FAIL", "SHORTFALL", "UNVERIFIED", "OMITTED"]);
 
 function args() {
   const out = {};
@@ -62,11 +69,12 @@ function load(path) {
 }
 
 // corpusCases reads the manifest under dir and returns every case ID the
-// files it lists hold, with any disagreement between a file and the
-// manifest's count of it.
+// files it lists hold, the collision cases among them, and any disagreement
+// between a file and the manifest's count of it.
 export function corpusCases(dir) {
   const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
   const ids = [];
+  const collisions = [];
   const problems = [];
   for (const f of manifest.files || []) {
     const tests = JSON.parse(readFileSync(join(dir, f.path), "utf8")).tests || [];
@@ -76,9 +84,12 @@ export function corpusCases(dir) {
   for (const f of manifest.scenarioFiles || []) {
     const scenarios = JSON.parse(readFileSync(join(dir, f.path), "utf8")).scenarios || [];
     if (scenarios.length !== f.scenarios) problems.push(`${f.path}: the manifest counts ${f.scenarios} cases, the file holds ${scenarios.length}`);
-    for (const s of scenarios) ids.push(s.id);
+    for (const s of scenarios) {
+      ids.push(s.id);
+      if (s.expected?.outcome === "collision") collisions.push(s.id);
+    }
   }
-  return { ids, problems };
+  return { ids, collisions, problems };
 }
 
 export function compare(results, expected, corpus) {
@@ -98,9 +109,20 @@ export function compare(results, expected, corpus) {
   const expectedByCase = new Map();
   for (const f of expected.failures || []) {
     if (expectedByCase.has(f.case)) problems.push(`${f.case}: expected twice`);
+    if (f.status === "OMITTED") problems.push(`${f.case}: an omission is keyed under omissions, not failures`);
     expectedByCase.set(f.case, { ...f, status: f.status ?? "FAIL" });
   }
+  for (const o of expected.omissions || []) {
+    if (expectedByCase.has(o.case)) problems.push(`${o.case}: expected twice`);
+    expectedByCase.set(o.case, { ...o, status: "OMITTED" });
+  }
+  const collisions = new Set(corpus.collisions || []);
   for (const c of byCase.values()) {
+    if (!CATEGORIES.has(c.status)) {
+      problems.push(`${c.id}: status ${JSON.stringify(c.status)} is not a run category`);
+      continue;
+    }
+    if (c.status === "ADVISORY" && !collisions.has(c.id)) problems.push(`${c.id}: ADVISORY on a case that is not a collision case`);
     if (c.status !== "pass" && !c.signature) problems.push(`${c.id}: ${c.status} with no reason`);
     if (!KEYED.has(c.status)) continue;
     const f = expectedByCase.get(c.id);
@@ -127,6 +149,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   const problems = compare(load(results), load(expected), cases);
   for (const p of problems) console.log(`  - ${p}`);
-  console.log(problems.length ? `\n${problems.length} mismatch(es)` : "results match the corpus and the expected failures");
+  console.log(problems.length ? `\n${problems.length} mismatch(es)` : "results match the corpus and the expected failures and omissions");
   process.exit(problems.length ? 1 : 0);
 }

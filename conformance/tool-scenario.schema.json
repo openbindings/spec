@@ -462,7 +462,7 @@
                   }
                 },
                 "namesAppliedText": {
-                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test. The harness compares the named identity first, then verifies the text it names against the bytes at the named revision, read from the specification repository's history, never against the text beside the corpus.",
+                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test. The harness compares the named identity first, then verifies the text it names against the bytes at the named revision, a full commit read from the specification repository's history, never against the text beside the corpus or the index.",
                   "const": true
                 },
                 "duplicateBlind": {

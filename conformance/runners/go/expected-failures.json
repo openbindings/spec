@@ -1,6 +1,6 @@
 {
-  "description": "Cases the reference Go runner is expected to fail against the Go core commit named by pin, each with the failure signature the runner prints and the reason. Spec CI compares the runner's results with this file (scripts/check-runner-results.mjs): an unexpected failure, an expected failure that passes or is not run, a changed signature, and a pin other than the one the job checked out all fail CI. The pin is the Go commit this corpus was built against. The job that reads this file stays disabled until integration publishes that commit, or the commit that adopts this corpus, and the pin and these failures are keyed to it.",
-  "pin": "dcb3e007c711e24f6c2b402f62b61dd99fce02f0",
+  "description": "Cases the reference Go runner is expected to fail or to omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, unverified case, or omission, an unknown status, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, and a pin other than the one the job checked out all fail CI. The pin is the Go commit the runner was repaired against; the job that reads this file stays disabled until integration publishes that commit, or the commit that adopts this corpus, and the pin, the failures, and the omissions are keyed to it.",
+  "pin": "6c79f301af983bbc0992a7d5a55b5ad6485760e8",
   "failures": [
     {
       "case": "document/OBI-D-10.json#/tests/22",
@@ -11,6 +11,48 @@
       "case": "document/OBI-D-12.json#/tests/40",
       "signature": "OBI-D-12 is \"satisfied\", not violated (violated: [OBI-D-10])",
       "reason": "Needs G: S3 says only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares a plain name (section 7.3). The core at the pin counts any string. Under a stand-in that applies the grammar, the case passes."
+    }
+  ],
+  "omissions": [
+    {
+      "case": "T04-S-28",
+      "signature": "gate: requires a tool declaring support for 0.2.0-rc.1",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
+    },
+    {
+      "case": "T05-S-01",
+      "signature": "this SDK derives no forms from a schema (OBI-T-05 has no executor here)",
+      "reason": "The Go core derives no forms from a schema: OBI-T-05 has no executor (corpus README, Designated executors)."
+    },
+    {
+      "case": "T05-S-02",
+      "signature": "this SDK derives no forms from a schema (OBI-T-05 has no executor here)",
+      "reason": "The Go core derives no forms from a schema: OBI-T-05 has no executor (corpus README, Designated executors)."
+    },
+    {
+      "case": "T05-S-03",
+      "signature": "this SDK derives no forms from a schema (OBI-T-05 has no executor here)",
+      "reason": "The Go core derives no forms from a schema: OBI-T-05 has no executor (corpus README, Designated executors)."
+    },
+    {
+      "case": "T05-S-04",
+      "signature": "this SDK derives no forms from a schema (OBI-T-05 has no executor here)",
+      "reason": "The Go core derives no forms from a schema: OBI-T-05 has no executor (corpus README, Designated executors)."
+    },
+    {
+      "case": "T09-S-09",
+      "signature": "gate: requires a tool declaring support for 0.2.0-rc.1",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
+    },
+    {
+      "case": "document/OBI-D-09.json#/tests/1",
+      "signature": "gate: requires a tool declaring support for 1.0.0",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
+    },
+    {
+      "case": "document/OBI-D-09.json#/tests/2",
+      "signature": "gate: requires a tool declaring support for 1.0.0",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
     }
   ]
 }

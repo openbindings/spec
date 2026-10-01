@@ -3,9 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -48,35 +46,12 @@ type run struct {
 }
 
 // newRun reads the SDK's support declaration from SupportedVersions ("0.2.x":
-// the 0.2 line; "1.x": major 1), and verifies the declared applied text: the
-// openbindings.md at the declared revision, read from the history of the
-// specification repository holding the corpus, must hash to the sha256 the
-// SDK declares for the text it applies. The text beside the corpus plays no
-// part, so an unrelated specification commit cannot change the result.
-func newRun(corpusDir, applied, appliedSHA256 string, strict bool) *run {
-	r := &run{evaluator: schemaeval.New(schemaeval.Options{}), strict: strict}
+// the 0.2 line; "1.x": major 1) and verifies the declared applied text (see
+// verifyApplied). The declaration has been parsed by parseApplied.
+func newRun(corpusDir string, applied appliedText, strict bool) *run {
+	r := &run{evaluator: schemaeval.New(schemaeval.Options{}), strict: strict, release: applied.release, revision: applied.revision}
 	r.lines = []string{strings.TrimSuffix(openbindings.SupportedVersions, ".x")}
-	release, revision, ok := strings.Cut(applied, "@")
-	switch {
-	case applied == "":
-		r.unverified = "no applied text was declared (-applied release@revision)"
-	case !ok:
-		r.unverified = "-applied must be release@revision"
-	default:
-		r.release, r.revision = release, revision
-		text, err := gitShow(corpusDir, revision+":openbindings.md")
-		sum := sha256.Sum256(text)
-		switch got := hex.EncodeToString(sum[:]); {
-		case appliedSHA256 == "":
-			r.unverified = "no applied-text hash was declared (-applied-sha256)"
-		case err != nil:
-			r.unverified = fmt.Sprintf("the specification history holding the corpus does not give the text at %s: %v", revision, err)
-		case got != appliedSHA256:
-			r.unverified = fmt.Sprintf("openbindings.md at %s hashes to %s, not the declared %s", revision, got, appliedSHA256)
-		default:
-			r.verified = true
-		}
-	}
+	r.verified, r.unverified = verifyApplied(corpusDir, applied)
 	return r
 }
 
@@ -328,17 +303,7 @@ func (r *run) judgeDocument(c Case) (string, string) {
 		}
 	}
 	if s.Expected.NamesAppliedText {
-		// The named identity first, then the bytes it names: a naming defect
-		// is a failure whether or not the text can be verified.
-		if r.release != "" && (report.Version != r.release || report.Revision != r.revision) {
-			return failed("names %q@%q; the declared applied text is %q@%q", report.Version, report.Revision, r.release, r.revision)
-		}
-		if !r.verified {
-			if r.strict {
-				return failed("UNVERIFIED applied text: %s", r.unverified)
-			}
-			return Unverified, r.unverified
-		}
+		return r.judgeNaming(report)
 	}
 	return Pass, string(report.Conclusion)
 }

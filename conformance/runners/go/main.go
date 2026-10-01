@@ -86,7 +86,7 @@ func main() {
 	flag.BoolVar(&verbose, "verbose", false, "print every case's category")
 	flag.BoolVar(&jsonOutput, "json", false, "print the results as JSON for scripts/check-runner-results.mjs")
 	flag.StringVar(&pin, "pin", "", "the full commit SHA of the SDK under test, recorded in the JSON results")
-	flag.StringVar(&applied, "applied", "", "the release@revision the SDK declares it applies; naming cases are UNVERIFIED without it")
+	flag.StringVar(&applied, "applied", "", "the applied text the SDK declares: release@revision (a full 40-hex commit), or a release alone; naming cases are UNVERIFIED without it")
 	flag.StringVar(&appliedSum, "applied-sha256", "", "the sha256 of the openbindings.md the SDK declares it applies, verified against the revision -applied names")
 	flag.BoolVar(&strict, "strict", false, "report an applied text that cannot be verified as FAIL, not UNVERIFIED")
 	flag.Parse()
@@ -96,7 +96,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "loading the corpus: %v\n", err)
 		os.Exit(2)
 	}
-	r := newRun(corpusDir, applied, appliedSum, strict)
+	declared, err := parseApplied(applied, appliedSum)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	r := newRun(corpusDir, declared, strict)
 	var results []Result
 	for _, c := range cases {
 		if ruleFilter != "" && c.Rule != ruleFilter {
@@ -329,14 +334,14 @@ func findDefaultCorpus() string {
 	return "./conformance"
 }
 
-// gitShow reads an object from the git repository holding dir.
-func gitShow(dir, object string) ([]byte, error) {
-	cmd := exec.Command("git", "-C", dir, "show", object)
+// git runs a git command in the repository holding dir.
+func git(dir string, args ...string) ([]byte, error) {
+	cmd := exec.Command("git", append([]string{"-C", dir}, args...)...)
 	var stderr strings.Builder
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("git show %s: %v %s", object, err, strings.TrimSpace(stderr.String()))
+		return nil, fmt.Errorf("git %s: %v %s", strings.Join(args, " "), err, strings.TrimSpace(stderr.String()))
 	}
 	return out, nil
 }

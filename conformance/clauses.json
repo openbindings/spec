@@ -572,7 +572,7 @@
           "class": "obligation",
           "part": "not an invalid reference",
           "status": "tested",
-          "limits": "Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported."
+          "limits": "Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. That reason is forbidden there because each cycle consumes the instance as it recurses: §7.4 and OBI-T-08's definition of an undefined result (OBI-T-08/c7, JSON Schema Core §9.4.1) make only a cycle that recurses without consuming any of the instance undefined. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported."
         },
         {
           "id": "OBI-T-06/c2b",

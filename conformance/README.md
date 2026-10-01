@@ -144,7 +144,7 @@ Each scenario carries `id` (`T<rule>-S-<n>`, never reused), `clauses` (the claus
 
 **`duplicateBlind`.** For a tool declaring `repeated-member-detection` unsupported, a case whose `openbindings` member is repeated states the outcome required for each value the tool's parser may read (OBI-T-04/c7).
 
-**`namesAppliedText`.** The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test (OBI-T-09/c3). The harness compares the named identity first, then verifies the text it names: the `openbindings.md` at the named revision, read from the specification repository's history, must hash to the text the tool declares it applies. The text checked out beside the corpus plays no part, so an unrelated specification commit cannot change the result.
+**`namesAppliedText`.** The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test (OBI-T-09/c3). The harness compares the named identity first, always, then verifies the text it names: the named revision must be a full commit of the specification repository's history, and its `openbindings.md`, read from that history, must hash to the text the tool declares it applies. The text checked out beside the corpus, and the index, play no part, so an unrelated specification commit cannot change the result. A release named alone (OBI-T-09/c3a) is reported unverified until a verification against a release snapshot exists.
 
 ### Run categories
 
@@ -246,7 +246,7 @@ A clause whose status is short of tested is incomplete coverage, and is recorded
 | OBI-T-06/c1 | obligation | tested through its alternatives |  |
 | OBI-T-06/c1a | alternative | tested |  |
 | OBI-T-06/c1b | alternative | tested |  |
-| OBI-T-06/c2a | obligation | tested | Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported. |
+| OBI-T-06/c2a | obligation | tested | Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. That reason is forbidden there because each cycle consumes the instance as it recurses: §7.4 and OBI-T-08's definition of an undefined result (OBI-T-08/c7, JSON Schema Core §9.4.1) make only a cycle that recurses without consuming any of the instance undefined. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported. |
 | OBI-T-06/c2b | obligation | tested |  |
 | OBI-T-07/c1 | obligation | tested |  |
 | OBI-T-07/c2 | specialization | not portably testable | T07-G-01 (T07-S-12, T07-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy. |
