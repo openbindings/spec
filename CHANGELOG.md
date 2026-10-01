@@ -204,6 +204,35 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 - Informative binding-spec authoring doctrine, an AI-agent primer, and a
   practical 0.1-to-0.2 migration guide.
 
+- **`openbindings.core-tool-scenarios@2`**, replacing `@1` for the core tool
+  rules' scenarios. Each scenario names the clauses of `conformance/clauses.json`
+  it tests. The actions are `validate-document`, `resolve-operation`,
+  `conclude-conformance`, `check-dependency-kind`, `validate-operation-values`,
+  `check-examples`, and `derive-form`. Value results use the specification's
+  three outcomes (`valid`, `instance-mismatch`, `no-verdict`), with
+  `orNoVerdict` where a result does not depend on what may be missing,
+  `dependsOn` naming the capability-profile features a verdict needs, and
+  `forbidReasons` for no-verdict reasons a tool must not report. Version
+  gates are judged against a tool's declaration, never its version decision.
+  `namesAppliedText` checks that a conclusion names the applied text, verified
+  against the bytes at the named revision. Each case is reported in one run
+  category (pass, FAIL, SHORTFALL, OMITTED, ADVISORY, UNVERIFIED), and a
+  collision group is advisory. `@1` is retired rather than extended because a
+  runner reading `@1` would run none of the new actions and report green.
+
+- **`notViolated` in validity fixtures**: the document rules a negative
+  fixture's document does not violate, the mirror of `violates`. A tool that
+  reports violated rules must not report these, so a rule that holds, holds
+  vacuously, or does not govern the document is checked too.
+
+- **`conformance/clauses.json`**, the clause inventory of the tool rules
+  OBI-T-01 to OBI-T-11: each rule's text partitioned into clauses with
+  corpus-owned IDs, each clause's class and coverage status, and the corpus's
+  case-identity records (retired case IDs and migrated cases).
+  `scripts/verify-corpus.mjs` checks the partition against `openbindings.md`,
+  the README's clause table against the inventory, and every case's clause
+  tags; `manifest.json` counts cases per clause.
+
 ### Changed
 
 - **OBI-T-09 forbids an unestablished non-conformance claim.** OBI-T-09's
@@ -1164,6 +1193,18 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   cancellation, bounded cycles, lineage, deterministic portability claims,
   and stable validation/error identifiers.
 
+- **The reference Go runner (`conformance/runners/go`) was repaired against
+  the 0.2 Go core.** It executes every case the manifest counts, through the
+  core's API and its `schemaeval` evaluator, reports each in one run category
+  with every omission's reason, and reconciles its cases with the manifest. A
+  shortfall against the capability profile it declares for the core fails. It
+  verifies the applied text a conclusion names against the bytes at that
+  revision in the specification repository's history, and observes kind
+  retrieval through a local listener. Its `-json` results, reconciliation
+  included, are compared with the corpus's complete case set and with keyed
+  expected failures by `scripts/check-runner-results.mjs`; a CI job, pinned
+  to one Go commit, is prepared for the release line's integration.
+
 ### Removed
 
 - The 0.1 in-core schema-comparison, normalization, operation-matching,
@@ -1179,6 +1220,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   YAML or any other upstream artifact representation.
 - The experimental, unminted Workers RPC binding candidate. It is absent from
   the active catalog and implementations.
+- `conformance/tool/OBI-T-01.json` and `conformance/tool/OBI-T-04.json`.
+  The OBI-T-01 fixtures, which showed only that an unfamiliar kind is valid,
+  moved to `conformance/document/OBI-D-02.json` (tests 33 to 35); the OBI-T-04
+  fixtures became `scenarios/OBI-T-04.json` scenarios, where a version refusal
+  is its own outcome. `clauses.json` records each migrated case's earlier
+  identity.
+- Scenario format `openbindings.core-tool-scenarios@1`, replaced by `@2`.
 
 ### Repository and publication
 

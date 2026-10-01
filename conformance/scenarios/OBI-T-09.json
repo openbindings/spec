@@ -7,9 +7,9 @@
     {
       "id": "T09-S-01",
       "clauses": [
-        "OBI-T-09/c1"
+        "OBI-T-09/c4"
       ],
-      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion.",
+      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion, and establish no violation: a non-conformant conclusion is prohibited.",
       "action": "conclude-conformance",
       "given": {
         "evidence": {
@@ -279,6 +279,43 @@
       },
       "expected": {
         "conclusion": "conformance-undetermined"
+      }
+    },
+    {
+      "id": "T09-S-12",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "A violation establishes non-conformance even when the evidence omits other rules: only OBI-D-05 and OBI-D-11 are considered here (the evidence T09-S-05 carried before it was completed).",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-11": "not-applicable",
+          "OBI-D-05": "violated"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
+      }
+    },
+    {
+      "id": "T09-S-13",
+      "clauses": [
+        "OBI-T-09/c2"
+      ],
+      "description": "Violations establish non-conformance whatever remains inconclusive or unconsidered (the evidence T09-S-04 carried before it was completed).",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-10": "inconclusive",
+          "OBI-D-08": "violated",
+          "OBI-D-02": "violated",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-01": "inconclusive"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
       }
     }
   ]

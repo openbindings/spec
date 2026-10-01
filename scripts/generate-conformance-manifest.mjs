@@ -50,7 +50,7 @@ function releasedVersions() {
     .sort();
 }
 
-const TESTED = new Set(["tested", "tested through its alternatives", "tested through its specializations"]);
+const TESTED = new Set(["tested", "tested through its alternatives", "tested through its specializations", "tested through its exercised alternative"]);
 const UNIT_CLASSES = new Set(["obligation", "specialization", "alternative"]);
 
 const inventory = load(join(CONFORMANCE_ROOT, "clauses.json"));

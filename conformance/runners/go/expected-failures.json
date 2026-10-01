@@ -1,6 +1,6 @@
 {
   "description": "Cases the reference Go runner is expected to fail against the Go core commit named by pin, each with the failure signature the runner prints and the reason. Spec CI compares the runner's results with this file (scripts/check-runner-results.mjs): an unexpected failure, an expected failure that passes or is not run, a changed signature, and a pin other than the one the job checked out all fail CI. The pin is the Go commit this corpus was built against. The job that reads this file stays disabled until integration publishes that commit, or the commit that adopts this corpus, and the pin and these failures are keyed to it.",
-  "pin": "cd57ff277aaf5fb06c609c6a483e1d5a941e5ec3",
+  "pin": "dcb3e007c711e24f6c2b402f62b61dd99fce02f0",
   "failures": [
     {
       "case": "document/OBI-D-10.json#/tests/22",
@@ -11,26 +11,6 @@
       "case": "document/OBI-D-12.json#/tests/40",
       "signature": "OBI-D-12 is \"satisfied\", not violated (violated: [OBI-D-10])",
       "reason": "Needs G: S3 says only an $anchor or $dynamicAnchor value matching JSON Schema Core section 8.2.2's grammar declares a plain name (section 7.3). The core at the pin counts any string. Under a stand-in that applies the grammar, the case passes."
-    },
-    {
-      "case": "T09-S-06",
-      "signature": "UNVERIFIED applied text: the corpus's openbindings.md is not the one at the declared revision 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
-      "reason": "Needs G: the core at the pin applies the text at its appliedRevision, 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f. This corpus sits beside a later openbindings.md, so the identity a conclusion names cannot be verified until the core declares this corpus's text."
-    },
-    {
-      "case": "T09-S-07",
-      "signature": "UNVERIFIED applied text: the corpus's openbindings.md is not the one at the declared revision 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
-      "reason": "Needs G: the core at the pin applies the text at its appliedRevision, 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f. This corpus sits beside a later openbindings.md, so the identity a conclusion names cannot be verified until the core declares this corpus's text."
-    },
-    {
-      "case": "T09-S-08",
-      "signature": "UNVERIFIED applied text: the corpus's openbindings.md is not the one at the declared revision 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
-      "reason": "Needs G: the core at the pin applies the text at its appliedRevision, 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f. This corpus sits beside a later openbindings.md, so the identity a conclusion names cannot be verified until the core declares this corpus's text."
-    },
-    {
-      "case": "T09-S-10",
-      "signature": "UNVERIFIED applied text: the corpus's openbindings.md is not the one at the declared revision 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f",
-      "reason": "Needs G: the core at the pin applies the text at its appliedRevision, 98127021a7e2fa08a8c7b2e6bead1c847c9b6e1f. This corpus sits beside a later openbindings.md, so the identity a conclusion names cannot be verified until the core declares this corpus's text."
     }
   ]
 }

@@ -228,9 +228,11 @@ jobs:
   # DISABLED UNTIL INTEGRATION PUBLISHES THE PINNED GO COMMIT (it lands with
   # the corpus's integration into the release line). Runs the reference Go runner
   # (conformance/runners/go) against this corpus, blocking, with the Go core
-  # pinned to one exact commit. The runner's results are compared with
-  # conformance/runners/go/expected-failures.json, keyed by case, pin, and
-  # failure signature: an unexpected failure and an unexpected pass both fail.
+  # pinned to one exact commit. The runner's results are compared with the
+  # corpus's complete case set and with
+  # conformance/runners/go/expected-failures.json, keyed by case, pin, status,
+  # and signature: an unexpected failure or shortfall, an expected failure that
+  # passes, a missing or unexplained case, and a reconciliation problem all fail.
   # The pin is the Go commit the runner was repaired against, not yet published;
   # integration enables the job with the pin and the expected failures keyed to
   # the published commit. A later Go commit reaches this job only by changing
@@ -240,7 +242,7 @@ jobs:
     if: ${{ false }}
     runs-on: ubuntu-latest
     env:
-      GO_CORE_PIN: "cd57ff277aaf5fb06c609c6a483e1d5a941e5ec3"
+      GO_CORE_PIN: "dcb3e007c711e24f6c2b402f62b61dd99fce02f0"
     steps:
       # The spec at path: spec and the SDK at path: openbindings-go, so the
       # runner's go.mod replace directives (../../../../openbindings-go)
@@ -263,10 +265,26 @@ jobs:
       - name: Run the reference runner against the corpus
         working-directory: spec/conformance/runners/go
         run: |
-          applied="$(sed -n 's/^const appliedRelease = "\(.*\)"/\1/p' ../../../../openbindings-go/version.go)@$(sed -n 's/^const appliedRevision = "\(.*\)"/\1/p' ../../../../openbindings-go/version.go)"
-          go run . -corpus ../.. -json -pin "$GO_CORE_PIN" -applied "$applied" -strict > "$RUNNER_TEMP/runner-results.json" || true
-      - name: Compare with the expected failures
-        run: node spec/scripts/check-runner-results.mjs --results "$RUNNER_TEMP/runner-results.json" --expected spec/conformance/runners/go/expected-failures.json
+          # The applied text the SDK declares: its release and revision
+          # (version.go), and the sha256 its corpus adapter pins for that
+          # revision's openbindings.md (conformance_test.go), which must be
+          # bound to the same revision.
+          sdk=../../../../openbindings-go
+          release="$(sed -n 's/^const appliedRelease = "\(.*\)"/\1/p' "$sdk/version.go")"
+          revision="$(sed -n 's/^const appliedRevision = "\(.*\)"/\1/p' "$sdk/version.go")"
+          pinned="$(sed -n 's/^const appliedTextRevision = "\(.*\)"/\1/p' "$sdk/conformance_test.go")"
+          sha256="$(sed -n 's/^const appliedTextSHA256 = "\(.*\)"/\1/p' "$sdk/conformance_test.go")"
+          test -n "$release" && test -n "$revision" && test -n "$sha256"
+          test "$pinned" = "$revision"
+          go build -o "$RUNNER_TEMP/runner" .
+          # Exit 1 means a case failed, fell short, or did not reconcile: the
+          # comparison below judges each against the expected failures. Any
+          # other non-zero exit is a usage or IO error and fails here.
+          rc=0
+          "$RUNNER_TEMP/runner" -corpus ../.. -json -pin "$GO_CORE_PIN" -applied "$release@$revision" -applied-sha256 "$sha256" -strict > "$RUNNER_TEMP/runner-results.json" || rc=$?
+          if [ "$rc" -gt 1 ]; then exit "$rc"; fi
+      - name: Compare with the corpus and the expected failures
+        run: node spec/scripts/check-runner-results.mjs --results "$RUNNER_TEMP/runner-results.json" --expected spec/conformance/runners/go/expected-failures.json --corpus spec/conformance
 
   reference-typescript:
     name: TypeScript binding conformance

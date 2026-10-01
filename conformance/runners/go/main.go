@@ -17,10 +17,11 @@
 //	go run . -rule OBI-T-08                    # one rule's cases
 //	go run . -verbose                          # every case's category
 //	go run . -json -pin <SDK commit SHA>       # results for scripts/check-runner-results.mjs
-//	go run . -applied 0.2.0@<revision> -strict # verify the text conclusions name
+//	go run . -applied 0.2.0@<revision> -applied-sha256 <hex> -strict
+//	                                           # verify the text conclusions name
 //
-// Exit status: 0 when no case fails and every case is accounted for, 1
-// otherwise, 2 on a usage or IO error.
+// Exit status: 0 when no case fails or falls short and every case is
+// accounted for, 1 otherwise, 2 on a usage or IO error.
 package main
 
 import (
@@ -77,6 +78,7 @@ func main() {
 		jsonOutput bool
 		pin        string
 		applied    string
+		appliedSum string
 		strict     bool
 	)
 	flag.StringVar(&corpusDir, "corpus", findDefaultCorpus(), "path to the conformance/ directory")
@@ -85,6 +87,7 @@ func main() {
 	flag.BoolVar(&jsonOutput, "json", false, "print the results as JSON for scripts/check-runner-results.mjs")
 	flag.StringVar(&pin, "pin", "", "the full commit SHA of the SDK under test, recorded in the JSON results")
 	flag.StringVar(&applied, "applied", "", "the release@revision the SDK declares it applies; naming cases are UNVERIFIED without it")
+	flag.StringVar(&appliedSum, "applied-sha256", "", "the sha256 of the openbindings.md the SDK declares it applies, verified against the revision -applied names")
 	flag.BoolVar(&strict, "strict", false, "report an applied text that cannot be verified as FAIL, not UNVERIFIED")
 	flag.Parse()
 
@@ -93,7 +96,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "loading the corpus: %v\n", err)
 		os.Exit(2)
 	}
-	r := newRun(corpusDir, applied, strict)
+	r := newRun(corpusDir, applied, appliedSum, strict)
 	var results []Result
 	for _, c := range cases {
 		if ruleFilter != "" && c.Rule != ruleFilter {
@@ -104,13 +107,14 @@ func main() {
 	}
 	problems := []string{}
 	if ruleFilter == "" {
-		problems = reconcile(cases, counts, results)
+		problems = append(problems, reconcile(cases, counts, results)...)
 	}
 	if jsonOutput {
 		out, _ := json.MarshalIndent(struct {
-			Pin   string   `json:"pin"`
-			Cases []Result `json:"cases"`
-		}{pin, results}, "", "  ")
+			Pin            string   `json:"pin"`
+			Reconciliation []string `json:"reconciliation"`
+			Cases          []Result `json:"cases"`
+		}{pin, problems, results}, "", "  ")
 		fmt.Println(string(out))
 	} else {
 		printSummary(results, problems, verbose)
@@ -119,7 +123,9 @@ func main() {
 		fmt.Fprintln(os.Stderr, "reconciliation:", p)
 	}
 	for _, res := range results {
-		if res.Status == Fail {
+		// A SHORTFALL is no verdict where the profile, the SDK's own
+		// declaration, supports every feature the case depends on.
+		if res.Status == Fail || res.Status == Shortfall {
 			os.Exit(1)
 		}
 	}
@@ -323,11 +329,14 @@ func findDefaultCorpus() string {
 	return "./conformance"
 }
 
-// gitShow reads a file at a revision of the spec checkout, or nil.
-func gitShow(dir, object string) []byte {
-	out, err := exec.Command("git", "-C", dir, "show", object).Output()
+// gitShow reads an object from the git repository holding dir.
+func gitShow(dir, object string) ([]byte, error) {
+	cmd := exec.Command("git", "-C", dir, "show", object)
+	var stderr strings.Builder
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("git show %s: %v %s", object, err, strings.TrimSpace(stderr.String()))
 	}
-	return out
+	return out, nil
 }

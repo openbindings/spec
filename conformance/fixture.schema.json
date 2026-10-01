@@ -96,7 +96,7 @@
           "requiresSupports": {
             "type": "string",
             "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-            "description": "When set, administer this test only to tools whose declared support set includes this SemVer 2.0.0 version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The harness derives the set from the tool's declaration (for the Go SDK, the exported SupportedVersions constant), never from the tool's acceptance or refusal code, so a defect in that code cannot gate its own tests out. Otherwise runners skip the test, reporting the skip separately (skips are never failures)."
+            "description": "When set, administer this test only to tools whose declared support set includes this SemVer 2.0.0 version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The harness derives the set from the tool's declaration, never from the tool's acceptance or refusal code, so a defect in that code cannot gate its own tests out. Otherwise runners skip the test, reporting the skip separately (skips are never failures)."
           },
           "clauses": {
             "type": "array",

@@ -2392,6 +2392,238 @@
           "no-verdict"
         ]
       }
+    },
+    {
+      "id": "T08-S-64",
+      "clauses": [
+        "OBI-T-08/c1"
+      ],
+      "description": "A $schema in the document resource declares no dialect (section 5.2): read as 2020-12, a misplaced draft-07 schema's dependencies is an unknown keyword, so {\"a\": 1} is valid, or the tool declines; draft-07 would reject it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object",
+                "dependencies": {
+                  "a": [
+                    "b"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": 1
+          }
+        ],
+        "nonConformant": [
+          "OBI-D-06"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "verdict": "valid",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "T08-S-65",
+      "clauses": [
+        "OBI-T-08/c3a"
+      ],
+      "description": "ECMA-262's dot matches no line terminator: not \\n, \\r, U+2028, or U+2029.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^.$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\n",
+          "\r",
+          "\u2028",
+          "\u2029",
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "instance-mismatch",
+          "instance-mismatch",
+          "instance-mismatch",
+          "instance-mismatch",
+          "valid"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-66",
+      "clauses": [
+        "OBI-T-08/c3a"
+      ],
+      "description": "Without the i flag, ECMA-262's \\w is ASCII only, even with the u flag: neither e with an acute accent nor the Kelvin sign is a word character.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\w$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          "_",
+          "\u00e9",
+          "\u212a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "valid",
+          "instance-mismatch",
+          "instance-mismatch"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-67",
+      "clauses": [
+        "OBI-T-08/c3a"
+      ],
+      "description": "ECMA-262's \\b is a boundary between an ASCII word character and anything else, so a letter outside ASCII ends a word.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^a\\b"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a-",
+          "a\u00e9",
+          "a_"
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "valid",
+          "instance-mismatch"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-68",
+      "clauses": [
+        "OBI-T-08/c3a"
+      ],
+      "description": "With the u flag, an escaped surrogate pair is one code point, so a class holding it matches the one character outside the Basic Multilingual Plane.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^[\\uD83D\\uDE00]$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\ud83d\ude00",
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
+    },
+    {
+      "id": "T08-S-69",
+      "clauses": [
+        "OBI-T-08/c4",
+        "OBI-T-06/c1b"
+      ],
+      "description": "A schema nested in an $id resource that declares $id of its own is a resource too, resolved against its parent's base (section 7.2): https://e.example.test/inner.json names it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.example.test/inner.json"
+              }
+            }
+          },
+          "schemas": {
+            "Outer": {
+              "$id": "https://e.example.test/outer.json",
+              "$defs": {
+                "inner": {
+                  "$id": "inner.json",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     }
   ]
 }

@@ -462,7 +462,7 @@
                   }
                 },
                 "namesAppliedText": {
-                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test.",
+                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test. The harness compares the named identity first, then verifies the text it names against the bytes at the named revision, read from the specification repository's history, never against the text beside the corpus.",
                   "const": true
                 },
                 "duplicateBlind": {
@@ -649,7 +649,8 @@
                 "conformant",
                 "non-conformant",
                 "conformance-undetermined"
-              ]
+              ],
+              "description": "The conclusion the evidence permits. conformant also admits conformance-undetermined, as for validate-document: OBI-T-09 only prohibits."
             }
           }
         }

@@ -49,7 +49,8 @@
           "recursive-references"
         ],
         "forbidReasons": [
-          "invalid-reference"
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
@@ -107,7 +108,8 @@
           "recursive-references"
         ],
         "forbidReasons": [
-          "invalid-reference"
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
@@ -172,7 +174,8 @@
           "recursive-references"
         ],
         "forbidReasons": [
-          "invalid-reference"
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
@@ -180,6 +183,7 @@
       "id": "T06-S-04",
       "clauses": [
         "OBI-T-06/c1b",
+        "OBI-T-06/c2a",
         "OBI-T-06/c2b"
       ],
       "description": "Inside a schema that declares $id, # names that schema (section 7.5), so a tree recurses through it.",
@@ -235,7 +239,8 @@
           "recursive-references"
         ],
         "forbidReasons": [
-          "invalid-reference"
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
@@ -334,7 +339,8 @@
           "instance-mismatch"
         ],
         "forbidReasons": [
-          "invalid-reference"
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },

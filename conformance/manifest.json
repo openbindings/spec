@@ -10,13 +10,13 @@
     "fixtureFiles": 15,
     "scenarioFiles": 10,
     "tests": 223,
-    "scenarios": 164,
+    "scenarios": 172,
     "positives": 107,
     "negatives": 116,
     "rulesCoveredDocument": 13,
     "rulesPartialDocument": 0,
-    "rulesCoveredTool": 6,
-    "rulesPartialTool": 5,
+    "rulesCoveredTool": 5,
+    "rulesPartialTool": 6,
     "clauseIds": 78,
     "clauseUnits": 60,
     "clauseUnitsTested": 50,
@@ -25,7 +25,8 @@
       "contrast tools only": 2,
       "expressible, no executor": 2,
       "not portably testable": 1,
-      "tested": 46,
+      "tested": 45,
+      "tested (adapter)": 1,
       "tested through its alternatives": 3,
       "tested through its exercised alternative": 1,
       "tested through its specializations": 1
@@ -34,11 +35,11 @@
   "actions": {
     "check-dependency-kind": 18,
     "check-examples": 7,
-    "conclude-conformance": 6,
+    "conclude-conformance": 8,
     "derive-form": 4,
     "resolve-operation": 22,
     "validate-document": 39,
-    "validate-operation-values": 68,
+    "validate-operation-values": 74,
     "validity fixture": 223
   },
   "files": [
@@ -192,10 +193,10 @@
       "rule": "OBI-T-03",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 7,
+      "scenarios": 6,
       "actions": {
         "check-dependency-kind": 1,
-        "resolve-operation": 3,
+        "resolve-operation": 2,
         "validate-document": 2,
         "validate-operation-values": 1
       }
@@ -237,9 +238,9 @@
       "rule": "OBI-T-07",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 14,
+      "scenarios": 15,
       "actions": {
-        "resolve-operation": 14
+        "resolve-operation": 15
       }
     },
     {
@@ -247,10 +248,10 @@
       "rule": "OBI-T-08",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 61,
+      "scenarios": 67,
       "actions": {
         "check-examples": 2,
-        "validate-operation-values": 59
+        "validate-operation-values": 65
       }
     },
     {
@@ -258,9 +259,9 @@
       "rule": "OBI-T-09",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 11,
+      "scenarios": 13,
       "actions": {
-        "conclude-conformance": 6,
+        "conclude-conformance": 8,
         "validate-document": 5
       }
     },
@@ -386,8 +387,7 @@
         "tool/OBI-T-03.json#/tests/0",
         "tool/OBI-T-03.json#/tests/1",
         "tool/OBI-T-03.json#/tests/2",
-        "tool/OBI-T-03.json#/tests/3",
-        "T03-S-07"
+        "tool/OBI-T-03.json#/tests/3"
       ]
     },
     "OBI-T-03/c2": {
@@ -651,7 +651,8 @@
         "T08-S-34",
         "T08-S-35",
         "T08-S-37",
-        "T08-S-57"
+        "T08-S-57",
+        "T08-S-69"
       ]
     },
     "OBI-T-06/c2a": {
@@ -662,6 +663,7 @@
         "T06-S-01",
         "T06-S-02",
         "T06-S-03",
+        "T06-S-04",
         "T06-S-06"
       ]
     },
@@ -686,7 +688,8 @@
         "T07-S-05",
         "T07-S-11",
         "T07-S-12",
-        "T07-S-14"
+        "T07-S-14",
+        "T07-S-15"
       ]
     },
     "OBI-T-07/c2": {
@@ -742,7 +745,8 @@
         "T08-S-46",
         "T08-S-50",
         "T08-S-58",
-        "T08-S-59"
+        "T08-S-59",
+        "T08-S-64"
       ]
     },
     "OBI-T-08/c2": {
@@ -769,7 +773,11 @@
         "T08-S-27",
         "T08-S-52",
         "T08-S-60",
-        "T08-S-61"
+        "T08-S-61",
+        "T08-S-65",
+        "T08-S-66",
+        "T08-S-67",
+        "T08-S-68"
       ]
     },
     "OBI-T-08/c3b": {
@@ -796,13 +804,14 @@
         "T08-S-49",
         "T08-S-54",
         "T08-S-62",
-        "T08-S-63"
+        "T08-S-63",
+        "T08-S-69"
       ]
     },
     "OBI-T-08/c5": {
       "rule": "OBI-T-08",
       "class": "obligation",
-      "status": "tested",
+      "status": "tested (adapter)",
       "cases": [
         "T08-S-06",
         "T08-S-36"
@@ -893,7 +902,6 @@
       "class": "obligation",
       "status": "tested",
       "cases": [
-        "T09-S-01",
         "T09-S-02",
         "T09-S-10",
         "T09-S-11"
@@ -904,6 +912,7 @@
       "class": "obligation",
       "status": "tested",
       "cases": [
+        "T09-S-01",
         "T09-S-02",
         "T09-S-10",
         "T09-S-11"
@@ -917,7 +926,9 @@
         "T09-S-03",
         "T09-S-04",
         "T09-S-05",
-        "T09-S-08"
+        "T09-S-08",
+        "T09-S-12",
+        "T09-S-13"
       ]
     },
     "OBI-T-09/c3": {

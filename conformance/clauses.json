@@ -107,7 +107,7 @@
           "id": "OBI-T-01/c4",
           "class": "obligation",
           "status": "tested",
-          "limits": "Observed on the http channel for the whole action and on the file channel through a FIFO sentinel; other channels are not observed."
+          "limits": "Observed for the whole action on the http channel, through a TCP listener bound to an ephemeral local port whose address the kind names (every accepted connection counts, whatever client made it), and on the file channel through a FIFO sentinel; other channels are not observed."
         }
       ]
     },
@@ -572,7 +572,7 @@
           "class": "obligation",
           "part": "not an invalid reference",
           "status": "tested",
-          "limits": "Through the optional reason channel, where a tool reports reasons; a tool may declare recursive references unsupported."
+          "limits": "Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported."
         },
         {
           "id": "OBI-T-06/c2b",
@@ -744,7 +744,8 @@
           "class": "specialization",
           "of": "OBI-T-08/c1",
           "part": "pattern values",
-          "status": "tested"
+          "status": "tested",
+          "limits": "Representative divergences between ECMA-262 with the u flag and other engines: white space, digits, word characters and boundaries, the dot and line terminators, code points outside the Basic Multilingual Plane, escaped surrogate pairs, anchors, inline modifiers, identity escapes, and property escapes. Others are not enumerated."
         },
         {
           "id": "OBI-T-08/c3b",
@@ -761,8 +762,8 @@
         {
           "id": "OBI-T-08/c5",
           "class": "obligation",
-          "status": "tested",
-          "limits": "Holds by construction for the Go core, whose value API takes one value per call."
+          "status": "tested (adapter)",
+          "limits": "Holds by construction for the Go core, whose value API takes one value per call; the executor's part a deliberately wrong tool can break is the harness's composition of those calls."
         },
         {
           "id": "OBI-T-08/c6",
@@ -914,7 +915,7 @@
           "of": "OBI-T-09/c3",
           "part": "a working draft and its revision",
           "status": "tested",
-          "limits": "Credited only when the applied text is verified against the pinned bytes."
+          "limits": "Credited only when the applied text is verified: the named identity is compared first, then the text at the named revision, read from the specification repository's history, against the hash the tool declares."
         }
       ]
     },
@@ -1135,6 +1136,10 @@
       {
         "id": "T11-S-05",
         "reason": "As T11-S-02."
+      },
+      {
+        "id": "T03-S-07",
+        "reason": "Moved to T07-S-15 before this corpus revision: it tests OBI-T-07/c1, not OBI-T-03/c1. Withheld so the review records that cite it stay unambiguous."
       }
     ],
     "migrated": [

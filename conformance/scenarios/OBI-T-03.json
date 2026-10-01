@@ -178,28 +178,6 @@
       "expected": {
         "outcome": "meets"
       }
-    },
-    {
-      "id": "T03-S-07",
-      "clauses": [
-        "OBI-T-03/c1"
-      ],
-      "description": "A map key beginning with x- names an ordinary operation, not an extension field (section 12).",
-      "action": "resolve-operation",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "x-internal": {}
-          }
-        },
-        "name": "x-internal"
-      },
-      "expected": {
-        "outcome": "resolved",
-        "operationKey": "x-internal",
-        "bindingKeys": []
-      }
     }
   ]
 }
