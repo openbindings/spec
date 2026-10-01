@@ -227,15 +227,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 - **What the other document rules say about a text OBI-D-01 rejects.**
   [§10](openbindings.md#10-conformance), under "The document and its data",
-  states that OBI-D-02 through OBI-D-13 read the JSON value the text
-  denotes. A text that violates OBI-D-01 denotes no single value: with a
-  byte-order mark, ill-formed UTF-8, or broken syntax it is not a JSON text
-  (RFC 8259 §2), and with repeated names its value is unpredictable (RFC
-  8259 §4). For it those rules are neither satisfied nor violated, and the
-  OBI-D-01 violation alone makes it non-conformant. A validator that has not
-  decided OBI-D-01 may judge the other rules on the value it parsed, and a
-  violation found there establishes non-conformance. OBI-T-04's
-  version-declaration test is unchanged. Changes rule-level outcomes only
+  states that OBI-D-02 through OBI-D-13 govern the JSON value only when
+  OBI-D-01 holds. If OBI-D-01 is violated, those rules impose no further
+  requirements and are not applicable in the vacuous sense of
+  [§10.4](openbindings.md#104-conformance-conclusions); the OBI-D-01
+  violation alone establishes non-conformance. A validator that has not
+  decided OBI-D-01 may check the value it parsed, provided the data used by
+  the check would be exact if OBI-D-01 held; a failed check establishes that
+  OBI-D-01 or the checked rule is violated, and so non-conformance, without
+  necessarily establishing which. OBI-T-04's version-declaration test is
+  unchanged. Changes rule-level outcomes only
   for documents already non-conformant under OBI-D-01; no document's
   conformance changes.
 
