@@ -13,7 +13,13 @@ cd spec/conformance/runners/go
 go run . $(go run ./declared -sdk ../../../../openbindings-go -spec ../..) -strict
 ```
 
-`./declared` prints the applied text the SDK declares, as `-applied` and `-applied-sha256`, by parsing the SDK's source: `appliedRelease` and `appliedRevision` (`version.go`) and the hash its corpus adapter pins for that revision (`appliedTextRevision`, `appliedTextSHA256`). It refuses, with exit status 1, a missing or non-literal constant, a release that is not SemVer, a revision that is not a full 40-hex commit of the spec history, and a hash pinned for another revision. `go test ./...` here runs the controls for both programs: the applied-text parsing and verification, and the runner's judges, held to a small synthetic corpus with one deliberately wrong expectation per action and judging branch, each of which must fail.
+`./declared` prints the applied text the SDK declares, as `-applied` and `-applied-sha256`, by parsing the SDK's source: `appliedRelease` and `appliedRevision` (`version.go`) and the hash its corpus adapter pins for that revision (`appliedTextRevision`, `appliedTextSHA256`). It refuses, with exit status 1, a missing or non-literal constant, a release that is not SemVer, a revision that is not a full 40-hex commit of the spec history, and a hash pinned for another revision. `go test ./...` here runs the controls for both programs:
+
+- the applied-text parsing and verification, and `./declared`'s reading of the SDK;
+- the judges against wrong expectations: a small synthetic corpus run through the pinned SDK, with at least one deliberately wrong expectation for every action and for the judging branches a correct SDK can reach (binding keys, `violates` and `notViolated`, `conformant` in both directions, refusals expected or not, `forbidReasons`, `orNoVerdict` and `dependsOn`, shortfalls, example results, kind, conclusion, collision candidates), each of which must fail beside a correct twin;
+- the checks that fire only when the SDK misbehaves, each held at its call site: a stand-in for the misbehaving call drives the judge, which must fail (a retrieval the sentinel observes, a conclusion naming another applied text, a ParseDocument refusal that comes with a document, a value-contract refusal that comes with contracts), beside direct controls of the residue helpers and the http sentinel.
+
+They do not cover every way an SDK can misbehave, only the checks listed.
 
 Inside the `openbindings/` monorepo, the project's `go.work` may exclude this directory; if so, set `GOWORK=off`.
 

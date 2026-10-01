@@ -176,6 +176,47 @@ func (g carriage) bytes() ([]byte, error) {
 
 func isRefusal(err error) bool { return errors.As(err, new(*openbindings.VersionRefusalError)) }
 
+// The SDK calls whose misbehavior only the checks below see, and the
+// sentinel starter: variables, so the runner's controls can stand in for a
+// misbehaving SDK and hold each judge's call site to its check.
+var (
+	parseDocument    = openbindings.ParseDocument
+	resolveContracts = func(ctx context.Context, c *openbindings.ValueContractCompiler, doc *openbindings.Document) (*openbindings.ValueContracts, error) {
+		return c.Resolve(ctx, doc)
+	}
+	sentinelStarter = startSentinels
+)
+
+// parseRefusalResidue lists what is wrong with ParseDocument's answer to a
+// text ValidateDocument refused: it must refuse too, with no document and no
+// established violation.
+func parseRefusalResidue(parsed *openbindings.Document, err error) []string {
+	var out []string
+	if !isRefusal(err) {
+		out = append(out, "no version refusal")
+	}
+	if parsed != nil {
+		out = append(out, "a document")
+	}
+	if errors.As(err, new(*openbindings.ValidationError)) {
+		out = append(out, "a *ValidationError in its error chain")
+	}
+	return out
+}
+
+// valueRefusalResidue lists what a value-contract version refusal came with:
+// it is exclusive of value contracts and of an established violation.
+func valueRefusalResidue(contracts *openbindings.ValueContracts, err error) []string {
+	var out []string
+	if contracts != nil {
+		out = append(out, "value contracts")
+	}
+	if errors.As(err, new(*openbindings.ValidationError)) {
+		out = append(out, "a *ValidationError in its error chain")
+	}
+	return out
+}
+
 // refusalResidue lists what a version refusal came with; it is exclusive of
 // a document, a report, and an established violation.
 func refusalResidue(doc *openbindings.Document, report openbindings.ValidationReport, err error) []string {
@@ -273,8 +314,8 @@ func (r *run) judgeDocument(c Case) (string, string) {
 		if s.Expected.Outcome != "version-refusal" {
 			return failed("version-refusal; expected %s", s.Expected.Outcome)
 		}
-		if parsed, perr := openbindings.ParseDocument(data); !isRefusal(perr) || parsed != nil || errors.As(perr, new(*openbindings.ValidationError)) {
-			return failed("ParseDocument does not refuse exclusively")
+		if residue := parseRefusalResidue(parseDocument(data)); len(residue) > 0 {
+			return failed("ParseDocument does not refuse exclusively: %s", strings.Join(residue, ", "))
 		}
 		return Pass, "version-refusal"
 	}
@@ -416,7 +457,7 @@ func judgeKind(c Case) (string, string) {
 	var observe *sentinels
 	if len(s.Given.Sentinels) > 0 {
 		var err error
-		if observe, err = startSentinels(s.Given.Sentinels); err != nil {
+		if observe, err = sentinelStarter(s.Given.Sentinels); err != nil {
 			return Omitted, err.Error()
 		}
 		data = observe.substitute(data)
@@ -460,7 +501,7 @@ func (r *run) contracts(document json.RawMessage, resources []openbindings.Resou
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
 	defer cancel()
-	contracts, err := compiler.Resolve(ctx, &doc)
+	contracts, err := resolveContracts(ctx, compiler, &doc)
 	return contracts, &doc, true, err
 }
 
@@ -522,8 +563,8 @@ func (r *run) judgeValues(c Case) (string, string) {
 	case !carried:
 		return Omitted, "the model cannot carry this non-conformant document, so the SDK does not continue with it"
 	case isRefusal(err):
-		if contracts != nil || errors.As(err, new(*openbindings.ValidationError)) {
-			return failed("the version refusal came with a result")
+		if residue := valueRefusalResidue(contracts, err); len(residue) > 0 {
+			return failed("the version refusal came with %s", strings.Join(residue, ", "))
 		}
 		if s.Expected.Outcome == "version-refusal" {
 			return Pass, "version-refusal"
