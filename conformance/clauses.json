@@ -644,8 +644,7 @@
         {
           "id": "OBI-T-07/c4",
           "class": "obligation",
-          "status": "tested (adapter)",
-          "limits": "Bindings are found by the adapter's own loop until the Go core's binding finder lands."
+          "status": "tested"
         }
       ]
     },

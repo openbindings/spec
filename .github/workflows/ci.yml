@@ -225,21 +225,22 @@ jobs:
           OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
           OB_CORPUS_REQUIRED: "1"
 
-  # DISABLED UNTIL THE GO COMMIT THAT ADOPTS THIS CORPUS LANDS (it lands with
+  # DISABLED UNTIL INTEGRATION PUBLISHES THE PINNED GO COMMIT (it lands with
   # the corpus's integration into the release line). Runs the reference Go runner
   # (conformance/runners/go) against this corpus, blocking, with the Go core
   # pinned to one exact commit. The runner's results are compared with
   # conformance/runners/go/expected-failures.json, keyed by case, pin, and
   # failure signature: an unexpected failure and an unexpected pass both fail.
-  # It is enabled, with GO_CORE_PIN set to the commit that adopts this corpus,
-  # once the runner is repaired against that commit's API; a later Go commit
-  # reaches this job only by changing the pin here, in a spec change.
+  # The pin is the Go commit the runner was repaired against, not yet published;
+  # integration enables the job with the pin and the expected failures keyed to
+  # the published commit. A later Go commit reaches this job only by changing
+  # the pin here, in a spec change.
   reference-go-core:
     name: Go core conformance runner (pinned)
     if: ${{ false }}
     runs-on: ubuntu-latest
     env:
-      GO_CORE_PIN: ""
+      GO_CORE_PIN: "cd57ff277aaf5fb06c609c6a483e1d5a941e5ec3"
     steps:
       # The spec at path: spec and the SDK at path: openbindings-go, so the
       # runner's go.mod replace directives (../../../../openbindings-go)
@@ -247,6 +248,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           path: spec
+          fetch-depth: 0 # the runner verifies the applied text with git show
       - uses: actions/checkout@v7
         with:
           repository: openbindings/openbindings-go
@@ -260,7 +262,9 @@ jobs:
           cache: false
       - name: Run the reference runner against the corpus
         working-directory: spec/conformance/runners/go
-        run: go run . -corpus ../.. -json -pin "$GO_CORE_PIN" > "$RUNNER_TEMP/runner-results.json" || true
+        run: |
+          applied="$(sed -n 's/^const appliedRelease = "\(.*\)"/\1/p' ../../../../openbindings-go/version.go)@$(sed -n 's/^const appliedRevision = "\(.*\)"/\1/p' ../../../../openbindings-go/version.go)"
+          go run . -corpus ../.. -json -pin "$GO_CORE_PIN" -applied "$applied" -strict > "$RUNNER_TEMP/runner-results.json" || true
       - name: Compare with the expected failures
         run: node spec/scripts/check-runner-results.mjs --results "$RUNNER_TEMP/runner-results.json" --expected spec/conformance/runners/go/expected-failures.json
 

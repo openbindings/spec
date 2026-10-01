@@ -6,7 +6,7 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 ## Status
 
-**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-11, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 60 obligation-type clauses, 49 are tested by discriminating cases the designated executor runs, one through adapter code, and 10 hold a recorded status short of that: composition only, contrast tools only, expressible with no executor, or not portably testable. Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-10 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
+**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-11, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 60 obligation-type clauses, 50 are tested by discriminating cases the designated executor runs, and 10 hold a recorded status short of that: composition only, contrast tools only, expressible with no executor, or not portably testable. Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-10 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
 
 | Rule range | Coverage |
 |---|---|
@@ -251,7 +251,7 @@ A clause whose status is short of tested is incomplete coverage, and is recorded
 | OBI-T-07/c1 | obligation | tested |  |
 | OBI-T-07/c2 | specialization | not portably testable | T07-G-01 (T07-S-12, T07-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy. |
 | OBI-T-07/c3 | obligation | tested |  |
-| OBI-T-07/c4 | obligation | tested (adapter) | Bindings are found by the adapter's own loop until the Go core's binding finder lands. |
+| OBI-T-07/c4 | obligation | tested |  |
 | OBI-T-08/c1 | obligation | tested |  |
 | OBI-T-08/c2 | specialization | tested |  |
 | OBI-T-08/c3a | specialization | tested |  |
@@ -296,7 +296,7 @@ The corpus README once required adapters for two independent implementations bef
 |---|---|---|
 | validity fixtures (`document/`, `tool/`) | Go core (`ValidateDocument`) | Two implementations written from the text alone, in TypeScript and Python, through a harness that maps the action to their commands |
 | `validate-document` | Go core (`ValidateDocument`) | As above |
-| `resolve-operation` | Go core (`ResolveOperation`; bindings by the adapter until the core's binding finder lands) | As above |
+| `resolve-operation` | Go core (`ResolveOperation` and `OperationBindings`) | As above |
 | `validate-operation-values` | Go core with `schemaeval` (value contracts) | As above |
 | `conclude-conformance` | Go core (`ConcludeConformance`) | As above |
 | `check-dependency-kind` | Go core (the dependency's kind constraint) | None: single executor |

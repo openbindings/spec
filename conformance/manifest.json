@@ -19,14 +19,13 @@
     "rulesPartialTool": 5,
     "clauseIds": 78,
     "clauseUnits": 60,
-    "clauseUnitsTested": 49,
+    "clauseUnitsTested": 50,
     "clauseUnitsByStatus": {
       "composition only": 4,
       "contrast tools only": 2,
       "expressible, no executor": 2,
       "not portably testable": 1,
-      "tested": 45,
-      "tested (adapter)": 1,
+      "tested": 46,
       "tested through its alternatives": 3,
       "tested through its exercised alternative": 1,
       "tested through its specializations": 1
@@ -717,7 +716,7 @@
     "OBI-T-07/c4": {
       "rule": "OBI-T-07",
       "class": "obligation",
-      "status": "tested (adapter)",
+      "status": "tested",
       "cases": [
         "T07-S-02",
         "T07-S-13"
