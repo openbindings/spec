@@ -650,7 +650,7 @@
                 "non-conformant",
                 "conformance-undetermined"
               ],
-              "description": "The conclusion the evidence permits. conformant also admits conformance-undetermined, as for validate-document: OBI-T-09 only prohibits."
+              "description": "The exact conclusion describing the supplied evidence (§10.4). Withholding a positive report is not incomplete evidence; conformant does not admit conformance-undetermined for this action."
             }
           }
         }

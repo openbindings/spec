@@ -9,7 +9,7 @@
       "clauses": [
         "OBI-T-09/c4"
       ],
-      "description": "Every applicable rule satisfied, and an inapplicable rule, permit a conformant conclusion, and establish no violation: a non-conformant conclusion is prohibited.",
+      "description": "Every applicable rule satisfied, and an inapplicable rule, establish conformance. A reported conclusion is conformant: neither non-conformant nor conformance-undetermined describes this complete evidence (§10.4).",
       "action": "conclude-conformance",
       "given": {
         "evidence": {

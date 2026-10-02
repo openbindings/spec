@@ -235,6 +235,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Withholding a positive report is not incomplete evidence.** §10.4 clarifies
+  that any reported conclusion retains its defined meaning. OBI-T-09 still
+  does not require reporting established conformance. The `conclude-conformance`
+  corpus action now requires the exact conclusion from its supplied evidence;
+  `validate-document` still permits an undetermined result when a validator
+  lacks evidence.
+
 - **OBI-T-09 forbids an unestablished non-conformance claim.** OBI-T-09's
   first sentence gains the clause "MUST NOT claim non-conformance unless it
   has established a violation of an applicable document rule", and its last
