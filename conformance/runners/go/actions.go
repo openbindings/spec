@@ -46,7 +46,7 @@ type run struct {
 }
 
 // newRun reads the SDK's support declaration from SupportedVersions ("0.2.x":
-// the 0.2 line; "1.x": major 1) and verifies the declared applied text (see
+// the 0.2 line; "1.0.x": the 1.0 line) and verifies the declared applied text (see
 // verifyApplied). The declaration has been parsed by parseApplied.
 func newRun(corpusDir string, applied appliedText, strict bool) *run {
 	r := &run{evaluator: schemaeval.New(schemaeval.Options{}), strict: strict, release: applied.release, revision: applied.revision}
@@ -67,15 +67,11 @@ func (r *run) supports(v string) bool {
 	if m[4] != "" {
 		return slices.Contains(r.prereleases, m[1]+"."+m[2]+"."+m[3]+"-"+m[4])
 	}
-	return slices.Contains(r.lines, m[1]+"."+m[2]) || (m[1] != "0" && slices.Contains(r.lines, m[1]))
+	return slices.Contains(r.lines, m[1]+"."+m[2])
 }
 
 func (r *run) lowest() string {
-	line := r.lines[0]
-	if strings.Contains(line, ".") {
-		return line + ".0"
-	}
-	return line + ".0.0"
+	return r.lines[0] + ".0"
 }
 
 // compareRelease orders major.minor.patch as digit strings, never machine
