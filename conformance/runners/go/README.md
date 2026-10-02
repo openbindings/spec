@@ -41,7 +41,7 @@ Flags:
 ## What it checks
 
 - **Validity fixtures:** `ValidateDocument`'s report. A conforming case is neither refused nor non-conformant (undetermined is not non-conformant). A violating case is non-conformant, with every rule in `violates` violated and no rule in `notViolated` violated.
-- **Scenarios:** each action through the SDK's API: `ValidateDocument` (a version refusal must come with nothing else, at `ParseDocument` too), `Document.ResolveOperation` and `Document.OperationBindings`, `ConcludeConformance` (`conformant` admits `conformance-undetermined`), `Dependency.AcceptsKind`, and value contracts under `schemaeval` for value and example cases. `derive-form` is omitted: the SDK derives no forms.
+- **Scenarios:** each action through the SDK's API: `ValidateDocument` (a version refusal must come with nothing else, at `ParseDocument` too), `Document.ResolveOperation` and `Document.OperationBindings`, `ConcludeConformance` (the reported conclusion must exactly match the supplied evidence), `Dependency.AcceptsKind`, and value contracts under `schemaeval` for value and example cases. `derive-form` is omitted: the SDK derives no forms.
 - **Retrieval sentinels:** for the whole check-dependency-kind action, a TCP listener bound to an ephemeral local port, whose address the kind names, counts every accepted connection whatever client made it; a FIFO observes the file channel where the platform has FIFOs.
 - **Capability profile:** the features the SDK with `schemaeval` declares. A SHORTFALL, no verdict where the profile supports every feature the case depends on, fails the run: the profile is the SDK's own declaration.
 - **Version gates:** judged against the SDK's declaration, `SupportedVersions`, never against its version decision.
