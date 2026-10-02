@@ -429,9 +429,9 @@ func judgeConclude(c Case) (string, string) {
 		return failed("unreadable scenario: %v", err)
 	}
 	got := openbindings.ConcludeConformance(s.Given.Evidence).Conclusion
-	// conformant admits conformance-undetermined, as in validate-document:
-	// OBI-T-09 only prohibits.
-	if string(got) != s.Expected.Conclusion && !(s.Expected.Conclusion == "conformant" && got == openbindings.ConclusionConformanceUndetermined) {
+	// This action receives the evidence, rather than performing checks that
+	// may be incomplete. Its reported conclusion must mean what §10.4 says.
+	if string(got) != s.Expected.Conclusion {
 		return failed("concluded %s; expected %s", got, s.Expected.Conclusion)
 	}
 	return Pass, string(got)
