@@ -8,29 +8,29 @@
 <h1 align="center">OpenBindings</h1>
 
 <p align="center">
-  One interface. Any binding. Describe what a service does separately from how you access it.
+  A document model for protocol-independent operation contracts, bindings, and dependencies.
 </p>
 
 <p align="center">
   <a href="https://openbindings.com">Website</a> &middot;
   <a href="openbindings.md">Read the spec</a> &middot;
-  <a href="agent-primer.md">AI agent primer</a> &middot;
-  <a href="https://github.com/openbindings/ob">CLI</a>
+  <a href="agent-primer.md">AI agent primer</a>
 </p>
 
 ---
 
 ## What is OpenBindings?
 
-OpenBindings defines a standard way to declare protocol-independent operation contracts, describe concrete realizations a component provides, and name operation dependencies it consumes without coupling either side to one protocol.
+OpenBindings defines an interface document model: protocol-independent operation contracts, author-declared realizations through bindings, and named consumption points through dependencies.
 
 A single OpenBindings Interface (OBI) can point at sources read as OpenAPI,
 AsyncAPI, MCP, gRPC, GraphQL, or under a private kind, without redefining the
 operation contract for each one. OBI sits one layer above those artifacts and
 protocols. Its core document model does not define kind-specific source or
-binding behavior. The OpenBindings project's brownfield binding specifications
-are separate, optional descriptions of kinds that deliberately defer to capable
-upstream standards.
+binding behavior.
+
+The protocol labels and targets below illustrate content interpreted under a
+source's kind; they are not core fields or built-in protocol support.
 
 ```
 ┌────────────────────────────────────────────┐
@@ -39,7 +39,7 @@ upstream standards.
 │  operations:                               │
 │    placeOrder   (aliases: orders.create)   │
 │    getMenu                                 │
-│    orderUpdates (event)                    │
+│    orderUpdates                            │
 │    payments.authorize                      │
 │                                            │
 │  dependencies:                             │
@@ -54,9 +54,9 @@ upstream standards.
 
 ### Core concepts
 
-- **Operations** are neutral contracts: named units of behavior with input/output schemas and semantic metadata (idempotency, tags, examples). Presence alone does not assert availability.
+- **Operations** are neutral contracts: named units of behavior with optional per-value input/output schemas and descriptive metadata, including tags and examples. Presence alone does not assert availability.
 - **Dependencies** are named consumption points that reference operations and may constrain acceptable kinds. They carry no concrete target.
-- **Bindings** map an operation to a concrete protocol target without redefining the contract. One operation can carry many bindings.
+- **Bindings** declare realizations of operations through sources, as author claims. Multiple bindings can reference one operation. An optional `idempotent` member states a claim about repetition through that particular binding.
 - **Sources** carry an exact, opaque `kind` and optional `content` read under it. The core gives no meaning to that content; it might embed an artifact, contain an address, or describe a live surface.
 - **Aliases** give an operation additional names with equal standing to its key, including a shared-contract name so consumers can recognize it across services. The name is author-asserted; the spec attaches no trust semantics to it.
 
@@ -64,17 +64,16 @@ upstream standards.
 
 The spec defines what an OBI document **is**: its shape, reference resolution, versioning, and exact kind comparison, plus a thin conformance floor for tools. Higher-level tool behavior beyond the [§10](openbindings.md#10-conformance) floor is deliberately left to implementations: comparison and matching, dependency composition, provider and binding selection, and credential and context resolution. How a binding reaches its target and adapts values between the operation and that target is read under its source's kind, outside the core. [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
 
-Authentication in particular is **not** part of an OBI document. It is a
-runtime prerequisite negotiated by the binding invoker at call time and
-resolved into effective invocation context; a runtime may persist durable
-values in a document store or somewhere else, but no store architecture is
-required — see the
-[`binding-invoker`](https://openbindings.com/interfaces/binding-invoker)
-interface.
+The core defines no authentication protocol or invoker. Context, such as a
+credential used to access a target, is supplied under a source's kind or tool
+policy ([§5](openbindings.md#5-document-model)).
 
 ## Guides and tutorials
 
-This repository is the **normative and reference** source. It is self-contained for understanding and implementing the core standard: the spec, the schema, the conformance corpus, project binding-specification candidates, and worked examples. The project's shared interfaces are published separately in [openbindings/interfaces](https://github.com/openbindings/interfaces).
+This repository contains the working core specification, its derived schema,
+core conformance corpus, and worked examples. The core specification is
+self-contained; the separately scoped specifications and informative material
+listed below do not add core requirements.
 
 Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **[openbindings.com](https://openbindings.com)**, where they can evolve independently of any spec version. The informative [`agent-primer.md`](agent-primer.md) is kept beside the working specification; it is pending revision for the kind pass, so the core specification governs any disagreement. The website renders that same file rather than maintaining another copy.
 
@@ -85,7 +84,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`openbindings.md`](openbindings.md) | The OBI specification (v0.2.0) |
 | [`http-discovery.md`](http-discovery.md) | Optional, independently versioned HTTP Discovery specification |
 | [`openbindings.schema.json`](openbindings.schema.json) | JSON Schema for validating OBI documents |
-| [`agent-primer.md`](agent-primer.md) | Informative, version-aligned orientation for AI agents |
+| [`agent-primer.md`](agent-primer.md) | Informative orientation for AI agents; pending revision for the kind pass |
 | [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
 | [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
 | [`binding-specs/`](binding-specs/) | Unreleased first-`@1` binding-specification candidates and authoring guidance |
@@ -95,16 +94,6 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`history/`](history/) | Archived, non-normative design records; not current requirements or issue lists |
 
 The specification is self-contained and does not depend on any of the reference or tooling material above.
-
-## Implementations
-
-The openbindings project publishes reference implementations. The spec privileges no implementation; third-party tools are free to build their own.
-
-| Project | Description |
-| --- | --- |
-| [openbindings-go](https://github.com/openbindings/openbindings-go) | Go SDK to read, write, and invoke OBI documents, with separately installable binding implementations |
-| [openbindings-ts](https://github.com/openbindings/openbindings-ts) | TypeScript SDK monorepo: core SDK plus separately installable binding implementations |
-| [ob](https://github.com/openbindings/ob) | The `ob` CLI: synthesize, invoke, and serve OBIs locally (`ob start`), with a built-in multi-protocol demo (`ob demo`) |
 
 ## Status
 
