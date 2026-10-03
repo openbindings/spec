@@ -8,7 +8,7 @@
 <h1 align="center">OpenBindings</h1>
 
 <p align="center">
-  A document model for protocol-independent operation contracts, bindings, and dependencies.
+  One interface. Any binding. Describe what a service does separately from how you access it.
 </p>
 
 <p align="center">
