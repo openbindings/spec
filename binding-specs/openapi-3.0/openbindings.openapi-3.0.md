@@ -173,29 +173,26 @@ adapts each successful decoded response value independently to an operation valu
 Without a mapping, the respective value is unchanged. Mapping has no access to
 credentials, status codes, headers or other transport state.
 
-A mapping is an object containing exactly one of:
+`input` and `output`, when present, are JSONata expression strings using the
+[shared JSONata embedding](../jsonata.md). No additional variable or function
+bindings are supplied by this kind. The input expression receives the caller
+value (or absence); the output expression receives one successfully decoded
+response value. JSONata's result is used directly under that embedding's
+presence and JSON-value rules. An array result remains one operation value.
 
-| Form | Result |
-| --- | --- |
-| `{"at": "<pointer>", "up": <integer>}` | Select by literal RFC 6901 string-form pointer. Optional `up` defaults to zero (current input); one selects the input enclosing the current `each.value`, two the next enclosing input, and so on. Empty pointer selects that entire input. An unresolved pointer produces absence. |
-| `{"literal": <JSON value>}` | That value, including null. |
-| `{"object": {"name": <mapping>, ...}}` | An object made from independently evaluated members; an absent member result is omitted. |
-| `{"array": [<mapping>, ...]}` | An array of evaluated results in order; an absent element is a mapping failure. |
-| `{"each": {"in": <mapping>, "value": <mapping>}}` | Evaluate `in`, then evaluate `value` separately with each selected array item as its input, preserving order. An absent collection produces absence; a non-array collection or absent item result is a mapping failure. |
+Invalid expression syntax is invalid binding content. A failed input transform
+prevents dispatch; a failed output transform makes completion unsuccessful,
+preserving any outputs already emitted. An absent output result emits no value;
+null emits a null value. The operation's claimed contract must still be faithfully
+realized under core; an expression is not evidence of that claim.
 
-Mappings are finite JSON trees. Nested mappings use their enclosing mapping
-input, except that `each.value` uses the current item and adds one enclosing-input
-scope; nested `each` forms apply the same rule. Object/array construction adds no
-scope. `up` is allowed only on `at`, must be a nonnegative integer, and must name
-an existing scope in the mapping tree; otherwise the binding is invalid. An empty
-collection produces an empty array. The `each` object has exactly the two members
-shown; no item index is supplied. An absent input has no selectable value, including at the empty pointer.
-A malformed mapping is invalid binding content. A failed input mapping prevents
-dispatch; a failed output mapping makes completion unsuccessful. Absence after
-an output mapping emits no value; it does not produce JSON null. A mapping
-constructs values only: it defines no arithmetic, arbitrary expressions, external
-lookup or implicit coercion. The operation's claimed contract must still
-be faithfully realized under core; a mapping is not evidence of that claim.
+For example, this input expression puts `petId` in a parameter and preserves all
+other caller members, including future members, in the body:
+
+```jsonata
+{"parameters": {"petId": petId},
+ "body": $merge([{}, $sift($, function($value, $key) { $key != "petId" })])}
+```
 
 The request value is absent or an object with only optional `parameters` and
 `body`. Absence is equivalent to supplying neither member. Present `parameters`

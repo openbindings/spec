@@ -106,42 +106,8 @@
       "source": "httpApi",
       "content": {
         "target": "/paths/~1things~1{id}/post",
-        "input": {
-          "object": {
-            "parameters": {
-              "object": {
-                "id": {
-                  "at": "/key"
-                },
-                "tag": {
-                  "at": "/labels"
-                },
-                "flag": {
-                  "at": "/enabled"
-                }
-              }
-            },
-            "body": {
-              "object": {
-                "title": {
-                  "at": "/name"
-                },
-                "done": {
-                  "literal": false
-                },
-                "note": {
-                  "at": "/note"
-                },
-                "omitted": {
-                  "at": "/notThere"
-                }
-              }
-            }
-          }
-        },
-        "output": {
-          "at": "/result"
-        }
+        "input": "{\"parameters\": {\"id\": $lookup($, \"key\"), \"tag\": $lookup($, \"labels\"), \"flag\": $lookup($, \"enabled\")}, \"body\": {\"title\": $lookup($, \"name\"), \"done\": false, \"note\": $lookup($, \"note\"), \"omitted\": $lookup($, \"notThere\")}}",
+        "output": "$lookup($, \"result\")"
       }
     }
   }

@@ -270,13 +270,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1named/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "plain.http": {
@@ -284,13 +278,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1plain/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "choice.http": {
@@ -298,13 +286,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1choice/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "positional.http": {
@@ -312,13 +294,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1positional/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "style.http": {

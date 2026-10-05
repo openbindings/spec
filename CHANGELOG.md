@@ -235,6 +235,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI candidate transforms use JSONata.** The 2.0, 3.0, 3.1 and 3.2
+  candidates replace their draft structural mapping objects with JSONata 2.1
+  expression strings, pinned to jsonata-js 2.1.1. The shared kind-owned
+  embedding preserves absence versus null and defines failure boundaries.
+  Existing `target`, `input` and `output` content members remain; legacy mapping
+  objects must be rewritten as expressions. Core has no transform language.
+
 - **Complete-evidence reporting is explicit in OBI-T-09.** The numbered rule
   now prohibits reporting conformance as undetermined when the evidence establishes
   conformance, matching §10.4 and the existing corpus behavior. Positive reporting

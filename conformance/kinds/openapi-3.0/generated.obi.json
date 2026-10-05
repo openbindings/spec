@@ -102,27 +102,8 @@
       "source": "native",
       "content": {
         "target": "/paths/~1things~1{thingId}/post",
-        "input": {
-          "object": {
-            "parameters": {
-              "object": {
-                "thingId": {
-                  "at": "/id"
-                }
-              }
-            },
-            "body": {
-              "object": {
-                "label": {
-                  "at": "/name"
-                }
-              }
-            }
-          }
-        },
-        "output": {
-          "at": "/accepted"
-        }
+        "input": "{\"parameters\": {\"thingId\": $lookup($, \"id\")}, \"body\": {\"label\": $lookup($, \"name\")}}",
+        "output": "$lookup($, \"accepted\")"
       }
     }
   }

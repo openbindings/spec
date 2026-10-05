@@ -14,7 +14,7 @@
           "payload": {
             "enum": [
               null,
-              "\u00e9",
+              "é",
               {
                 "n": 2
               }
@@ -63,7 +63,7 @@
                           "payload": {
                             "enum": [
                               null,
-                              "\u00e9",
+                              "é",
                               {
                                 "n": 2
                               }
@@ -99,13 +99,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1submit/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     }
   }

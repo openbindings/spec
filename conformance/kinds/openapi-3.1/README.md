@@ -1,5 +1,10 @@
 # Independent bounded OAS 3.1 interpretation evidence
 
+**JSONata migration:** transforms now use upstream JSONata 2.1.1; install its
+[test dependency](../jsonata/README.md) before reproducing this suite. Earlier
+structural-language coverage descriptions below are historical; current
+expressions and embedding cases are listed in that evidence note.
+
 **2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
 The original authorship narrative below is historical. This maintenance changed
 probe algorithms and expectations; it is not another independent implementation.
@@ -20,7 +25,7 @@ bind ephemeral loopback listeners; the debug mode is not native HTTP evidence.
 
 | Input | SHA-256 |
 | --- | --- |
-| OAS 3.1 clarified candidate | `a8e203b2f39609ddd24c4750b61842a079e97285514f0075d2ca8c70a277504e` |
+| OAS 3.1 clarified candidate | `d7c3a65d9303696f11fb05ac589f098d17d32385d9bcd7534beeb4ec5a57a9a0` |
 | Core 0.2.0 working-draft text | `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e` |
 
 The candidate is [the active 3.1 definition](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md).

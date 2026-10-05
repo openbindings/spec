@@ -75,17 +75,17 @@ paths:
     no=copy.deepcopy(d); no['schemes']=[]; add('context-empty-scheme',doc=no,category='missing-context'); add('context-empty-scheme-replacement',doc=no,context={'server':'http://127.0.0.1:PORT/api'})
     badpath=document('/x?y'); add('url-literal-query-boundary',doc=badpath,category='unsupported')
     # Mapping lexical scope, absence, shape, failure and output cardinality.
-    maps={'target':'/paths/~1invoke/post','input':{'object':{'body':{'object':{'groups':{'each':{'in':{'at':'/groups'},'value':{'each':{'in':{'at':'/items'},'value':{'object':{'item':{'at':''},'group':{'at':'/id','up':1},'root':{'at':'/root','up':2},'literal':{'literal':None},'absent':{'at':'/missing'}}}}}}}}}}},'output':{'object':{'answer':{'at':'/ok'},'fixed':{'array':[{'literal':'x'},{'literal':None}]}}}}
+    maps={'target':'/paths/~1invoke/post','input':'($root := $; {"body": {"groups": ($exists($lookup($root, "groups")) ? ($count($lookup($root, "groups")) = 0 ? [] : $map($lookup($root, "groups"), function($item1) { ($exists($lookup($item1, "items")) ? ($count($lookup($item1, "items")) = 0 ? [] : $map($lookup($item1, "items"), function($item2) { {"item": $item2, "group": $lookup($item1, "id"), "root": $lookup($root, "root"), "literal": null, "absent": $lookup($item2, "missing")} })[])) })[]))}})','output':'{"answer": $lookup($, "ok"), "fixed": ["x", null]}'}
     request={'root':'ROOT','groups':[{'id':'g1','items':['a','b']},{'id':'g2','items':[]}]}
     nativebody={'groups':[[{'item':'a','group':'g1','root':'ROOT','literal':None},{'item':'b','group':'g1','root':'ROOT','literal':None}],[]]}
-    add('mapping-nested-each-up',doc=document(parameters=[bodypar()]),caller=request,binding=maps,expect=[native(body_kind='json',body=nativebody)],result=[{'answer':True,'fixed':['x',None]}])
-    add('mapping-empty-input-is-absent',binding={'target':'/paths/~1invoke/post','input':{'at':''}})
-    add('mapping-array-missing-prevents-dispatch',binding={'target':'/paths/~1invoke/post','input':{'array':[{'at':'/missing'}]}},category='mapping-failure')
-    add('mapping-each-non-array',caller={'x':1},binding={'target':'/paths/~1invoke/post','input':{'each':{'in':{'at':'/x'},'value':{'at':''}}}},category='mapping-failure')
-    add('mapping-illegal-up',binding={'target':'/paths/~1invoke/post','input':{'at':'','up':1}},category='invalid')
-    add('mapping-output-absence',binding={'target':'/paths/~1invoke/post','output':{'at':'/missing'}},result=[])
-    add('mapping-output-null',binding={'target':'/paths/~1invoke/post','output':{'literal':None}},result=[None])
-    add('mapping-output-failure',binding={'target':'/paths/~1invoke/post','output':{'array':[{'at':'/missing'}]}},expect=[native()],category='mapping-failure')
+    add('jsonata-nested-lexical-scope',doc=document(parameters=[bodypar()]),caller=request,binding=maps,expect=[native(body_kind='json',body=nativebody)],result=[{'answer':True,'fixed':['x',None]}])
+    add('jsonata-absent-input',binding={'target':'/paths/~1invoke/post','input':'$'})
+    add('mapping-array-missing-prevents-dispatch',binding={'target':'/paths/~1invoke/post','input':'($assert($exists(missing)); [missing])'},category='mapping-failure')
+    add('jsonata-author-array-assertion',caller={'x':1},binding={'target':'/paths/~1invoke/post','input':'($assert($type(x) = "array"); ($exists(x) ? ($count(x) = 0 ? [] : $map(x, function($v){$v})[])))'},category='mapping-failure')
+    add('jsonata-rejects-legacy-object',binding={'target':'/paths/~1invoke/post','input':{'at':'','up':1}},category='invalid')
+    add('mapping-output-absence',binding={'target':'/paths/~1invoke/post','output':'$lookup($, "missing")'},result=[])
+    add('mapping-output-null',binding={'target':'/paths/~1invoke/post','output':'null'},result=[None])
+    add('mapping-output-failure',binding={'target':'/paths/~1invoke/post','output':'($assert($exists(missing)); [missing])'},expect=[native()],category='mapping-failure')
     # References: schema/parameter/response replacement, contextual closure and mounts.
     selfdoc=document(parameters=[{'$ref':'#/parameters/P','required':False}]); selfdoc['parameters']={'P':par('q','query',required=True)}
     add('reference-parameter-siblings-ignored',doc=selfdoc,caller={'parameters':{'q':'a/b?'}},expect=[native(query={'q':['a/b?']})])
@@ -185,7 +185,7 @@ paths:
     default=document(); default['paths']['/invoke']['post']['responses']={'default':{'schema':{'type':'object'}}}; add('response-default-only-2xx',doc=default)
     specific=copy.deepcopy(default); specific['paths']['/invoke']['post']['responses']['200']={}; add('response-defective-exact-no-fallback',doc=specific,expect=[native()],category='decode-failure')
     invalidkey=document(); invalidkey['paths']['/invoke']['post']['responses']['2XX']={'schema':False}; add('response-invalid-range-clean-sibling',doc=invalidkey)
-    add('response-non2xx-no-output-no-output-mapping',resp=reply(b'not-json',422),binding={'target':'/paths/~1invoke/post','output':{'literal':{'would':'leak'}}},expect=[native()],category='http-failure')
+    add('response-non2xx-no-output-no-output-mapping',resp=reply(b'not-json',422),binding={'target':'/paths/~1invoke/post','output':'{"would": "leak"}'},expect=[native()],category='http-failure')
     add('response-truncated-no-partial',resp=reply(b'{"ok":true}',truncate=9),expect=[native()],category='decode-failure')
     add('response-interim-then-final',resp=reply(interim=True))
     add('response-101-refused',resp=reply(b'',101,None),expect=[native()],category='unsupported')

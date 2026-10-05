@@ -257,13 +257,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1xml/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "numberXml.http": {
@@ -271,13 +265,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1number-xml/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     },
     "deep.http": {
@@ -285,17 +273,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1deep/get",
-        "input": {
-          "object": {
-            "parameters": {
-              "object": {
-                "filter": {
-                  "at": "/filters"
-                }
-              }
-            }
-          }
-        }
+        "input": "{\"parameters\": {\"filter\": $lookup($, \"filters\")}}"
       }
     },
     "contentUri.http": {
@@ -303,20 +281,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1opaque~1{p}/get",
-        "input": {
-          "object": {
-            "parameters": {
-              "object": {
-                "p": {
-                  "at": "/path"
-                },
-                "q": {
-                  "at": "/query"
-                }
-              }
-            }
-          }
-        }
+        "input": "{\"parameters\": {\"p\": $lookup($, \"path\"), \"q\": $lookup($, \"query\")}}"
       }
     },
     "parts.http": {
@@ -324,13 +289,7 @@
       "source": "api",
       "content": {
         "target": "/paths/~1parts/post",
-        "input": {
-          "object": {
-            "body": {
-              "at": ""
-            }
-          }
-        }
+        "input": "{\"body\": $}"
       }
     }
   }

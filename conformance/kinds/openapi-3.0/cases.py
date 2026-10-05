@@ -92,25 +92,17 @@ d=artifact();d['components']={'schemas':{'recursive':{'type':'object','propertie
 add('unused-schema-cycle-does-not-poison',d)
 
 # All mapping forms, nested scopes, absence/null, invalid mapping shape.
-row_mapping = {'object': {
-    'v': {'at': ''}, 'group': {'at': '/tag', 'up': 1},
-    'tenant': {'at': '/tenant', 'up': 2}}}
-group_mapping = {'object': {'tag': {'at': '/tag'},
-    'items': {'each': {'in': {'at': '/rows'}, 'value': row_mapping}}}}
-m = {'object': {'body': {'object': {
-    'batch': {'each': {'in': {'at': '/groups'}, 'value': group_mapping}},
-    'pair': {'array': [{'literal': None}, {'at': '/tenant'}]},
-    'omit': {'at': '/missing'}}}}}
+m = '($root := $; {"body": {"batch": ($exists($lookup($root, "groups")) ? ($count($lookup($root, "groups")) = 0 ? [] : $map($lookup($root, "groups"), function($item1) { {"tag": $lookup($item1, "tag"), "items": ($exists($lookup($item1, "rows")) ? ($count($lookup($item1, "rows")) = 0 ? [] : $map($lookup($item1, "rows"), function($item2) { {"v": $item2, "group": $lookup($item1, "tag"), "tenant": $lookup($root, "tenant")} })[]))} })[])), "pair": [null, $lookup($root, "tenant")], "omit": $lookup($root, "missing")}})'
 
-add('mapping-nested-each-up',artifact('post',body=rb()),input={'tenant':'T','groups':[{'tag':'A','rows':[2,3]},{'tag':'B','rows':[]}]},binding={'target':target(method='post'),'input':m,'output':{'object':{'result':{'at':'/native'},'missing':{'at':'/missing'}}}},expect=expected('POST',headers={'content-type':'application/json'},body_json={'batch':[{'tag':'A','items':[{'v':2,'group':'A','tenant':'T'},{'v':3,'group':'A','tenant':'T'}]},{'tag':'B','items':[]}],'pair':[None,'T']}),result={'success':True,'values':[{'result':True}]},authority='§4')
-add('mapping-absent-input-empty-pointer',absent=True,binding={'target':target(),'input':{'at':''}})
-add('mapping-absent-output-suppresses',binding={'target':target(),'output':{'at':'/missing'}},result={'success':True,'values':[]})
-add('mapping-null-output-value',binding={'target':target(),'output':{'literal':None}},result={'success':True,'values':[None]})
-add('mapping-absent-collection-omitted',artifact('post',body=rb()),input={},binding={'target':target(method='post'),'input':{'object':{'body':{'object':{'rows':{'each':{'in':{'at':'/missing'},'value':{'at':''}}}}}}}},expect=expected('POST',headers={'content-type':'application/json'},body_json={}))
-for name,mp in [('up',{'at':'','up':1}),('negative-up',{'at':'','up':-1}),('bool-up',{'at':'','up':True}),('ambiguous',{'at':'','literal':None}),('each-extra',{'each':{'in':{'at':''},'value':{'at':''},'index':True}})]:error_case('mapping-invalid-'+name,'invalid',binding={'target':target(),'input':mp})
-for name,mp in [('array-absence',{'array':[{'at':'/missing'}]}),('each-scalar',{'each':{'in':{'literal':3},'value':{'at':''}}}),('each-absence',{'each':{'in':{'literal':[{}]},'value':{'at':'/missing'}}})]:error_case('mapping-failure-'+name,'mapping',binding={'target':target(),'input':mp})
-add('output-mapping-failure',binding={'target':target(),'output':{'array':[{'at':'/missing'}]}},result={'success':False,'values':[]})
-error_case('request-null-envelope','unroutable',binding={'target':target(),'input':{'literal':None}})
+add('jsonata-nested-lexical-scope',artifact('post',body=rb()),input={'tenant':'T','groups':[{'tag':'A','rows':[2,3]},{'tag':'B','rows':[]}]},binding={'target':target(method='post'),'input':m,'output':'{"result": $lookup($, "native"), "missing": $lookup($, "missing")}'},expect=expected('POST',headers={'content-type':'application/json'},body_json={'batch':[{'tag':'A','items':[{'v':2,'group':'A','tenant':'T'},{'v':3,'group':'A','tenant':'T'}]},{'tag':'B','items':[]}],'pair':[None,'T']}),result={'success':True,'values':[{'result':True}]},authority='§4')
+add('jsonata-absent-input',absent=True,binding={'target':target(),'input':'$'})
+add('mapping-absent-output-suppresses',binding={'target':target(),'output':'$lookup($, "missing")'},result={'success':True,'values':[]})
+add('mapping-null-output-value',binding={'target':target(),'output':'null'},result={'success':True,'values':[None]})
+add('mapping-absent-collection-omitted',artifact('post',body=rb()),input={},binding={'target':target(method='post'),'input':'($root := $; {"body": {"rows": ($exists($lookup($root, "missing")) ? ($count($lookup($root, "missing")) = 0 ? [] : $map($lookup($root, "missing"), function($item1) { $item1 })[]))}})'},expect=expected('POST',headers={'content-type':'application/json'},body_json={}))
+for name,mp in [('up',{'at':'','up':1}),('negative-up',{'at':'','up':-1}),('bool-up',{'at':'','up':True}),('ambiguous',{'at':'','literal':None}),('each-extra',{'each':{'in':'$','value':'$','index':True}})]:error_case('mapping-invalid-'+name,'invalid',binding={'target':target(),'input':mp})
+for name,mp in [('assertion','$assert(false)'),('type-error','$sum("wrong")'),('non-json-result','function($x){$x}')]:error_case('jsonata-failure-'+name,'mapping',binding={'target':target(),'input':mp})
+add('output-mapping-failure',binding={'target':target(),'output':'($assert($exists(missing)); [missing])'},result={'success':False,'values':[]})
+error_case('request-null-envelope','unroutable',binding={'target':target(),'input':'null'})
 error_case('request-unknown-member','unroutable',input={'alien':1})
 error_case('request-null-parameters','unroutable',input={'parameters':None})
 
@@ -236,7 +228,7 @@ add('response-null-is-value',native=response(b'null'),result={'success':True,'va
 add('response-empty-is-no-value',native=response(b''),result={'success':True,'values':[]})
 add('response-unpaired-surrogate-fails',native=response(b'"\\ud800"'),result={'success':False,'values':[]})
 add('response-truncated-unary',native={**response(b'{"x":'), 'truncated':True},result={'success':False,'values':[]})
-add('response-failure-no-output',native=response(b'{"error":"bad"}',400),binding={'target':target(),'output':{'literal':'would-leak'}},result={'success':False,'values':[]})
+add('response-failure-no-output',native=response(b'{"error":"bad"}',400),binding={'target':target(),'output':'"would-leak"'},result={'success':False,'values':[]})
 add('response-invalid-failure-diagnostics',native=response(b'not JSON',500),result={'success':False,'values':[]})
 add('response-101-upgrade',native=response(b'',101),result={'success':False,'values':[]})
 add('response-redirect-not-followed',native=response(b'',307,[['Location','/elsewhere']]),result={'success':False,'values':[]})
@@ -273,7 +265,7 @@ error_case('request-content-coding-no-body','unroutable',doc=artifact(params=[p(
 # encoder is involved in generator construction, and expected requests are literal.
 def synthesize_subset():
     native=artifact('post','/things/{thingId}',params=[p('thingId','path',required=True)],body=rb('application/json',{'type':'object','properties':{'label':{'type':'string'}},'required':['label']}),resp=rr('application/json',{'type':'object','properties':{'accepted':{'type':'boolean'}}}))
-    out=obi(native,{'target':target('/things/{thingId}','post'),'input':{'object':{'parameters':{'object':{'thingId':{'at':'/id'}}},'body':{'object':{'label':{'at':'/name'}}}}},'output':{'at':'/accepted'}})
+    out=obi(native,{'target':target('/things/{thingId}','post'),'input':'{"parameters": {"thingId": $lookup($, "id")}, "body": {"label": $lookup($, "name")}}','output':'$lookup($, "accepted")'})
     out['operations']={'perform':{'description':'Store the named thing','input':{'type':'object','properties':{'id':{'type':'string'},'name':{'type':'string'}},'required':['id','name'],'additionalProperties':False},'output':{'type':'boolean'}}}
     return out
 c=add('generated-current-core-OBI',input={'id':'a/b','name':'native label'},expect=expected('POST',path='/api/things/a%2Fb',headers={'content-type':'application/json'},body_json={'label':'native label'}),native=response(b'{"accepted":true}'),result={'success':True,'values':[True]},origin='generated subset',authority='§11/core§5–6');c['obi']=synthesize_subset()

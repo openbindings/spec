@@ -19,7 +19,7 @@ import urllib.parse as U
 import urllib.request
 from pathlib import Path
 
-CANDIDATE_SHA256 = 'a8e203b2f39609ddd24c4750b61842a079e97285514f0075d2ca8c70a277504e'
+CANDIDATE_SHA256 = 'd7c3a65d9303696f11fb05ac589f098d17d32385d9bcd7534beeb4ec5a57a9a0'
 CORE_SHA256 = hashlib.sha256((Path(os.environ.get('SPEC_ROOT', str(Path(__file__).resolve().parents[3]))) / 'openbindings.md').read_bytes()).hexdigest()
 KIND = 'openbindings.openapi-3.1@1'
 ABSENT = object()
@@ -151,43 +151,21 @@ def at(v,p):
         else: return ABSENT
     return v
 
-def check_mapping(m,depth=0):
-    require(isinstance(m,dict), 'invalid', 'mapping must be object')
-    keys = set(m)
-    if 'at' in m:
-        require(keys <= {'at','up'}, 'invalid', 'mapping extra field')
-        pointer_parts(m['at'])
-        u = m.get('up',0)
-        require(type(u) is int and 0 <= u <= depth, 'invalid', 'mapping up scope')
-    elif keys == {'literal'}: json_text(m['literal'])
-    elif keys == {'object'}:
-        require(isinstance(m['object'],dict), 'invalid', 'mapping object shape')
-        for x in m['object'].values(): check_mapping(x,depth)
-    elif keys == {'array'}:
-        require(isinstance(m['array'],list), 'invalid', 'mapping array shape')
-        for x in m['array']: check_mapping(x,depth)
-    elif keys == {'each'}:
-        x = m['each']
-        require(isinstance(x,dict) and set(x)=={'in','value'}, 'invalid', 'each shape')
-        check_mapping(x['in'],depth)
-        check_mapping(x['value'],depth+1)
-    else: fail('invalid','mapping form')
+# Shared test transport delegates expression semantics to upstream JSONata.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'jsonata'))
+from jsonata_probe import (validate as _validate_expression, evaluate as _evaluate_expression,
+    InvalidExpression, EvaluationFailure, NumericLimit)
 
-def mapping(m,v,parents=()):
-    if 'at' in m: return at(([v]+list(parents))[m.get('up',0)],m['at'])
-    if 'literal' in m: return copy.deepcopy(m['literal'])
-    if 'object' in m:
-        d = {k:mapping(x,v,parents) for k,x in m['object'].items()}
-        return {k:x for k,x in d.items() if x is not ABSENT}
-    if 'array' in m:
-        a = [mapping(x,v,parents) for x in m['array']]
-    else:
-        a = mapping(m['each']['in'],v,parents)
-        if a is ABSENT: return ABSENT
-        require(isinstance(a,list),'mapping','each collection is not array')
-        a = [mapping(m['each']['value'],x,(v,)+parents) for x in a]
-    require(all(x is not ABSENT for x in a),'mapping','absent array item')
-    return a
+def check_mapping(expression):
+    try: _validate_expression(expression)
+    except InvalidExpression as exc: raise Cannot('invalid', str(exc)) from exc
+
+def mapping(expression, value):
+    try: return _evaluate_expression(expression, value, ABSENT)
+    except InvalidExpression as exc: raise Cannot('invalid', str(exc)) from exc
+    except EvaluationFailure as exc: raise Cannot('mapping', str(exc)) from exc
+    except NumericLimit as exc: raise Cannot('unsupported', str(exc)) from exc
 
 def esc(s): return s.replace('~','~0').replace('/','~1')
 def pct(s): return U.quote(s,safe='-._~')

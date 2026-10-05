@@ -90,30 +90,21 @@ def select(v,p):
         else: return ABSENT
     return v
 
-def mapping_check(m,depth=0):
-    need(isinstance(m,dict),'invalid','mapping-object')
-    forms=set(m)-{'up'}; need(len(forms)==1,'invalid','mapping-form'); f=next(iter(forms))
-    need(f in {'at','literal','object','array','each'} and ('up' not in m or f=='at'),'invalid','mapping-members')
-    if f=='at':
-        pointer_tokens(m[f]); up=m.get('up',0); need(type(up)==int and 0<=up<=depth,'invalid','mapping-up')
-    if f=='object':
-        need(isinstance(m[f],dict),'invalid','mapping-object'); [mapping_check(x,depth) for x in m[f].values()]
-    if f=='array':
-        need(isinstance(m[f],list),'invalid','mapping-array'); [mapping_check(x,depth) for x in m[f]]
-    if f=='each':
-        e=m[f]; need(isinstance(e,dict) and set(e)=={'in','value'},'invalid','mapping-each')
-        mapping_check(e['in'],depth); mapping_check(e['value'],depth+1)
+# Shared test transport delegates expression semantics to upstream JSONata.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'jsonata'))
+from jsonata_probe import (validate as _validate_expression, evaluate as _evaluate_expression,
+    InvalidExpression, EvaluationFailure, NumericLimit)
 
-def mapped(m,scope):
-    if 'at' in m: return select(scope[m.get('up',0)],m['at'])
-    if 'literal' in m: return m['literal']
-    if 'object' in m: return {k:v for k,x in m['object'].items() if (v:=mapped(x,scope)) is not ABSENT}
-    if 'array' in m:
-        out=[mapped(x,scope) for x in m['array']]; need(all(x is not ABSENT for x in out),'mapping-failure','absent-array-member'); return out
-    e=m['each']; col=mapped(e['in'],scope)
-    if col is ABSENT: return ABSENT
-    need(isinstance(col,list),'mapping-failure','each-non-array'); out=[mapped(e['value'],[x]+scope) for x in col]
-    need(all(x is not ABSENT for x in out),'mapping-failure','absent-each-member'); return out
+def mapping_check(expression):
+    try: _validate_expression(expression)
+    except InvalidExpression as exc: raise Problem('invalid', str(exc)) from exc
+
+def mapped(expression, scope):
+    try: return _evaluate_expression(expression, scope[0], ABSENT)
+    except InvalidExpression as exc: raise Problem('invalid', str(exc)) from exc
+    except EvaluationFailure as exc: raise Problem('mapping-failure', str(exc)) from exc
+    except NumericLimit as exc: raise Problem('unsupported', str(exc)) from exc
 
 class Resolver:
     def __init__(self,ctx): self.docs={}; self.ctx=ctx; self.bases={}; self.roots={}; self.fetches=[]

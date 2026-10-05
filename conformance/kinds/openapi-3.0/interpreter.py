@@ -33,34 +33,21 @@ def pointer(v,p):
         else: return ABSENT
     return v
 
-def validate_mapping(m, depth=0):
-    check(isinstance(m,dict),'invalid','mapping object')
-    ks=set(m)
-    if 'at' in m:
-        check(ks <= {'at','up'},'invalid','at members'); pointer_tokens(m['at'])
-        n=m.get('up',0); check(type(n) is int and 0<=n<=depth,'invalid','up scope')
-    elif ks=={'literal'}: return
-    elif ks=={'object'}:
-        check(isinstance(m['object'],dict),'invalid','object mapping')
-        for x in m['object'].values(): validate_mapping(x,depth)
-    elif ks=={'array'}:
-        check(isinstance(m['array'],list),'invalid','array mapping')
-        for x in m['array']: validate_mapping(x,depth)
-    elif ks=={'each'}:
-        check(isinstance(m['each'],dict) and set(m['each'])=={'in','value'},'invalid','each members')
-        validate_mapping(m['each']['in'],depth); validate_mapping(m['each']['value'],depth+1)
-    else: fail('invalid','mapping form')
-def mapping(m,v,scopes=()):
-    if 'at' in m: return pointer(((v,)+scopes)[m.get('up',0)],m['at'])
-    if 'literal' in m: return m['literal']
-    if 'object' in m: return {k:x for k,a in m['object'].items() if (x:=mapping(a,v,scopes)) is not ABSENT}
-    if 'array' in m:
-        a=[mapping(x,v,scopes) for x in m['array']]; check(all(x is not ABSENT for x in a),'mapping','absent array element'); return a
-    a=mapping(m['each']['in'],v,scopes)
-    if a is ABSENT:return ABSENT
-    check(isinstance(a,list),'mapping','nonarray each')
-    out=[mapping(m['each']['value'],x,(v,)+scopes) for x in a]
-    check(all(x is not ABSENT for x in out),'mapping','absent each item'); return out
+# Shared test transport delegates expression semantics to upstream JSONata.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'jsonata'))
+from jsonata_probe import (validate as _validate_expression, evaluate as _evaluate_expression,
+    InvalidExpression, EvaluationFailure, NumericLimit)
+
+def validate_mapping(expression):
+    try: _validate_expression(expression)
+    except InvalidExpression as exc: raise Cannot('invalid', str(exc)) from exc
+
+def mapping(expression, value):
+    try: return _evaluate_expression(expression, value, ABSENT)
+    except InvalidExpression as exc: raise Cannot('invalid', str(exc)) from exc
+    except EvaluationFailure as exc: raise Cannot('mapping', str(exc)) from exc
+    except NumericLimit as exc: raise Cannot('unsupported', str(exc)) from exc
 
 def text_bytes(b):
     for bom,codec in ((codecs.BOM_UTF32_BE,'utf-32'),(codecs.BOM_UTF32_LE,'utf-32'),(codecs.BOM_UTF16_BE,'utf-16'),(codecs.BOM_UTF16_LE,'utf-16'),(codecs.BOM_UTF8,'utf-8-sig')):

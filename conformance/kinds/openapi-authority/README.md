@@ -8,6 +8,7 @@ independent implementation or a declaration of complete kind support.
 Run from the spec root:
 
 ```sh
+npm ci --prefix conformance/kinds/jsonata --ignore-scripts --no-audit --no-fund
 python3 conformance/kinds/openapi-authority/test_authorities.py -v
 node scripts/verify-openapi-20-kind.mjs
 node scripts/verify-openapi-30-kind.mjs

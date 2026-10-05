@@ -9,7 +9,7 @@ from cases import CASES
 from interpreter import ABSENT, Cannot, Interpreter, complete, parse_artifact
 
 HERE=Path(__file__).resolve().parent
-CANDIDATE_HASH='3fab61d2903d4f2916b776ce4ae17ea7fa59e838cb0644fd7a8d5fc0fa0fbc8b'
+CANDIDATE_HASH='1f4b76b52706996f5061ec8f81a01fc3852d7599b0a34d8d07440daae0cd986b'
 
 def authority_root():
     return Path(os.environ.get('SPEC_ROOT',str(HERE.parents[2])))
@@ -231,7 +231,7 @@ def main():
     hashes=verify_hashes();h=Harness(args.native);rows=[];counts=Counter();allcases=[c for c in CASES if args.only is None or args.only in c['id']]
     (HERE/'fixtures.json').write_text(json.dumps(portable(CASES),ensure_ascii=False,indent=2)+'\n')
     (HERE/'generated.obi.json').write_text(json.dumps(next(c['obi'] for c in CASES if c['id']=='generated-current-core-OBI'),indent=2)+'\n')
-    (HERE/'hand-authored.obi.json').write_text(json.dumps(next(c['obi'] for c in CASES if c['id']=='mapping-nested-each-up'),indent=2)+'\n')
+    (HERE/'hand-authored.obi.json').write_text(json.dumps(next(c['obi'] for c in CASES if c['id']=='jsonata-nested-lexical-scope'),indent=2)+'\n')
     (HERE/'generated-callbacks.obi.json').write_text(json.dumps(next(c['obi'] for c in CASES if c['id']=='generated-callback-dependencies'),indent=2)+'\n')
     try:
         for original in allcases:

@@ -54,3 +54,14 @@ uses a different identifier. A clarification may retain the identifier only
 when those facts remain unchanged. Before first publication, candidates can
 change in place. This policy does not govern how another publisher evolves
 its kinds.
+
+## PB-04. Transform language
+
+OpenBindings-published binding specifications use JSONata when they provide
+document-carried transform expressions. They incorporate a precise language
+edition and define the evaluation boundary, including inputs, presence, results
+and failures. The [shared JSONata embedding](jsonata.md) supplies that boundary
+where incorporated; each kind defines its interaction-specific consequences.
+Do not introduce a project-specific replacement transform language. This policy
+does not require every kind to provide transforms, place expression semantics in
+core, or prescribe languages for third-party kinds.

@@ -1,5 +1,9 @@
 # Binding specifications
 
+Project transform policy: published binding specifications use JSONata when they
+provide transform expressions; see [PB-04](PROJECT-POLICY.md#pb-04-transform-language)
+and the [shared embedding](jsonata.md). Core defines no transform language.
+
 **Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
 **Core-model migration status.** [OpenAPI 2.0](openapi-2.0/openbindings.openapi-2.0.md),

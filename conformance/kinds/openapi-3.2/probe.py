@@ -40,51 +40,21 @@ def at(value, pointer):
         else: return ABSENT
     return value
 
-def validate_mapping(m,depth=0):
-    if not isinstance(m, dict): raise Invalid('mapping must be object')
-    if 'at' in m:
-        if set(m)-{'at','up'}:raise Invalid('at has unknown member')
-        pointer_tokens(m['at'])
-        up=m.get('up',0)
-        if type(up) not in (int,float,decimal.Decimal) or up<0 or not decimal.Decimal(str(up)).is_finite() or int(up)!=up or up>depth:
-            raise Invalid('up must select an existing scope by nonnegative integer')
-        return
-    if len(m) != 1: raise Invalid('mapping must have one form')
-    key, v = next(iter(m.items()))
-    if key == 'at': pointer_tokens(v)
-    elif key == 'literal': pass
-    elif key == 'object' and isinstance(v, dict):
-        for child in v.values(): validate_mapping(child,depth)
-    elif key == 'array' and isinstance(v, list):
-        for child in v: validate_mapping(child,depth)
-    elif key == 'each' and isinstance(v, dict) and set(v)=={'in','value'}:
-        validate_mapping(v['in'],depth); validate_mapping(v['value'],depth+1)
-    else: raise Invalid('malformed mapping')
+# Shared test transport delegates expression semantics to upstream JSONata.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'jsonata'))
+from jsonata_probe import (validate as _validate_expression, evaluate as _evaluate_expression,
+    InvalidExpression, EvaluationFailure, NumericLimit)
 
-def mapping(m, original, parents=()):
-    validate_mapping(m,len(parents))
-    if 'at' in m:
-        up=int(m.get('up',0))
-        return at(original if up==0 else parents[up-1],m['at'])
-    key, v = next(iter(m.items()))
-    if key == 'at': return at(original, v)
-    if key == 'literal': return copy.deepcopy(v)
-    if key == 'each':
-        collection=mapping(v['in'],original,parents)
-        if collection is ABSENT: return ABSENT
-        if not isinstance(collection,list): raise MappingFailure('each collection is not array')
-        out=[mapping(v['value'],item,(original,)+parents) for item in collection]
-        if any(x is ABSENT for x in out): raise MappingFailure('each item result absent')
-        return out
-    if key == 'object':
-        out = {}
-        for name, child in v.items():
-            value = mapping(child, original,parents)
-            if value is not ABSENT: out[name] = value
-        return out
-    out = [mapping(child, original,parents) for child in v]
-    if any(x is ABSENT for x in out): raise MappingFailure('array element absent')
-    return out
+def validate_mapping(expression):
+    try: _validate_expression(expression)
+    except InvalidExpression as exc: raise Invalid(str(exc)) from exc
+
+def mapping(expression, value):
+    try: return _evaluate_expression(expression, value, ABSENT)
+    except InvalidExpression as exc: raise Invalid(str(exc)) from exc
+    except EvaluationFailure as exc: raise MappingFailure(str(exc)) from exc
+    except NumericLimit as exc: raise Unsupported(str(exc)) from exc
 
 def artifact_text(data):
     if isinstance(data, bytes):
@@ -701,4 +671,4 @@ def synthesize_named_json_body(doc,path,method):
         'sources':{'api':{'kind':'openbindings.openapi-3.2@1','content':{'document':copy.deepcopy(doc)}}},
         'bindings':{'http':{'operation':'call','source':'api','content':{
             'target':'/paths/'+path.replace('~','~0').replace('/','~1')+'/'+method,
-            'input':{'object':{'body':{'at':''}}}}}}}
+            'input':'{"body": $}'}}}}

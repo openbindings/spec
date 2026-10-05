@@ -21,7 +21,7 @@ from validated_data_probe import encode_checked_text
 SPEC_ROOT=pathlib.Path(os.environ.get('SPEC_ROOT',str(pathlib.Path(__file__).resolve().parents[3])))
 SPEC=SPEC_ROOT/'binding-specs/openapi-3.2/openbindings.openapi-3.2.md'
 CORE=SPEC_ROOT/'openbindings.md'
-EXPECTED_SPEC_SHA256='bb220e73a28904b5fba9d42dddde914eba3142247fd60000c4d808a25d93e4ca'
+EXPECTED_SPEC_SHA256='7806440779d38fe98c1bfef17909be4c59d30864a8e121e9b2fd1c7a86efb013'
 
 def api(path='/things/{id}',method='post',op=None):
     return {'openapi':'3.2.0','info':{'title':'Independent probe','version':'1'},
@@ -52,22 +52,20 @@ class Probes(unittest.TestCase):
         self.assertEqual(hashlib.sha256(SPEC.read_bytes()).hexdigest(),EXPECTED_SPEC_SHA256)
 
     def test_mapping_absence_null_and_original_input(self):
-        self.assertIs(mapping({'at':''},ABSENT),ABSENT)
-        self.assertIsNone(mapping({'at':''},None))
-        self.assertIs(mapping({'at':'/a'},{}),ABSENT)
-        self.assertEqual(mapping({'object':{'keep':{'at':'/a'},'missing':{'at':'/b'},'nil':{'literal':None}}},{'a':False}),{'keep':False,'nil':None})
-        self.assertEqual(mapping({'object':{'nested':{'object':{'x':{'at':'/x'}}}}},{'x':7}),{'nested':{'x':7}})
-        self.assertEqual(mapping({'array':[{'at':'/b'},{'at':'/a'}, {'literal':None}]},{'a':1,'b':2}),[2,1,None])
-        with self.assertRaises(MappingFailure): mapping({'array':[{'at':'/missing'}]}, {})
+        self.assertIs(mapping('$',ABSENT),ABSENT)
+        self.assertIsNone(mapping('$',None))
+        self.assertIs(mapping('$lookup($, "a")',{}),ABSENT)
+        self.assertEqual(mapping('{"keep": $lookup($, "a"), "missing": $lookup($, "b"), "nil": null}',{'a':False}),{'keep':False,'nil':None})
+        self.assertEqual(mapping('{"nested": {"x": $lookup($, "x")}}',{'x':7}),{'nested':{'x':7}})
+        self.assertEqual(mapping('[$lookup($, "b"), $lookup($, "a"), null]',{'a':1,'b':2}),[2,1,None])
+        with self.assertRaises(MappingFailure): mapping('($assert($exists(missing)); [missing])', {})
 
-    def test_mapping_pointer_is_literal_and_decodes_once(self):
+    def test_jsonata_member_names_and_array_index(self):
         value={'a/b':1,'a~1b':2,'%2F':3,'array':[4,5]}
-        for pointer,expected in [('/a~1b',1),('/a~01b',2),('/%2F',3),('/array/1',5)]:
-            self.assertEqual(mapping({'at':pointer},value),expected)
-        for pointer in ['/array/01','/array/-','/array/2','/array/-1']:
-            self.assertIs(mapping({'at':pointer},value),ABSENT)
-        for pointer in ['#/a','abc','/bad~2']:
-            with self.assertRaises(Invalid): mapping({'at':pointer},value)
+        for expression,expected in [('$lookup($,"a/b")',1),('$lookup($,"a~1b")',2),('$lookup($,"%2F")',3),('array[1]',5)]:
+            self.assertEqual(mapping(expression,value),expected)
+        self.assertIs(mapping('array[2]',value),ABSENT)
+        self.assertEqual(mapping('[missing]',{}),[])
 
     def test_malformed_mappings_rejected_even_in_unreached_member(self):
         for m in [None,{},[],{'at':'','literal':1},{'array':{}},{'object':[]},{'unknown':1},{'object':{'x':{'bad':0}}}]:
@@ -166,7 +164,7 @@ class Probes(unittest.TestCase):
         for v in [ABSENT,{},None,{'parameters':None},{'wrong':1}]:
             with self.subTest(v=str(v)),self.assertRaises(Unroutable):request(s,b,v)
         self.assertEqual(request(s,b,{'body':None})[0]['body'],b'null')
-        b['input']={'array':[{'at':'/missing'}]}
+        b['input']='($assert($exists(missing)); [missing])'
         with self.assertRaises(MappingFailure):request(s,b,{})
 
     def test_hand_authored_mapping_native_request(self):
@@ -300,11 +298,11 @@ class Probes(unittest.TestCase):
         self.assertEqual(finish(response(),b'x','image/png'),[('complete',False)])
 
     def test_output_mapping_absence_null_each_value_and_failure(self):
-        self.assertEqual(finish(response(),b'{"x":null}',binding={'output':{'at':'/x'}}),[('value',None),('complete',True)])
-        self.assertEqual(finish(response(),b'{}',binding={'output':{'at':'/x'}}),[('complete',True)])
-        self.assertEqual(finish(response(),b'{}',binding={'output':{'array':[{'at':'/x'}]}}),[('complete',False)])
+        self.assertEqual(finish(response(),b'{"x":null}',binding={'output':'$lookup($, "x")'}),[('value',None),('complete',True)])
+        self.assertEqual(finish(response(),b'{}',binding={'output':'$lookup($, "x")'}),[('complete',True)])
+        self.assertEqual(finish(response(),b'{}',binding={'output':'($assert($exists(x)); [x])'}),[('complete',False)])
         op=response('application/x-ndjson')
-        self.assertEqual(finish(op,b'{"x":1}\n{}\n{"x":null}\n','application/x-ndjson',{'output':{'at':'/x'}}),[('value',1),('value',None),('complete',True)])
+        self.assertEqual(finish(op,b'{"x":1}\n{}\n{"x":null}\n','application/x-ndjson',{'output':'$lookup($, "x")'}),[('value',1),('value',None),('complete',True)])
 
     def test_sequences_late_parse_mapping_transport_failures(self):
         op=response('application/x-ndjson')
@@ -312,7 +310,7 @@ class Probes(unittest.TestCase):
             self.assertEqual(list(response_events(op,{},200,[('Content-Type','application/x-ndjson')],chunks)),[('value',1),('value',2),('value',3),('complete',True)])
         for data in [b'1\n{bad',b'1\n\n2\n',b'1\n  \n2\n']:
             self.assertEqual(finish(op,data,'application/x-ndjson'),[('value',1),('complete',False)])
-        self.assertEqual(finish(op,b'{"x":1}\n{}\n','application/x-ndjson',{'output':{'array':[{'at':'/x'}]}}),[('value',[1]),('complete',False)])
+        self.assertEqual(finish(op,b'{"x":1}\n{}\n','application/x-ndjson',{'output':'($assert($exists(x)); [x])'}),[('value',[1]),('complete',False)])
         def broken():
             yield b'1\n'
             yield b'2'
@@ -322,7 +320,7 @@ class Probes(unittest.TestCase):
 
     def test_failure_data_never_becomes_success(self):
         op={'responses':{'400':{'content':{'application/json':{}}}}}
-        self.assertEqual(finish(op,b'{"error":"bad"}',binding={'output':{'literal':'forged-success'}},status=400),[('complete',False)])
+        self.assertEqual(finish(op,b'{"error":"bad"}',binding={'output':'"forged-success"'},status=400),[('complete',False)])
         self.assertEqual(finish(op,b'broken',status=400),[('complete',False)])
         self.assertEqual(finish(op,b'1\n2\n','application/x-ndjson',status=400),[('complete',False)])
 
@@ -341,7 +339,7 @@ class Probes(unittest.TestCase):
             # by the bridge decoder or reconstituted from generated schema.
             self.assertEqual((req['method'],req['url']),('POST','https://wire.example/base/submit'))
             self.assertEqual(json.loads(req['body']),{'mode':mode,'payload':payload})
-            wrong=copy.deepcopy(binding);wrong['input']={'object':{'body':{'at':'/payload'}}}
+            wrong=copy.deepcopy(binding);wrong['input']='{"body": $lookup($, "payload")}'
             bad,_=request(source,wrong,caller)
             self.assertNotEqual(json.loads(bad['body']),{'mode':mode,'payload':payload})
         doc['paths']['/submit']['post']['requestBody']['content']['application/json']['schema']['unevaluatedProperties']=False
@@ -356,23 +354,20 @@ class Probes(unittest.TestCase):
         # contract contradicts the independently derived two scalar values.
         self.assertFalse(all(isinstance(v,list) for v in emitted))
 
-    def test_r2_each_mapping_collection_and_item_scope(self):
-        m={'each':{'in':{'at':'/rows'},'value':{'object':{'native':{'at':'/x'},'outer':{'at':'/outer'}}}}}
+    def test_jsonata_collection_and_lexical_scope(self):
+        m='($exists(rows) ? ($count(rows) = 0 ? [] : $map(rows, function($row) { {"native": $row.x, "outer": $row.outer} })[]))'
         self.assertEqual(mapping(m,{'outer':'secret','rows':[{'x':2},{'x':None}]}),[{'native':2},{'native':None}])
         self.assertEqual(mapping(m,{'rows':[]}),[])
         self.assertIs(mapping(m,{}),ABSENT)
-        for collection in [None,{},'text']:
-            with self.assertRaises(MappingFailure):mapping(m,{'rows':collection})
-        with self.assertRaises(MappingFailure):mapping({'each':{'in':{'at':''},'value':{'at':'/missing'}}},[{}])
-        nested={'each':{'in':{'at':''},'value':{'each':{'in':{'at':'/rows'},'value':{'at':'/x'}}}}}
-        self.assertEqual(mapping(nested,[{'rows':[{'x':1},{'x':2}]},{'rows':[]}]),[[1,2],[]])
-        for m in [{'each':{'in':{'at':''}}},{'each':{'in':{'at':''},'value':{'at':''},'index':'i'}}]:
-            with self.assertRaises(Invalid):validate_mapping(m)
+        self.assertEqual(mapping('($exists($) ? ($count($) = 0 ? [] : $map($, function($g) {$g.rows.x[]})[]))',[{'rows':[{'x':1},{'x':2}]},{'rows':[]}]),[[1,2]])
+        with self.assertRaises(MappingFailure): mapping('$sum("wrong")',{})
+        with self.assertRaises(MappingFailure): mapping('function($x){$x}',{})
+        with self.assertRaises(Invalid): validate_mapping('false ? ( : 1')
 
     def test_r2_each_hand_authored_body_and_output_collection(self):
         doc=api('/bulk','post',{'requestBody':{'content':{'application/json':{}}},'responses':{'200':{'content':{'application/json':{}}}}})
-        b={'target':target('/bulk','post'),'input':{'object':{'body':{'each':{'in':{'at':'/items'},'value':{'object':{'title':{'at':'/label'}}}}}}},
-            'output':{'each':{'in':{'at':'/results'},'value':{'at':'/id'}}}}
+        b={'target':target('/bulk','post'),'input':'($root := $; {"body": ($exists($lookup($root, "items")) ? ($count($lookup($root, "items")) = 0 ? [] : $map($lookup($root, "items"), function($item1) { {"title": $lookup($item1, "label")} })[]))})',
+            'output':'($exists(results) ? ($count(results) = 0 ? [] : $map(results, function($item) { ($assert($exists($item.id)); $item.id) })[]))'}
         req,op=request(Source({'document':doc}),b,{'items':[{'label':'first'},{'label':'second'}]})
         self.assertEqual(req['body'],b'[{"title":"first"},{"title":"second"}]')
         self.assertEqual(finish(op,b'{"results":[{"id":3},{"id":4}]}',binding=b),[('value',[3,4]),('complete',True)])
@@ -435,29 +430,27 @@ class Probes(unittest.TestCase):
 
     def test_r3_each_parent_batch_and_nested_scopes(self):
         doc=api('/batch','post',{'requestBody':{'content':{'application/json':{}}}})
-        b={'target':target('/batch','post'),'input':{'object':{'body':{'each':{'in':{'at':'/items'},'value':{'object':{
-            'batch':{'at':'/batch','up':1},'name':{'at':'/label'}}}}}}}}
+        b={'target':target('/batch','post'),'input':'($root := $; {"body": ($exists($lookup($root, "items")) ? ($count($lookup($root, "items")) = 0 ? [] : $map($lookup($root, "items"), function($item1) { {"batch": $lookup($root, "batch"), "name": $lookup($item1, "label")} })[]))})'}
         caller={'batch':'batch-7','items':[{'label':'a'},{'label':'b'}]}
         req,_=request(Source({'document':doc}),b,caller)
         native=[{'batch':'batch-7','name':'a'},{'batch':'batch-7','name':'b'}]
         self.assertEqual(json.loads(req['body']),native)
         wrong=copy.deepcopy(b)
-        wrong['input']['object']['body']['each']['value']['object']['batch']['up']=0
+        wrong['input']=wrong['input'].replace('$lookup($root, "batch")', '$lookup($item1, "batch")')
         self.assertNotEqual(json.loads(request(Source({'document':doc}),wrong,caller)[0]['body']),native)
-        nested={'each':{'in':{'at':'/groups'},'value':{'each':{'in':{'at':'/rows'},'value':{'object':{
-            'root':{'at':'/batch','up':2},'group':{'at':'/name','up':1},'value':{'at':''}}}}}}}
+        nested='($root := $; ($exists($lookup($root, "groups")) ? ($count($lookup($root, "groups")) = 0 ? [] : $map($lookup($root, "groups"), function($item1) { ($exists($lookup($item1, "rows")) ? ($count($lookup($item1, "rows")) = 0 ? [] : $map($lookup($item1, "rows"), function($item2) { {"root": $lookup($root, "batch"), "group": $lookup($item1, "name"), "value": $item2} })[])) })[])))'
         self.assertEqual(mapping(nested,{'batch':'b','groups':[{'name':'g','rows':[3,4]}]}),[[{'root':'b','group':'g','value':3},{'root':'b','group':'g','value':4}]])
-        with_float={'each':{'in':{'at':''},'value':{'at':'','up':1.0}}}
-        self.assertEqual(mapping(with_float,[1]),[[1]])
+        whole_parent='($root := $; ($exists($root) ? ($count($root) = 0 ? [] : $map($root, function($item1) { $root })[])))'
+        self.assertEqual(mapping(whole_parent,[1]),[[1]])
 
-    def test_r3_up_binding_validation_is_static(self):
+    def test_jsonata_rejects_legacy_transform_objects(self):
         for bad in [{'at':'','up':-1},{'at':'','up':0.5},{'at':'','up':True},{'at':'','up':'0'},
             {'at':'','up':1},{'literal':1,'up':0},
             {'object':{'a':{'at':'','up':1}}},
-            {'each':{'in':{'at':'','up':1},'value':{'at':''}}},
-            {'each':{'in':{'literal':[]},'value':{'at':'','up':2}}}]:
+            {'each':{'in':{'at':'','up':1},'value':'$'}},
+            {'each':{'in':'[]','value':{'at':'','up':2}}}]:
             with self.subTest(bad=bad),self.assertRaises(Invalid):validate_mapping(bad)
-        self.assertEqual(mapping({'at':'','up':0},None),None)
+        self.assertEqual(mapping('$',None),None)
 
     def test_r3_case_distinct_header_single_contribution(self):
         doc=api('/x','get',{'parameters':[{'name':'X-Tag','in':'header','schema':{}},{'name':'x-tag','in':'header','schema':{}}]})
@@ -583,7 +576,7 @@ class Probes(unittest.TestCase):
         try:
             source=Source({'location':base+'/redirect'},Resolver(http=True))
             self.assertEqual(source.retrieval,base+'/dir/api.json')
-            binding={'target':target('/submit','post'),'input':{'object':{'body':{'at':'/payload'}}},'output':{'at':'/answer'}}
+            binding={'target':target('/submit','post'),'input':'{"body": $lookup($, "payload")}','output':'$lookup($, "answer")'}
             req,op=request(source,binding,{'payload':{'native':'value'}})
             self.assertEqual(dispatch(req,op,binding),[('value',1),('value',2),('complete',True)])
             self.assertEqual(captured,[('POST','/service/submit','application/json',{'native':'value'})])
@@ -595,8 +588,7 @@ def hand_authored():
         {'in':'query','name':'tag','schema':{'type':'array','items':{'type':'string'}}},
         {'in':'query','name':'flag','schema':{'type':'boolean'}}],
         'requestBody':{'required':True,'content':{'application/json':{}}},'responses':{'200':{'content':{'application/json':{}}}}}
-    binding={'target':target(),'input':{'object':{'parameters':{'object':{'id':{'at':'/key'},'tag':{'at':'/labels'},'flag':{'at':'/enabled'}}},
-        'body':{'object':{'title':{'at':'/name'},'done':{'literal':False},'note':{'at':'/note'},'omitted':{'at':'/notThere'}}}}},'output':{'at':'/result'}}
+    binding={'target':target(),'input':'{"parameters": {"id": $lookup($, "key"), "tag": $lookup($, "labels"), "flag": $lookup($, "enabled")}, "body": {"title": $lookup($, "name"), "done": false, "note": $lookup($, "note"), "omitted": $lookup($, "notThere")}}','output':'$lookup($, "result")'}
     caller={'key':'a/b','name':'alpha','labels':['x y','z'],'enabled':True,'note':None}
     return api(op=op),binding,caller
 

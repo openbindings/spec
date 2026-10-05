@@ -11,7 +11,7 @@ SPEC_ROOT=Path(os.environ.get('SPEC_ROOT',HERE.parents[2]))
 CANDIDATE=SPEC_ROOT/'binding-specs/openapi-2.0/openbindings.openapi-2.0.md'
 CORE=SPEC_ROOT/'openbindings.md'
 POLICY=SPEC_ROOT/'binding-specs/PROJECT-POLICY.md'
-PINS={'candidate':'82eae25aa475bd3f994177b5b2be1b01a1a07502c46229fe2c7c09649ece3a5a','policy':'b580affc92223d5f0e75d66d17363c8befa1951ed7c4c8ad825a8470dd7a0b3c'}
+PINS={'candidate':'a2e6449e75e2750e59f142dac0dcfcb461fce920f8f883b7e517abbe8e1b8103','policy':'1674d5b60e521749c5fb3b030a6fa30e26cbe3b8fdef7148685bbf85a4a68a90'}
 def write(name,value): (HERE/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
 def replace_ports(v,port,other):
     if isinstance(v,str): return v.replace('OTHERPORT',str(other)).replace('PORT',str(port))

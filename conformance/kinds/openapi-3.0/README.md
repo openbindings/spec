@@ -1,5 +1,10 @@
 # Independent OAS 3.0 interpretation evidence
 
+**JSONata migration:** transforms now use upstream JSONata 2.1.1; install its
+[test dependency](../jsonata/README.md) before reproducing this suite. Earlier
+structural-language coverage descriptions below are historical; current
+expressions and embedding cases are listed in that evidence note.
+
 **2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
 The original authorship narrative below is historical. This maintenance changed
 probe algorithms and expectations; it is not another independent implementation.
@@ -20,7 +25,7 @@ the 3.0 candidate incorporates.
 
 - Kind: `openbindings.openapi-3.0@1`.
 - Candidate/canonical SHA-256:
-  `3fab61d2903d4f2916b776ce4ae17ea7fa59e838cb0644fd7a8d5fc0fa0fbc8b`.
+  `1f4b76b52706996f5061ec8f81a01fc3852d7599b0a34d8d07440daae0cd986b`.
 - Core SHA-256:
   `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e`.
 - Candidate's incorporated OAS 3.0.4 interpretation governs admitted `3.0.0`
@@ -85,7 +90,7 @@ HTTP activity. Counts and each observed interaction are saved in the result JSON
   independently authored response bytes under `response`/`responses_sequence`;
   completion expectations under `expected_completion`; artifact resource bytes
   under `resources`. The top level is an array, not an OBI fragment collection.
-- `hand-authored.obi.json`: standalone complete OBI with nested `each`/`up`
+- `hand-authored.obi.json`: standalone complete OBI with nested JSONata lexical scopes
   input correspondence and output adaptation.
 - `generated.obi.json`: complete generated OBI for the bounded rename/shape
   translation, with native names and independent caller-facing contracts.
@@ -120,7 +125,7 @@ not presented as another 372 independent interactions.
 | Every admitted entry patch and source form | `patch-*`; embedded object, JSON/YAML text, location-only HTTP JSON/YAML/UTF-16, co-present object/text plus location, successful acquisition redirect/final base |
 | Source refusals and representation rules | absent/null/empty/wrong members; duplicate/nonscalar keys, tags, non-JSON values, multiple docs, later patches, unsuccessful/policy-denied HTTP; exact Core scalar values and key spellings |
 | Literal target and references | percent/tilde path, malformed pointers, missing target, Reference adjacency ignored, mounted external Path Item, entry inheritance, declaration-relative server, used/overridden collisions, missing reference, unused cycle |
-| Adaptation and absence | every mapping form; nested `each` with `up:1`/`up:2`; empty/missing collections; object omission; null literals; empty pointer on absent input; invalid scopes/forms; input/output failures |
+| Adaptation and absence | JSONata expressions; nested JSONata lexical scopes; empty/missing collections; object omission; null literals; empty pointer on absent input; invalid expression syntax and legacy objects; input/output failures |
 | Request and context | envelope shape, name qualification, required/optional parameters/bodies, complete server replacement with repeated slash preservation, selection, variables/defaults/enums, unrepaired invalid URLs |
 | Parameters and cookies | operation override, matrix/label/simple, form/deepObject/space/pipe query, undefined/empty/absent values, scalar conversion, reserved and ordinary query coexistence, JSON content parameters, corrected UTF-8 headers, collisions/ownership, raw and structured cookies |
 | Methods | POST/PUT/PATCH bodies; GET/HEAD/DELETE/OPTIONS ignored body declarations plus refused supplied bodies; TRACE body and sensitive credential boundaries |

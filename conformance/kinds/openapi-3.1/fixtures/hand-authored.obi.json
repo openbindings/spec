@@ -3,9 +3,24 @@
   "name": "Independent grouped job submission",
   "operations": {
     "submitGroupedJob": {
-      "aliases": ["independent.submit"],
-      "input": {"type": "object"},
-      "output": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}, "additionalProperties": false}
+      "aliases": [
+        "independent.submit"
+      ],
+      "input": {
+        "type": "object"
+      },
+      "output": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "sources": {
@@ -14,18 +29,69 @@
       "content": {
         "document": {
           "openapi": "3.1.2",
-          "info": {"title": "Independent fixture", "version": "1"},
+          "info": {
+            "title": "Independent fixture",
+            "version": "1"
+          },
           "paths": {
             "/jobs/{job-id}": {
               "post": {
                 "parameters": [
-                  {"name": "job-id", "in": "path", "required": true, "schema": {"type": "string"}},
-                  {"name": "labels", "in": "query", "schema": {"type": "array", "items": {"type": "string"}}},
-                  {"name": "X-Mode", "in": "header", "schema": {"type": "string"}},
-                  {"name": "session", "in": "cookie", "schema": {"type": "string"}}
+                  {
+                    "name": "job-id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "name": "labels",
+                    "in": "query",
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "name": "X-Mode",
+                    "in": "header",
+                    "schema": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "name": "session",
+                    "in": "cookie",
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
                 ],
-                "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object"}}}},
-                "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"type": "object"}}}}}
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "Created",
+                    "content": {
+                      "application/json": {
+                        "schema": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -39,28 +105,8 @@
       "source": "api",
       "content": {
         "target": "/paths/~1jobs~1{job-id}/post",
-        "input": {
-          "object": {
-            "parameters": {"object": {
-              "job-id": {"at": "/key"},
-              "labels": {"at": "/labels"},
-              "X-Mode": {"literal": "batch"},
-              "session": {"at": "/session"}
-            }},
-            "body": {"object": {
-              "organization": {"at": "/org"},
-              "groups": {"each": {"in": {"at": "/groups"}, "value": {"object": {
-                "group": {"at": "/name"},
-                "entries": {"each": {"in": {"at": "/entries"}, "value": {"object": {
-                  "id": {"at": ""},
-                  "group": {"at": "/name", "up": 1},
-                  "organization": {"at": "/org", "up": 2}
-                }}}}
-              }}}}
-            }}
-          }
-        },
-        "output": {"object": {"id": {"at": "/job/id"}, "optional": {"at": "/absent"}}}
+        "input": "($root := $; {\"parameters\": {\"job-id\": $lookup($root, \"key\"), \"labels\": $lookup($root, \"labels\"), \"X-Mode\": \"batch\", \"session\": $lookup($root, \"session\")}, \"body\": {\"organization\": $lookup($root, \"org\"), \"groups\": ($exists($lookup($root, \"groups\")) ? ($count($lookup($root, \"groups\")) = 0 ? [] : $map($lookup($root, \"groups\"), function($item1) { {\"group\": $lookup($item1, \"name\"), \"entries\": ($exists($lookup($item1, \"entries\")) ? ($count($lookup($item1, \"entries\")) = 0 ? [] : $map($lookup($item1, \"entries\"), function($item2) { {\"id\": $item2, \"group\": $lookup($item1, \"name\"), \"organization\": $lookup($root, \"org\")} })[]))} })[]))}})",
+        "output": "{\"id\": $lookup($lookup($, \"job\"), \"id\"), \"optional\": $lookup($, \"absent\")}"
       }
     }
   }

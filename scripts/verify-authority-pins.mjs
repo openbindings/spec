@@ -71,6 +71,7 @@ const SPEC_TEXTS = readdirSync(BINDING_SPECS, { withFileTypes: true })
   )
   .sort();
 SPEC_TEXTS.push("binding-specs/README.md");
+SPEC_TEXTS.push("binding-specs/jsonata.md");
 
 const problems = []; // { kind, message } — kind: moved | unreachable | completeness | manifest
 const seenProblems = new Set();

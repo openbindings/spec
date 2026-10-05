@@ -1,5 +1,10 @@
 # Independent OpenAPI 2.0 bounded executable evidence
 
+**JSONata migration:** transforms now use upstream JSONata 2.1.1; install its
+[test dependency](../jsonata/README.md) before reproducing this suite. Earlier
+structural-language coverage descriptions below are historical; current
+expressions and embedding cases are listed in that evidence note.
+
 **2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
 The original authorship narrative below is historical. This maintenance changed
 probe algorithms and expectations; it is not another independent implementation.
@@ -17,9 +22,9 @@ The final run applied these bytes:
 
 | Authority | SHA-256 |
 | --- | --- |
-| Current clarified candidate | `82eae25aa475bd3f994177b5b2be1b01a1a07502c46229fe2c7c09649ece3a5a` |
+| Current clarified candidate | `a2e6449e75e2750e59f142dac0dcfcb461fce920f8f883b7e517abbe8e1b8103` |
 | Current core `openbindings.md` | `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e` |
-| Project policy | `b580affc92223d5f0e75d66d17363c8befa1951ed7c4c8ad825a8470dd7a0b3c` |
+| Project policy | `1674d5b60e521749c5fb3b030a6fa30e26cbe3b8fdef7148685bbf85a4a68a90` |
 
 Initial interpretation began from candidate r1 `c112468784fff85d38c020108cbe8c1c6851d272fe6b93e3f07575ab1347151b`. The complete revised public text was read after notification of r2. Source-fragment handling, duplicate/overlapping media declarations, and multipart permitted defaults were re-derived from that public revision before the final run. The current run refuses a differing candidate or policy hash and records the observed core hash. It stores the exact candidate in `candidate-pinned.md`; the current core and policy remain canonical in this repository. `pins.json` records both revisions.
 
@@ -70,7 +75,7 @@ Hand-authored operation contracts deliberately use a singleton `const` for prese
 | --- | --- |
 | Source forms | Object, JSON text, YAML text, each with/without `location`; location-only JSON/YAML; UTF-16 BOM retrieval; redirected acquisition; all invalid presence/type modes; fragments; HTTP 404 and policy denial |
 | References | Self-contained parameter references; ignored siblings; external mounted Path Item, external Schema and Response closure; source retrieval provenance; entry-root URL/media/security inheritance; unrelated broken material; missing base/resource; used-field collisions |
-| Mapping | Every form; nested `each`/`up` with two enclosing scopes; literals/null; object omission; empty collection; illegal scopes; absence at empty pointer; input and output failures |
+| Mapping | Every form; nested JSONata lexical scopes with two enclosing scopes; literals/null; object omission; empty collection; illegal scopes; absence at empty pointer; input and output failures |
 | OAS 2.0 schema inspection | Type unions and `allOf` intersections; empty intersection; typeless/non-string character refusal; ignored later keywords; resolved deep `readOnly` under properties/items/additionalProperties; required/readOnly contradiction; absent optional enclosing object; consuming recursive schema |
 | Parameters and URL | Every location; repeated path expression; qualified names; path/query UTF-8 reserved data; all five collection formats; empty/null/absent; delimiter refusal; nested-array refusal; identity overrides/duplicates; unknown envelope keys; default non-insertion; transport-owned and case-colliding headers; raw UTF-8 headers; ordinary Authorization/Accept/Cookie |
 | Forms, files, media | URL-encoded newline/space/plus preservation; multipart exact named parts and file octets, no filename; byte vs binary; canonical Base64 pad bits; body meaning across all seven methods; context selection; empty/duplicate/overlapping media lists; parameter matching; gzip/deflate request stack |

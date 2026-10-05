@@ -271,28 +271,28 @@ case('well_formed_missing_target',no_target)
 
 for label,m in [('up_outside',{'at':'','up':1}),('negative_up',{'at':'','up':-1}),('bool_up',{'at':'','up':True}),
                 ('extra',{'literal':1,'up':0}),('two_forms',{'literal':1,'at':''}),
-                ('bad_each',{'each':{'in':{'at':''},'value':{'at':''},'index':'n'}}),('bad_pointer',{'at':'#/x'})]:
+                ('bad_each',{'each':{'in':'$','value':'$','index':'n'}}),('bad_pointer',{'at':'#/x'})]:
     def invalid_map(t,m=m):
         o=fixture();o['bindings']['native']['content']['input']=m
         t.rejected(lambda:t.i.invoke(o,'native',{},t.ctx),'invalid')
     case('mapping_invalid_'+label,invalid_map)
 
 for label,m,value,expected in [
- ('literal_null',{'literal':None},{},None),('absence_empty_pointer',{'at':''},ABSENT,ABSENT),
- ('object_omits_absent',{'object':{'x':{'at':'/missing'},'y':{'literal':None}}},{},{'y':None}),
- ('empty_each',{'each':{'in':{'at':''},'value':{'at':''}}},[],[]),
- ('missing_each',{'each':{'in':{'at':'/missing'},'value':{'at':''}}},{},ABSENT),
- ('array_literal',{'array':[{'literal':None},{'at':'/a'}]},{'a':3},[None,3]),
- ('literal_percent_key',{'at':'/a%2Fb'},{'a%2Fb':'yes','a/b':'wrong'},'yes')]:
+ ('literal_null','null',{},None),('absence_empty_pointer','$',ABSENT,ABSENT),
+ ('object_omits_absent','{"x": $lookup($, "missing"), "y": null}',{},{'y':None}),
+ ('empty_each','($root := $; ($exists($root) ? ($count($root) = 0 ? [] : $map($root, function($item1) { $item1 })[])))',[],[]),
+ ('missing_each','($root := $; ($exists($lookup($root, "missing")) ? ($count($lookup($root, "missing")) = 0 ? [] : $map($lookup($root, "missing"), function($item1) { $item1 })[])))',{},ABSENT),
+ ('array_literal','[null, $lookup($, "a")]',{'a':3},[None,3]),
+ ('literal_percent_key','$lookup($, "a%2Fb")',{'a%2Fb':'yes','a/b':'wrong'},'yes')]:
     def map_semantics(t,m=m,value=value,expected=expected):
         check_mapping(m);actual=mapping(m,value)
         if expected is ABSENT:t.assertIs(actual,ABSENT)
         else:t.assertEqual(actual,expected)
     case('mapping_'+label,map_semantics)
 
-for label,m,value in [('array_absent',{'array':[{'at':'/missing'}]},{}),
-                      ('each_nonarray',{'each':{'in':{'at':''},'value':{'at':''}}},None),
-                      ('each_absent_item',{'each':{'in':{'at':''},'value':{'at':'/missing'}}},[{}])]:
+for label,m,value in [('assertion','$assert(false)',{}),
+                      ('type_error','$sum("wrong")',None),
+                      ('non_json_result','function($x){$x}',[{}])]:
     def map_failure(t,m=m,value=value):
         o=fixture();o['bindings']['native']['content']['input']=m
         t.rejected(lambda:t.i.invoke(o,'native',value,t.ctx),'mapping')
@@ -678,7 +678,7 @@ for label,status,headers,payload in [
  ('unmatched_ContentType',200,[('Content-Type','image/png')],b'abc'),
  ('unavailable_codec',200,[('Content-Type','application/json'),('Content-Encoding','unknown')],b'null')]:
     def response_fail(t,status=status,headers=headers,payload=payload):
-        r=response_req(t);r['binding']['output']={'literal':'must not escape'}
+        r=response_req(t);r['binding']['output']='"must not escape"'
         out=t.i.complete(r,status,headers,payload)
         t.assertFalse(out['success']);t.assertEqual(out['outputs'],[])
     case('response_unsuccessful_'+label,response_fail)
@@ -692,10 +692,10 @@ case('unary_text_event_stream_whole_representation_itemSchema_no_effect',sse)
 
 def sse_item_mapping(t):
     r=response_req(t,{'text/event-stream':{'schema':{'type':'string'}}})
-    r['binding']['output']={'each':{'in':{'at':''},'value':{'at':'/data'}}}
+    r['binding']['output']='($assert($type($) = "array"); $map($, function($item){$item.data})[])'
     out=t.i.complete(r,200,[('Content-Type','text/event-stream')],b'data: {"a":1}\n\n')
     t.assertFalse(out['success']);t.assertEqual(out['outputs'],[])
-case('unary_does_not_supply_items_to_each_output_mapping',sse_item_mapping)
+case('unary_does_not_supply_items_to_jsonata_array_assertion',sse_item_mapping)
 
 def truncated(t):
     t.server.reply=(200,[('Content-Type','application/json'),('Content-Length','100')],b'{"part":1}')
@@ -703,9 +703,9 @@ def truncated(t):
 case('actual_truncated_unary_HTTP_response_emits_nothing',truncated)
 
 def output_absence(t):
-    r=response_req(t);r['binding']['output']={'at':'/absent'}
+    r=response_req(t);r['binding']['output']='$lookup($, "absent")'
     t.assertEqual(t.i.complete(r,200,[('Content-Type','application/json')],b'{}'),{'success':True,'outputs':[]})
-    r['binding']['output']={'literal':None}
+    r['binding']['output']='null'
     t.assertEqual(t.i.complete(r,200,[('Content-Type','application/json')],b'{}'),{'success':True,'outputs':[None]})
 case('output_mapping_absence_and_null_distinct',output_absence)
 
@@ -854,7 +854,7 @@ case('multipart_response_object_decode_not_in_kind',response_form_unsupported)
 
 def model_has_no_contract_channel_for_transport(t):
     o=fixture();t.server.reply=(200,[('Content-Type','application/json'),('X-Secret','transport-only')],b'{"id":1}')
-    o['bindings']['native']['content']['output']={'object':{'id':{'at':'/id'},'status':{'at':'/status'},'header':{'at':'/X-Secret'}}}
+    o['bindings']['native']['content']['output']='{"id": $lookup($, "id"), "status": $lookup($, "status"), "header": $lookup($, "X-Secret")}'
     t.native(o,{}, {'method':'GET','path':'/probe','query':{}},{'success':True,'outputs':[{'id':1}]})
 case('mapping_cannot_access_status_headers',model_has_no_contract_channel_for_transport)
 

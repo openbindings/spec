@@ -57,73 +57,8 @@
       "source": "native",
       "content": {
         "target": "/paths/~1check/post",
-        "input": {
-          "object": {
-            "body": {
-              "object": {
-                "batch": {
-                  "each": {
-                    "in": {
-                      "at": "/groups"
-                    },
-                    "value": {
-                      "object": {
-                        "tag": {
-                          "at": "/tag"
-                        },
-                        "items": {
-                          "each": {
-                            "in": {
-                              "at": "/rows"
-                            },
-                            "value": {
-                              "object": {
-                                "v": {
-                                  "at": ""
-                                },
-                                "group": {
-                                  "at": "/tag",
-                                  "up": 1
-                                },
-                                "tenant": {
-                                  "at": "/tenant",
-                                  "up": 2
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "pair": {
-                  "array": [
-                    {
-                      "literal": null
-                    },
-                    {
-                      "at": "/tenant"
-                    }
-                  ]
-                },
-                "omit": {
-                  "at": "/missing"
-                }
-              }
-            }
-          }
-        },
-        "output": {
-          "object": {
-            "result": {
-              "at": "/native"
-            },
-            "missing": {
-              "at": "/missing"
-            }
-          }
-        }
+        "input": "($root := $; {\"body\": {\"batch\": ($exists($lookup($root, \"groups\")) ? ($count($lookup($root, \"groups\")) = 0 ? [] : $map($lookup($root, \"groups\"), function($item1) { {\"tag\": $lookup($item1, \"tag\"), \"items\": ($exists($lookup($item1, \"rows\")) ? ($count($lookup($item1, \"rows\")) = 0 ? [] : $map($lookup($item1, \"rows\"), function($item2) { {\"v\": $item2, \"group\": $lookup($item1, \"tag\"), \"tenant\": $lookup($root, \"tenant\")} })[]))} })[])), \"pair\": [null, $lookup($root, \"tenant\")], \"omit\": $lookup($root, \"missing\")}})",
+        "output": "{\"result\": $lookup($, \"native\"), \"missing\": $lookup($, \"missing\")}"
       }
     }
   }

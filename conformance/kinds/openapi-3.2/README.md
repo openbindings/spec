@@ -1,5 +1,10 @@
 # Independent OpenAPI 3.2 family follow-up
 
+**JSONata migration:** transforms now use upstream JSONata 2.1.1; install its
+[test dependency](../jsonata/README.md) before reproducing this suite. Earlier
+structural-language coverage descriptions below are historical; current
+expressions and embedding cases are listed in that evidence note.
+
 **2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
 The original authorship narrative below is historical. This maintenance changed
 probe algorithms and expectations; it is not another independent implementation.
@@ -16,7 +21,7 @@ conclusion.
 ## Exact inputs and isolation
 
 - Candidate: [canonical candidate](../../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md).
-- Candidate SHA-256: `bb220e73a28904b5fba9d42dddde914eba3142247fd60000c4d808a25d93e4ca`.
+- Candidate SHA-256: `7806440779d38fe98c1bfef17909be4c59d30864a8e121e9b2fd1c7a86efb013`.
 - Linked current core: [current core](../../../openbindings.md).
 - Core SHA-256: `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e`.
 
@@ -154,7 +159,7 @@ reported 73-method run.
 The retained live pilot test separately exercises an HTTP artifact redirect,
 a mapped POST and two streamed NDJSON outputs. Retained tests also cover
 querystring present-empty vs absent, ordinary scalar/media rules, mappings and
-nested `each`/`up`, exact status selection, unary failure, retained values after
+nested JSONata lexical scopes, exact status selection, unary failure, retained values after
 late sequential failures, and the optional validated-data route.
 
 ## Bounded added components
