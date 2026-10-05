@@ -43,3 +43,19 @@ at their established `openapi-3.1` paths. The verifier checks their rule IDs aga
 this exact historical text. They do not establish support for the
 [current candidate](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md);
 see its [migration and evidence](../../../binding-specs/openapi-3.1/README.md).
+
+## OpenAPI 3.0
+
+The [pre-kind snapshot](../../../history/binding-specs/openapi-3.0-pre-kind.md)
+is byte-identical to the draft at commit
+`a42ee205afc9cead7fe5e449692fcb2af9b14693`, SHA-256
+`c4eed1a1706c5494cb93a47b827bf2194bb2207934c4289ebc37fdf2667ce5c3`.
+Its relative links retain their original repository context; use the
+[original Git snapshot](https://github.com/openbindings/spec/blob/a42ee205afc9cead7fe5e449692fcb2af9b14693/binding-specs/openapi-3.0/openbindings.openapi-3.0.md)
+when following them.
+
+The two D-rule fixture files and 234 processor/synthesis scenarios remain at
+their established `openapi-3.0` paths. The verifier checks their rule IDs against
+this exact historical text. They do not establish support for the
+[current candidate](../../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md);
+see its [migration and evidence](../../../binding-specs/openapi-3.0/README.md).

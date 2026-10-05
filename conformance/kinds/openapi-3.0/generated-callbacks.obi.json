@@ -1,0 +1,164 @@
+{
+  "openbindings": "0.2.0",
+  "name": "Independent OAS 3.0 probe",
+  "operations": {
+    "perform": {
+      "description": "Invoke the fixture surface",
+      "input": true,
+      "output": true
+    },
+    "receive": {
+      "description": "Consume a service event and acknowledge it",
+      "input": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event"
+        ]
+      },
+      "output": {
+        "type": "boolean"
+      }
+    }
+  },
+  "sources": {
+    "native": {
+      "kind": "openbindings.openapi-3.0@1",
+      "content": {
+        "document": {
+          "openapi": "3.0.4",
+          "info": {
+            "title": "Independent native surface",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "http://127.0.0.1:__PORT__/api"
+            }
+          ],
+          "paths": {
+            "/check": {
+              "post": {
+                "responses": {
+                  "200": {
+                    "description": "ok",
+                    "content": {
+                      "application/json": {
+                        "schema": {}
+                      }
+                    }
+                  }
+                },
+                "requestBody": {
+                  "required": false,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "callbacks": {
+                  "first": {
+                    "{$request.body#/first}": {
+                      "post": {
+                        "requestBody": {
+                          "required": false,
+                          "content": {
+                            "application/json": {
+                              "schema": {
+                                "type": "object",
+                                "properties": {
+                                  "event": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "event"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "responses": {
+                          "200": {
+                            "description": "ack",
+                            "content": {
+                              "application/json": {
+                                "schema": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "second": {
+                    "{$request.body#/second}": {
+                      "post": {
+                        "requestBody": {
+                          "required": false,
+                          "content": {
+                            "application/json": {
+                              "schema": {
+                                "type": "object",
+                                "properties": {
+                                  "event": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "event"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "responses": {
+                          "200": {
+                            "description": "ack",
+                            "content": {
+                              "application/json": {
+                                "schema": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "bindings": {
+    "invoke": {
+      "operation": "perform",
+      "source": "native",
+      "content": {
+        "target": "/paths/~1check/post"
+      }
+    }
+  },
+  "dependencies": {
+    "first-event": {
+      "operation": "receive"
+    },
+    "second-event": {
+      "operation": "receive"
+    }
+  }
+}

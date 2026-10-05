@@ -1,0 +1,5 @@
+__pycache__/
+results-*.json
+evidence-hashes.json
+fixtures.json
+run.log
