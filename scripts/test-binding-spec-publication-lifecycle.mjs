@@ -71,6 +71,7 @@ try {
   mkdirSync(join(temp, "scripts"), { recursive: true });
   for (const script of [
     "publish-binding-specifications.mjs",
+    "concise-core-authority.mjs",
     "verify-binding-spec-publications.mjs",
   ]) {
     copyFileSync(join(SCRIPT_DIR, script), join(temp, "scripts", script));

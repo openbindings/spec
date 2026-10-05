@@ -35,6 +35,8 @@ import { createHash } from "node:crypto";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { conciseCoreAuthorityErrors } from "./concise-core-authority.mjs";
+
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
 const BINDING_ROOT = join(ROOT, "binding-specs");
@@ -138,6 +140,11 @@ function coreSpecificationVersions(markdown) {
 }
 
 function assertOpenApiCoreAuthority(markdown, document, expectedVersion) {
+  const concise = conciseCoreAuthorityErrors(markdown, document, expectedVersion);
+  if (concise !== null) {
+    if (concise.length) fail(concise.join("\n"));
+    return;
+  }
   const declarations = [
     ...markdown.matchAll(
       /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g

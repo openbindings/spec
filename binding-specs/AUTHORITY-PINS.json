@@ -42,7 +42,6 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
@@ -73,7 +72,6 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
@@ -159,7 +157,6 @@
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/graphql/openbindings.graphql.md"
       ],
@@ -312,7 +309,6 @@
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/graphql/openbindings.graphql.md"
       ],
@@ -337,7 +333,6 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/graphql/openbindings.graphql.md"
       ],
@@ -465,8 +460,7 @@
       "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/v3.0.4.html"
@@ -531,8 +525,7 @@
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/v3.1.2.html"
@@ -559,7 +552,8 @@
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
-        "spec.openapis.org/oas/3.1/dialect/base"
+        "spec.openapis.org/oas/3.1/dialect/base",
+        "spec.openapis.org/oas/3.1/dialect/2024-11-10"
       ]
     },
     {
@@ -679,7 +673,6 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -713,7 +706,8 @@
       ],
       "matchTokens": [
         "rfc6839",
-        "RFC 6839"
+        "RFC 6839",
+        "RFCs 6839, 7464 and 8091"
       ]
     },
     {
@@ -766,7 +760,6 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
@@ -1073,8 +1066,7 @@
       "retrievedAt": "2026-08-25T21:31:28Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "www.rfc-editor.org/rfc/rfc5789"
@@ -1093,12 +1085,12 @@
       "sha256": "7d48f01f37eeae4799041b371ad5f533f9f533fd2b0caa1011a8ba27c5b48b70",
       "bytes": 39731,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/oas/3.2/schema/2025-11-23"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Retained historical authority bytes. The migrated OpenAPI 3.2 candidate incorporates OAS 3.2.0 directly and no longer cites this descriptive schema resource."
     },
     {
       "id": "oas-3.2-schema-base-2025-11-23",
@@ -1275,8 +1267,7 @@
       "retrievedAt": "2026-08-24T23:27:03Z",
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "rfc6749",
@@ -1394,7 +1385,8 @@
       ],
       "matchTokens": [
         "rfc8091",
-        "RFC 8091"
+        "RFC 8091",
+        "RFCs 6839, 7464 and 8091"
       ]
     },
     {

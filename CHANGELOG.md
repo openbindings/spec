@@ -235,6 +235,17 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI 3.2 candidate migrated to the current 0.2 core model.** Source
+  `kind` and kind-owned `content` replace the pre-kind fields; explicit target
+  pointers and structural input/output mappings replace removed core selectors
+  and transforms. The reduced specification incorporates upstream mechanics,
+  preserves meaningful interaction boundaries, and leaves equivalent encodings
+  and implementation strategy open. The [migration record](binding-specs/openapi-3.2/README.md)
+  describes incompatible candidate changes and bounded current-core evidence.
+  The old OAPI32 rule corpus is frozen historical evidence, not validation of the
+  migrated kind. The identifier remains unpublished; no SDK support is implied.
+
+
 - **Withholding a positive report is not incomplete evidence.** §10.4 clarifies
   that any reported conclusion retains its defined meaning. OBI-T-09 still
   does not require reporting established conformance. The `conclude-conformance`

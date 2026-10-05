@@ -1,0 +1,112 @@
+{
+  "openbindings": "0.2.0",
+  "operations": {
+    "call": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "enum": [
+              "fast",
+              "safe"
+            ]
+          },
+          "payload": {
+            "enum": [
+              null,
+              "\u00e9",
+              {
+                "n": 2
+              }
+            ]
+          }
+        },
+        "required": [
+          "mode",
+          "payload"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "sources": {
+    "api": {
+      "kind": "openbindings.openapi-3.2@1",
+      "content": {
+        "document": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Independent probe",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "https://wire.example/base"
+            }
+          ],
+          "paths": {
+            "/submit": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "enum": [
+                              "fast",
+                              "safe"
+                            ]
+                          },
+                          "payload": {
+                            "enum": [
+                              null,
+                              "\u00e9",
+                              {
+                                "n": 2
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "mode",
+                          "payload"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "content": {
+                      "application/json": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "bindings": {
+    "http": {
+      "operation": "call",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1submit/post",
+        "input": {
+          "object": {
+            "body": {
+              "at": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

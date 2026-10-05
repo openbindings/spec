@@ -72,6 +72,9 @@ jobs:
             node scripts/verify-binding-spec-publications.mjs
           fi
 
+      - name: Check concise Core authority declarations
+        run: node scripts/test-concise-core-authority.mjs
+
       - name: Exercise binding-specification publication lifecycle
         run: node scripts/test-binding-spec-publication-lifecycle.mjs
 
@@ -224,6 +227,23 @@ jobs:
         env:
           OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
           OB_CORPUS_REQUIRED: "1"
+
+  openapi32-kind:
+    name: OpenAPI 3.2 current-kind probes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: npm install -g ajv-cli ajv-formats
+      - run: node scripts/verify-openapi-32-kind.mjs
 
   # Runs the reference Go runner (conformance/runners/go) against this corpus,
   # blocking, with the Go core pinned to one exact commit, the one that adopts

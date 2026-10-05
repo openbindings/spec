@@ -52,6 +52,7 @@ import { join, dirname, resolve, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { countBindingSpecScenarios } from "./count-binding-spec-scenarios.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -103,7 +104,8 @@ const FAMILIES = {
   "openapi-3.2": {
     bindingSpec: "openbindings.openapi-3.2@1",
     prefix: "OAPI32",
-    spec: join(SPEC_ROOT, "binding-specs", "openapi-3.2", "openbindings.openapi-3.2.md"),
+    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.2-pre-kind.md"),
+    historicalSha256: "453916b488ce92e73a0f18cbe718e71416a58f0d1ba3f2eda08af3c57096627d",
   },
   mcp: {
     bindingSpec: "openbindings.mcp@1",
@@ -329,12 +331,15 @@ const allRuleIds = new Set(coreRules);
 for (const [dir, fam] of Object.entries(FAMILIES)) {
   const md = readFileSync(fam.spec, "utf8");
   specTexts[dir] = md;
+  if (fam.historicalSha256 && createHash("sha256").update(md).digest("hex") !== fam.historicalSha256) {
+    errors.push(`${dir}: historical specification snapshot changed; legacy fixtures must keep their original authority`);
+  }
   if (OPENAPI_FAMILY_DIRS.has(dir)) {
     // An unreleased page is a publication input and must track the companion
     // Core text that the publisher will archive. Once published, its mutable
     // mirror remains locked to that revision's own exact Core dependency even
     // while work on a later Core release begins.
-    const expectedVersion = /^\*\*Status: unreleased /m.test(md) ? coreVersion : undefined;
+    const expectedVersion = !fam.historicalSha256 && /^\*\*Status: unreleased /m.test(md) ? coreVersion : undefined;
     verifyOpenApiCoreAuthority(md, relative(SPEC_ROOT, fam.spec), expectedVersion);
   }
   for (const id of extractFamilyRules(md, fam.prefix)) {
@@ -996,4 +1001,5 @@ if (errors.length) {
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log("\nCandidate corpus internal consistency: OK (not current Core conformance)");
+console.log("\nLegacy candidate corpus internal consistency: OK (not current Core conformance)");
+console.log("OpenAPI 3.2 here uses the frozen pre-kind text; current-kind evidence is conformance/kinds/openapi-3.2.");
