@@ -6,7 +6,7 @@ This record describes migration and evidence; it adds no interpretation rules
 and makes no publication or SDK-support claim.
 
 The shared [value-flow example](../openapi-value-flow.md) traces source and
-binding content, caller input, `each/up`, absence/null, a native request and
+binding content, caller input, JSONata lexical scope, absence/null, a native request and
 response, and output adaptation. It is informative.
 
 The [scope and limits index](../openapi-scope-limits.md) records reasons,
@@ -21,13 +21,14 @@ establish readiness for the current candidates.
 | An OAS object/string directly in `source.content` | `{ "document": <object-or-string> }` inside `source.content` |
 | Top-level `source.location` | `source.content.location`; also the retrieval base for embedded content |
 | `binding.selector: "#/paths/..."` | `binding.content.target: "/paths/..."`, a literal string-form JSON Pointer |
-| Core expression transforms | Optional kind-owned `binding.content.input` / `output` structural mappings |
+| Core expression transforms | Optional kind-owned `binding.content.input` / `output` JSONata expressions |
 | Prescribed processing phases and generation reports | Observable interpretation, truthful contract claims and implementation-specific diagnostics |
 
-Mappings support selection, constants, object/array construction and ordered
-array-item mapping with enclosing input. Arbitrary expressions and dynamic
-object-key iteration need deliberate redesign, not a field rename. Application
-contracts need not expose the intermediate HTTP request envelope.
+Transforms use the [shared JSONata embedding](../jsonata.md). Dynamic object-key
+iteration, arithmetic and other JSONata expressions are available under its
+incorporated language. Legacy structural mapping objects must be rewritten as
+expression strings. Application contracts need not expose the intermediate HTTP
+request envelope.
 
 ## Edition and completeness
 
@@ -44,7 +45,7 @@ per item; whole content-based form-urlencoded values have a separate rule.
 | 2. Address interpretation and acquisition | §2: absolute URI, scheme resolver, successful acquisition and unavailable resources |
 | 3. Source content and absence | §2: closed document/location wrapper with at least one member |
 | 4. Composition and bases | §§2–3: embedded artifact precedence, contributing-document bases and entry-root mounted inheritance |
-| 5. Target and binding content | §§3–4: literal path/method pointer and finite structural mappings |
+| 5. Target and binding content | §§3–4: literal path/method pointer and JSONata expressions |
 | 6. Interaction and lifecycle | §§4–10: unary input, at most one complete success value, failure and cancellation |
 | 7. Correspondence and runtime choices | §§4–11: routing, representation, security, prerequisites and faithful synthesis |
 

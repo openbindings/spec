@@ -22,12 +22,12 @@ unhandled case as handled.
 
 The current correctness evidence is in the
 [authority regression record](../conformance/kinds/openapi-authority/README.md).
-Adaptation language/content, associated failure data, response negotiation and
-header declaration identity still require design reconciliation. These open
+The transform-language decision is settled: the candidates use JSONata under
+[PB-04](PROJECT-POLICY.md#pb-04-transform-language). Their §4 example preserves
+unknown body members while separating `petId` as a parameter. Content-wrapper
+choices, associated failure data, response negotiation and header declaration
+identity remain separate questions. The outstanding review findings and those
 choices prevent treating the candidates as frozen implementation contracts.
-For example, the current structural adaptation cannot express “put `petId` in
-parameters and forward every other, possibly unknown, input member as the body.”
-That is a practical expressiveness question, not an upstream serialization fix.
 
 The literal RFC 6901 target form deliberately omits the old `#` sentinel: it
 names the standard string form directly and avoids suggesting URI-fragment

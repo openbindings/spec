@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { run } from './runner.mjs';
 
 // Expected values are authored directly from the incorporated language rules,
@@ -43,4 +44,21 @@ test('empty remainder is an empty body object', async () => {
   assert.deepEqual(await run({ expression: remainder, present: true, value: { petId: 7 } }), {
     present: true, value: { parameters: { petId: 7 }, body: {} },
   });
+});
+test('published value-flow example and its empty/null cases', async () => {
+  const text = readFileSync(new URL('../../../binding-specs/openapi-value-flow.md', import.meta.url), 'utf8');
+  const blocks = [...text.matchAll(/```json\n([\s\S]*?)\n```/g)].map(match => JSON.parse(match[1]));
+  const binding = blocks.find(value => value.operation === 'submitBatch').content;
+  const caller = { tenant: 't-7', rows: [{ name: 'alpha' }, { name: 'beta' }], note: null };
+  assert.deepEqual(await run({ expression: binding.input, present: true, value: caller }), {
+    present: true, value: { parameters: { tenant: 't-7' }, body: {
+      items: [{ tenant: 't-7', name: 'alpha' }, { tenant: 't-7', name: 'beta' }], note: null,
+    } },
+  });
+  assert.deepEqual(await run({ expression: binding.input, present: true, value: { tenant: 't-7', rows: [] } }), {
+    present: true, value: { parameters: { tenant: 't-7' }, body: { items: [] } },
+  });
+  assert.deepEqual(await run({ expression: binding.input, present: true, value: { tenant: 't-7', rows: null } }), { error: 'mapping' });
+  assert.deepEqual(await run({ expression: binding.output, present: true, value: { accepted: 2 } }), { present: true, value: { count: 2 } });
+  assert.deepEqual(await run({ expression: binding.output, present: true, value: null }), { present: true, value: {} });
 });

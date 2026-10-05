@@ -4,8 +4,8 @@ This is an **informative example** of the OpenAPI family's shared mapping rules.
 The [3.1 candidate](openapi-3.1/openbindings.openapi-3.1.md) governs the concrete
 artifact below. The [2.0](openapi-2.0/openbindings.openapi-2.0.md),
 [3.0](openapi-3.0/openbindings.openapi-3.0.md) and
-[3.2](openapi-3.2/openbindings.openapi-3.2.md) candidates define the same mapping
-forms; their native artifacts and edition-specific interpretation still differ.
+[3.2](openapi-3.2/openbindings.openapi-3.2.md) candidates incorporate the same JSONata
+embedding; their native artifacts and edition-specific interpretation still differ.
 All four kind identifiers remain unpublished candidates.
 
 The source and binding below are entries of an OBI document. They show the whole
@@ -62,29 +62,8 @@ Each `/` in the path key is escaped as `~1`; there is no URI-fragment prefix:
   "source": "api",
   "content": {
     "target": "/paths/~1tenants~1{tenant}~1batch/post",
-    "input": {
-      "object": {
-        "parameters": {"object": {"tenant": {"at": "/tenant"}}},
-        "body": {
-          "object": {
-            "items": {
-              "each": {
-                "in": {"at": "/rows"},
-                "value": {
-                  "object": {
-                    "tenant": {"at": "/tenant", "up": 1},
-                    "name": {"at": "/name"}
-                  }
-                }
-              }
-            },
-            "note": {"at": "/note"},
-            "traceId": {"at": "/traceId"}
-          }
-        }
-      }
-    },
-    "output": {"object": {"count": {"at": "/accepted"}}}
+    "input": "($root := $; $assert($type(rows) = \"array\"); {\"parameters\": {\"tenant\": tenant}, \"body\": {\"items\": [rows.{\"tenant\": $root.tenant, \"name\": name}], \"note\": note, \"traceId\": traceId}})",
+    "output": "{\"count\": accepted}"
   }
 }
 ```
@@ -116,9 +95,10 @@ The input mapping produces this request envelope:
 }
 ```
 
-Inside `each.value`, `at: /name` reads the current row and `up: 1` reads the
-original caller value. The intervening `object` constructors add no scope.
-Missing `/traceId` produces absence, so that object member is omitted. Present
+The expression captures the original caller value in `$root`. Inside the
+`rows` path, `name` reads the current row and `$root.tenant` reads the caller.
+The explicit array constructor preserves empty and singleton collections.
+Missing `traceId` produces absence, so that object member is omitted. Present
 `note: null` remains a supplied null and is preserved by the JSON body mapping.
 
 The native interaction is a POST to
@@ -138,11 +118,11 @@ object; the output mapping then emits the operation value `{"count":2}`.
 | --- | --- |
 | Caller omits `note` | The request body omits `note`; it does not insert null. |
 | Caller supplies `rows: []` | The body contains `items: []`. |
-| Caller supplies `rows: null` | `each` receives a non-array: input mapping fails before dispatch. |
+| Caller supplies `rows: null` | The expression's array assertion fails before dispatch. |
 | Caller omits `tenant` | The required path parameter is absent: invocation cannot dispatch. |
 | A complete 204 response has no content | No response value is decoded, so the output mapping runs zero times and emits nothing. |
 | A complete 200 response has zero content octets | It likewise emits no value. Even replacing the output mapping with a literal would not manufacture a value. |
-| A 200 JSON response contains `null` | This is a present decoded null. `/accepted` is absent, so this particular output mapping emits `{}`, not absence or null. |
+| A 200 JSON response contains `null` | This is a present decoded null. `accepted` is absent, so this particular output mapping emits `{}`, not absence or null. |
 | A nonempty unary JSON response is truncated | Completion is unsuccessful and no partial value is emitted. |
 | A 400 response contains `{"accepted":2}` | Completion is unsuccessful; the body does not become an operation output. |
 

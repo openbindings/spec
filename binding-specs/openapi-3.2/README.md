@@ -6,7 +6,7 @@ Updating this draft does not publish that identifier or assert SDK support.
 This page records migration and evidence; it adds no interpretation requirements.
 
 The shared [value-flow example](../openapi-value-flow.md) traces source and
-binding content, caller input, `each/up`, absence/null, a native request and
+binding content, caller input, JSONata lexical scope, absence/null, a native request and
 response, and output adaptation. It is informative.
 
 The [scope and limits index](../openapi-scope-limits.md) records reasons,
@@ -21,7 +21,7 @@ establish readiness for the current candidates.
 | An OAS object/string directly in `source.content` | `{ "document": <object-or-string> }` inside `source.content` |
 | Top-level `source.location` | `source.content.location`; may accompany `document` as its retrieval base |
 | `binding.selector: "#/paths/..."` | `binding.content.target: "/paths/..."`; literal string-form JSON Pointer, without the old `#` sentinel |
-| Core `inputTransform` / `outputTransform` | Optional kind-owned `binding.content.input` / `output` structural mappings |
+| Core `inputTransform` / `outputTransform` | Optional kind-owned `binding.content.input` / `output` JSONata expressions |
 | Required source/load phases and exhaustive generation-report layout | Required interaction meaning, with implementation-specific diagnostics and generation policy |
 
 Sources, bindings, operations and dependencies retain their core-defined roles.
@@ -29,10 +29,10 @@ The kind interprets only the content assigned to it. A mapping adapts applicatio
 values into native parameters/body and decoded response values into application
 outputs; an operation contract need not expose the HTTP envelope.
 
-Expression transforms need deliberate rewriting, not a field rename. The small
-mapping facility supports selection, constants, object/array construction and
-array-item mapping with enclosing-value access. It does not reproduce arbitrary
-expressions or iteration over dynamic object keys.
+Transforms use the [shared JSONata embedding](../jsonata.md), including ordinary
+JSONata expressions and dynamic object-key iteration. Legacy structural mapping
+objects must be rewritten as expression strings; JSONata absence and sequence
+rules apply.
 
 A [hand-authored OBI](../../conformance/kinds/openapi-3.2/hand-authored.obi.json)
 and a [generated OBI](../../conformance/kinds/openapi-3.2/synthesized.obi.json)
@@ -64,6 +64,7 @@ complete current-core OBIs, independently authored native expectations, permitte
 variation, and semantic-negative cases. Run:
 
 ```sh
+npm ci --prefix conformance/kinds/jsonata --ignore-scripts --no-audit --no-fund
 node scripts/verify-openapi-32-kind.mjs
 ```
 

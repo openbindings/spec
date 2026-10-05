@@ -16,13 +16,15 @@ Then run the four `scripts/verify-openapi-*-kind.mjs` entry points. Node.js and
 this installed dependency are required in addition to those suites' existing
 prerequisites. Their native HTTP cases require temporary loopback listeners.
 
-The 22 direct tests trace to [the shared embedding](../../../binding-specs/jsonata.md)
+The 23 direct tests trace to [the shared embedding](../../../binding-specs/jsonata.md)
 and its incorporated upstream language: sequence normalization (zero, one and
 many results), explicit arrays, object omission, absence versus null, ordinary
 arithmetic and author functions, expression errors, non-JSON results, and the
 closed host-binding boundary. Two literal expected results exercise the OpenAPI
 §4 open-body example, including an empty remainder and unknown future members.
-The family suites separately exercise native request bodies, per-value output
+The worked value-flow document is parsed and its actual expression strings are
+also evaluated against independently written results. The family suites
+separately exercise native request bodies, per-value output
 adaptation, input refusal and unsuccessful completion after emitted outputs.
 
 The Python bridge refuses integer inputs outside the interoperable range and
