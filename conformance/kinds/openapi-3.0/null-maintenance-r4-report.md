@@ -9,3 +9,7 @@ Added **53 cases**, all passing: required/optional null under explicit/default J
 One previous expectation was revised to the new public text: a supplied null property under a wildcard media declaration now needs a concrete media choice before deciding correspondence. An absent optional property still needs no choice. The interpreter now selects media before null handling, permits JSON null, expands only actual arrays, and refuses unrepresentable required/item null instead of eliding it.
 
 The 15 source-fragment cases remain included and pass natively. Exact r4 text is saved in `candidate-pinned-r4.md`; full observations and expanded OBIs are in the normal results/fixtures. No ambiguity witness was established in this bounded revision. Existing README limits remain: partial schema/URI/media/runtime support, no full kind/core conformance claim, no exhaustive coverage claim.
+
+Final maintenance also asserts the selected multipart Content-Type independently
+(application/json or application/example+json). Both full modes were rerun with
+all 319 checks passing and unchanged interaction counts.

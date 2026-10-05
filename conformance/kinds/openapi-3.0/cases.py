@@ -358,7 +358,7 @@ for label,location,resource_path,expected_api in [('encoded-path',ORIGIN+'/fragm
     c['expected_fetch_urls']=[location[:-1]];c['expected_artifact_paths']=[resource_path+('?marker=%23' if label=='encoded-query' else '')];c['expected_resource_urls']=[location[:-1]]
 
 # Public r4 content-null cases, independently authored native octets/form values.
-def r4_null_form(name,mt,prop,value,required=False,encoding=None,expected_values=None,error=None,context=None):
+def r4_null_form(name,mt,prop,value,required=False,encoding=None,expected_values=None,error=None,context=None,expected_part_media='application/json'):
     schema={'type':'object','properties':{'value':prop,'keep':{'type':'string'}}}
     if required:schema['required']=['value']
     d=artifact('post',body=rb(mt,schema,encoding={'value':encoding} if encoding is not None else None))
@@ -367,7 +367,7 @@ def r4_null_form(name,mt,prop,value,required=False,encoding=None,expected_values
     if mt=='application/x-www-form-urlencoded':
         ex=expected('POST',form=([['value',x] for x in expected_values] if expected_values else [])+[['keep','v']])
     else:
-        ex=expected('POST',media=mt,parts=([{'name':'value','body_hex':x.encode().hex()} for x in expected_values] if expected_values else [])+[{'name':'keep','body_hex':'76'}])
+        ex=expected('POST',media=mt,parts=([{'name':'value','body_hex':x.encode().hex(),'headers':{'content-type':expected_part_media}} for x in expected_values] if expected_values else [])+[{'name':'keep','body_hex':'76'}])
     return add('r4-'+name,d,expect=ex,**kwargs)
 
 for mt,label in [('application/x-www-form-urlencoded','urlencoded'),('multipart/form-data','multipart-formdata'),('multipart/mixed','multipart-mixed')]:
@@ -378,7 +378,7 @@ for mt,label in [('application/x-www-form-urlencoded','urlencoded'),('multipart/
         prop={'type':'array','nullable':True,'items':{'type':'object','nullable':True}}
         r4_null_form(label+'-'+mode+'-whole-array-property-null',mt,prop,None,True,encoding,['null'])
         r4_null_form(label+'-'+mode+'-preserve-array-null-items',mt,prop,[None,{'x':1},None],False,encoding,['[null,{"x":1},null]'] if label=='urlencoded' else ['null','{"x":1}','null'])
-    r4_null_form(label+'-json-suffix-null',mt,{'type':'string','nullable':True},None,True,{'contentType':'application/example+json'},['null'])
+    r4_null_form(label+'-json-suffix-null',mt,{'type':'string','nullable':True},None,True,{'contentType':'application/example+json'},['null'],expected_part_media='application/example+json')
     r4_null_form(label+'-text-null-optional-omitted',mt,{'type':'string','nullable':True},None,False,None,[])
     r4_null_form(label+'-text-null-required-refused',mt,{'type':'string','nullable':True},None,True,None,error='unroutable')
     if label!='urlencoded':
