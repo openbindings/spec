@@ -3,7 +3,7 @@
 **Status: pre-kind candidate corpus.** The fixture formats and family rules in
 this subtree target the unpublished binding-specification candidates, which
 still use the earlier `bindingSpec`, `location`, and `selector` source shape.
-For OpenAPI 3.1 and 3.2, the active candidates have migrated; this subtree retains their
+For OpenAPI 3.0, 3.1 and 3.2, the active candidates have migrated; this subtree retains their
 [pre-kind snapshot](legacy/README.md) and legacy scenarios. Current evidence is described by each migrated candidate’s adjacent README.
 The dedicated verifier checks consistency with the corresponding historical or
 unmigrated candidates. A passing run
@@ -19,7 +19,7 @@ ten standalone brownfield synthesis binding specifications, keyed to each specif
 | -------- | ------------------------- | -------------------------------------------------------------------------------------------- | -------------- | ----------------- |
 | usage    | `openbindings.usage@1`    | [`usage/openbindings.usage.md`](../../binding-specs/usage/openbindings.usage.md)             | USAGE-D-01..03 | USAGE-P-01..08    |
 | openapi-2.0 | `openbindings.openapi-2.0@1` | [`openapi-2.0/openbindings.openapi-2.0.md`](../../binding-specs/openapi-2.0/openbindings.openapi-2.0.md) | OAPI20-D-01..02 | OAPI20-P-01..36 |
-| openapi-3.0 | `openbindings.openapi-3.0@1` | [`openapi-3.0/openbindings.openapi-3.0.md`](../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md) | OAPI30-D-01..02 | OAPI30-P-01..59 |
+| openapi-3.0 | `openbindings.openapi-3.0@1` | [historical snapshot](../../history/binding-specs/openapi-3.0-pre-kind.md) (historical) | OAPI30-D-01..02 | OAPI30-P-01..59 |
 | openapi-3.1 | `openbindings.openapi-3.1@1` | [historical snapshot](../../history/binding-specs/openapi-3.1-pre-kind.md) (historical) | OAPI31-D-01..02 | OAPI31-P-01..58 |
 | openapi-3.2 | `openbindings.openapi-3.2@1` | [historical snapshot](../../history/binding-specs/openapi-3.2-pre-kind.md) (historical) | OAPI32-D-01..02 | OAPI32-P-01..62 |
 | mcp      | `openbindings.mcp@1`      | [`mcp/openbindings.mcp.md`](../../binding-specs/mcp/openbindings.mcp.md)                     | MCP-D-01..03   | MCP-P-01..04,06..08 |

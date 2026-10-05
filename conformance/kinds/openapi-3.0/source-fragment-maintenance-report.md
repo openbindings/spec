@@ -1,0 +1,11 @@
+# OpenAPI 3.0 public r3 source-fragment follow-up
+
+Maintained an existing independently authored interpreter; this is not a fresh-origin implementation claim. Full public candidate r3 `88dcca19cf1da5b11bffd3f388b4b19271b3cbe31001ce90764d427da4c10d73` and core `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` governed this run. Public-text expectations were recorded before reading the existing probe code. Prior r2 files and hashes are preserved in the local development record; this repository history retains the previous integrated suite.
+
+**Full offline and native reruns: 266/266 checks pass in each mode.** Native counts: 146 fixture interactions, 148 actual HTTP dispatches, 22 actual artifact acquisitions, 103 predispatch refusals, and 292 completion-oracle mutations rejected. The 17 existing focused checks remain in the total. `fixtures.json` now contains 249 complete OBI fixtures.
+
+Added 15 source-location cases: nine invalid nonempty fragments across location-only, embedded object, and embedded text forms (pointer/name/percent-encoded variants); three empty-fragment physical-reference cases; one final-redirect-base case; and two encoded-# data cases. All pass. Every new refusal independently asserts zero resolver calls, zero HTTP acquisition, and zero invocation. Positive cases assert exact fragment-free resolver arguments, registered physical resource URLs, real artifact request targets, and independently authored native operation paths. Embedded content never fetches the named source artifact.
+
+The interpreter change adds a nonempty-fragment refusal and strips an empty fragment before source acquisition/registration. The harness records resolver arguments and resource bases. Its native acquisition request now preserves the URI query, needed to distinguish percent-encoded # data from a fragment. The hash gate applies the public candidate first and saves its exact text in `candidate-pinned-r3.md`.
+
+No candidate ambiguity witness arose in this boundary. Existing bounded interpreter, core-checker, resolver-policy, codec, schema, framing, and cancellation limits remain those in README. No claim of full URI/OAS/core conformance or exhaustive coverage is added. The tests use only temporary loopback HTTP services. The independent 2.0 evidence was not modified.

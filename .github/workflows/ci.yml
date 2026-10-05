@@ -228,6 +228,23 @@ jobs:
           OB_SPEC_CORPUS: ${{ github.workspace }}/conformance
           OB_CORPUS_REQUIRED: "1"
 
+  openapi30-kind:
+    name: OpenAPI 3.0 current-kind probes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - run: npm install -g ajv-cli ajv-formats
+      - run: node scripts/verify-openapi-30-kind.mjs
+
   openapi31-kind:
     name: OpenAPI 3.1 current-kind probes
     runs-on: ubuntu-latest

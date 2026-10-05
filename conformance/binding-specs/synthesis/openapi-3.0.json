@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.0@1",
   "family": "openapi-3.0",
-  "description": "Reference-tooling full-document OpenAPI 3.0 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
+  "description": "HISTORICAL PRE-KIND DRAFT: governed by history/binding-specs/openapi-3.0-pre-kind.md; not current core or kind evidence. Reference-tooling full-document OpenAPI 3.0 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI30-SS-07",

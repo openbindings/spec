@@ -2,7 +2,7 @@
   "rule": "OAPI30-D-01",
   "bindingSpec": "openbindings.openapi-3.0@1",
   "section": "5",
-  "description": "The source content and location carriages satisfy the OpenAPI sibling's closed document-loading rules.",
+  "description": "HISTORICAL PRE-KIND DRAFT: governed by history/binding-specs/openapi-3.0-pre-kind.md; not current core or kind evidence. The source content and location carriages satisfy the OpenAPI sibling's closed document-loading rules.",
   "notes": "openbindings.openapi-3.0@1 combines the former content and location fixture cells under one document-conformance rule. Edition discrimination remains a processor and binding obligation rather than a content-type fixture.",
   "tests": [
     {

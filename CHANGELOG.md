@@ -235,6 +235,17 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI 3.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
+  source/binding content and finite value mappings replace removed core fields.
+  OAS 3.0.4 governs all five admitted patch values while retaining its closed
+  schema vocabulary, request-body rules and binary/byte distinction. A narrow
+  explicit header correction uses OAS 3.1.2 Appendix D. Equivalent URI forms,
+  XML encoding, focused declaration inspection and truthful synthesis replace
+  implementation mandates. Source locations identify whole documents, and JSON
+  content parts preserve supplied null values. Historical evidence is separately
+  pinned and a fresh bounded native-interaction suite is added to CI. The kind
+  remains unpublished.
+
 - **OpenAPI 3.1 candidate reduced and migrated to the 0.2 core.** Kind-owned
   source and binding content replace the pre-kind fields and expression hooks.
   The candidate specifies necessary interpretation and correspondence while
