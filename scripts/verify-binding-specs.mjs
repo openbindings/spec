@@ -99,7 +99,8 @@ const FAMILIES = {
   "openapi-3.1": {
     bindingSpec: "openbindings.openapi-3.1@1",
     prefix: "OAPI31",
-    spec: join(SPEC_ROOT, "binding-specs", "openapi-3.1", "openbindings.openapi-3.1.md"),
+    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.1-pre-kind.md"),
+    historicalSha256: "f11f4e387a8601bccb23986272d0b1c01a81647d3d15aea6a4846acfe43cdcf5",
   },
   "openapi-3.2": {
     bindingSpec: "openbindings.openapi-3.2@1",
@@ -1002,4 +1003,4 @@ if (errors.length) {
   process.exit(1);
 }
 console.log("\nLegacy candidate corpus internal consistency: OK (not current Core conformance)");
-console.log("OpenAPI 3.2 here uses the frozen pre-kind text; current-kind evidence is conformance/kinds/openapi-3.2.");
+console.log("Migrated OpenAPI families here use frozen pre-kind text; current-kind evidence lives under conformance/kinds.");
