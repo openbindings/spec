@@ -1,6 +1,6 @@
 # Historical OpenAPI 3.2 candidate evidence
 
-`openapi-3.2.md` is an exact snapshot of the pre-kind draft at spec commit
+[`history/binding-specs/openapi-3.2-pre-kind.md`](../../../history/binding-specs/openapi-3.2-pre-kind.md) is an exact snapshot of the pre-kind draft at spec commit
 `337c3e298e50a25e7ddab9a172a40ac0820b3c9a`. SHA-256:
 `453916b488ce92e73a0f18cbe718e71416a58f0d1ba3f2eda08af3c57096627d`.
 It is historical text, not the active definition of the proposed kind. Its

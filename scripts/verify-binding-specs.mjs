@@ -104,7 +104,7 @@ const FAMILIES = {
   "openapi-3.2": {
     bindingSpec: "openbindings.openapi-3.2@1",
     prefix: "OAPI32",
-    spec: join(CORPUS, "legacy", "openapi-3.2.md"),
+    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.2-pre-kind.md"),
     historicalSha256: "453916b488ce92e73a0f18cbe718e71416a58f0d1ba3f2eda08af3c57096627d",
   },
   mcp: {
