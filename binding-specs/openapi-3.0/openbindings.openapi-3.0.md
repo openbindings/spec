@@ -189,8 +189,11 @@ be faithfully realized under core; a mapping is not evidence of that claim.
 
 The request value is absent or an object with only optional `parameters` and
 `body`. Absence is equivalent to supplying neither member. Present `parameters`
-is an object keyed by effective OAS parameter names, after ignored and unavailable
-parameter projections are removed. Where any remaining name occurs at more than
+is an object keyed by effective OAS parameter names, after projections excluded
+by the governing OAS or kind rules are removed (including the ignored and
+unavailable fields in §6). Missing implementation capabilities or runtime
+context, and value-dependent failures, do not remove a projection for key
+construction or change any key. Where any remaining name occurs at more than
 one location, all parameter keys are `<location>/<RFC6901-escaped-name>`;
 otherwise they are the exact names. OAS determines identity, overrides, ignored
 parameters and destinations. Unknown keys and wrong-shaped request values are
@@ -337,6 +340,7 @@ that other schema keywords disappear; it means they do not select a type.
 | Representation | Operation-side value before adaptation |
 | --- | --- |
 | Non-sequential application/json or a +json subtype | The JSON value. |
+| Non-JSON, non-form concrete media carrying an artifact-encoded string under the `format: byte` rule below | The encoded string as text, without an additional boundary Base64 decode. |
 | text/*, application/xml or +xml, with uniquely determined string type and no binary format | The string. |
 | Non-JSON, non-form concrete media with omitted/typeless schema, or string with format: binary | A Base64 string carrying the exact octets. |
 | Name-based form or multipart request | An object whose members supply the declared properties. |
@@ -373,8 +377,9 @@ the JSON value crossing the operation boundary, not the native body encoding.
 A schema declaring string as its sole non-null type with `format: byte` carries
 its artifact-encoded Base64 string as text; crossing this boundary does not
 trigger another Base64 decode. `format: binary` instead denotes unencoded octets
-and uses the raw mapping. For JSON media the ordinary JSON mapping still governs
-the whole value. OAS's raw-content length constraints measure octets, not the
+and uses the raw mapping. Artifact-encoded text uses the character-encoding
+rules above even for non-character media such as application/octet-stream.
+For JSON media the ordinary JSON mapping still governs the whole value. OAS's raw-content length constraints measure octets, not the
 Base64 boundary string, when schema validation is claimed. Later-edition
 `contentEncoding` creates no behavior. HTTP Content-Encoding and a part's
 Content-Transfer-Encoding remain separate protocol concepts.
@@ -498,8 +503,9 @@ performed by this kind.
 Basic uses RFC 7617 with printable ASCII user-id/password because no charset
 selection is declared here. Bearer and OAuth/OpenID access tokens use RFC 6750's
 b64token syntax and Bearer carriage; unsupported token types cannot be guessed
-into that form. HTTP authentication tokens are case-insensitive; equivalent
-protocol-permitted field spelling is free. API keys use their exact declared
+into that form. HTTP authentication scheme names are case-insensitive;
+equivalent protocol-permitted field spelling is free. This does not permit
+changing credential values. API keys use their exact declared
 destination: query name/value are separately UTF-8 percent-encoded, header values
 use the field rules above, and cookies use RFC 6265 without invented escaping.
 Other HTTP authentication schemes require runtime capability satisfying the

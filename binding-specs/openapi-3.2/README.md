@@ -5,6 +5,10 @@ core model. It is an unreleased proposal for `openbindings.openapi-3.2@1`.
 Updating this draft does not publish that identifier or assert SDK support.
 This page records migration and evidence; it adds no interpretation requirements.
 
+The shared [value-flow example](../openapi-value-flow.md) traces source and
+binding content, caller input, `each/up`, absence/null, a native request and
+response, and output adaptation. It is informative.
+
 ## Content migration
 
 | Earlier draft | Current candidate |
@@ -99,3 +103,7 @@ The suite includes independent native observations and semantic mutations for
 these repairs. Three live HTTP tests run, including two family follow-ups with
 14 observed requests; these counts describe bounded evidence rather than full
 protocol coverage.
+
+The [text-clarification maintenance record](../../conformance/kinds/openapi-text-clarifications.md)
+records the subsequent bounded wording repairs, current text hashes and suite
+replays. Earlier review hashes above identify the text those reviews examined.

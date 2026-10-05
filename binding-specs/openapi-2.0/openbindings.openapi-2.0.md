@@ -187,8 +187,12 @@ be faithfully realized under core; a mapping is not evidence of that claim.
 
 The request value is absent or an object containing only optional `parameters`
 and `body`. Absence supplies neither member. Present `parameters` is an object
-keyed by effective non-body parameter names after unavailable projections are
-removed. If any remaining name occurs at more than one location, all keys are
+keyed by effective non-body parameter names, after projections excluded by the
+governing OAS or kind rules are removed (including the ignored and unavailable
+fields in §6). Missing implementation capabilities or runtime context, and
+value-dependent failures, do not remove a projection for key construction or
+change any key. If any remaining name occurs at more than one location, all
+keys are
 `<location>/<RFC6901-escaped-name>`; otherwise they are the exact names. Locations
 `path`, `query`, `header` and `formData` use that map. The one body parameter uses
 the envelope's `body`; its declared name is documentation only. Unknown keys or
@@ -333,6 +337,7 @@ that other schema keywords disappear; it means they do not select a type.
 | --- | --- |
 | Response-root `type: file`, or formData file | Canonical Base64 carrying exact octets, regardless of file media type. |
 | application/json or a +json subtype, other than that file case | The JSON value. |
+| Non-JSON, non-form concrete media carrying an artifact-encoded string under the `format: byte` rule below | The encoded string as text, without an additional boundary Base64 decode. |
 | text/*, application/xml or +xml, with uniquely determined string type and no binary format | The string. |
 | Non-JSON, non-form concrete media with omitted/typeless schema, or string with format: binary | A Base64 string carrying the exact octets. |
 | Declared formData request | The supplied named parameter values under §8.1. |
@@ -367,8 +372,9 @@ the JSON value crossing the operation boundary, not the native body encoding.
 A schema declaring string as its sole non-null type with `format: byte` carries
 its artifact-encoded Base64 string as text; crossing this boundary does not
 trigger another Base64 decode. `format: binary` instead denotes unencoded octets
-and uses the raw mapping. For JSON media the ordinary JSON mapping still governs
-the whole value except response-root file. Length constraints on raw content
+and uses the raw mapping. Artifact-encoded text uses the character-encoding
+rules above even for non-character media such as application/octet-stream.
+For JSON media the ordinary JSON mapping still governs the whole value except response-root file. Length constraints on raw content
 measure octets, not the Base64 boundary string, when schema validation is claimed. Later-edition
 `contentEncoding` creates no behavior. HTTP Content-Encoding and a part's
 Content-Transfer-Encoding remain separate protocol concepts.

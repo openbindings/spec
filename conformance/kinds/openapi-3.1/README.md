@@ -1,5 +1,10 @@
 # Independent bounded OAS 3.1 interpretation evidence
 
+**2026-10-05 maintenance:** the current pin includes the bounded text
+clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
+The independence narrative below describes the original suite authorship; this
+maintenance replay is not a new independent implementation.
+
 This directory was independently authored from the public candidate, current
 core, and incorporated primary authorities. No old binding document,
 implementation, corpus, 3.2 probe, author note, or other review was read.
@@ -13,7 +18,7 @@ bind ephemeral loopback listeners; the debug mode is not native HTTP evidence.
 
 | Input | SHA-256 |
 | --- | --- |
-| OAS 3.1 candidate r5 | `92896520b7726c577186ecf0e7a0a5064c9c61867d6343baf60ea1c3eb5bd7a0` |
+| OAS 3.1 clarified candidate | `71740a12de79325a90b132d91c080910f68c59f21c3d2f812b82d5b44960c5b3` |
 | Core 0.2.0 working-draft text | `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` |
 
 The candidate is [the active 3.1 definition](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md).

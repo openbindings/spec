@@ -5,6 +5,10 @@ core model. It is an unreleased proposal for `openbindings.openapi-2.0@1`.
 This record describes migration and evidence; it adds no interpretation rules
 and makes no publication or SDK-support claim.
 
+The shared [value-flow example](../openapi-value-flow.md) traces source and
+binding content, caller input, `each/up`, absence/null, a native request and
+response, and output adaptation. It is informative.
+
 ## Content migration
 
 | Earlier draft | Current candidate |
@@ -84,3 +88,7 @@ outside operation outputs, without mandatory failure-data carriage.
 Production adapters, general schema translation and a rebuilt full portable
 conformance corpus remain separate work. The probes provide bounded evidence;
 they do not qualify a production SDK or establish exhaustive kind conformance.
+
+The [text-clarification maintenance record](../../conformance/kinds/openapi-text-clarifications.md)
+records the subsequent bounded wording repairs, current text hashes and suite
+replays. Earlier review hashes above identify the text those reviews examined.

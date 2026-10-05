@@ -1,5 +1,10 @@
 # Independent OpenAPI 2.0 bounded executable evidence
 
+**2026-10-05 maintenance:** the current pin includes the bounded text
+clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
+The independence narrative below describes the original suite authorship; this
+maintenance replay is not a new independent implementation.
+
 This directory is fresh interpretation evidence for the public, unreleased `openbindings.openapi-2.0@1` candidate. It is **not a production SDK, full kind conformance claim, full OAS validator, or publication verdict**.
 
 Final result: **182/182 cases pass**, comprising 92 successful interactions, 75 failures before dispatch, and 15 failures after dispatch. The primary suite observed 109 real HTTP service requests and 14 real HTTP artifact acquisitions. Five cases use newly synthesized complete current-core OBIs. Four deliberately incorrect semantic mutations were detected, and three permitted wire variations passed.
@@ -10,7 +15,7 @@ The final run applied these bytes:
 
 | Authority | SHA-256 |
 | --- | --- |
-| Public candidate, fully re-read r2 | `397afbf81fec6e41d279e7e47e5b7f52558d1ec1dacca63e3221cb0f52842b8d` |
+| Current clarified candidate | `18d3ca4238a387d576464aa743c346498104fb55c30634c6b523187cbf501b1a` |
 | Current core `openbindings.md` | `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` |
 | Project policy | `b580affc92223d5f0e75d66d17363c8befa1951ed7c4c8ad825a8470dd7a0b3c` |
 

@@ -9,7 +9,7 @@ from cases import CASES
 from interpreter import ABSENT, Cannot, Interpreter, complete, parse_artifact
 
 HERE=Path(__file__).resolve().parent
-CANDIDATE_HASH='67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a'
+CANDIDATE_HASH='0761b376c9c978eeb0836b1be7a2ae3434fd53dcc1fd00bb7739d45c8d42f8a4'
 CORE_HASH='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 
 def authority_root():

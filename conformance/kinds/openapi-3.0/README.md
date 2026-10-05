@@ -1,5 +1,10 @@
 # Independent OAS 3.0 interpretation evidence
 
+**2026-10-05 maintenance:** the current pin includes the bounded text
+clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
+The independence narrative below describes the original suite authorship; this
+maintenance replay is not a new independent implementation.
+
 This is a bounded, independently written executable interpretation of the frozen
 candidate. It is **not** a production SDK, a complete OAS implementation, a core
 conformance validator, or a claim of full support for this kind. Inputs and native
@@ -13,7 +18,7 @@ the 3.0 candidate incorporates.
 
 - Kind: `openbindings.openapi-3.0@1`.
 - Candidate/canonical SHA-256:
-  `67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a`.
+  `0761b376c9c978eeb0836b1be7a2ae3434fd53dcc1fd00bb7739d45c8d42f8a4`.
 - Core SHA-256:
   `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
 - Candidate's incorporated OAS 3.0.4 interpretation governs admitted `3.0.0`

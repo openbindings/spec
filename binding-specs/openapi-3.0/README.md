@@ -5,6 +5,10 @@ core model. It is an unreleased proposal for `openbindings.openapi-3.0@1`.
 This record describes migration and evidence; it adds no interpretation rules
 and makes no publication or SDK-support claim.
 
+The shared [value-flow example](../openapi-value-flow.md) traces source and
+binding content, caller input, `each/up`, absence/null, a native request and
+response, and output adaptation. It is informative.
+
 ## Content migration
 
 | Earlier draft | Current candidate |
@@ -44,7 +48,7 @@ native raw field strings rather than percent-encoding field syntax.
 | 6. Interaction and lifecycle | §§4–10: unary input, at most one complete success value, failure and cancellation |
 | 7. Correspondence and runtime choices | §§4–11: routing, representation, security, prerequisites and faithful synthesis |
 
-Independent reduction and completeness reviews passed the complete integrated
+Independent reduction and completeness reviews passed the pre-clarification
 text at SHA-256 `67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a`.
 The [independent interpretation suite](../../conformance/kinds/openapi-3.0/README.md)
 passes 319 checks: 302 complete OBI fixtures and 17 focused parser/completion/
@@ -92,3 +96,7 @@ JSON media preserves present null, including required properties and array items
 Omission/refusal applies where the selected media has no null correspondence;
 style serialization retains its own rules. The current suite includes 53 focused
 cases for this boundary.
+
+The [text-clarification maintenance record](../../conformance/kinds/openapi-text-clarifications.md)
+records the subsequent bounded wording repairs, current text hashes and suite
+replays. Earlier review hashes above identify the text those reviews examined.
