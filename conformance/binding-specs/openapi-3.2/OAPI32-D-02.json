@@ -2,7 +2,7 @@
   "rule": "OAPI32-D-02",
   "bindingSpec": "openbindings.openapi-3.2@1",
   "section": "6",
-  "description": "The binding names this exact binding specification, carries a literal selector admitted by the sibling, and identifies a source inside its exact edition gate.",
+  "description": "Historical pre-kind evidence governed by legacy/openapi-3.2.md, not the current candidate. The binding names this exact binding specification, carries a literal selector admitted by the sibling, and identifies a source inside its exact edition gate.",
   "notes": "Resolution-dependent tests embed the artifact so the verdict is offline-decidable. The two explicit gate negatives keep family identifiers and accepted editions exact rather than inferred from adjacent siblings.",
   "tests": [
     {

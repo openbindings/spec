@@ -20,6 +20,8 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
+import { conciseCoreAuthorityErrors } from "./concise-core-authority.mjs";
+
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
 const MANIFEST_PATH = join(ROOT, "binding-specs", "publications.json");
@@ -49,6 +51,11 @@ function coreSpecificationVersions(markdown) {
 }
 
 function verifyOpenApiCoreAuthority(markdown, label, expectedVersion) {
+  const concise = conciseCoreAuthorityErrors(markdown, label, expectedVersion);
+  if (concise !== null) {
+    errors.push(...concise);
+    return;
+  }
   const declarations = [
     ...markdown.matchAll(
       /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
