@@ -43,16 +43,15 @@ bounded interpreter cannot substantiate a narrower claim.
 | 6. Interaction and lifecycle | §§4–10: unary input, unary/sequential output, completion, failure and cancellation |
 | 7. Value correspondence and runtime choices | §§4–11: mappings, native representations, prerequisites, partial output, diagnostics and faithful synthesis |
 
-The scope-reduction pilot reviewed these answers against the current core with
-opposing reduction/completeness readers. Its final meaning was recorded at
-SHA-256 `7ed075b2fc0d20bd017e496b89a030c86aa5e9fd8eb388e063c0105eb27b20b2`.
-Integration changes only the opening status and makes the incorporated core
-edition explicit in a single versioned authority citation; §§2–11 are unchanged.
+Full independent reduction and completeness reviews passed the complete family
+follow-up at SHA-256 `47ebae7d9a13274c639c22932025c2e3b3b609e3c2d47085b4131aaf6dcec4c8`.
+The original pilot remains preserved in repository history; this follow-up was
+reviewed and exercised separately at its own exact text hash.
 
 ## Evidence and remaining work
 
 The [current interpretation suite](../../conformance/kinds/openapi-3.2/README.md)
-contains 48 focused tests, including actual loopback HTTP acquisition/dispatch,
+contains 74 focused tests, including actual loopback HTTP acquisition/dispatch,
 complete current-core OBIs, independently authored native expectations, permitted
 variation, and semantic-negative cases. Run:
 
@@ -60,10 +59,10 @@ variation, and semantic-negative cases. Run:
 node scripts/verify-openapi-32-kind.mjs
 ```
 
-It checks the example documents against the current core's structural schema and
-runs the bounded interpreter. It is not a full implementation qualification.
-Full resource graphs, general schema translation, multipart, SSE and other
-protocol surfaces still need production-adapter coverage.
+It runs the bounded interpreter and checks all saved complete OBIs, including
+regenerated location-source fixtures, against the current core structural schema. It is not a full implementation qualification.
+Full resource graphs, general schema translation, broader multipart/sequence
+coverage, SSE and other protocol surfaces still need production-adapter coverage.
 
 The old source fixtures and 399 processor/synthesis scenarios remain
 [historical evidence](../../conformance/binding-specs/legacy/README.md), bound to
@@ -80,3 +79,23 @@ value preservation replaces silent rounding; negotiation becomes runtime policy;
 and non-2xx bodies are diagnostic observations outside operation outputs. These
 are changes to an unpublished draft, not a promise of compatibility with its old
 implementation.
+
+## Family follow-up
+
+Locations identify whole documents: nonempty fragments are invalid, while an
+empty fragment is removed before retrieval and base use. Standalone referenceable
+OAS roots use the type expected at their reference position. Mounted operations
+inherit entry-root globals while contributing declarations retain physical bases.
+
+Equivalent URI spellings and escaped deep-object scalar data preserve their
+native values. XML encoding follows RFC 7303; common scalar correspondence stays
+intact. Impossible inspected union branches do not create false ambiguity. Fixed
+Encoding headers require schema-form declarations, and coherent transfer headers
+can accompany already encoded strings without another value transformation.
+
+Selected JSON media preserves null form properties and items, including required
+and positional values; text/raw omission/refusal and style rules remain separate.
+The suite includes independent native observations and semantic mutations for
+these repairs. Three live HTTP tests run, including two family follow-ups with
+14 observed requests; these counts describe bounded evidence rather than full
+protocol coverage.

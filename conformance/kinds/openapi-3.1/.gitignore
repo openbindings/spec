@@ -4,3 +4,4 @@ results*.txt
 run.log
 fixtures/executed/
 fixtures/in-memory-debug/
+candidate-pinned-r5.md

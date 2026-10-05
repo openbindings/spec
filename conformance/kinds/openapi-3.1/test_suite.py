@@ -54,6 +54,7 @@ class NativeServer(http.server.ThreadingHTTPServer):
         super().__init__(('127.0.0.1',0),Handler)
         self.origin='http://127.0.0.1:'+str(self.server_address[1])
         self.resources={}
+        self.acquisition_paths=[]
         self.observed=[]
         self.reply=(200,[('Content-Type','application/json')],b'{"ok":true}')
         self.thread=threading.Thread(target=self.serve_forever,daemon=True)
@@ -68,6 +69,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         resource=self.server.resources.get(self.path)
         if resource is not None:
             NETWORK_COUNTS['acquisitions']+=1
+            self.server.acquisition_paths.append(self.path)
             status,headers,data=resource
         else:
             NETWORK_COUNTS['dispatches']+=1
@@ -85,7 +87,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 class InMemoryServer:
     """Debug-only substitute; these results are never labeled HTTP evidence."""
     origin='http://127.0.0.1:41000'
-    def __init__(self):self.resources={};self.observed=[];self.reply=(200,[],b'')
+    def __init__(self):self.resources={};self.acquisition_paths=[];self.observed=[];self.reply=(200,[],b'')
     def shutdown(self):pass
     def server_close(self):pass
 
@@ -94,7 +96,7 @@ class InMemoryResolver(Resolver):
     def fetch(self,url):
         import urllib.parse
         self.requests.append(url)
-        path=urllib.parse.urlsplit(url).path
+        parsed=urllib.parse.urlsplit(url);path=parsed.path+('?' + parsed.query if parsed.query else '')
         if path not in self.server.resources:raise Cannot('unavailable','in-memory resource absent')
         status,headers,raw=self.server.resources[path]
         if 300<=status<400:
@@ -123,7 +125,7 @@ class Probes(unittest.TestCase):
     def tearDownClass(cls):cls.server.shutdown();cls.server.server_close()
     def setUp(self):
         self.i=InMemoryInterpreter(self.server) if OFFLINE else Interpreter()
-        self.server.observed.clear();self.server.resources.clear()
+        self.server.observed.clear();self.server.resources.clear();self.server.acquisition_paths.clear()
         self.server.reply=(200,[('Content-Type','application/json')],b'{"ok":true}')
         self.ctx={'server':self.server.origin}
     def rejected(self,fn,category=None):
@@ -146,7 +148,9 @@ class Probes(unittest.TestCase):
         metadata={'candidate_sha256':CANDIDATE_SHA256,'transport':'in-memory debug' if OFFLINE else 'actual loopback HTTP','input':value,'context':ctx,
                   'expected_native':expected,'expected_completion':result,
                   'observed':self.server.observed[-1],'completion':out,
-                  'acquisition_resources':self.server.resources}
+                  'acquisition_resources':self.server.resources,
+                  'resolver_request_urls':self.i.r.requests,'registered_resource_urls':list(self.i.r.docs),
+                  'artifact_HTTP_paths':self.server.acquisition_paths}
         (path/'interaction.json').write_text(json.dumps(metadata,indent=2,default=json_safe)+'\n')
         return out
 
@@ -159,6 +163,7 @@ def pinned(t):
     core=SPEC_ROOT/'openbindings.md'
     t.assertEqual(hashlib.sha256(candidate.read_bytes()).hexdigest(),CANDIDATE_SHA256)
     t.assertEqual(hashlib.sha256(core.read_bytes()).hexdigest(),CORE_SHA256)
+    (HERE/'candidate-pinned-r5.md').write_bytes(candidate.read_bytes())
 case('000_pinned_inputs',pinned)
 
 def hand(t):
@@ -970,6 +975,161 @@ def encoding_content_header_required(t):
       'X-Content':{'required':True,'content':{'text/plain':{'schema':{'const':'not-a-fixed-field'}}}}}}})
     t.rejected(lambda:t.i.invoke(o,'native',{'body':{'name':'x'}},t.ctx),'capability')
 case('r3_Encoding_required_content_form_header_has_no_fixed_value',encoding_content_header_required)
+
+# Public r4 source-fragment maintenance by a new agent; original r3 files and
+# complete fixtures remain in archive-r3. Expectations were recorded first.
+def fragment_record(t,o,expected,actual):
+    path=HERE/'fixtures'/('in-memory-debug' if OFFLINE else 'executed')/t._testMethodName.removeprefix('test_')
+    path.mkdir(parents=True,exist_ok=True)
+    (path/'interface.obi.json').write_text(json_text(o)+'\n')
+    (path/'source-fragment-boundary.json').write_text(json.dumps({'candidate_sha256':CANDIDATE_SHA256,'expected':expected,'actual':actual},indent=2)+'\n')
+
+for form in ('location_only','embedded_object','embedded_text'):
+    for label,fragment in [('pointer','/nested'),('name','anchor'),('encoded','%2Fnested')]:
+        def bad_fragment(t,form=form,fragment=fragment):
+            o=fixture();d=doc(o);source={'location':t.server.origin+'/fragment/no-fetch#'+fragment}
+            if form!='location_only':source['document']=d if form=='embedded_object' else json_text(d)
+            o['sources']['api']['content']=source
+            before=NETWORK_COUNTS.copy()
+            t.rejected(lambda:t.i.invoke(o,'native',{},{}),'invalid')
+            t.assertEqual(t.i.r.requests,[]);t.assertEqual(t.i.r.docs,{})
+            t.assertEqual(t.server.acquisition_paths,[]);t.assertEqual(NETWORK_COUNTS,before)
+            fragment_record(t,o,{'category':'invalid','resolver_calls':[],'artifact_HTTP_paths':[],'dispatches':0},{'category':'invalid','resolver_calls':t.i.r.requests,'artifact_HTTP_paths':t.server.acquisition_paths,'dispatches':len(t.server.observed)})
+        case('r4_source_nonempty_fragment_'+form+'_'+label,bad_fragment)
+
+for form in ('location_only','embedded_object','embedded_text'):
+    def good_fragment(t,form=form):
+        o=fixture(path='/mounted');d=doc(o);d['servers']=[{'url':'../../wrong-entry-base'}]
+        d['paths']['/mounted']={'$ref':'parts/item.json#/item'}
+        item={'item':{'get':{'servers':[{'url':'../../native-physical'}],'responses':{'200':{'description':'ok','content':{'application/json':{}}}}}}}
+        location=t.server.origin+'/fragment/physical/entry.json'
+        source={'location':location+'#'};expected_fetch=[];expected_paths=[]
+        if form=='location_only':
+            t.server.resources['/fragment/physical/entry.json']=(200,[],json_text(d).encode());expected_fetch.append(location);expected_paths.append('/fragment/physical/entry.json')
+        else:source['document']=d if form=='embedded_object' else json_text(d)
+        t.server.resources['/fragment/physical/parts/item.json']=(200,[],json_text(item).encode())
+        expected_fetch.append(t.server.origin+'/fragment/physical/parts/item.json');expected_paths.append('/fragment/physical/parts/item.json')
+        o['sources']['api']['content']=source
+        t.native(o,{}, {'method':'GET','path':'/fragment/native-physical/mounted','query':{}},ctx={})
+        t.assertEqual(t.i.r.requests,expected_fetch)
+        t.assertEqual(list(t.i.r.docs),[location,t.server.origin+'/fragment/physical/parts/item.json'])
+        if not OFFLINE:t.assertEqual(t.server.acquisition_paths,expected_paths)
+        fragment_record(t,o,{'resolver_calls':expected_fetch,'artifact_HTTP_paths':expected_paths,'registered_resource_urls':[location,t.server.origin+'/fragment/physical/parts/item.json']},{'resolver_calls':t.i.r.requests,'artifact_HTTP_paths':t.server.acquisition_paths,'registered_resource_urls':list(t.i.r.docs)})
+    case('r4_source_empty_fragment_'+form+'_physical_reference',good_fragment)
+
+def redirected_empty_fragment(t):
+    o=fixture();d=doc(o);d['servers']=[{'url':'../physical-native'}]
+    o['sources']['api']['content']={'location':t.server.origin+'/fragment/start#'}
+    t.server.resources['/fragment/start']=(302,[('Location','/fragment/final/entry.json')],b'')
+    t.server.resources['/fragment/final/entry.json']=(200,[],json_text(d).encode())
+    t.native(o,{}, {'method':'GET','path':'/fragment/physical-native/probe','query':{}},ctx={})
+    # Offline resolver exposes its internal redirect fetch too; native urllib's
+    # redirect is observed independently at the HTTP server instead.
+    wanted=[t.server.origin+'/fragment/start']+([t.server.origin+'/fragment/final/entry.json'] if OFFLINE else [])
+    t.assertEqual(t.i.r.requests,wanted)
+    if not OFFLINE:t.assertEqual(t.server.acquisition_paths,['/fragment/start','/fragment/final/entry.json'])
+    t.assertIn(t.server.origin+'/fragment/final/entry.json',t.i.r.docs)
+    t.assertTrue(all('#' not in key for key in t.i.r.docs))
+    fragment_record(t,o,{'resolver_calls':wanted,'artifact_HTTP_paths':['/fragment/start','/fragment/final/entry.json']},{'resolver_calls':t.i.r.requests,'artifact_HTTP_paths':t.server.acquisition_paths,'registered_resource_urls':list(t.i.r.docs)})
+case('r4_source_empty_fragment_redirect_final_physical_base',redirected_empty_fragment)
+
+for label,relative,expected_path in [('encoded_path','/fragment/data%23root/entry','/fragment/native/probe'),('encoded_query','/fragment/entry?marker=%23','/native/probe')]:
+    def encoded_hash(t,relative=relative,expected_path=expected_path):
+        o=fixture();d=doc(o);d['servers']=[{'url':'../native'}]
+        url=t.server.origin+relative
+        o['sources']['api']['content']={'location':url+'#'}
+        t.server.resources[relative]=(200,[],json_text(d).encode())
+        t.native(o,{}, {'method':'GET','path':expected_path,'query':{}},ctx={})
+        t.assertEqual(t.i.r.requests,[url]);t.assertIn(url,t.i.r.docs)
+        if not OFFLINE:t.assertEqual(t.server.acquisition_paths,[relative])
+        fragment_record(t,o,{'resolver_calls':[url],'artifact_HTTP_paths':[relative]},{'resolver_calls':t.i.r.requests,'artifact_HTTP_paths':t.server.acquisition_paths,'registered_resource_urls':list(t.i.r.docs)})
+    case('r4_source_empty_fragment_'+label+'_data',encoded_hash)
+
+def schema_id_separate_physical(t):
+    o=fixture(method='post',oas=oas_doc(method='post',operation=body_operation('text/plain',{'$ref':'#/components/schemas/Text'})))
+    d=doc(o);d['servers']=[{'url':'../native'}];d['$self']='https://ignored.invalid/wrong'
+    d['components']={'schemas':{'Text':{'$id':t.server.origin+'/logical/root.json','allOf':[{'$ref':'child.json'}]}}}
+    o['sources']['api']['content']['location']=t.server.origin+'/fragment/physical/entry#'
+    t.server.resources['/logical/child.json']=(200,[],b'{"type":"string"}')
+    t.native(o,{'body':'logical-schema-physical-server'},{'method':'POST','path':'/fragment/native/probe','query':{},'bytes':b'logical-schema-physical-server'},ctx={})
+    t.assertEqual(t.i.r.requests,[t.server.origin+'/logical/child.json'])
+    t.assertIn(t.server.origin+'/fragment/physical/entry',t.i.r.docs)
+    if not OFFLINE:t.assertEqual(t.server.acquisition_paths,['/logical/child.json'])
+    fragment_record(t,o,{'resolver_calls':[t.server.origin+'/logical/child.json'],'native_path':'/fragment/native/probe'},{'resolver_calls':t.i.r.requests,'registered_resource_urls':list(t.i.r.docs),'native_path':t.server.observed[-1]['target']})
+case('r4_empty_source_fragment_schema_id_distinct_from_physical_server_base',schema_id_separate_physical)
+
+# Public r5 content-null maintenance; independent native values below are never
+# derived by importing this interpreter's encoders or schema-inspection helpers.
+def r5_null_case(name,mt,prop,value,required=False,encoding=None,expected_values=None,error=None,extra_context=None,style=False,expected_part_media='application/json'):
+    def check(t):
+        schema={'type':'object','properties':{'value':copy.deepcopy(prop),'keep':{'type':'string'}}}
+        if required:schema['required']=['value']
+        operation=body_operation(mt,schema)
+        if encoding is not None:operation['requestBody']['content'][mt]['encoding']={'value':copy.deepcopy(encoding)}
+        o=fixture(method='post',oas=oas_doc(method='post',operation=operation))
+        ctx={**t.ctx,**(extra_context or {})};caller={'body':{'value':copy.deepcopy(value),'keep':'v'}}
+        if error:
+            t.rejected(lambda:t.i.invoke(o,'native',caller,ctx),error)
+            path=HERE/'fixtures'/('in-memory-debug' if OFFLINE else 'executed')/t._testMethodName.removeprefix('test_');path.mkdir(parents=True,exist_ok=True)
+            (path/'interface.obi.json').write_text(json_text(o)+'\n')
+            (path/'null-boundary.json').write_text(json.dumps({'candidate_sha256':CANDIDATE_SHA256,'input':caller,'context':ctx,'expected_category':error,'observed_dispatches':len(t.server.observed)},indent=2)+'\n')
+            return
+        expected={'method':'POST','path':'/probe','query':{},'media':mt}
+        if mt=='application/x-www-form-urlencoded':
+            expected['form']={'keep':['v']}
+            if expected_values is not None:
+                if style:expected['form']['value']=['']
+                else:expected['form_json']={'value':expected_values[0]}
+        else:
+            expected['parts']={'keep':[{'body':b'v','headers':{'content-type':'text/plain'}}]}
+            if expected_values is not None:
+                expected['parts']['value']=[{'body':b'','absent_headers':['content-type']}] if style else [{'json':v,'headers':{'content-type':expected_part_media}} for v in expected_values]
+        t.native(o,caller,expected,ctx=ctx)
+    case('r5_'+name,check)
+
+for mt,label in [('application/x-www-form-urlencoded','urlencoded'),('multipart/form-data','multipart_formdata'),('multipart/mixed','multipart_mixed')]:
+    for required in (False,True):
+        for mode,prop,encoding in [('explicit_json',{'type':['string','null']},{'contentType':'application/json'}),('default_json',{'type':['object','null']},None)]:
+            r5_null_case(label+'_'+mode+'_null_'+str(required),mt,prop,None,required,encoding,[None])
+    for mode,encoding in [('explicit_json',{'contentType':'application/json'}),('default_json',None)]:
+        prop={'type':['array','null'],'items':{'type':['object','null']}}
+        r5_null_case(label+'_'+mode+'_whole_array_property_null',mt,prop,None,True,encoding,[None])
+        r5_null_case(label+'_'+mode+'_preserve_array_null_items',mt,prop,[None,{'x':1},None],False,encoding,[[None,{'x':1},None]] if label=='urlencoded' else [None,{'x':1},None])
+    r5_null_case(label+'_json_suffix_null',mt,{'type':['string','null']},None,True,{'contentType':'application/example+json'},[None],expected_part_media='application/example+json')
+    r5_null_case(label+'_text_null_optional_omitted',mt,{'type':['string','null']},None)
+    r5_null_case(label+'_text_null_required_refused',mt,{'type':['string','null']},None,True,error='unroutable')
+    if label!='urlencoded':r5_null_case(label+'_text_array_null_item_refused',mt,{'type':'array','items':{'type':['string','null']}},[None,'after'],error='unroutable')
+    for required in (False,True):r5_null_case(label+'_raw_null_'+str(required),mt,{},None,required,{'contentType':'application/octet-stream'},error='unroutable' if required else None)
+
+# Explicit style in form-data is meaningful in 3.1, unlike 3.0. Mixed ignores it.
+for mt,label in [('application/x-www-form-urlencoded','urlencoded'),('multipart/form-data','multipart_formdata')]:
+    r5_null_case(label+'_style_null_undefined_not_json',mt,{'type':['string','null']},None,True,{'style':'form','contentType':'application/json'},[''],style=True)
+r5_null_case('multipart_mixed_style_ignored_json_null','multipart/mixed',{'type':['string','null']},None,True,{'style':'form','contentType':'application/json'},[None])
+for typename in ('number','boolean'):
+    r5_null_case('text_'+typename+'_null_optional_no_invented_spelling','application/x-www-form-urlencoded',{'type':[typename,'null']},None)
+    r5_null_case('text_'+typename+'_null_required_refused','application/x-www-form-urlencoded',{'type':[typename,'null']},None,True,error='unroutable')
+r5_null_case('supplied_null_media_context_json','multipart/form-data',{'type':['string','null']},None,True,{'contentType':'application/json, text/plain'},[None],extra_context={'property_media':{'value':'application/json'}})
+r5_null_case('supplied_null_media_context_text_omitted','multipart/form-data',{'type':['string','null']},None,False,{'contentType':'application/json, text/plain'},extra_context={'property_media':{'value':'text/plain'}})
+r5_null_case('supplied_null_media_choice_missing','multipart/form-data',{'type':['string','null']},None,False,{'contentType':'application/json, text/plain'},error='context')
+
+def r5_absent_no_choice(t):
+    o=form_doc('multipart/form-data',{'optional':{'contentType':'*/*'}})
+    t.native(o,{'body':{'name':'v'}},{'method':'POST','path':'/probe','query':{},'parts':{'name':[{'body':b'v'}]}})
+case('r5_absent_property_needs_no_media_choice',r5_absent_no_choice)
+
+def r5_null_whole_body(t):
+    o=form_doc('multipart/form-data');t.rejected(lambda:t.i.invoke(o,'native',{'body':None},t.ctx),'unroutable')
+    path=HERE/'fixtures'/('in-memory-debug' if OFFLINE else 'executed')/t._testMethodName.removeprefix('test_');path.mkdir(parents=True,exist_ok=True)
+    (path/'interface.obi.json').write_text(json_text(o)+'\n');(path/'null-boundary.json').write_text(json.dumps({'input':{'body':None},'expected_category':'unroutable','observed_dispatches':len(t.server.observed)},indent=2)+'\n')
+case('r5_null_entire_form_body_not_object',r5_null_whole_body)
+
+def r5_null_mutations(t):
+    expectation={'method':'POST','path':'/probe','query':{},'form':{'keep':['v']},'form_json':{'value':None}}
+    observed={'method':'POST','target':'/probe','headers':[('Content-Type','application/x-www-form-urlencoded')],'body':b'keep=v&value=null'}
+    assert_request(observed,expectation)
+    for body in (b'keep=v',b'keep=v&value=%22null%22',b'keep=v&value='):
+        with t.assertRaises((AssertionError, ValueError)):assert_request({**observed,'body':body},expectation)
+case('r5_null_oracle_rejects_omission_string_null_and_empty_value',r5_null_mutations)
 
 class EvidenceResult(unittest.TextTestResult):
     def addSuccess(self,test):

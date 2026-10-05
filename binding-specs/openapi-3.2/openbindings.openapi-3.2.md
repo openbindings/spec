@@ -51,6 +51,11 @@ Source `content` is an object with only these members:
 | `document` | An embedded OAS document object or a string containing one JSON/YAML document. |
 | `location` | An absolute URI identifying the artifact and supplying its retrieval base. |
 
+`location` identifies a whole document. Its URI fragment, if present, must be
+empty; a nonempty fragment is invalid source content. Remove an empty fragment
+before retrieval and base-URI use. This rule also applies when `document` is
+embedded; `location` never selects a nested artifact from either representation.
+
 At least one member is present. Absent content, null, other JSON types, an
 unknown member, or a member of the wrong type is invalid for this kind.
 An embedded `document` supplies the artifact; `location` does not replace it.
@@ -82,9 +87,10 @@ cannot be interpreted; self-contained references remain usable. Redirected
 artifact acquisition uses the final retrieval URI for a location-only source.
 
 OAS's full-document parsing and resource-identity rules apply. Reference cycles
-do not by themselves invalidate a document. The supported referenced-root forms
-are an OAS Object or Schema Object; other-root embeddings require a meaning this
-kind does not define. A node used in different reference contexts is interpreted
+do not by themselves invalidate a document. A referenced root may be an OAS Object,
+a Schema Object or another referenceable OAS object in the type expected at that
+position. Arbitrary untyped embeddings supply no additional reference
+interpretation. A node used in different reference contexts is interpreted
 separately in each expected OAS object type.
 
 ## 3. Target and applicable declarations
@@ -117,6 +123,13 @@ selected operation is not a target. Exact CONNECT is unsupported because
 its successful interaction is a tunnel; other method tokens do not acquire
 CONNECT semantics by case-insensitive comparison.
 
+A mounted operation inherits top-level server and security declarations from
+the entry OAS document, including when its Path Item was referenced from another
+document. Operation and effective Path Item overrides retain their ordinary
+precedence. Relative references and relative Server URLs retain the base of the
+document contributing that declaration; mounting does not rebase them. The
+security scheme-name lookup choice in §9 is separate from this inheritance rule.
+
 Only declarations needed for the selected interaction govern invocation. A defect
 in an unrelated operation, documentary field or unselected alternative does not
 prevent it. A needed invalid or unsupported parameter, media, server or security
@@ -134,9 +147,9 @@ interpreting it. This includes JSON carriage that needs no schema inspection.
 Where a rule below needs a declared type or member, follow Schema `$ref`. For
 `allOf`, intersect admitted instance categories, treating integer as a subset of
 number; an absent type adds no restriction. Other inspected member declarations
-must agree where combined. For `anyOf`/`oneOf`, ignore null-only branches: exactly
-one candidate must remain, or every remaining candidate must determine the same
-needed declaration. An unrestricted candidate does not establish such agreement.
+must agree where combined. For `anyOf`/`oneOf`, ignore false schemas, statically empty category
+intersections and null-only branches: exactly one candidate must remain, or every
+remaining candidate must determine the same needed declaration. An unrestricted candidate does not establish such agreement.
 Do not use `not` or conditionals to invent a uniquely determined declaration.
 A false schema or empty category intersection admits no supplied value at an
 inspected position. If needed static inspection reaches `$dynamicRef`, this kind
@@ -247,16 +260,21 @@ An OAS serialization cell without defined behavior is unsupported. If only the
 supplied value leaves an otherwise supported cell, that invocation is unroutable,
 not every invocation of the operation. Undefined compound members and nested
 compound shapes without an upstream expansion cannot be serialized by guessing.
-For space/pipe-delimited and deep-object forms, values or names containing the
-form's structural delimiters are unsupported; deep-object also disallows `&` and
-`=` in those positions. This kind defines no extra escaping convention for them.
+For space/pipe-delimited forms, a scalar component containing its structural
+separator is unsupported where splitting the decoded value cannot preserve it.
+Deep-object property names containing `[` or `]` are unsupported because no
+additional escape convention fixes their structural meaning. Deep-object scalar
+values retain ordinary query-value encoding; encoded `&` or `=` in such a value
+does not introduce another query member.
 
 Mixed regular/reserved query parameters preserve each parameter's required
 contribution within one query component. Order across distinct parameter
 contributions is free; order within a supplied array is preserved. Illegal
 RFC 6570 variable-name spelling is an assembly concern and never changes the
 request-value key. For path and ordinary query content-form parameters, media
-bytes are percent-encoded as one value, leaving unreserved bytes literal. Header
+bytes are URI-encoded as one value, preserving them after percent-decoding.
+Literal and percent-encoded unreserved bytes are equivalent; reserved delimiters
+remain data rather than changing the URI structure. Header
 and cookie content-form parameters instead carry those media bytes subject to
 their field grammar, without an extra URI-encoding layer. Percent-triplet hex
 case is free.
@@ -343,14 +361,25 @@ storage is unrestricted when the JSON value at each operation or native boundary
 is preserved. Equivalent JSON spellings, member order and insignificant
 whitespace are free.
 
-Scalar text uses a declared charset, defaulting to UTF-8. UTF-8 is required;
-additional encoders/decoders are runtime capabilities. Strings retain their
-characters. Booleans use `true`/`false`; numbers use any RFC 8259 number spelling
-with the same mathematical value. Scalar decoding accepts one such token with
-only JSON whitespace around it, not a leading BOM or a second token. An integer
+Non-XML scalar text uses a declared charset, defaulting to UTF-8. XML media use
+[RFC 7303 §3](https://www.rfc-editor.org/rfc/rfc7303#section-3) for character
+encoding: on receipt a BOM takes precedence, then a MIME charset, then XML's
+encoding declaration or default. An encoding-signature BOM is metadata, not a
+character in the decoded text. Requests use an encoding consistent with those
+rules and the supplied text; they do not rewrite its markup or declarations.
+For both paths UTF-8 is required; additional encoders/decoders are runtime
+capabilities. An unavailable required codec prevents encoding or decoding rather
+than selecting a different character value.
+
+After character decoding, or before character encoding, the same scalar
+correspondence applies to both paths. Strings retain their characters. Booleans
+use `true`/`false`; numbers use any RFC 8259 number spelling with the same
+mathematical value. Scalar decoding accepts one such token with only JSON
+whitespace around it, not a leading U+FEFF character or a second token. An integer
 declaration selects the numeric decoder without adding runtime schema validation.
-No scalar-text null spelling is defined. XML is opaque text in this mapping,
-not a generated object tree; this kind does not define object-to-XML conversion.
+No scalar-text null spelling is defined. XML is opaque character text before any
+declared scalar conversion; this kind performs no entity expansion or
+object-to-XML conversion.
 
 Raw octets use canonical RFC 4648 Base64: standard alphabet, padding and zero
 unused pad bits. Noncanonical input is not repaired. This convention governs
@@ -376,17 +405,20 @@ repeated elements of one array preserve its order. Boundary generation and
 equivalent quoting are implementation choices. Upstream-permitted preambles and
 epilogues have no operation-value meaning.
 
-For content-based name encoding, a null optional property is omitted; a null
-required property is not silently dropped and cannot be serialized. Null positional
-items cannot be omitted and are unsupported. A null entire form body is not an
-object and is unroutable. Style-based encoding uses §6's undefined-value rules.
+For content-based encoding, the selected media's §8 correspondence governs
+supplied null as it does other values: JSON media carries JSON null. A supplied
+null is one value, not an array to expand. If the selected media has no null
+correspondence, an optional named property is omitted; a required property,
+named-array item or positional item cannot be omitted and is unsupported. No
+null spelling is invented for text or raw media. A null entire form body is not
+an object and is unroutable. Style-based encoding uses §6's undefined-value rules.
 
 An encoded named array property's item declaration selects each part's media;
 other properties use their whole-value declaration. A multi-type declaration
 with no unique default, a range or multiple Encoding content types needs a
 concrete context-supplied property media choice. That choice must match a declared
 alternative where one exists, and applies to every emitted item of that property.
-Elided values need no media choice. A supplied value at an inspected false schema
+Absent properties need no media choice. A supplied value at an inspected false schema
 is unrepresentable; an unused impossible property does not poison its siblings.
 
 Name-based form and multipart decoding into response objects is unsupported:
@@ -402,8 +434,9 @@ name and satisfy the media subtype's restrictions, including RFC 7578's ban on
 filename*. Illegal field names or values cannot be repaired.
 
 Other non-ignored Encoding headers have no implicit caller channel. They are
-supplied only when the declaration fixes a single string through `const` or a
-single-string `enum`; defaults and examples are not fixed values. Case-equivalent
+supplied only when a schema-form declaration fixes a raw field string through
+`const` or a single-string `enum`; defaults and examples are not fixed values.
+Content-form Header Objects supply no fixed field value under this kind. Case-equivalent
 header declarations describe one field. Their fixed values must agree and satisfy
 any applicable finite raw-string domains from string `const`/`enum`, intersected
 through `$ref`/`allOf`. A required header with no fixed value makes the alternative
@@ -411,9 +444,14 @@ unsupported; an optional nonfixed header emits nothing. Other schema constraints
 are not silently claimed to have been represented in synthesis.
 
 OAS's ignored Content-Type Encoding header does not compete with media selection.
-This kind emits no Content-Transfer-Encoding header; an explicit contradictory
-Encoding header makes only the affected part unusable. Coherent artifact-fixed
-headers must also satisfy the selected multipart subtype's rules. Encoding's
+A schema contentEncoding annotation alone generates no Content-Transfer-Encoding
+field. An explicit artifact-fixed field matching the string's declared encoding
+can be emitted where the subtype permits it; for form-data this explicit
+declaration supplies the reason to use the deprecated field. It causes no second
+encoding. A header rejecting the declared encoding makes the affected part
+unusable; a transfer encoding requiring another transformation is unsupported.
+Coherent artifact-fixed headers must also satisfy the selected multipart subtype's
+rules. Encoding's
 mutual exclusions and positional prerequisites remain OAS requirements.
 One level of nested Encoding is required by OAS; deeper levels may be supported
 under the same recursive semantics. A depth limit is a reported implementation

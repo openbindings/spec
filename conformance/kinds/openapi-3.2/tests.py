@@ -8,6 +8,7 @@ import http.server
 import io
 import json
 import pathlib
+import os
 import socket
 import threading
 import unittest
@@ -17,8 +18,11 @@ from probe import *
 import security_probe
 from validated_data_probe import encode_checked_text
 
-SPEC=pathlib.Path(__file__).resolve().parents[3]/'binding-specs/openapi-3.2/openbindings.openapi-3.2.md'
-EXPECTED_SPEC_SHA256='1086c117655d3ec19ee022184e89435288f158f7c4a44428e345c31992567ec2'
+SPEC_ROOT=pathlib.Path(os.environ.get('SPEC_ROOT',str(pathlib.Path(__file__).resolve().parents[3])))
+SPEC=SPEC_ROOT/'binding-specs/openapi-3.2/openbindings.openapi-3.2.md'
+CORE=SPEC_ROOT/'openbindings.md'
+EXPECTED_SPEC_SHA256='47ebae7d9a13274c639c22932025c2e3b3b609e3c2d47085b4131aaf6dcec4c8'
+EXPECTED_CORE_SHA256='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 
 def api(path='/things/{id}',method='post',op=None):
     return {'openapi':'3.2.0','info':{'title':'Independent probe','version':'1'},
@@ -45,6 +49,8 @@ def obi_fixture(name,binding_key):
     return obi,operation,Source(source['content']),b['content']
 
 class Probes(unittest.TestCase):
+    def test_current_core_hash(self):
+        self.assertEqual(hashlib.sha256(CORE.read_bytes()).hexdigest(),EXPECTED_CORE_SHA256)
     def test_final_candidate_hash(self):
         self.assertEqual(hashlib.sha256(SPEC.read_bytes()).hexdigest(),EXPECTED_SPEC_SHA256)
 
@@ -612,11 +618,18 @@ def native_request_oracle(req):
 
 if __name__=='__main__':
     suite=unittest.defaultTestLoader.loadTestsFromTestCase(Probes)
+    from family_tests import FamilyProbes
+    from family_r6_tests import FinalFamilyProbes
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(FamilyProbes))
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(FinalFamilyProbes))
     result=unittest.TextTestRunner(verbosity=2).run(suite)
     metadata={'spec_sha256':hashlib.sha256(SPEC.read_bytes()).hexdigest(),'pilot_sha256':'7ed075b2fc0d20bd017e496b89a030c86aa5e9fd8eb388e063c0105eb27b20b2','target_spec_sha256':EXPECTED_SPEC_SHA256,
+        'core_sha256':hashlib.sha256(CORE.read_bytes()).hexdigest(),'target_core_sha256':EXPECTED_CORE_SHA256,
         'tests_run':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),
         'skipped':len(result.skipped),'success':result.wasSuccessful(),
         'claim':'Independent focused probes only; not full kind or core conformance.',
-        'test_names':unittest.defaultTestLoader.getTestCaseNames(Probes)}
+        'test_names':unittest.defaultTestLoader.getTestCaseNames(Probes)+unittest.defaultTestLoader.getTestCaseNames(FamilyProbes)+unittest.defaultTestLoader.getTestCaseNames(FinalFamilyProbes),
+        'executed_artifact_sha256':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in pathlib.Path(__file__).parent.iterdir()
+            if p.suffix in ('.py','.rb') or p.name.endswith(('.obi.json','.oas.json','native-expectations.json'))}}
     pathlib.Path(__file__).with_name('results.json').write_text(json.dumps(metadata,indent=2)+'\n')
     raise SystemExit(not result.wasSuccessful())

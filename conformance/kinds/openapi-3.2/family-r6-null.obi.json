@@ -1,0 +1,332 @@
+{
+  "openbindings": "0.2.0",
+  "operations": {
+    "named": {},
+    "plain": {},
+    "choice": {},
+    "positional": {},
+    "style": {}
+  },
+  "sources": {
+    "api": {
+      "kind": "openbindings.openapi-3.2@1",
+      "content": {
+        "document": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Independent r6 null probes",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "./service"
+            }
+          ],
+          "paths": {
+            "/named": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "requiredNull": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "optionalNull": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "items": {
+                            "type": [
+                              "array",
+                              "null"
+                            ],
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "whole": {
+                            "type": [
+                              "array",
+                              "null"
+                            ],
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "requiredNull"
+                        ]
+                      },
+                      "encoding": {
+                        "requiredNull": {
+                          "contentType": "application/json"
+                        },
+                        "optionalNull": {
+                          "contentType": "application/json"
+                        },
+                        "items": {
+                          "contentType": "application/json"
+                        },
+                        "whole": {
+                          "contentType": "application/json"
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "accepted"
+                  }
+                }
+              }
+            },
+            "/plain": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "optionalNull": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "requiredNull": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "items": {
+                            "type": [
+                              "array",
+                              "null"
+                            ],
+                            "items": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "requiredNull"
+                        ]
+                      },
+                      "encoding": {
+                        "optionalNull": {
+                          "contentType": "text/plain"
+                        },
+                        "requiredNull": {
+                          "contentType": "text/plain"
+                        },
+                        "items": {
+                          "contentType": "text/plain"
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "accepted"
+                  }
+                }
+              }
+            },
+            "/choice": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/form-data": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "optionalNull": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "encoding": {
+                        "optionalNull": {
+                          "contentType": "text/plain,application/json"
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "accepted"
+                  }
+                }
+              }
+            },
+            "/positional": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "multipart/mixed": {
+                      "schema": {
+                        "type": "array",
+                        "prefixItems": [
+                          {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        ],
+                        "items": false
+                      },
+                      "prefixEncoding": [
+                        {
+                          "contentType": "application/json"
+                        },
+                        {
+                          "contentType": "application/json"
+                        },
+                        {
+                          "contentType": "application/problem+json"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "accepted"
+                  }
+                }
+              }
+            },
+            "/style": {
+              "get": {
+                "parameters": [
+                  {
+                    "name": "q",
+                    "in": "query",
+                    "schema": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "style": "form"
+                  }
+                ],
+                "responses": {
+                  "204": {
+                    "description": "ok"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "location": "https://refs.example/entry/api.json"
+      }
+    }
+  },
+  "bindings": {
+    "named.http": {
+      "operation": "named",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1named/post",
+        "input": {
+          "object": {
+            "body": {
+              "at": ""
+            }
+          }
+        }
+      }
+    },
+    "plain.http": {
+      "operation": "plain",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1plain/post",
+        "input": {
+          "object": {
+            "body": {
+              "at": ""
+            }
+          }
+        }
+      }
+    },
+    "choice.http": {
+      "operation": "choice",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1choice/post",
+        "input": {
+          "object": {
+            "body": {
+              "at": ""
+            }
+          }
+        }
+      }
+    },
+    "positional.http": {
+      "operation": "positional",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1positional/post",
+        "input": {
+          "object": {
+            "body": {
+              "at": ""
+            }
+          }
+        }
+      }
+    },
+    "style.http": {
+      "operation": "style",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1style/get"
+      }
+    }
+  }
+}

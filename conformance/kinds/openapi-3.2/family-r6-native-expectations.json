@@ -1,0 +1,96 @@
+{
+  "null_pair": [
+    {
+      "name": "requiredNull",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": "optionalNull",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    }
+  ],
+  "named_array": [
+    {
+      "name": "requiredNull",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": "items",
+      "media": "application/json",
+      "body_hex": "31",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": "items",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": "items",
+      "media": "application/json",
+      "body_hex": "32",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": "whole",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    }
+  ],
+  "positional": [
+    {
+      "name": null,
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": null,
+      "media": "application/json",
+      "body_hex": "37",
+      "filename": null,
+      "cte": null
+    },
+    {
+      "name": null,
+      "media": "application/problem+json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    }
+  ],
+  "plain_omission": [
+    {
+      "name": "requiredNull",
+      "media": "text/plain",
+      "body_hex": "70726573656e74",
+      "filename": null,
+      "cte": null
+    }
+  ],
+  "selected_null": [
+    {
+      "name": "optionalNull",
+      "media": "application/json",
+      "body_hex": "6e756c6c",
+      "filename": null,
+      "cte": null
+    }
+  ]
+}

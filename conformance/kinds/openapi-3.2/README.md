@@ -1,36 +1,42 @@
-# OpenAPI 3.2 current-kind interpretation probes
+# Independent OpenAPI 3.2 family follow-up
 
-The active candidate is [openbindings.openapi-3.2.md](../../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md).
-This suite was imported from the independent scope-reduction pilot. Integration
-updated the document path and expected hash; the interpreted rules are unchanged.
-The active document SHA-256 is
-`1086c117655d3ec19ee022184e89435288f158f7c4a44428e345c31992567ec2`.
-The historical pilot hashes below identify reviewed snapshots, not the active
-file's new status/authority wording. No released kind or SDK conformance is claimed.
+The final native run passes **74 test methods**, with zero failures, errors or
+skips. These are focused executable interpretation probes, including real
+localhost HTTP acquisition and dispatch. They are not a full OpenAPI SDK,
+complete kind-conformance suite, general schema engine, or core-conformance
+conclusion.
 
-From the repository root run `node scripts/verify-openapi-32-kind.mjs`.
-It first validates both complete OBI examples against the current core schema,
-then executes this suite. CI installs Python 3.13 and Ruby 3.3; the probe uses
-Ruby's standard-library YAML syntax tree with its own scalar resolution.
+## Exact inputs and isolation
 
-These are a fresh, bounded executable interpretation of the scope-reduction
-candidate. The final recorded run passes **48 test methods** (with multiple
-explicit examples in several methods), zero failures, zero errors, and no skips.
-This is not a complete OpenAPI implementation, conformance corpus, schema
-validator, security SDK, or proof that any pre-existing SDK conforms.
+- Candidate: [canonical candidate](../../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md).
+- Candidate SHA-256: `47ebae7d9a13274c639c22932025c2e3b3b609e3c2d47085b4131aaf6dcec4c8`.
+- Linked current core: [current core](../../../openbindings.md).
+- Core SHA-256: `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
 
-## Exact input and provenance
+Both pins are executable assertions. `results.json` repeats the observed pins,
+counts, test names and hashes of the executed probe/OBI artifacts. `run.log` is
+the final full-run output. The complete public candidate was read before making
+these changes; its linked core governs the OBI fixtures.
 
-- Reviewed pilot: revision r3; its interpretation is carried by the active document linked above.
-- Reviewed pilot SHA-256: `7ed075b2fc0d20bd017e496b89a030c86aa5e9fd8eb388e063c0105eb27b20b2`.
-- Intermediate r2 SHA-256: `61e746d9b176e7eacbc56798527858661342ee0f4f7c77383ad0b792cf0e66bc`.
-- Initial candidate r1 SHA-256: `b9e31f24a5acfb691d4e900014adabeef1cf8a49acf9ad912e30092695e507a9`.
-- Governing core: [`openbindings.md`](../../../openbindings.md), source baseline commit `337c3e298e50a25e7ddab9a172a40ac0820b3c9a`; especially §§5.1–5.3 and its distinction between author claims and document conformance.
-- The implementer initially inspected the main-checkout core before discovering it was older. It does **not** supply the final interpretation. The candidate-linked core was then read directly; in particular the final failure-output interpretation follows r2 and that linked core.
-- No old kind specification, existing kind implementation, existing corpus, author notes, or other reviewers' reports were read. The parent sent the revised candidate and described its changed decisions; the implementer read and interpreted that candidate directly.
-- Incorporated authorities consulted directly: [OAS 3.2.0](https://spec.openapis.org/oas/v3.2.0.html), particularly §§4.9, 4.12 and Appendix F, and [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901). Candidate rules supply the bridge-specific expected results. Upstream prose is not copied into these tests.
+This directory started as a copy of this implementer's own previously integrated
+48-test probe at `conformance/kinds/openapi-3.2`. The extension adds one core-pin
+assertion and 15 focused family test methods, several with multiple cases. The
+prior pilot evidence remains in repository history. The separate development
+record also preserves all 18 artifacts of the prior 64-test family run, including
+code, fixtures, results, traces and a manifest of their hashes. That archive pins
+candidate `66b297c4d37ec1fc39ef50155f9114b54adb1a3e519234450a4f0a45873b1418`.
+The final r6 extension adds ten methods in `family_r6_tests.py`; both complete
+public texts were read again before this extension. No sibling candidate, sibling probe, old
+conformance corpus, author note or reviewer report was read. The independent implementer did not edit the canonical specification or CI.
 
-## Reproduction
+Primary authorities consulted for this follow-up were
+[OAS 3.2.0](https://spec.openapis.org/oas/v3.2.0.html), especially the multipart
+Encoding and transfer-encoding rules, and
+[RFC 7303 §3](https://www.rfc-editor.org/rfc/rfc7303#section-3), for XML character
+encoding. Bridge choices are taken from the pinned candidate rather than inferred
+from the old implementation.
+
+## Reproduction and execution
 
 From this directory:
 
@@ -38,172 +44,193 @@ From this directory:
 python3 tests.py > run.log 2>&1
 ```
 
-Requires Python 3 and Ruby with standard-library Psych/JSON. There are no pip or
-npm dependencies. Ruby/Psych supplies a YAML syntax tree only; the probe applies
-Core scalar resolution and duplicate-key checks itself, avoiding Psych's YAML
-1.1 value conversion. The final run used Python 3.13 and Psych 3.1.0 on macOS.
+Requires Python 3 and Ruby with standard-library Psych/JSON; no pip/npm packages
+are needed. The final run used Python 3.13 and Psych 3.1.0. Ruby provides a YAML
+syntax tree only; the probe applies the candidate's Core scalar rules itself.
 
-The HTTP test binds an ephemeral port on `127.0.0.1`; it never contacts an external
-service. The workspace sandbox initially denied that bind. The same command was
-run with approved sandbox escalation and passed. A bind denial is an environment
-failure, not a specification failure. The ordinary command on a host that permits
-loopback listeners needs no special application privileges.
+Three tests bind ephemeral listeners on `127.0.0.1`; the environment must permit
+local listeners. The final recorded run has no skipped HTTP tests. No external
+API is called by the test runner.
 
-`results.json` (generated and gitignored) records the actually read candidate hash, target hash, counts, and
-test names. `run.log` is generated when using the redirected command above. Prior pilot logs
-are not carried as fresh execution results in this directory.
+## Concrete evidence for repaired boundaries
 
-## What the executable evidence establishes
-
-| Area | Concrete evidence |
+| Candidate boundary | Executed evidence and independent expectation |
 | --- | --- |
-| Source modes | Embedded object, embedded JSON text, embedded YAML text, location-only, embedded object/text plus location. Embedded data is not replaced by retrieval. Registered URI acquisition and real HTTP acquisition both execute. Wrong types, duplicate keys, non-scalar keys, non-JSON numbers/tags, multiple documents, wrong entry version, policy failure and a real 404 are distinguished in the tested cases. |
-| Encoding and bases | UTF-8/BOM, UTF-16/32 BOM and initial-pattern detection; `$self` reference base differs from server retrieval base; final redirected acquisition URI; relative server without a base fails. |
-| Targets/references | Fixed and extension method targets, exact method case, literal target percent characters, one-pass `~` escapes, same-document/external Path Item references, noncolliding fields, r2 disjoint additional-method merge, selected collisions, unavailable refs, overridden server fields, boolean schema roots. |
-| Mappings | All five r3 forms; absence vs null, omission vs array failure, original-input scope, `each` item/nested scope, r3 parent/grandparent selection, static out-of-scope rejection, absent/empty/non-array collections, late output mapping failure, unary collection shaping, and request-envelope adaptation from an application-shaped input. |
-| Request assembly | Path scalar escaping, query form arrays and repeat order, global parameter-key qualification, operation parameter overrides, ignored parameters, unavailable projection removal, r3 optional case-distinct headers with one contribution, whole-query present-empty vs absent, content query percent encoding, content header bytes, scalar-conversion prerequisite, body-required checks, TRACE, QUERY, GET/DELETE bodies, exact server slash append, explicit replacement and variable enum/default decisions. |
-| Media and values | Concrete choice prerequisite, body-free request, media specificity/parameter matching, duplicate identities and equal specificity, JSON duplicate-last/BOM/surrogate rules, exact arbitrary-size integer and decimal response values, mandatory integer range, opaque XML string, scalar integer declaration without implicit validation, canonical raw Base64, preserved schema annotations, limited type-intersection/consensus inspection, runtime Accept policy. |
-| Headers/coding | Sample forbidden/invalid fields, gzip requests and ordered double-gzip response decoding, required response headers, ignored response Content-Type declaration, no-content without codec requirement. |
-| Completion | Exact/range/default selection without invalid-exact fallback, empty vs null, HEAD/101 behavior, mismatched/duplicate response Content-Type, unary no-partial-value rule, NDJSON chunk boundaries/CRLF/EOF, malformed and whitespace-only lines, late parse/mapping/transport failures retaining prior values, and no operation outputs from non-2xx responses. |
-| Focused ownership/redirect decisions | Direct entry header API-key credentials targeting Accept/Accept-Encoding may be the sole contribution; competing runtime negotiation contributions refuse. Scalar ordinary structured Cookie and raw Cookie, selected header API keys and Authorization are withheld cross-origin. Same-origin forwarding is permitted, including host case/default-port equivalence. These are executed decisions with independently specified expected field maps, not live redirect-network evidence. |
-| Optional validated-data route | A separate explicit predicate checks every keyword of one finite string-or-number schema domain. Validated 7 selects numeric text bytes; unvalidated apparent 7 stays unresolved; a false claimed type, an invalid string, and boolean are rejected. This establishes one fixture, not general schema evaluation. |
-| Actual interaction | The HTTP server provides a redirect to an OAS artifact, observes the interpreted POST path/media/body, and returns two NDJSON items. The test asserts the independently expected server capture and the two mapped caller values. This is a real local HTTP exchange, not a parser-only or mocked-dispatch assertion. |
+| §2 whole-document location | Nonempty fragments are rejected before resolver use for location-only and embedded object/JSON/YAML forms. Empty fragments are removed before retrieval/base use. `%23` within the URI remains data. The real HTTP acquisition begins from an empty-fragment location and follows a redirect. |
+| §3 impossible union branches | False, statically empty category intersections and null-only branches no longer obscure the remaining scalar declaration. Number/integer and agreeing-string cases work; no surviving scalar and unrestricted/conflicting surviving branches refuse. A complete OBI produces native numeric XML bytes `7`. |
+| §3 mounted inheritance | Entry-root server/security inheritance is asserted against a foreign root deliberately containing wrong alternatives. Operation, referenced Path Item and local Path Item server declarations use their own physical retrieval bases. An empty override falls through. `$self` resolves a relative parameter reference while the server still uses its retrieval base. Scheme lookup can select entry or referring scope without changing inheritance. |
+| §6 URI spellings | Content-form path/query data `A/~?&=Z` stays one path segment and one query value. Literal and encoded unreserved characters, and percent-triplet case, have the same native meaning. Unescaped slash/question/ampersand mutations change meaning and fail the native oracle. Both unreserved spellings are sent through real HTTP. |
+| §6 deep object and delimiters | Property name `a&b` and value `x=y&z` preserve exactly one deep-object contribution after decoding; bracket characters in property names refuse. Encoded value brackets stay data. Nested/undefined members refuse. Space/pipe array separators work, and a scalar containing that structural separator refuses. |
+| §8 XML encoding | BOM precedence over MIME charset, MIME precedence over a conflicting declaration, declaration-driven ISO-8859-1 and default UTF-8 are asserted directly. The encoding signature is removed once; another U+FEFF remains a character. Request markup, declarations and entity-looking text are preserved without expansion. Missing codecs and unrepresentable characters fail. |
+| §8 common scalar correspondence | XML and ordinary text retain the same boolean/number rules. JSON whitespace and integer-declaration numeric decoding are exercised. XML BOM metadata is removed before scalar conversion; ordinary text's U+FEFF does not become numeric whitespace. Null, second tokens, non-JSON whitespace and NaN refuse. |
+| §8.1 fixed Encoding headers | Schema-form string `const`/single-string `enum`, finite `$ref`/`allOf` domain intersection and case-equivalent agreement supply fixed fields. Defaults do not. Content-form Header schemas never become fixed raw header values; required nonfixed headers refuse. Ignored Content-Type declarations stay ignored. |
+| §8.1 content transfer encoding | A `contentEncoding` annotation alone emits no CTE field. An explicit coherent Base64 header is emitted with the supplied `SGk=` text unchanged; neither Base64 decoding nor a second Base64 encoding occurs. Contradictory declarations, a required extra transform, wrong disposition names and forbidden form-data headers refuse. Alternate multipart boundaries yield identical independently parsed native parts. |
 
-## Independent expectations and bounded synthesis
+Final r6 coverage adds these independently stated cases:
 
-`hand-authored.obi.json` saves a complete current-core OBI containing the
-operation input contract, source, and binding from `hand_authored()`. Its output
-contract is unspecified because native responses are not schema-validated.
-`synthesized.obi.json` saves the complete generated OBI. The request and
-synthesis tests load these files and resolve each binding’s same-document
-`operation` and `source` relationship before interpreting its content. They
-check the hand-authored correspondence and the generated fixture against the
-independent expected native values; no overall core conformance claim is made.
+| Candidate boundary | Executed evidence and independent expectation |
+| --- | --- |
+| §8.1 JSON named null | Required and optional named null both produce a part with JSON media and exactly `6e756c6c` (four bytes). Missing parts, empty bytes and the string `"null"` are wrong-meaning negatives. Media spelling, boundary choice and order between distinct named properties may vary. |
+| §8.1 array and positional null | Named `[1, null, 2]` yields three parts with payloads `1`, `null`, `2` in that order. A whole nullable-array property set to null yields one `null` part. Positional `[null, 7, null]` preserves all three positions, including a `+json` part. Coalescing, dropping and reordering items fail the native oracle. |
+| §8.1 non-JSON null and choice | Optional named null omits under text/raw media; required null and actual array/positional null items refuse. A present null under multiple media or a range needs a concrete context choice; absence needs none. JSON choice emits null; text choice omits it. A null whole form body refuses. The existing style route still produces `q=` for null and no query for absence. |
+| §2 typed standalone roots | Complete OBI fixtures reference external Path Item, Parameter, Response and Header roots. Path Item and Response redirects change physical bases; nested references and the relative server use the final physical locations. The unused 500 Response reference is never acquired. Missing required response Header produces unsuccessful completion. |
+| §2 multiple expected types | The same external node is used first as a Parameter and then as a Response: native query `q=7` and decoded numeric output `7` are independently asserted. Reverse explicit reads also retain each interpretation. Arbitrary untyped embedding is not granted extra reference semantics. |
 
-`hand_authored()` defines an application input with `key`, `name`, `labels`,
-`enabled`, and `note`. Its binding maps these into a path id, query contributions,
-and JSON body. `native_request_oracle()` independently states the service-side
-expectation: POST `/base/things/a%2Fb`, `tag` values `x y` then `z`, `flag=true`, and
-body `{"title":"alpha","done":false,"note":null}`. It does not call the bridge's
-media decoder or mapping function to derive the expected result.
+`family_r6_tests.py` reads literal native observations from
+`family-r6-native-expectations.json`. Those observations were written separately
+from the composer, then compared with the independent standard-library MIME
+parser. JSON null, named item order and positional order are compared before
+any bridge response decoding.
 
-Equivalent JSON whitespace/member order, media type case, percent-triplet case,
-and interleaved distinct query contributions pass that oracle. Changed method,
-decoded path slash, removed null member, changed boolean, and reversed repeated
-array values fail it. These tests distinguish semantic agreement from incidental
-wire equality and from round-trip self-consistency.
+`family_tests.py` states expected native values independently of the bridge
+encoder/decoder. Its URI oracle uses URI segmentation and percent-decoding rather
+than the serializer. Its multipart oracle uses Python's independent MIME parser
+and inspects the raw part payload, not the bridge decoder. Wrong native meaning
+is tested alongside permitted spelling variation. These checks go beyond
+round-trip self-consistency.
 
-The small generator emits an application-shaped input contract and an input
-mapping that wraps it into the request body. Six native inputs are enumerated
-independently: two `mode` strings crossed with null, a Unicode string, and a
-small object payload. Every generated binding produces the separately expected
-POST, target, and complete native JSON object. A mutation that drops the wrapper
-object fails that comparison for all six. Unsupported synthesis keywords are
-refused in the tested example. The generator leaves `output` unspecified because
-it does not validate received data against the source's output schema; it does
-not claim that copying a native output schema is automatically faithful.
+## Actual interactions and complete OBIs
 
-A separate counterexample confirms that an aggregate array schema cannot simply
-be copied as the output contract of a sequential binding emitting integer items.
-These finite checks support the displayed mappings and examples; they do not
-prove arbitrary schema translation, the service's behavior, or general schema
-equivalence.
+`hand-authored.obi.json` and `synthesized.obi.json` retain the complete pilot
+fixtures. Their tests resolve the binding's `operation` and `source` relationship
+from those documents before interpreting source/binding content. The finite
+synthesis test still checks six independently enumerated native values and
+rejects a mapping mutation that drops the native object. Output contracts remain
+unspecified where native output schema validation is not performed.
 
-## Ambiguity witness and revision handling
+`family.obi.json` is a new complete OBI for XML, numeric XML, deep-object queries,
+content-form URI parameters and multipart requests. The live test constructs a
+complete location-source OBI around that fixture and adds two mounted targets;
+it performs actual HTTP acquisition and seven requests. The independently
+expected service-side observations are:
 
-R1 left disjoint local/referenced `additionalOperations` maps unclear: a reader
-could merge their method entries or treat the containing fixed field as a
-collision. This concrete witness was sent to the author before implementation
-privately selected a meaning. R2 explicitly merges by exact method key and
-confines collision to the selected method; the r2 tests exercise both independent
-methods and a colliding method. R2 also made the repeated-slash append rule
-explicit; the expected result preserves the base and path's other slashes.
+- XML is sent as the declaration-selected ISO-8859-1 bytes, retaining `&amp;` and
+  the encoding declaration. A UTF-16 response with a conflicting UTF-8 MIME
+  charset decodes to the exact supplied reply markup and snowman character.
+- The deep-object request has one decoded pair, `filter[a&b] = x=y&z`.
+- Two native URI spellings both carry path/query value `A/~?&=Z`, with the path
+  value confined to one segment.
+- The multipart part is named `payload`, has no invented filename, uses
+  `text/plain`, declares Base64 CTE, and carries raw text `SGk=`.
+- Mounted targets dispatch to `/service/mounted` and
+  `/refs/physical/mounted-physical`, respectively. Every request carries the
+  entry-selected `X-Entry-Key` credential; the foreign root's security is not
+  inherited.
 
-The final tests were changed for the new `each` form, schema category/consensus
-rules, boolean schema roots, unavailable parameter projections, URI-only content
-parameter escaping, Accept policy, ignored response Content-Type declaration,
-and failure-data boundary. R3 added explicit parent selection through `at.up`. New probes construct a
-batch body from both item and parent fields, exercise nested parent/grandparent
-scopes, reject malformed and statically out-of-scope selections even in an empty
-collection, and detect the wrong meaning produced by silently using item scope.
-Case-distinct optional Header keys now exercise one usable contribution and
-refusal of two supplied contributions. The final hash has its own executable
-assertion, so a later edit cannot silently inherit this pass result.
+`family-http-trace.json` records the actual captured request targets, headers
+and exact body hex, plus acquisition paths. It is produced by the live test.
+`family-mounted.obi.json` and `family-mounted-foreign.oas.json` save the baseline
+mounted fixture returned by the independent fixture constructor; variant tests
+make local copies to exercise override/base combinations.
 
-No unresolved candidate ambiguity blocked the final
-tested subset. That statement is confined to this subset and is not a claim
-that every bridge decision has been independently reconstructed.
+The r6 fixtures `family-r6-null.obi.json` and
+`family-r6-references.obi.json` include current-core operations, sources and
+bindings. Their operations deliberately leave input/output contracts unspecified
+where this bounded runtime does not validate the whole native schema. Five
+`family-r6-*.oas.json` files supply the standalone Path Item, Parameter, Response,
+Header and shared-context roots. The live test saves the complete actually used
+location-source OBIs as `family-r6-live-null.obi.json` and
+`family-r6-live-references.obi.json`; their ephemeral port is evidence from the
+last run, and the reproducible test regenerates it.
 
-## Limitations and unprobed decisions
+The new live test acquires both OAS descriptions, follows two reference-resource
+redirects, fetches nested standalone roots, and dispatches seven requests. Five
+multipart requests cover the required/optional JSON-null pair, named array plus
+whole-property null, positional null, optional text-null omission, and explicit
+JSON media selection for null. Two GETs check the mounted physical path and the
+node interpreted in both Parameter and Response contexts. Expected request paths
+and exact response values are hard-coded independently of reference resolution.
+`family-r6-http-trace.json` records all ten acquisition paths and seven request
+observations, including exact body hex. All three HTTP tests execute in the
+reported 74-method run.
 
-The functions are deliberately small and intended for these executable probes;
-they must not be advertised as a general conforming kind implementation. Some
-out-of-subset features raise `Unsupported`; others would require additional
-validation before exposing this as a public interpreter.
+The retained live pilot test separately exercises an HTTP artifact redirect,
+a mapped POST and two streamed NDJSON outputs. Retained tests also cover
+querystring present-empty vs absent, ordinary scalar/media rules, mappings and
+nested `each`/`up`, exact status selection, unary failure, retained values after
+late sequential failures, and the optional validated-data route.
 
-- YAML aliases/cycles, complete YAML 1.2 syntax conformance and tag coverage,
-  resource-identity indexing, `$id`/anchor graphs, schema-reference inspection,
-  cross-context reference nodes, and required cycles are not established. The
-  Ruby parser's supported syntax is a dependency capability. No full OAS or core
-  document validation is claimed.
-- The schema helper tests a narrow type domain. It does not implement general
-  JSON Schema, inspected member agreement, full `$ref`/`$id` resolution,
-  conditional semantics, or a general independently validated-data capability.
-  `validated_data_probe.py` exercises the optional route for one finite schema
-  domain using an independent predicate in the test; all other schemas remain
-  outside that validation claim.
-  The boolean-root tests establish retrieval/representation only, not all
-  downstream schema-reference behavior.
-- Referenced Path Items with mixed-origin relative servers or parameters, all
-  overridden-parameter collision combinations, and arbitrary full-description
-  resource identity cases are unprobed.
-- Full URI validity, arbitrary URI-scheme resolvers, HTTPS/TLS, proxies,
-  authentication protocols, multiple security alternatives, general credential
-  collisions, full cookie grammar/serialization and redirect method rewriting,
-  interim HTTP responses, and cancellation/connection reuse are unprobed.
-- Matrix/label/deep-object/space/pipe serialization, reserved expansion edge
-  cases, compound/header parameter shapes, ordinary content-form path/cookie
-  parameters, and form-urlencoded querystring behavior are unprobed.
-- Name/position multipart, nested Encoding, per-part headers/dispositions,
-  property media selection, form omission/collisions, arbitrary MIME quoted
-  parameter syntax, clean-media fallback selection, and complete media
-  usability analysis are unprobed. The media parser handles only its displayed
-  token/quoted-string subset.
-- JSONL/NDJSON **responses** are covered. Sequence **requests**, JSON text
-  sequences, SSE, positional multipart sequences, codec-streaming late errors,
-  resource exhaustion, and real socket truncation/cancellation are unprobed.
-  Late transport failure is injected into the chunk iterator; it proves the
-  interpreter's emitted-value trace, not socket lifecycle behavior.
-- UTF-8 scalar media is covered; other charsets and content codings besides
-  gzip are unsupported by the probe. General exact-number request serialization
-  is not implemented; the mandatory integer range is covered and response
-  decimals use `Decimal`. No float precision portability claim is made.
-- Core dependency generation, callbacks/webhooks, operation naming policy,
-  general synthesis, contract validation and a complete-coverage claim are
-  deliberately absent. A pre-existing implementation was not tested.
+## Bounded added components
 
-## Added exit-gate subsets
+`xml_probe.py` supplies encoding selection and character carriage, not an XML
+parser. Its declared extra codecs are UTF-16/LE/BE, ISO-8859-1 and ASCII in
+addition to UTF-8. UTF-32 signatures are detected but that codec is deliberately
+unsupported. XML well-formedness, entities, DTDs, XInclude and markup rewriting
+are not implemented. General encoding autodetection, including EBCDIC and
+arbitrary declaration layouts, is not claimed. The tests avoid requiring a
+policy for contradictory request-side charset/declaration production; receipt
+precedence is explicitly tested.
 
-`security_probe.py` is an independent contribution-decision component, separate
-from the main request interpreter. It reads one direct Security Requirement
-alternative and its direct entry-document header apiKey schemes, then combines
-those with scalar string Header parameters, scalar string Cookie parameters
-using `style: cookie`, and optional runtime negotiation headers. The tests read
-those declarations to produce contributions before checking redirects; they do
-not merely tag preconstructed Cookie bytes as safe or unsafe.
+`multipart_probe.py` provides a small fixed-header inspector and flat multipart
+composition: named scalar/array properties for form-data, and positional
+prefix/item encoding for mixed multipart. Explicit media declarations are
+required; concrete context choices handle the tested multiple/range cases.
+No default-media inference is claimed. Schema-reference inspection is limited
+to the displayed finite raw-string header domains; it is not a general schema
+evaluator. The composer uses safe test boundaries and simple quoted names.
+It does not claim complete Encoding Objects, nested multipart, MIME quoting,
+filename or recursive-schema behavior. Style-based multipart is unsupported;
+style-null preservation is separately checked through the ordinary query route.
+Fixed-header tests for other Content-* fields are decision probes; the real
+multipart exchanges use only permitted fields.
 
-For redirects it accepts a resolved target URL and assumes the redirect preserves
-the request method/body. The implementation selects one permitted policy:
-forward protected fields to the same origin and remove them across scheme, host,
-or effective-port changes. Target URL bytes remain unchanged; the probe never
-appends old query parameters. This does not establish redirect acquisition,
-connection handling, broader credential scope, query-credential carriage, or
-a full authentication implementation. The main request interpreter still refuses
-security outside its original subset.
+The main request interpreter now tracks field provenance through the tested
+single-hop Path Item mounts and accepts the existing focused header-apiKey
+component when credentials are supplied. The r6 extension additionally retains physical context for the tested standalone
+roots and resolves only the selected Response and its required Header. It does
+not validate arbitrary OAS roots or register a persistent global object type.
+Standalone roots reached with empty fragments in the explicit expected-type
+subset are supported; arbitrary fragments into standalone non-OAS roots are
+outside this probe. This does not establish arbitrary reference chains, complete
+OAS resource identity, multiple security alternatives,
+Basic/Bearer/OAuth/TLS protocols, cookie variants or real credential-forwarding
+redirect execution. The retained security tests establish bounded ownership and
+redirect decisions only.
 
-`validated_data_probe.py` accepts a validation callback and evaluates it before
-using the resulting data category. The independent fixture predicate implements
-exactly `{"type":["string","number"],"enum":[7,"seven"]}`. It checks the
-complete domain for that fixture, rejects boolean-as-number confusion, and
-provides no success for a claimed type alone. This proves the displayed
-validated-data branch while keeping general schema validation unimplemented.
+`validated_data_probe.py` retains the optional validated-data route for one
+finite string-or-number domain. Its independent test predicate evaluates the
+whole fixture schema, accepts `7`/`seven`, rejects booleans and invalid strings,
+and never accepts a claimed type alone. General JSON Schema validation remains
+unimplemented.
+
+## Remaining limits and conclusions
+
+- No full OAS or current-core document validator, unrestricted synthesis,
+  contract-equivalence checker, callback/webhook dependency generator or
+  complete-coverage report is provided. Examples establish only their own
+  correspondences and native traces.
+- YAML aliases/cycles, full YAML conformance, `$id`/anchor resource indexing,
+  arbitrary cyclic references, cross-context cases beyond the shared fixture,
+  and general schema-reference/type
+  member inspection remain outside the claim. The type inspector remains
+  narrower than general JSON Schema.
+- Parameter styles beyond the displayed scalar, query, deep-object and
+  nonexploded delimiter cases, full reserved expansion, full cookie grammar,
+  compound Header serialization and URL-encoded querystring media are not
+  established. URI grammar validation is bounded to the shown cases.
+- Full MIME/media-parameter grammar, alternate usability analysis, positional
+  multipart beyond the flat displayed cases, recursive Encoding and arbitrary
+  part headers remain unprobed.
+- NDJSON responses and injected late transport failures are retained. Sequence
+  requests, SSE, JSON text sequences, streaming codec errors, actual socket
+  truncation/cancellation and resource-limit behavior remain unprobed. An
+  injected chunk-iterator failure is not proof of connection lifecycle behavior.
+- JSON integer range and exact response-decimal examples remain covered. General
+  arbitrary-precision request serialization and all non-XML charsets/codecs are
+  not claimed.
+
+No unresolved candidate ambiguity blocked the addressed family cases. This is a
+bounded interpretation result under the two exact pins, not a finding that every
+remaining rule or every third-party implementation is conformant.
+
+## Repository integration
+
+Run `node scripts/verify-openapi-32-kind.mjs` from the spec root. It runs all 74
+methods, then validates every saved complete OBI in this directory against the
+current core schema, including the regenerated location-source fixtures. The
+wrapper sets `SPEC_ROOT`; direct execution defaults to this repository root.
+Canonical spec/core hashes are mandatory. Integration changes lookup/packaging
+only; the interpreter, native expectations and fixtures retain their independently
+authored meanings. HTTP traces, live fixture addresses and result files are
+reproducible ignored outputs. Prior revisions remain in repository history and
+the separate development-loop archive.

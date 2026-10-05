@@ -1,0 +1,62 @@
+{
+  "openbindings": "0.2.0",
+  "operations": {
+    "mounted": {},
+    "shared": {}
+  },
+  "sources": {
+    "api": {
+      "kind": "openbindings.openapi-3.2@1",
+      "content": {
+        "document": {
+          "openapi": "3.2.0",
+          "info": {
+            "title": "Independent r6 standalone roots",
+            "version": "1"
+          },
+          "servers": [
+            {
+              "url": "./service"
+            }
+          ],
+          "paths": {
+            "/mounted": {
+              "$ref": "../redirect/path-item.json"
+            },
+            "/shared": {
+              "get": {
+                "parameters": [
+                  {
+                    "$ref": "../roots/shared.json"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "$ref": "../roots/shared.json"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "location": "https://refs.example/entry/api.json"
+      }
+    }
+  },
+  "bindings": {
+    "mounted.http": {
+      "operation": "mounted",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1mounted/get"
+      }
+    },
+    "shared.http": {
+      "operation": "shared",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1shared/get"
+      }
+    }
+  }
+}
