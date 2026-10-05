@@ -21,7 +21,7 @@ from validated_data_probe import encode_checked_text
 SPEC_ROOT=pathlib.Path(os.environ.get('SPEC_ROOT',str(pathlib.Path(__file__).resolve().parents[3])))
 SPEC=SPEC_ROOT/'binding-specs/openapi-3.2/openbindings.openapi-3.2.md'
 CORE=SPEC_ROOT/'openbindings.md'
-EXPECTED_SPEC_SHA256='47ebae7d9a13274c639c22932025c2e3b3b609e3c2d47085b4131aaf6dcec4c8'
+EXPECTED_SPEC_SHA256='1105086f6b0acf82766918e5c0a77b9ab1121ea75bbdc1990b721ec6d1e28c99'
 EXPECTED_CORE_SHA256='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 
 def api(path='/things/{id}',method='post',op=None):

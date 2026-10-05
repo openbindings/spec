@@ -18,7 +18,7 @@ import urllib.parse as U
 import urllib.request
 from pathlib import Path
 
-CANDIDATE_SHA256 = '92896520b7726c577186ecf0e7a0a5064c9c61867d6343baf60ea1c3eb5bd7a0'
+CANDIDATE_SHA256 = '71740a12de79325a90b132d91c080910f68c59f21c3d2f812b82d5b44960c5b3'
 CORE_SHA256 = 'afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 KIND = 'openbindings.openapi-3.1@1'
 ABSENT = object()

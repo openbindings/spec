@@ -235,6 +235,14 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI family text clarifications.** Parameter keys remain stable when
+  runtime context or implementation capabilities change. Media tables expose
+  the existing artifact-encoded-string correspondence, including its character
+  encoding. Authentication case-insensitivity names scheme identifiers rather
+  than credential values. A shared informative value-flow example connects
+  mappings, native requests and output values. The four candidates remain
+  unpublished; core and SDK behavior are unchanged.
+
 - **OpenAPI 3.1/3.2 family review repairs.** Source locations identify whole
   documents, and selected JSON media preserves null form values and item positions.
   OpenAPI 3.2 admits standalone referenceable OAS roots by expected type, preserves

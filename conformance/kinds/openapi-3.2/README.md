@@ -1,5 +1,10 @@
 # Independent OpenAPI 3.2 family follow-up
 
+**2026-10-05 maintenance:** the current pin includes the bounded text
+clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
+The independence narrative below describes the original suite authorship; this
+maintenance replay is not a new independent implementation.
+
 The final native run passes **74 test methods**, with zero failures, errors or
 skips. These are focused executable interpretation probes, including real
 localhost HTTP acquisition and dispatch. They are not a full OpenAPI SDK,
@@ -9,7 +14,7 @@ conclusion.
 ## Exact inputs and isolation
 
 - Candidate: [canonical candidate](../../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md).
-- Candidate SHA-256: `47ebae7d9a13274c639c22932025c2e3b3b609e3c2d47085b4131aaf6dcec4c8`.
+- Candidate SHA-256: `1105086f6b0acf82766918e5c0a77b9ab1121ea75bbdc1990b721ec6d1e28c99`.
 - Linked current core: [current core](../../../openbindings.md).
 - Core SHA-256: `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
 
