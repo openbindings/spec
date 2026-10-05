@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-synthesis-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.1@1",
   "family": "openapi-3.1",
-  "description": "Reference-tooling full-document OpenAPI 3.1 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
+  "description": "Historical pre-kind OpenAPI 3.1 candidate evidence; governed by the snapshot linked from legacy/README.md. Reference-tooling full-document OpenAPI 3.1 generation and exhaustive reporting, with portable semantic facts distinguished from chosen shapes, names, and report fields in ../openapi-generation-correspondence.md.",
   "scenarios": [
     {
       "id": "OAPI31-SS-01",

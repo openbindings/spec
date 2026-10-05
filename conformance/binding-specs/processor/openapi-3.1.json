@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-processor-scenarios@5",
   "bindingSpec": "openbindings.openapi-3.1@1",
   "family": "openapi-3.1",
-  "description": "Portable processor scenarios for the OpenAPI 3.1 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
+  "description": "Historical pre-kind OpenAPI 3.1 candidate evidence; governed by the snapshot linked from legacy/README.md. Portable processor scenarios for the OpenAPI 3.1 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
   "scenarios": [
     {
       "id": "OAPI31-PS-01",

@@ -4,9 +4,9 @@ This is the OpenBindings project's authoring and publication policy for kinds
 published under `openbindings.*`. It is not part of the [core document
 model](../openbindings.md), and it imposes no requirement on a third-party or
 private kind. A conformant OBI may name a kind with no written definition or
-implementation. The candidate family documents in this directory predate the
-core's `kind` and `kinds` fields; they are not yet evidence that this policy has
-been met for publication.
+implementation. Some family candidates still predate the core's `kind` and `kinds` fields;
+the [authoring index](README.md) records migration status. A candidate's existence
+alone is not evidence that this policy has been met for publication.
 
 ## PB-01. Exact project identifiers
 

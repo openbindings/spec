@@ -1,0 +1,67 @@
+{
+  "openbindings": "0.2.0",
+  "name": "Independent grouped job submission",
+  "operations": {
+    "submitGroupedJob": {
+      "aliases": ["independent.submit"],
+      "input": {"type": "object"},
+      "output": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}, "additionalProperties": false}
+    }
+  },
+  "sources": {
+    "api": {
+      "kind": "openbindings.openapi-3.1@1",
+      "content": {
+        "document": {
+          "openapi": "3.1.2",
+          "info": {"title": "Independent fixture", "version": "1"},
+          "paths": {
+            "/jobs/{job-id}": {
+              "post": {
+                "parameters": [
+                  {"name": "job-id", "in": "path", "required": true, "schema": {"type": "string"}},
+                  {"name": "labels", "in": "query", "schema": {"type": "array", "items": {"type": "string"}}},
+                  {"name": "X-Mode", "in": "header", "schema": {"type": "string"}},
+                  {"name": "session", "in": "cookie", "schema": {"type": "string"}}
+                ],
+                "requestBody": {"required": true, "content": {"application/json": {"schema": {"type": "object"}}}},
+                "responses": {"201": {"description": "Created", "content": {"application/json": {"schema": {"type": "object"}}}}}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "bindings": {
+    "submit.http": {
+      "operation": "submitGroupedJob",
+      "source": "api",
+      "content": {
+        "target": "/paths/~1jobs~1{job-id}/post",
+        "input": {
+          "object": {
+            "parameters": {"object": {
+              "job-id": {"at": "/key"},
+              "labels": {"at": "/labels"},
+              "X-Mode": {"literal": "batch"},
+              "session": {"at": "/session"}
+            }},
+            "body": {"object": {
+              "organization": {"at": "/org"},
+              "groups": {"each": {"in": {"at": "/groups"}, "value": {"object": {
+                "group": {"at": "/name"},
+                "entries": {"each": {"in": {"at": "/entries"}, "value": {"object": {
+                  "id": {"at": ""},
+                  "group": {"at": "/name", "up": 1},
+                  "organization": {"at": "/org", "up": 2}
+                }}}}
+              }}}}
+            }}
+          }
+        },
+        "output": {"object": {"id": {"at": "/job/id"}, "optional": {"at": "/absent"}}}
+      }
+    }
+  }
+}

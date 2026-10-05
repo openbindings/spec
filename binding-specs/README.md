@@ -2,10 +2,10 @@
 
 **Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
-**Core-model migration status.** [OpenAPI 3.2](openapi-3.2/openbindings.openapi-3.2.md)
-has been revised for core 0.2.0: source `kind`, kind-owned source/binding content,
-and value adaptation defined by the kind. Its [migration and evidence](openapi-3.2/README.md)
-remain separate from publication. Other family candidates still contain pre-kind
+**Core-model migration status.** [OpenAPI 3.1](openapi-3.1/openbindings.openapi-3.1.md)
+and [OpenAPI 3.2](openapi-3.2/openbindings.openapi-3.2.md)
+have been revised for core 0.2.0: source `kind`, kind-owned source/binding content,
+and value adaptation defined by the kind. Their adjacent migration/evidence READMEs remain separate from publication. Other family candidates still contain pre-kind
 fields and require revision. [PROJECT-POLICY.md](PROJECT-POLICY.md) states the
 project's completeness and revision requirements; these are not core requirements
 for other kinds. Legacy corpora do not demonstrate current core or kind support.

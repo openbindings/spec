@@ -235,6 +235,14 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI 3.1 candidate reduced and migrated to the 0.2 core.** Kind-owned
+  source and binding content replace the pre-kind fields and expression hooks.
+  The candidate specifies necessary interpretation and correspondence while
+  leaving equivalent wire forms, execution strategies and generation policy
+  free. Its [migration record](binding-specs/openapi-3.1/README.md) identifies
+  deliberate semantic changes and the historical status of the old corpus.
+  This updates an unreleased proposal; it does not publish a kind or SDK.
+
 - **OpenAPI 3.2 candidate migrated to the current 0.2 core model.** Source
   `kind` and kind-owned `content` replace the pre-kind fields; explicit target
   pointers and structural input/output mappings replace removed core selectors

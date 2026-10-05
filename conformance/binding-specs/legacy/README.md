@@ -1,4 +1,6 @@
-# Historical OpenAPI 3.2 candidate evidence
+# Historical OpenAPI candidate evidence
+
+## OpenAPI 3.2
 
 [`history/binding-specs/openapi-3.2-pre-kind.md`](../../../history/binding-specs/openapi-3.2-pre-kind.md) is an exact snapshot of the pre-kind draft at spec commit
 `337c3e298e50a25e7ddab9a172a40ac0820b3c9a`. SHA-256:
@@ -25,3 +27,19 @@ The active current-core candidate is
 [current evidence](../../kinds/openapi-3.2/README.md). Historical phase names,
 exact wire formatting and generator-report expectations must be re-evaluated
 before inclusion in a current portable corpus.
+
+## OpenAPI 3.1
+
+The [pre-kind snapshot](../../../history/binding-specs/openapi-3.1-pre-kind.md)
+is byte-identical to the draft at commit
+`a42ee205afc9cead7fe5e449692fcb2af9b14693`, SHA-256
+`f11f4e387a8601bccb23986272d0b1c01a81647d3d15aea6a4846acfe43cdcf5`.
+Its relative links retain their original repository context; use the
+[original Git snapshot](https://github.com/openbindings/spec/blob/a42ee205afc9cead7fe5e449692fcb2af9b14693/binding-specs/openapi-3.1/openbindings.openapi-3.1.md)
+when following them.
+
+The two D-rule fixture files, processor scenarios and synthesis scenarios remain
+at their established `openapi-3.1` paths. The verifier checks their rule IDs against
+this exact historical text. They do not establish support for the
+[current candidate](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md);
+see its [migration and evidence](../../../binding-specs/openapi-3.1/README.md).
