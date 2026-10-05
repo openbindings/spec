@@ -89,7 +89,8 @@ const FAMILIES = {
   "openapi-2.0": {
     bindingSpec: "openbindings.openapi-2.0@1",
     prefix: "OAPI20",
-    spec: join(SPEC_ROOT, "binding-specs", "openapi-2.0", "openbindings.openapi-2.0.md"),
+    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-2.0-pre-kind.md"),
+    historicalSha256: "533913dbd33189c0efd9bafafc39918ae230707b060c1a1347a4c65b89eccca3",
   },
   "openapi-3.0": {
     bindingSpec: "openbindings.openapi-3.0@1",

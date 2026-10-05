@@ -41,7 +41,6 @@
       "bytes": 4723,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
         "binding-specs/usage/openbindings.usage.md",
         "binding-specs/mcp/openbindings.mcp.md",
@@ -69,7 +68,6 @@
       "bytes": 6071,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/asyncapi/openbindings.asyncapi.md",
         "binding-specs/usage/openbindings.usage.md",
         "binding-specs/mcp/openbindings.mcp.md",
@@ -256,12 +254,12 @@
       "bytes": 805810,
       "retrievedAt": "2026-08-25T15:35:03Z",
       "pinChoice": "OAS 2.0 cites the 1 October 2009 YAML 1.2 publication at http://yaml.org/spec/1.2/spec.html. That live path now serves a client-side redirect shim whose default destination is YAML 1.2.2; the preserved /spec/1.2-old/spec.html resource identifies and contains the cited 2009 publication, so these are the pinned authority bytes.",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "yaml.org/spec/1.2-old/spec.html"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "html-4.01-forms",
@@ -279,12 +277,12 @@
       "sha256": "2cae431b14b66134e855b10cd75a805c3f656a1cc918dfafaf5615e7ccf7d8e3",
       "bytes": 140033,
       "retrievedAt": "2026-08-25T15:35:03Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "www.w3.org/TR/html401"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "json-schema-2020-12-validation",
@@ -301,7 +299,6 @@
       "bytes": 64328,
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/graphql/openbindings.graphql.md"
       ],
@@ -372,7 +369,7 @@
         "spec.openapis.org/oas/v3.0.0.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.0.1",
@@ -392,7 +389,7 @@
         "spec.openapis.org/oas/v3.0.1.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.0.2",
@@ -412,7 +409,7 @@
         "spec.openapis.org/oas/v3.0.2.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.0.3",
@@ -432,7 +429,7 @@
         "spec.openapis.org/oas/v3.0.3.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.0.4",
@@ -474,7 +471,7 @@
         "spec.openapis.org/oas/v3.1.0.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.1.1",
@@ -494,7 +491,7 @@
         "spec.openapis.org/oas/v3.1.1.html"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.1.2",
@@ -513,7 +510,6 @@
       "bytes": 594687,
       "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
@@ -563,7 +559,6 @@
       "bytes": 674364,
       "retrievedAt": "2026-09-18T18:52:16Z",
       "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
@@ -659,13 +654,13 @@
       "sha256": "b08ccba7e5116e61085f2e1fe447d90eee785fb0efaa448a4b4ef6ea48b03b80",
       "bytes": 72942,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "rfc6838",
         "RFC 6838"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc6839",
@@ -716,7 +711,6 @@
       "citedBy": [
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
       ],
       "matchTokens": [
@@ -777,7 +771,7 @@
         "RFC 4180"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc6570",
@@ -826,7 +820,7 @@
         "RFC 1866"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc1738",
@@ -847,7 +841,7 @@
         "rfc1738",
         "RFC 1738"
       ],
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "status": "reference-only"
     },
     {
@@ -935,12 +929,12 @@
       "sha256": "416d309dbb8254b7d0b374925991be5bc2082ff7195598418f56be2b99eeee25",
       "bytes": 24220,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "draft-zyp-json-schema-04"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "json-schema-draft-04-validation",
@@ -957,12 +951,12 @@
       "sha256": "d87e72f3df3249843322cded0800b4729cb64e6280d8eb1ac10a8aeeb140cbf1",
       "bytes": 41082,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "draft-fge-json-schema-validation-00"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc3339",
@@ -978,13 +972,13 @@
       "sha256": "9ab2b8864a85dca73a88f49b0927bc7bc85f596926e4fd1890905777924e700a",
       "bytes": 35064,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "rfc3339",
         "RFC 3339"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc7159",
@@ -1000,13 +994,13 @@
       "sha256": "50aa72534210945457f5460a50f263c1d6cf87a3da8c814c1d9f54cb04f22342",
       "bytes": 27451,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "rfc7159",
         "RFC 7159"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc7231",
@@ -1028,7 +1022,7 @@
         "www.rfc-editor.org/rfc/rfc7231"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc5789",
@@ -1047,7 +1041,8 @@
       "bytes": 21706,
       "retrievedAt": "2026-08-25T21:31:28Z",
       "citedBy": [
-        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md"
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
       ],
       "matchTokens": [
         "www.rfc-editor.org/rfc/rfc5789",
@@ -1072,7 +1067,7 @@
         "spec.openapis.org/oas/3.2/schema/2025-11-23"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "oas-3.2-schema-base-2025-11-23",
@@ -1088,7 +1083,7 @@
       "bytes": 721,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/oas/3.2/schema-base/2025-11-23"
@@ -1108,7 +1103,7 @@
       "bytes": 2433,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/oas/3.2/meta/2025-09-17"
@@ -1128,7 +1123,7 @@
       "bytes": 1029,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/oas/3.2/dialect/2025-09-17"
@@ -1173,7 +1168,7 @@
       "bytes": 13823,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "www.iana.org/assignments/http-status-codes"
@@ -1194,7 +1189,7 @@
       "bytes": 111190,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "rfc3987",
@@ -1253,7 +1248,7 @@
         "RFC 6749"
       ],
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource."
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource."
     },
     {
       "id": "rfc7578",
@@ -1274,7 +1269,8 @@
       "citedBy": [
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
       ],
       "matchTokens": [
         "rfc7578",
@@ -1296,7 +1292,7 @@
       "bytes": 53831,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "rfc8414",
@@ -1318,7 +1314,7 @@
       "bytes": 46718,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "rfc8628",
@@ -1385,7 +1381,7 @@
       "bytes": 4259,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "www.iana.org/assignments/http-authschemes"
@@ -1404,7 +1400,7 @@
       "bytes": 14546,
       "retrievedAt": "2026-09-18T18:52:16Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/registry/index.html"
@@ -1423,7 +1419,7 @@
       "bytes": 437508,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "openid.net/specs/openid-connect-core-1_0.html"
@@ -1442,7 +1438,7 @@
       "bytes": 109112,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidate no longer directly cites this resource.",
+      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
       "citedBy": [],
       "matchTokens": [
         "openid.net/specs/openid-connect-discovery-1_0.html"
@@ -2369,6 +2365,26 @@
       "matchTokens": [
         "REC-eventsource-20150203",
         "www.w3.org/TR/eventsource"
+      ]
+    },
+    {
+      "id": "rfc2045",
+      "family": "shared",
+      "name": "RFC 2045: Multipurpose Internet Mail Extensions Part One",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc2045.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc2045"
+      ],
+      "sha256": "9bb251635dd37fda97dcce6c08dea019432117a0f1e389051d2ecbf7b76350b0",
+      "bytes": 72932,
+      "retrievedAt": "2026-10-05T12:56:47Z",
+      "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
+      ],
+      "matchTokens": [
+        "rfc2045",
+        "RFC 2045"
       ]
     }
   ]

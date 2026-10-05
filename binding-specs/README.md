@@ -2,7 +2,8 @@
 
 **Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
-**Core-model migration status.** [OpenAPI 3.0](openapi-3.0/openbindings.openapi-3.0.md),
+**Core-model migration status.** [OpenAPI 2.0](openapi-2.0/openbindings.openapi-2.0.md),
+[OpenAPI 3.0](openapi-3.0/openbindings.openapi-3.0.md),
 [OpenAPI 3.1](openapi-3.1/openbindings.openapi-3.1.md)
 and [OpenAPI 3.2](openapi-3.2/openbindings.openapi-3.2.md)
 have been revised for core 0.2.0: source `kind`, kind-owned source/binding content,
@@ -97,8 +98,7 @@ operation value merely so the observation remains visible.
 Generation soundness is distinct from generation strategy. A family can
 require an emitted correspondence to preserve the meaning it claims without
 requiring generation, a particular contract shape, complete source coverage,
-or a reporting interface. The OpenAPI 2.0 candidate makes that distinction in §12.2; the current
-OpenAPI 3.0–3.2 candidates do so in §11:
+or a reporting interface. The current OpenAPI 2.0 and 3.0–3.2 candidates make that distinction in §11:
 selection and presentation are free; faithful correspondence and applicable
 Core schema-loss and conformance-reporting duties remain.
 
