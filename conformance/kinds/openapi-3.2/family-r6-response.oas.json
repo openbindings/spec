@@ -1,0 +1,11 @@
+{
+  "description": "standalone response",
+  "headers": {
+    "X-Trace": {
+      "$ref": "./trace-header.json"
+    }
+  },
+  "content": {
+    "application/json": {}
+  }
+}

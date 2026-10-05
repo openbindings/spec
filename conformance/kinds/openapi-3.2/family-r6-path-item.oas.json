@@ -1,0 +1,22 @@
+{
+  "servers": [
+    {
+      "url": "./dispatch"
+    }
+  ],
+  "parameters": [
+    {
+      "$ref": "./parameter.json"
+    }
+  ],
+  "get": {
+    "responses": {
+      "200": {
+        "$ref": "./reply-alias.json"
+      },
+      "500": {
+        "$ref": "./unused-unavailable.json"
+      }
+    }
+  }
+}

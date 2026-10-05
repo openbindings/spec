@@ -741,7 +741,8 @@
       "citedBy": [
         "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "rfc7303",

@@ -4,18 +4,16 @@ This directory was independently authored from the public candidate, current
 core, and incorporated primary authorities. No old binding document,
 implementation, corpus, 3.2 probe, author note, or other review was read.
 
-**Current result: 240/240 checks pass against candidate r3 with actual loopback
-HTTP: 22 artifact/reference acquisitions and 120 operation dispatches.** The
-in-memory debug run also passes 240/240. Earlier r2 execution was temporarily
-blocked by listener sandboxing and approval-service capacity; the approved
-native run is now complete. The historical attempts remain recorded separately.
-No approval mechanism was bypassed.
+**Current result: 310/310 checks pass against candidate r5 with actual loopback
+HTTP: 31 artifact/reference acquisitions and 168 operation dispatches.** The
+in-memory debug run also passes 310/310. Native execution requires permission to
+bind ephemeral loopback listeners; the debug mode is not native HTTP evidence.
 
 ## Pinned inputs
 
 | Input | SHA-256 |
 | --- | --- |
-| OAS 3.1 candidate r3 | `39c4ab98ab09f0057b57b72f626ca0b17f83460d43f51e8480da1e6347f9f2ab` |
+| OAS 3.1 candidate r5 | `92896520b7726c577186ecf0e7a0a5064c9c61867d6343baf60ea1c3eb5bd7a0` |
 | Core 0.2.0 working-draft text | `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` |
 
 The candidate is [the active 3.1 definition](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md).
@@ -26,8 +24,8 @@ repinning, and rerunning. R1 was read at
 `33f4a31fc7f50edac3243be86c260e817f66854de1453c911ed9178b5a0e0421`;
 the complete r2 public text was subsequently read at
 `f7e27a0b7ab3aad3da959eff6cf6f2230fc59676070318882e10307073ff8492`.
-The complete r3 public text was reread before the current interpretation and
-expectations were updated and these results were produced.
+The original author read the complete r3 text. A new maintainer read the full
+r4/r5 public texts and current core before deriving the follow-up expectations.
 
 ## Commands and artifacts
 
@@ -55,7 +53,7 @@ descriptions through HTTP (including a redirect), sends requests through
 `http.client`, observes them at the server, and consumes native responses. It
 does not need the public internet. Its outputs are `results.json`, `results.txt`,
 and `fixtures/executed/`. The current `results.json`/`.txt` record the successful
-240-test r3 native run. The actual-HTTP evidence gate is satisfied for the bounded
+310-test r5 native run. The actual-HTTP evidence gate is satisfied for the bounded
 cases described here. HTTP acquisition and dispatch counts exclude in-memory
 tests and direct completion-unit probes.
 
@@ -67,10 +65,10 @@ and the other mode's results are retained.
 | `interpreter.py` | Fresh bounded interpretation; no repository implementation imports. |
 | `yaml_nodes.rb` | YAML syntax tree only; Python applies Core scalar resolution and scalar-key spelling. Psych's YAML 1.1 scalar resolver is never used. |
 | `native_oracle.py` | Independently written expected-native predicates, without importing interpreter helpers. |
-| `test_suite.py` | 240 named checks, native server, explicit in-memory substitute, fixture/result writer. |
+| `test_suite.py` | 310 named checks, native server, explicit in-memory substitute, fixture/result writer. |
 | `fixtures/hand-authored.obi.json` | Complete 0.2.0-shaped OBI with application input, two levels of `each`, `up: 1`/`up: 2`, and output adaptation. |
 | `fixtures/synthesized.obi.json` | Complete OBI emitted by narrow schema-free JSON synthesis. |
-| `fixtures/executed/*/interface.obi.json` | 119 complete expanded OBIs for actual HTTP request cases. |
+| `fixtures/executed/*/interface.obi.json` | 188 complete expanded OBIs: 167 native request fixtures and 21 added refusals. |
 | `fixtures/executed/*/interaction.json` | Input, context, independently authored expected request/completion, observed native message, source-resource bytes, and candidate hash. |
 | `fixtures/in-memory-debug/*` | Corresponding debug fixtures, explicitly labeled in-memory. |
 
@@ -188,7 +186,7 @@ OAS client.
   is claimed.
 
 No unresolved candidate ambiguity was established in the bounded cases. The
-unimplemented surfaces above remain unproved. The r3 native HTTP gate passed.
+unimplemented surfaces above remain unproved. The r5 native HTTP gate passed.
 Future semantic candidate changes invalidate the pin and
 require renewed review.
 
@@ -216,3 +214,14 @@ integration changes only file lookup and packaging: the canonical candidate is
 hashed, and the root defaults to a relative path. The interpreter and native
 expectations are unchanged. Historical r2/r3 reviews and the full obligation
 audit are maintained in the separate development-loop record.
+
+## Public r5 maintenance follow-up
+
+The [maintenance report](maintenance-r5-report.md) records the added 16 fragment
+checks, 53 selected-media null checks and three rejected null mutations. Negative
+source cases assert zero acquisition and dispatch; positives verify physical
+reference/server bases and real HTTP requests. JSON null survives required and
+optional content properties and array positions. Non-JSON and style boundaries
+remain explicit. Multipart media is checked independently as well as its values.
+The full native and offline runs pass at the current pin. This is maintenance of
+the original independent suite, not another fresh-origin implementation claim.

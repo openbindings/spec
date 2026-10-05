@@ -235,6 +235,14 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI 3.1/3.2 family review repairs.** Source locations identify whole
+  documents, and selected JSON media preserves null form values and item positions.
+  OpenAPI 3.2 admits standalone referenceable OAS roots by expected type, preserves
+  physical reference/server bases, permits equivalent URI and deep-object data,
+  follows XML encoding authority, and clarifies impossible schema branches and
+  fixed multipart headers. Exact-hash independent reviews and native probes cover
+  the updated candidates; these changes do not publish their kind identifiers.
+
 - **OpenAPI 2.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
   source/binding content and finite value mappings replace removed core fields.
   Swagger 2.0 retains its closed draft-04 schema vocabulary, parameter/formData

@@ -1,4 +1,4 @@
-"""Fresh, deliberately bounded reading of OAS 3.1 candidate r3.
+"""Independently authored bounded OAS 3.1 interpreter, maintained against public r5.
 
 This is executable interpretation evidence, not a production client or a claim
 of complete OAS/core conformance. See README for capabilities and exclusions.
@@ -18,7 +18,7 @@ import urllib.parse as U
 import urllib.request
 from pathlib import Path
 
-CANDIDATE_SHA256 = '39c4ab98ab09f0057b57b72f626ca0b17f83460d43f51e8480da1e6347f9f2ab'
+CANDIDATE_SHA256 = '92896520b7726c577186ecf0e7a0a5064c9c61867d6343baf60ea1c3eb5bd7a0'
 CORE_SHA256 = 'afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 KIND = 'openbindings.openapi-3.1@1'
 ABSENT = object()
@@ -253,6 +253,8 @@ class Resolver:
         base = content.get('location')
         if 'location' in content:
             require(isinstance(base,str) and bool(U.urlsplit(base).scheme), 'invalid','absolute location required')
+            require(not U.urlsplit(base).fragment, 'invalid','source location must identify a whole document')
+            base = U.urldefrag(base)[0]
         if 'document' in content:
             d = content['document']
             require(isinstance(d,(dict,str)), 'invalid','document must be object/text')
@@ -546,9 +548,6 @@ class Interpreter:
             ps=self.r.inspect(governing[0] if len(governing)==1 else {'allOf':governing},base)
             en=decl.get('encoding',{}).get(name,{})
             style=media_identity(mt)[0] in ('application/x-www-form-urlencoded','multipart/form-data') and any(k in en for k in ('style','explode','allowReserved'))
-            if v is None and not style:
-                require(name not in required,'unroutable','null required content property')
-                continue
             if style:
                 p={'name':name,'in':'query',**{k:x for k,x in en.items() if k in ('style','explode','allowReserved')}}
                 items=serialize_parameter(p,v,ctx,uri=not multipart)
@@ -562,9 +561,14 @@ class Interpreter:
             default='application/octet-stream' if deftyp is None or (deftyp=='string' and 'contentEncoding' in item) else 'application/json' if deftyp=='object' else 'text/plain'
             alternatives={x.strip():{} for x in en.get('contentType',default).split(',')}
             chosen,_=choose_media(alternatives,ctx.get('property_media',{}).get(name))
-            vals=v if multipart and typ=='array' else [v]
+            expanded=multipart and typ=='array' and isinstance(v,list)
+            vals=v if expanded else [v]
             for val in vals:
-                payload=self.media(val,chosen,{'schema':item if multipart and typ=='array' else ps},base,ctx,form_scalar=True)
+                chosen_type=media_identity(chosen)[0]
+                if val is None and not(chosen_type=='application/json' or chosen_type.endswith('+json')):
+                    require(not expanded and name not in required,'unroutable','null has no selected media correspondence')
+                    continue
+                payload=self.media(val,chosen,{'schema':item if expanded else ps},base,ctx,form_scalar=True)
                 if not multipart: pairs.append((pct(name),U.quote_from_bytes(payload,safe='-._~'))); continue
                 hs={'Content-Type':chosen}
                 for hn,hd in en.get('headers',{}).items():

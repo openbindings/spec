@@ -176,6 +176,9 @@ class Source:
         location = content.get('location')
         if 'location' in content and (not isinstance(location,str) or not url.urlsplit(location).scheme):
             raise Invalid('location must be absolute URI')
+        if location is not None:
+            if url.urlsplit(location).fragment:raise Invalid('location identifies a whole document, not a fragment')
+            location=url.urldefrag(location)[0]
         self.resolver = resolver or Resolver()
         if 'document' in content:
             if not isinstance(content['document'], (dict,str)): raise Invalid('document object/text required')
@@ -188,7 +191,7 @@ class Source:
         self.base = self.description_base(doc, location)
     @staticmethod
     def description_base(doc, retrieval):
-        if '$self' not in doc: return retrieval
+        if not isinstance(doc,dict) or doc.get('openapi')!='3.2.0' or '$self' not in doc: return retrieval
         s = doc['$self']
         if url.urlsplit(s).scheme: return s
         if retrieval: return url.urljoin(retrieval,s)
@@ -208,7 +211,8 @@ class Source:
             if not url.urlsplit(resource).scheme: raise Prerequisite('relative reference lacks base')
             raw,retrieval = self.resolver.acquire(resource)
             root = parse_artifact(raw,referenced_schema=expected=='schema')
-            if expected!='schema' and not ('openapi' in root or any(k in root for k in ('$id','$schema','type','$defs'))):
+            standalone = not frag and expected in ('pathItem','parameter','response','requestBody','header')
+            if expected!='schema' and not standalone and not ('openapi' in root or any(k in root for k in ('$id','$schema','type','$defs'))):
                 raise Unsupported('referenced-root embedding not supported')
         # URI-fragment form references decode URI escapes; binding target does not.
         node = at(root,url.unquote(frag)) if frag else root
@@ -234,8 +238,9 @@ class Source:
         item = self.doc.get('paths',{}).get(path,ABSENT)
         if item is ABSENT: raise Unavailable('no selected path')
         item_doc,item_uri = self.doc,self.retrieval
+        field_origins={key:(self.doc,self.retrieval) for key in item}
         if '$ref' in item:
-            ref,refdoc,refuri = self.ref(item)
+            ref,refdoc,refuri = self.ref(item,expected='pathItem')
             selected_field = t[2]
             if selected_field=='additionalOperations':
                 own=item.get(selected_field,{})
@@ -251,16 +256,18 @@ class Source:
                 inherited={(p.get('in'),p.get('name')) for p in item['parameters']+ref['parameters']}
                 replaced={(p.get('in'),p.get('name')) for p in chosen.get('parameters',[])}
                 if not inherited <= replaced: raise Unavailable('ambiguous inherited parameters')
-            # Probe deliberately supports noncolliding local operation fields and
-            # referenced operation fields; mixed-origin server/parameter nodes are unprobed.
+            field_origins={key:(refdoc,refuri) for key in ref}
+            field_origins.update({key:(self.doc,self.retrieval) for key in item if key!='$ref'})
             merged = {**ref,**{k:v for k,v in item.items() if k != '$ref'}}
             if 'additionalOperations' in item or 'additionalOperations' in ref:
                 merged['additionalOperations']={**ref.get('additionalOperations',{}),**item.get('additionalOperations',{})}
-            if selected_field not in item: item_doc,item_uri = refdoc,refuri
+            local_selected=(t[3] in item.get('additionalOperations',{})) if selected_field=='additionalOperations' else selected_field in item
+            if not local_selected:item_doc,item_uri=refdoc,refuri
             item = merged
         operation = at(item,'/'+ '/'.join(x.replace('~','~0').replace('/','~1') for x in t[2:]))
         if operation is ABSENT: raise Unavailable('no selected operation')
         if not isinstance(operation,dict): raise Invalid('operation must be object')
+        self.selection_origins={'operation':(item_doc,item_uri),'item_fields':field_origins}
         return path,method,item,operation,item_doc,item_uri
 
 def media_parts(s):
@@ -312,9 +319,13 @@ def inspected_type(schema):
         if t is not None: known = categories(t) if known is None else known & categories(t)
     for kw in ('anyOf','oneOf'):
         if kw in schema:
-            choices = [inspected_type(child) for child in schema[kw]]
+            choices=[]
+            for child in schema[kw]:
+                try:choices.append(inspected_type(child))
+                except Unroutable:pass  # statically impossible branch admits no candidate
             choices = [x for x in choices if x != 'null']
-            if not choices or any(c is None for c in choices) or len(set(choices)) != 1: raise Unsupported('nonunique union declaration')
+            if not choices:raise Unroutable('no non-null possible union branch')
+            if any(c is None for c in choices) or len(set(choices)) != 1: raise Unsupported('nonunique union declaration')
             known = categories(choices[0]) if known is None else known & categories(choices[0])
     if known is not None and not known: raise Unroutable('empty type intersection')
     nonnull = known-{'null'} if known else known
@@ -352,7 +363,10 @@ def encode(media, decl, value):
         elif t=='boolean' and type(value) is bool: text = 'true' if value else 'false'
         elif t in ('number','integer') and type(value) in (int,float): text = json.dumps(value,allow_nan=False)
         else: raise Unroutable('wrong scalar type')
-        if p.get('charset','utf-8') != 'utf-8': raise Unsupported('probe supports UTF-8 only')
+        if b=='xml' or b.endswith('+xml'):
+            from xml_probe import encode_characters
+            return encode_characters(text,p.get('charset'))
+        if p.get('charset','utf-8') != 'utf-8': raise Unsupported('probe non-XML text supports UTF-8 only')
         return text.encode('utf-8')
     if t is None and a!='multipart' and b!='x-www-form-urlencoded':
         try:
@@ -366,8 +380,12 @@ def decode(media,decl,data):
     if isjson(media): return json_load(data)
     a,b,p=media_parts(media); t=inspected_type(decl.get('schema'))
     if (a=='text' or b=='xml' or b.endswith('+xml')) and t in ('string','boolean','number','integer'):
-        if p.get('charset','utf-8')!='utf-8': raise Unsupported('probe supports UTF-8 only')
-        text=data.decode('utf-8')
+        if b=='xml' or b.endswith('+xml'):
+            from xml_probe import decode_characters
+            text=decode_characters(data,p.get('charset'))
+        else:
+            if p.get('charset','utf-8')!='utf-8': raise Unsupported('probe non-XML text supports UTF-8 only')
+            text=data.decode('utf-8')
         if t=='string': return text
         if text.startswith('\ufeff'): raise ValueError('scalar BOM')
         val=json.loads(text,parse_float=decimal.Decimal)
@@ -393,6 +411,12 @@ def field(name,value):
         raise Unroutable('invalid field value')
     return name,value
 
+class OperationContext(dict):
+    """Keep physical reference scope without adding fields to an OAS object."""
+    def __init__(self,operation,source,doc,retrieval):
+        super().__init__(operation)
+        self.reference_context=(source,doc,retrieval)
+
 def request(source,binding,value=ABSENT,context=None):
     context=context or {}
     path,method,item,op,doc,retrieval=source.select(binding,context)
@@ -404,7 +428,12 @@ def request(source,binding,value=ABSENT,context=None):
     if context.get('server'):
         base=context['server']
     else:
-        servers=op.get('servers') or item.get('servers') or doc.get('servers') or [{'url':'/'}]
+        if op.get('servers'):
+            servers=op['servers'];server_uri=retrieval
+        elif item.get('servers'):
+            servers=item['servers'];_,server_uri=source.selection_origins['item_fields']['servers']
+        else:
+            servers=source.doc.get('servers') or [{'url':'/'}];server_uri=source.retrieval
         if len(servers)!=1: raise Prerequisite('server choice required')
         server=servers[0]; base=server['url']
         for var in re.findall(r'\{([^}]+)\}',base):
@@ -414,16 +443,17 @@ def request(source,binding,value=ABSENT,context=None):
             if 'enum' in declaration and replacement not in declaration['enum']: raise Unroutable('server variable enum')
             base=base.replace('{'+var+'}',replacement)
         if not url.urlsplit(base).scheme:
-            if retrieval is None: raise Prerequisite('relative server lacks retrieval URI')
-            base=url.urljoin(retrieval,base)
+            if server_uri is None: raise Prerequisite('relative server lacks retrieval URI')
+            base=url.urljoin(server_uri,base)
     parsed=url.urlsplit(base)
     if parsed.scheme not in ('http','https') or not parsed.hostname or parsed.username or parsed.query or parsed.fragment:
         raise Unroutable('invalid server base')
     params={}
-    for scope in (item,op):
+    item_param_origin=source.selection_origins['item_fields'].get('parameters',(source.doc,source.retrieval))
+    for scope,(param_doc,param_uri) in ((item,item_param_origin),(op,(doc,retrieval))):
         local=set()
         for p in scope.get('parameters',[]):
-            p,_,_=source.ref(p,doc,retrieval)
+            p,_,_=source.ref(p,param_doc,param_uri,expected='parameter')
             ident=(p['in'],p['name'])
             if ident in local: raise Invalid('duplicate parameter')
             local.add(ident)
@@ -456,6 +486,7 @@ def request(source,binding,value=ABSENT,context=None):
             if loc=='querystring': whole=url.quote_from_bytes(data,safe='-._~'); continue
             if loc=='query': query.append(url.quote(name,safe='-._~')+'='+url.quote_from_bytes(data,safe='-._~')); continue
             if loc=='header': headers.update([field(name,data.decode('utf-8'))]); continue
+            if loc=='path':path=path.replace('{'+name+'}',url.quote_from_bytes(data,safe='-._~'));continue
             raise Unsupported('content parameter destination outside subset')
         if loc=='header':
             if name.lower() in ('host','content-length','connection','keep-alive','proxy-authorization','proxy-connection','te','trailer','transfer-encoding','upgrade'):
@@ -465,6 +496,19 @@ def request(source,binding,value=ABSENT,context=None):
             headers.update([field(name,scalar(v,context))]); continue
         if loc=='path' and style=='simple' and not isinstance(v,(dict,list)):
             path=path.replace('{'+name+'}',url.quote(scalar(v,context),safe='-._~'));continue
+        if loc=='query' and style=='deepObject':
+            if not isinstance(v,dict) or not v:raise Unroutable('deepObject probe requires nonempty object')
+            for member,member_value in v.items():
+                if '[' in member or ']' in member:raise Unsupported('structural bracket in deepObject property name')
+                if member_value is None or isinstance(member_value,(dict,list)):raise Unroutable('undefined/nested deepObject member')
+                query.append(url.quote(name+'['+member+']',safe='-._~')+'='+url.quote(scalar(member_value,context),safe='-._~'))
+            continue
+        if loc=='query' and style in ('spaceDelimited','pipeDelimited'):
+            if not isinstance(v,list) or not v or p.get('explode',False):raise Unsupported('delimited probe supports nonempty non-exploded arrays')
+            separator=' ' if style=='spaceDelimited' else '|'
+            values=[scalar(x,context) for x in v]
+            if any(separator in x for x in values):raise Unsupported('structural separator in delimited scalar')
+            query.append(url.quote(name,safe='-._~')+'='+url.quote(separator.join(values),safe='-._~'));continue
         if loc=='query' and style=='form':
             if v is None or v==[] or v=={}:
                 query.append(url.quote(name,safe='-._~')+'=');continue
@@ -483,7 +527,7 @@ def request(source,binding,value=ABSENT,context=None):
     elif query: target+='?'+'&'.join(query)
     body=ABSENT
     rb=op.get('requestBody',{})
-    rb,_,_=source.ref(rb,doc,retrieval)
+    rb,_,_=source.ref(rb,doc,retrieval,expected='requestBody')
     if method=='TRACE':
         if 'body' in value: raise Unroutable('TRACE cannot carry body')
     elif 'body' in value:
@@ -494,7 +538,14 @@ def request(source,binding,value=ABSENT,context=None):
             media=next(iter(content))
             if '*' in media_parts(media)[:2]: raise Prerequisite('concrete media choice required')
         _,decl=media_select(content,media)
-        body=encode(media,decl,value['body']); headers['Content-Type']=media
+        if media_parts(media)[:2]==('multipart','form-data'):
+            from multipart_probe import compose_form_data
+            media,body=compose_form_data(decl,value['body'],source=source,boundary=context.get('boundary','independent-family-boundary'),choices=context.get('property_media',{}))
+        elif media_parts(media)[:2]==('multipart','mixed'):
+            from multipart_probe import compose_positional
+            media,body=compose_positional(decl,value['body'],source=source,boundary=context.get('boundary','independent-family-boundary'),choices=context.get('position_media',{}))
+        else:body=encode(media,decl,value['body'])
+        headers['Content-Type']=media
     elif rb.get('required'): raise Unroutable('required body absent')
     codings=[v for k,v in headers.items() if k.lower()=='content-encoding']
     if codings:
@@ -503,8 +554,16 @@ def request(source,binding,value=ABSENT,context=None):
             if coding.strip().lower()=='gzip': body=gzip.compress(body,mtime=0)
             else: raise Unsupported('coding unavailable')
     if 'accept' in context: headers['Accept']=context['accept']
-    if op.get('security',doc.get('security',[])): raise Unsupported('security outside probe subset')
-    return {'method':method,'url':target,'headers':headers,'body':body},op
+    effective_security=op.get('security',source.doc.get('security',[]))
+    if effective_security:
+        if 'credentials' not in context:raise Unsupported('header apiKey prerequisite outside supplied context')
+        import security_probe
+        lookup_doc=doc if context.get('scheme_scope')=='referring' else source.doc
+        contributions=security_probe.assemble(lookup_doc,{'security':effective_security},credentials=context['credentials'])
+        for contribution in contributions:
+            if any(k.lower()==contribution.name.lower() for k in headers):raise Unroutable('credential contribution collision')
+            headers[contribution.name]=contribution.value
+    return {'method':method,'url':target,'headers':headers,'body':body},OperationContext(op,source,doc,retrieval)
 
 def response_events(op,binding,status,headers,chunks,method='GET'):
     """Yields value then completion records; chunks may raise to model late I/O."""
@@ -517,8 +576,13 @@ def response_events(op,binding,status,headers,chunks,method='GET'):
         if status<200: raise Unsupported('probe consumes final status only')
         responses=op.get('responses',{})
         selected=responses.get(str(status),responses.get(str(status//100)+'XX',responses.get('default',{})))
+        reference_context=getattr(op,'reference_context',None)
+        if reference_context:
+            source,doc,retrieval=reference_context
+            selected,doc,retrieval=source.ref(selected,doc,retrieval,expected='response')
         if not isinstance(selected,dict): raise Invalid('invalid exact response declaration')
         for name,decl in selected.get('headers',{}).items():
+            if reference_context:decl,_,_=source.ref(decl,doc,retrieval,expected='header')
             if name.lower()=='content-type': continue
             if decl.get('required') and name.lower() not in h: raise ValueError('required response header absent')
             if name.lower()=='content-encoding' and name.lower() in h:

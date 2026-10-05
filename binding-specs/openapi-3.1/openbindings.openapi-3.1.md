@@ -48,6 +48,11 @@ Source `content` is an object with only these members:
 | `document` | An embedded OAS document object or a string containing one JSON/YAML document. |
 | `location` | An absolute URI identifying the artifact and supplying its retrieval base. |
 
+`location` identifies a whole document. Its URI fragment, if present, must be
+empty; a nonempty fragment is invalid source content. Remove an empty fragment
+before retrieval and base-URI use. This rule also applies when `document` is
+embedded; `location` never selects a nested artifact from either representation.
+
 At least one member is present. Absent content, null, other JSON types, an
 unknown member, or a member of the wrong type is invalid for this kind.
 An embedded `document` supplies the artifact; `location` does not replace it.
@@ -392,9 +397,12 @@ hexadecimal percent-triplet case. The style path retains its own RFC 6570 rules.
 
 The governing property schema determines each property's representation,
 including constraints contributed by `properties`, `patternProperties`,
-`additionalProperties` and `allOf`. For content-based encoding, a supplied null
-optional property is omitted; a null required property cannot be silently
-dropped and prevents dispatch. A null entire body is not an object. A supplied
+`additionalProperties` and `allOf`. For content-based encoding, the selected media's §8 correspondence governs
+supplied null as it does other values: JSON media carries JSON null. A supplied
+null is one value, not an array to expand. If the selected media has no null
+correspondence, an optional named property is omitted; a required property or
+array item cannot be omitted and prevents dispatch. No null spelling is invented
+for text or raw media. A null entire form body is not an object. A supplied
 value at an inspected false schema is unrepresentable; an unused impossible
 property does not poison its siblings.
 
@@ -403,7 +411,7 @@ per item and use the item declaration for each part. A form-urlencoded content
 property is one media-serialized value; an item-derived default that cannot
 serialize that whole value needs an explicit usable property media choice.
 A wildcard or multiple Encoding content types likewise needs a concrete context
-choice matching a declared alternative. Elided values need no media choice.
+choice matching a declared alternative. Absent properties need no media choice.
 Number/boolean form values under text/plain use a value-preserving RFC 8259
 number spelling or `true`/`false`; this is not the configurable style converter.
 No scalar null spelling is invented. Ordinary §8 mappings govern other values.

@@ -41,9 +41,9 @@ per item; whole content-based form-urlencoded values have a separate rule.
 | 7. Correspondence and runtime choices | §§4–11: routing, representation, security, prerequisites and faithful synthesis |
 
 Independent reduction and completeness reviews passed the complete integrated
-text at SHA-256 `39c4ab98ab09f0057b57b72f626ca0b17f83460d43f51e8480da1e6347f9f2ab`.
+text at SHA-256 `92896520b7726c577186ecf0e7a0a5064c9c61867d6343baf60ea1c3eb5bd7a0`.
 The [independent interpretation suite](../../conformance/kinds/openapi-3.1/README.md)
-passes 240 focused cases, including 22 actual artifact acquisitions and 120
+passes 310 focused cases, including 31 actual artifact acquisitions and 168
 operation dispatches over loopback HTTP. It includes complete hand-authored and
 synthesized OBIs, separately authored native expectations, permitted variations
 and semantic-negative cases. Run `node scripts/verify-openapi-31-kind.mjs`.
@@ -77,3 +77,10 @@ translation and a rebuilt full portable corpus remain separate work.
 The final reduction round also delegates XML text encoding to RFC 7303 and
 permits equivalent unreserved-byte URI spellings. These changes remove parser
 and encoder strategy restrictions while preserving characters and URI structure.
+
+The family follow-up defines source locations as whole-document addresses,
+rejecting nonempty fragments and stripping an empty fragment before retrieval
+and base use. JSON content-based form values preserve supplied null, including
+required properties and array items. Omission/refusal applies where the selected
+media has no null correspondence; style rules retain their own boundaries.
+The updated native suite checks these cases at the exact current text hash.
