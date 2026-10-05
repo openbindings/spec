@@ -1,15 +1,17 @@
 # Independent bounded OAS 3.1 interpretation evidence
 
-**2026-10-05 maintenance:** the current pin includes the bounded text
-clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
-The independence narrative below describes the original suite authorship; this
-maintenance replay is not a new independent implementation.
+**2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
+The original authorship narrative below is historical. This maintenance changed
+probe algorithms and expectations; it is not another independent implementation.
+Candidate bytes remain an executable gate. Core bytes are recorded as run metadata;
+the wrapper validates complete OBI fixture shapes against the current core schema.
+Neither mechanism proves complete core or kind conformance.
 
 This directory was independently authored from the public candidate, current
 core, and incorporated primary authorities. No old binding document,
 implementation, corpus, 3.2 probe, author note, or other review was read.
 
-**Current result: 310/310 checks pass against candidate r5 with actual loopback
+**Current result: 310/310 checks pass against the maintained candidate with actual loopback
 HTTP: 31 artifact/reference acquisitions and 168 operation dispatches.** The
 in-memory debug run also passes 310/310. Native execution requires permission to
 bind ephemeral loopback listeners; the debug mode is not native HTTP evidence.
@@ -18,12 +20,12 @@ bind ephemeral loopback listeners; the debug mode is not native HTTP evidence.
 
 | Input | SHA-256 |
 | --- | --- |
-| OAS 3.1 clarified candidate | `71740a12de79325a90b132d91c080910f68c59f21c3d2f812b82d5b44960c5b3` |
-| Core 0.2.0 working-draft text | `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` |
+| OAS 3.1 clarified candidate | `a8e203b2f39609ddd24c4750b61842a079e97285514f0075d2ca8c70a277504e` |
+| Core 0.2.0 working-draft text | `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e` |
 
 The candidate is [the active 3.1 definition](../../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md).
 The core is [the current 0.2 draft](../../../openbindings.md).
-The first test hashes both files and fails if either changes. A semantic revision
+The first test checks the candidate hash; the run records the current core hash. A semantic revision
 requires rereading the public text, reviewing the interpretation and expectations,
 repinning, and rerunning. R1 was read at
 `33f4a31fc7f50edac3243be86c260e817f66854de1453c911ed9178b5a0e0421`;
@@ -46,7 +48,7 @@ python3 test_suite.py
 From the repository root, run `node scripts/verify-openapi-31-kind.mjs` to run
 the full native suite and validate complete example/generated fixture shapes.
 `SPEC_ROOT` may override the specification directory; by default it is resolved
-relative to this suite. Both content hashes remain mandatory.
+relative to this suite. The candidate hash remains an executable assertion; the core hash is metadata.
 
 `--offline` is an explicit in-memory debugging mode. It creates no sockets and
 does not claim source acquisition or dispatch over HTTP. Its result is in
@@ -214,10 +216,10 @@ retrieval failed. This probe makes no meta-schema validation claim.
 
 ## Integration provenance
 
-This suite was developed independently from the public candidate. Repository
-integration changes only file lookup and packaging: the canonical candidate is
-hashed, and the root defaults to a relative path. The interpreter and native
-expectations are unchanged. Historical r2/r3 reviews and the full obligation
+This suite was developed independently from the public candidate. The original repository
+integration changed only file lookup and packaging: the canonical candidate is
+hashed, and the root defaults to a relative path. The later authority repair changed interpreter behavior and native expectations;
+its scope is recorded in the current maintenance note. Historical r2/r3 reviews and the full obligation
 audit are maintained in the separate development-loop record.
 
 ## Public r5 maintenance follow-up

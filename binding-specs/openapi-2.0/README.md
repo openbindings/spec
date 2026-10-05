@@ -9,6 +9,10 @@ The shared [value-flow example](../openapi-value-flow.md) traces source and
 binding content, caller input, `each/up`, absence/null, a native request and
 response, and output adaptation. It is informative.
 
+The [scope and limits index](../openapi-scope-limits.md) records reasons,
+reopening conditions and unresolved design choices. Earlier review grades do not
+establish readiness for the current candidates.
+
 ## Content migration
 
 | Earlier draft | Current candidate |

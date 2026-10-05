@@ -7,11 +7,11 @@
 ## 1. Authority and scope
 
 This kind incorporates [OpenBindings Specification 0.2.0](../../openbindings.md).
-It incorporates [OpenAPI 3.2.0](https://spec.openapis.org/oas/v3.2.0.html)
+It incorporates [OpenAPI 3.2.1](https://spec.openapis.org/oas/v3.2.1.html)
 (OAS), its normative references for the features used below, and
 [HTTP Semantics, RFC 9110](https://www.rfc-editor.org/rfc/rfc9110).
-Accepted entry documents have `openapi` equal to `3.2.0`. Later editions are not
-implicitly admitted. The kind string is compared exactly under core.
+Accepted entry documents have `openapi` equal to `3.2.0` or `3.2.1`; both are
+interpreted under the incorporated 3.2.1 text. Later editions are not implicitly admitted. The kind string is compared exactly under core.
 
 The following table identifies the upstream rules governing each interpretation.
 This document supplies the additional decisions and express restrictions below;
@@ -27,12 +27,12 @@ otherwise the incorporated authority governs, including its permitted variation.
 | Security requirements and schemes | §§4.27–4.30 |
 
 For stable incorporation, the default OAS schema dialect uses its
-[2024-11-10 resource](https://spec.openapis.org/oas/3.1/dialect/2024-11-10),
+[2025-09-17 resource](https://spec.openapis.org/oas/3.2/dialect/2025-09-17),
 the URL Living Standard uses the
 [18 August 2026 review draft](https://url.spec.whatwg.org/review-drafts/2026-08/),
 SSE parsing uses the
 [WHATWG HTML snapshot 24c5e48](https://github.com/whatwg/html/blob/24c5e48bf66ea61bc199ec6338c81258275ba9c6/source),
-and QUERY uses [HTTP QUERY draft-11](https://www.ietf.org/archive/id/draft-ietf-httpbis-safe-method-w-body-11.html).
+and QUERY uses [HTTP QUERY, RFC 10008](https://www.rfc-editor.org/rfc/rfc10008.html).
 The suffix and framing authorities are RFCs 6839, 7464 and 8091; Base64 is
 [RFC 4648 §4](https://www.rfc-editor.org/rfc/rfc4648#section-4).
 
@@ -92,6 +92,16 @@ a Schema Object or another referenceable OAS object in the type expected at that
 position. Arbitrary untyped embeddings supply no additional reference
 interpretation. A node used in different reference contexts is interpreted
 separately in each expected OAS object type.
+
+**[convention]** Source content first satisfies its stated contract. For the
+entry artifact, the representation, root-shape and edition requirements above
+are the closed source-load gates. Failure to acquire or interpret a referenced
+resource affects its owning declarations, not these entry-artifact gates. Below
+the gates, defects affect the smallest owning unit. Refuse the source if it declared targets and defects destroy every
+addressable target; an artifact that conformantly declares none remains usable
+and may yield an interface with no operations. An addressable target lacking a
+capability, runtime prerequisite or supported representation is not thereby
+destroyed. This revision adds no source-wide feature exclusion.
 
 ## 3. Target and applicable declarations
 
@@ -153,10 +163,10 @@ remaining candidate must determine the same needed declaration. An unrestricted 
 Do not use `not` or conditionals to invent a uniquely determined declaration.
 A false schema or empty category intersection admits no supplied value at an
 inspected position. If needed static inspection reaches `$dynamicRef`, this kind
-provides no static answer. Where OAS permits type determination from independently
-validated data, that determination may instead supply the needed type, without
-requiring static inspection or making validation mandatory. Apparent runtime type
-alone does not substitute for either determination. If neither supplies the needed
+provides no static answer. A serializer with access to independently validated data uses that data to
+determine the needed type where possible, as OAS requires. Otherwise the static
+inspection rules above apply. This does not make validation mandatory. Apparent
+unvalidated runtime type alone does not substitute for either determination. If neither supplies the needed
 answer, the position is unsupported. Schema references remain distinct from
 Reference Objects and Path Item references under OAS.
 
@@ -197,15 +207,15 @@ be faithfully realized under core; a mapping is not evidence of that claim.
 
 The request value is absent or an object with only optional `parameters` and
 `body`. Absence is equivalent to supplying neither member. Present `parameters`
-is an object keyed by effective OAS parameter names, after projections excluded
+is an object keyed by effective OAS parameter names, after parameters excluded
 by the governing OAS or kind rules are removed (including the ignored and
 unavailable fields in §6). Missing implementation capabilities or runtime
-context, and value-dependent failures, do not remove a projection for key
+context, and value-dependent failures, do not remove a parameter for key
 construction or change any key. Where any remaining name occurs at more than
 one location, all parameter keys are `<location>/<RFC6901-escaped-name>`;
 otherwise they are the exact names. OAS determines identity, overrides, ignored
 parameters and destinations. Unknown keys and wrong-shaped request values are
-unroutable and prevent dispatch. Absent members are not supplied; null members
+not representable and prevent dispatch. Absent members are not supplied; null members
 are supplied null values, whose representability is determined below.
 
 The request envelope is a kind-defined intermediate value, not a mandatory
@@ -233,12 +243,21 @@ retaining every other path byte; do not collapse repeated slashes. An incomplete
 chosen URL prevents dispatch. An unavailable declaration-derived server can be
 recovered by this explicit replacement.
 
-Context supplies server selection/substitutions, request media selection,
-security alternative and credentials, scalar parameter conversion, and property
-media selection where the corresponding rules need them. A missing necessary
-choice prevents dispatch. These are semantic prerequisites, not prescribed API
-field names, call order or a context-negotiation protocol. They do not enter the
-operation input merely because a runtime needs them.
+**[configuration point]** These names identify the choices this kind leaves to
+its consumer. They are portable semantic names, not required SDK field names or
+context-store keys. Each choice has the domain and effect below; §6–§9 determine
+when it is needed. An unanswered necessary choice prevents dispatch. Supplying
+it, discovering it and negotiating context remain outside this specification.
+These choices do not become operation-input fields.
+
+| Name | Admissible choice and effect |
+| --- | --- |
+| `server` | One effective server alternative with its required substitutions, or the complete replacement base allowed above. It fixes the URL base; it does not replace the operation path or method. |
+| `requestMedia` | One concrete media type matching an admitted request alternative under §7. It selects that alternative's representation, without substituting another declaration's schema. |
+| `security` | One complete effective Security Requirement alternative under §9, including an admitted anonymous alternative. Alternatives are never combined. Credentials satisfy the selected alternative separately. |
+| `parameterConversion` | A deterministic conversion of booleans and numbers to strings for §6's schema/style paths, including array members and object values. Strings pass unchanged; null follows that section's separate rule. |
+| `propertyMedia` | One concrete media type for an affected form or multipart property under §8, matching a declared alternative where one exists. It selects the property's representation. |
+| `implicitConnectionScope` | `entry` or `referring` document for component-name Security Requirement lookup under §9. The default is `entry`; no unanswered-choice refusal applies to this default. |
 
 ## 6. Parameters and request assembly
 
@@ -254,14 +273,15 @@ the needed conversion, the request cannot be formed. The conversion applies to
 array members and object values as well. Content-based serialization instead
 uses §8's media representation.
 
-For schema-form serialization, supplied null, an empty array and an empty object
-use OAS §4.12.6's undefined column. Its result governs where an Appendix C
-URI-template example would omit that contribution instead. An absent optional
-parameter contributes nothing; an empty string remains a supplied string.
+For schema-form serialization, supplied null uses OAS §4.12.6's undefined
+column. Where the serialization incorporates RFC 6570, empty arrays and objects
+contribute nothing under its §2.3 and OAS Appendix C.4.3; they are not substituted with null. An absent optional
+parameter also contributes nothing; an empty string remains a supplied string.
 
-An OAS serialization cell without defined behavior is unsupported. If only the
-supplied value leaves an otherwise supported cell, that invocation is unroutable,
-not every invocation of the operation. Undefined compound members and nested
+A combination of parameter location, style, explode setting and value category
+without OAS-defined serialization is unsupported. If only the supplied value
+cannot be serialized, that invocation cannot dispatch; other invocations of the
+operation remain usable. Undefined compound members and nested
 compound shapes without an upstream expansion cannot be serialized by guessing.
 For space/pipe-delimited forms, a scalar component containing its structural
 separator is unsupported where splitting the decoded value cannot preserve it.
@@ -293,13 +313,15 @@ leading/trailing field-line whitespace and forbidden controls cannot be repaired
 into a different value. Cookie contributions must satisfy RFC 6265; no invented
 escaping repairs an invalid cookie. An effective raw Cookie header must be a
 complete cookie-string. It cannot be combined with structured cookie contributions.
+An explicit `explode: false` on an `in: cookie` parameter is invalid under OAS
+§4.12.2.2, including scalar parameters and both cookie styles.
 Form-style cookie expansion with two or more `&`-separated pairs is unsupported;
 zero or one pair remains subject to the ordinary cookie grammar. `style: cookie`
 uses OAS's RFC 6265 mapping.
 
-An invalid HTTP field or cookie name makes that parameter projection unavailable;
-required unavailable projections make invocation impossible; omitting an optional
-unavailable projection does not. Case-distinct effective Header parameter names
+An invalid HTTP field or cookie name makes that parameter contribution unavailable;
+required unavailable parameter contributions make invocation impossible; omitting an optional
+unavailable parameter contribution does not. Case-distinct effective Header parameter names
 remain distinct request keys. Supplying more than one contribution to the same
 case-insensitive field is ambiguous and prevents dispatch; a single supplied
 contribution remains usable. Parameters naming
@@ -407,10 +429,20 @@ completion unsuccessful. Failure-response data follows §10 instead.
 OAS §§4.14.5 and 4.15 govern encoding by name/position, Encoding precedence,
 default content types and nested Encoding Objects. URL encoding follows the
 pinned WHATWG rules; multipart framing follows RFC 2046 and RFC 7578 as
-incorporated by OAS. Member order across distinct named properties is free;
+incorporated by OAS. Member order across distinct named properties is free unless the selected
+multipart subtype requires an order;
 repeated elements of one array preserve its order. Boundary generation and
 equivalent quoting are implementation choices. Upstream-permitted preambles and
 epilogues have no operation-value meaning.
+
+Supplied named members are not limited to names explicitly listed under
+`properties`. Their governing schemas include applicable `properties`,
+`patternProperties`, `additionalProperties` and `allOf` constraints. A supplied
+member forbidden by those declarations cannot be represented; no undeclared
+member is silently dropped. Encoding entries for absent members or positional
+items create no values. For positional multipart/form-data, each array item is
+the OAS-defined single-member object supplying that part's name and value; the
+name determines its generated Content-Disposition. Positional order is preserved.
 
 For content-based encoding, the selected media's §8 correspondence governs
 supplied null as it does other values: JSON media carries JSON null. A supplied
@@ -418,7 +450,7 @@ null is one value, not an array to expand. If the selected media has no null
 correspondence, an optional named property is omitted; a required property,
 named-array item or positional item cannot be omitted and is unsupported. No
 null spelling is invented for text or raw media. A null entire form body is not
-an object and is unroutable. Style-based encoding uses §6's undefined-value rules.
+an object and cannot be encoded as a form. Style-based encoding uses §6's undefined-value rules.
 
 An encoded named array property's item declaration selects each part's media;
 other properties use their whole-value declaration. A multi-type declaration
@@ -429,7 +461,8 @@ Absent properties need no media choice. A supplied value at an inspected false s
 is unrepresentable; an unused impossible property does not poison its siblings.
 
 Name-based form and multipart decoding into response objects is unsupported:
-this kind defines no inverse for repeated names or omitted properties. Positional
+this kind does not adopt OAS's name-based inverse into its response-value
+correspondence. Positional
 multipart response decoding remains supported. A collision between separately
 declared serialized property sources is unsupported; repeated items of the same
 property are not such a collision.
@@ -622,7 +655,7 @@ Callbacks and webhooks, when represented, become dependencies with input describ
 the request the service sends and output describing the response it expects.
 They do not become invocable parent-operation targets or deployed receivers.
 Preserve distinct consumption points; their names and schema layouts are generation
-policy. The OAS artifact alone does not restrict those dependencies' accepted kinds.
+policy. These dependencies carry no `kinds` constraint.
 
 Conformance to this kind is separate from core document conformance. A document's
 unknown kind or unavailable external resource does not establish a core violation.

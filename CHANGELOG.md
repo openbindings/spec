@@ -235,6 +235,12 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **Complete-evidence reporting is explicit in OBI-T-09.** The numbered rule
+  now prohibits reporting conformance as undetermined when the evidence establishes
+  conformance, matching §10.4 and the existing corpus behavior. Positive reporting
+  remains optional; an established violation still requires a non-conformance
+  report. Corpus clause `OBI-T-09/c5` traces the existing case to this requirement.
+
 - **OpenAPI family text clarifications.** Parameter keys remain stable when
   runtime context or implementation capabilities change. Media tables expose
   the existing artifact-encoded-string correspondence, including its character

@@ -9,6 +9,10 @@ The shared [value-flow example](../openapi-value-flow.md) traces source and
 binding content, caller input, `each/up`, absence/null, a native request and
 response, and output adaptation. It is informative.
 
+The [scope and limits index](../openapi-scope-limits.md) records reasons,
+reopening conditions and unresolved design choices. Earlier review grades do not
+establish readiness for the current candidates.
+
 ## Content migration
 
 | Earlier draft | Current candidate |
@@ -39,7 +43,7 @@ bounded interpreter cannot substantiate a narrower claim.
 
 | [PB-02](../PROJECT-POLICY.md#pb-02-publication-completeness) item | Candidate answer |
 | --- | --- |
-| 1. Artifact, representations and editions | §§1–2: OAS 3.2.0; embedded object/text or acquired document; accepted referenced roots |
+| 1. Artifact, representations and editions | §§1–2: OAS 3.2.0 and 3.2.1, interpreted under 3.2.1; embedded object/text or acquired document; accepted referenced roots |
 | 2. Address interpretation and acquisition | §2: absolute URI, scheme acquisition, failure and unavailable resources |
 | 3. Source content and absence | §2: closed `document`/`location` object; at least one member |
 | 4. Composition and bases | §2: embedded content wins; retrieval, `$self` and schema bases remain distinct |
@@ -55,7 +59,7 @@ reviewed and exercised separately at its own exact text hash.
 ## Evidence and remaining work
 
 The [current interpretation suite](../../conformance/kinds/openapi-3.2/README.md)
-contains 74 focused tests, including actual loopback HTTP acquisition/dispatch,
+contains 73 focused tests, including actual loopback HTTP acquisition/dispatch,
 complete current-core OBIs, independently authored native expectations, permitted
 variation, and semantic-negative cases. Run:
 

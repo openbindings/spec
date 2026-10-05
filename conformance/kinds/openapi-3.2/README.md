@@ -1,11 +1,13 @@
 # Independent OpenAPI 3.2 family follow-up
 
-**2026-10-05 maintenance:** the current pin includes the bounded text
-clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
-The independence narrative below describes the original suite authorship; this
-maintenance replay is not a new independent implementation.
+**2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
+The original authorship narrative below is historical. This maintenance changed
+probe algorithms and expectations; it is not another independent implementation.
+Candidate bytes remain an executable gate. Core bytes are recorded as run metadata;
+the wrapper validates complete OBI fixture shapes against the current core schema.
+Neither mechanism proves complete core or kind conformance.
 
-The final native run passes **74 test methods**, with zero failures, errors or
+The final native run passes **73 test methods**, with zero failures, errors or
 skips. These are focused executable interpretation probes, including real
 localhost HTTP acquisition and dispatch. They are not a full OpenAPI SDK,
 complete kind-conformance suite, general schema engine, or core-conformance
@@ -14,11 +16,11 @@ conclusion.
 ## Exact inputs and isolation
 
 - Candidate: [canonical candidate](../../../binding-specs/openapi-3.2/openbindings.openapi-3.2.md).
-- Candidate SHA-256: `1105086f6b0acf82766918e5c0a77b9ab1121ea75bbdc1990b721ec6d1e28c99`.
+- Candidate SHA-256: `bb220e73a28904b5fba9d42dddde914eba3142247fd60000c4d808a25d93e4ca`.
 - Linked current core: [current core](../../../openbindings.md).
-- Core SHA-256: `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
+- Core SHA-256: `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e`.
 
-Both pins are executable assertions. `results.json` repeats the observed pins,
+The candidate pin is an executable assertion; the core hash is observed metadata. `results.json` repeats the observed pins,
 counts, test names and hashes of the executed probe/OBI artifacts. `run.log` is
 the final full-run output. The complete public candidate was read before making
 these changes; its linked core governs the OBI fixtures.
@@ -147,7 +149,7 @@ node interpreted in both Parameter and Response contexts. Expected request paths
 and exact response values are hard-coded independently of reference resolution.
 `family-r6-http-trace.json` records all ten acquisition paths and seven request
 observations, including exact body hex. All three HTTP tests execute in the
-reported 74-method run.
+reported 73-method run.
 
 The retained live pilot test separately exercises an HTTP artifact redirect,
 a mapped POST and two streamed NDJSON outputs. Retained tests also cover
@@ -225,17 +227,17 @@ unimplemented.
   not claimed.
 
 No unresolved candidate ambiguity blocked the addressed family cases. This is a
-bounded interpretation result under the two exact pins, not a finding that every
+bounded interpretation result for the recorded candidate and core text, not a finding that every
 remaining rule or every third-party implementation is conformant.
 
 ## Repository integration
 
-Run `node scripts/verify-openapi-32-kind.mjs` from the spec root. It runs all 74
+Run `node scripts/verify-openapi-32-kind.mjs` from the spec root. It runs all 73
 methods, then validates every saved complete OBI in this directory against the
 current core schema, including the regenerated location-source fixtures. The
 wrapper sets `SPEC_ROOT`; direct execution defaults to this repository root.
-Canonical spec/core hashes are mandatory. Integration changes lookup/packaging
-only; the interpreter, native expectations and fixtures retain their independently
-authored meanings. HTTP traces, live fixture addresses and result files are
+The canonical candidate hash is checked; the current core hash is recorded. The original integration changed lookup and packaging only. The authority
+repair subsequently changed interpreter behavior and expectations; the current
+run is a maintenance replay of that independently authored suite. HTTP traces, live fixture addresses and result files are
 reproducible ignored outputs. Prior revisions remain in repository history and
 the separate development-loop archive.

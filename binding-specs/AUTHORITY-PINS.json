@@ -534,8 +534,7 @@
       "bytes": 1027,
       "retrievedAt": "2026-08-21T23:11:57Z",
       "citedBy": [
-        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
       ],
       "matchTokens": [
         "spec.openapis.org/oas/3.1/dialect/base",
@@ -558,12 +557,12 @@
       "sha256": "c3b1e0700840af9734254884e9a4cd823868b9b5ecc1628cf48358c1052532a5",
       "bytes": 674364,
       "retrievedAt": "2026-09-18T18:52:16Z",
-      "citedBy": [
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "spec.openapis.org/oas/v3.2.0.html"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority retained; the current OpenAPI 3.2 candidate incorporates 3.2.1 and RFC 10008."
     },
     {
       "id": "whatwg-html-sse",
@@ -1123,9 +1122,9 @@
       "sha256": "4e2c989f3d1e6489d41bc1ca4ade11743278c612b82fba9144c6116c79f1c273",
       "bytes": 1029,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "status": "reference-only",
-      "reason": "Historical authority bytes retained; the reduced OpenAPI candidates no longer directly cite this resource.",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "spec.openapis.org/oas/3.2/dialect/2025-09-17"
       ]
@@ -1146,12 +1145,12 @@
       "bytes": 42843,
       "retrievedAt": "2026-08-24T23:27:03Z",
       "pinChoice": "OAS 3.2.0 visibly labels the inline citation as draft-08 but links to draft-11. The hyperlink target is the cited evidence and identifies exact retrievable bytes, so this manifest pins draft-11 and preserves the label/target mismatch here rather than silently choosing the visible label.",
-      "citedBy": [
-        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
-      ],
+      "citedBy": [],
       "matchTokens": [
         "draft-ietf-httpbis-safe-method-w-body-11"
-      ]
+      ],
+      "status": "reference-only",
+      "reason": "Historical authority retained; the current OpenAPI 3.2 candidate incorporates 3.2.1 and RFC 10008."
     },
     {
       "id": "iana-http-status-codes",
@@ -2386,6 +2385,52 @@
       "matchTokens": [
         "rfc2045",
         "RFC 2045"
+      ]
+    },
+    {
+      "id": "oas-3.2.1",
+      "families": [
+        "openapi-3.0",
+        "openapi-3.1",
+        "openapi-3.2"
+      ],
+      "name": "OpenAPI Specification 3.2.1",
+      "edition": "3.2.1",
+      "kind": "url",
+      "url": "https://spec.openapis.org/oas/v3.2.1.html",
+      "citedUrls": [],
+      "sha256": "68a1729054df3707288f1907094de77c64b6f68107da1eb14dbbaa318dcc5e8b",
+      "bytes": 678358,
+      "retrievedAt": "2026-10-05T20:34:33Z",
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md"
+      ],
+      "matchTokens": [
+        "spec.openapis.org/oas/v3.2.1.html"
+      ]
+    },
+    {
+      "id": "rfc10008",
+      "families": [
+        "openapi-3.2"
+      ],
+      "name": "RFC 10008: The HTTP QUERY Method",
+      "edition": "RFC 10008",
+      "kind": "url",
+      "url": "https://www.rfc-editor.org/rfc/rfc10008.txt",
+      "citedUrls": [
+        "https://www.rfc-editor.org/rfc/rfc10008.html"
+      ],
+      "sha256": "de289b4a8d2a105d1ae393b52e1ce32a2bce6f2adf8b2638f95946d6296219c6",
+      "bytes": 45943,
+      "retrievedAt": "2026-10-05T20:34:33Z",
+      "citedBy": [
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
+      "matchTokens": [
+        "rfc10008"
       ]
     }
   ]

@@ -3,7 +3,38 @@
 Named scalars/arrays and flat positional multipart with explicit part media are
 composed. This is not a complete MIME, Encoding Object, or schema implementation.
 """
-from probe import ABSENT,Prerequisite,Unsupported,Unroutable,encode,field,isjson,media_parts,media_select
+import re
+from probe import ABSENT,Prerequisite,Unsupported,Unroutable,encode,field,isjson,media_parts,media_select,inspected_type
+
+def governing_member(schema,name):
+    """Bounded JSON Schema property correspondence; no instance validation claim."""
+    if schema is False:raise Unroutable('supplied forbidden multipart member')
+    if schema is True:return {}
+    if any(k in schema for k in ('$ref','$dynamicRef','anyOf','oneOf','if','not')):
+        raise Unsupported('property schema interpretation outside bounded composer')
+    declarations=[]
+    if name in schema.get('properties',{}):declarations.append(schema['properties'][name])
+    for pattern,child in schema.get('patternProperties',{}).items():
+        if re.search(pattern,name):declarations.append(child)
+    if not declarations:declarations.append(schema.get('additionalProperties',{}))
+    for child in schema.get('allOf',[]):declarations.append(governing_member(child,name))
+    if any(d is False for d in declarations):raise Unroutable('supplied forbidden multipart member')
+    declarations=[d for d in declarations if d is not True and d!={}]
+    if not declarations:return {}
+    return declarations[0] if len(declarations)==1 else {'allOf':declarations}
+
+def required_properties(schema):
+    if not isinstance(schema,dict):return set()
+    return set(schema.get('required',[])).union(*(required_properties(c) for c in schema.get('allOf',[])))
+
+def item_schema(schema):
+    if not isinstance(schema,dict):return {}
+    declarations=([schema['items']] if 'items' in schema else [])
+    declarations += [item_schema(c) for c in schema.get('allOf',[])]
+    if any(s is False for s in declarations):return False
+    declarations=[s for s in declarations if s is not True and s!={}]
+    if not declarations:return {}
+    return declarations[0] if len(declarations)==1 else {'allOf':declarations}
 
 def intersection(a,b):
     if a is None:return b
@@ -111,15 +142,13 @@ def compose_form_data(declaration,body,source=None,boundary='independent-family-
     if not isinstance(body,dict):raise Unroutable('named multipart body must be object')
     check_boundary(boundary);choices=choices or {}
     schema=declaration.get('schema',{})
-    props=schema.get('properties',{});required=schema.get('required',[])
-    if set(body)-set(props):raise Unroutable('undeclared multipart member')
+    required=required_properties(schema)
     out=[]
     for name,value in body.items():
-        member=props[name]
+        member=governing_member(schema,name)
         if member is False:raise Unroutable('supplied impossible multipart member')
-        types=member.get('type',[]) if isinstance(member,dict) else []
-        array_declared=types=='array' or isinstance(types,list) and 'array' in types
-        part_schema=member.get('items',{}) if array_declared else member
+        array_declared=inspected_type(member)=='array'
+        part_schema=item_schema(member) if array_declared else member
         enc=declaration.get('encoding',{}).get(name,{})
         # Select before null omission. Whole-property null is one value, even
         # when its declaration names an array. Actual array items never omit.
@@ -137,7 +166,7 @@ def compose_form_data(declaration,body,source=None,boundary='independent-family-
     out.append(('--'+boundary+'--\r\n').encode())
     return 'multipart/form-data; boundary='+boundary,b''.join(out)
 
-def compose_positional(declaration,body,source=None,boundary='independent-family-boundary',choices=None):
+def compose_positional(declaration,body,source=None,boundary='independent-family-boundary',choices=None,subtype='mixed'):
     if not isinstance(body,list):raise Unroutable('positional multipart body must be array')
     check_boundary(boundary);choices=choices or {}
     schema=declaration.get('schema',{})
@@ -147,10 +176,15 @@ def compose_positional(declaration,body,source=None,boundary='independent-family
         member=prefix[i] if i<len(prefix) else schema.get('items',{})
         enc=encodings[i] if i<len(encodings) else declaration.get('itemEncoding',{})
         if member is False:raise Unroutable('supplied impossible positional item')
+        name=None
+        if subtype=='form-data':
+            if not isinstance(value,dict) or len(value)!=1:raise Unroutable('positional form-data item must have one member')
+            name,value=next(iter(value.items()))
+            member=governing_member(member,name)
         media=choose_media(enc,choices.get(i,ABSENT))
         if value is None and not isjson(media):raise Unsupported('positional null has no selected-media correspondence')
-        headers=part_headers(enc,member,value,source,'mixed')
+        headers=part_headers(enc,member,value,source,subtype,name)
         headers['Content-Type']=media
         append_part(out,boundary,headers,encode(media,{'schema':member},value))
     out.append(('--'+boundary+'--\r\n').encode())
-    return 'multipart/mixed; boundary='+boundary,b''.join(out)
+    return 'multipart/'+subtype+'; boundary='+boundary,b''.join(out)

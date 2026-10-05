@@ -186,12 +186,12 @@ class Source:
         else:
             raw, location = self.resolver.acquire(location)
             doc = parse_artifact(raw)
-        if doc.get('openapi') != '3.2.0': raise Invalid('entry must be OAS 3.2.0')
+        if doc.get('openapi') not in ('3.2.0','3.2.1'): raise Invalid('entry must be OAS 3.2.0 or 3.2.1')
         self.doc, self.retrieval = doc, location
         self.base = self.description_base(doc, location)
     @staticmethod
     def description_base(doc, retrieval):
-        if not isinstance(doc,dict) or doc.get('openapi')!='3.2.0' or '$self' not in doc: return retrieval
+        if not isinstance(doc,dict) or doc.get('openapi') not in ('3.2.0','3.2.1') or '$self' not in doc: return retrieval
         s = doc['$self']
         if url.urlsplit(s).scheme: return s
         if retrieval: return url.urljoin(retrieval,s)
@@ -199,7 +199,7 @@ class Source:
     def ref(self, value, doc=None, retrieval=None, seen=None, expected=None):
         doc = self.doc if doc is None else doc
         retrieval = self.retrieval if retrieval is None else retrieval
-        if not isinstance(value,dict) or '$ref' not in value: return value, doc, retrieval
+        if not isinstance(value,dict) or '$ref' not in value: return scoped_object(value,doc,expected), doc, retrieval
         ref = value['$ref']; seen = set() if seen is None else seen
         base = self.description_base(doc,retrieval)
         absolute = url.urljoin(base or '',ref)
@@ -268,7 +268,7 @@ class Source:
         if operation is ABSENT: raise Unavailable('no selected operation')
         if not isinstance(operation,dict): raise Invalid('operation must be object')
         self.selection_origins={'operation':(item_doc,item_uri),'item_fields':field_origins}
-        return path,method,item,operation,item_doc,item_uri
+        return path,method,item,scoped_object(operation,item_doc),item_doc,item_uri
 
 def media_parts(s):
     # Concrete tested subset: tokens and quoted parameter strings without escapes.
@@ -303,11 +303,32 @@ def media_select(content, actual):
     if len(entries)>1 and entries[0][0] == entries[1][0]: raise Unsupported('ambiguous media match')
     return entries[0][1],entries[0][2]
 
-def inspected_type(schema):
+DEFAULT_DIALECT = 'https://spec.openapis.org/oas/3.2/dialect/2025-09-17'
+
+def scoped_object(node, document, expected=None):
+    """Carry dialect context into a selected OAS object without editing the artifact."""
+    if not isinstance(node,dict): return node
+    dialect=document.get('jsonSchemaDialect',DEFAULT_DIALECT) if isinstance(document,dict) else DEFAULT_DIALECT
+    if dialect==DEFAULT_DIALECT:return node
+    if expected=='schema':
+        return {'$schema':dialect,**node}
+    result=copy.deepcopy(node)
+    def walk(o):
+        if not isinstance(o,dict): return
+        if isinstance(o.get('schema'),dict):o['schema']={'$schema':dialect,**o['schema']}
+        for p in o.get('parameters',[]):walk(p)
+        for field in ('content','responses','headers'):
+            for child in o.get(field,{}).values():walk(child)
+        if 'requestBody' in o:walk(o['requestBody'])
+    walk(result)
+    return result
+
+def inspected_type(schema, dialect=DEFAULT_DIALECT):
     if schema is False: raise Unroutable('false schema at inspected position')
     if schema in (None,True) or schema == {}: return None
     if '$dynamicRef' in schema or '$ref' in schema: raise Unsupported('probe schema reference inspection not implemented')
-    if '$schema' in schema and schema['$schema'] not in ('https://spec.openapis.org/oas/3.1/dialect/2024-11-10',):
+    dialect=schema.get('$schema',dialect)
+    if dialect != DEFAULT_DIALECT:
         raise Unsupported('unsupported schema dialect')
     def categories(t): return {'integer','fractional'} if t=='number' else {t}
     known = None
@@ -315,13 +336,13 @@ def inspected_type(schema):
         ts=schema['type'] if isinstance(schema['type'],list) else [schema['type']]
         known=set().union(*(categories(t) for t in ts))
     for child in schema.get('allOf',[]):
-        t = inspected_type(child)
+        t = inspected_type(child,dialect)
         if t is not None: known = categories(t) if known is None else known & categories(t)
     for kw in ('anyOf','oneOf'):
         if kw in schema:
             choices=[]
             for child in schema[kw]:
-                try:choices.append(inspected_type(child))
+                try:choices.append(inspected_type(child,dialect))
                 except Unroutable:pass  # statically impossible branch admits no candidate
             choices = [x for x in choices if x != 'null']
             if not choices:raise Unroutable('no non-null possible union branch')
@@ -454,6 +475,7 @@ def request(source,binding,value=ABSENT,context=None):
         local=set()
         for p in scope.get('parameters',[]):
             p,_,_=source.ref(p,param_doc,param_uri,expected='parameter')
+            if p['in']=='cookie' and p.get('explode') is False:raise Invalid('cookie explode:false')
             ident=(p['in'],p['name'])
             if ident in local: raise Invalid('duplicate parameter')
             local.add(ident)
@@ -494,8 +516,13 @@ def request(source,binding,value=ABSENT,context=None):
             if any(n.lower()==name.lower() for n in headers): raise Unsupported('case-ambiguous header')
             if style!='simple' or isinstance(v,(dict,list)): raise Unsupported('only scalar simple headers in probe')
             headers.update([field(name,scalar(v,context))]); continue
-        if loc=='path' and style=='simple' and not isinstance(v,(dict,list)):
-            path=path.replace('{'+name+'}',url.quote(scalar(v,context),safe='-._~'));continue
+        if loc=='path' and style in ('simple','matrix','label'):
+            if v is None or v==[] or v=={}:part=''
+            else:
+                part=url.quote(scalar(v,context),safe='-._~')
+                if style=='label':part='.'+part
+                elif style=='matrix':part=';'+url.quote(name,safe='-._~')+('='+part if part else '')
+            path=path.replace('{'+name+'}',part);continue
         if loc=='query' and style=='deepObject':
             if not isinstance(v,dict) or not v:raise Unroutable('deepObject probe requires nonempty object')
             for member,member_value in v.items():
@@ -510,7 +537,8 @@ def request(source,binding,value=ABSENT,context=None):
             if any(separator in x for x in values):raise Unsupported('structural separator in delimited scalar')
             query.append(url.quote(name,safe='-._~')+'='+url.quote(separator.join(values),safe='-._~'));continue
         if loc=='query' and style=='form':
-            if v is None or v==[] or v=={}:
+            if v==[] or v=={}: continue
+            if v is None:
                 query.append(url.quote(name,safe='-._~')+'=');continue
             values=v if isinstance(v,list) else [v]
             if isinstance(v,dict): raise Unsupported('object form query outside probe subset')

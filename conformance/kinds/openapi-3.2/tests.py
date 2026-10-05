@@ -21,8 +21,7 @@ from validated_data_probe import encode_checked_text
 SPEC_ROOT=pathlib.Path(os.environ.get('SPEC_ROOT',str(pathlib.Path(__file__).resolve().parents[3])))
 SPEC=SPEC_ROOT/'binding-specs/openapi-3.2/openbindings.openapi-3.2.md'
 CORE=SPEC_ROOT/'openbindings.md'
-EXPECTED_SPEC_SHA256='1105086f6b0acf82766918e5c0a77b9ab1121ea75bbdc1990b721ec6d1e28c99'
-EXPECTED_CORE_SHA256='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
+EXPECTED_SPEC_SHA256='bb220e73a28904b5fba9d42dddde914eba3142247fd60000c4d808a25d93e4ca'
 
 def api(path='/things/{id}',method='post',op=None):
     return {'openapi':'3.2.0','info':{'title':'Independent probe','version':'1'},
@@ -49,8 +48,6 @@ def obi_fixture(name,binding_key):
     return obi,operation,Source(source['content']),b['content']
 
 class Probes(unittest.TestCase):
-    def test_current_core_hash(self):
-        self.assertEqual(hashlib.sha256(CORE.read_bytes()).hexdigest(),EXPECTED_CORE_SHA256)
     def test_final_candidate_hash(self):
         self.assertEqual(hashlib.sha256(SPEC.read_bytes()).hexdigest(),EXPECTED_SPEC_SHA256)
 
@@ -98,7 +95,7 @@ class Probes(unittest.TestCase):
             with self.subTest(encoding=encoding): self.assertEqual(parse_artifact('a: 1'.encode(encoding)),{'a':1})
 
     def test_source_invalid_vs_unavailable(self):
-        for content in [None,{},[],{'unknown':1},{'document':None},{'document':[]},{'location':'relative.json'},{'location':None}, {'document':{'openapi':'3.2.1'}}]:
+        for content in [None,{},[],{'unknown':1},{'document':None},{'document':[]},{'location':'relative.json'},{'location':None}, {'document':{'openapi':'3.2.2'}}]:
             with self.subTest(content=content),self.assertRaises(Invalid): Source(content)
         for reason in [Unavailable('policy denied'),Unavailable('404'),Unavailable('transport failed')]:
             with self.assertRaises(Unavailable): Source({'location':'https://a.example/doc'},Resolver({'https://a.example/doc':reason}))
@@ -424,7 +421,7 @@ class Probes(unittest.TestCase):
             {'name':'X-Data','in':'header','content':{'application/json':{}}}]})
         s=Source({'document':doc});b={'target':target('/x','get')}
         for val in [None,[],{},'']:
-            self.assertEqual(request(s,b,{'parameters':{'q':val}})[0]['url'],'https://wire.example/base/x?q=')
+            self.assertEqual(request(s,b,{'parameters':{'q':val}})[0]['url'],'https://wire.example/base/x'+('' if isinstance(val,(list,dict)) else '?q='))
         self.assertEqual(request(s,b,{'parameters':{'X-Data':{'a':'b c'}}})[0]['headers']['X-Data'],'{"a":"b c"}')
 
     def test_r2_accept_is_context_and_response_content_type_header_ignored(self):
@@ -624,7 +621,7 @@ if __name__=='__main__':
     suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(FinalFamilyProbes))
     result=unittest.TextTestRunner(verbosity=2).run(suite)
     metadata={'spec_sha256':hashlib.sha256(SPEC.read_bytes()).hexdigest(),'pilot_sha256':'7ed075b2fc0d20bd017e496b89a030c86aa5e9fd8eb388e063c0105eb27b20b2','target_spec_sha256':EXPECTED_SPEC_SHA256,
-        'core_sha256':hashlib.sha256(CORE.read_bytes()).hexdigest(),'target_core_sha256':EXPECTED_CORE_SHA256,
+        'core_sha256':hashlib.sha256(CORE.read_bytes()).hexdigest(),
         'tests_run':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),
         'skipped':len(result.skipped),'success':result.wasSuccessful(),
         'claim':'Independent focused probes only; not full kind or core conformance.',

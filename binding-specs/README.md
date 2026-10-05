@@ -141,7 +141,7 @@ When published, project binding specifications are identified as `openbindings.<
 
 - Identifiers are exact, opaque strings ([PB-01](PROJECT-POLICY.md#pb-01-exact-project-identifiers)): no ranges, no version algebra, no normalization, never dereferenced. A tool supports the exact identifiers it implements.
 - An incompatible change publishes the next revision — a different identifier ([PB-03](PROJECT-POLICY.md#pb-03-published-meaning-and-revisions)). Compatible clarification may retain the identifier only when the accepted domain and every required, permitted, or refused observable behavior remain unchanged.
-- **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. An unqualified support claim covers that complete domain; an implementation with narrower coverage reports partial support rather than presenting the identifier as fully supported.
+- **The accepted domain is frozen at publication.** One revision may accept one upstream edition or a finite set of exact editions, but adding or removing an edition, source mode, or previously excluded feature or interaction publishes a new binding-specification identifier. A claim of complete conformance covers that domain. The project interfaces’ per-job `checkKindSupport` is a different promise: true means the implementation knows the kind for its job, with unhandled cases refused or disclosed through that operation’s partial-result route. It is not a claim of complete coverage; false means every call on that kind is refused before work.
 - **The OpenBindings project publishes an `openbindings.*` identifier only when its defining document meets [PB-02](PROJECT-POLICY.md#pb-02-publication-completeness).** Draft pages in this directory mint no project-published identifier, and project tooling adopts one only at publication. Core does not make that publication policy a gate on other kinds.
 - **Citations denote revisions, not mutable files.** A citation into a published binding specification by its identifier denotes the immutable defining document recorded for that revision in [`publications.json`](publications.json). Every revision has a permanent human-readable URL, `https://openbindings.com/binding-specs/<family>/<rev>`, and raw Markdown URL, `https://openbindings.com/raw/binding-specs/<family>/<rev>.md`. The shorter family URL is only a latest-revision alias. A superseding revision changes that alias but never either permanent URL. Cross-specification citations SHOULD name stable rule identifiers alongside the exact-revision URL.
 - **Core dependencies are exact.** A project binding specification that normatively incorporates the OpenBindings Specification names one exact Core version in its scope-and-authorities section and repeats that version in its normative references. At publication, the declared version MUST equal both the publication record's `coreRelease` and the version of `openbindings.md` preserved in the immutable bundle. Core is a repository-internal authority carried in that bundle, not an external authority recorded in [`AUTHORITY-PINS.json`](AUTHORITY-PINS.json).
@@ -440,13 +440,11 @@ has been established.
 **2. Below the load gates there is exactly one whole-source refusal, and it
 is derived, not enumerated.** Once the artifact has a JSON image and a
 determined edition, every defect confines to the smallest unit that owns it.
-The source refuses only when **no addressable target remains**: no conformant
-`selector` resolves to an invocable target, because every position that would have
-carried one is defective under the governing authority. This single rule
-replaces both "the artifact declares no addressable target" and "the artifact
-declares addressable targets and every one of them is destroyed" — an empty
-set has no survivors, so one sentence covers both. Specific shapes that
-trigger it are illustrations, never a closed list.
+The source refuses when it declared targets but **no addressable target
+remains**, because every position that would have carried one is defective
+under the governing authority. An artifact that conformantly declared no
+target is accepted, as specified below. Specific shapes that destroy all
+declared targets are illustrations, never a closed list.
 
 **"Addressable" is the test, and it is deliberately not "representable."** A
 target that resolves and is then unusable for another reason — no admissible

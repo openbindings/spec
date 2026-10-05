@@ -6,7 +6,7 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 ## Status
 
-**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-11, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 60 obligation-type clauses, 50 are tested by discriminating cases the designated executor runs (a parent clause counts as tested when its alternatives or specializations are, or, where the tool's declaration selects one alternative, when the exercised one is), one through adapter code, and 9 hold a recorded status short of that: composition only (4), contrast tools only (2), expressible with no executor (2), not portably testable (1). Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-10 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
+**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-11, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 61 obligation-type clauses, 51 are tested by discriminating cases the designated executor runs (a parent clause counts as tested when its alternatives or specializations are, or, where the tool's declaration selects one alternative, when the exercised one is), one through adapter code, and 9 hold a recorded status short of that: composition only (4), contrast tools only (2), expressible with no executor (2), not portably testable (1). Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-10 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
 
 | Rule range | Coverage |
 |---|---|
@@ -115,7 +115,7 @@ Each scenario carries `id` (`T<rule>-S-<n>`, never reused), `clauses` (the claus
 | `resolve-operation` | `document`, `name` | `resolved` with `operationKey` and `bindingKeys`, `not-found`, `version-refusal`, or an advisory `collision` |
 | `validate-document` | exactly one of `document`, `documentText`, `documentBase64` | `version-refusal`, or an `outcome`: `conformant` (which also admits `conformance-undetermined`, a validator lacking evidence), `non-conformant` (with `violates`, a minimum set), `conformance-undetermined`, or `interpreted` (any conclusion, no refusal); optional `namesAppliedText` and `duplicateBlind` |
 | `validate-operation-values` | `document`, `operation`, `side`, `values`; optional `resources` | one result per value, or `version-refusal`; optional `dependsOn` and `forbidReasons` |
-| `conclude-conformance` | `evidence`, a map from document rules to `satisfied`, `violated`, `inconclusive`, or `not-applicable` | exactly the stated `conformant`, `non-conformant`, or `conformance-undetermined` conclusion; the supplied evidence determines its meaning (§10.4), and withholding a positive report is not incomplete evidence |
+| `conclude-conformance` | `evidence`, a map from document rules to `satisfied`, `violated`, `inconclusive`, or `not-applicable` | exactly the stated `conformant`, `non-conformant`, or `conformance-undetermined` conclusion; the supplied evidence determines its meaning (OBI-T-09 and §10.4), and withholding a positive report is not incomplete evidence |
 | `check-examples` | `document`, `operation` | per example and side: `holds`, `false-claim`, `no-claim` (no contract stated), or `no-verdict` |
 | `derive-form` | `document`, `operation`, `side`, `probes` | the schema's verdict on each probe; a tool claiming its derived form preserves the schema's meaning must agree on every probe |
 
@@ -266,6 +266,7 @@ A clause whose status is short of tested is incomplete coverage, and is recorded
 | OBI-T-08/c9 | obligation | tested |  |
 | OBI-T-09/c1 | obligation | tested |  |
 | OBI-T-09/c4 | obligation | tested |  |
+| OBI-T-09/c5 | obligation | tested | Complete evidence cannot be reported as undetermined. |
 | OBI-T-09/c2 | obligation | tested |  |
 | OBI-T-09/c3 | obligation | tested through its exercised alternative | A tool names one kind of text; the Go core declares a working draft and its revision (c3c). |
 | OBI-T-09/c3a | alternative | expressible, no executor | Applies to a tool that declares a patch release; none does before 0.2.0 is released. |

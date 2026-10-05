@@ -17,15 +17,15 @@
     "rulesPartialDocument": 0,
     "rulesCoveredTool": 5,
     "rulesPartialTool": 6,
-    "clauseIds": 78,
-    "clauseUnits": 60,
-    "clauseUnitsTested": 50,
+    "clauseIds": 79,
+    "clauseUnits": 61,
+    "clauseUnitsTested": 51,
     "clauseUnitsByStatus": {
       "composition only": 4,
       "contrast tools only": 2,
       "expressible, no executor": 2,
       "not portably testable": 1,
-      "tested": 45,
+      "tested": 46,
       "tested (adapter)": 1,
       "tested through its alternatives": 3,
       "tested through its exercised alternative": 1,
@@ -929,6 +929,14 @@
         "T09-S-08",
         "T09-S-12",
         "T09-S-13"
+      ]
+    },
+    "OBI-T-09/c5": {
+      "rule": "OBI-T-09",
+      "class": "obligation",
+      "status": "tested",
+      "cases": [
+        "T09-S-01"
       ]
     },
     "OBI-T-09/c3": {

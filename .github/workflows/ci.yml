@@ -156,7 +156,7 @@ jobs:
           exit $rc
 
   reference-go:
-    name: Go binding conformance (${{ matrix.family }})
+    name: Legacy Go binding corpus (${{ matrix.family }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -295,6 +295,8 @@ jobs:
           ruby-version: "3.3"
       - run: npm install -g ajv-cli ajv-formats
       - run: node scripts/verify-openapi-32-kind.mjs
+      - name: Upstream-derived OpenAPI authority regressions
+        run: python3 -B conformance/kinds/openapi-authority/test_authorities.py
 
   # Runs the reference Go runner (conformance/runners/go) against this corpus,
   # blocking, with the Go core pinned to one exact commit, the one that adopts

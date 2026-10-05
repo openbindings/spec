@@ -1,9 +1,11 @@
 # Independent OpenAPI 2.0 bounded executable evidence
 
-**2026-10-05 maintenance:** the current pin includes the bounded text
-clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
-The independence narrative below describes the original suite authorship; this
-maintenance replay is not a new independent implementation.
+**2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
+The original authorship narrative below is historical. This maintenance changed
+probe algorithms and expectations; it is not another independent implementation.
+Candidate bytes remain an executable gate. Core bytes are recorded as run metadata;
+the wrapper validates complete OBI fixture shapes against the current core schema.
+Neither mechanism proves complete core or kind conformance.
 
 This directory is fresh interpretation evidence for the public, unreleased `openbindings.openapi-2.0@1` candidate. It is **not a production SDK, full kind conformance claim, full OAS validator, or publication verdict**.
 
@@ -15,11 +17,11 @@ The final run applied these bytes:
 
 | Authority | SHA-256 |
 | --- | --- |
-| Current clarified candidate | `18d3ca4238a387d576464aa743c346498104fb55c30634c6b523187cbf501b1a` |
-| Current core `openbindings.md` | `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5` |
+| Current clarified candidate | `82eae25aa475bd3f994177b5b2be1b01a1a07502c46229fe2c7c09649ece3a5a` |
+| Current core `openbindings.md` | `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e` |
 | Project policy | `b580affc92223d5f0e75d66d17363c8befa1951ed7c4c8ad825a8470dd7a0b3c` |
 
-Initial interpretation began from candidate r1 `c112468784fff85d38c020108cbe8c1c6851d272fe6b93e3f07575ab1347151b`. The complete revised public text was read after notification of r2. Source-fragment handling, duplicate/overlapping media declarations, and multipart permitted defaults were re-derived from that public revision before the final run. The final run refuses a differing candidate/core/policy hash. It stores the exact candidate in `candidate-pinned.md`; the current core and policy remain canonical in this repository. `pins.json` records both revisions.
+Initial interpretation began from candidate r1 `c112468784fff85d38c020108cbe8c1c6851d272fe6b93e3f07575ab1347151b`. The complete revised public text was read after notification of r2. Source-fragment handling, duplicate/overlapping media declarations, and multipart permitted defaults were re-derived from that public revision before the final run. The current run refuses a differing candidate or policy hash and records the observed core hash. It stores the exact candidate in `candidate-pinned.md`; the current core and policy remain canonical in this repository. `pins.json` records both revisions.
 
 This agent read only the allowed public candidate, its current core and project policy, and incorporated primary authorities. It did not read historical binding specs, corpora, SDK implementations, sibling candidates/probes, author notes, or reviews. No implementation code was copied from other work. No subagents were used.
 

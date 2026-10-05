@@ -1,5 +1,7 @@
 # OpenAPI family text-clarification maintenance — 2026-10-05
 
+**Historical record:** superseded by the [authority repair](openapi-authority/README.md). The results and hashes below describe only the earlier clarification pass.
+
 This maintenance follows a full cold foundation audit of all four candidates.
 It repairs three wording boundaries and adds an informative worked example.
 The existing probe interpretations and expectations are unchanged; only their

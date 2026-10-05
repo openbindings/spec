@@ -11,6 +11,7 @@ import gzip
 import hashlib
 import http.client
 import json
+import os
 import re
 import subprocess
 import urllib.error
@@ -18,8 +19,8 @@ import urllib.parse as U
 import urllib.request
 from pathlib import Path
 
-CANDIDATE_SHA256 = '71740a12de79325a90b132d91c080910f68c59f21c3d2f812b82d5b44960c5b3'
-CORE_SHA256 = 'afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
+CANDIDATE_SHA256 = 'a8e203b2f39609ddd24c4750b61842a079e97285514f0075d2ca8c70a277504e'
+CORE_SHA256 = hashlib.sha256((Path(os.environ.get('SPEC_ROOT', str(Path(__file__).resolve().parents[3]))) / 'openbindings.md').read_bytes()).hexdigest()
 KIND = 'openbindings.openapi-3.1@1'
 ABSENT = object()
 METHODS = {'get','put','post','delete','options','head','patch','trace'}
@@ -27,7 +28,8 @@ TOKEN = re.compile(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+\Z")
 OWNED = {'host','content-length','connection','keep-alive','proxy-authorization',
          'proxy-connection','te','trailer','transfer-encoding','upgrade'}
 IGNORED = {'accept','content-type','authorization'}
-BASE_DIALECT = 'https://spec.openapis.org/oas/3.1/dialect/2024-11-10'
+BASE_DIALECT = 'https://spec.openapis.org/oas/3.1/dialect/base'
+SUPPORTED_DIALECTS = {BASE_DIALECT, 'https://spec.openapis.org/oas/3.1/dialect/2024-11-10'}
 
 class Cannot(Exception):
     def __init__(self, category, detail):
@@ -196,6 +198,7 @@ class Resolver:
         self.requests = []
         self.schema_resources = {}
         self.schema_bases = {}
+        self.schema_dialects = {}
         self.anchors = {}
 
     def fetch(self,url):
@@ -210,19 +213,21 @@ class Resolver:
         self.docs[url] = result
         return result,final
 
-    def register_schema(self,s,base):
+    def register_schema(self,s,base,dialect=BASE_DIALECT):
         if not isinstance(s,dict): return
+        dialect = s.get('$schema',dialect)
+        self.schema_dialects[id(s)] = dialect
         if '$id' in s:
             base = U.urljoin(base or '', s['$id'])
             self.schema_resources[U.urldefrag(base)[0]] = s
         self.schema_bases[id(s)] = base
         if '$anchor' in s: self.anchors[(U.urldefrag(base or '')[0],s['$anchor'])] = s
         for key in ('properties','patternProperties','$defs','dependentSchemas'):
-            for c in s.get(key,{}).values(): self.register_schema(c,base)
+            for c in s.get(key,{}).values(): self.register_schema(c,base,dialect)
         for key in ('items','additionalProperties','not','if','then','else','contains'):
-            if key in s: self.register_schema(s[key],base)
+            if key in s: self.register_schema(s[key],base,dialect)
         for key in ('allOf','anyOf','oneOf','prefixItems'):
-            for c in s.get(key,[]): self.register_schema(c,base)
+            for c in s.get(key,[]): self.register_schema(c,base,dialect)
 
     def register(self,doc,base):
         self.docs[base or ''] = doc
@@ -230,11 +235,12 @@ class Resolver:
         if 'openapi' not in doc:
             # External schemas are registered in schema-reference context below.
             return
-        for s in doc.get('components',{}).get('schemas',{}).values(): self.register_schema(s,base)
+        dialect = doc.get('jsonSchemaDialect',BASE_DIALECT)
+        for s in doc.get('components',{}).get('schemas',{}).values(): self.register_schema(s,base,dialect)
         # Only schema positions, not arbitrary x-/example/literal embeddings.
         def obj(o):
             if not isinstance(o,dict): return
-            if 'schema' in o: self.register_schema(o['schema'],base)
+            if 'schema' in o: self.register_schema(o['schema'],base,dialect)
             for p in o.get('parameters',[]): obj(p)
             for m in o.get('content',{}).values(): obj(m)
             for h in o.get('headers',{}).values(): obj(h)
@@ -273,7 +279,7 @@ class Resolver:
         if schema and resource in self.schema_resources: root = self.schema_resources[resource]
         elif resource in self.docs: root = self.docs[resource]
         else: root,_ = self.fetch(resource)
-        if schema and isinstance(root,dict) and 'openapi' not in root:
+        if schema and isinstance(root,dict) and 'openapi' not in root and id(root) not in self.schema_dialects:
             self.register_schema(root,resource)
         fragment = U.unquote(fragment)
         if fragment == '' or fragment.startswith('/'): out = at(root,fragment)
@@ -296,7 +302,7 @@ class Resolver:
         if s is True or s is None: return {}
         require(isinstance(s,dict),'invalid','schema shape')
         base = self.schema_bases.get(id(s),base)
-        require(s.get('$schema',BASE_DIALECT)==BASE_DIALECT,'capability','unsupported schema dialect')
+        require(s.get('$schema',self.schema_dialects.get(id(s),BASE_DIALECT)) in SUPPORTED_DIALECTS,'capability','unsupported schema dialect')
         require('$dynamicRef' not in s,'capability','static dynamicRef unavailable')
         require(id(s) not in seen,'capability','static schema cycle')
         seen = seen+(id(s),)
@@ -426,7 +432,9 @@ def serialize_parameter(p,v,ctx,uri=True):
         return [(pct(name+'['+k+']'),enc(x)) for k,x in v.items()]
     if loc=='cookie' and isinstance(v,(list,dict)):
         require(len(v)<=1,'unroutable','multiple logical cookie values')
-    if undefined: pairs=[(n,'')]; plain=''
+    if undefined:
+        if style=='form': return [] if isinstance(v,(list,dict)) else [(n,'')]
+        return ''
     elif isinstance(v,list):
         xs=[enc(x) for x in v]; plain=','.join(xs)
         pairs=[(n,x) for x in xs] if explode else [(n,plain)]

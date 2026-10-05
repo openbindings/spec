@@ -836,6 +836,13 @@
         },
         {
           "kind": "clause",
+          "text": "It MUST NOT report conformance as undetermined when every applicable document rule has been established with no violation.",
+          "clauses": [
+            "OBI-T-09/c5"
+          ]
+        },
+        {
+          "kind": "clause",
           "text": "It MUST name the release of this specification whose text it applied:",
           "clauses": [
             "OBI-T-09/c3"
@@ -883,6 +890,12 @@
           "id": "OBI-T-09/c2",
           "class": "obligation",
           "remark": "Reworded when c4 was added (\"when it has established one\"): the obligation is unchanged.",
+          "status": "tested"
+        },
+        {
+          "id": "OBI-T-09/c5",
+          "class": "obligation",
+          "remark": "Makes the complete-evidence reporting requirement explicit in the numbered rule; it does not require a positive report. Existing clause IDs are unchanged.",
           "status": "tested"
         },
         {

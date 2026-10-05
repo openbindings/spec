@@ -136,7 +136,7 @@ add('parameter-operation-override',d,input={'parameters':{'q':['a','b']}},expect
 for style,explode,v,encoded in [('simple',False,['a','b'],'a,b'),('label',True,['a','b'],'.a.b'),('matrix',True,{'a':'x','b':'y'},';a=x;b=y')]:
     add('path-'+style,artifact(path='/p/{v}',params=[p('v','path',required=True,style=style,explode=explode)]),input={'parameters':{'v':v}},binding={'target':target('/p/{v}')},expect=expected(path='/api/p/'+encoded))
 for v,n in [(None,'null'),([], 'empty-array'),({},'empty-object'),('', 'empty-string')]:
-    add('parameter-undefined-'+n,artifact(params=[p('q')]),input={'parameters':{'q':v}},expect=expected(query=[['q','']]))
+    add('parameter-undefined-'+n,artifact(params=[p('q')]),input={'parameters':{'q':v}},expect=expected(query=[] if isinstance(v,(list,dict)) else [['q','']]))
 add('optional-parameter-absent',artifact(params=[p('q')]))
 error_case('required-parameter-absent','unroutable',doc=artifact(params=[p('q',required=True)]))
 add('query-deepObject-encoded-delimiters',artifact(params=[p('filter',style='deepObject',explode=True)]),input={'parameters':{'filter':{'x':'a&b=c'}}},expect=expected(query=[['filter[x]','a&b=c']]))

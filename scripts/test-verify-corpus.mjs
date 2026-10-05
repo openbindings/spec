@@ -94,6 +94,8 @@ const NEGATIVE = [
       delete s.given.evidence["OBI-D-12"];
       delete s.given.evidence["OBI-D-13"];
     })],
+  ["complete evidence incorrectly expected undetermined", "does not follow from the evidence",
+    editJSON("conformance/scenarios/OBI-T-09.json", (f) => { scenario(f, "T09-S-01").expected.conclusion = "conformance-undetermined"; })],
   ["a conclusion that ignores a violation", "does not follow from the evidence",
     editJSON("conformance/scenarios/OBI-T-09.json", (f) => { scenario(f, "T09-S-05").expected.conclusion = "conformance-undetermined"; })],
   ["a validity fixture that names a tool rule as violated", "OBI-T-04",

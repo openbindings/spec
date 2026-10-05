@@ -307,7 +307,7 @@ def parameter(p,v,ctx,r):
     undefined=v is None or v==[] or v=={}
     if undefined:
         check(style in ('simple','label','matrix','form'),'unsupported','undefined style cell')
-        return {'simple':'','label':'.','matrix':';'+n,'form':[(n,'')]}[style]
+        return {'simple':'','label':'','matrix':'','form':([] if isinstance(v,(list,dict)) else [(n,'')])}[style]
     if style in ('spaceDelimited','pipeDelimited'):
         check(not explode and isinstance(v,(list,dict)),'unsupported','delimited cell')
         delim=' ' if style=='spaceDelimited' else '|';a=v if isinstance(v,list) else [z for kv in v.items() for z in kv]
@@ -325,7 +325,7 @@ def parameter(p,v,ctx,r):
     if style=='form':return pairs if explode else [(n,','.join(vals))]
     if style=='simple':return ','.join(k+'='+x for k,x in pairs) if isinstance(v,dict) and explode else ','.join(vals)
     if style=='label':return '.'+('.'.join(k+'='+x for k,x in pairs) if isinstance(v,dict) and explode else ('.' if explode else ',').join(vals))
-    if style=='matrix':return ''.join(';'+k+'='+x for k,x in pairs) if explode else ';'+n+'='+','.join(vals)
+    if style=='matrix':return ''.join(';'+k+('='+x if x else '') for k,x in pairs) if explode else ';'+n+('='+','.join(vals) if ','.join(vals) else '')
 
 @dataclass
 class Request:

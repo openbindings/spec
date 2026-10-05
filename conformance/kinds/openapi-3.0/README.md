@@ -1,9 +1,11 @@
 # Independent OAS 3.0 interpretation evidence
 
-**2026-10-05 maintenance:** the current pin includes the bounded text
-clarifications recorded in [the family maintenance note](../openapi-text-clarifications.md).
-The independence narrative below describes the original suite authorship; this
-maintenance replay is not a new independent implementation.
+**2026-10-05 authority repair:** see the [current repair evidence](../openapi-authority/README.md).
+The original authorship narrative below is historical. This maintenance changed
+probe algorithms and expectations; it is not another independent implementation.
+Candidate bytes remain an executable gate. Core bytes are recorded as run metadata;
+the wrapper validates complete OBI fixture shapes against the current core schema.
+Neither mechanism proves complete core or kind conformance.
 
 This is a bounded, independently written executable interpretation of the frozen
 candidate. It is **not** a production SDK, a complete OAS implementation, a core
@@ -18,14 +20,14 @@ the 3.0 candidate incorporates.
 
 - Kind: `openbindings.openapi-3.0@1`.
 - Candidate/canonical SHA-256:
-  `0761b376c9c978eeb0836b1be7a2ae3434fd53dcc1fd00bb7739d45c8d42f8a4`.
+  `3fab61d2903d4f2916b776ce4ae17ea7fa59e838cb0644fd7a8d5fc0fa0fbc8b`.
 - Core SHA-256:
-  `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
+  `36754319dc7146787ca7df13dfa2ea8d44d4e6ac4eeb54f4997e1de7fc80f80e`.
 - Candidate's incorporated OAS 3.0.4 interpretation governs admitted `3.0.0`
   through `3.0.4`; patch admission is explicitly tested for every patch.
 - PB-02 was read as publication policy, not a core conformance class.
 
-`run.py` verifies those exact hashes before constructing its listener. It honors
+`run.py` verifies the candidate hash before constructing its listener and records the core hash. It honors
 `SPEC_ROOT`; by default it uses this repository root. It always hashes the
 [canonical candidate](../../../binding-specs/openapi-3.0/openbindings.openapi-3.0.md)
 and [current core](../../../openbindings.md), never an untracked draft.

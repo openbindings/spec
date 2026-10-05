@@ -94,6 +94,16 @@ Reference cycles do not by themselves invalidate a document. A node used in
 different reference contexts is interpreted separately in each expected OAS
 object type. Path Item references have the separate adjacent-field rule below.
 
+**[convention]** Source content first satisfies its stated contract. For the
+entry artifact, the representation, root-shape and edition requirements above
+are the closed source-load gates. Failure to acquire or interpret a referenced
+resource affects its owning declarations, not these entry-artifact gates. Below
+the gates, defects affect the smallest owning unit. Refuse the source if it declared targets and defects destroy every
+addressable target; an artifact that conformantly declares none remains usable
+and may yield an interface with no operations. An addressable target lacking a
+capability, runtime prerequisite or supported representation is not thereby
+destroyed. This revision adds no source-wide feature exclusion.
+
 ## 3. Target and applicable declarations
 
 Binding `content` is an object with required `target` and optional `input` and
@@ -187,10 +197,10 @@ be faithfully realized under core; a mapping is not evidence of that claim.
 
 The request value is absent or an object containing only optional `parameters`
 and `body`. Absence supplies neither member. Present `parameters` is an object
-keyed by effective non-body parameter names, after projections excluded by the
+keyed by effective non-body parameter names, after parameters excluded by the
 governing OAS or kind rules are removed (including the ignored and unavailable
 fields in §6). Missing implementation capabilities or runtime context, and
-value-dependent failures, do not remove a projection for key construction or
+value-dependent failures, do not remove a parameter for key construction or
 change any key. If any remaining name occurs at more than one location, all
 keys are
 `<location>/<RFC6901-escaped-name>`; otherwise they are the exact names. Locations
@@ -205,7 +215,7 @@ distinct header names remain separate identities subject to §6's wire collision
 rule. Every path parameter must correspond to a path-template expression and
 vice versa. Repeated occurrences use the same value. More than one body parameter,
 or both body and formData parameters, makes the operation unusable. Supplied body
-without a body declaration is unroutable.
+without a body declaration cannot be represented and prevents dispatch.
 
 The envelope is an intermediate value, not a mandated operation-contract shape.
 Mappings may construct it from application fields. A declared body or formData
@@ -237,11 +247,22 @@ An incomplete or invalid final URL prevents dispatch.
 
 Context can instead supply a complete server base satisfying those same URL
 conditions. It replaces scheme/host/basePath while operation path, method and
-parameter/body semantics remain. Context also supplies request media selection,
-security selection and credentials, scalar conversion and optional file-part
-media where needed below. These are semantic choices, not prescribed API names,
-processing order or a negotiation protocol. They do not become operation input
-fields merely because a runtime needs them.
+parameter/body semantics remain.
+
+**[configuration point]** These names identify the choices this kind leaves to
+its consumer. They are portable semantic names, not required SDK field names or
+context-store keys. Each choice has the domain and effect below; §6–§9 determine
+when it is needed. An unanswered necessary choice prevents dispatch. Supplying
+it, discovering it and negotiating context remain outside this specification.
+These choices do not become operation-input fields.
+
+| Name | Admissible choice and effect |
+| --- | --- |
+| `server` | One effective `http` or `https` scheme with the artifact host and basePath, or the complete replacement base allowed above. It fixes the URL base; it does not replace the operation path or method. |
+| `requestMedia` | One concrete media type matching an admitted request alternative under §7. It selects that alternative's representation, without substituting another declaration's schema. |
+| `security` | One complete effective Security Requirement alternative under §9, including an admitted anonymous alternative. Alternatives are never combined. Credentials satisfy the selected alternative separately. |
+| `parameterConversion` | A deterministic conversion of booleans, numbers and null to strings for §6's schema/style paths, including array members. Strings pass unchanged. |
+| `propertyMedia` | A concrete media type for a present file part under §8. It supplies that part's optional media metadata; omission uses §8's application/octet-stream default. |
 
 ## 6. Parameters and request assembly
 
@@ -249,7 +270,7 @@ OAS §§6.4.9–6.4.10 govern parameter and Items declarations. A non-body param
 has a scalar or array shape, or is a formData file. Declared scalar parameters
 carry scalar values; declared arrays carry arrays of scalar items. Objects have
 no correspondence. An array requires an Items declaration. Nested arrays have no defined composite
-collection correspondence under this kind. An omitted optional projection does
+collection correspondence under this kind. An omitted optional parameter does
 not need serialization; supplying an unsupported shape prevents that invocation.
 
 Context supplies a deterministic conversion of supplied booleans, numbers and
@@ -286,9 +307,9 @@ Header values use raw UTF-8 characters with no URI percent-encoding or automatic
 quoting. They must be valid RFC 9110 field values; forbidden controls or boundary
 field-line whitespace cannot be repaired into a different value. A raw Cookie
 header must additionally be a complete RFC 6265 cookie-string. Non-token header
-names and transport-owned headers are unavailable projections: Host, Content-Length,
+names and transport-owned headers are unavailable parameter contributions: Host, Content-Length,
 Content-Type, Connection, Keep-Alive, Proxy-Authorization, Proxy-Connection, TE,
-Trailer, Transfer-Encoding and Upgrade. A required unavailable projection prevents
+Trailer, Transfer-Encoding and Upgrade. A required unavailable contribution prevents
 invocation; an omitted optional one does not. Supplying case-distinct contributions
 to one HTTP field is ambiguous and prevents dispatch; a single contribution
 remains usable. Unlike OAS 3.x, ordinary Accept and Authorization parameters are

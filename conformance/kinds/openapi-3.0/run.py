@@ -9,19 +9,18 @@ from cases import CASES
 from interpreter import ABSENT, Cannot, Interpreter, complete, parse_artifact
 
 HERE=Path(__file__).resolve().parent
-CANDIDATE_HASH='0761b376c9c978eeb0836b1be7a2ae3434fd53dcc1fd00bb7739d45c8d42f8a4'
-CORE_HASH='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
+CANDIDATE_HASH='3fab61d2903d4f2916b776ce4ae17ea7fa59e838cb0644fd7a8d5fc0fa0fbc8b'
 
 def authority_root():
     return Path(os.environ.get('SPEC_ROOT',str(HERE.parents[2])))
 def verify_hashes():
     root=authority_root()
     candidate='binding-specs/openapi-3.0/openbindings.openapi-3.0.md'
-    for path,want in [(candidate,CANDIDATE_HASH),('openbindings.md',CORE_HASH)]:
+    for path,want in [(candidate,CANDIDATE_HASH)]:
         actual=hashlib.sha256((root/path).read_bytes()).hexdigest()
         assert actual==want,(path,actual,want)
         if path==candidate:(HERE/'candidate-pinned-r4.md').write_bytes((root/path).read_bytes())
-    return {'candidate_sha256':CANDIDATE_HASH,'core_sha256':CORE_HASH}
+    return {'candidate_sha256':CANDIDATE_HASH,'core_sha256':hashlib.sha256((root/'openbindings.md').read_bytes()).hexdigest()}
 def portable(v):
     if isinstance(v,bytes):return {'$bytes_base64':base64.b64encode(v).decode()}
     if isinstance(v,dict):return {k:portable(x) for k,x in v.items()}
