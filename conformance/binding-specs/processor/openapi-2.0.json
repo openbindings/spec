@@ -2,7 +2,7 @@
   "format": "openbindings.binding-spec-processor-scenarios@5",
   "bindingSpec": "openbindings.openapi-2.0@1",
   "family": "openapi-2.0",
-  "description": "Portable processor scenarios for the OpenAPI 2.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
+  "description": "HISTORICAL PRE-KIND DRAFT: governed by history/binding-specs/openapi-2.0-pre-kind.md; not current core or kind evidence. Portable processor scenarios for the OpenAPI 2.0 binding-specification sibling. Configuration is named semantically; adapters normalize HTTP observations.",
   "scenarios": [
     {
       "id": "OAPI20-PS-01",

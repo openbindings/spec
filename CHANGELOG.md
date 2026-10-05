@@ -235,6 +235,16 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
+- **OpenAPI 2.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
+  source/binding content and finite value mappings replace removed core fields.
+  Swagger 2.0 retains its closed draft-04 schema vocabulary, parameter/formData
+  model, readOnly sender duty, security definitions and response semantics.
+  Equivalent media and wire forms, contextual scalar conversion and faithful
+  synthesis replace execution phases and generator layout requirements. Source
+  locations identify whole documents. Historical evidence remains separately
+  pinned; a fresh bounded native-interaction suite is added to CI. The kind
+  remains unpublished.
+
 - **OpenAPI 3.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
   source/binding content and finite value mappings replace removed core fields.
   OAS 3.0.4 governs all five admitted patch values while retaining its closed
