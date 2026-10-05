@@ -238,7 +238,7 @@ jobs:
           node-version: 22
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.03"
+          python-version: "3.13"
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
