@@ -126,7 +126,10 @@ class Resources:
     def source(self,c):
         check(isinstance(c,dict) and bool(c) and set(c)<={'document','location'},'invalid','source members')
         loc=c.get('location','')
-        if 'location' in c:check(isinstance(loc,str) and bool(urllib.parse.urlsplit(loc).scheme),'invalid','absolute location')
+        if 'location' in c:
+            check(isinstance(loc,str) and bool(urllib.parse.urlsplit(loc).scheme),'invalid','absolute location')
+            check(not urllib.parse.urlsplit(loc).fragment,'invalid','source location must identify a whole document')
+            loc=urllib.parse.urldefrag(loc)[0]
         if 'document' in c: d=parse_artifact(c['document'])
         else:
             raw,loc=self.fetch(loc);d=parse_artifact(raw)
@@ -487,12 +490,11 @@ class Interpreter:
             style=not multipart and bool(set(enc)&{'style','explode','allowReserved'})
             if style:
                 pairs+=parameter({'name':name,'in':'query',**{k:x for k,x in enc.items() if k in ('style','explode','allowReserved')}},v,ctx,self.r);continue
-            if v is None:
-                check(name not in s.get('required',[]),'unroutable','required null form property');continue
             pt,ps=sole_type(prop,self.r)
             check(bool(inspect_schema(prop,self.r)[0]),'unroutable','empty property categories')
-            vs=v if multipart and pt=='array' else [v]
-            pdecl=ps.get('items',{}) if multipart and pt=='array' else prop
+            expanded=multipart and pt=='array' and isinstance(v,list)
+            vs=v if expanded else [v]
+            pdecl=ps.get('items',{}) if expanded else prop
             default_schema=ps.get('items',{}) if pt=='array' else prop
             dt,ds=sole_type(default_schema,self.r)
             default='application/octet-stream' if ds.get('format') in ('binary','byte') else 'application/json' if dt=='object' else 'text/plain' if dt in ('string','number','integer','boolean') else None
@@ -500,6 +502,9 @@ class Interpreter:
             if names:pm,_=select_media({x:{} for x in names},ctx.get('property_media',{}).get(name))
             else:fail('missing-context','property media')
             for item in vs:
+                pmtype=media(pm)[0]
+                if item is None and not(pmtype=='application/json' or pmtype.endswith('+json')):
+                    check(not expanded and name not in s.get('required',[]),'unroutable','null has no selected media correspondence');continue
                 data=representation(pm,{'schema':pdecl},item,self.r,property_value=True)
                 if not multipart:pairs.append((urllib.parse.quote(name,safe=''),urllib.parse.quote_from_bytes(data,safe='')));continue
                 h={};domains={}

@@ -45,12 +45,12 @@ native raw field strings rather than percent-encoding field syntax.
 | 7. Correspondence and runtime choices | §§4–11: routing, representation, security, prerequisites and faithful synthesis |
 
 Independent reduction and completeness reviews passed the complete integrated
-text at SHA-256 `b3d3a5767ec8751ec50c9f78f4d346669fe2086eb5757a1427fc6f5c82d993a7`.
+text at SHA-256 `67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a`.
 The [independent interpretation suite](../../conformance/kinds/openapi-3.0/README.md)
-passes 251 checks: 234 complete OBI fixtures and 17 focused parser/completion/
-variation/mutation checks. It observes 142 actual HTTP dispatches, including two
-redirect followups, and 14 HTTP artifact acquisitions; 94 negative fixture cases
-refuse before dispatch. Another 280 completion-oracle mutations are rejected.
+passes 319 checks: 302 complete OBI fixtures and 17 focused parser/completion/
+variation/mutation checks. It observes 188 actual HTTP dispatches, including two
+redirect followups, and 22 HTTP artifact acquisitions; 116 negative fixture cases
+refuse before dispatch. Another 372 completion-oracle mutations are rejected.
 Run `node scripts/verify-openapi-30-kind.mjs` for native probes and all complete
 fixture shape checks against the current core schema. The interpreter, separate
 native expectations, hand-authored and synthesized OBIs provide bounded evidence;
@@ -81,3 +81,14 @@ translation and a rebuilt full portable corpus remain separate work.
 The final reduction round also delegates XML text encoding to RFC 7303 and
 permits equivalent unreserved-byte URI spellings. These changes remove parser
 and encoder strategy restrictions while preserving characters and URI structure.
+
+Source locations identify whole documents. Nonempty fragments are invalid and
+empty fragments are removed before retrieval and base-URI use. Updated probes
+cover acquired and embedded forms, redirects, physical references and URI data
+containing an encoded # without treating it as a fragment.
+
+Content-based form values use the selected representation's null correspondence.
+JSON media preserves present null, including required properties and array items.
+Omission/refusal applies where the selected media has no null correspondence;
+style serialization retains its own rules. The current suite includes 53 focused
+cases for this boundary.

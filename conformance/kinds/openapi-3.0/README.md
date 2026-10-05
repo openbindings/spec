@@ -13,7 +13,7 @@ the 3.0 candidate incorporates.
 
 - Kind: `openbindings.openapi-3.0@1`.
 - Candidate/canonical SHA-256:
-  `b3d3a5767ec8751ec50c9f78f4d346669fe2086eb5757a1427fc6f5c82d993a7`.
+  `67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a`.
 - Core SHA-256:
   `afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5`.
 - Candidate's incorporated OAS 3.0.4 interpretation governs admitted `3.0.0`
@@ -58,11 +58,11 @@ calls; its report explicitly records zero HTTP acquisitions and dispatches.
 
 ## Recorded full results
 
-Both full commands passed **251 / 251 checks** on the frozen authority hashes.
-The native run completed 140 fixture interactions, **142 actual HTTP request
-dispatches** (including two redirect followups), and **14 actual HTTP artifact
-acquisitions**. It established 94 pre-dispatch refusals and 17 direct/parser/
-variation/mutation checks. An additional 280 completion-oracle mutations were
+Both full commands passed **319 / 319 checks** on the frozen authority hashes.
+The native run completed 186 fixture interactions, **188 actual HTTP request
+dispatches** (including two redirect followups), and **22 actual HTTP artifact
+acquisitions**. It established 116 pre-dispatch refusals and 17 direct/parser/
+variation/mutation checks. An additional 372 completion-oracle mutations were
 rejected. The offline result has the same scenario outcomes and explicitly zero
 HTTP activity. Counts and each observed interaction are saved in the result JSON.
 
@@ -98,15 +98,15 @@ HTTP activity. Counts and each observed interaction are saved in the result JSON
 
 ## Coverage
 
-The full suite has 234 OBI-based fixture cases and 17 focused checks: three YAML
+The full suite has 302 OBI-based fixture cases and 17 focused checks: three YAML
 value checks, four direct completion-boundary checks, four permitted-variation
 checks, and six native-oracle semantic mutations. Expected native interactions
 are not obtained by synthesizing then decoding the interpreter's own output.
 The oracle compares literal facts and semantic properties, not a canonical wire
 transcript. It separately parses MIME/form syntax and checks literal expected
 values. Every invoked case also rejects changed success and changed output-value
-expectations (280 completion-oracle mutations); those are counted separately,
-not presented as another 280 independent interactions.
+expectations (372 completion-oracle mutations); those are counted separately,
+not presented as another 372 independent interactions.
 
 | Bridge decision | Representative evidence |
 | --- | --- |
@@ -187,8 +187,29 @@ minimality on their own. The loop's reviews and obligation ledger remain separat
 ## Repository integration
 
 Run `node scripts/verify-openapi-30-kind.mjs` from the repository root. It executes
-the native suite, validates all 234 expanded OBI fixture shapes against the core
+the native suite, validates all 302 expanded OBI fixture shapes against the core
 schema, and checks the three standalone authored/generated OBIs. Generated
 fixtures and results are reproducible outputs, ignored by Git. Integration
 changes file lookup and packaging only; the interpreter, cases and native
 expectations are unchanged from independent development.
+
+## Public r3 maintenance follow-up
+
+A new maintainer read the full revised public text and current core before
+maintaining the original independent interpreter. This adds 15 source-location
+cases: nine invalid nonempty fragments, three empty-fragment physical-reference
+cases, a final-redirect-base case and two encoded-# data cases. All negative cases
+assert zero resolver calls and zero invocation; positive cases verify actual
+acquisition and native target paths. The full suite was rerun in both modes.
+See [the follow-up report](source-fragment-maintenance-report.md) for provenance.
+This maintenance does not claim another independent implementation origin.
+
+## Public r4 content-null follow-up
+
+The maintainer read the complete public r4 text and added 53 cases for JSON null
+in content-based form and multipart values. Required/optional properties, explicit
+and default JSON media, whole-property null, array null items, non-JSON refusal
+or omission, media context and unchanged style rules are covered with independent
+native expectations. The complete offline and native suites pass at the new pin.
+See [the r4 report](null-maintenance-r4-report.md); this remains maintenance of the
+original independent implementation with its documented limits.

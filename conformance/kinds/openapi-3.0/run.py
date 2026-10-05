@@ -9,7 +9,7 @@ from cases import CASES
 from interpreter import ABSENT, Cannot, Interpreter, complete, parse_artifact
 
 HERE=Path(__file__).resolve().parent
-CANDIDATE_HASH='b3d3a5767ec8751ec50c9f78f4d346669fe2086eb5757a1427fc6f5c82d993a7'
+CANDIDATE_HASH='67f430824f51be10bcffb4c801fb387b4b65ba3c69c8cef8554524db7812600a'
 CORE_HASH='afaa04552f5330db6baa13deeb0516d8df0698ae57be26301e2f4bdd341dc1b5'
 
 def authority_root():
@@ -20,6 +20,7 @@ def verify_hashes():
     for path,want in [(candidate,CANDIDATE_HASH),('openbindings.md',CORE_HASH)]:
         actual=hashlib.sha256((root/path).read_bytes()).hexdigest()
         assert actual==want,(path,actual,want)
+        if path==candidate:(HERE/'candidate-pinned-r4.md').write_bytes((root/path).read_bytes())
     return {'candidate_sha256':CANDIDATE_HASH,'core_sha256':CORE_HASH}
 def portable(v):
     if isinstance(v,bytes):return {'$bytes_base64':base64.b64encode(v).decode()}
@@ -111,7 +112,7 @@ def structural_obi_check(o):
 
 class Harness:
     def __init__(self,native):
-        self.native=native;self.current=None;self.requests=[];self.acquisitions=[];self.server=None
+        self.native=native;self.current=None;self.requests=[];self.acquisitions=[];self.fetch_urls=[];self.server=None
         if native:
             owner=self
             class Handler(http.server.BaseHTTPRequestHandler):
@@ -145,12 +146,13 @@ class Harness:
     def close(self):
         if self.server:self.server.shutdown();self.server.server_close();self.thread.join()
     def fetch(self,url):
+        self.fetch_urls.append(url)
         parsed=urllib.parse.urlsplit(url)
         if parsed.scheme!='http' or parsed.hostname not in ('127.0.0.1','localhost') or parsed.port!=self.port:raise Cannot('unavailable','loopback acquisition policy')
         for i in range(5):
             parsed=urllib.parse.urlsplit(url);path=parsed.path or '/';self.pending_artifacts.add(path)
             if self.native:
-                conn=http.client.HTTPConnection(parsed.hostname,parsed.port,timeout=3);conn.request('GET',path);res=conn.getresponse();status=res.status;headers=dict(res.getheaders());raw=res.read();conn.close()
+                conn=http.client.HTTPConnection(parsed.hostname,parsed.port,timeout=3);conn.request('GET',path+('?' + parsed.query if parsed.query else ''));res=conn.getresponse();status=res.status;headers=dict(res.getheaders());raw=res.read();conn.close()
             else:
                 res=self.current['resources'].get(path,{'status':404});status=res.get('status',200);headers=dict(res.get('headers',[]));raw=res.get('body',b'')
             if status in (301,302,303,307,308):
@@ -234,7 +236,7 @@ def main():
     (HERE/'generated-callbacks.obi.json').write_text(json.dumps(next(c['obi'] for c in CASES if c['id']=='generated-callback-dependencies'),indent=2)+'\n')
     try:
         for original in allcases:
-            c=materialize(copy.deepcopy(original),h.port);h.current=c;before=len(h.requests);before_art=len(h.acquisitions)
+            c=materialize(copy.deepcopy(original),h.port);h.current=c;before=len(h.requests);before_art=len(h.acquisitions);before_fetch=len(h.fetch_urls)
             row={'id':c['id'],'authority':c['authority'],'origin':c['origin']}
             try:
                 structural_obi_check(c['obi']);interp=Interpreter(h.fetch)
@@ -260,9 +262,14 @@ def main():
                     wrong_values={**result,'values':result['values']+[None]}
                     for mutant in (wrong_success,wrong_values):assert {k:mutant[k] for k in ('success','values')}!=c['expected_completion']
                     counts['completion_mutations_killed']+=2
+                if 'expected_fetch_urls' in c:assert h.fetch_urls[before_fetch:]==c['expected_fetch_urls'],('source resolver arguments',h.fetch_urls[before_fetch:],c['expected_fetch_urls'])
+                if 'expected_artifact_paths' in c and args.native:assert h.acquisitions[before_art:]==c['expected_artifact_paths'],('native artifact paths',h.acquisitions[before_art:],c['expected_artifact_paths'])
+                if 'expected_resource_urls' in c:assert list(interp.r.docs)==c['expected_resource_urls'],('physical resource bases',list(interp.r.docs),c['expected_resource_urls'])
                 row['pass']=row.pop('pass_')
             except Exception as e:
                 row.update({'pass':False,'error':repr(e)});print('FAIL',c['id'],repr(e))
+            row['resolver_request_urls']=h.fetch_urls[before_fetch:]
+            row['registered_resource_urls']=list(interp.r.docs)
             row['artifact_HTTP_acquisitions']=len(h.acquisitions)-before_art
             row['artifact_HTTP_paths']=h.acquisitions[before_art:]
             rows.append(row)

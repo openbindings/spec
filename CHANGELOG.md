@@ -241,8 +241,10 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   schema vocabulary, request-body rules and binary/byte distinction. A narrow
   explicit header correction uses OAS 3.1.2 Appendix D. Equivalent URI forms,
   XML encoding, focused declaration inspection and truthful synthesis replace
-  implementation mandates. Historical evidence is separately pinned and a fresh
-  bounded native-interaction suite is added to CI. The kind remains unpublished.
+  implementation mandates. Source locations identify whole documents, and JSON
+  content parts preserve supplied null values. Historical evidence is separately
+  pinned and a fresh bounded native-interaction suite is added to CI. The kind
+  remains unpublished.
 
 - **OpenAPI 3.1 candidate reduced and migrated to the 0.2 core.** Kind-owned
   source and binding content replace the pre-kind fields and expression hooks.

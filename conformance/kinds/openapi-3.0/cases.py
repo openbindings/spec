@@ -285,7 +285,7 @@ for scope,header in [('entry','x-entry-key'),('referring','x-remote-key')]:
     add('security-external-scope-'+scope,d,source={'document':d,'location':ORIGIN+'/artifacts/entry'},binding={'target':target('/mounted')},resources={'/artifacts/parts.json':{'body':json.dumps(remote).encode()}},context={'security_scope':scope,'credentials':{'key':'native-secret'}},expect=expected(path='/api/mounted',headers={header:'native-secret'}))
 uri_key='https://keys.invalid/component'
 add('security-URI-looking-component-literal',secured({uri_key:{'type':'apiKey','in':'header','name':'X-Key'}},[{uri_key:[]}]),context={'credentials':{uri_key:'literal-secret'}},expect=expected(headers={'x-key':'literal-secret'}))
-add('multipart-null-elision-no-media-choice',artifact('post',body=rb('multipart/form-data',{'type':'object','properties':{'optional':{'type':'string','nullable':True},'s':{'type':'string'}}},encoding={'optional':{'contentType':'text/*'}})),input={'body':{'optional':None,'s':'v'}},binding={'target':target(method='post')},expect=expected('POST',media='multipart/form-data',parts=[{'name':'s','body_hex':'76'}]))
+error_case('multipart-supplied-null-needs-media-choice','missing-context',doc=artifact('post',body=rb('multipart/form-data',{'type':'object','properties':{'optional':{'type':'string','nullable':True},'s':{'type':'string'}}},encoding={'optional':{'contentType':'text/*'}})),input={'body':{'optional':None,'s':'v'}},binding={'target':target(method='post')},expect=expected('POST',media='multipart/form-data',parts=[{'name':'s','body_hex':'76'}]))
 error_case('multipart-case-alias-domain-conflict','unsupported',doc=artifact('post',body=rb('multipart/form-data',{'type':'object','properties':{'s':{'type':'string'}}},encoding={'s':{'headers':{'X-Enum':{'schema':{'enum':['fixed']}},'x-enum':{'schema':{'enum':['other','else']}}}}})),input={'body':{'s':'v'}},binding={'target':target(method='post')})
 error_case('multipart-byte-nonfixed-domain-rejects-base64','unsupported',doc=artifact('post',body=rb('multipart/form-data',{'type':'object','properties':{'b':{'type':'string','format':'byte'}}},encoding={'b':{'headers':{'Content-Transfer-Encoding':{'schema':{'enum':['identity','quoted-printable']}}}}})),input={'body':{'b':'Zg=='}},binding={'target':target(method='post')})
 add('form-unused-impossible-property',artifact('post',body=rb('application/x-www-form-urlencoded',{'type':'object','properties':{'impossible':{'allOf':[{'type':'string'},{'type':'integer'}]},'s':{'type':'string'}}})),input={'body':{'s':'v'}},binding={'target':target(method='post')},expect=expected('POST',headers={'content-type':'application/x-www-form-urlencoded'},form=[['s','v']]))
@@ -323,3 +323,80 @@ c['obi']['operations']['receive']={'description':'Consume a service event and ac
 c['obi']['dependencies']={'first-event':{'operation':'receive'},'second-event':{'operation':'receive'}}
 error_case('callback-not-parent-target','invalid',doc=d,binding={'target':'/paths/~1check/post/callbacks/first'})
 add('response-decimal-capability-no-substitution',native=response(b'0.10000000000000001'),result={'success':False,'values':[]})
+
+# Follow-up maintenance by a new agent, derived from public r3 §2 before reading
+# this existing interpreter. Original r2 source/results preserved in archive-r2.
+# Expectations below use only authored physical URLs/native paths, never resolver helpers.
+for form in ('location-only','embedded-object','embedded-text'):
+    for label,fragment in [('pointer','/nested'),('name','anchor'),('encoded','%2Fnested')]:
+        location=ORIGIN+'/fragment/no-fetch#'+fragment
+        source={'location':location}
+        if form!='location-only':source['document']=artifact() if form=='embedded-object' else json.dumps(artifact())
+        c=error_case('source-fragment-'+form+'-'+label,'invalid',source=source,origin='maintained-r3-fragment-boundary',authority='public r3 §2')
+        c['expected_fetch_urls']=[];c['expected_artifact_paths']=[];c['expected_resource_urls']=[]
+
+fragment_doc=artifact(path='/mounted')
+fragment_doc['servers']=[{'url':'../../wrong-entry-base'}]
+fragment_doc['paths']['/mounted']={'$ref':'parts/item.json#/item'}
+fragment_part={'item':{'get':{'servers':[{'url':'../../native-physical'}],'responses':rr()}}}
+for form in ('location-only','embedded-object','embedded-text'):
+    source={'location':ORIGIN+'/fragment/physical/entry.json#'}
+    resources={'/fragment/physical/parts/item.json':{'body':json.dumps(fragment_part).encode()}}
+    fetched=[];paths=[]
+    if form=='location-only':resources['/fragment/physical/entry.json']={'body':json.dumps(fragment_doc).encode()};fetched.append(ORIGIN+'/fragment/physical/entry.json');paths.append('/fragment/physical/entry.json')
+    else:source['document']=copy.deepcopy(fragment_doc) if form=='embedded-object' else json.dumps(fragment_doc)
+    fetched.append(ORIGIN+'/fragment/physical/parts/item.json');paths.append('/fragment/physical/parts/item.json')
+    c=add('source-empty-fragment-'+form+'-physical-reference',fragment_doc,source=source,binding={'target':target('/mounted')},resources=resources,expect=expected(path='/fragment/native-physical/mounted'),origin='maintained-r3-fragment-boundary',authority='public r3 §2/§3/§5')
+    c['expected_fetch_urls']=fetched;c['expected_artifact_paths']=paths;c['expected_resource_urls']=[ORIGIN+'/fragment/physical/entry.json',ORIGIN+'/fragment/physical/parts/item.json']
+
+redirect_doc=artifact();redirect_doc['servers']=[{'url':'../physical-native'}]
+c=add('source-empty-fragment-redirect-final-base',source={'location':ORIGIN+'/fragment/start#'},resources={'/fragment/start':{'status':302,'headers':[['Location','/fragment/final/entry.json']]},'/fragment/final/entry.json':{'body':json.dumps(redirect_doc).encode()}},expect=expected(path='/fragment/physical-native/check'),origin='maintained-r3-fragment-boundary',authority='public r3 §2/§5')
+c['expected_fetch_urls']=[ORIGIN+'/fragment/start'];c['expected_artifact_paths']=['/fragment/start','/fragment/final/entry.json'];c['expected_resource_urls']=[ORIGIN+'/fragment/final/entry.json']
+for label,location,resource_path,expected_api in [('encoded-path',ORIGIN+'/fragment/data%23root/entry#','/fragment/data%23root/entry','/fragment/native/check'),('encoded-query',ORIGIN+'/fragment/entry?marker=%23#','/fragment/entry','/native/check')]:
+    doc=artifact();doc['servers']=[{'url':'../native'}]
+    c=add('source-empty-fragment-'+label,source={'location':location},resources={resource_path:{'body':json.dumps(doc).encode()}},expect=expected(path=expected_api),origin='maintained-r3-fragment-boundary',authority='public r3 §2/RFC3986')
+    c['expected_fetch_urls']=[location[:-1]];c['expected_artifact_paths']=[resource_path+('?marker=%23' if label=='encoded-query' else '')];c['expected_resource_urls']=[location[:-1]]
+
+# Public r4 content-null cases, independently authored native octets/form values.
+def r4_null_form(name,mt,prop,value,required=False,encoding=None,expected_values=None,error=None,context=None):
+    schema={'type':'object','properties':{'value':prop,'keep':{'type':'string'}}}
+    if required:schema['required']=['value']
+    d=artifact('post',body=rb(mt,schema,encoding={'value':encoding} if encoding is not None else None))
+    kwargs={'input':{'body':{'value':value,'keep':'v'}},'binding':{'target':target(method='post')},'context':context,'origin':'maintained-r4-content-null','authority':'public r4 §8/§8.1'}
+    if error:return error_case('r4-'+name,error,doc=d,**kwargs)
+    if mt=='application/x-www-form-urlencoded':
+        ex=expected('POST',form=([['value',x] for x in expected_values] if expected_values else [])+[['keep','v']])
+    else:
+        ex=expected('POST',media=mt,parts=([{'name':'value','body_hex':x.encode().hex()} for x in expected_values] if expected_values else [])+[{'name':'keep','body_hex':'76'}])
+    return add('r4-'+name,d,expect=ex,**kwargs)
+
+for mt,label in [('application/x-www-form-urlencoded','urlencoded'),('multipart/form-data','multipart-formdata'),('multipart/mixed','multipart-mixed')]:
+    for required in (False,True):
+        for mode,prop,encoding in [('explicit-json',{'type':'string','nullable':True},{'contentType':'application/json'}),('default-json',{'type':'object','nullable':True},None)]:
+            r4_null_form(label+'-'+mode+'-null-'+str(required),mt,prop,None,required,encoding,['null'])
+    for mode,encoding in [('explicit-json',{'contentType':'application/json'}),('default-json',None)]:
+        prop={'type':'array','nullable':True,'items':{'type':'object','nullable':True}}
+        r4_null_form(label+'-'+mode+'-whole-array-property-null',mt,prop,None,True,encoding,['null'])
+        r4_null_form(label+'-'+mode+'-preserve-array-null-items',mt,prop,[None,{'x':1},None],False,encoding,['[null,{"x":1},null]'] if label=='urlencoded' else ['null','{"x":1}','null'])
+    r4_null_form(label+'-json-suffix-null',mt,{'type':'string','nullable':True},None,True,{'contentType':'application/example+json'},['null'])
+    r4_null_form(label+'-text-null-optional-omitted',mt,{'type':'string','nullable':True},None,False,None,[])
+    r4_null_form(label+'-text-null-required-refused',mt,{'type':'string','nullable':True},None,True,None,error='unroutable')
+    if label!='urlencoded':
+        r4_null_form(label+'-text-array-null-item-refused',mt,{'type':'array','items':{'type':'string','nullable':True}},[None,'after'],False,None,error='unroutable')
+    for required in (False,True):
+        r4_null_form(label+'-raw-null-'+str(required),mt,{'type':'string','format':'binary','nullable':True},None,required,{'contentType':'application/octet-stream'},[],error='unroutable' if required else None)
+
+# Style rules are unchanged: URL-encoded explicit controls beat contentType;
+# OAS 3.0 multipart ignores those same controls and remains content based.
+r4_null_form('urlencoded-style-null-undefined-not-json', 'application/x-www-form-urlencoded',{'type':'string','nullable':True},None,True,{'style':'form','contentType':'application/json'},[''])
+for mt in ('multipart/form-data','multipart/mixed'):
+    r4_null_form(mt.replace('/','-')+'-style-ignored-json-null',mt,{'type':'string','nullable':True},None,True,{'style':'form','contentType':'application/json'},['null'])
+for typename in ('number','boolean'):
+    r4_null_form('text-'+typename+'-null-optional-no-invented-spelling','application/x-www-form-urlencoded',{'type':typename,'nullable':True},None,False,None,[])
+    r4_null_form('text-'+typename+'-null-required-refused','application/x-www-form-urlencoded',{'type':typename,'nullable':True},None,True,None,error='unroutable')
+r4_null_form('supplied-null-media-context-json','multipart/form-data',{'type':'string','nullable':True},None,True,{'contentType':'application/json, text/plain'},['null'],context={'property_media':{'value':'application/json'}})
+r4_null_form('supplied-null-media-context-text-omitted','multipart/form-data',{'type':'string','nullable':True},None,False,{'contentType':'application/json, text/plain'},[],context={'property_media':{'value':'text/plain'}})
+r4_null_form('supplied-null-media-choice-missing','multipart/form-data',{'type':'string','nullable':True},None,False,{'contentType':'application/json, text/plain'},error='missing-context')
+d=artifact('post',body=rb('multipart/form-data',{'type':'object','properties':{'absent':{'type':'string'},'keep':{'type':'string'}}},encoding={'absent':{'contentType':'*/*'}}))
+add('r4-absent-property-needs-no-media-choice',d,input={'body':{'keep':'v'}},binding={'target':target(method='post')},expect=expected('POST',media='multipart/form-data',parts=[{'name':'keep','body_hex':'76'}]),origin='maintained-r4-content-null',authority='public r4 §8.1')
+error_case('r4-null-entire-form-body-not-object','unroutable',doc=d,input={'body':None},binding={'target':target(method='post')},origin='maintained-r4-content-null',authority='public r4 §8.1')

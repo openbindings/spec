@@ -3,3 +3,5 @@ results-*.json
 evidence-hashes.json
 fixtures.json
 run.log
+candidate-pinned-r3.md
+candidate-pinned-r4.md
