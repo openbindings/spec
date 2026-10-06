@@ -195,6 +195,108 @@
           }
         }
       }
+    },
+    {
+      "id": "T02-S-07",
+      "clauses": [
+        "OBI-T-02/c1"
+      ],
+      "description": "Deprecation is a hint to migrate away (section 5.1), not a removal: a deprecated operation still resolves.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "legacyTask": {
+              "deprecated": true
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "legacy": {
+              "operation": "legacyTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "legacyTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "legacyTask",
+        "bindingKeys": [
+          "legacy"
+        ]
+      }
+    },
+    {
+      "id": "T02-S-08",
+      "clauses": [
+        "OBI-T-02/c1"
+      ],
+      "description": "A binding's deprecated, preference, and content members do not remove it from its operation's bindings (section 5.3): deprecation recommends migrating away, preference expresses author preference among them, and content's presence and value carry no core meaning.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "deprecated": {
+              "operation": "createTask",
+              "source": "s",
+              "deprecated": true
+            },
+            "nullContent": {
+              "operation": "createTask",
+              "source": "s",
+              "content": null
+            },
+            "noContent": {
+              "operation": "createTask",
+              "source": "s"
+            },
+            "zeroPreference": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": 0
+            },
+            "negativePreference": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": -5
+            },
+            "preferred": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": 10
+            }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "deprecated",
+          "negativePreference",
+          "noContent",
+          "nullContent",
+          "preferred",
+          "zeroPreference"
+        ]
+      }
     }
   ]
 }

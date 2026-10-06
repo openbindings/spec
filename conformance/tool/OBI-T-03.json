@@ -89,6 +89,24 @@
       "clauses": [
         "OBI-T-03/c1"
       ]
+    },
+    {
+      "description": "a member beginning X- is not an extension: names compare exactly, so it is an unknown field",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {
+            "X-note": "uppercase prefix"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-02"
+      ],
+      "clauses": [
+        "OBI-T-03/c1"
+      ]
     }
   ]
 }

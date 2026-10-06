@@ -409,6 +409,92 @@
         "operationKey": "x-internal",
         "bindingKeys": []
       }
+    },
+    {
+      "id": "T07-S-16",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "A binding key is not an operation identifier: a name equal to one resolves to nothing.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "tasks.http": {
+              "operation": "createTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.http"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-17",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "A dependency key is not an operation identifier: a name equal to one resolves to nothing, not to the operation it consumes.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "dependencies": {
+            "taskSink": {
+              "operation": "createTask"
+            }
+          }
+        },
+        "name": "taskSink"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T07-S-18",
+      "clauses": [
+        "OBI-T-07/c3"
+      ],
+      "description": "Source and schema keys are not operation identifiers: a name equal to both resolves to nothing.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "Task": {
+              "kind": "example.test@1"
+            }
+          },
+          "schemas": {
+            "Task": {
+              "type": "object"
+            }
+          }
+        },
+        "name": "Task"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
     }
   ]
 }

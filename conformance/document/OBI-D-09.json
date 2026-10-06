@@ -137,6 +137,17 @@
       "violates": [
         "OBI-D-09"
       ]
+    },
+    {
+      "description": "a hyphen with no prerelease identifiers after it is not SemVer 2.0.0, whose pre-release is one or more identifiers",
+      "document": {
+        "openbindings": "0.2.0-",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
     }
   ]
 }

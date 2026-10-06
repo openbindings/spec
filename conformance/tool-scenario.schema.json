@@ -271,19 +271,26 @@
           }
         },
         "expected": {
-          "type": "object",
-          "required": [
-            "outcome"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "outcome": {
-              "enum": [
-                "meets",
-                "does-not-meet"
-              ]
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "outcome"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "enum": [
+                    "meets",
+                    "does-not-meet"
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/refusal"
             }
-          }
+          ]
         }
       }
     },
@@ -686,28 +693,35 @@
         },
         "expected": {
           "description": "One entry per example of the operation, with one member per side the example supplies (the verifier checks completeness).",
-          "type": "object",
-          "required": [
-            "examples"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "examples": {
+          "oneOf": [
+            {
               "type": "object",
-              "additionalProperties": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "input": {
-                    "$ref": "#/$defs/exampleResult"
-                  },
-                  "output": {
-                    "$ref": "#/$defs/exampleResult"
+              "required": [
+                "examples"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "examples": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "input": {
+                        "$ref": "#/$defs/exampleResult"
+                      },
+                      "output": {
+                        "$ref": "#/$defs/exampleResult"
+                      }
+                    }
                   }
                 }
               }
+            },
+            {
+              "$ref": "#/$defs/refusal"
             }
-          }
+          ]
         }
       }
     },

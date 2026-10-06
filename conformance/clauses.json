@@ -150,7 +150,7 @@
           "class": "obligation",
           "remark": "Universal over every defined field; tested only through fields some action observes.",
           "status": "tested",
-          "limits": "Tested through the fields an action observes (version, a binding's operation, name). preference, deprecated, and content presence: no action selected. description and tags: not testable (no behavior)."
+          "limits": "Tested through the fields an action observes: version, name, a binding's operation, an operation's and a binding's deprecated, and a binding's preference and content (T02-S-07, T02-S-08). description and tags: not testable (no behavior)."
         },
         {
           "id": "OBI-T-02/c2",
@@ -632,7 +632,7 @@
           "id": "OBI-T-07/c2",
           "class": "specialization",
           "of": "OBI-T-07/c1",
-          "remark": "Observable only on a document violating OBI-D-04. The rule fixes no policy for an ambiguous name; Go's 'resolves to none' is SDK policy (resolve_operation.go:10-13).",
+          "remark": "Observable only on a document violating OBI-D-04. The rule fixes no policy for an ambiguous name.",
           "status": "not portably testable",
           "limits": "T07-G-01 (T07-S-12, T07-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy."
         },
