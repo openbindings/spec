@@ -173,6 +173,62 @@
       "violates": [
         "OBI-D-06"
       ]
+    },
+    {
+      "description": "a $schema naming the 2020-12 meta-schema with the http scheme is neither permitted value; nested, it is OBI-D-06's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$schema": "http://json-schema.org/draft/2020-12/schema",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-06"
+      ],
+      "notViolated": [
+        "OBI-D-02"
+      ]
+    },
+    {
+      "description": "a $schema naming the 2020-12 meta-schema with a trailing slash is neither permitted value; nested, it is OBI-D-06's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "$schema": "https://json-schema.org/draft/2020-12/schema/",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-06"
+      ],
+      "notViolated": [
+        "OBI-D-02"
+      ]
     }
   ]
 }

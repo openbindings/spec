@@ -59,6 +59,17 @@
       },
       "valid": false,
       "violates": ["OBI-D-04"]
+    },
+    {
+      "description": "operation keys that differ only in case are distinct identifiers: names are equal only as exact strings (section 5)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "addTask": {},
+          "AddTask": {}
+        }
+      },
+      "valid": true
     }
   ]
 }

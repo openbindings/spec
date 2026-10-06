@@ -186,6 +186,72 @@
         "OBI-D-12",
         "OBI-D-13"
       ]
+    },
+    {
+      "description": "a NaN literal is not a JSON value (RFC 8259 section 6), so the text is malformed JSON",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{},\"x-a\":NaN}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a comma after the last member of an object is malformed JSON (RFC 8259 section 4)",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{},}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
+      ]
+    },
+    {
+      "description": "a key written with an escape repeats the same key written plainly: member names are compared after unescaping (RFC 8259 section 8.3, section 10)",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"operations\":{\"a\":{},\"\\u0061\":{}}}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ],
+      "notViolated": [
+        "OBI-D-02",
+        "OBI-D-03",
+        "OBI-D-04",
+        "OBI-D-05",
+        "OBI-D-06",
+        "OBI-D-07",
+        "OBI-D-08",
+        "OBI-D-09",
+        "OBI-D-10",
+        "OBI-D-11",
+        "OBI-D-12",
+        "OBI-D-13"
+      ]
     }
   ]
 }

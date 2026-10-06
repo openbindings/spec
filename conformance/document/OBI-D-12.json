@@ -448,7 +448,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a typo: the pointer reaches no location",
@@ -757,7 +760,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a plain name declared only in x- data, which holds no schema",
@@ -775,7 +781,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a $dynamicRef with a plain name that no schema declares",
@@ -802,7 +811,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a JSON Pointer with an invalid escape (~2) identifies no location",
@@ -826,7 +838,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a pointer into a binding's content, which is read under the source's kind",
@@ -856,7 +871,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a fragment whose percent-decoding is not valid UTF-8 identifies nothing",
@@ -875,7 +893,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
     },
     {
       "description": "a fragment is percent-decoded once, so %2520 decodes to %20 and names a property that does not exist",
@@ -973,6 +994,144 @@
       "violates": [
         "OBI-D-12"
       ]
+    },
+    {
+      "description": "a pointer to a properties map, which holds schemas but is not one",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/Task/properties"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a pointer to a const value, which is data even when it is shaped like a schema",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "const": {
+              "type": "string"
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/Task/const"
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-12"
+      ]
+    },
+    {
+      "description": "a pointer to an allOf entry lands on a schema at an OBI position",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "allOf": [
+              {
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/Task/allOf/0"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a pointer with the ~1 escape reaches a property whose name contains a slash (RFC 6901 section 4)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "a/b": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#/schemas/Task/properties/a~1b"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $ref may name a plain name declared only with $dynamicAnchor: either keyword declares it",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Node": {
+            "$dynamicAnchor": "node",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$ref": "#node"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a $dynamicRef may name a plain name declared only with $anchor: either keyword declares it",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Node": {
+            "$anchor": "node",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "f": {
+            "input": {
+              "$dynamicRef": "#node"
+            }
+          }
+        }
+      },
+      "valid": true
     }
   ]
 }

@@ -99,6 +99,30 @@
       "violates": [
         "OBI-D-07"
       ]
+    },
+    {
+      "description": "binding operation value differs from an operation key only in case: names are equal only as exact strings (section 5)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createtask",
+            "source": "httpApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-07"
+      ]
     }
   ]
 }

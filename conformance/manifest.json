@@ -9,10 +9,10 @@
     "files": 25,
     "fixtureFiles": 15,
     "scenarioFiles": 10,
-    "tests": 223,
-    "scenarios": 173,
-    "positives": 107,
-    "negatives": 116,
+    "tests": 281,
+    "scenarios": 176,
+    "positives": 115,
+    "negatives": 166,
     "rulesCoveredDocument": 13,
     "rulesPartialDocument": 0,
     "rulesCoveredTool": 5,
@@ -38,41 +38,41 @@
     "conclude-conformance": 8,
     "derive-form": 4,
     "resolve-operation": 22,
-    "validate-document": 40,
+    "validate-document": 43,
     "validate-operation-values": 74,
-    "validity fixture": 223
+    "validity fixture": 281
   },
   "files": [
     {
       "path": "document/OBI-D-01.json",
       "rule": "OBI-D-01",
       "section": "10.2",
-      "tests": 9,
+      "tests": 12,
       "positives": 2,
-      "negatives": 7
+      "negatives": 10
     },
     {
       "path": "document/OBI-D-02.json",
       "rule": "OBI-D-02",
       "section": "10.2",
-      "tests": 36,
-      "positives": 11,
-      "negatives": 25
+      "tests": 70,
+      "positives": 13,
+      "negatives": 57
     },
     {
       "path": "document/OBI-D-03.json",
       "rule": "OBI-D-03",
       "section": "10.2",
-      "tests": 24,
+      "tests": 29,
       "positives": 15,
-      "negatives": 9
+      "negatives": 14
     },
     {
       "path": "document/OBI-D-04.json",
       "rule": "OBI-D-04",
       "section": "10.2",
-      "tests": 5,
-      "positives": 1,
+      "tests": 6,
+      "positives": 2,
       "negatives": 4
     },
     {
@@ -87,17 +87,17 @@
       "path": "document/OBI-D-06.json",
       "rule": "OBI-D-06",
       "section": "10.2",
-      "tests": 9,
+      "tests": 11,
       "positives": 4,
-      "negatives": 5
+      "negatives": 7
     },
     {
       "path": "document/OBI-D-07.json",
       "rule": "OBI-D-07",
       "section": "10.2",
-      "tests": 4,
+      "tests": 5,
       "positives": 1,
-      "negatives": 3
+      "negatives": 4
     },
     {
       "path": "document/OBI-D-08.json",
@@ -111,17 +111,17 @@
       "path": "document/OBI-D-09.json",
       "rule": "OBI-D-09",
       "section": "10.2",
-      "tests": 11,
+      "tests": 13,
       "positives": 3,
-      "negatives": 8
+      "negatives": 10
     },
     {
       "path": "document/OBI-D-10.json",
       "rule": "OBI-D-10",
       "section": "10.2",
-      "tests": 23,
-      "positives": 12,
-      "negatives": 11
+      "tests": 27,
+      "positives": 13,
+      "negatives": 14
     },
     {
       "path": "document/OBI-D-11.json",
@@ -135,9 +135,9 @@
       "path": "document/OBI-D-12.json",
       "rule": "OBI-D-12",
       "section": "10.2",
-      "tests": 42,
-      "positives": 19,
-      "negatives": 23
+      "tests": 48,
+      "positives": 23,
+      "negatives": 25
     },
     {
       "path": "document/OBI-D-13.json",
@@ -206,10 +206,10 @@
       "rule": "OBI-T-04",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 35,
+      "scenarios": 38,
       "actions": {
         "resolve-operation": 2,
-        "validate-document": 32,
+        "validate-document": 35,
         "validate-operation-values": 1
       }
     },
@@ -418,7 +418,9 @@
         "T04-S-02",
         "T04-S-03",
         "T04-S-10",
-        "T04-S-31"
+        "T04-S-31",
+        "T04-S-37",
+        "T04-S-38"
       ]
     },
     "OBI-T-04/c1b": {
@@ -447,7 +449,8 @@
         "T04-S-32",
         "T04-S-33",
         "T04-S-34",
-        "T04-S-35"
+        "T04-S-35",
+        "T04-S-36"
       ]
     },
     "OBI-T-04/c3": {
@@ -459,7 +462,8 @@
         "T04-S-05",
         "T04-S-32",
         "T04-S-33",
-        "T04-S-35"
+        "T04-S-35",
+        "T04-S-36"
       ]
     },
     "OBI-T-04/c4": {
@@ -587,7 +591,8 @@
       "class": "specialization",
       "status": "tested",
       "cases": [
-        "T04-S-03"
+        "T04-S-03",
+        "T04-S-38"
       ]
     },
     "OBI-T-04/c9.i4": {

@@ -77,6 +77,7 @@ A release snapshot captures the normative core spec at the time of release:
      - Core conformance artifacts → `versions/<next>/conformance/`:
        - `conformance/README.md`
        - `conformance/manifest.json`
+       - `conformance/clauses.json`
        - `conformance/fixture.schema.json`
        - `conformance/tool-scenario.schema.json`
        - `conformance/document/`
