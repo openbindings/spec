@@ -48,7 +48,7 @@ See `EDITORS.md` for the current editor roster.
 
 ## Status of this document
 
-This is **version 0.2.0** of the OpenBindings specification. This text is the unreleased working draft of that version; the latest release is **0.1.0** (immutable released snapshots live under `versions/`). Until 0.2.0 is released, this working draft stands in for that release wherever this text speaks of the release whose text a conclusion applies, and such a conclusion names the draft and its revision ([OBI-T-09](#103-tool-rules)). It is pre-1.0, and minor-version revisions MAY include breaking changes per [§8. Versioning](#8-versioning). Substantive changes are recorded in `CHANGELOG.md` and cite rule identifiers (`OBI-D-##`/`OBI-T-##`) where applicable, each under the version it belongs to.
+This is **version 0.2.0** of the OpenBindings specification. This text is the unreleased working draft of that version; the latest release is **0.1.0** (immutable released snapshots live under `versions/`). Until 0.2.0 is released, this working draft stands in for that release wherever this text speaks of the release whose text a conclusion applies, and such a conclusion names the draft and its revision ([OBI-T-09](#103-tool-rules)). It is pre-1.0, and minor-version revisions may include breaking changes per [§8. Versioning](#8-versioning). Substantive changes are recorded in `CHANGELOG.md` and cite rule identifiers (`OBI-D-##`/`OBI-T-##`) where applicable, each under the version it belongs to.
 
 ## License and intellectual property
 
@@ -389,15 +389,15 @@ Examples are **positive** author claims ([§5](#5-document-model)): the author a
 
 The top-level `schemas` map holds named JSON Schemas, which operations reference with `$ref` (for example, `{"$ref": "#/schemas/Task"}`).
 
-Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) schema in object or boolean form, valid against the 2020-12 meta-schemas ([OBI-D-10](#102-document-rules)); an invalid schema at a schema position, such as `{"type": 42}`, violates that rule.
+Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) schema in object or boolean form, valid against the 2020-12 meta-schemas ([OBI-D-10](#102-document-rules)); an invalid schema the document contains, such as `{"type": 42}`, violates that rule.
 
 **Dialect.** Each schema the document contains is read under its resource's dialect. The document resource's dialect is 2020-12; a `$schema` in it declares none. A resource an `$id` declares takes the dialect its `$schema` names, or without one that of its enclosing resource, which for a schema at an OBI position is the document resource (JSON Schema Core §9.3.2). A `$schema` other than 2020-12 violates [OBI-D-06](#102-document-rules); a tool that still evaluates follows [OBI-T-08](#103-tool-rules) under that dialect and gives no verdict where it lacks it. JSON Schema permits `$schema` only at a resource root (JSON Schema Core §8.1.1), which in an OBI is a schema that declares `$id`, the only resource root in an OBI that is itself a schema ([§7.2](#72-the-document-as-embedding)), so authors write it only there and remove it from a pasted schema that declares no `$id`; misplacement is JSON Schema's to report, not a document rule. A schema reached through an external URI follows the dialect JSON Schema assigns it, implementation-defined when its root declares no `$schema` (JSON Schema Core §8.1.1).
 
-Beyond this section and the reference forms of [§7](#7-reference-resolution), JSON Schema 2020-12 governs the document's schemas: their meaning, reference resolution, and value evaluation. This specification defines no keyword and no evaluation of its own. Besides OBI-D-01 and OBI-D-02, which read the whole document, only OBI-D-05, OBI-D-06, OBI-D-10, OBI-D-12, and OBI-D-13 test schemas ([§7.5](#75-notes-for-authors-and-tools-informative) tabulates what each walks). JSON Schema's other requirements, and conditions that arise at evaluation, such as an unobtainable external reference or a regular expression an engine cannot compile, surface when a tool uses the schema and are not document-rule violations.
+Beyond this section and [§7](#7-reference-resolution), JSON Schema 2020-12 governs the document's schemas: their meaning, reference resolution, and value evaluation. This specification defines no keyword and no evaluation of its own. Besides OBI-D-01 and OBI-D-02, which read the whole document, only OBI-D-05, OBI-D-06, OBI-D-10, OBI-D-12, and OBI-D-13 test schemas ([§7.5](#75-notes-for-authors-and-tools-informative) tabulates what each walks). JSON Schema's other requirements, and conditions that arise at evaluation, such as an unobtainable external reference or a regular expression an engine cannot compile, surface when a tool uses the schema and are not document-rule violations.
 
 **Validation semantics.** A tool that claims to check values against an operation's value contracts follows [OBI-T-08](#103-tool-rules) under the dialect assigned above, and one that claims to derive another form from a schema follows [OBI-T-05](#103-tool-rules); a tool that only preserves schemas through round-trips need not interpret them.
 
-**Schemas from other dialects (informative).** A copied schema is read under the dialect assigned by the preceding paragraph. In the document resource, that dialect is 2020-12, even if a misplaced `$schema` names another dialect. A resource root can declare its dialect with `$schema`; otherwise it inherits its enclosing resource's dialect. Any `$schema` naming another dialect violates OBI-D-06. Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores, so `{"type": "string", "nullable": true}` rejects a `null` the service returns, and draft-07's array form of `items` violates OBI-D-10. Translating such schemas to 2020-12 when bringing them in keeps their meaning.
+**Schemas from other dialects (informative).** A copied schema is read under the dialect the **Dialect** paragraph above assigns. In the document resource, that dialect is 2020-12, even if a misplaced `$schema` names another dialect. A resource root can declare its dialect with `$schema`; otherwise it inherits its enclosing resource's dialect. Any `$schema` naming another dialect violates OBI-D-06. Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores, so `{"type": "string", "nullable": true}` rejects a `null` the service returns, and draft-07's array form of `items` violates OBI-D-10. Translating such schemas to 2020-12 when bringing them in keeps their meaning.
 
 ### 5.3. Bindings
 
@@ -470,7 +470,7 @@ A source's `kind` ([§3](#3-terminology)) names how the source and its bindings 
 
 **Comparison.** Kinds are compared as whole strings by exact equality ([OBI-T-01](#103-tool-rules)): two different strings are two unrelated kinds.
 
-**Interpretation.** Supporting a kind means knowing how to read the `content` of its sources and their bindings for whatever work a tool does with them. That knowledge may be built in, supplied by a plugin, or configured locally, written down or only in code; a tool may preserve, index, or display a source whose kind it does not support, and the document conforms regardless ([OBI-T-01](#103-tool-rules)).
+**Interpretation.** Supporting a kind means knowing how to read the `content` of its sources and their bindings for whatever work a tool does with them. That knowledge may be built in, supplied by a plugin, or configured locally, written down or only in code; a tool may preserve, index, or display a source whose kind it does not support, and that lack of support does not change the document's conformance ([OBI-T-01](#103-tool-rules)).
 
 **What a kind decides.** The core leaves to a source's kind:
 
@@ -489,7 +489,7 @@ A kind in turn stands on these core provisions, whose changes [§8.1](#81-openbi
 - caller-facing values are JSON values, and an operation's schemas apply to each value (invariant 1);
 - a binding claims that its target realizes its operation as the document describes it, taking any value `input` describes, without promising success on each, and returning only values `output` describes, each where the operation states the corresponding value contract ([§5.3](#53-bindings)).
 
-**Sharing a kind.** A kind is portable as far as its meaning is shared. Authors who want independent tools to agree on one describe it in writing and, since a document offers tools no way to tell two meanings of one kind apart, give an incompatible meaning a new kind. A kind meant to circulate widely can be qualified under a name its publisher controls. These are interoperability practices, not conformance requirements. This project's published kind definitions ([§14](#14-see-also)) have no special standing here, and matching a kind establishes neither provenance nor authorization ([§9](#9-security-considerations)).
+**Sharing a kind.** A kind is portable as far as its meaning is shared. Authors who want independent tools to agree on one describe it in writing and, since a document offers tools no way to tell two meanings of one kind apart, give an incompatible meaning a new kind. A kind meant to circulate widely can be qualified under a name its publisher controls. These are interoperability practices, not conformance requirements. This project's kind definitions ([§14](#14-see-also)) have no special standing here, and matching a kind establishes neither provenance nor authorization ([§9](#9-security-considerations)).
 
 A locally built CLI consuming a private artifact might use:
 
@@ -510,7 +510,7 @@ OBI documents define no `id` field. A document's base URI is its own ([§7.2](#7
 
 ### 7.1. Reference forms
 
-The **OBI-defined document references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-D-05](#102-document-rules) fixes their form, and that of each schema `$id` at an OBI position: an [absolute URI](#3-terminology), or for a reference a same-document reference (empty, or a fragment alone; RFC 3986 §4.4), all well-formed URI-references (RFC 3986 §4.1). A string that is not a well-formed URI-reference is not a reference of any form: OBI-D-05 reports it, [OBI-D-12](#102-document-rules) does not govern it, and a value whose evaluation depends on it has an undefined result ([OBI-T-08](#103-tool-rules)).
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-D-05](#102-document-rules) fixes their form, and that of each schema `$id` at an OBI position: an [absolute URI](#3-terminology), or for a reference a same-document reference (empty, or a fragment alone; RFC 3986 §4.4), all well-formed URI-references (RFC 3986 §4.1). A string that is not a well-formed URI-reference is not a reference of any form: OBI-D-05 reports it, [OBI-D-12](#102-document-rules) does not govern it, and a value whose evaluation depends on it has an undefined result ([OBI-T-08](#103-tool-rules)).
 
 ### 7.2. The document as embedding
 
@@ -526,7 +526,7 @@ JSON Schema lets the format that embeds a schema determine its initial base URI 
 
 ### 7.4. Other references
 
-Beyond these lookups, references resolve as JSON Schema 2020-12 defines: dynamic references, references within a schema resource that declares `$id` (its plain names included), and references to external schemas. Because [OBI-D-13](#102-document-rules) normalizes an `$id` only by RFC 3986 §5.2 resolution (which removes dot segments) and empty-fragment removal, spellings a URI library would merge stay distinct under it; whether they collide in use is JSON Schema's. Where JSON Schema leaves a result undefined, the reference's meaning in an OBI is undefined too (an undefined result, [OBI-T-08](#103-tool-rules)), though the document conforms: within a schema resource that declares `$id`, a pointer that reaches no schema or a plain name declared twice (JSON Schema Core §9.4.2, §8.2.2).
+Beyond these lookups, references resolve as JSON Schema 2020-12 defines: dynamic references, references within a schema resource that declares `$id` (its plain names included), and references to external schemas. Because [OBI-D-13](#102-document-rules) normalizes an `$id` only by RFC 3986 §5.2 resolution (which removes dot segments) and empty-fragment removal, spellings a URI library would merge stay distinct under it; whether they collide in use is JSON Schema's. Where JSON Schema leaves a result undefined, the reference's meaning in an OBI is undefined too (an undefined result, [OBI-T-08](#103-tool-rules)), but that does not make the document non-conformant: within a schema resource that declares `$id`, a pointer that reaches no schema or a plain name declared twice (JSON Schema Core §9.4.2, §8.2.2).
 
 A tool MAY decline to obtain external resources. A document whose schema references all resolve within it needs no network access to resolve them, and declining a resource needed to evaluate a particular value prevents a validation verdict for that value ([OBI-T-08](#103-tool-rules)) but never affects document conformance ([§10.4](#104-conformance-conclusions)). Schema reference cycles are permitted ([OBI-T-06](#103-tool-rules)): recursive types (trees, linked lists, ASTs) are legitimate and widespread. A cycle that recurses without consuming any of the instance, such as a schema whose only keyword is a `$ref` to itself, has undefined behavior under JSON Schema (JSON Schema Core §9.4.1).
 
@@ -639,7 +639,7 @@ The `openbindings` field identifies the version of this specification the docume
 
 **Lines.** A document is interpreted under the `major.minor` line its version names. Each line is one document model: a patch release corrects errors in this text without adding fields or changing what documents mean, though a correction can change a document's conformance (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning: `0.2.0` and `0.2.1` are read alike, under the text of the patch release a processor applies ([OBI-T-09](#103-tool-rules)).
 
-**Processing.** Support is per line ([OBI-T-04](#103-tool-rules)), and supporting one line implies nothing about another. From 1.0.0 onward a new minor is backward-compatible with documents written to the previous minor, while pre-1.0 minors MAY break (release policy, below).
+**Processing.** Support is per line ([OBI-T-04](#103-tool-rules)), and supporting one line implies nothing about another. From 1.0.0 onward a new minor is backward-compatible with documents written to the previous minor, while pre-1.0 minors may break (release policy, below).
 
 - A prerelease (`0.2.0-rc.1`) is a distinct, potentially incompatible draft outside its line, identified by its full version; a processor that explicitly includes it interprets the document under the draft's text and derived schema.
 - Build metadata is permitted, has no OpenBindings semantics, and is ignored when determining support: `0.2.0+build.1` denotes the same line as `0.2.0`.
@@ -670,7 +670,7 @@ The `openbindings` field identifies the version of this specification the docume
 
 Where the table says a text is non-conformant, that is what a validator applying the 0.2 line reports.
 
-**Release policy.** While pre-1.0, minor versions MAY include breaking changes, per pre-1.0 SemVer convention. Changes to the provisions [§6](#6-kinds) lists as those a kind stands on are recorded in the changelog as breaking: a commitment about this specification's own provisions, not a compatibility judgment about external behavior. Declaring the earliest line sufficient for a document's content maximizes the processors able to interpret it.
+**Release policy.** While pre-1.0, minor versions may include breaking changes, per pre-1.0 SemVer convention. Changes to the provisions [§6](#6-kinds) lists as those a kind stands on are recorded in the changelog as breaking: a commitment about this specification's own provisions, not a compatibility judgment about external behavior. Declaring the earliest line sufficient for a document's content maximizes the processors able to interpret it.
 
 ### 8.2. `version` field (interface-version label)
 
@@ -846,7 +846,6 @@ Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindi
 - **[RFC 7493]** T. Bray, Ed., "The I-JSON Message Format," RFC 7493, March 2015. <https://www.rfc-editor.org/rfc/rfc7493>. Cited by [OBI-D-01](#102-document-rules) and [Appendix A](#appendix-a-canonical-serialization-informative).
 - **[RFC 8785]** A. Rundgren, B. Jordan, S. Erdtman, "JSON Canonicalization Scheme (JCS)," RFC 8785, June 2020. <https://www.rfc-editor.org/rfc/rfc8785>. Cited by [Appendix A](#appendix-a-canonical-serialization-informative).
 - **[OpenAPI]** OpenAPI Initiative, "OpenAPI Specification v3.2.0," September 2025. <https://spec.openapis.org/oas/v3.2.0.html>. Cited by [§7.5](#75-notes-for-authors-and-tools-informative).
-- **openbindings project tools**: `ob` CLI, `openbindings-go`, `openbindings-ts` (see project README). One implementation of this specification among potentially many.
 
 ---
 
@@ -854,7 +853,7 @@ Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindi
 
 - `openbindings.schema.json`: derived JSON Schema for structural document validity.
 - The openbindings project's shared-contract interfaces, published at [openbindings.com/interfaces](https://openbindings.com/interfaces) (informational).
-- `binding-specs/`: definitions of kinds this project publishes, with authoring guidance ([§6](#6-kinds)).
+- `binding-specs/`: this project's kind definitions, with authoring guidance ([§6](#6-kinds)).
 - The project's optional operation-invoker interface, published with the shared-contract interfaces above: one reusable invocation interface, and one place a tool's binding-selection policy can live.
 - `conformance/`: conformance test corpus keyed to OBI-D-##/OBI-T-## rule identifiers.
 - `CHANGELOG.md`: version history and diffs between specification versions.

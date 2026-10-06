@@ -119,7 +119,7 @@ Each scenario carries `id` (`T<rule>-S-<n>`, never reused), `clauses` (the claus
 | `check-examples` | `document`, `operation` | per example and side: `holds`, `false-claim`, `no-claim` (no contract stated), or `no-verdict` |
 | `derive-form` | `document`, `operation`, `side`, `probes` | the schema's verdict on each probe; a tool claiming its derived form preserves the schema's meaning must agree on every probe |
 
-**Value outcomes** are the specification's three: `valid`, `instance-mismatch`, and `no-verdict`. A value result is one of:
+**Value outcomes** name what OBI-T-08 lets a tool report for a value: `valid` (validation success), `instance-mismatch`, and `no-verdict` (neither reported). A value result is one of:
 - a token: `no-verdict` is required of every tool (an absent contract, an undefined result); `valid` or `instance-mismatch` is expected of a tool that supports every feature the case depends on (no verdict there is a SHORTFALL), while a tool that declares one of them unsupported must give no verdict, a correct verdict included;
 - `{"verdict": ..., "orNoVerdict": true}`: that verdict, or no verdict, for every tool, because the result does not depend on what may be missing and the rule prescribes no evaluation strategy;
 - `{"verdict": ..., "dependsOn": [...]}`: a per-value dependence that replaces the scenario's `dependsOn` (an empty array: this value depends on no feature).
