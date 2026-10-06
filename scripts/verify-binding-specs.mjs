@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Verifies the binding-specification conformance subcorpus
-// (conformance/binding-specs/) against the ten standalone brownfield
-// synthesis-family specifications (the OpenAPI family has four siblings).
-// Operation Graph has its own composition
+// (conformance/binding-specs/) against the six standalone brownfield
+// synthesis-family specifications. The OpenAPI family has no legacy evidence
+// here. Operation Graph has its own composition
 // corpus and is invocation-only because its operation contracts live in the
 // containing OBI.
 //
@@ -14,7 +14,7 @@
 //      directory, and its `bindingSpec` is that family's exact identifier.
 //   3. Each fixture's `section` names a section heading that exists in the
 //      family specification.
-//   4. Every family D-rule defined in the ten brownfield specs' Conformance sections is
+//   4. Every family D-rule defined in the six brownfield specs' Conformance sections is
 //      either covered by a fixture or listed as **Deferred** in the
 //      subcorpus README; no rule has two fixture files.
 //   5. Every negative test (`valid: false`) carries `violates`, and every
@@ -52,7 +52,6 @@ import { join, dirname, resolve, basename, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import { countBindingSpecScenarios } from "./count-binding-spec-scenarios.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -72,12 +71,6 @@ const ABSTRACTION_FIDELITY_LEDGER = join(ABSTRACTION_FIDELITY_DIR, "ledger.json"
 const ABSTRACTION_FIDELITY_SCHEMA = join(ABSTRACTION_FIDELITY_DIR, "ledger.schema.json");
 const README = join(CORPUS, "README.md");
 const CORE_SPEC_MD = join(SPEC_ROOT, "openbindings.md");
-const OPENAPI_FAMILY_DIRS = new Set([
-  "openapi-2.0",
-  "openapi-3.0",
-  "openapi-3.1",
-  "openapi-3.2",
-]);
 
 // Family directory → { exact identifier, rule prefix, spec path }.
 const FAMILIES = {
@@ -85,30 +78,6 @@ const FAMILIES = {
     bindingSpec: "openbindings.usage@1",
     prefix: "USAGE",
     spec: join(SPEC_ROOT, "binding-specs", "usage", "openbindings.usage.md"),
-  },
-  "openapi-2.0": {
-    bindingSpec: "openbindings.openapi-2.0@1",
-    prefix: "OAPI20",
-    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-2.0-pre-kind.md"),
-    historicalSha256: "533913dbd33189c0efd9bafafc39918ae230707b060c1a1347a4c65b89eccca3",
-  },
-  "openapi-3.0": {
-    bindingSpec: "openbindings.openapi-3.0@1",
-    prefix: "OAPI30",
-    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.0-pre-kind.md"),
-    historicalSha256: "c4eed1a1706c5494cb93a47b827bf2194bb2207934c4289ebc37fdf2667ce5c3",
-  },
-  "openapi-3.1": {
-    bindingSpec: "openbindings.openapi-3.1@1",
-    prefix: "OAPI31",
-    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.1-pre-kind.md"),
-    historicalSha256: "f11f4e387a8601bccb23986272d0b1c01a81647d3d15aea6a4846acfe43cdcf5",
-  },
-  "openapi-3.2": {
-    bindingSpec: "openbindings.openapi-3.2@1",
-    prefix: "OAPI32",
-    spec: join(SPEC_ROOT, "history", "binding-specs", "openapi-3.2-pre-kind.md"),
-    historicalSha256: "453916b488ce92e73a0f18cbe718e71416a58f0d1ba3f2eda08af3c57096627d",
   },
   mcp: {
     bindingSpec: "openbindings.mcp@1",
@@ -206,8 +175,7 @@ function semanticAssertionFormatViolations(fixture, label) {
   return violations;
 }
 
-// Extracts family D-rule ids from a family spec's Conformance section. Older
-// families use list items; the OpenAPI siblings use labeled paragraphs.
+// Extracts family D-rule ids from a family spec's Conformance section.
 function extractFamilyRules(md, prefix) {
   const rules = new Set();
   const re = new RegExp(`\\*\\*(${prefix}-D-\\d+)\\*\\*`, "g");
@@ -251,58 +219,11 @@ function extractCoreSpecificationVersion(md) {
   return matches.map((match) => match[1]);
 }
 
-function verifyOpenApiCoreAuthority(md, label, expectedVersion) {
-  const declarations = [
-    ...md.matchAll(
-      /incorporates exactly version \*\*(\d+\.\d+\.\d+)\*\* of the \[OpenBindings Specification\]\(\.\.\/\.\.\/openbindings\.md\) as its Core authority\. Throughout this document, \*\*Core\*\* means that exact version; no other Core version is incorporated\./g
-    ),
-  ].map((match) => match[1]);
-  if (declarations.length !== 1) {
-    errors.push(
-      `${label}: must declare exactly one versioned OpenBindings Core authority in §2 (found ${declarations.length})`
-    );
-  } else if (expectedVersion && declarations[0] !== expectedVersion) {
-    errors.push(
-      `${label}: declares OpenBindings Core ${declarations[0]}, but openbindings.md declares ${expectedVersion}`
-    );
-  }
-
-  const sectionMatches = [...md.matchAll(/^## 13\. Normative references\s*$/gm)];
-  if (sectionMatches.length !== 1) {
-    errors.push(`${label}: must contain exactly one §13 Normative references section`);
-    return;
-  }
-  const references = md.slice(sectionMatches[0].index);
-  const coreReferences = [
-    ...references.matchAll(
-      /^- \[OpenBindings Specification (\d+\.\d+\.\d+)\]\(\.\.\/\.\.\/openbindings\.md\)$/gm
-    ),
-  ].map((match) => match[1]);
-  if (coreReferences.length !== 1) {
-    errors.push(
-      `${label}: §13 must contain exactly one versioned OpenBindings Specification reference (found ${coreReferences.length})`
-    );
-  } else if (expectedVersion && coreReferences[0] !== expectedVersion) {
-    errors.push(
-      `${label}: §13 references OpenBindings ${coreReferences[0]}, but openbindings.md declares ${expectedVersion}`
-    );
-  }
-  if (
-    declarations.length === 1 &&
-    coreReferences.length === 1 &&
-    declarations[0] !== coreReferences[0]
-  ) {
-    errors.push(
-      `${label}: §2 Core declaration and §13 Core reference name different versions`
-    );
-  }
-}
-
 // Rows like `| USAGE-D-03 | **Deferred...` in the subcorpus README mark
 // formally deferred rules.
 function extractDeferredRules(readme) {
   const out = new Set();
-  const re = /\|\s*((?:USAGE|OAPI(?:20|30|31|32)|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
+  const re = /\|\s*((?:USAGE|MCP|GRPC|CONN|ASYNC|GQL)-D-\d+)\s*\|\s*\*\*Deferred/g;
   let m;
   while ((m = re.exec(readme)) !== null) out.add(m[1]);
   return out;
@@ -334,17 +255,6 @@ const allRuleIds = new Set(coreRules);
 for (const [dir, fam] of Object.entries(FAMILIES)) {
   const md = readFileSync(fam.spec, "utf8");
   specTexts[dir] = md;
-  if (fam.historicalSha256 && createHash("sha256").update(md).digest("hex") !== fam.historicalSha256) {
-    errors.push(`${dir}: historical specification snapshot changed; legacy fixtures must keep their original authority`);
-  }
-  if (OPENAPI_FAMILY_DIRS.has(dir)) {
-    // An unreleased page is a publication input and must track the companion
-    // Core text that the publisher will archive. Once published, its mutable
-    // mirror remains locked to that revision's own exact Core dependency even
-    // while work on a later Core release begins.
-    const expectedVersion = !fam.historicalSha256 && /^\*\*Status: unreleased /m.test(md) ? coreVersion : undefined;
-    verifyOpenApiCoreAuthority(md, relative(SPEC_ROOT, fam.spec), expectedVersion);
-  }
   for (const id of extractFamilyRules(md, fam.prefix)) {
     definedDRules.set(`${dir}\0${id}`, { ruleId: id, dir });
   }
@@ -474,15 +384,11 @@ for (const ruleId of deferred) {
   }
 }
 
-// Portable P-rule scenario files for all ten standalone brownfield synthesis specifications. These files preserve permitted
+// Portable P-rule scenario files for all six standalone brownfield synthesis specifications. These files preserve permitted
 // alternatives explicitly; the verifier checks shape, identity, citations,
 // and distinct rule-id coverage, while family adapters execute them against SDKs.
 const processorTargets = [
   "usage",
-  "openapi-2.0",
-  "openapi-3.0",
-  "openapi-3.1",
-  "openapi-3.2",
   "asyncapi",
   "mcp",
   "grpc",
@@ -553,12 +459,6 @@ for (const dir of processorTargets) {
           errors.push(`${materializationAt}: codeUnits must contain an unpaired surrogate so JSON-safe parsing cannot erase the hostile boundary`);
       }
     }
-    for (const expected of scenario.expected) {
-      for (const assertion of expected.assertions) {
-        if (dir.startsWith("openapi-") && (assertion.path.startsWith("/context/") || assertion.path.startsWith("/error/")))
-          errors.push(`${at}: portable OpenAPI evidence cannot assert project-interface path '${assertion.path}'`);
-      }
-    }
     for (const rule of scenario.rules) {
       if (!rule.startsWith(`${fam.prefix}-P-`) || !familyRuleIds[dir].has(rule))
         errors.push(`${at}: rule '${rule}' is not a defined ${dir} P-rule`);
@@ -585,8 +485,6 @@ for (const [rule, dirs] of processorPRules) {
 // family conformance. It reuses the semantic harness but may also cite the
 // core binding-specification completeness floor.
 const fidelityTargets = [
-  "openapi-3.0",
-  "openapi-3.1",
   "asyncapi",
   "grpc",
   "connect",
@@ -632,8 +530,6 @@ for (const dir of fidelityTargets) {
 }
 
 // Shared synthesis scenarios record target interpretation and authoring evidence.
-// OpenAPI's exhaustive inventories and chosen output strategy additionally test
-// reference-tooling promises, not requirements for every conforming generator.
 const synthesisScenarioIds = new Set();
 const synthesisRuleCoverage = new Map();
 let synthesisFiles = 0;
@@ -699,8 +595,6 @@ for (const dir of processorTargets) {
     }
     for (const [entryIndex, entry] of scenario.expected.coverage.entries.entries()) {
       const entryAt = `${at}.expected.coverage.entries[${entryIndex}]`;
-      if (dir.startsWith("openapi-") && Object.hasOwn(entry, "reasonCode"))
-        errors.push(`${entryAt}: portable OpenAPI evidence cannot pin diagnostic reasonCode spelling`);
       if (entry.status === "represented") {
         if (
           entry.scope !== "dependency"
@@ -720,15 +614,6 @@ for (const dir of processorTargets) {
     );
     if (scenario.expected.coverage.fullyRepresented !== derivedFull)
       errors.push(`${at}: fullyRepresented does not match the declared dispositions`);
-  }
-}
-
-for (const dir of ["openapi-2.0", "openapi-3.0", "openapi-3.1", "openapi-3.2"]) {
-  const fam = FAMILIES[dir];
-  for (const rule of familyRuleIds[dir]) {
-    if (!rule.startsWith(`${fam.prefix}-S-`)) continue;
-    if (!synthesisRuleCoverage.has(rule))
-      errors.push(`Synthesizer rule ${rule} (${dir}) has no portable synthesis scenario citation`);
   }
 }
 
@@ -838,27 +723,27 @@ try {
 {
   const synthesisSchema = JSON.parse(readFileSync(SYNTHESIS_SCHEMA, "utf8"));
   const probeFile = (source) => ({
-    format: "openbindings.binding-spec-synthesis-scenarios@5",
-    bindingSpec: "openbindings.openapi-3.1@1",
-    family: "openapi-3.1",
+    format: "openbindings.binding-spec-synthesis-scenarios@4",
+    bindingSpec: "openbindings.grpc@1",
+    family: "grpc",
     description: "verifier probe; not part of the corpus",
     scenarios: [
       {
-        id: "OAPI31-SS-99",
+        id: "GRPC-SS-99",
         description: "verifier probe; not part of the corpus",
         source,
-        expected: { outcome: "refused", rules: ["OAPI31-P-01"] },
+        expected: { outcome: "refused", rules: ["GRPC-P-01"] },
       },
     ],
   });
   const probes = [
-    ["carrying `content`", { bindingSpec: "openbindings.openapi-3.1@1", content: {} }, true],
+    ["carrying `content`", { bindingSpec: "openbindings.grpc@1", content: {} }, true],
     [
       "carrying `location`",
-      { bindingSpec: "openbindings.openapi-3.1@1", location: "https://example.com/a.yaml" },
+      { bindingSpec: "openbindings.grpc@1", location: "https://example.com/a.proto" },
       true,
     ],
-    ["carrying neither `location` nor `content`", { bindingSpec: "openbindings.openapi-3.1@1" }, false],
+    ["carrying neither `location` nor `content`", { bindingSpec: "openbindings.grpc@1" }, false],
   ];
   for (const [what, source, shouldValidate] of probes) {
     const probe = ajvOk(SYNTHESIS_SCHEMA, probeFile(source));
@@ -962,8 +847,8 @@ rmSync(tmp, { recursive: true, force: true });
     },
     {
       what: "portable synthesis scenarios",
-      pattern: /The (\d+) scenarios exercise all ten standalone brownfield synthesis specifications/,
-      shape: "The <N> scenarios exercise all ten standalone brownfield synthesis specifications",
+      pattern: /The (\d+) scenarios exercise all six standalone brownfield synthesis specifications/,
+      shape: "The <N> scenarios exercise all six standalone brownfield synthesis specifications",
       actual: counts.synthesis.scenarios,
     },
   ];
@@ -982,7 +867,7 @@ rmSync(tmp, { recursive: true, force: true });
   }
 }
 
-console.log(`Family D-rules defined across ten brownfield synthesis specs: ${definedDRules.size}`);
+console.log(`Family D-rules defined across six brownfield synthesis specs: ${definedDRules.size}`);
 console.log(`Fixture files: ${files}`);
 console.log(`Rules covered by fixtures: ${fixtureRules.size}`);
 console.log(`Rules deferred per README: ${deferred.size}`);
@@ -1005,4 +890,3 @@ if (errors.length) {
   process.exit(1);
 }
 console.log("\nLegacy candidate corpus internal consistency: OK (not current Core conformance)");
-console.log("Migrated OpenAPI families here use frozen pre-kind text; current-kind evidence lives under conformance/kinds.");

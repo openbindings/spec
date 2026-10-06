@@ -42,8 +42,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   immutable, absolute-URI-keyed companion-document set a processor scenario
   carries under `given.resources`, served offline through the family adapter's
   own artifact resolver; without it the format could not express a
-  multi-document artifact at all, so `openbindings.openapi@1` §6 "Reference
-  scope" had no portable synthesis coverage. A `synthesized` scenario may carry
+  multi-document artifact at all. A `synthesized` scenario may carry
   `assertions`, pointer-addressed comparisons against the emitted OBI document
   reusing the processor corpus's own assertion object and evaluators. Neither
   widens the identity surface: `operations`, `bindings`, `coverage` and
@@ -57,90 +56,7 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   `conformance/binding-specs/README.md` states the addressing rule that keeps an
   assertion on the authority-defined side of the line — a path may traverse
   names an authority defines and names the artifact supplies, never a name an
-  implementation mints — and states the two places that rule costs the corpus
-  evidence today.
-
-- `openbindings.openapi@1` §9.1 and OAPI-P-02 state that a `form`,
-  `spaceDelimited`, `pipeDelimited` or `deepObject` declaration whose resolved
-  schema carries a member with **no defined expansion** is refused at admission
-  and its exclusion accounted. Each of those styles expands a composite value
-  exactly one level, so every member becomes a member string; an array whose
-  resolved items resolve to `object` or `array`, or an object one of whose
-  resolved property schemas does, therefore declares a member with no
-  representation. The refusal is decided by the DECLARATION, because every
-  value conforming to it carries that member as a composite — the unit was
-  previously published as represented and refused only once a caller populated
-  it. The authority is read per edition: the `form` row cites [RFC 6570] §3.2.8
-  on every accepted edition and those expansions append member strings, while
-  `spaceDelimited`, `pipeDelimited` and `deepObject` cite no RFC section on any
-  edition; the `deepObject` row governs the case without defining it on 3.0.0,
-  3.0.1, 3.0.2, 3.0.3 and 3.1.0 ("Provides a simple way of rendering nested
-  objects using form parameters"), and 3.0.4, 3.1.1 and 3.1.2 state it outright
-  ("The representation of array or object properties is not defined"). No
-  representation is authored, and whether to expose an interpretation choice
-  for these declarations is left open. The excluded unit is the smallest one
-  that owns the defect: a parameter's **target**, a form-body property's
-  **alternative**. A typeless member, a choice with more than one non-null
-  branch, and an object declaring no members at all are deliberately not
-  reached, because a declaration-keyed rule must not refuse a declaration that
-  admits a scalar value. `simple`, `label` and `matrix` are not addressed.
-
-- **Three portable synthesis scenarios for the style-lane composite-member
-  rule** (`OAPI-SS-36`–`OAPI-SS-38`). `OAPI-SS-36` pins both positions and
-  their two accountings side by side with the controls the rule must not
-  reach; `OAPI-SS-37` and `OAPI-SS-38` are an edition-scoped pair with
-  identical member bytes and opposite answers, because the 3.1 line reads an
-  array-valued `type` as a union under [JSON Schema 2020-12] §6.1.1 while every
-  3.0 edition states that "Multiple types via an array are not supported". Both
-  of the first two fail in both runners when the synthesis gate is reverted;
-  the 3.0 twin stays green, which is what scopes the collapse to one line.
-
-- **Five portable synthesis scenarios for `openbindings.openapi@1` §6
-  "Reference scope"** (`OAPI-SS-25`–`OAPI-SS-29`), authored from the
-  multi-document case table the three engines already share. A dangling
-  reference outside the composed closure synthesizes; the same defect inside it
-  refuses; a pointer into one property composes that property and not its
-  siblings; and two sequence cases pin index-scoped retention, where a sequence
-  keeps its length and every index and an uncomposed element cannot decide the
-  artifact. Four of the five fail when the pointer-scope implementation is
-  reverted, in both runners, proven by execution; the refusing twin stays green
-  because a whole-file composer refuses that artifact too, which is why it
-  cannot carry the proof alone.
-
-- **`OAPI-SS-17` gains four assertions** pinning that a date-, time- or
-  boolean-word-shaped plain scalar crosses the boundary as the string the
-  artifact wrote. That value is decided by every accepted edition's "Tags MUST
-  be limited to those allowed by [YAML's] JSON schema ruleset" and YAML 1.2.2
-  §10.3.2, and it was previously invisible to the corpus: the scenario passed
-  while one implementation emitted `{}`.
-
-- `openbindings.openapi@1` §9.2 and OAPI-P-04 state, per edition, what a form
-  part whose resolved Schema Object declares no `type` defaults to. Every
-  accepted 3.1 edition states `application/octet-stream` for it — 3.1.1 and
-  3.1.2 tabulate a `type`-absent first row in the Encoding Object's own default
-  table, and 3.1.0 reaches the same answer through the total catch-all closing
-  its prose enumeration — and this revision defines no boundary from a JSON
-  application value to octets for a form part, so such a part refuses before
-  dispatch there and its alternative is an accounted exclusion. The 3.0 line
-  states no row that reaches it: 3.0.0 through 3.0.3 enumerate a `string` with
-  `format: binary`, other primitive types, `object`, and `array` without a
-  catch-all, and 3.0.4 tabulates the same cases keyed on a declared `type`.
-  This specification's own convention answers there, keyed the same way those
-  editions key their stated rows, and it now says which five editions it
-  covers.
-
-  **This revises a prior draft position, and the prior text was wrong.** §9.2
-  read an unconstrained part as asserting nothing and applied the convention on
-  every edition, which displaced a stated authority row on three of the eight.
-  Two portable scenarios asserted the displaced reading and are corrected:
-  OAPI-SS-14 moves to `openapi: 3.0.3`, and OAPI-PS-50 keeps only its
-  nullable-choice half. New scenarios pin the corrected split: OAPI-SS-23
-  (3.1.1, the tabulated row), OAPI-SS-24 (3.1.0, the catch-all), OAPI-PS-56
-  (the 3.0-line convention) and OAPI-PS-57 (the 3.1 refusal). The convention's
-  predicate is also stated exactly — `type`-absence, the key the editions' own
-  rows use — rather than the narrower "memberless or boolean `true`" the prior
-  text named, which never matched the behavior a `description`-carrying part
-  received.
+  implementation mints.
 
 - The unreleased first `openbindings.asyncapi@1` candidate. It treats AsyncAPI
   Core and each artifact-declared protocol binding as authority incorporated
@@ -150,28 +66,25 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   drivers happen to be installed; unsupported execution fails locally before
   dispatch. No Core OBI document-model field changed.
 
-- **The OpenAPI binding-specification family**: four sibling
-  specifications, one per published OAS minor line — `openbindings.openapi-2.0@1`
-  (edition 2.0), `openbindings.openapi-3.0@1` (3.0.0–3.0.4),
-  `openbindings.openapi-3.1@1` (3.1.0–3.1.2), and `openbindings.openapi-3.2@1`
-  (3.2.0) — replacing the earlier unified `openbindings.openapi@1` candidate,
-  which is deleted. Each sibling states its own line's rules flatly with
-  per-clause provenance labels and pinned authority citations. The
-  caller-facing correspondence value is the `{parameters?, body?}` envelope
-  with artifact-derived routing; the flattening trigger apparatus, routed
-  tuple, and unmatched-field passthrough are removed, with flat synthesized
-  contracts carried by emitted `inputTransform`s. Callbacks and webhooks
-  synthesize as targetless Core dependencies with role-inverted contracts.
-  The 3.2 sibling incorporates OAS 3.2's sequential-media, `itemSchema`, and
-  SSE event model; 3.0 and 3.1 state the one-body/one-value limit their
-  editions force. The naming convention
+- **The OpenAPI binding-specification family**: four sibling kinds, one per
+  OAS minor line: `openbindings.openapi-2.0@1` (Swagger 2.0),
+  `openbindings.openapi-3.0@1` (3.0.0 to 3.0.4), `openbindings.openapi-3.1@1`
+  (3.1.0 to 3.1.2) and `openbindings.openapi-3.2@1` (3.2.0 and 3.2.1),
+  replacing the earlier unified `openbindings.openapi@1` candidate. Each is a
+  minimal bridge: it incorporates its OAS edition, HTTP and JSONata 2.1 at
+  their upstream sources and adds only what a binding needs beyond them, each
+  addition marked as a pin, convention or configuration point. Source
+  `content` carries the OAS `document`, its `location`, or both; binding
+  `content` names the operation by a JSON Pointer `target`, with optional
+  JSONata `input`, `output` and `failure` transforms. The request value is
+  `{parameters?, body?}`. A 2xx response completes successfully; a non-2xx
+  response completes unsuccessfully unless `failure` maps it to an output
+  value. Context supplies the server, media choices, security alternative and
+  credentials. Callbacks and webhooks synthesize as targetless Core
+  dependencies, and the 3.2 sibling incorporates OAS 3.2's sequential media,
+  `itemSchema` and event-stream model. The naming convention
   `openbindings.<family>-<upstream-line>@<rev>` is recorded in the
-  binding-specs README. Earlier working-draft entries below that cite
-  `openbindings.openapi@1` or `OAPI-*` rule identifiers record development
-  history now carried forward — where their rules survived — under the
-  family identifiers and `OAPI20`/`OAPI30`/`OAPI31`/`OAPI32` rule prefixes,
-  with the conformance corpus partitioned per family
-  (`processor-scenarios@2`, `synthesis-scenarios@5`).
+  binding-specs README.
 
 - A small, explicit set of core invariants: value contracts,
   enabling-not-invoking, split authority, context-free references,
@@ -235,61 +148,11 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
-- **OpenAPI family text clarifications.** Parameter keys remain stable when
-  runtime context or implementation capabilities change. Media tables expose
-  the existing artifact-encoded-string correspondence, including its character
-  encoding. Authentication case-insensitivity names scheme identifiers rather
-  than credential values. A shared informative value-flow example connects
-  mappings, native requests and output values. The four candidates remain
-  unpublished; core and SDK behavior are unchanged.
-
-- **OpenAPI 3.1/3.2 family review repairs.** Source locations identify whole
-  documents, and selected JSON media preserves null form values and item positions.
-  OpenAPI 3.2 admits standalone referenceable OAS roots by expected type, preserves
-  physical reference/server bases, permits equivalent URI and deep-object data,
-  follows XML encoding authority, and clarifies impossible schema branches and
-  fixed multipart headers. Exact-hash independent reviews and native probes cover
-  the updated candidates; these changes do not publish their kind identifiers.
-
-- **OpenAPI 2.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
-  source/binding content and finite value mappings replace removed core fields.
-  Swagger 2.0 retains its closed draft-04 schema vocabulary, parameter/formData
-  model, readOnly sender duty, security definitions and response semantics.
-  Equivalent media and wire forms, contextual scalar conversion and faithful
-  synthesis replace execution phases and generator layout requirements. Source
-  locations identify whole documents. Historical evidence remains separately
-  pinned; a fresh bounded native-interaction suite is added to CI. The kind
-  remains unpublished.
-
-- **OpenAPI 3.0 candidate reduced and migrated to the 0.2 core.** Kind-owned
-  source/binding content and finite value mappings replace removed core fields.
-  OAS 3.0.4 governs all five admitted patch values while retaining its closed
-  schema vocabulary, request-body rules and binary/byte distinction. A narrow
-  explicit header correction uses OAS 3.1.2 Appendix D. Equivalent URI forms,
-  XML encoding, focused declaration inspection and truthful synthesis replace
-  implementation mandates. Source locations identify whole documents, and JSON
-  content parts preserve supplied null values. Historical evidence is separately
-  pinned and a fresh bounded native-interaction suite is added to CI. The kind
-  remains unpublished.
-
-- **OpenAPI 3.1 candidate reduced and migrated to the 0.2 core.** Kind-owned
-  source and binding content replace the pre-kind fields and expression hooks.
-  The candidate specifies necessary interpretation and correspondence while
-  leaving equivalent wire forms, execution strategies and generation policy
-  free. Its [migration record](binding-specs/openapi-3.1/README.md) identifies
-  deliberate semantic changes and the historical status of the old corpus.
-  This updates an unreleased proposal; it does not publish a kind or SDK.
-
-- **OpenAPI 3.2 candidate migrated to the current 0.2 core model.** Source
-  `kind` and kind-owned `content` replace the pre-kind fields; explicit target
-  pointers and structural input/output mappings replace removed core selectors
-  and transforms. The reduced specification incorporates upstream mechanics,
-  preserves meaningful interaction boundaries, and leaves equivalent encodings
-  and implementation strategy open. The [migration record](binding-specs/openapi-3.2/README.md)
-  describes incompatible candidate changes and bounded current-core evidence.
-  The old OAPI32 rule corpus is frozen historical evidence, not validation of the
-  migrated kind. The identifier remains unpublished; no SDK support is implied.
-
+- **Complete-evidence reporting is explicit in OBI-T-09.** The numbered rule
+  now prohibits reporting conformance as undetermined when the evidence establishes
+  conformance, matching §10.4 and the existing corpus behavior. Positive reporting
+  remains optional; an established violation still requires a non-conformance
+  report. Corpus clause `OBI-T-09/c5` traces the existing case to this requirement.
 
 - **Withholding a positive report is not incomplete evidence.** §10.4 clarifies
   that any reported conclusion retains its defined meaning. OBI-T-09 still
@@ -1164,28 +1027,6 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   `scripts/count-binding-spec-scenarios.mjs` derives all three from the corpus
   files and prints them per family, and `scripts/verify-binding-specs.mjs`
   fails when the README and the corpus disagree.
-
-- `openbindings.openapi@1` §6 now states **reference traversal** — what a
-  reference's fragment means when its own path runs below another reference
-  (`#/components/schemas/Alias/properties/name`, where `Alias` is a `$ref`
-  object) — and the accepted editions answer it differently, so both branches
-  are stated. Under OAS 3.0.0–3.0.4 the reference standing in the path is
-  resolved and evaluation continues into the target, because those editions
-  process `$ref` as per JSON Reference, which frames itself as transclusion,
-  ignores every other member, and resolves to the referenced value. Under
-  OAS 3.1.0–3.1.2 it is not, and the reference is unresolvable: §4.6 makes the
-  fragment a JSON-Pointer over the referenced document, and the 3.1 Schema
-  Object's JSON Schema 2020-12 dialect makes `$ref` an applicator that
-  substitutes nothing, so the next token identifies no member and RFC 6901 §4's
-  error condition arises. The governing edition is the artifact's own. Three
-  citations are corrected with it: §6 and §11 qualify `[JSON Reference]` to the
-  five 3.0 editions that name it, §11 adds the JSON Schema 2020-12 **core**
-  vocabulary that every reference semantic actually lives in beside the
-  validation vocabulary it already cited, and §7 no longer attributes its
-  path-item `$ref` rule to "OAS reference resolution" — no accepted edition
-  states it, and the rule is this specification's under core OBI-B-02 item 2
-  and RFC 6901 §7's delegation to an application of JSON Pointer. No Core OBI
-  document-model field changed.
 
 - The invocation interfaces now define unsuccessful completion as exactly
   `{code,data?}`. They have no portable message or diagnostic escape lane;

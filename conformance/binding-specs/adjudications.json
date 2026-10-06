@@ -109,31 +109,23 @@
       "id": "BS-A-20260723-05",
       "date": "2026-07-23",
       "scenarios": [
-        "OAPI31-SS-01",
-        "OAPI31-SS-02",
-        "OAPI31-SS-04",
         "GRPC-SS-03"
       ],
       "authority": {
-        "upstreamFact": "Some represented targets remain callable only after the consumer supplies an artifact-permitted choice: an unresolved or non-unique OpenAPI server, or gRPC transport security for a bare host:port target.",
+        "upstreamFact": "Some represented targets remain callable only after the consumer supplies an artifact-permitted choice: gRPC transport security for a bare host:port target.",
         "coreRules": [],
         "bindingRules": [
-          "OAPI31-P-04",
           "GRPC-P-02"
         ]
       },
-      "discrepancy": "Both reference SDKs emitted exhaustive synthesis coverage but left the requirements field empty for targets whose binding specifications require runtime configuration before dispatch.",
+      "discrepancy": "Both reference SDKs emitted exhaustive synthesis coverage but left the requirements field empty for targets whose binding specification requires runtime configuration before dispatch.",
       "owner": "implementation",
-      "resolution": "Derive stable configuration.server and configuration.transport prerequisites from the same resolution rules used by invocation, while proving that an absolute sole OpenAPI server and a scheme-qualified gRPC address add no such requirement.",
+      "resolution": "Derive a stable configuration.transport prerequisite from the same resolution rules used by invocation, while proving that a scheme-qualified gRPC address adds no such requirement.",
       "compatibility": "implementation-compatible",
       "status": "fixed",
       "evidence": [
-        "openbindings-go/formats/openapi/coverage.go",
         "openbindings-go/formats/grpc/coverage.go",
-        "openbindings-ts/packages/openapi/src/coverage.ts",
         "openbindings-ts/packages/grpc/src/coverage.ts",
-        "conformance/binding-specs/synthesis/openapi-3.1.json#OAPI31-SS-01",
-        "conformance/binding-specs/synthesis/openapi-3.1.json#OAPI31-SS-04",
         "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-03"
       ]
     },
@@ -185,28 +177,6 @@
         "openbindings-ts/packages/grpc/src/authoring.ts",
         "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-04",
         "conformance/binding-specs/synthesis/grpc.json#GRPC-SS-05"
-      ]
-    },
-    {
-      "id": "BS-A-20260728-01",
-      "date": "2026-07-28",
-      "scenarios": [
-        "OAPI31-SS-03"
-      ],
-      "authority": {
-        "upstreamFact": "The superseded unified OpenAPI candidate treated a parameter/body-property collision as unflattenable. CO31-03 executes R-C for openbindings.openapi-3.1@1: synthesis maps a flat operation contract through inputTransform to structurally disjoint parameters and body envelope members, so the collision is fully representable rather than narrowed.",
-        "coreRules": [],
-        "bindingRules": [
-          "OAPI31-P-02"
-        ]
-      },
-      "discrepancy": "BS-A-20260723-01 originally treated OAPI31-SS-03 as an unrepresentable-operation case. The family change order deleted the routed/flattened correspondence apparatus that created that collision, so retaining either whole-source refusal or partial target exclusion would preserve semantics the sealed sibling expressly removed [CO31-03].",
-      "owner": "fixtures",
-      "resolution": "OAPI31-SS-03 remains synthesized, but is now fully represented: the flat synthesized input maps through inputTransform to the parameter/body envelope required by OAPI31-P-02. The scenario and this record no longer assert target exclusion, and BS-A-20260723-01 no longer lists the OpenAPI scenario or rule. This semantic change is exactly the one CO31-03 demands.",
-      "compatibility": "pre-launch-behavior-revision",
-      "status": "fixed",
-      "evidence": [
-        "conformance/binding-specs/synthesis/openapi-3.1.json"
       ]
     }
   ]

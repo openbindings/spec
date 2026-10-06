@@ -99,6 +99,8 @@ var judgeControls = []judgeControl{
 		`{"given": {"evidence": ` + evidence(map[string]string{"OBI-D-05": "inconclusive"}) + `}, "expected": {"conclusion": "conformant"}}`, Fail, "concluded conformance-undetermined"},
 	{"conclude-conformance: partial evidence (its correct twin)", "conclude-conformance",
 		`{"given": {"evidence": ` + evidence(map[string]string{"OBI-D-05": "inconclusive"}) + `}, "expected": {"conclusion": "conformance-undetermined"}}`, Pass, ""},
+	{"conclude-conformance: complete evidence cannot be undetermined", "conclude-conformance",
+		`{"given": {"evidence": ` + evidence(nil) + `}, "expected": {"conclusion": "conformance-undetermined"}}`, Fail, "concluded conformant"},
 	{"conclude-conformance: complete evidence", "conclude-conformance",
 		`{"given": {"evidence": ` + evidence(nil) + `}, "expected": {"conclusion": "conformant"}}`, Pass, ""},
 	// check-dependency-kind
