@@ -123,7 +123,11 @@
       "retrievedAt": "2026-08-20T17:06:56Z",
       "citedBy": [
         "binding-specs/operation-graph/openbindings.operation-graph.md",
-        "binding-specs/graphql/openbindings.graphql.md"
+        "binding-specs/graphql/openbindings.graphql.md",
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "rfc8259",
@@ -146,7 +150,10 @@
         "binding-specs/connect/openbindings.connect.md",
         "binding-specs/operation-graph/openbindings.operation-graph.md",
         "binding-specs/graphql/openbindings.graphql.md",
-        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md"
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
       ],
       "matchTokens": [
         "rfc3986",
@@ -702,13 +709,16 @@
       "sha256": "7ac4096b9263e11a704f06892638258ac1ddc0394dd75ffdc171e7b5ba0123e0",
       "bytes": 105854,
       "retrievedAt": "2026-08-20T17:06:56Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc2046",
         "RFC 2046"
-      ],
-      "status": "reference-only",
-      "reason": "Historical authority bytes retained; the OpenAPI candidates no longer cite this resource after the 2026-10 rewrite."
+      ]
     },
     {
       "id": "rfc7303",
