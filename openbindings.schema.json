@@ -9,7 +9,7 @@
     "openbindings": {
       "type": "string",
       "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-      "description": "OpenBindings specification version the document declares. Semantic Versioning 2.0.0 syntax (e.g., 0.2.0). Pattern validates syntax only: the line or prerelease the version names decides which text the document is interpreted under (§8.1)."
+      "description": "OpenBindings specification version the document declares. Semantic Versioning 2.0.0 syntax (e.g., 0.2.0). Pattern validates syntax only: the line or prerelease the version names decides which text gives the document its meaning (§8.1)."
     },
     "name": {
       "type": "string",
