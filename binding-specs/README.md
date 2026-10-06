@@ -1,8 +1,8 @@
 # Binding specifications
 
 Project transform policy: published binding specifications use JSONata when they
-provide transform expressions; see [PB-04](PROJECT-POLICY.md#pb-04-transform-language)
-and the [shared embedding](jsonata.md). Core defines no transform language.
+provide transform expressions ([PB-04](PROJECT-POLICY.md#pb-04-transform-language)).
+Core defines no transform language.
 
 **Status: index and authoring guidance for unreleased first-revision candidates.** No OpenBindings binding specification has been published yet. Every indexed family document in this directory is a mutable candidate for its first `@1` identifier. (During 0.2 development the publication lifecycle was exercised against earlier drafts of these candidates; those artifacts were withdrawn on 2026-08-11 and are not regarded as publications — the inventory is preserved in [`publications.json`](publications.json) under `developmentExercises`, and the full account is the publication-lifecycle reset entry in [`../history/0.2-development-log.md`](../history/0.2-development-log.md). Earlier drafts bearing the same `@1` spellings are superseded working texts.) The documents are used by reference implementations and conformance work during development, but they do not mint immutable identifiers until the explicit publication lifecycle below completes. This README itself is informative: it carries the cross-specification doctrine, the index, and the authoring template.
 
@@ -10,8 +10,8 @@ and the [shared embedding](jsonata.md). Core defines no transform language.
 [OpenAPI 3.0](openapi-3.0/openbindings.openapi-3.0.md),
 [OpenAPI 3.1](openapi-3.1/openbindings.openapi-3.1.md)
 and [OpenAPI 3.2](openapi-3.2/openbindings.openapi-3.2.md)
-have been revised for core 0.2.0: source `kind`, kind-owned source/binding content,
-and value adaptation defined by the kind. Their adjacent migration/evidence READMEs remain separate from publication. Other family candidates still contain pre-kind
+are written for core 0.2.0: source `kind`, kind-owned source/binding content,
+and value adaptation defined by the kind. Other family candidates still contain pre-kind
 fields and require revision. [PROJECT-POLICY.md](PROJECT-POLICY.md) states the
 project's completeness and revision requirements; these are not core requirements
 for other kinds. Legacy corpora do not demonstrate current core or kind support.
@@ -287,7 +287,7 @@ replaces a library that hides required facts or imposes conflicting policy.
 | openapi-2.0     | [openbindings.openapi-2.0.md](openapi-2.0/openbindings.openapi-2.0.md)             | **unreleased @1 candidate** | `openbindings.openapi-2.0@1`     | JSON Pointer to the operation object |
 | openapi-3.0     | [openbindings.openapi-3.0.md](openapi-3.0/openbindings.openapi-3.0.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.0@1`     | JSON Pointer to the operation object |
 | openapi-3.1     | [openbindings.openapi-3.1.md](openapi-3.1/openbindings.openapi-3.1.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.1@1`     | JSON Pointer to the operation object |
-| openapi-3.2     | [openbindings.openapi-3.2.md](openapi-3.2/openbindings.openapi-3.2.md)             | **unreleased @1 candidate; current core model** | `openbindings.openapi-3.2@1`     | JSON Pointer to the operation object |
+| openapi-3.2     | [openbindings.openapi-3.2.md](openapi-3.2/openbindings.openapi-3.2.md)             | **unreleased @1 candidate** | `openbindings.openapi-3.2@1`     | JSON Pointer to the operation object |
 | mcp             | [openbindings.mcp.md](mcp/openbindings.mcp.md)                                     | **unreleased @1 candidate** | `openbindings.mcp@1`             | `tools/<name>` for a unique non-task-required tool declaring `outputSchema` |
 | grpc            | [openbindings.grpc.md](grpc/openbindings.grpc.md)                                  | **unreleased @1 candidate** | `openbindings.grpc@1`            | `<fully-qualified-service>/<method>` |
 | connect         | [openbindings.connect.md](connect/openbindings.connect.md)                         | **unreleased @1 candidate** | `openbindings.connect@1`         | `<fully-qualified-service>/<method>` |
@@ -562,9 +562,9 @@ error this project has made at this step was a mistake about what an
 authority says, never about what to choose: an edition-scoping charge
 refuted by a patch pin the claimant had not read, a "no corpus scenario"
 claim refuted by the scenario, a gap declared closed by an informative
-README that does not close it, and a pin asserting that RFC 2046 groups
-`boundary` with `charset` when its actual words mark `charset` as the
-exception. An unquoted silence is not evidence and does not advance the
+README that does not close it, and a pin asserting that the multipart
+media-type RFC groups `boundary` with `charset` when its actual words mark
+`charset` as the exception. An unquoted silence is not evidence and does not advance the
 ladder.
 
 **Arbitrary closure is not an escape hatch.** Where nothing favors
@@ -760,7 +760,7 @@ Where the artifact does not answer and the deference order reaches its final ste
 
 | Specification family | Routing                                                                           | Decode                                                                                                                                                                                                                                    | Classify                                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| openapi-2.0/-3.0/-3.1/-3.2 (HTTP) | artifact: parameter locations                                                     | **declaration-and-framing rule**: status selects the Response Object; concrete `Content-Type` selects its exact/range declaration; JSON, text, SSE where supported, and artifact-authorized raw-byte lanes then produce protocol-independent values | **2xx rule**: success iff status ∈ 2xx; declared `responses` may admit application failure _data_, never change classification |
+| openapi-2.0/-3.0/-3.1/-3.2 (HTTP) | artifact: parameter locations                                                     | **declaration-and-framing rule**: status selects the Response Object; concrete `Content-Type` selects its exact/range declaration; JSON, text, SSE where supported, and artifact-authorized raw-byte lanes then produce protocol-independent values | **2xx rule**: success iff status ∈ 2xx, unless the binding's `failure` transform maps a non-2xx response to an output; declared `responses` never change classification |
 | asyncapi             | artifact: channel/message (payload wholesale — no field routing)                  | delegated to the artifact's schema, format, binding, driver, and codec authorities (ASYNC-P-05); Schema Objects enter OBI positions only under dialect translation; envelope unwrapping is never built in | driver-decided from the incorporated AsyncAPI and protocol-binding authorities per interaction cell (ASYNC-P-06); message content never reclassifies |
 | usage (CLI)          | assumption: argv (consumer hooks route fields to stdin / `-`-operand / temp file) | assumption: stdout as text, trailing newlines stripped (command-substitution semantics)                                                                                                                                                   | assumption: exit 0                                                                                                     |
 | mcp                  | artifact: tool `arguments` object whole                                           | artifact: tool `outputSchema`; successful value is `structuredContent` alone; progress is not solicited                                                                                                                                   | protocol: `isError` / JSON-RPC / transport failure                                                                    |
@@ -768,7 +768,7 @@ Where the artifact does not answer and the deference order reaches its final ste
 
 `openbindings.connect@1`'s descriptorless mode has no artifact: there, routing and classification are protocol-answered and decode is that specification's fixed verbatim-JSON rule — see its §9.3.
 
-Two of these are the conventions the reference implementations hold fixed across the HTTP lanes where classification is a convention rather than protocol-answered (`openbindings.connect@1`'s lane is 200-exact by its protocol's own rule): (1) _the header decides the decode lane_ — never the payload shape; (2) _success is 2xx and declared responses never change classification_ — a declared 404 response documents a failure's shape, it does not bless the failure. Once a binding specification here publishes, its answers to these axes are normative for its identifier; this table records the defaults project specifications adopt. A binding specification published under another authority that chooses differently defines its own rules — the point of the identifier is that consumers can tell.
+Two of these are the conventions the reference implementations hold fixed across the HTTP lanes where classification is a convention rather than protocol-answered (`openbindings.connect@1`'s lane is 200-exact by its protocol's own rule): (1) _the header decides the decode lane_ — never the payload shape; (2) _success is 2xx and declared responses never change classification_ — a declared 404 response documents a failure's shape, it does not bless the failure; only a binding's own mapping can turn it into an output, as the OpenAPI candidates' `failure` transform does. Once a binding specification here publishes, its answers to these axes are normative for its identifier; this table records the defaults project specifications adopt. A binding specification published under another authority that chooses differently defines its own rules — the point of the identifier is that consumers can tell.
 
 Reference tooling reports which rule answered each axis using
 `x-ob-decode`/`x-ob-classify`/`x-ob-route` provenance and may warn when a
@@ -781,7 +781,7 @@ frame and not part of a binding's portable meaning.
 The operation value domain is JSON (core [§5](../openbindings.md#5-document-model)), so a value that is neither a JSON value nor a string — arbitrary bytes — needs a **boundary encoding** to cross the seam. This is one instance of the decode/routing answers above, not a separate mechanism, and it is governed by two principles in order:
 
 1. **Follow the artifact where it declares an encoding.** OpenAPI's `contentEncoding` (`base64`/`base64url`), gRPC/Connect's ProtoJSON `bytes`, and MCP's resource `blob` all define how bytes ride; a binding specification incorporates its family's answer and does not override it. The artifact keeps authority over its own bytes.
-2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI 3.0's `format: binary` or exact schema-omitted non-JSON declaration, or a 3.1 raw body whose Media Type Object omits `schema`). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (`openbindings.openapi-3.0@1` §9.2 is one pattern: "this specification's Base64 boundary representation"). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
+2. **Default to Base64 only in the gap** — where a family admits bytes but the artifact signals them without an encoding (OpenAPI 3.0's `format: binary` or exact schema-omitted non-JSON declaration, or a 3.1 raw body whose Media Type Object omits `schema`). **Base64 is the project's recommended boundary encoding**, and a specification that adopts it says so in its own text (the OpenAPI candidates' §4.3 is one pattern). This is a recommended default like the table above — not a cross-specification mandate; the catalog has no mechanism for one, so each specification restates it and a specification published under another authority may choose differently.
 
 A family candidate that does not define bytes carriage on some axis **declares the gap** rather than leaving it silent. The four current OpenAPI `@1` candidates define their line's artifact-authorized raw request and response carriage; the AsyncAPI `@1` candidate records its non-string, non-JSON payload boundary; and the Usage `@1` candidate keeps a text-only stdout default. A gap left in a published specification could only be closed by a later revision, following the two principles above.
 
@@ -793,7 +793,7 @@ Credentials and other runtime prerequisites are **not** part of an OBI document 
 
 Many source families present parameters from several protocol locations (path, query, headers, body) as a single object-shaped view. In that flattened representation each field name maps to at most one value, and within a JSON object property names are unique. OpenBindings works best when a source can be represented with unique field names across its effective input/output surface.
 
-When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. The four current OpenAPI `@1` candidates use a binding-private routed source value: synthesis preserves protocol-neutral application fields and carries the concrete name-plus-location correspondence in the pre-kind draft's `inputTransform`. The routing envelope belongs below the operation boundary and is never copied into the caller-facing schema.
+When declarations are distinct in the artifact but collapse to one property name, a binding MUST NOT invent equality between them. The four OpenAPI `@1` candidates key a request value's `parameters` by name, qualifying a name that occurs at several locations as `<location>/<name>`, and a binding's JSONata `input` transform maps application fields into that request value. The request value belongs below the operation boundary and is never copied into the caller-facing schema.
 
 ## Authoring a new binding specification
 

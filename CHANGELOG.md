@@ -235,12 +235,26 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
 
 ### Changed
 
-- **OpenAPI candidate transforms use JSONata.** The 2.0, 3.0, 3.1 and 3.2
-  candidates replace their draft structural mapping objects with JSONata 2.1
-  expression strings, pinned to jsonata-js 2.1.1. The shared kind-owned
-  embedding preserves absence versus null and defines failure boundaries.
-  Existing `target`, `input` and `output` content members remain; legacy mapping
-  objects must be rewritten as expressions. Core has no transform language.
+- **OpenAPI candidates rewritten as minimal bridges.** The 2.0, 3.0, 3.1 and 3.2
+  candidates now add to OAS and HTTP only what a binding needs: content shapes,
+  the target, the `{parameters?, body?}` request value, JSONata transforms,
+  outcome classification, named configuration points and decisions at upstream
+  gaps, each marked as a pin, convention or configuration point, with exclusions
+  and their reopen conditions in one table. Restated upstream rules, runtime
+  policy and implementation guidance are removed, and the shared JSONata,
+  scope-limit and value-flow documents are deleted. Meaning changes for
+  unpublished candidates: binding `content` gains `failure`, a JSONata mapping
+  of non-2xx responses into the operation's output (a defined result completes
+  successfully); transforms cite the JSONata 2.1 documentation directly, with
+  no reference-implementation tiebreak, and an undefined result fails except per
+  item in a 3.2 sequential response; header parameter names compare
+  case-insensitively; booleans and numbers serialize in JSON spelling, removing
+  the `parameterConversion` configuration point; component names in referenced
+  documents resolve in the entry document, removing `implicitConnectionScope`;
+  redirects are followed; JSON representations decode without a matching
+  declaration; typed XML is unusable rather than read as scalar text; 3.2
+  streams per item only under `itemSchema`; the server URL joins without a
+  doubled slash. Core has no transform language.
 
 - **Complete-evidence reporting is explicit in OBI-T-09.** The numbered rule
   now prohibits reporting conformance as undetermined when the evidence establishes
