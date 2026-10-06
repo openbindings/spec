@@ -5,11 +5,11 @@
 
 This document bridges OpenAPI 3.0 into OpenBindings. The OpenAPI Specification
 and the standards it cites govern everything they define. This document adds
-only what a binding needs beyond them. A marker at the start of a paragraph or
-list item covers that paragraph or item: `[pin]` fixes one reading where an
-authority is ambiguous or leaves a choice to tools; `[convention]` decides where
-no authority speaks; `[configuration point]` names a choice the consumer
-supplies. Unmarked text defines this kind's content or cites an authority.
+only what a binding needs beyond them. A marker covers the text from it to the
+end of its paragraph or list item: `[pin]` fixes one reading where an authority
+is ambiguous or leaves a choice to tools; `[convention]` decides where no
+authority speaks; `[configuration point]` names a choice the consumer supplies.
+Unmarked text defines this kind's content or cites an authority.
 
 Outcomes use these words. Content that breaks a rule here is *invalid*. A
 binding whose source cannot be obtained *cannot be interpreted*, which does not
@@ -50,12 +50,13 @@ and its relative server URLs (OAS §4.6, §4.7.5.1). With `location` alone, the
 document is obtained through a resolver for the URI's scheme, and an HTTP
 retrieval produces it only with a 2xx response. When none produces it, the
 binding cannot be interpreted. The URI of the OBI carrying the source is never a
-base; a reference or server URL that needs a base when none exists cannot be
-interpreted.
+base: a reference that needs a base when none exists cannot be interpreted, and a
+server URL that needs one is not usable (§7 `server` can supply a base).
 
-`[pin]` Text is [YAML 1.2.2](https://yaml.org/spec/1.2.2/) under the constraints
-of OAS §4.2. Duplicate keys, values JSON cannot represent and multiple documents
-are invalid.
+`[pin]` Text is [YAML 1.2.2](https://yaml.org/spec/1.2.2/) under its Core schema
+with the constraints of OAS §4.2. Duplicate keys, non-scalar keys and multiple
+documents are invalid. A value JSON cannot represent is a defect of the
+declaration containing it.
 
 `[pin]` A referenced document's root is read as the object type the referring
 position expects, and a node referenced from positions expecting different types
@@ -75,13 +76,15 @@ Binding `content` is an object with a required `target` and optional `input`,
 `target` is an [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) JSON Pointer in
 string form into the entry document, of the form `/paths/<path>/<method>`, where
 `<method>` is `get`, `put`, `post`, `delete`, `options`, `head`, `patch` or
-`trace`. The pointer is not percent-decoded. A pointer to no operation is not a
-target.
+`trace`. The pointer is not percent-decoded; its method is looked up in the Path
+Item after any `$ref` is merged. A pointer that reaches no operation in the
+obtained document is invalid binding content.
 
 `[pin]` A Path Item with `$ref` (OAS §4.7.9.1 leaves conflicts undefined) is
-merged with its referenced Path Item: a field present in only one applies; a
-field present in both, if the selected operation uses it, makes that operation
-ambiguous and not a target.
+merged with its referenced Path Item: a field present in only one applies. A
+method present in both makes that operation ambiguous; any other field present in
+both makes every operation of the Path Item ambiguous. An ambiguous operation is
+not a target.
 
 `[pin]` An operation reached through a Path Item in another document inherits the
 entry document's `servers` (OAS §4.3.2) and, likewise, its `security`. An empty
@@ -100,16 +103,15 @@ cannot be sent.
 
 `parameters` is an object keyed by the names of the operation's effective
 parameters (OAS §4.7.10.1). `[convention]` Where one name occurs at more than one
-location, every key is `<location>/<name>`, escaping `~` and `/` as RFC 6901
-does; otherwise keys are the names. Keys do not depend on runtime context or
-capability. A key no effective parameter has cannot be sent.
+location, names compared exactly, every key is `<location>/<name>`, escaping `~`
+and `/` as RFC 6901 does; otherwise keys are the names. Keys do not depend on
+runtime context or capability. A key no effective parameter has cannot be sent.
 
-`[pin]` Header parameter names compare case-insensitively (OAS §3.8, RFC 9110
-§5.1). Header parameters differing only in case within one list are duplicate
-parameters; an Operation header parameter overrides a Path Item one whatever its
-case; the key is the effective declaration's spelling. A header parameter named
-`Accept`, `Content-Type` or `Authorization`, in any case, is ignored (OAS
-§4.7.12.2.1) and has no key.
+`[pin]` Header parameters differing only in case (OAS §3.8) within one list are
+duplicate parameters; an Operation header parameter overrides a Path Item one
+whatever its case; the key is the effective declaration's spelling. A header
+parameter named `Accept`, `Content-Type` or `Authorization` in any case is
+ignored (OAS §4.7.12.2.1) and has no key.
 
 `body` is the request body value. A member that is absent is not supplied; a
 member that is null supplies JSON null. Required parameters and a required body
@@ -118,9 +120,9 @@ declaration cannot be sent. `[pin]` A request body applies to POST, PUT and
 PATCH. OAS ignores it where HTTP leaves body semantics vague, naming GET, HEAD
 and DELETE (§4.7.10.1); this kind treats every other method the same way, so a
 supplied body there cannot be sent and the declaration requires nothing. A TRACE
-request carries no credentials or cookies (RFC 9110 §9.3.8): a supplied cookie
-parameter cannot be sent, and only security alternatives needing no credential
-in a field stay usable.
+request sends no credentials or cookies (RFC 9110 §9.3.8): a supplied cookie
+parameter cannot be sent, and only security alternatives needing no credential in
+the request stay usable.
 
 ### 4.2 Transforms
 
@@ -163,40 +165,42 @@ row that applies:
 | --- | --- |
 | JSON media (`application/json`, `+json`) | The JSON value. |
 | Any media declared `type: string` with `format: byte` | The Base64 string. |
-| Any media declared `type: string` with `format: binary`, or with no schema | The octets as a Base64 string (OAS §4.4.2). |
-| Character media (`text/*` other than XML) declared as one scalar type | That string, number, integer or boolean. |
+| Any media declared `type: string` with `format: binary` | The octets as a Base64 string (OAS §4.4.2). |
+| Character media (`text/*` other than XML) | A string, number, integer or boolean, as below. |
 | `application/x-www-form-urlencoded`, `multipart/form-data` | An object with one member per field (OAS §4.7.15). |
+| Any other media declared with no schema or no type | The octets as a Base64 string. |
 
 A representation no row covers is unusable. A JSON response needs no
 declaration; a request body and any other response representation need a
 matching declaration. Values are not validated against OAS schemas, which are
 inspected only for what this document names.
 
-`[pin]` Types come from the governing Schema Object's `type`, reached by
+`[pin]` A declaration's types come from its Schema Object's `type`, reached by
 following only Reference Objects and `allOf` (the procedure
 [OAS 3.2.1](https://spec.openapis.org/oas/v3.2.1.html) §4.24.4.2 later wrote
 down, without its optional inspection of other keywords); keywords outside OAS
-3.0's subset (§4.7.24) have no effect. A schema without `type` admits every type,
-and `nullable` adds nothing to the text forms, since null has none. For a
-request, the supplied value's own type selects among the declared types, and a
-value of no declared type cannot be sent. A response declaration that leaves
-more than one type for a character representation is unusable there.
+3.0's subset (§4.7.24) have no effect, and a schema without `type` admits every
+type. A character response is the text as a string when its declaration admits
+`string` or has no type; it is the one scalar when the declaration's type is
+`number`, `integer` or `boolean`. A request writes a scalar in the text form of
+its own type; an object, array or null has no text form and cannot be sent in
+character media.
 
 `[pin]` Character media without `charset` are UTF-8, a superset of RFC 2046's
 US-ASCII default. A boolean is `true` or `false`; a number is a JSON number with
 its value, and an integer is written as decimal digits with a leading `-` when
 negative. Decoding reads exactly one such token, allowing JSON whitespace around
-it. Null has no text form. These text forms also serve parameter serialization
-(§5), which OAS Appendix B leaves to implementations.
+it. These text forms also serve parameter serialization (§5), which OAS
+Appendix B leaves to implementations.
 
 `[pin]` Base64 is RFC 4648 §4 with padding and zero pad bits; a non-canonical
 string cannot be sent.
 
-`[pin]` In JSON (RFC 8259 §4, §8.2), the last of duplicate member names wins, a
-leading byte order mark is ignored on receipt and never sent, and unpaired
-surrogates cannot be carried. A number keeps its exact value; an implementation
-that cannot hold one unchanged fails that request or completion instead of
-substituting another.
+`[pin]` In JSON (RFC 8259 §4, §8.1, §8.2), the last of duplicate member names
+wins, a leading byte order mark is ignored on receipt and never sent, and
+unpaired surrogates cannot be carried. A number keeps its exact value; an
+implementation that cannot hold one unchanged fails that request or completion
+instead of substituting another.
 
 Schema defaults, examples, `readOnly` and `writeOnly` never add or remove members.
 
@@ -205,23 +209,31 @@ Schema defaults, examples, `readOnly` and `writeOnly` never add or remove member
 OAS §§4.7.12 to 4.7.15 and Appendices B to E govern serialization, with these
 decisions:
 
-- `[pin]` Null serialized by style uses OAS §4.7.12.4's undefined column, except
-  that it contributes nothing in the matrix and label styles, as RFC 6570
-  requires (OAS 3.2.1 corrects these cells). Where RFC 6570 applies, an empty
-  array or object contributes nothing (OAS Appendix C.4.3). An empty string is a
-  value; an absent optional parameter contributes nothing.
-- `[pin]` Under `allowReserved`, a value containing `&`, `#` or `+` cannot be
-  sent (OAS Appendix E.5). A value a declaration cannot serialize means only the
-  invocation supplying it cannot be sent.
-- `[pin]` Header values are not percent-encoded, whether serialized by style or
-  by content ([OAS 3.1.2](https://spec.openapis.org/oas/v3.1.2.html) §4.8.12.2.2
-  corrects this); a form-style cookie has no `?` prefix (OAS 3.1.2 Appendix D.1).
-  A content-form path or query parameter is percent-encoded as one value (OAS
+- `[pin]` A null parameter value uses OAS §4.7.12.4's undefined column, where
+  OAS departs from RFC 6570's omission, except that in the matrix and label styles
+  it contributes nothing, as RFC 6570 requires (OAS 3.2.1 corrects these cells);
+  a null member of an object or array contributes nothing (RFC 6570 §2.3). Where
+  RFC 6570 applies, an empty array or object contributes nothing (OAS
+  Appendix C.4.3). An empty string is a value; an absent optional parameter
+  contributes nothing.
+- `[pin]` Where OAS applies percent-encoding and RFC 6570 does not fix the set,
+  every character outside RFC 3986's unreserved set is encoded, and also `~` in
+  form-urlencoded content, as OAS 3.2.1 §4.12.4 recommends. Header values are not
+  percent-encoded, whether serialized by style or by content
+  ([OAS 3.1.2](https://spec.openapis.org/oas/v3.1.2.html) §4.8.12.2.2 corrects
+  this); a form-style cookie has no `?` prefix (OAS 3.1.2 Appendix D.1). A
+  content-form path or query parameter is percent-encoded as one value (OAS
   Appendix E.3); a content-form cookie parameter is not.
+- `[pin]` Under `allowReserved`, a value containing a delimiter of its style, or
+  `#`, `[`, `]`, `&`, `=` or `+` in a query or form-urlencoded content, cannot be
+  sent: the caller percent-encodes them (OAS §4.7.12.2.2, Appendix C.4.2). A path
+  parameter value of `.` or `..` cannot be sent, since it would change the target
+  path (RFC 3986 §5.2.4). A value a declaration cannot serialize means only the
+  invocation supplying it cannot be sent.
 - `[pin]` Header values are UTF-8 and must be valid field values (RFC 9110 §5.5).
   A serialized cookie must satisfy [RFC 6265](https://www.rfc-editor.org/rfc/rfc6265)
-  §4.2.1, and one that would not cannot be sent. A parameter whose name is not a
-  valid field or cookie name is unusable. A header parameter named `Cookie`
+  §4.2.1, and one that would not cannot be sent. A header or cookie parameter
+  whose name is not a valid field or cookie name is unusable. A header parameter named `Cookie`
   supplies the whole Cookie field and cannot be combined with cookie parameters
   or cookie credentials.
 - `[convention]` Header parameters and header credentials naming `Host`,
@@ -230,44 +242,53 @@ decisions:
   header credentials naming `Content-Type` or `Content-Encoding`, are unusable
   (§9). Two contributions to one header, query name or cookie name, from
   different declarations or credentials, are never sent together: a required
-  declaration colliding with a credential makes that security alternative
-  unusable; otherwise only the invocation that would send both cannot be sent.
-- `[pin]` A declared media range matches when its parameters match, `charset`
-  case-insensitively and others exactly (RFC 9110 §8.3.1). The most specific match
-  applies (OAS §4.7.13.1, §4.7.17.1): a concrete type before a range, then the
-  match with more parameters; matches still equal are ambiguous and unusable. A
-  Request Body whose `content` is empty admits no body. When a body is supplied,
-  one usable alternative is used; with several, or a range, `requestMedia` (§7)
-  chooses. The `Content-Type` field carries the chosen type and any multipart
-  boundary.
+  declaration colliding with a credential, or two credentials of one alternative
+  colliding, make that security alternative unusable; otherwise only the
+  invocation that would send both cannot be sent.
+- `[pin]` A declared media range matches a media type when each of the range's
+  parameters appears there with the same value, `charset` compared
+  case-insensitively (RFC 9110 §8.3.1). The most specific match applies (OAS
+  §4.7.13.1, §4.7.17.1): a concrete type, then `type/*`, then `*/*`, and among
+  equals the match with more parameters; matches still equal are ambiguous and
+  unusable. A Request Body whose `content` is empty admits no body. When a body
+  is supplied, one usable alternative is used; with several, or a range,
+  `requestMedia` (§7) chooses.
 - `[pin]` A form or `multipart/form-data` body may carry any member its schema
   admits through `properties`, `additionalProperties` or `allOf`; a member it
-  forbids cannot be sent. An array member is one field or part per item, each
-  taking the item declaration's media (as OAS 3.2.1 §4.14.5.1 later made
-  explicit). A null member serialized by style follows the first bullet; one with
-  media follows that media, so JSON media carry it, and otherwise an optional
-  member is omitted and a required one cannot be sent. Among multipart types,
-  name-based Encoding applies only to `multipart/form-data` (§9).
-- `[pin]` A property whose media its declaration does not fix (a range, or
-  several Encoding content types) needs `propertyMedia` (§7). Part headers come
-  only from Encoding `headers` fixed by a single-valued `enum`; a required part
-  header without a fixed value makes the part unusable. A part declared with
-  `format: byte` carries `Content-Transfer-Encoding: base64` (OAS §4.7.15.3); a
-  fixed header contradicting it makes the part unusable. Generated form-data parts
-  use the exact property name and add no filename their declaration does not fix.
+  forbids cannot be sent. An array member is one field or part per item, all with
+  the member's name (OAS §4.7.15.3). Among multipart types, name-based Encoding
+  applies only to `multipart/form-data` (§9).
+- `[pin]` A field or part, or each item of an array member, takes its Encoding
+  `contentType` when that names one type, else OAS's default content type read
+  with the supplied value's type (§4.7.15.1.1); a `contentType` that is a range or
+  lists several types needs `propertyMedia` (§7). A null member serialized by
+  style follows the first bullet; one with media follows that media, so JSON
+  media carry it, and otherwise an optional member is omitted and a required one
+  cannot be sent.
+- `[pin]` Part headers come only from Encoding `headers` fixed by a single-valued
+  `enum`; a required part header without a fixed value makes the part unusable. A
+  part declared with `format: byte` carries `Content-Transfer-Encoding: base64`
+  (OAS §4.7.15.3); a fixed header contradicting it makes the part unusable.
+  Generated form-data parts use the exact property name, and a part carrying
+  octets also takes that name as its `filename` unless its declaration fixes one
+  (RFC 7578 §4.2).
 - `[convention]` A request body's content codings come only from a supplied
   `Content-Encoding` header parameter and are applied in order (RFC 9110 §8.4).
 
 ## 6. Responses and completion
 
-`[pin]` A 301, 302, 303, 307 or 308 response with a `Location` is followed (RFC
-9110 §15.4 leaves this to the client): 307 and 308 repeat the method and content;
-301 and 302 do too, except that POST becomes GET without content; 303 becomes GET
-without content, and HEAD stays HEAD. Any other final response, including other
-3xx statuses, completes the invocation. Its status selects the response
-declaration (OAS §4.7.16); an invalid declaration does not fall back to a less
-specific one, and a Responses Object with only `default` applies it to every
-status.
+`[pin]` A 301, 302, 303, 307 or 308 response with a `Location` is followed, up to
+20 times (RFC 9110 §15.4 leaves this to the client): 307 and 308 repeat the
+method and content; 301 and 302 do too, except that POST becomes GET without
+content; 303 becomes GET without content, and HEAD stays HEAD. The `Location` is
+used as given, and credentials and the Cookie field are not sent to another
+origin. Any other final response, including other 3xx statuses, completes the
+invocation; a transport failure before one completes it unsuccessfully.
+
+The final status selects the response declaration (OAS §4.7.16). `[pin]` A
+Responses Object with only `default` applies it to every status. An invalid
+declaration does not fall back to a less specific one, and content it governs
+cannot be decoded.
 
 ### 6.1 Success
 
@@ -299,19 +320,24 @@ Abandoning an invocation completes it unsuccessfully.
 ## 7. Context
 
 `[configuration point]` The consumer supplies these choices, never the operation
-input. An invocation that needs an unanswered choice cannot be sent.
+input. A supplied choice is used wherever it applies, needed or not; an
+invocation that needs an unanswered choice cannot be sent.
 
 | Name | Choice | Needed when |
 | --- | --- | --- |
 | `server` | One effective Server Object (OAS §4.7.5) with its variable values, or a complete absolute `http` or `https` base URL without userinfo, query or fragment. | More than one effective server, or none usable. |
 | `requestMedia` | One concrete media type matching a usable request alternative. | A body is supplied and several usable alternatives, or a range, remain. |
-| `propertyMedia` | One concrete media type for each affected form or multipart property. | It is supplied and its declaration does not fix its media (§5). |
-| `security` | One Security Requirement alternative (OAS §4.7.30), possibly the empty one. | More than one usable alternative. |
+| `propertyMedia` | One concrete media type for a form field or multipart part. | It is supplied and its Encoding `contentType` is a range or lists several types (§5). |
+| `security` | One Security Requirement alternative (OAS §4.7.30), possibly the empty one. | No usable alternative can be met from the credentials the context holds. |
 
-`[pin]` Server variables take their supplied values, which must satisfy a
-declared `enum`, else their defaults, as written (OAS §4.7.6); an undeclared
-variable takes a supplied value. A relative server URL is resolved against its
-document's base (§2). One trailing `/` is removed from the server URL, or from a
+`[pin]` Without a `security` choice, the first usable alternative in declaration
+order whose credentials the context holds is used, an alternative needing
+credentials before the empty one.
+
+`[pin]` Server variables take their supplied values, else their defaults, as
+written (OAS §4.7.6); a supplied value outside a declared `enum` cannot be sent,
+and an undeclared variable takes a supplied value. A relative server URL is
+resolved against the retrieval URI of the document that declares it (§2). One trailing `/` is removed from the server URL, or from a
 context-supplied base, before the path is appended (OAS §4.7.8). A result that
 is not an absolute URI with a host cannot be sent.
 
@@ -349,12 +375,12 @@ context choice, or reaches one of these exclusions:
 | Excluded | Reason | Reopens when |
 | --- | --- | --- |
 | Responses switching protocols (101) | A new protocol is not an HTTP response. | This kind defines upgrade semantics. |
-| One response as a sequence of values | OAS 3.0 defines no way to frame one body as several values. | Use the OpenAPI 3.2 kind, which incorporates OAS 3.2's sequential media. |
+| One response as a sequence of values | OAS 3.0 defines no way to frame one body as several values. | OAS defines a framing for this edition. |
 | Form and multipart responses as objects | OAS 3.0 defines encoding fields from objects but not reading them back. | OAS defines the inverse for this edition. |
 | Typed declarations for media no row of §4.3 covers, including XML Object modeling (OAS §4.7.26) | Mapping them to values is a model of its own. | This kind defines that mapping. |
 | Name-based Encoding for multipart types other than `multipart/form-data` (OAS §4.7.15.3) | OAS leaves it optional. | OAS makes it normative. |
 | Header parameters and credentials naming fields HTTP owns (§5) | They would contradict the message's own framing. | HTTP gives up ownership of those fields. |
 | Style and value combinations OAS leaves undefined or `n/a` (§4.7.12.2.2, §4.7.12.4, Appendix C.1) | No serialization is defined. | OAS defines them. |
 | Separators inside space- and pipe-delimited values; `[` or `]` in deep-object names (Appendix E.5) | The structure becomes ambiguous. | OAS defines an escape. |
-| Form-style cookies with more than one pair (Appendix D) | OAS calls them incorrect: cookie pairs are not joined with `&`. | OAS defines a cookie form. |
+| Form-style cookies with more than one pair (Appendix D) | Cookie pairs are joined with `; `, not the form's `&`. | OAS defines a cookie form. |
 | `http` schemes other than `basic` and `bearer` | No credential carriage is defined here. | This kind pins one. |

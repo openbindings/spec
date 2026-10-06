@@ -251,10 +251,13 @@ the first Changed entry supersedes earlier draft descriptions of `bindingSpec`,
   case-insensitively; booleans and numbers serialize in JSON spelling, removing
   the `parameterConversion` configuration point; component names in referenced
   documents resolve in the entry document, removing `implicitConnectionScope`;
-  redirects are followed; JSON representations decode without a matching
-  declaration; typed XML is unusable rather than read as scalar text; 3.2
-  streams per item only under `itemSchema`; the server URL joins without a
-  doubled slash. Core has no transform language.
+  redirects are followed, at most 20, without sending credentials or cookies to
+  another origin; JSON representations decode without a matching declaration;
+  character bodies without a declared type are text; typed XML is unusable
+  rather than read as scalar text; 3.2 streams per item only under
+  `itemSchema`; without a `security` choice, the first alternative whose
+  credentials the context holds applies; file parts carry a filename; the
+  server URL joins without a doubled slash. Core has no transform language.
 
 - **Complete-evidence reporting is explicit in OBI-T-09.** The numbered rule
   now prohibits reporting conformance as undetermined when the evidence establishes

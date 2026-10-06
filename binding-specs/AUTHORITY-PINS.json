@@ -1249,6 +1249,7 @@
     {
       "id": "rfc7578",
       "families": [
+        "openapi-2.0",
         "openapi-3.0",
         "openapi-3.1",
         "openapi-3.2"
@@ -1262,13 +1263,16 @@
       "sha256": "813277f91c6c65c9047da9e9a8f1f0c19c1fb4bb1aaeea944bcf3bbdcc2eef49",
       "bytes": 30240,
       "retrievedAt": "2026-08-24T23:27:03Z",
-      "citedBy": [],
+      "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
+        "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
+        "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
+        "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
+      ],
       "matchTokens": [
         "rfc7578",
         "RFC 7578"
-      ],
-      "status": "reference-only",
-      "reason": "Historical authority bytes retained; the OpenAPI candidates no longer cite this resource after the 2026-10 rewrite."
+      ]
     },
     {
       "id": "rfc8414",
@@ -2393,6 +2397,7 @@
     {
       "id": "oas-3.2.1",
       "families": [
+        "openapi-2.0",
         "openapi-3.0",
         "openapi-3.1",
         "openapi-3.2"
@@ -2406,6 +2411,7 @@
       "bytes": 678358,
       "retrievedAt": "2026-10-05T20:34:33Z",
       "citedBy": [
+        "binding-specs/openapi-2.0/openbindings.openapi-2.0.md",
         "binding-specs/openapi-3.0/openbindings.openapi-3.0.md",
         "binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
         "binding-specs/openapi-3.2/openbindings.openapi-3.2.md"
