@@ -668,6 +668,25 @@
       },
       "requiresMinSupported": "0.2.0",
       "requiresUnsupported": "0.1.0"
+    },
+    {
+      "id": "T04-S-35",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line that lacks members the current version requires is refused, not judged non-conformant.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "futureOperations": {}
+        }
+      },
+      "expected": {
+        "outcome": "version-refusal"
+      },
+      "requiresUnsupported": "999.5.0"
     }
   ]
 }

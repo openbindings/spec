@@ -10,7 +10,7 @@
     "fixtureFiles": 15,
     "scenarioFiles": 10,
     "tests": 223,
-    "scenarios": 172,
+    "scenarios": 173,
     "positives": 107,
     "negatives": 116,
     "rulesCoveredDocument": 13,
@@ -38,7 +38,7 @@
     "conclude-conformance": 8,
     "derive-form": 4,
     "resolve-operation": 22,
-    "validate-document": 39,
+    "validate-document": 40,
     "validate-operation-values": 74,
     "validity fixture": 223
   },
@@ -206,10 +206,10 @@
       "rule": "OBI-T-04",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 34,
+      "scenarios": 35,
       "actions": {
         "resolve-operation": 2,
-        "validate-document": 31,
+        "validate-document": 32,
         "validate-operation-values": 1
       }
     },
@@ -446,7 +446,8 @@
         "T04-S-27",
         "T04-S-32",
         "T04-S-33",
-        "T04-S-34"
+        "T04-S-34",
+        "T04-S-35"
       ]
     },
     "OBI-T-04/c3": {
@@ -457,7 +458,8 @@
         "T04-S-04",
         "T04-S-05",
         "T04-S-32",
-        "T04-S-33"
+        "T04-S-33",
+        "T04-S-35"
       ]
     },
     "OBI-T-04/c4": {
