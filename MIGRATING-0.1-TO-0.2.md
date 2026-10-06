@@ -17,7 +17,7 @@ This guide covers OBI documents. SDK and CLI APIs may also change before the
 | `bindings.*.priority` and `sources.*.priority`; lower wins | `bindings.*.preference`; higher is a stronger author preference |
 | `bindings.*.ref` | `bindings.*.content`: optional JSON content read under the source's kind; it may identify the target |
 | `sources.*.location` and `sources.*.content` | `sources.*.content` alone, in the shape the intended tool behavior reads; the core has no `location` member |
-| Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "language": "jsonata", "expression": "..." }` | Remove; any value adaptation is read under the source's kind, possibly through `bindings.*.content` |
+| Root `transforms`, binding `inputTransform`/`outputTransform`, and transform objects such as `{ "type": "jsonata", "expression": "..." }` | Remove; any value adaptation is read under the source's kind, possibly through `bindings.*.content` |
 | `operation.input: null` or `operation.output: null` for no value contract | Omit the member |
 | Root `roles` and operation `satisfies` | Remove; express qualified shared-contract names as operation aliases where appropriate |
 | No Core operation-dependency declaration | Optional named `dependencies` entries reference local operation keys and may constrain acceptable `kinds` |
