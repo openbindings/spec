@@ -64,33 +64,29 @@ const NEGATIVE = [
   ["the README clause table omits a clause", "is missing",
     editText("conformance/README.md", (t) => t.replace(/^\| OBI-T-03\/c2 \|.*\n/m, ""))],
   ["a case cites an undefined clause", "cites undefined clause",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").clauses.push("OBI-T-07/c9"); })],
-  ["a case names no clause of its file's rule", "names no clause of OBI-T-07",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").clauses = ["OBI-T-08/c1"]; })],
+    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-06").clauses.push("OBI-T-06/c9"); })],
+  ["a case names no clause of its file's rule", "names no clause of OBI-T-06",
+    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-06").clauses = ["OBI-T-07/c1"]; })],
   ["a duplicate case ID", "duplicate case ID",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-54").id = "T08-S-53"; })],
+    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-54").id = "T07-S-53"; })],
   ["an outcome token outside the specification's vocabulary", "does not match tool-scenario.schema.json",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-13").expected.results[0] = "graph-unavailable"; })],
+    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-13").expected.results[0] = "graph-unavailable"; })],
   ["an old action in format @2", "does not match tool-scenario.schema.json",
-    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-01").action = "resolve-schema-cycle"; })],
-  ["gates that contradict each other by support unit", "both are support unit",
-    editJSON("conformance/scenarios/OBI-T-04.json", (f) => { scenario(f, "T04-S-02").requiresUnsupported = "0.2.5"; })],
-  ["a required-supported version below the required lowest", "below the required lowest supported version",
-    editJSON("conformance/scenarios/OBI-T-04.json", (f) => { scenario(f, "T04-S-01").requiresMinSupported = "0.3.0"; })],
+    editJSON("conformance/scenarios/OBI-T-05.json", (f) => { scenario(f, "T05-S-01").action = "resolve-schema-cycle"; })],
   ["a gate that is not SemVer 2.0.0", "requiresSupports",
-    editJSON("conformance/scenarios/OBI-T-04.json", (f) => { scenario(f, "T04-S-01").requiresSupports = "0.2.0-01"; })],
+    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-09").requiresSupports = "0.2.0-01"; })],
   ["one result too few for the values", "results for",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-06").expected.results.pop(); })],
-  ["evidence missing two rules still expected conformant (the old T09-S-01)", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-09.json", (f) => {
-      const s = scenario(f, "T09-S-01");
+    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").expected.results.pop(); })],
+  ["evidence missing two rules still expected conformant (the old T08-S-01)", "does not follow from the evidence",
+    editJSON("conformance/scenarios/OBI-T-08.json", (f) => {
+      const s = scenario(f, "T08-S-01");
       delete s.given.evidence["OBI-D-12"];
       delete s.given.evidence["OBI-D-13"];
     })],
   ["complete evidence incorrectly expected undetermined", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-09.json", (f) => { scenario(f, "T09-S-01").expected.conclusion = "conformance-undetermined"; })],
+    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-01").expected.conclusion = "conformance-undetermined"; })],
   ["a conclusion that ignores a violation", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-09.json", (f) => { scenario(f, "T09-S-05").expected.conclusion = "conformance-undetermined"; })],
+    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-05").expected.conclusion = "conformance-undetermined"; })],
   ["a validity fixture that names a tool rule as violated", "OBI-T-04",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[1].violates = ["OBI-T-04"]; })],
   ["violates on a positive fixture", "violates is meaningful only when valid is false",
@@ -99,26 +95,26 @@ const NEGATIVE = [
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].notViolated = ["OBI-D-07"]; })],
   ["a rule both in violates and in notViolated", "listed both in violates and in notViolated",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-07", "OBI-D-02"]; })],
-  ["notViolated naming a tool rule", "notViolated names OBI-T-07",
+  ["notViolated naming a tool rule", "notViolated names OBI-T-06",
     (root) => {
-      editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-T-07"]; })(root);
+      editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-T-06"]; })(root);
     }],
   ["notViolated naming a rule the spec does not define", "notViolated names OBI-D-14",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-14"]; })],
   ["an empty notViolated", "does not match fixture.schema.json",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = []; })],
   ["a tool fixture test with no clause", "names no clause",
-    editJSON("conformance/tool/OBI-T-10.json", (f) => { delete f.tests[0].clauses; })],
+    editJSON("conformance/tool/OBI-T-09.json", (f) => { delete f.tests[0].clauses; })],
   ["clause tags on a document fixture", "clauses are tool-rule tags",
     editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].clauses = ["OBI-T-02/c1"]; })],
   ["a collision group of one", "collision group",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-14").expected.group = "T07-G-02"; })],
+    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-14").expected.group = "T06-G-02"; })],
   ["example expectations that miss an example", "expectations cover",
-    editJSON("conformance/scenarios/OBI-T-11.json", (f) => { delete scenario(f, "T11-S-01").expected.examples.good; })],
+    editJSON("conformance/scenarios/OBI-T-10.json", (f) => { delete scenario(f, "T10-S-01").expected.examples.good; })],
   ["a named operation the document lacks", "is not in the document",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-01").given.operation = "missing"; })],
+    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-01").given.operation = "missing"; })],
   ["a relative resource URI", "is not absolute",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-37").given.resources[0].uri = "s.json"; })],
+    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-37").given.resources[0].uri = "s.json"; })],
   ["a retrieval sentinel listed but absent from the document", "retrieval sentinel",
     editJSON("conformance/scenarios/OBI-T-01.json", (f) => { scenario(f, "T01-S-12").given.retrievalSentinels = ["http"]; })],
   ["a status that claims cases where none cites the clause", "no case cites it",
@@ -129,15 +125,15 @@ const NEGATIVE = [
     }],
   ["a parent tested through an alternative that is not tested", "is not tested",
     (root) => {
-      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-06").clauses.find((x) => x.id === "OBI-T-06/c1b").status = "contrast tools only"; })(root);
-      editText("conformance/README.md", (t) => t.replace("| OBI-T-06/c1b | alternative | tested |", "| OBI-T-06/c1b | alternative | contrast tools only |"))(root);
+      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-05").clauses.find((x) => x.id === "OBI-T-05/c1b").status = "contrast tools only"; })(root);
+      editText("conformance/README.md", (t) => t.replace("| OBI-T-05/c1b | alternative | tested |", "| OBI-T-05/c1b | alternative | contrast tools only |"))(root);
     }],
   ["an unknown scenario format", "unsupported format",
-    editJSON("conformance/scenarios/OBI-T-05.json", (f) => { f.format = "openbindings.core-tool-scenarios@3"; })],
+    editJSON("conformance/scenarios/OBI-T-04.json", (f) => { f.format = "openbindings.core-tool-scenarios@3"; })],
   ["a definition given a unit status", "a definition has status definition",
     (root) => {
-      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-04").clauses.find((x) => x.id === "OBI-T-04/c5").status = "tested"; })(root);
-      editText("conformance/README.md", (t) => t.replace("| OBI-T-04/c5 | definition | definition |", "| OBI-T-04/c5 | definition | tested |"))(root);
+      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-09").incorporations[0].segments.find((x) => x.id === "OBI-T-09/c1.i1").status = "tested"; })(root);
+      editText("conformance/README.md", (t) => t.replace("| OBI-T-09/c1.i1 | definition | definition |", "| OBI-T-09/c1.i1 | definition | tested |"))(root);
     }],
 ];
 

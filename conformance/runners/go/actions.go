@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
 	"regexp"
 	"slices"
 	"sort"
@@ -18,7 +17,7 @@ import (
 	"github.com/openbindings/openbindings-go/schemaeval"
 )
 
-// caseBound bounds one case: OBI-T-06 leaves termination strategy to the
+// caseBound bounds one case: OBI-T-05 leaves termination strategy to the
 // tool, and the corpus's recursive cases are finite.
 const caseBound = 10 * time.Second
 
@@ -57,8 +56,8 @@ func newRun(corpusDir string, applied appliedText, strict bool) *run {
 
 var semverRE = regexp.MustCompile(`^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 
-// supports judges a version against the declaration, never against the
-// SDK's version decision.
+// supports judges whether the declared texts include a version's line or
+// prerelease, never against the SDK's version decision.
 func (r *run) supports(v string) bool {
 	m := semverRE.FindStringSubmatch(v)
 	if m == nil {
@@ -70,37 +69,9 @@ func (r *run) supports(v string) bool {
 	return slices.Contains(r.lines, m[1]+"."+m[2])
 }
 
-func (r *run) lowest() string {
-	return r.lines[0] + ".0"
-}
-
-// compareRelease orders major.minor.patch as digit strings, never machine
-// integers.
-func compareRelease(a, b string) int {
-	pa, pb := semverRE.FindStringSubmatch(a), semverRE.FindStringSubmatch(b)
-	if pa == nil || pb == nil {
-		return strings.Compare(a, b)
-	}
-	for i := 1; i <= 3; i++ {
-		if c := len(pa[i]) - len(pb[i]); c != 0 {
-			return c
-		}
-		if c := strings.Compare(pa[i], pb[i]); c != 0 {
-			return c
-		}
-	}
-	return 0
-}
-
 func (r *run) gate(g Gates) (string, bool) {
 	if v := g.RequiresSupports; v != "" && !r.supports(v) {
-		return "gate: requires a tool declaring support for " + v, true
-	}
-	if v := g.RequiresUnsupported; v != "" && r.supports(v) {
-		return "gate: requires a tool not declaring support for " + v, true
-	}
-	if v := g.RequiresMinSupported; v != "" && compareRelease(r.lowest(), v) < 0 {
-		return "gate: requires a lowest supported version of at least " + v, true
+		return "gate: requires a tool applying the text of " + v, true
 	}
 	return "", false
 }
@@ -138,7 +109,7 @@ func (r *run) judge(c Case) (status, detail string) {
 		case "check-examples":
 			a.status, a.detail = r.judgeExamples(c)
 		case "derive-form":
-			a.status, a.detail = Omitted, "this SDK derives no forms from a schema (OBI-T-05 has no executor here)"
+			a.status, a.detail = Omitted, "this SDK derives no forms from a schema (OBI-T-04 has no executor here)"
 		default:
 			a.status, a.detail = failed("unknown action %q", c.Action)
 		}
@@ -172,62 +143,9 @@ func (g carriage) bytes() ([]byte, error) {
 
 func isRefusal(err error) bool { return errors.As(err, new(*openbindings.VersionRefusalError)) }
 
-// The SDK calls whose misbehavior only the checks below see, and the
-// sentinel starter: variables, so the runner's controls can stand in for a
-// misbehaving SDK and hold each judge's call site to its check.
-var (
-	parseDocument    = openbindings.ParseDocument
-	resolveContracts = func(ctx context.Context, c *openbindings.ValueContractCompiler, doc *openbindings.Document) (*openbindings.ValueContracts, error) {
-		return c.Resolve(ctx, doc)
-	}
-	sentinelStarter = startSentinels
-)
-
-// parseRefusalResidue lists what is wrong with ParseDocument's answer to a
-// text ValidateDocument refused: it must refuse too, with no document and no
-// established violation.
-func parseRefusalResidue(parsed *openbindings.Document, err error) []string {
-	var out []string
-	if !isRefusal(err) {
-		out = append(out, "no version refusal")
-	}
-	if parsed != nil {
-		out = append(out, "a document")
-	}
-	if errors.As(err, new(*openbindings.ValidationError)) {
-		out = append(out, "a *ValidationError in its error chain")
-	}
-	return out
-}
-
-// valueRefusalResidue lists what a value-contract version refusal came with:
-// it is exclusive of value contracts and of an established violation.
-func valueRefusalResidue(contracts *openbindings.ValueContracts, err error) []string {
-	var out []string
-	if contracts != nil {
-		out = append(out, "value contracts")
-	}
-	if errors.As(err, new(*openbindings.ValidationError)) {
-		out = append(out, "a *ValidationError in its error chain")
-	}
-	return out
-}
-
-// refusalResidue lists what a version refusal came with; it is exclusive of
-// a document, a report, and an established violation.
-func refusalResidue(doc *openbindings.Document, report openbindings.ValidationReport, err error) []string {
-	var out []string
-	if doc != nil {
-		out = append(out, "a document")
-	}
-	if !reflect.DeepEqual(report, openbindings.ValidationReport{}) {
-		out = append(out, "a report")
-	}
-	if errors.As(err, new(*openbindings.ValidationError)) {
-		out = append(out, "a *ValidationError in its error chain")
-	}
-	return out
-}
+// The sentinel starter is a variable, so the runner's controls can stand in
+// for an SDK that retrieves and hold judgeKind's call site to its check.
+var sentinelStarter = startSentinels
 
 // judgeFixture holds a validity fixture to ValidateDocument: a conforming
 // case is not refused and establishes no violation (it may be undetermined);
@@ -247,16 +165,13 @@ func judgeFixture(c Case) (string, string) {
 	if err != nil {
 		return failed("%v", err)
 	}
-	doc, report, err := openbindings.ValidateDocument(data)
+	_, report, err := openbindings.ValidateDocument(data)
 	refused := isRefusal(err)
 	var violation *openbindings.ValidationError
 	if err != nil && !refused && !errors.As(err, &violation) {
 		return failed("ValidateDocument: unexpected error %v", err)
 	}
 	if refused {
-		if residue := refusalResidue(doc, report, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
 		return failed("version-refusal; expected a conclusion")
 	}
 	if (violation != nil) != (report.Conclusion == openbindings.ConclusionNonConformant) {
@@ -300,23 +215,9 @@ func (r *run) judgeDocument(c Case) (string, string) {
 	if err != nil {
 		return failed("%v", err)
 	}
-	// The SDK detects repeated member names, so duplicateBlind does not
-	// apply to it.
-	doc, report, err := openbindings.ValidateDocument(data)
+	_, report, err := openbindings.ValidateDocument(data)
 	if isRefusal(err) {
-		if residue := refusalResidue(doc, report, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
-		if s.Expected.Outcome != "version-refusal" {
-			return failed("version-refusal; expected %s", s.Expected.Outcome)
-		}
-		if residue := parseRefusalResidue(parseDocument(data)); len(residue) > 0 {
-			return failed("ParseDocument does not refuse exclusively: %s", strings.Join(residue, ", "))
-		}
-		return Pass, "version-refusal"
-	}
-	if s.Expected.Outcome == "version-refusal" {
-		return failed("concluded %s; expected version-refusal", report.Conclusion)
+		return failed("version-refusal; expected %s", s.Expected.Outcome)
 	}
 	var violation *openbindings.ValidationError
 	if err != nil && !errors.As(err, &violation) {
@@ -363,18 +264,9 @@ func judgeResolve(c Case) (string, string) {
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
 	}
-	doc, report, err := openbindings.ValidateDocument(s.Given.Document)
+	doc, _, err := openbindings.ValidateDocument(s.Given.Document)
 	if isRefusal(err) {
-		if residue := refusalResidue(doc, report, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
-		if s.Expected.Outcome == "version-refusal" {
-			return Pass, "version-refusal"
-		}
 		return failed("version-refusal; expected %s", s.Expected.Outcome)
-	}
-	if s.Expected.Outcome == "version-refusal" {
-		return failed("interpreted; expected version-refusal")
 	}
 	if doc == nil {
 		if len(s.Given.NonConformant) == 0 {
@@ -458,7 +350,7 @@ func judgeKind(c Case) (string, string) {
 		}
 		data = observe.substitute(data)
 	}
-	doc, report, err := openbindings.ValidateDocument(data)
+	doc, _, err := openbindings.ValidateDocument(data)
 	meets := false
 	if doc != nil {
 		binding := doc.Bindings[s.Given.Binding]
@@ -471,15 +363,7 @@ func judgeKind(c Case) (string, string) {
 	}
 	switch {
 	case isRefusal(err):
-		if residue := refusalResidue(doc, report, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
-		if s.Expected.Outcome == "version-refusal" {
-			return Pass, "version-refusal"
-		}
 		return failed("version-refusal; expected %s", s.Expected.Outcome)
-	case s.Expected.Outcome == "version-refusal":
-		return failed("interpreted; expected version-refusal")
 	case doc == nil && len(s.Given.NonConformant) == 0:
 		return failed("the model does not carry a conformant document (%v)", err)
 	case doc == nil:
@@ -493,21 +377,11 @@ func judgeKind(c Case) (string, string) {
 }
 
 // contracts decodes the document into the model and resolves its value
-// contracts, so Resolve's own version decision is the one exercised. A
-// document the model cannot carry is read as an application reads wire
-// bytes, through ParseDocument, whose version refusal then stands; it comes
-// with no document and no established violation.
+// contracts.
 func (r *run) contracts(document json.RawMessage, resources []openbindings.Resource) (*openbindings.ValueContracts, *openbindings.Document, bool, error) {
 	var doc openbindings.Document
 	if err := json.Unmarshal(document, &doc); err != nil {
-		parsed, perr := parseDocument(document)
-		if !isRefusal(perr) {
-			return nil, nil, false, err
-		}
-		if residue := parseRefusalResidue(parsed, perr); len(residue) > 0 {
-			return nil, nil, true, fmt.Errorf("ParseDocument's version refusal came with %s", strings.Join(residue, ", "))
-		}
-		return nil, nil, true, perr
+		return nil, nil, false, err
 	}
 	compiler, err := openbindings.NewValueContractCompiler(r.evaluator, resources...)
 	if err != nil {
@@ -515,7 +389,7 @@ func (r *run) contracts(document json.RawMessage, resources []openbindings.Resou
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
 	defer cancel()
-	contracts, err := resolveContracts(ctx, compiler, &doc)
+	contracts, err := compiler.Resolve(ctx, &doc)
 	return contracts, &doc, true, err
 }
 
@@ -577,17 +451,9 @@ func (r *run) judgeValues(c Case) (string, string) {
 	case !carried:
 		return Omitted, "the model cannot carry this non-conformant document, so the SDK does not continue with it"
 	case isRefusal(err):
-		if residue := valueRefusalResidue(contracts, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
-		if s.Expected.Outcome == "version-refusal" {
-			return Pass, "version-refusal"
-		}
 		return failed("version-refusal; expected value results")
 	case err != nil:
 		return failed("the document's value contracts: %v", err)
-	case s.Expected.Outcome != "":
-		return failed("the document was interpreted; expected %s", s.Expected.Outcome)
 	}
 	compile := contracts.CompileInput
 	if s.Given.Side == "output" {
@@ -671,7 +537,6 @@ func (r *run) judgeExamples(c Case) (string, string) {
 			Operation string          `json:"operation"`
 		} `json:"given"`
 		Expected struct {
-			Outcome  string                       `json:"outcome"`
 			Examples map[string]map[string]string `json:"examples"`
 		} `json:"expected"`
 	}
@@ -681,17 +546,9 @@ func (r *run) judgeExamples(c Case) (string, string) {
 	contracts, doc, carried, err := r.contracts(s.Given.Document, nil)
 	switch {
 	case carried && isRefusal(err):
-		if residue := valueRefusalResidue(contracts, err); len(residue) > 0 {
-			return failed("the version refusal came with %s", strings.Join(residue, ", "))
-		}
-		if s.Expected.Outcome == "version-refusal" {
-			return Pass, "version-refusal"
-		}
 		return failed("version-refusal; expected example results")
 	case !carried || err != nil:
 		return failed("the document's value contracts: %v", err)
-	case s.Expected.Outcome != "":
-		return failed("the document was interpreted; expected %s", s.Expected.Outcome)
 	}
 	key, operation, found := doc.ResolveOperation(s.Given.Operation)
 	if !found {

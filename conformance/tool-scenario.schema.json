@@ -90,15 +90,7 @@
         },
         "requiresSupports": {
           "$ref": "#/$defs/semver",
-          "description": "Administer the case only to tools whose declared support set includes this version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The set comes from the tool's declaration, never from its acceptance or refusal code."
-        },
-        "requiresUnsupported": {
-          "$ref": "#/$defs/semver",
-          "description": "Administer the case only to tools whose declared support set excludes this version, judged by the same declaration."
-        },
-        "requiresMinSupported": {
-          "$ref": "#/$defs/semver",
-          "description": "Administer the case only to tools whose declared lowest supported version (the first release of the lowest declared line) is at least this version."
+          "description": "Administer the case only to tools that apply the text of this version's line, or of this prerelease (section 8.1), as the tool declares, never as its acceptance code decides."
         }
       }
     },
@@ -150,18 +142,6 @@
         "resource-limit",
         "invalid-reference"
       ]
-    },
-    "refusal": {
-      "type": "object",
-      "required": [
-        "outcome"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "outcome": {
-          "const": "version-refusal"
-        }
-      }
     },
     "valueResult": {
       "oneOf": [
@@ -271,26 +251,19 @@
           }
         },
         "expected": {
-          "oneOf": [
-            {
-              "type": "object",
-              "required": [
-                "outcome"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "outcome": {
-                  "enum": [
-                    "meets",
-                    "does-not-meet"
-                  ]
-                }
-              }
-            },
-            {
-              "$ref": "#/$defs/refusal"
+          "type": "object",
+          "required": [
+            "outcome"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {
+              "enum": [
+                "meets",
+                "does-not-meet"
+              ]
             }
-          ]
+          }
         }
       }
     },
@@ -362,9 +335,6 @@
                   "const": "not-found"
                 }
               }
-            },
-            {
-              "$ref": "#/$defs/refusal"
             },
             {
               "description": "ADVISORY: a name that is one operation's key and another operation's alias (an OBI-D-04 violation). The harness records the role of each document's result (key match, alias match, or no single resolution) and never fails a tool on it: no finite document set tells key preference from a role-neutral choice that happens to pick key matches, so OBI-T-07/c2 is not portably testable.",
@@ -440,69 +410,48 @@
           }
         },
         "expected": {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/refusal"
-            },
-            {
-              "type": "object",
-              "required": [
-                "outcome"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "outcome": {
-                  "description": "conformant permits conformance-undetermined (a validator lacking evidence); interpreted means any conclusion, refusal excluded, with no conclusion asserted.",
-                  "enum": [
-                    "conformant",
-                    "non-conformant",
-                    "conformance-undetermined",
-                    "interpreted"
-                  ]
-                },
-                "violates": {
-                  "type": "array",
-                  "minItems": 1,
-                  "uniqueItems": true,
-                  "items": {
-                    "$ref": "#/$defs/documentRule"
-                  }
-                },
-                "namesAppliedText": {
-                  "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test. The harness compares the named identity first, then verifies the text it names against the bytes at the named revision, a full commit read from the specification repository's history, never against the text beside the corpus or the index.",
-                  "const": true
-                },
-                "duplicateBlind": {
-                  "description": "For a tool declaring repeated-member-detection unsupported, and the occurrence its parser reads: the outcome required for each value it may read.",
-                  "type": "object",
-                  "minProperties": 2,
-                  "propertyNames": {
-                    "$ref": "#/$defs/semver"
-                  },
-                  "additionalProperties": {
-                    "enum": [
-                      "version-refusal",
-                      "conformance-undetermined"
-                    ]
-                  }
-                }
-              },
-              "allOf": [
-                {
-                  "if": {
-                    "required": [
-                      "violates"
-                    ]
-                  },
-                  "then": {
-                    "properties": {
-                      "outcome": {
-                        "const": "non-conformant"
-                      }
-                    }
-                  }
-                }
+          "type": "object",
+          "required": [
+            "outcome"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {
+              "description": "conformant permits conformance-undetermined (a validator lacking evidence); interpreted means any conclusion, with no conclusion asserted.",
+              "enum": [
+                "conformant",
+                "non-conformant",
+                "conformance-undetermined",
+                "interpreted"
               ]
+            },
+            "violates": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/documentRule"
+              }
+            },
+            "namesAppliedText": {
+              "description": "The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test. The harness compares the named identity first, then verifies the text it names against the bytes at the named revision, a full commit read from the specification repository's history, never against the text beside the corpus or the index.",
+              "const": true
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "violates"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "outcome": {
+                    "const": "non-conformant"
+                  }
+                }
+              }
             }
           ]
         }
@@ -571,39 +520,32 @@
           }
         },
         "expected": {
-          "oneOf": [
-            {
-              "type": "object",
-              "required": [
-                "results"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "results": {
-                  "type": "array",
-                  "minItems": 1,
-                  "items": {
-                    "$ref": "#/$defs/valueResult"
-                  }
-                },
-                "dependsOn": {
-                  "$ref": "#/$defs/features"
-                },
-                "forbidReasons": {
-                  "description": "No-verdict reasons the tool must not report for these values, where it reports reasons at all.",
-                  "type": "array",
-                  "minItems": 1,
-                  "uniqueItems": true,
-                  "items": {
-                    "$ref": "#/$defs/noVerdictReason"
-                  }
-                }
+          "type": "object",
+          "required": [
+            "results"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "results": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/valueResult"
               }
             },
-            {
-              "$ref": "#/$defs/refusal"
+            "dependsOn": {
+              "$ref": "#/$defs/features"
+            },
+            "forbidReasons": {
+              "description": "No-verdict reasons the tool must not report for these values, where it reports reasons at all.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/noVerdictReason"
+              }
             }
-          ]
+          }
         }
       }
     },
@@ -693,35 +635,28 @@
         },
         "expected": {
           "description": "One entry per example of the operation, with one member per side the example supplies (the verifier checks completeness).",
-          "oneOf": [
-            {
+          "type": "object",
+          "required": [
+            "examples"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "examples": {
               "type": "object",
-              "required": [
-                "examples"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "examples": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                      "input": {
-                        "$ref": "#/$defs/exampleResult"
-                      },
-                      "output": {
-                        "$ref": "#/$defs/exampleResult"
-                      }
-                    }
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "input": {
+                    "$ref": "#/$defs/exampleResult"
+                  },
+                  "output": {
+                    "$ref": "#/$defs/exampleResult"
                   }
                 }
               }
-            },
-            {
-              "$ref": "#/$defs/refusal"
             }
-          ]
+          }
         }
       }
     },

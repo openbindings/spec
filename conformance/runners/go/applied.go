@@ -24,7 +24,7 @@ var (
 
 // parseApplied reads -applied and -applied-sha256. -applied is either
 // release@revision, a working draft and the full 40-hex commit of its text,
-// or a release alone (OBI-T-09/c3a). An empty or malformed part is an error,
+// or a release alone (OBI-T-08/c3a). An empty or malformed part is an error,
 // never a declaration: a symbolic revision (HEAD, a branch) names moving text,
 // and an empty one would read the index. An absent -applied declares nothing.
 func parseApplied(applied, sum string) (appliedText, error) {
@@ -56,7 +56,7 @@ func verifyApplied(corpusDir string, a appliedText) (bool, string) {
 	case a.release == "":
 		return false, "no applied text was declared (-applied release@revision)"
 	case a.revision == "":
-		return false, fmt.Sprintf("a release named alone (%s, OBI-T-09/c3a) is not verified: no verification against a release snapshot exists", a.release)
+		return false, fmt.Sprintf("a release named alone (%s, OBI-T-08/c3a) is not verified: no verification against a release snapshot exists", a.release)
 	case a.sha256 == "":
 		return false, "no applied-text hash was declared (-applied-sha256)"
 	}

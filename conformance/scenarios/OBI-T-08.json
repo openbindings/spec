@@ -2,67 +2,120 @@
   "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-08",
   "section": "10.3",
-  "description": "Operation-boundary validation under the applicable dialect with format as annotation and ECMA-262 u-mode patterns, in the OBI document's resolution context, per value, with no verdict where the result depends on a missing reference or capability, the result is undefined, or no contract is stated.",
+  "description": "An overall conclusion follows the document-rule evidence and names the text it applied.",
   "scenarios": [
     {
       "id": "T08-S-01",
       "clauses": [
-        "OBI-T-08/c1"
+        "OBI-T-08/c4",
+        "OBI-T-08/c5"
       ],
-      "description": "A value satisfying a complete governing schema validates successfully.",
-      "action": "validate-operation-values",
+      "description": "Every applicable rule satisfied, and an inapplicable rule, establish conformance. A reported conclusion is conformant: neither non-conformant nor conformance-undetermined describes this complete evidence (§10.4).",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "echo": {
-              "input": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          }
-        },
-        "operation": "echo",
-        "side": "input",
-        "values": [
-          "hello"
-        ]
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
       },
       "expected": {
-        "results": [
-          "valid"
-        ]
+        "conclusion": "conformant"
       }
     },
     {
       "id": "T08-S-02",
       "clauses": [
-        "OBI-T-08/c1"
+        "OBI-T-08/c1",
+        "OBI-T-08/c4"
       ],
-      "description": "An available graph that rejects the instance reports instance mismatch.",
-      "action": "validate-operation-values",
+      "description": "An inconclusive applicable rule, with no violation established, prevents a conformant conclusion and a non-conformant one alike.",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "echo": {
-              "output": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "echo",
-        "side": "output",
-        "values": [
-          42
-        ]
+        "evidence": {
+          "OBI-D-01": "inconclusive",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "satisfied",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
       },
       "expected": {
-        "results": [
-          "instance-mismatch"
-        ]
+        "conclusion": "conformance-undetermined"
+      }
+    },
+    {
+      "id": "T08-S-03",
+      "clauses": [
+        "OBI-T-08/c2"
+      ],
+      "description": "A known violation establishes non-conformance even if other checks remain incomplete.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "violated",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "inconclusive",
+          "OBI-D-11": "satisfied",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
+      }
+    },
+    {
+      "id": "T08-S-04",
+      "clauses": [
+        "OBI-T-08/c2"
+      ],
+      "description": "More than one known violation still establishes non-conformance.",
+      "action": "conclude-conformance",
+      "given": {
+        "evidence": {
+          "OBI-D-01": "inconclusive",
+          "OBI-D-02": "violated",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "violated",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "inconclusive",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
+      },
+      "expected": {
+        "conclusion": "non-conformant"
       }
     },
     {
@@ -70,2559 +123,196 @@
       "clauses": [
         "OBI-T-08/c2"
       ],
-      "description": "Format is annotation-only at the operation boundary by default; this scenario runs without the format-assertion option JSON Schema lets a tool offer.",
-      "action": "validate-operation-values",
+      "description": "A violated rule determines non-conformance whatever the other rules' evidence.",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "acceptContact": {
-              "input": {
-                "type": "string",
-                "format": "email"
-              }
-            }
-          }
-        },
-        "operation": "acceptContact",
-        "side": "input",
-        "values": [
-          "not-an-email"
-        ]
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "violated",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-12": "satisfied",
+          "OBI-D-13": "satisfied"
+        }
       },
       "expected": {
-        "results": [
-          "valid"
-        ]
+        "conclusion": "non-conformant"
       }
     },
     {
       "id": "T08-S-06",
       "clauses": [
-        "OBI-T-08/c5"
+        "OBI-T-08/c3a",
+        "OBI-T-08/c3c"
       ],
-      "description": "A multi-value interaction validates each value independently rather than as one aggregate.",
-      "action": "validate-operation-values",
+      "description": "A conformance conclusion names the text applied: exactly the identity the tool declares for the line.",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": {
-            "events": {
-              "output": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "events",
-        "side": "output",
-        "values": [
-          "first",
-          2,
-          "third"
-        ]
+          "operations": {}
+        }
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch",
-          "valid"
-        ]
+        "outcome": "conformant",
+        "namesAppliedText": true
       }
     },
     {
       "id": "T08-S-07",
       "clauses": [
-        "OBI-T-08/c4"
+        "OBI-T-08/c3a",
+        "OBI-T-08/c3c"
       ],
-      "description": "An absolute reference satisfied by an embedded schema identifier is locally available.",
-      "action": "validate-operation-values",
+      "description": "The text named is the text applied, not the patch the document declares.",
+      "action": "validate-document",
       "given": {
         "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Contact": {
-              "$id": "https://schemas.example.test/contact.json",
-              "type": "object",
-              "required": [
-                "name"
-              ],
-              "properties": {
-                "name": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "operations": {
-            "acceptContact": {
-              "input": {
-                "$ref": "https://schemas.example.test/contact.json"
-              }
-            }
-          }
-        },
-        "operation": "acceptContact",
-        "side": "input",
-        "values": [
-          {
-            "name": "Ada"
-          },
-          {
-            "name": 7
-          }
-        ]
+          "openbindings": "0.2.5",
+          "operations": {}
+        }
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
+        "outcome": "conformant",
+        "namesAppliedText": true
       }
     },
     {
       "id": "T08-S-08",
       "clauses": [
-        "OBI-T-08/c4",
-        "OBI-T-06/c1a"
+        "OBI-T-08/c2",
+        "OBI-T-08/c3a",
+        "OBI-T-08/c3c"
       ],
-      "description": "Same-document references resolve from the OBI document root when an operation schema is evaluated.",
-      "action": "validate-operation-values",
+      "description": "A non-conformance conclusion names the text applied too.",
+      "action": "validate-document",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": {
-            "tree": {
-              "output": {
-                "$ref": "#/operations/tree/output/$defs/Node",
-                "$defs": {
-                  "Node": {
-                    "type": "object",
-                    "required": [
-                      "value"
-                    ],
-                    "properties": {
-                      "value": {
-                        "type": "string"
-                      },
-                      "next": {
-                        "$ref": "#/operations/tree/output/$defs/Node"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "operation": "tree",
-        "side": "output",
-        "values": [
-          {
-            "value": "root",
-            "next": {
-              "value": "leaf"
+          "bindings": {
+            "b": {
+              "operation": "missing",
+              "source": "missing"
             }
           },
-          {
-            "value": "root",
-            "next": {
-              "value": 7
-            }
-          }
-        ]
+          "operations": {}
+        }
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-D-07",
+          "OBI-D-08"
         ],
-        "dependsOn": [
-          "recursive-references"
-        ]
+        "namesAppliedText": true
       }
     },
     {
       "id": "T08-S-09",
       "clauses": [
-        "OBI-T-08/c9",
-        "OBI-T-02/c2"
+        "OBI-T-08/c3b"
       ],
-      "description": "An absent input states no contract: no verdict, success included.",
-      "action": "validate-operation-values",
+      "description": "A conclusion on a document declaring an explicitly included prerelease names that prerelease. No conclusion is asserted.",
+      "action": "validate-document",
       "given": {
         "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "output": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1,
-          null,
-          {}
-        ]
+          "openbindings": "0.2.0-rc.1",
+          "operations": {}
+        }
       },
+      "requiresSupports": "0.2.0-rc.1",
       "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict",
-          "no-verdict"
-        ]
+        "outcome": "interpreted",
+        "namesAppliedText": true
       }
     },
     {
       "id": "T08-S-10",
       "clauses": [
-        "OBI-T-08/c9",
-        "OBI-T-02/c2"
+        "OBI-T-08/c3a",
+        "OBI-T-08/c3c",
+        "OBI-T-08/c1",
+        "OBI-T-08/c4"
       ],
-      "description": "An absent output states no contract: no verdict, success included.",
-      "action": "validate-operation-values",
+      "description": "A conclusion names the text applied even when it is undetermined; here a validator that cannot read an escaped lone surrogate concludes undetermined.",
+      "action": "validate-document",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "output",
-        "values": [
-          "a"
-        ]
+        "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud800\",\"operations\":{}}"
       },
       "expected": {
-        "results": [
-          "no-verdict"
-        ]
+        "outcome": "conformant",
+        "namesAppliedText": true
       }
     },
     {
       "id": "T08-S-11",
       "clauses": [
-        "OBI-T-02/c2",
-        "OBI-T-08/c1"
+        "OBI-T-08/c1",
+        "OBI-T-08/c4"
       ],
-      "description": "input: true is a stated contract every value satisfies.",
-      "action": "validate-operation-values",
+      "description": "Evidence that leaves an applicable rule unestablished permits neither a conformant nor a non-conformant conclusion: OBI-D-12 and OBI-D-13 are missing here (the evidence T08-S-01 carried before it was completed).",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": true
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1,
-          null,
-          {}
-        ]
+        "evidence": {
+          "OBI-D-01": "satisfied",
+          "OBI-D-02": "satisfied",
+          "OBI-D-03": "satisfied",
+          "OBI-D-04": "satisfied",
+          "OBI-D-05": "satisfied",
+          "OBI-D-06": "satisfied",
+          "OBI-D-07": "satisfied",
+          "OBI-D-08": "satisfied",
+          "OBI-D-09": "satisfied",
+          "OBI-D-10": "satisfied",
+          "OBI-D-11": "not-applicable"
+        }
       },
       "expected": {
-        "results": [
-          "valid",
-          "valid",
-          "valid"
-        ]
+        "conclusion": "conformance-undetermined"
       }
     },
     {
       "id": "T08-S-12",
       "clauses": [
-        "OBI-T-02/c2",
-        "OBI-T-08/c1"
+        "OBI-T-08/c2"
       ],
-      "description": "input: false is a stated contract no value satisfies.",
-      "action": "validate-operation-values",
+      "description": "A violation establishes non-conformance even when the evidence omits other rules: only OBI-D-05 and OBI-D-11 are considered here (the evidence T08-S-05 carried before it was completed).",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": false
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1,
-          null
-        ]
+        "evidence": {
+          "OBI-D-11": "not-applicable",
+          "OBI-D-05": "violated"
+        }
       },
       "expected": {
-        "results": [
-          "instance-mismatch",
-          "instance-mismatch"
-        ]
+        "conclusion": "non-conformant"
       }
     },
     {
       "id": "T08-S-13",
       "clauses": [
-        "OBI-T-08/c6a"
-      ],
-      "description": "A required reference the tool does not have gives no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://absent.example.test/value.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x",
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-14",
-      "clauses": [
-        "OBI-T-08/c6a"
-      ],
-      "description": "A mismatch that depends on a missing reference gives no verdict; a success that does not depend on it may be reported.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "https://absent.example.test/alt.json"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "s",
-          5
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          },
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-15",
-      "clauses": [
-        "OBI-T-08/c7"
-      ],
-      "description": "A cycle that recurses without consuming the instance is undefined: no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Loop": {
-              "$ref": "#/schemas/Loop"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#/schemas/Loop"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-16",
-      "clauses": [
-        "OBI-T-08/c7"
-      ],
-      "description": "Within an $id resource, a pointer that reaches no schema is undefined: no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "R": {
-              "$id": "https://r.example.test/r.json",
-              "$ref": "#/$defs/missing"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://r.example.test/r.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-17",
-      "clauses": [
-        "OBI-T-08/c7"
-      ],
-      "description": "Within an $id resource, a plain name declared twice is undefined: no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "R": {
-              "$id": "https://r.example.test/dup.json",
-              "$ref": "#dup",
-              "$defs": {
-                "a": {
-                  "$anchor": "dup",
-                  "type": "string"
-                },
-                "b": {
-                  "$anchor": "dup",
-                  "type": "number"
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://r.example.test/dup.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "s"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-18",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3a"
-      ],
-      "description": "An inline modifier group is not an ECMA-262 (11th edition) pattern: undefined, no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "(?i)^abc$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "ABC",
-          "abc"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-19",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3a"
-      ],
-      "description": "An identity escape the u flag forbids is not a valid pattern: undefined, no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^\\a$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-20",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3b"
-      ],
-      "description": "An invalid patternProperties name makes the result undefined wherever it applies: no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "object",
-                "patternProperties": {
-                  "(?i)^a$": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "A": 1
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-21",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "ECMA-262 \\s matches Unicode white space and line terminators.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^\\s$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "\u00a0",
-          "\ufeff",
-          "\u2028",
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "valid",
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-22",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "ECMA-262 \\d matches ASCII digits only.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^\\d+$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "123",
-          "\u0661\u0662\u0663"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-23",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "With the u flag, . matches one code point outside the Basic Multilingual Plane.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^.$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "\ud83d\ude00",
-          "a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-24",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "$ matches only at the end of input, not before a trailing newline.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^abc$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "abc",
-          "abc\n"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-25",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "A pattern is not anchored: it matches anywhere in the string.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "b"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "abc",
-          "xyz"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-26",
-      "clauses": [
-        "OBI-T-08/c3b"
-      ],
-      "description": "patternProperties names are ECMA-262 patterns with Unicode semantics.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "object",
-                "patternProperties": {
-                  "^\\s$": {
-                    "type": "integer"
-                  }
-                },
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "\u00a0": 1
-          },
-          {
-            "\u00a0": "x"
-          },
-          {
-            "x": 1
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-27",
-      "clauses": [
-        "OBI-T-08/c3a",
-        "OBI-T-08/c6b"
-      ],
-      "description": "A Unicode property escape matches under the u flag; a tool declaring the feature unsupported must give no verdict, even a correct one.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^\\p{L}+$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "\u00e9t\u00e9",
-          "123"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "ecma262-unicode-property-escapes"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-28",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "OpenAPI 3.0's nullable is an unknown keyword under 2020-12 (section 5.2).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          null,
-          "a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-29",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "The legacy dependencies keyword is not a 2020-12 assertion: the 2020-12 meta-schema keeps it only to validate its form.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "object",
-                "dependencies": {
-                  "a": [
-                    "b"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "a": 1
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-30",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "Content keywords are annotations under 2020-12 (JSON Schema Validation, content vocabulary).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "contentMediaType": "application/json",
-                "contentEncoding": "base64"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "%%% not base64 %%%"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-31",
-      "clauses": [
-        "OBI-T-08/c4",
-        "OBI-T-06/c1a"
-      ],
-      "description": "A plain name declared in the document resource resolves.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Task": {
-              "$anchor": "task",
-              "type": "string"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#task"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-32",
-      "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c4"
-      ],
-      "description": "A percent-encoded plain name is decoded before lookup.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Task": {
-              "$anchor": "task",
-              "type": "string"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#t%61sk"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-33",
-      "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c4"
-      ],
-      "description": "A percent-encoded JSON Pointer is decoded before evaluation.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Task": {
-              "type": "string"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#%2Fschemas%2FTask"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-34",
-      "clauses": [
-        "OBI-T-08/c4",
-        "OBI-T-06/c1b"
-      ],
-      "description": "A relative reference inside an $id resource resolves against its base.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "A": {
-              "$id": "https://e.example.test/dir/a.json",
-              "$ref": "b.json"
-            },
-            "B": {
-              "$id": "https://e.example.test/dir/b.json",
-              "type": "integer"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://e.example.test/dir/a.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          1,
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-35",
-      "clauses": [
-        "OBI-T-08/c4",
-        "OBI-T-06/c1b",
-        "OBI-T-08/c6b"
-      ],
-      "description": "A $dynamicRef inside an $id resource resolves through the dynamic scope to the document resource's $dynamicAnchor (section 7.5).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Tree": {
-              "$id": "https://e.example.test/dyn-tree.json",
-              "$dynamicAnchor": "node",
-              "type": "object",
-              "properties": {
-                "children": {
-                  "type": "array",
-                  "items": {
-                    "$dynamicRef": "#node"
-                  }
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$dynamicAnchor": "node",
-                "$ref": "https://e.example.test/dyn-tree.json",
-                "unevaluatedProperties": false
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "children": [
-              {
-                "children": []
-              }
-            ]
-          },
-          {
-            "children": [
-              {
-                "extra": 1
-              }
-            ]
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "document-resource-dynamic-scope",
-          "recursive-references"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-36",
-      "clauses": [
-        "OBI-T-08/c5"
-      ],
-      "description": "An array schema is applied to each value, never to the values as one array.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "output": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "output",
-        "values": [
-          "a",
-          "b"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-37",
-      "clauses": [
-        "OBI-T-06/c1b",
-        "OBI-T-08/c6a"
-      ],
-      "description": "An external reference resolves to a resource the tool accepts; a tool that declines supplied resources must give no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://ext.example.test/s.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          1
-        ],
-        "resources": [
-          {
-            "uri": "https://ext.example.test/s.json",
-            "document": {
-              "type": "string"
-            }
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "supplied-resources"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-38",
-      "clauses": [
         "OBI-T-08/c2"
       ],
-      "description": "format: regex is an annotation, separate from the pattern keyword.",
-      "action": "validate-operation-values",
+      "description": "Violations establish non-conformance whatever remains inconclusive or unconsidered (the evidence T08-S-04 carried before it was completed).",
+      "action": "conclude-conformance",
       "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "format": "regex"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "("
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-39",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "An example outside the schema does not widen the contract (formerly T11-S-03).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "maxLength": 3
-              },
-              "examples": {
-                "long": {
-                  "input": "abcdef"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "abcdef",
-          "ab"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-40",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "Examples do not narrow the contract to themselves (formerly T11-S-04).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string"
-              },
-              "examples": {
-                "only": {
-                  "input": "a"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "zzz"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-41",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "An example does not override an enum (formerly T11-S-05).",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "enum": [
-                  "a"
-                ]
-              },
-              "examples": {
-                "other": {
-                  "input": "b"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "b"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-42",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c6"
-      ],
-      "description": "A result that does not depend on an invalid pattern may be reported: anyOf succeeds or fails on the first branch's type alone.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "string",
-                    "pattern": "(?i)x"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "s",
-          5
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          },
-          {
-            "verdict": "instance-mismatch",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-43",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c6"
-      ],
-      "description": "A dormant property schema with an invalid pattern does not decide a value that lacks the property.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "object",
-                "properties": {
-                  "a": {
-                    "type": "string",
-                    "pattern": "(?i)x"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "b": 1
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-44",
-      "clauses": [
-        "OBI-T-08/c1",
-        "OBI-T-08/c6b"
-      ],
-      "description": "Numbers are compared at their exact value: 2^53 + 1 is not 2^53.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "integer",
-                "const": 9007199254740993
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          9007199254740993,
-          9007199254740992
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "exact-numbers"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-45",
-      "clauses": [
-        "OBI-T-08/c1",
-        "OBI-T-08/c6b"
-      ],
-      "description": "multipleOf is decided on exact decimal values.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "number",
-                "multipleOf": 0.01
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          0.07,
-          0.075
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "dependsOn": [
-              "exact-numbers"
-            ]
-          },
-          {
-            "verdict": "instance-mismatch",
-            "dependsOn": []
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-46",
-      "clauses": [
-        "OBI-T-08/c1",
-        "OBI-T-08/c6b",
-        "OBI-T-08/c6a"
-      ],
-      "description": "An external schema declaring draft-07 is evaluated under draft-07, where dependencies asserts; a tool without that dialect or the resource gives no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://ext.example.test/d7.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "a": 1
-          },
-          {
-            "a": 1,
-            "b": 2
-          }
-        ],
-        "resources": [
-          {
-            "uri": "https://ext.example.test/d7.json",
-            "document": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "type": "object",
-              "dependencies": {
-                "a": [
-                  "b"
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "valid"
-        ],
-        "dependsOn": [
-          "supplied-resources",
-          "draft-07-dialect"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-47",
-      "clauses": [
-        "OBI-T-08/c6a"
-      ],
-      "description": "An example checked against a schema with a missing reference gets no verdict (section 5.1: a checker evaluates the value as any other).",
-      "action": "check-examples",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://absent.example.test/x.json"
-              },
-              "examples": {
-                "e": {
-                  "input": 1
-                }
-              }
-            }
-          }
-        },
-        "operation": "op"
-      },
-      "expected": {
-        "examples": {
-          "e": {
-            "input": "no-verdict"
-          }
+        "evidence": {
+          "OBI-D-10": "inconclusive",
+          "OBI-D-08": "violated",
+          "OBI-D-02": "violated",
+          "OBI-D-11": "not-applicable",
+          "OBI-D-01": "inconclusive"
         }
-      }
-    },
-    {
-      "id": "T08-S-48",
-      "clauses": [
-        "OBI-T-08/c7"
-      ],
-      "description": "An example checked against an undefined schema (a non-productive cycle) gets no verdict.",
-      "action": "check-examples",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Loop": {
-              "$ref": "#/schemas/Loop"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#/schemas/Loop"
-              },
-              "examples": {
-                "e": {
-                  "input": 1
-                }
-              }
-            }
-          }
-        },
-        "operation": "op"
       },
       "expected": {
-        "examples": {
-          "e": {
-            "input": "no-verdict"
-          }
-        }
-      }
-    },
-    {
-      "id": "T08-S-49",
-      "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c4"
-      ],
-      "description": "A percent-encoded pointer is decoded before lookup even when the literal spelling also names a property: my%20type means 'my type'.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Holder": {
-              "type": "object",
-              "properties": {
-                "my type": {
-                  "type": "string"
-                },
-                "my%20type": {
-                  "type": "integer"
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#/schemas/Holder/properties/my%20type"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          1
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-50",
-      "clauses": [
-        "OBI-T-08/c1",
-        "OBI-T-08/c6b"
-      ],
-      "description": "A schema resource without $schema takes its enclosing resource's dialect (section 5.2, JSON Schema Core section 9.3.2): the inner resource is draft-07, where dependencies asserts; a tool without that dialect gives no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Outer": {
-              "$id": "https://e.example.test/outer.json",
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "definitions": {
-                "inner": {
-                  "$id": "https://e.example.test/inner.json",
-                  "type": "object",
-                  "dependencies": {
-                    "a": [
-                      "b"
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://e.example.test/inner.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "a": 1
-          },
-          {
-            "a": 1,
-            "b": 2
-          }
-        ],
-        "nonConformant": [
-          "OBI-D-06"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "valid"
-        ],
-        "dependsOn": [
-          "draft-07-dialect"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-51",
-      "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c7"
-      ],
-      "description": "A string that is not a well-formed URI-reference is not a reference of any form, and a value whose evaluation depends on it has an undefined result (section 7.1): no verdict through a raw space.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "Task": {
-              "type": "object",
-              "properties": {
-                "my type": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "#/schemas/Task/properties/my type"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x",
-          5
-        ],
-        "nonConformant": [
-          "OBI-D-05"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-52",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3a"
-      ],
-      "description": "A modifier group (?i:...) is not a pattern under the pinned ECMA-262 11th edition (section 13.1): undefined, no verdict, even where a newer engine accepts it.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^(?i:a)$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          "A"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-53",
-      "clauses": [
-        "OBI-T-08/c7"
-      ],
-      "description": "Within an $id resource, a pointer that reaches a map rather than a schema is undefined (section 7.4): no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "R": {
-              "$id": "https://r.example.test/map.json",
-              "$ref": "#/$defs",
-              "$defs": {
-                "a": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://r.example.test/map.json"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-54",
-      "clauses": [
-        "OBI-T-08/c4"
-      ],
-      "description": "The resolution context is the OBI document's own resources: an $id that claims the 2020-12 meta-schema's URI names the document's schema, not the meta-schema.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "schemas": {
-            "S": {
-              "$id": "https://json-schema.org/draft/2020-12/schema",
-              "type": "string"
-            }
-          },
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://json-schema.org/draft/2020-12/schema"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x",
-          5
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-55",
-      "clauses": [
-        "OBI-T-08/c7",
-        "OBI-T-08/c6"
-      ],
-      "description": "A malformed reference has an undefined result only for an evaluation that depends on it (section 7.1): type fails 5 whatever #%zz would yield, so a mismatch is permitted, and so is declining.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "$ref": "#%zz"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          5
-        ],
-        "nonConformant": [
-          "OBI-D-05"
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "instance-mismatch",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-56",
-      "clauses": [
-        "OBI-T-08/c7",
-        "OBI-T-08/c6"
-      ],
-      "description": "anyOf with true holds for any value whatever a malformed sibling reference would yield (section 7.1): valid is permitted, and so is declining.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "anyOf": [
-                  true,
-                  {
-                    "$ref": "#%zz"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ],
-        "nonConformant": [
-          "OBI-D-05"
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-57",
-      "clauses": [
-        "OBI-T-08/c7",
-        "OBI-T-06/c1b"
-      ],
-      "description": "Inside an $id resource, a $ref that is not a URI-reference (a raw space) has no defined target (JSON Schema Core section 8.2.3.1): no verdict for a value that needs it.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://e.com/t"
-              }
-            }
-          },
-          "schemas": {
-            "T": {
-              "$id": "https://e.com/t",
-              "$ref": "#/$defs/a b",
-              "$defs": {
-                "a b": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-58",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "A $schema in the document resource declares no dialect (section 5.2), so a foreign one there leaves the schema read as 2020-12: a tool that continues reports the mismatch or declines.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$schema": "http://json-schema.org/draft-07/schema#",
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          5
-        ],
-        "nonConformant": [
-          "OBI-D-06"
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "instance-mismatch",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-59",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "A $schema in the document resource declares no dialect (section 5.2), even one that is not a string: a tool that continues reports the 2020-12 verdict or declines.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$schema": 5,
-                "type": "string"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ],
-        "nonConformant": [
-          "OBI-D-06",
-          "OBI-D-10"
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-60",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3a"
-      ],
-      "description": "\\p{EBase} names no property in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 section 21.2.1.1, Table 56): the pattern is invalid, so no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "pattern": "\\p{EBase}"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-61",
-      "clauses": [
-        "OBI-T-08/c8",
-        "OBI-T-08/c3a"
-      ],
-      "description": "Script=Kawi is not a script value in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 Table 58): the pattern is invalid, so no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "pattern": "\\p{Script=Kawi}"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-62",
-      "clauses": [
-        "OBI-T-08/c7",
-        "OBI-T-08/c4"
-      ],
-      "description": "Two schemas declaring one $id leave a reference to it with no defined target (JSON Schema Core section 9.1.2): no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://e.com/s"
-              }
-            }
-          },
-          "schemas": {
-            "A": {
-              "$id": "https://e.com/s",
-              "type": "string"
-            },
-            "B": {
-              "$id": "https://e.com/s",
-              "type": "number"
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x"
-        ],
-        "nonConformant": [
-          "OBI-D-13"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-63",
-      "clauses": [
-        "OBI-T-08/c7",
-        "OBI-T-08/c4"
-      ],
-      "description": "With the document resource outermost in the dynamic scope (section 7.2), a $dynamicRef the document resource captures through a $dynamicAnchor it declares twice has no defined target (JSON Schema Core sections 8.2.3.2, 8.2.2): no verdict.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://example.com/tree"
-              }
-            }
-          },
-          "schemas": {
-            "Tree": {
-              "$id": "https://example.com/tree",
-              "$dynamicAnchor": "node",
-              "type": "object",
-              "properties": {
-                "children": {
-                  "type": "array",
-                  "items": {
-                    "$dynamicRef": "#node"
-                  }
-                }
-              }
-            },
-            "Str": {
-              "$dynamicAnchor": "node",
-              "type": "string"
-            },
-            "Num": {
-              "$dynamicAnchor": "node",
-              "type": "number"
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "children": [
-              1
-            ]
-          }
-        ],
-        "nonConformant": [
-          "OBI-D-13"
-        ]
-      },
-      "expected": {
-        "results": [
-          "no-verdict"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-64",
-      "clauses": [
-        "OBI-T-08/c1"
-      ],
-      "description": "A $schema in the document resource declares no dialect (section 5.2): read as 2020-12, a misplaced draft-07 schema's dependencies is an unknown keyword, so {\"a\": 1} is valid, or the tool declines; draft-07 would reject it.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$schema": "http://json-schema.org/draft-07/schema#",
-                "type": "object",
-                "dependencies": {
-                  "a": [
-                    "b"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          {
-            "a": 1
-          }
-        ],
-        "nonConformant": [
-          "OBI-D-06"
-        ]
-      },
-      "expected": {
-        "results": [
-          {
-            "verdict": "valid",
-            "orNoVerdict": true
-          }
-        ]
-      }
-    },
-    {
-      "id": "T08-S-65",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "ECMA-262's dot matches no line terminator: not \\n, \\r, U+2028, or U+2029.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^.$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "\n",
-          "\r",
-          "\u2028",
-          "\u2029",
-          "a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "instance-mismatch",
-          "instance-mismatch",
-          "instance-mismatch",
-          "instance-mismatch",
-          "valid"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-66",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "Without the i flag, ECMA-262's \\w is ASCII only, even with the u flag: neither e with an acute accent nor the Kelvin sign is a word character.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^\\w$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a",
-          "_",
-          "\u00e9",
-          "\u212a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "valid",
-          "instance-mismatch",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-67",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "ECMA-262's \\b is a boundary between an ASCII word character and anything else, so a letter outside ASCII ends a word.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^a\\b"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "a-",
-          "a\u00e9",
-          "a_"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-68",
-      "clauses": [
-        "OBI-T-08/c3a"
-      ],
-      "description": "With the u flag, an escaped surrogate pair is one code point, so a class holding it matches the one character outside the Basic Multilingual Plane.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "type": "string",
-                "pattern": "^[\\uD83D\\uDE00]$"
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "\ud83d\ude00",
-          "a"
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
-      }
-    },
-    {
-      "id": "T08-S-69",
-      "clauses": [
-        "OBI-T-08/c4",
-        "OBI-T-06/c1b"
-      ],
-      "description": "A schema nested in an $id resource that declares $id of its own is a resource too, resolved against its parent's base (section 7.2): https://e.example.test/inner.json names it.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0",
-          "operations": {
-            "op": {
-              "input": {
-                "$ref": "https://e.example.test/inner.json"
-              }
-            }
-          },
-          "schemas": {
-            "Outer": {
-              "$id": "https://e.example.test/outer.json",
-              "$defs": {
-                "inner": {
-                  "$id": "inner.json",
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x",
-          5
-        ]
-      },
-      "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ]
+        "conclusion": "non-conformant"
       }
     }
   ]

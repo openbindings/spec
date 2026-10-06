@@ -107,7 +107,7 @@ function runSchemaJobs() {
 // ---------------------------------------------------------------- spec text
 
 function extractSpecRules(md) {
-  // Lines like "- **OBI-D-01**: Is valid UTF-8 ..." and "- **OBI-T-04** (all processors): ...".
+  // Lines like "- **OBI-D-01**: Is valid UTF-8 ..." and "- **OBI-T-01** (applies when interpreting a kind string ...): ...".
   const rules = new Map();
   const re = /^\s*-\s*\*\*(OBI-[DT]-\d+)\*\*[^:]*:\s*(.*)$/gm;
   let m;
@@ -171,38 +171,11 @@ function partition(body, segments, label) {
 const SEMVER =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
-// The unit a tool supports a version under (§8.1): a release's major.minor
-// line, build metadata ignored; a prerelease's full version.
-function supportUnit(v) {
-  const m = SEMVER.exec(v);
-  return m[4] ? `${m[1]}.${m[2]}.${m[3]}-${m[4]}` : `${m[1]}.${m[2]}`;
-}
-
-function compareRelease(a, b) {
-  const pa = SEMVER.exec(a);
-  const pb = SEMVER.exec(b);
-  for (let i = 1; i <= 3; i++) {
-    const x = BigInt(pa[i]);
-    const y = BigInt(pb[i]);
-    if (x !== y) return x < y ? -1 : 1;
-  }
-  return 0;
-}
-
+// A version gate names a SemVer 2.0.0 version: the line or prerelease whose
+// text a tool must apply for the case to be administered (§8.1).
 function checkGates(item, label) {
   const sup = item.requiresSupports;
-  const uns = item.requiresUnsupported;
-  const low = item.requiresMinSupported;
-  for (const [k, v] of [["requiresSupports", sup], ["requiresUnsupported", uns], ["requiresMinSupported", low]]) {
-    if (v !== undefined && (typeof v !== "string" || !SEMVER.test(v))) err(`${label}: ${k} ${JSON.stringify(v)} is not a SemVer 2.0.0 version`);
-  }
-  const ok = (v) => typeof v === "string" && SEMVER.test(v);
-  if (ok(sup) && ok(uns) && supportUnit(sup) === supportUnit(uns)) {
-    err(`${label}: ${sup} is required supported and ${uns} unsupported, but both are support unit ${supportUnit(sup)} (§8.1)`);
-  }
-  if (ok(sup) && ok(low) && compareRelease(sup, low) < 0) {
-    err(`${label}: ${sup} is required supported, below the required lowest supported version ${low}`);
-  }
+  if (sup !== undefined && (typeof sup !== "string" || !SEMVER.test(sup))) err(`${label}: requiresSupports ${JSON.stringify(sup)} is not a SemVer 2.0.0 version`);
 }
 
 // ---------------------------------------------------------------- inventory
@@ -414,7 +387,7 @@ function checkConclusion(evidence, conclusion, label, ctx) {
     if (!ctx.specRules.has(id) || !id.startsWith("OBI-D-")) err(`${label}: evidence names ${id}, not a document rule of §10.2`);
     if (!["satisfied", "violated", "inconclusive", "not-applicable"].includes(status)) err(`${label}: evidence ${id}=${JSON.stringify(status)}`);
   }
-  // OBI-T-09: a violation establishes non-conformance; otherwise any rule not
+  // OBI-T-08: a violation establishes non-conformance; otherwise any rule not
   // established, inconclusive or absent from the evidence, leaves it undetermined.
   const statuses = drules.map((r) => evidence[r] ?? "absent");
   const want = statuses.includes("violated")
@@ -422,7 +395,7 @@ function checkConclusion(evidence, conclusion, label, ctx) {
     : statuses.some((s) => s === "inconclusive" || s === "absent")
       ? "conformance-undetermined"
       : "conformant";
-  if (conclusion !== want) err(`${label}: expected conclusion ${conclusion} does not follow from the evidence (OBI-T-09 gives ${want})`);
+  if (conclusion !== want) err(`${label}: expected conclusion ${conclusion} does not follow from the evidence (OBI-T-08 gives ${want})`);
 }
 
 function verifyScenarioV2(file, relPath, ctx) {
@@ -437,9 +410,6 @@ function verifyScenarioV2(file, relPath, ctx) {
     const d = isObject(g.document) ? g.document : null;
     const nonConformant = Array.isArray(g.nonConformant) && g.nonConformant.length > 0;
     for (const r of g.nonConformant || []) if (!ctx.specRules.has(r)) err(`${label}: nonConformant names ${r}, which §10.2 does not define`);
-    // A refused document is not interpreted, so the names a case gives need
-    // not exist in it.
-    const refused = e.outcome === "version-refusal";
     const operations = d && isObject(d.operations) ? d.operations : {};
     switch (s.action) {
       case "validate-operation-values": {
@@ -451,7 +421,7 @@ function verifyScenarioV2(file, relPath, ctx) {
         for (const u of uris) {
           if (!/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u) || u.replace(/#$/, "").includes("#")) err(`${label}: resource URI ${JSON.stringify(u)} is not absolute without a fragment`);
         }
-        if (d && !nonConformant && !refused && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
+        if (d && !nonConformant && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
         break;
       }
       case "derive-form":
@@ -459,7 +429,6 @@ function verifyScenarioV2(file, relPath, ctx) {
         if (d && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
         break;
       case "check-examples": {
-        if (refused) break;
         const op = operations[g.operation];
         if (!isObject(op)) {
           err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
@@ -477,7 +446,7 @@ function verifyScenarioV2(file, relPath, ctx) {
         break;
       }
       case "check-dependency-kind": {
-        if (d && !nonConformant && !refused && (!isObject(d.dependencies) || !(g.dependency in d.dependencies) || !isObject(d.bindings) || !(g.binding in d.bindings))) {
+        if (d && !nonConformant && (!isObject(d.dependencies) || !(g.dependency in d.dependencies) || !isObject(d.bindings) || !(g.binding in d.bindings))) {
           err(`${label}: the named dependency or binding is not in the document`);
         }
         const text = JSON.stringify(g.document);

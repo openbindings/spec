@@ -6,50 +6,50 @@
   ],
   "corpusVersion": "0.2.0",
   "totals": {
-    "files": 25,
+    "files": 24,
     "fixtureFiles": 15,
-    "scenarioFiles": 10,
-    "tests": 288,
-    "scenarios": 187,
+    "scenarioFiles": 9,
+    "tests": 301,
+    "scenarios": 142,
     "positives": 117,
-    "negatives": 171,
+    "negatives": 184,
     "rulesCoveredDocument": 13,
     "rulesPartialDocument": 0,
     "rulesCoveredTool": 5,
-    "rulesPartialTool": 6,
-    "clauseIds": 79,
-    "clauseUnits": 61,
-    "clauseUnitsTested": 51,
+    "rulesPartialTool": 5,
+    "clauseIds": 58,
+    "clauseUnits": 52,
+    "clauseUnitsTested": 43,
     "clauseUnitsByStatus": {
       "composition only": 4,
-      "contrast tools only": 2,
+      "contrast tools only": 1,
       "expressible, no executor": 2,
       "not portably testable": 1,
-      "tested": 46,
+      "tested": 39,
       "tested (adapter)": 1,
-      "tested through its alternatives": 3,
+      "tested through its alternatives": 2,
       "tested through its exercised alternative": 1,
       "tested through its specializations": 1
     }
   },
   "actions": {
-    "check-dependency-kind": 20,
-    "check-examples": 9,
+    "check-dependency-kind": 18,
+    "check-examples": 7,
     "conclude-conformance": 8,
     "derive-form": 4,
-    "resolve-operation": 28,
-    "validate-document": 43,
-    "validate-operation-values": 75,
-    "validity fixture": 288
+    "resolve-operation": 25,
+    "validate-document": 7,
+    "validate-operation-values": 73,
+    "validity fixture": 301
   },
   "files": [
     {
       "path": "document/OBI-D-01.json",
       "rule": "OBI-D-01",
       "section": "10.2",
-      "tests": 12,
+      "tests": 20,
       "positives": 2,
-      "negatives": 10
+      "negatives": 18
     },
     {
       "path": "document/OBI-D-02.json",
@@ -111,9 +111,9 @@
       "path": "document/OBI-D-09.json",
       "rule": "OBI-D-09",
       "section": "10.2",
-      "tests": 14,
+      "tests": 19,
       "positives": 3,
-      "negatives": 11
+      "negatives": 16
     },
     {
       "path": "document/OBI-D-10.json",
@@ -156,8 +156,8 @@
       "negatives": 1
     },
     {
-      "path": "tool/OBI-T-10.json",
-      "rule": "OBI-T-10",
+      "path": "tool/OBI-T-09.json",
+      "rule": "OBI-T-09",
       "section": "10.3",
       "tests": 8,
       "positives": 8,
@@ -193,11 +193,11 @@
       "rule": "OBI-T-03",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 6,
+      "scenarios": 5,
       "actions": {
         "check-dependency-kind": 1,
         "resolve-operation": 2,
-        "validate-document": 2,
+        "validate-document": 1,
         "validate-operation-values": 1
       }
     },
@@ -206,28 +206,14 @@
       "rule": "OBI-T-04",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
-      "scenarios": 44,
-      "actions": {
-        "check-dependency-kind": 2,
-        "check-examples": 2,
-        "resolve-operation": 3,
-        "validate-document": 35,
-        "validate-operation-values": 2
-      }
-    },
-    {
-      "path": "scenarios/OBI-T-05.json",
-      "rule": "OBI-T-05",
-      "section": "10.3",
-      "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 4,
       "actions": {
         "derive-form": 4
       }
     },
     {
-      "path": "scenarios/OBI-T-06.json",
-      "rule": "OBI-T-06",
+      "path": "scenarios/OBI-T-05.json",
+      "rule": "OBI-T-05",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 7,
@@ -236,8 +222,8 @@
       }
     },
     {
-      "path": "scenarios/OBI-T-07.json",
-      "rule": "OBI-T-07",
+      "path": "scenarios/OBI-T-06.json",
+      "rule": "OBI-T-06",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 18,
@@ -246,8 +232,8 @@
       }
     },
     {
-      "path": "scenarios/OBI-T-08.json",
-      "rule": "OBI-T-08",
+      "path": "scenarios/OBI-T-07.json",
+      "rule": "OBI-T-07",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 67,
@@ -257,8 +243,8 @@
       }
     },
     {
-      "path": "scenarios/OBI-T-09.json",
-      "rule": "OBI-T-09",
+      "path": "scenarios/OBI-T-08.json",
+      "rule": "OBI-T-08",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 13,
@@ -268,8 +254,8 @@
       }
     },
     {
-      "path": "scenarios/OBI-T-11.json",
-      "rule": "OBI-T-11",
+      "path": "scenarios/OBI-T-10.json",
+      "rule": "OBI-T-10",
       "section": "10.3",
       "format": "openbindings.core-tool-scenarios@2",
       "scenarios": 4,
@@ -367,11 +353,11 @@
       "cases": [
         "T01-S-13",
         "T02-S-06",
-        "T08-S-09",
-        "T08-S-10",
-        "T08-S-11",
-        "T08-S-12",
-        "T11-S-01"
+        "T07-S-09",
+        "T07-S-10",
+        "T07-S-11",
+        "T07-S-12",
+        "T10-S-01"
       ]
     },
     "OBI-T-02/c3": {
@@ -403,7 +389,6 @@
         "T03-S-01",
         "T03-S-02",
         "T03-S-03",
-        "T03-S-04",
         "T03-S-05",
         "T03-S-06"
       ]
@@ -411,232 +396,65 @@
     "OBI-T-04/c1": {
       "rule": "OBI-T-04",
       "class": "obligation",
-      "status": "tested through its alternatives",
-      "cases": []
-    },
-    "OBI-T-04/c1a": {
-      "rule": "OBI-T-04",
-      "class": "alternative",
-      "status": "tested",
+      "status": "expressible, no executor",
       "cases": [
         "T04-S-01",
         "T04-S-02",
         "T04-S-03",
-        "T04-S-10",
-        "T04-S-31",
-        "T04-S-37",
-        "T04-S-38"
+        "T04-S-04"
       ]
-    },
-    "OBI-T-04/c1b": {
-      "rule": "OBI-T-04",
-      "class": "alternative",
-      "status": "tested",
-      "cases": [
-        "T04-S-06",
-        "T04-S-28"
-      ]
-    },
-    "OBI-T-04/c2": {
-      "rule": "OBI-T-04",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T03-S-04",
-        "T04-S-04",
-        "T04-S-05",
-        "T04-S-06",
-        "T04-S-07",
-        "T04-S-24",
-        "T04-S-25",
-        "T04-S-26",
-        "T04-S-27",
-        "T04-S-32",
-        "T04-S-33",
-        "T04-S-34",
-        "T04-S-35",
-        "T04-S-36",
-        "T04-S-39",
-        "T04-S-40",
-        "T04-S-41",
-        "T04-S-42",
-        "T04-S-43",
-        "T04-S-44"
-      ]
-    },
-    "OBI-T-04/c3": {
-      "rule": "OBI-T-04",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T04-S-04",
-        "T04-S-05",
-        "T04-S-32",
-        "T04-S-33",
-        "T04-S-35",
-        "T04-S-36",
-        "T04-S-40",
-        "T04-S-42",
-        "T04-S-43",
-        "T04-S-44"
-      ]
-    },
-    "OBI-T-04/c4": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-04/c4.p1": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-11"
-      ]
-    },
-    "OBI-T-04/c4.p2": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-12",
-        "T04-S-23"
-      ]
-    },
-    "OBI-T-04/c4.p3": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-17",
-        "T04-S-18",
-        "T04-S-22",
-        "T04-S-24",
-        "T04-S-29"
-      ]
-    },
-    "OBI-T-04/c4.p4": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-15",
-        "T04-S-16",
-        "T04-S-25"
-      ]
-    },
-    "OBI-T-04/c5": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-08",
-        "T04-S-13",
-        "T04-S-14",
-        "T04-S-19",
-        "T04-S-20",
-        "T04-S-21"
-      ]
-    },
-    "OBI-T-04/c6": {
-      "rule": "OBI-T-04",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T04-S-11",
-        "T04-S-12",
-        "T04-S-13",
-        "T04-S-14",
-        "T04-S-15",
-        "T04-S-16",
-        "T04-S-17",
-        "T04-S-18",
-        "T04-S-20",
-        "T04-S-21",
-        "T04-S-22",
-        "T04-S-23",
-        "T04-S-29",
-        "T04-S-30"
-      ]
-    },
-    "OBI-T-04/c7": {
-      "rule": "OBI-T-04",
-      "class": "permission",
-      "status": "permission",
-      "cases": [
-        "T04-S-18",
-        "T04-S-29"
-      ]
-    },
-    "OBI-T-04/c8": {
-      "rule": "OBI-T-04",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T04-S-08",
-        "T04-S-09",
-        "T04-S-19"
-      ]
-    },
-    "OBI-T-04/c9": {
-      "rule": "OBI-T-04",
-      "class": "incorporation",
-      "status": "incorporation",
-      "cases": []
-    },
-    "OBI-T-04/c9.i1": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-06"
-      ]
-    },
-    "OBI-T-04/c9.i2": {
-      "rule": "OBI-T-04",
-      "class": "specialization",
-      "status": "contrast tools only",
-      "cases": [
-        "T04-S-28"
-      ]
-    },
-    "OBI-T-04/c9.i3": {
-      "rule": "OBI-T-04",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "T04-S-03",
-        "T04-S-38"
-      ]
-    },
-    "OBI-T-04/c9.i4": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": [
-        "T04-S-26",
-        "T04-S-27",
-        "T04-S-39",
-        "T04-S-41"
-      ]
-    },
-    "OBI-T-04/c9.i5": {
-      "rule": "OBI-T-04",
-      "class": "permission",
-      "status": "permission",
-      "cases": []
-    },
-    "OBI-T-04/c9.i6": {
-      "rule": "OBI-T-04",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
     },
     "OBI-T-05/c1": {
       "rule": "OBI-T-05",
       "class": "obligation",
-      "status": "expressible, no executor",
+      "status": "tested through its alternatives",
+      "cases": []
+    },
+    "OBI-T-05/c1a": {
+      "rule": "OBI-T-05",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T05-S-05",
+        "T05-S-06",
+        "T05-S-07",
+        "T07-S-08",
+        "T07-S-31",
+        "T07-S-32",
+        "T07-S-33",
+        "T07-S-49",
+        "T07-S-51"
+      ]
+    },
+    "OBI-T-05/c1b": {
+      "rule": "OBI-T-05",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T05-S-04",
+        "T07-S-34",
+        "T07-S-35",
+        "T07-S-37",
+        "T07-S-57",
+        "T07-S-69"
+      ]
+    },
+    "OBI-T-05/c2a": {
+      "rule": "OBI-T-05",
+      "class": "obligation",
+      "status": "tested",
+      "cases": [
+        "T05-S-01",
+        "T05-S-02",
+        "T05-S-03",
+        "T05-S-04",
+        "T05-S-06"
+      ]
+    },
+    "OBI-T-05/c2b": {
+      "rule": "OBI-T-05",
+      "class": "obligation",
+      "status": "tested",
       "cases": [
         "T05-S-01",
         "T05-S-02",
@@ -647,59 +465,51 @@
     "OBI-T-06/c1": {
       "rule": "OBI-T-06",
       "class": "obligation",
-      "status": "tested through its alternatives",
-      "cases": []
-    },
-    "OBI-T-06/c1a": {
-      "rule": "OBI-T-06",
-      "class": "alternative",
       "status": "tested",
       "cases": [
+        "T06-S-01",
+        "T06-S-02",
         "T06-S-05",
+        "T06-S-11",
+        "T06-S-12",
+        "T06-S-14",
+        "T06-S-15"
+      ]
+    },
+    "OBI-T-06/c2": {
+      "rule": "OBI-T-06",
+      "class": "specialization",
+      "status": "not portably testable",
+      "cases": [
+        "T06-S-12",
+        "T06-S-14"
+      ]
+    },
+    "OBI-T-06/c3": {
+      "rule": "OBI-T-06",
+      "class": "obligation",
+      "status": "tested",
+      "cases": [
+        "T06-S-03",
+        "T06-S-04",
         "T06-S-06",
         "T06-S-07",
-        "T08-S-08",
-        "T08-S-31",
-        "T08-S-32",
-        "T08-S-33",
-        "T08-S-49",
-        "T08-S-51"
+        "T06-S-08",
+        "T06-S-09",
+        "T06-S-10",
+        "T06-S-11",
+        "T06-S-16",
+        "T06-S-17",
+        "T06-S-18"
       ]
     },
-    "OBI-T-06/c1b": {
-      "rule": "OBI-T-06",
-      "class": "alternative",
-      "status": "tested",
-      "cases": [
-        "T06-S-04",
-        "T08-S-34",
-        "T08-S-35",
-        "T08-S-37",
-        "T08-S-57",
-        "T08-S-69"
-      ]
-    },
-    "OBI-T-06/c2a": {
+    "OBI-T-06/c4": {
       "rule": "OBI-T-06",
       "class": "obligation",
       "status": "tested",
       "cases": [
-        "T06-S-01",
         "T06-S-02",
-        "T06-S-03",
-        "T06-S-04",
-        "T06-S-06"
-      ]
-    },
-    "OBI-T-06/c2b": {
-      "rule": "OBI-T-06",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T06-S-01",
-        "T06-S-02",
-        "T06-S-03",
-        "T06-S-04"
+        "T06-S-13"
       ]
     },
     "OBI-T-07/c1": {
@@ -709,38 +519,61 @@
       "cases": [
         "T07-S-01",
         "T07-S-02",
-        "T07-S-05",
         "T07-S-11",
         "T07-S-12",
-        "T07-S-14",
-        "T07-S-15"
+        "T07-S-28",
+        "T07-S-29",
+        "T07-S-30",
+        "T07-S-39",
+        "T07-S-40",
+        "T07-S-41",
+        "T07-S-44",
+        "T07-S-45",
+        "T07-S-46",
+        "T07-S-50",
+        "T07-S-58",
+        "T07-S-59",
+        "T07-S-64"
       ]
     },
     "OBI-T-07/c2": {
       "rule": "OBI-T-07",
       "class": "specialization",
-      "status": "not portably testable",
-      "cases": [
-        "T07-S-12",
-        "T07-S-14"
-      ]
-    },
-    "OBI-T-07/c3": {
-      "rule": "OBI-T-07",
-      "class": "obligation",
       "status": "tested",
       "cases": [
-        "T07-S-03",
-        "T07-S-04",
-        "T07-S-06",
-        "T07-S-07",
-        "T07-S-08",
-        "T07-S-09",
-        "T07-S-10",
-        "T07-S-11",
-        "T07-S-16",
-        "T07-S-17",
-        "T07-S-18"
+        "T07-S-05",
+        "T07-S-38"
+      ]
+    },
+    "OBI-T-07/c3a": {
+      "rule": "OBI-T-07",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "T07-S-18",
+        "T07-S-19",
+        "T07-S-21",
+        "T07-S-22",
+        "T07-S-23",
+        "T07-S-24",
+        "T07-S-25",
+        "T07-S-27",
+        "T07-S-52",
+        "T07-S-60",
+        "T07-S-61",
+        "T07-S-65",
+        "T07-S-66",
+        "T07-S-67",
+        "T07-S-68"
+      ]
+    },
+    "OBI-T-07/c3b": {
+      "rule": "OBI-T-07",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "T07-S-20",
+        "T07-S-26"
       ]
     },
     "OBI-T-07/c4": {
@@ -748,8 +581,107 @@
       "class": "obligation",
       "status": "tested",
       "cases": [
-        "T07-S-02",
-        "T07-S-13"
+        "T07-S-07",
+        "T07-S-08",
+        "T07-S-31",
+        "T07-S-32",
+        "T07-S-33",
+        "T07-S-34",
+        "T07-S-35",
+        "T07-S-49",
+        "T07-S-54",
+        "T07-S-62",
+        "T07-S-63",
+        "T07-S-69"
+      ]
+    },
+    "OBI-T-07/c5": {
+      "rule": "OBI-T-07",
+      "class": "obligation",
+      "status": "tested (adapter)",
+      "cases": [
+        "T07-S-06",
+        "T07-S-36"
+      ]
+    },
+    "OBI-T-07/c6": {
+      "rule": "OBI-T-07",
+      "class": "obligation",
+      "status": "tested through its alternatives",
+      "cases": [
+        "T07-S-42",
+        "T07-S-43",
+        "T07-S-55",
+        "T07-S-56"
+      ]
+    },
+    "OBI-T-07/c6a": {
+      "rule": "OBI-T-07",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T07-S-13",
+        "T07-S-14",
+        "T07-S-37",
+        "T07-S-46",
+        "T07-S-47"
+      ]
+    },
+    "OBI-T-07/c6b": {
+      "rule": "OBI-T-07",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T07-S-27",
+        "T07-S-35",
+        "T07-S-44",
+        "T07-S-45",
+        "T07-S-46",
+        "T07-S-50"
+      ]
+    },
+    "OBI-T-07/c7": {
+      "rule": "OBI-T-07",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T05-S-05",
+        "T05-S-07",
+        "T07-S-15",
+        "T07-S-16",
+        "T07-S-17",
+        "T07-S-48",
+        "T07-S-51",
+        "T07-S-53",
+        "T07-S-55",
+        "T07-S-56",
+        "T07-S-57",
+        "T07-S-62",
+        "T07-S-63"
+      ]
+    },
+    "OBI-T-07/c8": {
+      "rule": "OBI-T-07",
+      "class": "alternative",
+      "status": "tested",
+      "cases": [
+        "T07-S-18",
+        "T07-S-19",
+        "T07-S-20",
+        "T07-S-42",
+        "T07-S-43",
+        "T07-S-52",
+        "T07-S-60",
+        "T07-S-61"
+      ]
+    },
+    "OBI-T-07/c9": {
+      "rule": "OBI-T-07",
+      "class": "obligation",
+      "status": "tested",
+      "cases": [
+        "T07-S-09",
+        "T07-S-10"
       ]
     },
     "OBI-T-08/c1": {
@@ -757,63 +689,9 @@
       "class": "obligation",
       "status": "tested",
       "cases": [
-        "T08-S-01",
         "T08-S-02",
-        "T08-S-11",
-        "T08-S-12",
-        "T08-S-28",
-        "T08-S-29",
-        "T08-S-30",
-        "T08-S-39",
-        "T08-S-40",
-        "T08-S-41",
-        "T08-S-44",
-        "T08-S-45",
-        "T08-S-46",
-        "T08-S-50",
-        "T08-S-58",
-        "T08-S-59",
-        "T08-S-64"
-      ]
-    },
-    "OBI-T-08/c2": {
-      "rule": "OBI-T-08",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "T08-S-05",
-        "T08-S-38"
-      ]
-    },
-    "OBI-T-08/c3a": {
-      "rule": "OBI-T-08",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "T08-S-18",
-        "T08-S-19",
-        "T08-S-21",
-        "T08-S-22",
-        "T08-S-23",
-        "T08-S-24",
-        "T08-S-25",
-        "T08-S-27",
-        "T08-S-52",
-        "T08-S-60",
-        "T08-S-61",
-        "T08-S-65",
-        "T08-S-66",
-        "T08-S-67",
-        "T08-S-68"
-      ]
-    },
-    "OBI-T-08/c3b": {
-      "rule": "OBI-T-08",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "T08-S-20",
-        "T08-S-26"
+        "T08-S-10",
+        "T08-S-11"
       ]
     },
     "OBI-T-08/c4": {
@@ -821,302 +699,184 @@
       "class": "obligation",
       "status": "tested",
       "cases": [
-        "T08-S-07",
+        "T08-S-01",
+        "T08-S-02",
+        "T08-S-10",
+        "T08-S-11"
+      ]
+    },
+    "OBI-T-08/c2": {
+      "rule": "OBI-T-08",
+      "class": "obligation",
+      "status": "tested",
+      "cases": [
+        "T08-S-03",
+        "T08-S-04",
+        "T08-S-05",
         "T08-S-08",
-        "T08-S-31",
-        "T08-S-32",
-        "T08-S-33",
-        "T08-S-34",
-        "T08-S-35",
-        "T08-S-49",
-        "T08-S-54",
-        "T08-S-62",
-        "T08-S-63",
-        "T08-S-69"
+        "T08-S-12",
+        "T08-S-13"
       ]
     },
     "OBI-T-08/c5": {
       "rule": "OBI-T-08",
       "class": "obligation",
-      "status": "tested (adapter)",
+      "status": "tested",
+      "cases": [
+        "T08-S-01"
+      ]
+    },
+    "OBI-T-08/c3": {
+      "rule": "OBI-T-08",
+      "class": "obligation",
+      "status": "tested through its exercised alternative",
+      "cases": []
+    },
+    "OBI-T-08/c3a": {
+      "rule": "OBI-T-08",
+      "class": "alternative",
+      "status": "expressible, no executor",
       "cases": [
         "T08-S-06",
-        "T08-S-36"
+        "T08-S-07",
+        "T08-S-08",
+        "T08-S-10"
       ]
     },
-    "OBI-T-08/c6": {
+    "OBI-T-08/c3b": {
       "rule": "OBI-T-08",
-      "class": "obligation",
-      "status": "tested through its alternatives",
+      "class": "alternative",
+      "status": "contrast tools only",
       "cases": [
-        "T08-S-42",
-        "T08-S-43",
-        "T08-S-55",
-        "T08-S-56"
+        "T08-S-09"
       ]
     },
-    "OBI-T-08/c6a": {
+    "OBI-T-08/c3c": {
       "rule": "OBI-T-08",
       "class": "alternative",
       "status": "tested",
       "cases": [
-        "T08-S-13",
-        "T08-S-14",
-        "T08-S-37",
-        "T08-S-46",
-        "T08-S-47"
-      ]
-    },
-    "OBI-T-08/c6b": {
-      "rule": "OBI-T-08",
-      "class": "alternative",
-      "status": "tested",
-      "cases": [
-        "T08-S-27",
-        "T08-S-35",
-        "T08-S-44",
-        "T08-S-45",
-        "T08-S-46",
-        "T08-S-50"
-      ]
-    },
-    "OBI-T-08/c7": {
-      "rule": "OBI-T-08",
-      "class": "alternative",
-      "status": "tested",
-      "cases": [
-        "T06-S-05",
-        "T06-S-07",
-        "T08-S-15",
-        "T08-S-16",
-        "T08-S-17",
-        "T08-S-48",
-        "T08-S-51",
-        "T08-S-53",
-        "T08-S-55",
-        "T08-S-56",
-        "T08-S-57",
-        "T08-S-62",
-        "T08-S-63"
-      ]
-    },
-    "OBI-T-08/c8": {
-      "rule": "OBI-T-08",
-      "class": "alternative",
-      "status": "tested",
-      "cases": [
-        "T08-S-18",
-        "T08-S-19",
-        "T08-S-20",
-        "T08-S-42",
-        "T08-S-43",
-        "T08-S-52",
-        "T08-S-60",
-        "T08-S-61"
-      ]
-    },
-    "OBI-T-08/c9": {
-      "rule": "OBI-T-08",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T08-S-09",
+        "T08-S-06",
+        "T08-S-07",
+        "T08-S-08",
         "T08-S-10"
       ]
     },
     "OBI-T-09/c1": {
       "rule": "OBI-T-09",
       "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T09-S-02",
-        "T09-S-10",
-        "T09-S-11"
-      ]
-    },
-    "OBI-T-09/c4": {
-      "rule": "OBI-T-09",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T09-S-01",
-        "T09-S-02",
-        "T09-S-10",
-        "T09-S-11"
-      ]
-    },
-    "OBI-T-09/c2": {
-      "rule": "OBI-T-09",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T09-S-03",
-        "T09-S-04",
-        "T09-S-05",
-        "T09-S-08",
-        "T09-S-12",
-        "T09-S-13"
-      ]
-    },
-    "OBI-T-09/c5": {
-      "rule": "OBI-T-09",
-      "class": "obligation",
-      "status": "tested",
-      "cases": [
-        "T09-S-01"
-      ]
-    },
-    "OBI-T-09/c3": {
-      "rule": "OBI-T-09",
-      "class": "obligation",
-      "status": "tested through its exercised alternative",
+      "status": "tested through its specializations",
       "cases": []
     },
-    "OBI-T-09/c3a": {
+    "OBI-T-09/c1a": {
       "rule": "OBI-T-09",
-      "class": "alternative",
-      "status": "expressible, no executor",
-      "cases": [
-        "T09-S-06",
-        "T09-S-07",
-        "T09-S-08",
-        "T09-S-10"
-      ]
-    },
-    "OBI-T-09/c3b": {
-      "rule": "OBI-T-09",
-      "class": "alternative",
-      "status": "contrast tools only",
-      "cases": [
-        "T09-S-09"
-      ]
-    },
-    "OBI-T-09/c3c": {
-      "rule": "OBI-T-09",
-      "class": "alternative",
+      "class": "specialization",
       "status": "tested",
       "cases": [
-        "T09-S-06",
-        "T09-S-07",
-        "T09-S-08",
-        "T09-S-10"
+        "tool/OBI-T-09.json#/tests/3",
+        "tool/OBI-T-09.json#/tests/4"
       ]
+    },
+    "OBI-T-09/c1b": {
+      "rule": "OBI-T-09",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "tool/OBI-T-09.json#/tests/5"
+      ]
+    },
+    "OBI-T-09/c1c": {
+      "rule": "OBI-T-09",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "tool/OBI-T-09.json#/tests/0",
+        "tool/OBI-T-09.json#/tests/1",
+        "tool/OBI-T-09.json#/tests/2"
+      ]
+    },
+    "OBI-T-09/c1d": {
+      "rule": "OBI-T-09",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "tool/OBI-T-09.json#/tests/6"
+      ]
+    },
+    "OBI-T-09/c1e": {
+      "rule": "OBI-T-09",
+      "class": "specialization",
+      "status": "tested",
+      "cases": [
+        "tool/OBI-T-09.json#/tests/7"
+      ]
+    },
+    "OBI-T-09/c1.i1": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
+    },
+    "OBI-T-09/c1.i2": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
+    },
+    "OBI-T-09/c1.i3": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
+    },
+    "OBI-T-09/c1.i4": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
+    },
+    "OBI-T-09/c1.i5": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
+    },
+    "OBI-T-09/c1.i6": {
+      "rule": "OBI-T-09",
+      "class": "definition",
+      "status": "definition",
+      "cases": []
     },
     "OBI-T-10/c1": {
       "rule": "OBI-T-10",
       "class": "obligation",
-      "status": "tested through its specializations",
-      "cases": []
-    },
-    "OBI-T-10/c1a": {
-      "rule": "OBI-T-10",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "tool/OBI-T-10.json#/tests/3",
-        "tool/OBI-T-10.json#/tests/4"
-      ]
-    },
-    "OBI-T-10/c1b": {
-      "rule": "OBI-T-10",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "tool/OBI-T-10.json#/tests/5"
-      ]
-    },
-    "OBI-T-10/c1c": {
-      "rule": "OBI-T-10",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "tool/OBI-T-10.json#/tests/0",
-        "tool/OBI-T-10.json#/tests/1",
-        "tool/OBI-T-10.json#/tests/2"
-      ]
-    },
-    "OBI-T-10/c1d": {
-      "rule": "OBI-T-10",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "tool/OBI-T-10.json#/tests/6"
-      ]
-    },
-    "OBI-T-10/c1e": {
-      "rule": "OBI-T-10",
-      "class": "specialization",
-      "status": "tested",
-      "cases": [
-        "tool/OBI-T-10.json#/tests/7"
-      ]
-    },
-    "OBI-T-10/c1.i1": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-10/c1.i2": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-10/c1.i3": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-10/c1.i4": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-10/c1.i5": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-10/c1.i6": {
-      "rule": "OBI-T-10",
-      "class": "definition",
-      "status": "definition",
-      "cases": []
-    },
-    "OBI-T-11/c1": {
-      "rule": "OBI-T-11",
-      "class": "obligation",
       "status": "composition only",
       "cases": [
-        "T11-S-01"
+        "T10-S-01"
       ]
     },
-    "OBI-T-11/c2a": {
-      "rule": "OBI-T-11",
+    "OBI-T-10/c2a": {
+      "rule": "OBI-T-10",
       "class": "specialization",
       "status": "composition only",
       "cases": [
-        "T11-S-06"
+        "T10-S-06"
       ]
     },
-    "OBI-T-11/c2b": {
-      "rule": "OBI-T-11",
+    "OBI-T-10/c2b": {
+      "rule": "OBI-T-10",
       "class": "specialization",
       "status": "composition only",
       "cases": [
-        "T11-S-07"
+        "T10-S-07"
       ]
     },
-    "OBI-T-11/c2c": {
-      "rule": "OBI-T-11",
+    "OBI-T-10/c2c": {
+      "rule": "OBI-T-10",
       "class": "specialization",
       "status": "composition only",
       "cases": [
-        "T11-S-08"
+        "T10-S-08"
       ]
     }
   }

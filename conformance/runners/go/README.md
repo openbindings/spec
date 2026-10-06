@@ -17,7 +17,7 @@ go run . $(go run ./declared -sdk ../../../../openbindings-go -spec ../..) -stri
 
 - the applied-text parsing and verification, and `./declared`'s reading of the SDK;
 - the judges against wrong expectations: a small synthetic corpus run through the pinned SDK, with at least one deliberately wrong expectation for every action and for the judging branches a correct SDK can reach (binding keys, `violates` and `notViolated`, `conformant` in both directions, refusals expected or not, `forbidReasons`, `orNoVerdict` and `dependsOn`, shortfalls, example results, kind, conclusion, collision candidates), each of which must fail beside a correct twin;
-- the checks that fire only when the SDK misbehaves, each held at its call site: a stand-in for the misbehaving call drives the judge, which must fail (a retrieval the sentinel observes, a conclusion naming another applied text, a ParseDocument refusal that comes with a document, a value-contract refusal that comes with contracts), beside direct controls of the residue helpers and the http sentinel.
+- the checks that fire only when the SDK misbehaves, each held at its call site: a stand-in for the misbehaving call drives the judge, which must fail (a retrieval the sentinel observes, a conclusion naming another applied text), beside a direct control of the http sentinel.
 
 They do not cover every way an SDK can misbehave, only the checks listed.
 
@@ -27,7 +27,7 @@ Flags:
 
 ```
   -corpus PATH      the conformance/ directory (found from the working directory by default)
-  -rule RULE        run one rule's cases, e.g. OBI-T-08 (skips the reconciliation)
+  -rule RULE        run one rule's cases, e.g. OBI-T-07 (skips the reconciliation)
   -verbose          print every case's category
   -json             print {"pin", "applied", "appliedSHA256", "reconciliation", "cases": [{"id", "status", "signature"}]}
                     for scripts/check-runner-results.mjs
@@ -40,11 +40,11 @@ Flags:
 
 ## What it checks
 
-- **Validity fixtures:** `ValidateDocument`'s report. A conforming case is neither refused nor non-conformant (undetermined is not non-conformant). A violating case is non-conformant, with every rule in `violates` violated and no rule in `notViolated` violated.
-- **Scenarios:** each action through the SDK's API: `ValidateDocument` (a version refusal must come with nothing else, at `ParseDocument` too), `Document.ResolveOperation` and `Document.OperationBindings`, `ConcludeConformance` (the reported conclusion must exactly match the supplied evidence), `Dependency.AcceptsKind`, and value contracts under `schemaeval` for value and example cases. `derive-form` is omitted: the SDK derives no forms.
+- **Validity fixtures:** `ValidateDocument`'s report. A conforming case is not non-conformant (undetermined is not non-conformant), and any version refusal by the SDK fails a case, since every case declares the 0.2 line or no version. A violating case is non-conformant, with every rule in `violates` violated and no rule in `notViolated` violated.
+- **Scenarios:** each action through the SDK's API: `ValidateDocument`, `Document.ResolveOperation` and `Document.OperationBindings`, `ConcludeConformance` (the reported conclusion must exactly match the supplied evidence), `Dependency.AcceptsKind`, and value contracts under `schemaeval` for value and example cases. `derive-form` is omitted: the SDK derives no forms.
 - **Retrieval sentinels:** for the whole check-dependency-kind action, a TCP listener bound to an ephemeral local port, whose address the kind names, counts every accepted connection whatever client made it; a FIFO observes the file channel where the platform has FIFOs.
 - **Capability profile:** the features the SDK with `schemaeval` declares. A SHORTFALL, no verdict where the profile supports every feature the case depends on, fails the run: the profile is the SDK's own declaration.
-- **Version gates:** judged against the SDK's declaration, `SupportedVersions`, never against its version decision. Release lines are always major.minor, including after 1.0; prereleases require explicit support.
+- **Version gates:** judged against the texts the SDK declares it applies, `SupportedVersions`, never against its version decision. Release lines are always major.minor, including after 1.0; a prerelease is declared by its full version.
 - **Applied text:** a conclusion names exactly the `-applied` release and revision, always compared first; then the revision must be a commit of the history of the specification repository holding the corpus (`git rev-parse --verify REV^{commit}` gives it back), and its `openbindings.md`, read with `git show`, must hash to `-applied-sha256`. The text checked out beside the corpus, and the index, play no part, so the spec checkout needs that revision in its history. An empty or malformed release or revision, a symbolic revision included, is a usage error.
 
 ## Exit codes

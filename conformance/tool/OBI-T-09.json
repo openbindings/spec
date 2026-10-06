@@ -1,5 +1,5 @@
 {
-  "rule": "OBI-T-10",
+  "rule": "OBI-T-09",
   "section": "10.3",
   "description": "A tool does not treat the apparent inaccuracy of an author claim, as section 5 lists them (examples, a binding's claim to realize its operation and its idempotent, a dependency's claim to consume its operation, and correspondence), as a document-rule violation.",
   "notes": "All tests are positive (valid: true). Each document carries a claim that a plausibility heuristic would doubt; such heuristics cannot establish a document-rule violation. The fixtures discriminate only heuristics over the document: a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture. Tools remain free to use the claims in their own decisions.",
@@ -26,7 +26,7 @@
       },
       "valid": true,
       "clauses": [
-        "OBI-T-10/c1c"
+        "OBI-T-09/c1c"
       ]
     },
     {
@@ -51,7 +51,7 @@
       },
       "valid": true,
       "clauses": [
-        "OBI-T-10/c1c"
+        "OBI-T-09/c1c"
       ]
     },
     {
@@ -76,13 +76,13 @@
       },
       "valid": true,
       "clauses": [
-        "OBI-T-10/c1c"
+        "OBI-T-09/c1c"
       ]
     },
     {
       "description": "an example whose input does not satisfy the input schema is a false claim, not a document-rule violation",
       "clauses": [
-        "OBI-T-10/c1a"
+        "OBI-T-09/c1a"
       ],
       "document": {
         "openbindings": "0.2.0",
@@ -104,7 +104,7 @@
     {
       "description": "an explicitly null example output against a string output is a false claim, not a violation",
       "clauses": [
-        "OBI-T-10/c1a"
+        "OBI-T-09/c1a"
       ],
       "document": {
         "openbindings": "0.2.0",
@@ -126,7 +126,7 @@
     {
       "description": "a binding whose opaque content looks, to a heuristic, like another operation's target is an unverified realization claim",
       "clauses": [
-        "OBI-T-10/c1b"
+        "OBI-T-09/c1b"
       ],
       "document": {
         "openbindings": "0.2.0",
@@ -155,7 +155,7 @@
     {
       "description": "a dependency on an operation whose description its consumption seems to contradict is an unverified claim",
       "clauses": [
-        "OBI-T-10/c1d"
+        "OBI-T-09/c1d"
       ],
       "document": {
         "openbindings": "0.2.0",
@@ -178,7 +178,7 @@
     {
       "description": "an alias adopting a published name the description seems to contradict is an unverified correspondence claim",
       "clauses": [
-        "OBI-T-10/c1e"
+        "OBI-T-09/c1e"
       ],
       "document": {
         "openbindings": "0.2.0",
