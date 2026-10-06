@@ -743,6 +743,164 @@
         "outcome": "interpreted"
       },
       "requiresSupports": "1.0.0"
+    },
+    {
+      "id": "T04-S-39",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c9.i4"
+      ],
+      "description": "Comparing kinds is interpretation (section 8.1): an unsupported line is refused, not compared.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "999.0.0",
+          "operations": {
+            "a": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "a.s": {
+              "operation": "a",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "a",
+              "kinds": [
+                "example.test@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "a.s"
+      },
+      "requiresUnsupported": "999.0.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T04-S-40",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line whose dependencies member has a type the current version forbids is refused when kinds are compared, not judged non-conformant.",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "dependencies": []
+        },
+        "dependency": "d",
+        "binding": "a.s"
+      },
+      "requiresUnsupported": "999.5.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T04-S-41",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c9.i4"
+      ],
+      "description": "Checking examples validates values (section 8.1): an unsupported line is refused, not checked.",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "999.0.0",
+          "operations": {
+            "a": {
+              "input": {
+                "type": "string"
+              },
+              "examples": {
+                "e": {
+                  "input": 1
+                }
+              }
+            }
+          }
+        },
+        "operation": "a"
+      },
+      "requiresUnsupported": "999.0.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T04-S-42",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when examples are checked, not judged non-conformant.",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "operations": []
+        },
+        "operation": "a"
+      },
+      "requiresUnsupported": "999.5.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T04-S-43",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when a name is resolved, not judged non-conformant.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "operations": []
+        },
+        "name": "a"
+      },
+      "requiresUnsupported": "999.5.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
+    },
+    {
+      "id": "T04-S-44",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when values are validated, not judged non-conformant.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "operations": []
+        },
+        "operation": "a",
+        "side": "input",
+        "values": [
+          1
+        ]
+      },
+      "requiresUnsupported": "999.5.0",
+      "expected": {
+        "outcome": "version-refusal"
+      }
     }
   ]
 }

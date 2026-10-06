@@ -40,6 +40,8 @@ const (
 	examples = `{"openbindings": "0.2.0", "operations": {"op": {"input": {"type": "string"}, "output": {"type": "integer"},
 		"examples": {"good": {"input": "x", "output": 1}, "bad": {"input": 5}}}}}`
 	future = `{"openbindings": "9.9.9", "operations": {}}`
+	// A document on another line that the 0.2 model cannot carry.
+	unshaped = `{"openbindings": "9.9.9", "operations": []}`
 )
 
 func evidence(overrides map[string]string) string {
@@ -110,6 +112,12 @@ var judgeControls = []judgeControl{
 		`{"given": {"document": ` + kinds + `, "dependency": "d", "binding": "b"}, "expected": {"outcome": "does-not-meet"}}`, Fail, "meets"},
 	{"check-dependency-kind: its correct twin, observed", "check-dependency-kind",
 		`{"given": {"document": ` + strings.Replace(kinds, `"example.openapi@1"]`, `"{retrieval-sentinel:http}"]`, 1) + `, "dependency": "d", "binding": "b", "retrievalSentinels": ["http"]}, "expected": {"outcome": "does-not-meet"}}`, Pass, ""},
+	{"check-dependency-kind: a refusal where an outcome is expected", "check-dependency-kind",
+		`{"given": {"document": ` + future + `, "dependency": "d", "binding": "b"}, "expected": {"outcome": "meets"}}`, Fail, "version-refusal"},
+	{"check-dependency-kind: an outcome where a refusal is expected", "check-dependency-kind",
+		`{"given": {"document": ` + kinds + `, "dependency": "d", "binding": "b"}, "expected": {"outcome": "version-refusal"}}`, Fail, "expected version-refusal"},
+	{"check-dependency-kind: a refusal (its correct twin)", "check-dependency-kind",
+		`{"given": {"document": ` + unshaped + `, "dependency": "d", "binding": "b"}, "expected": {"outcome": "version-refusal"}}`, Pass, ""},
 	// validate-operation-values
 	{"values: a wrong verdict", "validate-operation-values",
 		`{"given": {"document": ` + stringOp + `, "operation": "op", "side": "input", "values": ["a", "b"]}, "expected": {"results": ["valid", "valid"]}}`, Fail, "value 1"},
@@ -133,6 +141,8 @@ var judgeControls = []judgeControl{
 		`{"given": {"document": ` + future + `, "operation": "op", "side": "input", "values": ["a"]}, "expected": {"results": ["valid"]}}`, Fail, "version-refusal"},
 	{"values: values where a refusal is expected", "validate-operation-values",
 		`{"given": {"document": ` + stringOp + `, "operation": "op", "side": "input", "values": ["a"]}, "expected": {"outcome": "version-refusal"}}`, Fail, "expected version-refusal"},
+	{"values: a refusal of a document the model cannot carry (its correct twin)", "validate-operation-values",
+		`{"given": {"document": ` + unshaped + `, "operation": "op", "side": "input", "values": ["a"]}, "expected": {"outcome": "version-refusal"}}`, Pass, ""},
 	// check-examples
 	{"check-examples: a false claim expected to hold", "check-examples",
 		`{"given": {"document": ` + examples + `, "operation": "op"}, "expected": {"examples": {"good": {"input": "holds", "output": "holds"}, "bad": {"input": "holds"}}}}`, Fail, "false-claim"},
@@ -140,6 +150,14 @@ var judgeControls = []judgeControl{
 		`{"given": {"document": ` + examples + `, "operation": "op"}, "expected": {"examples": {"good": {"input": "holds", "output": "holds"}, "bad": {"input": "false-claim"}, "missing": {"input": "holds"}}}}`, Fail, "missing"},
 	{"check-examples: its correct twin", "check-examples",
 		`{"given": {"document": ` + examples + `, "operation": "op"}, "expected": {"examples": {"good": {"input": "holds", "output": "holds"}, "bad": {"input": "false-claim"}}}}`, Pass, ""},
+	{"check-examples: a refusal where results are expected", "check-examples",
+		`{"given": {"document": ` + future + `, "operation": "op"}, "expected": {"examples": {}}}`, Fail, "version-refusal"},
+	{"check-examples: results where a refusal is expected", "check-examples",
+		`{"given": {"document": ` + examples + `, "operation": "op"}, "expected": {"outcome": "version-refusal"}}`, Fail, "expected version-refusal"},
+	{"check-examples: a refusal (its correct twin)", "check-examples",
+		`{"given": {"document": ` + future + `, "operation": "op"}, "expected": {"outcome": "version-refusal"}}`, Pass, ""},
+	{"check-examples: a refusal of a document the model cannot carry (its correct twin)", "check-examples",
+		`{"given": {"document": ` + unshaped + `, "operation": "op"}, "expected": {"outcome": "version-refusal"}}`, Pass, ""},
 }
 
 func TestJudgeControls(t *testing.T) {
@@ -295,6 +313,24 @@ func TestParseExclusivityAtTheCallSite(t *testing.T) {
 		return &openbindings.Document{}, err
 	}
 	if status, detail := r.judge(Case{Action: "validate-document", Raw: raw}); status != Fail || !strings.Contains(detail, "does not refuse exclusively") {
+		t.Errorf("a ParseDocument refusal that comes with a document: %s %q; want FAIL", status, detail)
+	}
+}
+
+// For a document the model cannot carry, a ParseDocument refusal that comes
+// with a document fails judgeValues.
+func TestUncarriedRefusalAtTheCallSite(t *testing.T) {
+	defer func(previous func([]byte) (*openbindings.Document, error)) { parseDocument = previous }(parseDocument)
+	raw := []byte(`{"given": {"document": ` + unshaped + `, "operation": "op", "side": "input", "values": ["a"]}, "expected": {"outcome": "version-refusal"}}`)
+	r := &run{evaluator: schemaeval.New(schemaeval.Options{}), lines: []string{"0.2"}, strict: true}
+	if status, detail := r.judge(Case{Action: "validate-operation-values", Raw: raw}); status != Pass {
+		t.Fatalf("the SDK's own ParseDocument: %s %q", status, detail)
+	}
+	parseDocument = func(data []byte) (*openbindings.Document, error) {
+		_, err := openbindings.ParseDocument(data)
+		return &openbindings.Document{}, err
+	}
+	if status, detail := r.judge(Case{Action: "validate-operation-values", Raw: raw}); status != Fail || !strings.Contains(detail, "came with a document") {
 		t.Errorf("a ParseDocument refusal that comes with a document: %s %q; want FAIL", status, detail)
 	}
 }

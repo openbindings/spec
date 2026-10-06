@@ -71,6 +71,30 @@
       "violates": [
         "OBI-D-08"
       ]
+    },
+    {
+      "description": "binding references source HttpApi, which differs from the source key httpApi only in case",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask.http": {
+            "operation": "createTask",
+            "source": "HttpApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-08"
+      ]
     }
   ]
 }

@@ -437,6 +437,9 @@ function verifyScenarioV2(file, relPath, ctx) {
     const d = isObject(g.document) ? g.document : null;
     const nonConformant = Array.isArray(g.nonConformant) && g.nonConformant.length > 0;
     for (const r of g.nonConformant || []) if (!ctx.specRules.has(r)) err(`${label}: nonConformant names ${r}, which §10.2 does not define`);
+    // A refused document is not interpreted, so the names a case gives need
+    // not exist in it.
+    const refused = e.outcome === "version-refusal";
     const operations = d && isObject(d.operations) ? d.operations : {};
     switch (s.action) {
       case "validate-operation-values": {
@@ -448,7 +451,7 @@ function verifyScenarioV2(file, relPath, ctx) {
         for (const u of uris) {
           if (!/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u) || u.replace(/#$/, "").includes("#")) err(`${label}: resource URI ${JSON.stringify(u)} is not absolute without a fragment`);
         }
-        if (d && !nonConformant && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
+        if (d && !nonConformant && !refused && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
         break;
       }
       case "derive-form":
@@ -456,6 +459,7 @@ function verifyScenarioV2(file, relPath, ctx) {
         if (d && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
         break;
       case "check-examples": {
+        if (refused) break;
         const op = operations[g.operation];
         if (!isObject(op)) {
           err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
@@ -473,7 +477,7 @@ function verifyScenarioV2(file, relPath, ctx) {
         break;
       }
       case "check-dependency-kind": {
-        if (d && !nonConformant && (!isObject(d.dependencies) || !(g.dependency in d.dependencies) || !isObject(d.bindings) || !(g.binding in d.bindings))) {
+        if (d && !nonConformant && !refused && (!isObject(d.dependencies) || !(g.dependency in d.dependencies) || !isObject(d.bindings) || !(g.binding in d.bindings))) {
           err(`${label}: the named dependency or binding is not in the document`);
         }
         const text = JSON.stringify(g.document);

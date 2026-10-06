@@ -140,6 +140,24 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "dependency references operation createtask, which differs from the operation key createTask only in case",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "dependencies": {
+          "tasks": {
+            "operation": "createtask"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-11"
+      ]
     }
   ]
 }

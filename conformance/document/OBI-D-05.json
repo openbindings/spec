@@ -487,6 +487,30 @@
       "notViolated": [
         "OBI-D-12"
       ]
+    },
+    {
+      "description": "a relative $id on a subschema under properties is at an OBI position, since the walk enters the properties of a schema that declares no $id",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "f": {}
+        },
+        "schemas": {
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$id": "id.json",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-05"
+      ]
     }
   ]
 }

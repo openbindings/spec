@@ -458,7 +458,7 @@ func judgeKind(c Case) (string, string) {
 		}
 		data = observe.substitute(data)
 	}
-	doc, _, err := openbindings.ValidateDocument(data)
+	doc, report, err := openbindings.ValidateDocument(data)
 	meets := false
 	if doc != nil {
 		binding := doc.Bindings[s.Given.Binding]
@@ -471,7 +471,15 @@ func judgeKind(c Case) (string, string) {
 	}
 	switch {
 	case isRefusal(err):
+		if residue := refusalResidue(doc, report, err); len(residue) > 0 {
+			return failed("the version refusal came with %s", strings.Join(residue, ", "))
+		}
+		if s.Expected.Outcome == "version-refusal" {
+			return Pass, "version-refusal"
+		}
 		return failed("version-refusal; expected %s", s.Expected.Outcome)
+	case s.Expected.Outcome == "version-refusal":
+		return failed("interpreted; expected version-refusal")
 	case doc == nil && len(s.Given.NonConformant) == 0:
 		return failed("the model does not carry a conformant document (%v)", err)
 	case doc == nil:
@@ -485,11 +493,21 @@ func judgeKind(c Case) (string, string) {
 }
 
 // contracts decodes the document into the model and resolves its value
-// contracts, so Resolve's own version decision is the one exercised.
+// contracts, so Resolve's own version decision is the one exercised. A
+// document the model cannot carry is read as an application reads wire
+// bytes, through ParseDocument, whose version refusal then stands; it comes
+// with no document and no established violation.
 func (r *run) contracts(document json.RawMessage, resources []openbindings.Resource) (*openbindings.ValueContracts, *openbindings.Document, bool, error) {
 	var doc openbindings.Document
 	if err := json.Unmarshal(document, &doc); err != nil {
-		return nil, nil, false, err
+		parsed, perr := parseDocument(document)
+		if !isRefusal(perr) {
+			return nil, nil, false, err
+		}
+		if residue := parseRefusalResidue(parsed, perr); len(residue) > 0 {
+			return nil, nil, true, fmt.Errorf("ParseDocument's version refusal came with %s", strings.Join(residue, ", "))
+		}
+		return nil, nil, true, perr
 	}
 	compiler, err := openbindings.NewValueContractCompiler(r.evaluator, resources...)
 	if err != nil {
@@ -567,7 +585,7 @@ func (r *run) judgeValues(c Case) (string, string) {
 		}
 		return failed("version-refusal; expected value results")
 	case err != nil:
-		return failed("Resolve: %v", err)
+		return failed("the document's value contracts: %v", err)
 	case s.Expected.Outcome != "":
 		return failed("the document was interpreted; expected %s", s.Expected.Outcome)
 	}
@@ -653,6 +671,7 @@ func (r *run) judgeExamples(c Case) (string, string) {
 			Operation string          `json:"operation"`
 		} `json:"given"`
 		Expected struct {
+			Outcome  string                       `json:"outcome"`
 			Examples map[string]map[string]string `json:"examples"`
 		} `json:"expected"`
 	}
@@ -660,8 +679,19 @@ func (r *run) judgeExamples(c Case) (string, string) {
 		return failed("unreadable scenario: %v", err)
 	}
 	contracts, doc, carried, err := r.contracts(s.Given.Document, nil)
-	if !carried || err != nil {
+	switch {
+	case carried && isRefusal(err):
+		if residue := valueRefusalResidue(contracts, err); len(residue) > 0 {
+			return failed("the version refusal came with %s", strings.Join(residue, ", "))
+		}
+		if s.Expected.Outcome == "version-refusal" {
+			return Pass, "version-refusal"
+		}
+		return failed("version-refusal; expected example results")
+	case !carried || err != nil:
 		return failed("the document's value contracts: %v", err)
+	case s.Expected.Outcome != "":
+		return failed("the document was interpreted; expected %s", s.Expected.Outcome)
 	}
 	key, operation, found := doc.ResolveOperation(s.Given.Operation)
 	if !found {

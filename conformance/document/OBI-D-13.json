@@ -354,6 +354,47 @@
         "OBI-D-10",
         "OBI-D-13"
       ]
+    },
+    {
+      "description": "$id values that differ only in percent-encoding are different strings under this rule, which removes dot segments and an empty fragment and nothing else",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://example.com/task.json"
+          },
+          "B": {
+            "$id": "https://example.com/t%61sk.json"
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "a plain name declared twice within one schema resource that declares $id is outside this rule, which counts declarations in the document resource; the result is undefined, but the document conforms (section 7.4)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "R": {
+            "$id": "https://example.com/r.json",
+            "$defs": {
+              "a": {
+                "$anchor": "node"
+              },
+              "b": {
+                "$anchor": "node"
+              }
+            }
+          }
+        },
+        "operations": {
+          "f": {}
+        }
+      },
+      "valid": true
     }
   ]
 }

@@ -112,14 +112,29 @@
           "operations": {
             "op": {
               "input": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  }
+                }
               },
               "examples": {
                 "one": {
-                  "input": "a"
+                  "input": {
+                    "id": "a"
+                  }
                 },
                 "two": {
-                  "input": "b"
+                  "input": {
+                    "id": 7
+                  }
+                },
+                "three": {
+                  "input": {}
                 }
               }
             }
@@ -133,6 +148,9 @@
             "input": "holds"
           },
           "two": {
+            "input": "holds"
+          },
+          "three": {
             "input": "holds"
           }
         }
