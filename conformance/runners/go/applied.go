@@ -84,8 +84,8 @@ func (r *run) judgeNaming(report openbindings.ValidationReport) (string, string)
 		}
 		return Unverified, r.unverified
 	}
-	if report.Version != r.release || report.Revision != r.revision {
-		return failed("names %q@%q; the declared applied text is %q@%q", report.Version, report.Revision, r.release, r.revision)
+	if report.Release != r.release || report.Revision != r.revision {
+		return failed("names %q@%q; the declared applied text is %q@%q", report.Release, report.Revision, r.release, r.revision)
 	}
 	if !r.verified {
 		if r.strict {
