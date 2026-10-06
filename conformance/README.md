@@ -169,14 +169,6 @@ Version acceptance follows §8.1: a document is read under its `major.minor` lin
 
 The verifier rejects gates that contradict each other by support unit (a version required both supported and unsupported) or that require a version below the case's required lowest supported version.
 
-**Retired: `requiresMaxTested`.** Fixtures once gated acceptance-presuming positives on the SDK's tested range, a tested declaration rather than an acceptance declaration. Those positives moved to `requiresSupports`, and the forward-compatibility fixtures retired: across lines there is no forward-compatibility behavior to assert, and within a line the OBI-T-04 patch cases assert acceptance directly.
-
-### Retired format @1 and migrated fixtures
-
-The corpus once carried format `openbindings.core-tool-scenarios@1`, which admitted OBI-T-06 to OBI-T-09 only, with the outcome tokens `graph-unavailable` and `resolver-error` that the specification's vocabulary does not have. It is retired: every scenario file is `@2`, the cases it held keep their IDs, and the verifier rejects any other format. An implementation that needs to read both corpora while it migrates does so in its own adapter.
-
-The corpus's earlier OBI-T-04 validity fixtures (`tool/OBI-T-04.json`) migrated to scenarios, where a version refusal is its own outcome instead of `violates: ["OBI-T-04"]`; the OBI-T-01 fixtures, which showed only that an unfamiliar kind is valid, moved to `document/OBI-D-02.json`. `clauses.json` records each migrated case's earlier identity (`caseIdentity.migrated`), and the verifier checks that each record points at a case that exists.
-
 ## Clause IDs
 
 The specification numbers no clauses; the corpus does. A clause ID names one obligation, definition, permission, or incorporation inside a tool rule: `OBI-T-NN/cK`, with a letter for an alternative or specialization (`OBI-T-08/c6a`), `.pN` for a predicate of a definition (`OBI-T-04/c4.p1`), and `.iN` for an item another passage contributes by incorporation (`OBI-T-04/c9.i3`). The rules:
@@ -185,8 +177,6 @@ The specification numbers no clauses; the corpus does. A clause ID names one obl
 - **Line scope.** An ID is cited under the line the corpus tracks (0.2), as rule identifiers are (§10): another line may number its clauses differently.
 - **Stability.** When a rule's wording changes and its obligation is preserved, the ID stays and its segment text follows the new wording (OBI-T-09/c2 and c3b after OBI-T-09's 0.2.0 working-draft revision).
 - **Additions.** A new obligation takes the next unused number in its rule, so existing IDs never move (OBI-T-09/c4, added by that revision). A clause that splits keeps its number and gains letters.
-- **Retirement.** An obligation the text drops has its ID listed in `retiredClauses` with the revision and reason. A retired ID is never defined again or reused, and a case that cites one fails verification.
-- **Case IDs.** Scenario IDs follow the same discipline: a published ID is never reused, and a retired one is listed in `caseIdentity.retired`.
 
 ## Clause coverage
 

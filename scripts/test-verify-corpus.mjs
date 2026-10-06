@@ -65,15 +65,8 @@ const NEGATIVE = [
     editText("conformance/README.md", (t) => t.replace(/^\| OBI-T-03\/c2 \|.*\n/m, ""))],
   ["a case cites an undefined clause", "cites undefined clause",
     editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").clauses.push("OBI-T-07/c9"); })],
-  ["a case cites a retired clause", "cites retired clause",
-    (root) => {
-      editJSON("conformance/clauses.json", (c) => { c.retiredClauses.push({ id: "OBI-T-07/c9", reason: "control" }); })(root);
-      editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").clauses.push("OBI-T-07/c9"); })(root);
-    }],
   ["a case names no clause of its file's rule", "names no clause of OBI-T-07",
     editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").clauses = ["OBI-T-08/c1"]; })],
-  ["a case reuses a retired case ID", "reuses retired case ID",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-54").id = "T08-S-03"; })],
   ["a duplicate case ID", "duplicate case ID",
     editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-54").id = "T08-S-53"; })],
   ["an outcome token outside the specification's vocabulary", "does not match tool-scenario.schema.json",
@@ -139,8 +132,6 @@ const NEGATIVE = [
       editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-06").clauses.find((x) => x.id === "OBI-T-06/c1b").status = "contrast tools only"; })(root);
       editText("conformance/README.md", (t) => t.replace("| OBI-T-06/c1b | alternative | tested |", "| OBI-T-06/c1b | alternative | contrast tools only |"))(root);
     }],
-  ["a migration record that points at no case", "no such scenario",
-    editJSON("conformance/clauses.json", (c) => { c.caseIdentity.migrated[0].to = "scenarios/OBI-T-04.json#T04-S-99"; })],
   ["an unknown scenario format", "unsupported format",
     editJSON("conformance/scenarios/OBI-T-05.json", (f) => { f.format = "openbindings.core-tool-scenarios@3"; })],
   ["a definition given a unit status", "a definition has status definition",
@@ -149,26 +140,6 @@ const NEGATIVE = [
       editText("conformance/README.md", (t) => t.replace("| OBI-T-04/c5 | definition | definition |", "| OBI-T-04/c5 | definition | tested |"))(root);
     }],
 ];
-
-// The landed format @1 file for OBI-T-09 (its first case): format @1 is
-// retired, so the verifier must reject it.
-const V1_T09 = {
-  format: "openbindings.core-tool-scenarios@1",
-  rule: "OBI-T-09",
-  section: "10.3",
-  description: "A claimed overall conformance conclusion follows the document-rule evidence.",
-  scenarios: [
-    {
-      id: "T09-S-03",
-      description: "A known violation establishes non-conformance even if other checks remain incomplete",
-      action: "conclude-conformance",
-      given: { evidence: { "OBI-D-02": "satisfied", "OBI-D-03": "violated", "OBI-D-10": "inconclusive" } },
-      expected: { conclusion: "non-conformant" },
-    },
-  ],
-};
-NEGATIVE.push(["a retired format @1 scenario file", "unsupported format",
-  (root) => writeJSON(root, "conformance/scenarios/OBI-T-09.json", V1_T09)]);
 
 const POSITIVE = [["the unmodified corpus passes", null, () => {}]];
 

@@ -61,7 +61,7 @@ Registration of the well-known URI suffix per [RFC 8615](https://www.rfc-editor.
 
 ## 6. Conformance
 
-Server and client obligations are independent conformance classes: an implementation may claim either or both, and each claim is distinct from any core OpenBindings conformance claim. The rules above carry stable identifiers (`DISC-S-##`, `DISC-C-##`) under the same stability discipline as the core's rules: identifiers are never reused or renumbered, and retired rules keep their identifiers as historical references.
+Server and client obligations are independent conformance classes: an implementation may claim either or both, and each claim is distinct from any core OpenBindings conformance claim. The rules above carry stable identifiers (`DISC-S-##`, `DISC-C-##`) under the same stability discipline as the core's rules: identifiers are never reused or renumbered.
 
 ## 7. References
 

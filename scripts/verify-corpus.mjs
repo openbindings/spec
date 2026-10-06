@@ -7,25 +7,22 @@
 //      passage it names by anchor, into clauses: in order, with only white
 //      space and punctuation between segments. Clause IDs are unique, well
 //      formed, classed, and given a status the inventory defines; their
-//      references resolve; no retired ID is defined or cited.
+//      references resolve.
 //   2. The README's clause table lists exactly the inventory's clauses, with
 //      the same class and status.
 //   3. Every fixture and scenario file validates against its published JSON
 //      Schema (scenario files must declare format @2) and passes the
 //      semantic checks below: rule and section
 //      references, violates and notViolated (document rules only, disjoint,
-//      only on a negative fixture), case IDs (unique, of the file's rule, never a retired
-//      one), clause tags (defined, never retired, at least one of the file's
-//      rule), version gates (consistent by support unit, §8.1), per-action
+//      only on a negative fixture), case IDs (unique, of the file's rule),
+//      clause tags (defined, at least one of the file's rule), version gates (consistent by support unit, §8.1), per-action
 //      consistency (one result per value, one verdict per probe, named
 //      operations, bindings, and dependencies present unless the document is
 //      marked non-conformant, absolute resource URIs, complete example
 //      expectations, retrieval sentinels present), collision groups, and
 //      conclusions that follow from their evidence (a rule the evidence omits
 //      is not established).
-//   4. Every migrated case's record (clauses.json, caseIdentity) points at a
-//      case that exists.
-//   5. Every spec rule has a fixture or scenario file or is deferred in the
+//   4. Every spec rule has a fixture or scenario file or is deferred in the
 //      README, and every clause whose status claims cases has at least one.
 //
 // Exits 0 on success, 1 on any drift, 2 on usage/IO error.
@@ -295,13 +292,7 @@ function verifyInventory(md, inventory, specRules) {
       if (!items.has(ref)) err(`${item.id}: refers to unknown clause ${ref}`);
     }
   }
-  const retired = new Set();
-  for (const r of inventory.retiredClauses || []) {
-    if (!CLAUSE_ID.test(r.id ?? "") || !r.reason) err(`clauses.json: retired clause entry ${JSON.stringify(r)} needs an ID and a reason`);
-    if (items.has(r.id)) err(`clauses.json: retired clause ${r.id} is defined again`);
-    retired.add(r.id);
-  }
-  return { items, retired };
+  return { items };
 }
 
 // README clause table: | OBI-T-NN/cK | class | status | notes |
@@ -362,8 +353,7 @@ function checkClauseTags(tags, fileRule, label, ctx) {
     return;
   }
   for (const c of tags) {
-    if (ctx.retired.has(c)) err(`${label}: cites retired clause ${c}`);
-    else if (!ctx.items.has(c)) err(`${label}: cites undefined clause ${c}`);
+    if (!ctx.items.has(c)) err(`${label}: cites undefined clause ${c}`);
     ctx.citations.set(c, (ctx.citations.get(c) || 0) + 1);
   }
   if (!tags.some((c) => c.startsWith(`${fileRule}/`))) err(`${label}: names no clause of ${fileRule}`);
@@ -416,7 +406,6 @@ function recordCaseId(id, rule, label, ctx) {
   if (typeof id !== "string" || !expected.test(id)) err(`${label}: case ID ${JSON.stringify(id)} does not match ${rule}`);
   else if (ctx.caseIds.has(id)) err(`${label}: duplicate case ID ${id} (also ${ctx.caseIds.get(id)})`);
   else ctx.caseIds.set(id, label);
-  if (ctx.retiredCases.has(id)) err(`${label}: reuses retired case ID ${id}`);
 }
 
 function checkConclusion(evidence, conclusion, label, ctx) {
@@ -523,17 +512,15 @@ const md = readText(SPEC_MD);
 const readme = readText(README);
 const specRules = extractSpecRules(md);
 const inventory = JSON.parse(readText(CLAUSES));
-const { items, retired } = verifyInventory(md, inventory, specRules);
+const { items } = verifyInventory(md, inventory, specRules);
 const tableRows = verifyReadmeTable(readme, items);
 const deferredRules = extractDeferredRules(readme);
 
 const ctx = {
   specRules,
   items,
-  retired,
   citations: new Map(),
   caseIds: new Map(),
-  retiredCases: new Set((inventory.caseIdentity?.retired || []).map((r) => r.id)),
   groups: new Map(),
   fixtureCases: new Map(),
   scenarioCases: new Map(),
@@ -583,22 +570,6 @@ for (const { relPath, absPath } of scenarioFiles) {
 for (const [group, members] of ctx.groups) if (members.length < 2) err(`collision group ${group} has ${members.length} member`);
 
 runSchemaJobs();
-
-// Migrated cases: each record points at a case that exists.
-const migratedFrom = new Set();
-for (const m of inventory.caseIdentity?.migrated || []) {
-  if (migratedFrom.has(m.from)) err(`clauses.json: migration source ${m.from} appears twice`);
-  migratedFrom.add(m.from);
-  const [path, anchor] = m.to.split("#");
-  if (path.startsWith("scenarios/")) {
-    const c = ctx.scenarioCases.get(anchor);
-    if (!c || c.file !== path) err(`clauses.json: migration ${m.from} -> ${m.to}: no such scenario`);
-  } else {
-    const t = ctx.fixtureCases.get(m.to);
-    if (!t) err(`clauses.json: migration ${m.from} -> ${m.to}: no such fixture test`);
-    else if (t.description !== m.fromDescription) err(`clauses.json: migration ${m.from} -> ${m.to}: the test's description differs from the migrated one`);
-  }
-}
 
 // Rule coverage: every spec rule has a file or is deferred in the README.
 for (const ruleId of specRules.keys()) {
