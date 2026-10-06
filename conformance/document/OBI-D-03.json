@@ -327,6 +327,95 @@
       "violates": [
         "OBI-D-03"
       ]
+    },
+    {
+      "description": "operation key ending in a newline: the pattern is an ECMA-262 regular expression matched against the whole name, so a trailing newline fails it (section 5)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask\n": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
+    },
+    {
+      "description": "operation alias containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "aliases": [
+              "create task"
+            ]
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
+    },
+    {
+      "description": "binding key containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {}
+        },
+        "sources": {
+          "httpApi": {
+            "kind": "example.openapi@1"
+          }
+        },
+        "bindings": {
+          "createTask http": {
+            "operation": "createTask",
+            "source": "httpApi"
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
+    },
+    {
+      "description": "schema key starting with hyphen",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "-Task": {
+            "type": "object"
+          }
+        },
+        "operations": {
+          "createTask": {}
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
+    },
+    {
+      "description": "example key containing whitespace",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "createTask": {
+            "examples": {
+              "basic example": {}
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-03"
+      ]
     }
   ]
 }

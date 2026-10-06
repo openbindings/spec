@@ -388,7 +388,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
     },
     {
       "description": "count keywords take a non-negative integer, judged by exact value (section 10), so minLength 1.0 and maxProperties 0 are valid",
@@ -454,6 +457,94 @@
       ],
       "notViolated": [
         "OBI-D-13"
+      ]
+    },
+    {
+      "description": "the array form of items (draft-07 and 2019-09) fails the 2020-12 meta-schema, which takes a single schema there (section 5.2)",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "an $anchor beginning with an underscore passes the 2020-12 meta-schema, whose anchor pattern admits it (the 2019-09 pattern requires a leading letter)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$anchor": "_task",
+            "type": "object"
+          }
+        },
+        "operations": {
+          "op": {
+            "input": {
+              "$ref": "#_task"
+            }
+          }
+        }
+      },
+      "valid": true
+    },
+    {
+      "description": "the meta-schemas validate inside schemas that declare $id, nested ones included, so a type of 42 there fails (section 7.5)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "Task": {
+            "$id": "https://example.com/task.schema.json",
+            "type": "object",
+            "$defs": {
+              "Inner": {
+                "$id": "https://example.com/inner.schema.json",
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": 42
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
+      ]
+    },
+    {
+      "description": "a count keyword with a fractional part is not a non-negative integer, so minLength 1.5 fails the meta-schemas",
+      "document": {
+        "openbindings": "0.2.0",
+        "operations": {
+          "op": {
+            "input": {
+              "type": "string",
+              "minLength": 1.5
+            }
+          }
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-10"
       ]
     }
   ]

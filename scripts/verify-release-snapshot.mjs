@@ -61,6 +61,7 @@ try {
       "IPR.md",
       "conformance/README.md",
       "conformance/manifest.json",
+      "conformance/clauses.json",
       "conformance/fixture.schema.json",
       "conformance/tool-scenario.schema.json",
       "conformance/document/OBI-D-01.json",

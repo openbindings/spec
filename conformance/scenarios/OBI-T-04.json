@@ -687,6 +687,62 @@
         "outcome": "version-refusal"
       },
       "requiresUnsupported": "999.5.0"
+    },
+    {
+      "id": "T04-S-36",
+      "clauses": [
+        "OBI-T-04/c2",
+        "OBI-T-04/c3"
+      ],
+      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused, not judged non-conformant.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "999.5.0",
+          "operations": []
+        }
+      },
+      "expected": {
+        "outcome": "version-refusal"
+      },
+      "requiresUnsupported": "999.5.0"
+    },
+    {
+      "id": "T04-S-37",
+      "clauses": [
+        "OBI-T-04/c1a"
+      ],
+      "description": "A release of another line the tool declares is interpreted, not refused. No conclusion is asserted: the corpus has no text for that line.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "1.0.0",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "interpreted"
+      },
+      "requiresSupports": "1.0.0"
+    },
+    {
+      "id": "T04-S-38",
+      "clauses": [
+        "OBI-T-04/c1a",
+        "OBI-T-04/c9.i3"
+      ],
+      "description": "Build metadata is ignored in the decision for another line the tool declares. No conclusion is asserted: the corpus has no text for that line.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "1.0.0+build.123",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "interpreted"
+      },
+      "requiresSupports": "1.0.0"
     }
   ]
 }

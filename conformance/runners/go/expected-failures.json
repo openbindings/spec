@@ -11,6 +11,16 @@
       "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
     },
     {
+      "case": "T04-S-37",
+      "signature": "gate: requires a tool declaring support for 1.0.0",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
+    },
+    {
+      "case": "T04-S-38",
+      "signature": "gate: requires a tool declaring support for 1.0.0",
+      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
+    },
+    {
       "case": "T05-S-01",
       "signature": "this SDK derives no forms from a schema (OBI-T-05 has no executor here)",
       "reason": "The Go core derives no forms from a schema: OBI-T-05 has no executor (corpus README, Designated executors)."
@@ -33,16 +43,6 @@
     {
       "case": "T09-S-09",
       "signature": "gate: requires a tool declaring support for 0.2.0-rc.1",
-      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
-    },
-    {
-      "case": "document/OBI-D-09.json#/tests/1",
-      "signature": "gate: requires a tool declaring support for 1.0.0",
-      "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
-    },
-    {
-      "case": "document/OBI-D-09.json#/tests/2",
-      "signature": "gate: requires a tool declaring support for 1.0.0",
       "reason": "Gated out by the core's declaration (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
     }
   ]

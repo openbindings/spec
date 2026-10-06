@@ -2,7 +2,7 @@
   "rule": "OBI-D-09",
   "section": "10.2",
   "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
-  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §8.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected.",
+  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §8.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected. Every positive here is on the 0.2 line, the only line whose text this corpus has: a fixture asserts a verdict, and a version on another line is judged only under that line's text. Versions of other lines are OBI-T-04 scenarios with the outcome interpreted (T04-S-37, T04-S-38).",
   "tests": [
     {
       "description": "current released spec version",
@@ -13,22 +13,20 @@
       "valid": true
     },
     {
-      "description": "1.0.0 release version",
+      "description": "release version whose patch number exceeds 64 bits: SemVer 2.0.0 sets no bound on a numeric identifier, and the patch number carries no meaning (section 8.1)",
       "document": {
-        "openbindings": "1.0.0",
+        "openbindings": "0.2.99999999999999999999",
         "operations": {}
       },
-      "valid": true,
-      "requiresSupports": "1.0.0"
+      "valid": true
     },
     {
       "description": "version with build metadata",
       "document": {
-        "openbindings": "1.0.0+build.123",
+        "openbindings": "0.2.0+build.123",
         "operations": {}
       },
-      "valid": true,
-      "requiresSupports": "1.0.0"
+      "valid": true
     },
     {
       "description": "two-component version is not SemVer 2.0.0",
@@ -111,6 +109,28 @@
       "description": "leading-zero pre-release identifier (forbidden by SemVer 2.0.0 §9)",
       "document": {
         "openbindings": "1.0.0-01",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "minor version with a leading zero is not SemVer 2.0.0, whose X.Y.Z numbers carry no leading zeros",
+      "document": {
+        "openbindings": "0.02.0",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "version followed by a newline is not a SemVer 2.0.0 string",
+      "document": {
+        "openbindings": "0.2.0\n",
         "operations": {}
       },
       "valid": false,

@@ -155,7 +155,10 @@
           }
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
     },
     {
       "description": "two schemas entries declare the same plain name in the document's resource",
@@ -319,7 +322,10 @@
           "f": {}
         }
       },
-      "valid": false
+      "valid": false,
+      "violates": [
+        "OBI-D-13"
+      ]
     },
     {
       "description": "an object at a schema position is a schema even when the meta-schemas reject it, so its $anchor counts and duplicates another entry's (section 7)",
