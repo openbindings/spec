@@ -72,7 +72,7 @@
         "id": {
           "type": "string",
           "pattern": "^T[0-9]{2}-S-[0-9]{2}$",
-          "description": "T<rule>-S-<n>: the file's rule number and a number never reused within the corpus (clauses.json, caseIdentity)."
+          "description": "T<rule>-S-<n>: the file's rule number and a number unique within the corpus."
         },
         "clauses": {
           "type": "array",
