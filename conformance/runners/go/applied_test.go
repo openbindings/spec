@@ -102,8 +102,8 @@ func TestVerifyApplied(t *testing.T) {
 // The name a conclusion gives is compared always, before verification: a
 // wrong name fails even when the pinned bytes match.
 func TestJudgeNaming(t *testing.T) {
-	report := func(version, revision string) openbindings.ValidationReport {
-		return openbindings.ValidationReport{Conclusion: openbindings.ConclusionConformant, Version: version, Revision: revision}
+	report := func(release, revision string) openbindings.ValidationReport {
+		return openbindings.ValidationReport{Conclusion: openbindings.ConclusionConformant, Release: release, Revision: revision}
 	}
 	verified := &run{release: "0.2.0", revision: rev, verified: true, strict: true}
 	for _, c := range []struct {

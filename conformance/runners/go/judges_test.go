@@ -224,7 +224,7 @@ func TestNamingAtTheCallSite(t *testing.T) {
 		t.Fatal(err)
 	}
 	raw := []byte(`{"given": {"document": ` + conformingDocument + `}, "expected": {"outcome": "conformant", "namesAppliedText": true}}`)
-	declared := &run{evaluator: schemaeval.New(schemaeval.Options{}), lines: []string{"0.2"}, strict: true, release: report.Version, revision: report.Revision, verified: true}
+	declared := &run{evaluator: schemaeval.New(schemaeval.Options{}), lines: []string{"0.2"}, strict: true, release: report.Release, revision: report.Revision, verified: true}
 	if status, detail := declared.judge(Case{Action: "validate-document", Raw: raw}); status != Pass {
 		t.Errorf("the SDK's own applied text: %s %q", status, detail)
 	}
