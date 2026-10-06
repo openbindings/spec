@@ -15,13 +15,3 @@ requirements.
 | 5. Target and binding content | §3 |
 | 6. Interaction and lifecycle | §4, §6 |
 | 7. Value correspondence, success, failure and runtime choices | §§4 to 7, §9 |
-
-## Migration from pre-kind drafts
-
-| Earlier draft | Candidate |
-| --- | --- |
-| `source.bindingSpec` | `source.kind` |
-| An OAS object or string as `source.content` | `source.content.document` |
-| Top-level `source.location` | `source.content.location` |
-| `binding.selector: "#/paths/..."` | `binding.content.target: "/paths/..."`, a string-form JSON Pointer without `#` |
-| Core `inputTransform` and `outputTransform` | `binding.content.input` and `output`, JSONata expressions; `failure` maps a non-2xx response into an output |

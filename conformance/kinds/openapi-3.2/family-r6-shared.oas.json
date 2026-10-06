@@ -1,8 +1,0 @@
-{
-  "description": "Interpreted separately as Parameter and Response",
-  "name": "q",
-  "in": "query",
-  "content": {
-    "application/json": {}
-  }
-}

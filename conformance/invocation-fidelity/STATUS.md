@@ -83,7 +83,6 @@ proposal is a separate, advance design decision.
 
 | Family | Concrete binding evidence | Joined synthesis/operation evidence | Protocol-blind differential | Highest-priority remaining abstraction debt |
 | --- | --- | --- | --- | --- |
-| OpenAPI | Independent native-client and loopback HTTP scenarios partitioned across the 3.0 and 3.1 siblings, including bounded non-2xx responses, exact raw-byte fixtures, configured media ranges, dynamic objects, declaration-complex JSON bodies, and schema-omitted OAS 3.0 byte bodies. | The complete first `openbindings.openapi-3.0@1` and `openbindings.openapi-3.1@1` siblings are joined in both SDKs over the standalone runtime. | Passes for protocol-blind Base64 request and response boundaries, including exact schema-omitted OAS 3.0 representations; artifact-encoded strings; configured request-media ranges and pre-input context; explicit dynamic JSON/form/multipart objects; declaration-complex exact JSON values; and the prior request/response slice. | Artifact-defined codecs without a generic application-value decoder remain explicit coverage limits; omitted-open form/multipart schemas remain an authority-backed audit target rather than being inferred from corpus frequency. |
 | AsyncAPI | Standalone artifact runtimes, built-in HTTP/WebSocket drivers, injectable arbitrary-protocol drivers, separately packaged MQTT 3.1.1 and Kafka profiles, and native integration peers. | The complete first `openbindings.asyncapi@1` candidate is joined in both SDKs over the standalone runtime for AsyncAPI 2.0.0–2.6.0 and 3.0.0–3.1.0. | The supported 250-artifact corpus envelope is exactly equal across SDKs for 247/247 valid artifacts. MQTT and Kafka both have live TypeScript/Go and real OpenBindings-bridge evidence. Kafka additionally proves topic/key/group/client interpretation, transient broker-loss recovery without losing prior output, and SCRAM-SHA-256 supplied through abstract username/password context without protocol fields crossing the operation boundary. | Message headers and unavailable codecs remain explicit value-boundary exclusions. Protocols without a qualified installed driver remain execution gaps. MQTT TLS/X509, persistent sessions, and Last Will retain their recorded boundaries. Kafka TLS/X509, SASL/PLAIN, SCRAM-SHA-512, Schema Registry framing, tombstones, dynamic per-record keys, and replies retain explicit excluded or unqualified cells in its authority matrix. |
 | gRPC | Real in-memory gRPC server in Go, scripted runtime in TypeScript, plus native integration suites. | Joined in both SDKs. | Passes for streaming partial failure, lower-layer rich-status verification, and later-input cancellation without exposing native status. | Artifact-coverage loop only; no known abstraction-boundary debt. |
 | Connect | Scripted unary and streaming Connect peers. | Joined in both SDKs. | Passes for values and partial failure while END_STREAM evidence remains below the bridge. | Artifact-coverage loop only; no known abstraction-boundary debt. |
@@ -92,36 +91,14 @@ proposal is a separate, advance design decision.
 | Usage | Controlled process runtimes plus native process integration suites. | Joined in both SDKs. | Passes for output values, exit/signal failure, and decode failure. | Artifact-coverage loop only; process evidence remains below the bridge. |
 | Operation Graph | Portable identity-law and execution corpus against nested operation invocations. | Not applicable: the graph composes operations already declared by its containing OBI and carries no standalone operation contract to synthesize. | Passes through direct-versus-wrapped identity cases in both SDKs. | Deliberately invocation-only; advertising standalone synthesis would require invented schemas. |
 
-There are 30 fidelity scenarios across eight active binding-specification
-slices representing seven brownfield synthesis families, all joined by both
+There are 22 fidelity scenarios across six active binding-specification
+slices, one for each brownfield synthesis family except OpenAPI, all joined by both
 reference SDKs. The separate Operation Graph
 identity-law corpus covers the eighth candidate family. The joined slice
 closes the abstraction-boundary proof for its currently declared coverage. It
 does **not** claim that every artifact in the wild is covered; coverage
 exclusions and implementation losses continue through the measured family
 development loop.
-
-The OpenAPI qualification evaluated 170 independently sourced GitHub artifacts
-spanning 1,301 semantic signatures. The corpus is an internal qualification
-asset and is not redistributed; its sealed holdout cohorts are committed by
-the SHA-256 seals recorded in [`../EVIDENCE-POLICY.md`](../EVIDENCE-POLICY.md). Of the 152-artifact supported envelope,
-151 produced structurally identical Go and TypeScript OBIs and exhaustive
-coverage ledgers (99.34%); the sole residual was a validation-equivalent JSON
-Schema `$ref` versus inline representation, not an invocation difference.
-Successive development passes closed routed-input collisions, response ranges,
-raw request and response bytes, dynamic objects, and declaration-complex JSON.
-The publication lifecycle was exercised against development drafts during
-those passes; the resulting artifacts were withdrawn on 2026-08-11 and are
-not regarded as publications, and no binding-specification identifier is
-regarded as minted (see the publication-lifecycle reset entry in
-`history/0.2-development-log.md`). Thirteen
-authority-authored wire cases, the hash-selected 25-repository semantic
-holdout, and the 40-repository development differential produced no
-OpenBindings wire or application mismatch. That semantic holdout is distinct
-from the three later acquisition-boundary cohorts sealed for release
-qualification, which together hold 66 supported artifacts with exact parity;
-their seals are recorded in [`../EVIDENCE-POLICY.md`](../EVIDENCE-POLICY.md). No result demonstrated a Core-model or
-binding-specification-concept limitation.
 
 The AsyncAPI qualification evaluated 250 immutable corpus artifacts from 250
 independent GitHub repositories and 206 owners, split into a 187-repository

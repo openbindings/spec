@@ -1,7 +1,0 @@
-{
-  "name": "openbindings-kind-jsonata-probe",
-  "private": true,
-  "type": "module",
-  "dependencies": { "jsonata": "2.1.1" },
-  "scripts": { "test": "node --test test.mjs" }
-}

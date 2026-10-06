@@ -35,7 +35,7 @@ Two pre-kind candidate subcorpora live alongside the current core corpus, each w
 
 | Subcorpus | Covers | Verifier |
 |---|---|---|
-| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules), portable processor scenarios covering every P-rule, and portable artifact-to-OBI synthesis accounting for the ten standalone brownfield synthesis binding specifications — `openbindings.usage@1`, `openbindings.openapi-2.0@1`, `openbindings.openapi-3.0@1`, `openbindings.openapi-3.1@1`, `openbindings.openapi-3.2@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, `openbindings.graphql@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
+| [`binding-specs/`](binding-specs/README.md) | Source rules (D-rules), portable processor scenarios covering every P-rule, and portable artifact-to-OBI synthesis accounting for the six standalone brownfield synthesis binding specifications — `openbindings.usage@1`, `openbindings.mcp@1`, `openbindings.grpc@1`, `openbindings.connect@1`, `openbindings.asyncapi@1`, `openbindings.graphql@1` | `node scripts/verify-binding-specs.mjs` (shape and coverage; family adapters execute behavior) |
 | [`operation-graph/`](operation-graph/README.md) | `openbindings.operation-graph@1` — graph well-formedness rules, source rules, and replayable executions | `node scripts/verify-operation-graph.mjs` (+ reference runner) |
 
 ## Layout

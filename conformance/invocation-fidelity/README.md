@@ -35,22 +35,21 @@ application-authored failure value identified by governing binding rules. It
 is never a native-evidence catchall. Frame-relay tests likewise validate an
 optional invoker interface rather than enlarge the OBI document model.
 
-The active slices cover the seven candidate families that accept a standalone
-brownfield source from which an application operation contract can be derived:
-OpenAPI, AsyncAPI, gRPC, Connect, GraphQL, MCP, and Usage. Every slice executes
-the joined source → synthesis → operation-invocation path in both reference
-SDKs. OpenAPI also runs an independent native-client differential; the other
-families use controlled protocol peers or process runtimes, with native
+Seven candidate families accept a standalone brownfield source from which an
+application operation contract can be derived: OpenAPI, AsyncAPI, gRPC,
+Connect, GraphQL, MCP, and Usage. The active slices cover all of them except
+OpenAPI, whose candidates were rewritten for the current core and have no
+slices here. Every slice executes the joined source → synthesis →
+operation-invocation path in both reference SDKs. The families use controlled
+protocol peers or process runtimes, with native
 integration suites supplying additional lower-layer evidence. Exact statuses,
 metadata, envelopes, frames, bytes, and process results are asserted only in
 lower artifact runtimes, protocol harnesses, or out-of-band tooling. The
 abstract assertions are application values, ordering, partial outputs, and
 completion behavior.
 
-The current corpus contains 30 scenarios in eight binding-specification
-slices: separate OpenAPI 3.0 and 3.1 files plus the six other standalone
-family files. Those eight files still represent the seven candidate families
-listed above; partitioning the OpenAPI family does not create another family.
+The current corpus contains 22 scenarios in six binding-specification
+slices, one file per covered family.
 
 The project also publishes `openbindings.operation-graph@1`. It is an
 invocation-only composition binding, not an eighth standalone synthesis

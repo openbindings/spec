@@ -88,8 +88,6 @@
       "evidence": [
         "../invocation-fidelity/README.md",
         "../invocation-fidelity/STATUS.md",
-        "../invocation-fidelity/openapi-3.0.json",
-        "../invocation-fidelity/openapi-3.1.json",
         "../invocation-fidelity/grpc.json",
         "../invocation-fidelity/connect.json",
         "../invocation-fidelity/graphql.json",
@@ -97,7 +95,7 @@
         "../invocation-fidelity/usage.json",
         "../invocation-fidelity/asyncapi.json"
       ],
-      "notes": "All seven standalone brownfield synthesis candidate families now run portable source-to-synthesis-to-operation-invocation fidelity scenarios in both reference SDKs. The eighth candidate family, Operation Graph, is invocation-only and is covered by its portable identity-law and execution corpus. The abstract assertions cover application values, partial outputs, and completion without native facts; controlled peers and native differential/integration suites retain the lower-layer oracle separately. Remaining family work is measured artifact coverage, not a known abstraction-boundary gap."
+      "notes": "The AsyncAPI, gRPC, Connect, GraphQL, MCP and Usage candidate families run portable source-to-synthesis-to-operation-invocation fidelity scenarios in both reference SDKs. The eighth candidate family, Operation Graph, is invocation-only and is covered by its portable identity-law and execution corpus. The abstract assertions cover application values, partial outputs, and completion without native facts; controlled peers and native differential/integration suites retain the lower-layer oracle separately. Remaining family work is measured artifact coverage, not a known abstraction-boundary gap."
     },
     {
       "id": "AF-BINDING-002",
@@ -274,27 +272,6 @@
         "../invocation-fidelity"
       ],
       "notes": "The abstract record now has no framework message or diagnostics member. Protocol and implementation evidence stays below the bridge. A binding rule may preserve deliberately authored application prose only as opaque data (or within an application-authored data value); it is never promoted into framework presentation. Portable fidelity scenarios assert both sides of the boundary."
-    },
-    {
-      "id": "AF-SYNTH-002",
-      "layer": "synthesis",
-      "scope": "OpenAPI same-named input declarations",
-      "issue": "An earlier OpenAPI candidate draft flattened parameters and body properties into one source object, forcing synthesis to exclude independently declared same-named values even though the artifact retained enough authority to invoke them faithfully.",
-      "classification": "binding-internal",
-      "ordinaryCallerDependency": true,
-      "owner": "OpenAPI binding candidate and reference synthesizers",
-      "action": "revise",
-      "normativeImpact": "binding-candidate",
-      "status": "resolved",
-      "evidence": [
-        "../../binding-specs/openapi-3.1/openbindings.openapi-3.1.md",
-        "../binding-specs/processor/openapi-3.1.json",
-        "../binding-specs/synthesis/openapi-3.1.json",
-        "../../../openbindings-go/formats/openapi/native_differential_test.go",
-        "../../../openbindings-ts/packages/openapi/src/native-differential.test.ts",
-        "../../../ob/internal/app/openapi_v2_fidelity_test.go"
-      ],
-      "notes": "The first @1 candidate uses deterministic protocol-neutral operation fields plus a binding-private routed source value produced by the pre-kind draft's inputTransform. The binding consumes the exact OpenAPI identities below the operation boundary. A varied 100-repository GitHub corpus reduced flattening-collision exclusions from 119 to zero in TypeScript and 115 to zero in Go without new cross-SDK mismatches. No Core or OBI document-model change was required."
     },
     {
       "id": "AF-BINDING-005",
