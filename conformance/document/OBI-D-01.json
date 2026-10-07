@@ -252,6 +252,70 @@
         "OBI-D-12",
         "OBI-D-13"
       ]
+    },
+    {
+      "description": "an ill-formed byte in another member's string leaves the declared version 0.2.0 in place (section 8.1, Version declaration), and the text is non-conformant",
+      "documentBase64": "eyJvcGVuYmluZGluZ3MiOiIwLjIuMCIsImRlc2NyaXB0aW9uIjoieP8iLCJvcGVyYXRpb25zIjp7fX0=",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "a leading byte-order mark means the text declares no version, so this line's rules judge it, whatever version its openbindings member holds",
+      "documentBase64": "77u/eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwib3BlcmF0aW9ucyI6e319",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "UTF-16 text without a byte-order mark declares no version, since its zero bytes break the JSON grammar",
+      "documentBase64": "ewAiAG8AcABlAG4AYgBpAG4AZABpAG4AZwBzACIAOgAiADkAOQA5AC4AMAAuADAAIgAsACIAbwBwAGUAcgBhAHQAaQBvAG4AcwAiADoAewB9AH0A",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "an ill-formed byte inside the openbindings value leaves no SemVer version, so the text declares none",
+      "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC7/MCIsIm9wZXJhdGlvbnMiOnt9fQ==",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "an ill-formed byte within an escape breaks the JSON grammar, so the text declares no version",
+      "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwiZGVzY3JpcHRpb24iOiJcdTEy/zQiLCJvcGVyYXRpb25zIjp7fX0=",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "an ill-formed byte between tokens breaks the JSON grammar, so the text declares no version",
+      "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiz/Im9wZXJhdGlvbnMiOnt9fQ==",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "an ill-formed byte in the member name leaves no openbindings member, so the text declares no version",
+      "documentBase64": "eyJvcGVuYmluZGluZ3P/IjoiOTk5LjAuMCIsIm9wZXJhdGlvbnMiOnt9fQ==",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
+    },
+    {
+      "description": "a repeated openbindings member declares no version, whatever its values, so this line's rules judge the text",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"openbindings\":\"999.0.0\",\"operations\":{}}",
+      "valid": false,
+      "violates": [
+        "OBI-D-01"
+      ]
     }
   ]
 }

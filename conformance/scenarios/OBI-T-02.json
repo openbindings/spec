@@ -79,7 +79,7 @@
       "clauses": [
         "OBI-T-02/c1"
       ],
-      "description": "The version field is an interface label; it never enters the version decision.",
+      "description": "The version field is an interface label; it never names the line a document declares.",
       "action": "validate-document",
       "given": {
         "document": {
@@ -88,8 +88,6 @@
           "operations": {}
         }
       },
-      "requiresSupports": "0.2.0",
-      "requiresUnsupported": "999.0.0",
       "expected": {
         "outcome": "conformant"
       }

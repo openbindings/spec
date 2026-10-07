@@ -6,19 +6,19 @@ The corpus is reference material, not part of the specification (per `openbindin
 
 ## Status
 
-**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-11, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 61 obligation-type clauses, 51 are tested by discriminating cases the designated executor runs (a parent clause counts as tested when its alternatives or specializations are, or, where the tool's declaration selects one alternative, when the exercised one is), one through adapter code, and 9 hold a recorded status short of that: composition only (4), contrast tools only (2), expressible with no executor (2), not portably testable (1). Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-10 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
+**Document-validity coverage is complete for every OBI-D rule. Every tool rule, OBI-T-01 to OBI-T-10, is split into clauses in [`clauses.json`](clauses.json), and every clause carries a status that says what tests it ([Clause coverage](#clause-coverage)). Of the 52 obligation-type clauses, 43 are tested by discriminating cases the designated executor runs (a parent clause counts as tested when its alternatives or specializations are, or, where the tool's declaration selects one alternative, when the exercised one is), one through adapter code, and 8 hold a recorded status short of that: composition only (4), expressible with no executor (2), contrast tools only (1), not portably testable (1). Tool cases are portable scenarios in format `@2` (`scenarios/`), plus validity fixtures for OBI-T-03 and OBI-T-09 (`tool/`). See `manifest.json` for current counts, per file, per action, and per clause.**
 
 | Rule range | Coverage |
 |---|---|
-| OBI-D-01 | Complete. The fixture format's mutually exclusive `documentText` and `documentBase64` carriages preserve exact input text/bytes, covering malformed JSON (a truncation, a `NaN` literal, a trailing comma), malformed UTF-8, a leading UTF-8 BOM, and duplicate keys at root and nested positions, including a key that repeats another only once its escape is decoded (RFC 8259 §8.3), in addition to ordinary positives. A text that violates OBI-D-01 is non-conformant through it alone, whatever the rest would violate (§10, "The document and its data"). |
+| OBI-D-01 | Complete. The fixture format's mutually exclusive `documentText` and `documentBase64` carriages preserve exact input text/bytes, covering malformed JSON (a truncation, a `NaN` literal, a trailing comma), malformed UTF-8, a leading UTF-8 BOM, and duplicate keys at root and nested positions, including a key that repeats another only once its escape is decoded (RFC 8259 §8.3), in addition to ordinary positives. Texts whose bytes leave no version declared (§8.1, Version declaration: a byte-order mark, UTF-16, an ill-formed byte in the version, its member name, an escape, or between tokens, a repeated `openbindings` member) are judged under this line, whatever version they look like they hold; an ill-formed byte elsewhere leaves the declared version in place. A text that violates OBI-D-01 is non-conformant through it alone, whatever the rest would violate (§10, "The document and its data"). |
 | OBI-D-02 | Complete. Every constraint of the derived schema has a negative that breaks it alone (the name patterns in OBI-D-03's file), so a validator that drops any single constraint fails a case; the one constraint without a case, `additionalProperties: true` on the schema object form, restates JSON Schema's default. Every optional member of every OBI-defined object appears in a positive, and `preference` is covered at its type, both bounds, and the spelling `1.0`. A reference outside the name grammar violates OBI-D-02 beside OBI-D-07, OBI-D-08, or OBI-D-11, since the schema carries the name syntax those rules check. An unfamiliar kind string is valid (formerly `tool/OBI-T-01.json`). |
 | OBI-D-03 | Complete. Every kind of name has a negative: operation, dependency, binding, source, schema, and example keys, and aliases. A non-string `aliases` entry violates OBI-D-03 as well as OBI-D-02, and a key ending in a newline fails, as an ECMA-262 `$` requires. |
-| OBI-D-04 to OBI-D-09 | Complete. Names that differ only in case are distinct (OBI-D-04) and do not match (OBI-D-07, OBI-D-08). A relative `$id` on a subschema under `properties` is at an OBI position (OBI-D-05). OBI-D-06's near misses, the http scheme and a trailing slash, sit in nested schemas, where the derived schema does not check `$schema` and OBI-D-02 holds. An empty prerelease (`0.2.0-`) is not SemVer (OBI-D-09). Every OBI-D-09 positive is on the 0.2 line, the only line with text, so its verdict is decided; versions of other lines are OBI-T-04 scenarios with the outcome `interpreted` (T04-S-37, T04-S-38). |
+| OBI-D-04 to OBI-D-09 | Complete. Names that differ only in case are distinct (OBI-D-04) and do not match (OBI-D-07, OBI-D-08). A relative `$id` on a subschema under `properties` is at an OBI position (OBI-D-05). OBI-D-06's near misses, the http scheme and a trailing slash, sit in nested schemas, where the derived schema does not check `$schema` and OBI-D-02 holds. An empty prerelease (`0.2.0-`) is not SemVer (OBI-D-09). Every OBI-D-09 positive is on the 0.2 line, the only line with text, so its verdict is decided. A missing, non-string, or non-SemVer member, one nested below the root, and a text that is not an object declare no version, so this line's rules judge them; work under another line's text is outside these rules (§10.3), so the corpus has no case for it. |
 | OBI-D-10 | Complete. Meta-schema validity for every operation input and output and every `schemas` entry (boolean or object form, recursively through subschemas, inside schemas that declare `$id` as well). Unknown keywords, unparseable patterns, unresolvable references, and in-place recursion are positives: whether a schema can be evaluated is JSON Schema's, not a document rule. The pinned 2020-12 meta-schemas make this document rule decidable offline, and cases where the 2019-09 meta-schema differs (the array form of `items`, an `$anchor` beginning with an underscore) tell them apart. Count keywords take integers by exact value, so `minLength: 1.0` is valid and `minLength: 1.5` is not. |
 | OBI-D-11 | Complete. Dependency operation references resolve only against operation keys, not aliases or a key that differs only in case; fixtures also cover repeated operation use across named dependencies, simultaneous binding and dependency relationships, and prototype-like key handling. |
 | OBI-D-12 | Complete. Same-document references at OBI positions: typos, `#` and the empty reference, pointers to operation objects, maps (including a `properties` map inside a schema), strings, `x-` data, source content, example values, and a schema-shaped `const` value, pointers inside an `$id` schema, and plain names that no schema in the document's resource declares (including one declared only inside an `$id` schema or in `x-` data) are negatives; declared plain names (by `$anchor` or `$dynamicAnchor`, percent-encoded or not, and named by `$ref` or `$dynamicRef` whichever keyword declares them), references within an `$id` resource, absolute URIs, `allOf` entries, `definitions` targets, pointers with the `~1` escape, and recursion are positives. A plain name declared only by an `$anchor` outside the JSON Schema name grammar, and a pointer to an operation input holding `null`, are negatives. |
 | OBI-D-13 | Complete. Duplicate plain names in the document's resource (across `schemas` entries and operation schemas, or one schema declaring a name with both `$anchor` and `$dynamicAnchor`) and duplicate `$id` values (including an empty-fragment spelling and a nested relative `$id`) are negatives; the same name in different resources, a repeated malformed nested `$id`, `$id` values that differ in host case or only in percent-encoding, and a plain name declared twice inside a schema that declares `$id` (§7.4) are positives. An object at a schema position counts even when the meta-schemas reject it, so its `$anchor` collides with another entry's. |
-| OBI-T-01 to OBI-T-11 | Per clause: see [Clause coverage](#clause-coverage). |
+| OBI-T-01 to OBI-T-10 | Per clause: see [Clause coverage](#clause-coverage). |
 
 Per-family protocol rules (`…-P-…`, e.g. `GRPC-P-04`, `CONN-P-06`) are each family's binding-specification obligations and live in the [`binding-specs/`](binding-specs/README.md) subcorpus rather than the core rule format. Its portable processor scenarios cover every P-rule of the six standalone brownfield synthesis families without prescribing an SDK configuration API. The repository verifier checks their shape and rule coverage; they become cross-implementation execution evidence only when family adapters run them against independent processors. The invocation-only Operation Graph binding has its own identity-law and execution corpus because its operation contracts come from the containing OBI rather than its source document. Mirrored reference-SDK behavioral suites remain additional implementation evidence, not a substitute for those portable scenarios.
 
@@ -53,9 +53,9 @@ conformance/
     OBI-D-01.json ... OBI-D-13.json
   tool/                         (validity fixtures for tool rules a validity verdict can observe)
     OBI-T-03.json
-    OBI-T-10.json
+    OBI-T-09.json
   scenarios/                    (tool scenarios, one file per rule)
-    OBI-T-01.json ... OBI-T-09.json, OBI-T-11.json
+    OBI-T-01.json ... OBI-T-08.json, OBI-T-10.json
   runners/
     go/                         (reference Go harness; exemplar for SDK authors)
   binding-specs/                (per-family D-rule fixtures and portable P-rule scenarios; own README + verifier)
@@ -102,7 +102,7 @@ Field semantics:
 - `tests[*].violates` (optional, only with `valid: false`): the document rules the document is intended to exercise as violated. It names document rules only: a tool rule is never a document violation. By convention, OBI-D-02 is not listed when a more specific rule already names the violation, even though the derived schema would also catch it. **Semantics: minimum set.** For a negative fixture to pass, the tool's verdict is invalid and, where the tool reports violated rules at all, its report includes at least the listed rules. The spec defines no violation-reporting surface; this is harness semantics for consuming the corpus, not a conformance rule. Reporting a superset is never a defect, and a runner must not require the report to be exactly the listed set.
 - `tests[*].notViolated` (optional, only with `valid: false`): document rules a tool must not report violated, the mirror of `violates`. It records where a rule holds, holds vacuously, or does not govern the document although another rule is violated: for example, on a text that violates OBI-D-01, OBI-D-02 to OBI-D-13 impose no further requirement (§10, "The document and its data"). Where a tool reports violated rules at all, its report includes none of the listed rules; a tool that reports no rule-level evidence is judged by `valid` alone. Like `violates`, it is harness semantics, not a report shape, and it names document rules only. The two lists are disjoint.
 - `tests[*].clauses` (tool fixtures only, required there): the tool-rule clauses the test exercises ([Clause IDs](#clause-ids)). Document fixtures are keyed by rule and carry no clause tags.
-- `tests[*].requiresSupports`, `tests[*].requiresMinSupported` (optional): version gates ([Version gates](#version-gates)).
+- `tests[*].requiresSupports` (optional): a version gate ([Version gates](#version-gates)).
 
 Fixtures MAY include a file-level `notes` field (string) holding rationale about the rule's coverage. It is informational and not consumed by harnesses.
 
@@ -116,22 +116,22 @@ Each scenario carries `id` (`T<rule>-S-<n>`, never reused), `clauses` (the claus
 
 | Action | Given | Expected |
 |---|---|---|
-| `check-dependency-kind` | `document`, `dependency`, `binding`; optional `retrievalSentinels` | `meets`, `does-not-meet`, or `version-refusal` |
-| `resolve-operation` | `document`, `name` | `resolved` with `operationKey` and `bindingKeys`, `not-found`, `version-refusal`, or an advisory `collision` |
-| `validate-document` | exactly one of `document`, `documentText`, `documentBase64` | `version-refusal`, or an `outcome`: `conformant` (which also admits `conformance-undetermined`, a validator lacking evidence), `non-conformant` (with `violates`, a minimum set), `conformance-undetermined`, or `interpreted` (any conclusion, no refusal); optional `namesAppliedText` and `duplicateBlind` |
-| `validate-operation-values` | `document`, `operation`, `side`, `values`; optional `resources` | one result per value, or `version-refusal`; optional `dependsOn` and `forbidReasons` |
-| `conclude-conformance` | `evidence`, a map from document rules to `satisfied`, `violated`, `inconclusive`, or `not-applicable` | exactly the stated `conformant`, `non-conformant`, or `conformance-undetermined` conclusion; the supplied evidence determines its meaning (OBI-T-09 and §10.4), and withholding a positive report is not incomplete evidence |
-| `check-examples` | `document`, `operation` | per example and side: `holds`, `false-claim`, `no-claim` (no contract stated), or `no-verdict`; or `version-refusal` |
+| `check-dependency-kind` | `document`, `dependency`, `binding`; optional `retrievalSentinels` | `meets` or `does-not-meet` |
+| `resolve-operation` | `document`, `name` | `resolved` with `operationKey` and `bindingKeys`, `not-found`, or an advisory `collision` |
+| `validate-document` | exactly one of `document`, `documentText`, `documentBase64` | an `outcome`: `conformant` (which also admits `conformance-undetermined`, a validator lacking evidence), `non-conformant` (with `violates`, a minimum set), `conformance-undetermined`, or `interpreted` (any conclusion); optional `namesAppliedText` |
+| `validate-operation-values` | `document`, `operation`, `side`, `values`; optional `resources` | one result per value; optional `dependsOn` and `forbidReasons` |
+| `conclude-conformance` | `evidence`, a map from document rules to `satisfied`, `violated`, `inconclusive`, or `not-applicable` | exactly the stated `conformant`, `non-conformant`, or `conformance-undetermined` conclusion; the supplied evidence determines its meaning (OBI-T-08 and §10.4), and withholding a positive report is not incomplete evidence |
+| `check-examples` | `document`, `operation` | per example and side: `holds`, `false-claim`, `no-claim` (no contract stated), or `no-verdict` |
 | `derive-form` | `document`, `operation`, `side`, `probes` | the schema's verdict on each probe; a tool claiming its derived form preserves the schema's meaning must agree on every probe |
 
-**Value outcomes** name what OBI-T-08 lets a tool report for a value: `valid` (validation success), `instance-mismatch`, and `no-verdict` (neither reported). A value result is one of:
+**Value outcomes** name what OBI-T-07 lets a tool report for a value: `valid` (validation success), `instance-mismatch`, and `no-verdict` (neither reported). A value result is one of:
 - a token: `no-verdict` is required of every tool (an absent contract, an undefined result); `valid` or `instance-mismatch` is expected of a tool that supports every feature the case depends on (no verdict there is a SHORTFALL), while a tool that declares one of them unsupported must give no verdict, a correct verdict included;
 - `{"verdict": ..., "orNoVerdict": true}`: that verdict, or no verdict, for every tool, because the result does not depend on what may be missing and the rule prescribes no evaluation strategy;
 - `{"verdict": ..., "dependsOn": [...]}`: a per-value dependence that replaces the scenario's `dependsOn` (an empty array: this value depends on no feature).
 
 `forbidReasons` lists no-verdict reasons a tool must not report for the values, where it reports reasons at all (`no-contract`, `undefined-result`, `missing-reference`, `missing-capability`, `resource-limit`, `invalid-reference`). A reason is an observation, never a verdict.
 
-**Capabilities.** An adapter declares each profile feature the cases depend on as supported or unsupported. The list is the set of features this corpus's cases depend on, not the set of limitations a conforming tool may have: resource limits and evaluation strategy remain the tool's (OBI-T-06 and OBI-T-08 notes).
+**Capabilities.** An adapter declares each profile feature the cases depend on as supported or unsupported. The list is the set of features this corpus's cases depend on, not the set of limitations a conforming tool may have: resource limits and evaluation strategy remain the tool's (OBI-T-05 and OBI-T-07 notes).
 
 | Feature | A tool that supports it |
 |---|---|
@@ -145,11 +145,9 @@ Each scenario carries `id` (`T<rule>-S-<n>`, never reused), `clauses` (the claus
 
 **Non-conformant documents.** `given.nonConformant` lists the document rules a scenario's document violates. Continuing with a non-conformant document is the tool's choice (§10.3), so a tool that does not continue omits the case and reports that reason.
 
-**Collision groups.** A `collision` expectation (group `T07-G-01`) concerns a name that is one operation's key and another's alias, which OBI-D-04 forbids. It is advisory: the harness records which candidate a tool chooses and never fails it, because no finite set of documents tells key preference from a role-neutral choice that happens to pick key matches. OBI-T-07/c2 is recorded as not portably testable.
+**Collision groups.** A `collision` expectation (group `T06-G-01`) concerns a name that is one operation's key and another's alias, which OBI-D-04 forbids. It is advisory: the harness records which candidate a tool chooses and never fails it, because no finite set of documents tells key preference from a role-neutral choice that happens to pick key matches. OBI-T-06/c2 is recorded as not portably testable.
 
-**`duplicateBlind`.** For a tool declaring `repeated-member-detection` unsupported, a case whose `openbindings` member is repeated states the outcome required for each value the tool's parser may read (OBI-T-04/c7).
-
-**`namesAppliedText`.** The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test (OBI-T-09/c3). The harness compares the named identity first, always, then verifies the text it names: the named revision must be a full commit of the specification repository's history, and its `openbindings.md`, read from that history, must hash to the text the tool declares it applies. The text checked out beside the corpus, and the index, play no part, so an unrelated specification commit cannot change the result. A release named alone (OBI-T-09/c3a) is reported unverified until a verification against a release snapshot exists.
+**`namesAppliedText`.** The conclusion names exactly the applied-text identity the adapter declares for the document's line or prerelease, obtained independently of the report under test (OBI-T-08/c3). The harness compares the named identity first, always, then verifies the text it names: the named revision must be a full commit of the specification repository's history, and its `openbindings.md`, read from that history, must hash to the text the tool declares it applies. The text checked out beside the corpus, and the index, play no part, so an unrelated specification commit cannot change the result. A release named alone (OBI-T-08/c3a) is reported unverified until a verification against a release snapshot exists.
 
 ### Run categories
 
@@ -159,31 +157,27 @@ A harness reports each case in exactly one category.
 |---|---|
 | pass | The tool's outcome is one the case allows. |
 | FAIL | The tool's outcome is one the case forbids: a violation. |
-| SHORTFALL | No verdict where the tool's declared profile supports every feature the case depends on. OBI-T-08 permits it, so it is never a conformance violation; it counts against the profile. A harness holding an executor to its own declaration fails it, as the Go adapter and the reference runner do: the profile is the executor's own, so falling short of it is the executor's defect. |
+| SHORTFALL | No verdict where the tool's declared profile supports every feature the case depends on. OBI-T-07 permits it, so it is never a conformance violation; it counts against the profile. A harness holding an executor to its own declaration fails it, as the Go adapter and the reference runner do: the profile is the executor's own, so falling short of it is the executor's defect. |
 | OMITTED | Not administered, with the reason: a version gate, an action the tool does not implement, continuation with a non-conformant document declined, or a resource limit the tool reports. |
 | ADVISORY | Recorded and never failing (collision groups). |
 | UNVERIFIED | A naming case whose applied text could not be verified against the bytes it names. Never a pass. |
 
 ### Version gates
 
-Version acceptance follows §8.1: a document is read under its `major.minor` line, its patch number carries no meaning, build metadata is ignored, a prerelease is outside its line, and which lines and prereleases a tool supports is the tool's own declaration. Gates are SemVer 2.0.0 versions, judged against that declaration, never against the tool's acceptance or refusal code, so a defect in that code cannot gate its own tests out. A gated-out case is reported separately and is never a failure.
+A document means what the text of the line or prerelease it declares says (§8.1): its patch number carries no meaning, build metadata is ignored, and a prerelease names itself, not its line. Which texts a tool applies is its own declaration. A gate is a SemVer 2.0.0 version judged against that declaration, never against the tool's acceptance code, so a defect in that code cannot gate its own tests out. A gated-out case is reported separately and is never a failure.
 
-- `requiresSupports: "X.Y.Z"` administers the case only to tools whose declared support set includes X.Y.Z (a release whose line the tool declares, or a prerelease it declares it includes).
-- `requiresUnsupported: "X.Y.Z"` (scenarios) administers it only to tools whose declared support set excludes X.Y.Z.
-- `requiresMinSupported: "X.Y.Z"` administers it only to tools whose lowest supported version (the first release of the lowest declared line) is at least X.Y.Z; it marks downward refusals.
+- `requiresSupports: "X.Y.Z"` administers the case only to tools that apply the text of X.Y.Z's line, or of the prerelease X.Y.Z.
 
-The verifier rejects gates that contradict each other by support unit (a version required both supported and unsupported) or that require a version below the case's required lowest supported version.
-
-A validity fixture asserts a verdict, which only a line's text decides, so every fixture that declares a version declares one on the 0.2 line. A case where a tool interprets a version of another line, or a prerelease it includes, is a scenario whose outcome is `interpreted` (T04-S-28, T04-S-37, T04-S-38): the tool does not refuse the document, and the corpus asserts no conclusion about it.
+A validity fixture asserts a verdict, which only a line's text decides, so every fixture declares a version on the 0.2 line or declares none. Work a tool does by applying another line's or prerelease's text is outside the 0.2 rules (§10.3), so the corpus has no case for it. The one prerelease case, T08-S-09, is administered only to a tool applying that prerelease's text, and asserts only that its conclusion names that text.
 
 ## Clause IDs
 
-The specification numbers no clauses; the corpus does. A clause ID names one obligation, definition, permission, or incorporation inside a tool rule: `OBI-T-NN/cK`, with a letter for an alternative or specialization (`OBI-T-08/c6a`), `.pN` for a predicate of a definition (`OBI-T-04/c4.p1`), and `.iN` for an item another passage contributes by incorporation (`OBI-T-04/c9.i3`). The rules:
+The specification numbers no clauses; the corpus does. A clause ID names one obligation, definition, permission, or incorporation inside a tool rule: `OBI-T-NN/cK`, with a letter for an alternative or specialization (`OBI-T-07/c6a`), `.pN` for a predicate of a definition (`OBI-T-04/c4.p1`), and `.iN` for an item another passage contributes by incorporation (`OBI-T-04/c9.i3`). The rules:
 
 - **Ownership.** IDs are defined only in `clauses.json`, which partitions each rule's complete text into them; the verifier checks the partition against `openbindings.md`, so a change to a rule's text fails verification until the inventory follows it.
 - **Line scope.** An ID is cited under the line the corpus tracks (0.2), as rule identifiers are (§10): another line may number its clauses differently.
-- **Stability.** When a rule's wording changes and its obligation is preserved, the ID stays and its segment text follows the new wording (OBI-T-09/c2 and c3b after OBI-T-09's 0.2.0 working-draft revision).
-- **Additions.** A new obligation takes the next unused number in its rule, so existing IDs never move (OBI-T-09/c4, added by that revision). A clause that splits keeps its number and gains letters.
+- **Stability.** When a rule's wording changes and its obligation is preserved, the ID stays and its segment text follows the new wording (OBI-T-08/c2 and c3b after OBI-T-08's 0.2.0 working-draft revision).
+- **Additions.** A new obligation takes the next unused number in its rule, so existing IDs never move (OBI-T-08/c4, added by that revision). A clause that splits keeps its number and gains letters.
 
 ## Clause coverage
 
@@ -218,73 +212,52 @@ A clause whose status is short of tested is incomplete coverage, and is recorded
 | OBI-T-02/c3 | obligation | tested | For tools that continue with a document non-conformant under OBI-D-02. |
 | OBI-T-03/c1 | obligation | tested |  |
 | OBI-T-03/c2 | obligation | tested | Limited to the x- names the cases use. |
-| OBI-T-04/c1 | obligation | tested through its alternatives |  |
-| OBI-T-04/c1a | alternative | tested |  |
-| OBI-T-04/c1b | alternative | tested | The default refusal is tested; interpreting an included prerelease (T04-S-28) runs on contrast tools only, since the Go core includes no prerelease. |
-| OBI-T-04/c2 | obligation | tested |  |
-| OBI-T-04/c3 | obligation | tested |  |
-| OBI-T-04/c4 | definition | definition |  |
-| OBI-T-04/c4.p1 | definition | definition |  |
-| OBI-T-04/c4.p2 | definition | definition |  |
-| OBI-T-04/c4.p3 | definition | definition |  |
-| OBI-T-04/c4.p4 | definition | definition |  |
-| OBI-T-04/c5 | definition | definition |  |
-| OBI-T-04/c6 | obligation | tested |  |
-| OBI-T-04/c7 | permission | permission | Exercised as latitude: T04-S-18 and T04-S-29 admit a duplicate-blind reading. |
-| OBI-T-04/c8 | obligation | tested |  |
-| OBI-T-04/c9 | incorporation | incorporation |  |
-| OBI-T-04/c9.i1 | definition | definition |  |
-| OBI-T-04/c9.i2 | specialization | contrast tools only | No executor in the Go core, which includes no prerelease. |
-| OBI-T-04/c9.i3 | specialization | tested |  |
-| OBI-T-04/c9.i4 | definition | definition |  |
-| OBI-T-04/c9.i5 | permission | permission | Not testable: it grants latitude and requires nothing. |
-| OBI-T-04/c9.i6 | definition | definition |  |
-| OBI-T-05/c1 | obligation | expressible, no executor | Assertion keywords only: finite probes refute a preservation claim and never establish one. |
-| OBI-T-06/c1 | obligation | tested through its alternatives |  |
-| OBI-T-06/c1a | alternative | tested |  |
-| OBI-T-06/c1b | alternative | tested |  |
-| OBI-T-06/c2a | obligation | tested | Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T06-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. That reason is forbidden there because each cycle consumes the instance as it recurses: §7.4 and OBI-T-08's definition of an undefined result (OBI-T-08/c7, JSON Schema Core §9.4.1) make only a cycle that recurses without consuming any of the instance undefined. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported. |
-| OBI-T-06/c2b | obligation | tested |  |
+| OBI-T-04/c1 | obligation | expressible, no executor | Assertion keywords only: finite probes refute a preservation claim and never establish one. |
+| OBI-T-05/c1 | obligation | tested through its alternatives |  |
+| OBI-T-05/c1a | alternative | tested |  |
+| OBI-T-05/c1b | alternative | tested |  |
+| OBI-T-05/c2a | obligation | tested | Discriminated for the Go core through the verdict channel and the reasons it reports: it declares recursive references supported, so no verdict on a productive cycle (T05-S-01 to 04, 06) fails it, and those cases forbid the undefined-result reason. That reason is forbidden there because each cycle consumes the instance as it recurses: §7.4 and OBI-T-07's definition of an undefined result (OBI-T-07/c7, JSON Schema Core §9.4.1) make only a cycle that recurses without consuming any of the instance undefined. The invalid-reference reason itself is not observed: the Go core reports no such reason, so that part is incomplete coverage. A tool may declare recursive references unsupported. |
+| OBI-T-05/c2b | obligation | tested |  |
+| OBI-T-06/c1 | obligation | tested |  |
+| OBI-T-06/c2 | specialization | not portably testable | T06-G-01 (T06-S-12, T06-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy. |
+| OBI-T-06/c3 | obligation | tested |  |
+| OBI-T-06/c4 | obligation | tested |  |
 | OBI-T-07/c1 | obligation | tested |  |
-| OBI-T-07/c2 | specialization | not portably testable | T07-G-01 (T07-S-12, T07-S-14) is an advisory observation that never fails a tool. The Go core's resolving such a name to neither operation is its own policy. |
-| OBI-T-07/c3 | obligation | tested |  |
+| OBI-T-07/c2 | specialization | tested |  |
+| OBI-T-07/c3a | specialization | tested | Representative divergences between ECMA-262 with the u flag and other engines: white space, digits, word characters and boundaries, the dot and line terminators, code points outside the Basic Multilingual Plane, escaped surrogate pairs, anchors, inline modifiers, identity escapes, and property escapes. Others are not enumerated. |
+| OBI-T-07/c3b | specialization | tested |  |
 | OBI-T-07/c4 | obligation | tested |  |
+| OBI-T-07/c5 | obligation | tested (adapter) | Holds by construction for the Go core, whose value API takes one value per call; the executor's part a deliberately wrong tool can break is the harness's composition of those calls. |
+| OBI-T-07/c6 | obligation | tested through its alternatives |  |
+| OBI-T-07/c6a | alternative | tested |  |
+| OBI-T-07/c6b | alternative | tested |  |
+| OBI-T-07/c7 | alternative | tested |  |
+| OBI-T-07/c8 | alternative | tested |  |
+| OBI-T-07/c9 | obligation | tested |  |
 | OBI-T-08/c1 | obligation | tested |  |
-| OBI-T-08/c2 | specialization | tested |  |
-| OBI-T-08/c3a | specialization | tested | Representative divergences between ECMA-262 with the u flag and other engines: white space, digits, word characters and boundaries, the dot and line terminators, code points outside the Basic Multilingual Plane, escaped surrogate pairs, anchors, inline modifiers, identity escapes, and property escapes. Others are not enumerated. |
-| OBI-T-08/c3b | specialization | tested |  |
 | OBI-T-08/c4 | obligation | tested |  |
-| OBI-T-08/c5 | obligation | tested (adapter) | Holds by construction for the Go core, whose value API takes one value per call; the executor's part a deliberately wrong tool can break is the harness's composition of those calls. |
-| OBI-T-08/c6 | obligation | tested through its alternatives |  |
-| OBI-T-08/c6a | alternative | tested |  |
-| OBI-T-08/c6b | alternative | tested |  |
-| OBI-T-08/c7 | alternative | tested |  |
-| OBI-T-08/c8 | alternative | tested |  |
-| OBI-T-08/c9 | obligation | tested |  |
-| OBI-T-09/c1 | obligation | tested |  |
-| OBI-T-09/c4 | obligation | tested |  |
-| OBI-T-09/c5 | obligation | tested | Complete evidence cannot be reported as undetermined. |
-| OBI-T-09/c2 | obligation | tested |  |
-| OBI-T-09/c3 | obligation | tested through its exercised alternative | A tool names one kind of text; the Go core declares a working draft and its revision (c3c). |
-| OBI-T-09/c3a | alternative | expressible, no executor | Applies to a tool that declares a patch release; none does before 0.2.0 is released. |
-| OBI-T-09/c3b | alternative | contrast tools only | No executor in the Go core, which includes no prerelease. |
-| OBI-T-09/c3c | alternative | tested | Credited only when the applied text is verified: the named identity is compared first, then the text at the named revision, read from the specification repository's history, against the hash the tool declares. |
-| OBI-T-10/c1 | obligation | tested through its specializations |  |
-| OBI-T-10/c1a | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
-| OBI-T-10/c1b | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
-| OBI-T-10/c1c | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
-| OBI-T-10/c1d | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
-| OBI-T-10/c1e | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
-| OBI-T-10/c1.i1 | definition | definition |  |
-| OBI-T-10/c1.i2 | definition | definition |  |
-| OBI-T-10/c1.i3 | definition | definition |  |
-| OBI-T-10/c1.i4 | definition | definition |  |
-| OBI-T-10/c1.i5 | definition | definition |  |
-| OBI-T-10/c1.i6 | definition | definition |  |
-| OBI-T-11/c1 | obligation | composition only | The Go core has no example checker; the cases run through a composition of its value validation. |
-| OBI-T-11/c2a | specialization | composition only |  |
-| OBI-T-11/c2b | specialization | composition only |  |
-| OBI-T-11/c2c | specialization | composition only |  |
+| OBI-T-08/c5 | obligation | tested | Complete evidence cannot be reported as undetermined. |
+| OBI-T-08/c2 | obligation | tested |  |
+| OBI-T-08/c3 | obligation | tested through its exercised alternative | A tool names one kind of text; the Go core declares a working draft and its revision (c3c). |
+| OBI-T-08/c3a | alternative | expressible, no executor | Applies to a tool that declares a patch release; none does before 0.2.0 is released. |
+| OBI-T-08/c3b | alternative | contrast tools only | No executor in the Go core, which applies no prerelease's text. |
+| OBI-T-08/c3c | alternative | tested | Credited only when the applied text is verified: the named identity is compared first, then the text at the named revision, read from the specification repository's history, against the hash the tool declares. |
+| OBI-T-09/c1 | obligation | tested through its specializations |  |
+| OBI-T-09/c1a | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
+| OBI-T-09/c1b | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
+| OBI-T-09/c1c | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
+| OBI-T-09/c1d | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
+| OBI-T-09/c1e | specialization | tested | The fixtures discriminate plausibility heuristics over the document only. |
+| OBI-T-09/c1.i1 | definition | definition |  |
+| OBI-T-09/c1.i2 | definition | definition |  |
+| OBI-T-09/c1.i3 | definition | definition |  |
+| OBI-T-09/c1.i4 | definition | definition |  |
+| OBI-T-09/c1.i5 | definition | definition |  |
+| OBI-T-09/c1.i6 | definition | definition |  |
+| OBI-T-10/c1 | obligation | composition only | The Go core has no example checker; the cases run through a composition of its value validation. |
+| OBI-T-10/c2a | specialization | composition only |  |
+| OBI-T-10/c2b | specialization | composition only |  |
+| OBI-T-10/c2c | specialization | composition only |  |
 
 ## Designated executors
 
@@ -314,10 +287,10 @@ The corpus tracks the spec version it was authored against: `openbindings.md` v0
 This corpus does not replace conformance interpretation by spec text. Where prose and corpus disagree, the prose governs. Known limits:
 
 - **Rule-level reports are checked only where a tool gives them.** `violates` and `notViolated` bind a tool that reports violated rules; a tool that reports only a conclusion is judged by `valid` alone, and `notViolated` never forbids a rule the case does not list.
-- **Plausibility heuristics only.** The OBI-T-10 fixtures discriminate heuristics over the document; a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture.
+- **Plausibility heuristics only.** The OBI-T-09 fixtures discriminate heuristics over the document; a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture.
 - **Observed channels.** OBI-T-01/c4 is observed on the http channel, through a TCP listener bound to an ephemeral local port for the action whose address the kind names (every accepted connection counts, whatever client made it), and on the file channel through a FIFO sentinel; other retrieval channels are not observed.
-- **Representative regular-expression divergences.** OBI-T-08/c3a is tested through representative divergences between ECMA-262 with the `u` flag and other engines; others are not enumerated.
-- **Reasons are observed where an executor reports them.** OBI-T-06/c2a's `invalid-reference` reason is not observed for the designated executor, which reports no such reason; the clause is discriminated through the verdict channel and the `undefined-result` reason.
+- **Representative regular-expression divergences.** OBI-T-07/c3a is tested through representative divergences between ECMA-262 with the `u` flag and other engines; others are not enumerated.
+- **Reasons are observed where an executor reports them.** OBI-T-05/c2a's `invalid-reference` reason is not observed for the designated executor, which reports no such reason; the clause is discriminated through the verdict channel and the `undefined-result` reason.
 - **Representative fields.** OBI-T-02/c1 covers every defined field; the cases test the fields an action observes.
 
 ## Adding fixtures and scenarios

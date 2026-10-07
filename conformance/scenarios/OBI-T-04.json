@@ -2,904 +2,148 @@
   "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-04",
   "section": "10.3",
-  "description": "The line decision: when a text declares a version, a processor interprets it only under a supported line or an included prerelease, refuses otherwise, reports a refusal apart from non-conformance, and never refuses a text that declares no version.",
+  "description": "A tool that claims a derived form preserves a schema's meaning must have a form that agrees with the schema on every probe; otherwise it must not make that claim.",
   "scenarios": [
     {
       "id": "T04-S-01",
       "clauses": [
-        "OBI-T-04/c1a"
+        "OBI-T-04/c1"
       ],
-      "description": "A release of a supported line is interpreted.",
-      "action": "validate-document",
+      "description": "A derived form that cannot represent pattern must not be claimed to preserve the schema.",
+      "action": "derive-form",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "operations": {}
-        }
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^[0-9]+$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "probes": [
+          "123",
+          "abc"
+        ]
       },
       "expected": {
-        "outcome": "conformant"
-      },
-      "requiresSupports": "0.2.0"
+        "probeVerdicts": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     },
     {
       "id": "T04-S-02",
       "clauses": [
-        "OBI-T-04/c1a"
+        "OBI-T-04/c1"
       ],
-      "description": "A later patch of a supported line is interpreted; the patch carries no meaning.",
-      "action": "validate-document",
+      "description": "A derived form whose numbers cannot carry an exact const must not be claimed to preserve the schema.",
+      "action": "derive-form",
       "given": {
         "document": {
-          "openbindings": "0.2.1",
-          "operations": {}
-        }
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "integer",
+                "const": 9007199254740993
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "probes": [
+          9007199254740993,
+          9007199254740992
+        ]
       },
       "expected": {
-        "outcome": "conformant"
-      },
-      "requiresSupports": "0.2.0"
+        "probeVerdicts": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     },
     {
       "id": "T04-S-03",
       "clauses": [
-        "OBI-T-04/c1a",
-        "OBI-T-04/c9.i3"
+        "OBI-T-04/c1"
       ],
-      "description": "Build metadata is ignored in the decision.",
-      "action": "validate-document",
+      "description": "A derived form that admits unknown members must not be claimed to preserve unevaluatedProperties: false.",
+      "action": "derive-form",
       "given": {
         "document": {
-          "openbindings": "0.2.0+build.1",
-          "operations": {}
-        }
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "a": {
+                    "type": "string"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "probes": [
+          {
+            "a": "x"
+          },
+          {
+            "a": "x",
+            "b": 1
+          }
+        ]
       },
       "expected": {
-        "outcome": "conformant"
-      },
-      "requiresSupports": "0.2.0"
+        "probeVerdicts": [
+          "valid",
+          "instance-mismatch"
+        ]
+      }
     },
     {
       "id": "T04-S-04",
       "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
+        "OBI-T-04/c1"
       ],
-      "description": "An unsupported major line is refused, not judged.",
-      "action": "validate-document",
+      "description": "A derived form using binary floating point must not be claimed to preserve a decimal multipleOf.",
+      "action": "derive-form",
       "given": {
         "document": {
-          "openbindings": "999.0.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-05",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "An unsupported pre-1.0 minor line is refused.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.999.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "0.999.0"
-    },
-    {
-      "id": "T04-S-06",
-      "clauses": [
-        "OBI-T-04/c1b",
-        "OBI-T-04/c2",
-        "OBI-T-04/c9.i1"
-      ],
-      "description": "A prerelease the tool does not explicitly include is refused.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0-rc.1",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "0.2.0-rc.1"
-    },
-    {
-      "id": "T04-S-07",
-      "clauses": [
-        "OBI-T-04/c2"
-      ],
-      "description": "A lower line outside the supported set is refused.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.1.9",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresMinSupported": "0.2.0",
-      "requiresUnsupported": "0.1.9"
-    },
-    {
-      "id": "T04-S-08",
-      "clauses": [
-        "OBI-T-04/c8",
-        "OBI-T-04/c5"
-      ],
-      "description": "An ill-formed byte in another string leaves the version declared, so the line decision is made.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwiZGVzY3JpcHRpb24iOiJ4/yIsIm9wZXJhdGlvbnMiOnt9fQ=="
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-09",
-      "clauses": [
-        "OBI-T-04/c8"
-      ],
-      "description": "A repeated member elsewhere leaves the version declared, so the line decision is made.",
-      "action": "validate-document",
-      "given": {
-        "documentText": "{\"openbindings\":\"999.0.0\",\"operations\":{},\"operations\":{}}"
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-10",
-      "clauses": [
-        "OBI-T-04/c1a"
-      ],
-      "description": "A supported line with an ill-formed byte elsewhere is interpreted, and a validator finds it non-conformant.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiIwLjIuMCIsImRlc2NyaXB0aW9uIjoieP8iLCJvcGVyYXRpb25zIjp7fX0="
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      },
-      "requiresSupports": "0.2.0"
-    },
-    {
-      "id": "T04-S-11",
-      "clauses": [
-        "OBI-T-04/c4.p1",
-        "OBI-T-04/c6"
-      ],
-      "description": "A leading byte-order mark means no version is declared: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "77u/eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwib3BlcmF0aW9ucyI6e319"
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-12",
-      "clauses": [
-        "OBI-T-04/c4.p2",
-        "OBI-T-04/c6"
-      ],
-      "description": "UTF-16 text without a byte-order mark declares no version: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "ewAiAG8AcABlAG4AYgBpAG4AZABpAG4AZwBzACIAOgAiADkAOQA5AC4AMAAuADAAIgAsACIAbwBwAGUAcgBhAHQAaQBvAG4AcwAiADoAewB9AH0A"
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-13",
-      "clauses": [
-        "OBI-T-04/c5",
-        "OBI-T-04/c6"
-      ],
-      "description": "A replacement inside the version value leaves no SemVer version: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC7/MCIsIm9wZXJhdGlvbnMiOnt9fQ=="
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-14",
-      "clauses": [
-        "OBI-T-04/c5",
-        "OBI-T-04/c6"
-      ],
-      "description": "A replacement within an escape breaks the grammar: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwiZGVzY3JpcHRpb24iOiJcdTEy/zQiLCJvcGVyYXRpb25zIjp7fX0="
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-15",
-      "clauses": [
-        "OBI-T-04/c4.p4",
-        "OBI-T-04/c6"
-      ],
-      "description": "A value that is not SemVer declares no version: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "999.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-09"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-16",
-      "clauses": [
-        "OBI-T-04/c4.p4",
-        "OBI-T-04/c6"
-      ],
-      "description": "A non-string value declares no version: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": 2,
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-09"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-17",
-      "clauses": [
-        "OBI-T-04/c4.p3",
-        "OBI-T-04/c6"
-      ],
-      "description": "A missing member declares no version: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-09"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-18",
-      "clauses": [
-        "OBI-T-04/c4.p3",
-        "OBI-T-04/c6",
-        "OBI-T-04/c7"
-      ],
-      "description": "A repeated openbindings member (supported value first) declares no version. A detecting tool makes no refusal and finds OBI-D-01; a duplicate-blind tool reading 0.2.0 cannot establish OBI-D-01, so it concludes undetermined; one reading 999.0.0 may refuse.",
-      "action": "validate-document",
-      "given": {
-        "documentText": "{\"openbindings\":\"0.2.0\",\"openbindings\":\"999.0.0\",\"operations\":{}}"
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ],
-        "duplicateBlind": {
-          "0.2.0": "conformance-undetermined",
-          "999.0.0": "version-refusal"
-        }
-      },
-      "requiresSupports": "0.2.0",
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-19",
-      "clauses": [
-        "OBI-T-04/c5",
-        "OBI-T-04/c8"
-      ],
-      "description": "A truncated multi-byte sequence before a closing quote is replaced without consuming the quote, so the version is declared.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiwiZGVzY3JpcHRpb24iOiJ44iIsIm9wZXJhdGlvbnMiOnt9fQ=="
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-20",
-      "clauses": [
-        "OBI-T-04/c5",
-        "OBI-T-04/c6"
-      ],
-      "description": "A replacement between tokens breaks the grammar: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3MiOiI5OTkuMC4wIiz/Im9wZXJhdGlvbnMiOnt9fQ=="
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-21",
-      "clauses": [
-        "OBI-T-04/c5",
-        "OBI-T-04/c6"
-      ],
-      "description": "A replacement in the member name leaves no openbindings member: no refusal.",
-      "action": "validate-document",
-      "given": {
-        "documentBase64": "eyJvcGVuYmluZGluZ3P/IjoiOTk5LjAuMCIsIm9wZXJhdGlvbnMiOnt9fQ=="
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-22",
-      "clauses": [
-        "OBI-T-04/c4.p3",
-        "OBI-T-04/c6"
-      ],
-      "description": "Only the root object's member declares; a nested openbindings member does not.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "operations": {},
-          "x-meta": {
-            "openbindings": "999.0.0"
-          }
-        }
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-09"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-23",
-      "clauses": [
-        "OBI-T-04/c4.p2",
-        "OBI-T-04/c6"
-      ],
-      "description": "A text that is not an object declares no version.",
-      "action": "validate-document",
-      "given": {
-        "document": [
-          "openbindings",
-          "999.0.0"
-        ]
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-02",
-          "OBI-D-09"
-        ]
-      }
-    },
-    {
-      "id": "T04-S-24",
-      "clauses": [
-        "OBI-T-04/c4.p3",
-        "OBI-T-04/c2"
-      ],
-      "description": "A member name written with an escape is the openbindings member (RFC 8259 section 8.3).",
-      "action": "validate-document",
-      "given": {
-        "documentText": "{\"open\\u0062indings\":\"999.0.0\",\"operations\":{}}"
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-25",
-      "clauses": [
-        "OBI-T-04/c4.p4",
-        "OBI-T-04/c2"
-      ],
-      "description": "A version value written with an escape is that version.",
-      "action": "validate-document",
-      "given": {
-        "documentText": "{\"openbindings\":\"999\\u002e0.0\",\"operations\":{}}"
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-26",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c9.i4"
-      ],
-      "description": "Resolving an operation name is interpretation (section 8.1): an unsupported line is refused, not resolved.",
-      "action": "resolve-operation",
-      "given": {
-        "document": {
-          "openbindings": "999.0.0",
+          "openbindings": "0.2.0",
           "operations": {
-            "a": {}
-          }
-        },
-        "name": "a"
-      },
-      "requiresUnsupported": "999.0.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-27",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c9.i4"
-      ],
-      "description": "Validating a value is interpretation (section 8.1): an unsupported line is refused, not evaluated.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "999.0.0",
-          "operations": {
-            "a": {
+            "op": {
               "input": {
-                "type": "string"
+                "type": "number",
+                "multipleOf": 0.01
               }
             }
           }
         },
-        "operation": "a",
+        "operation": "op",
         "side": "input",
-        "values": [
-          1
+        "probes": [
+          0.07,
+          0.075
         ]
       },
-      "requiresUnsupported": "999.0.0",
       "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-28",
-      "clauses": [
-        "OBI-T-04/c1b",
-        "OBI-T-04/c9.i2"
-      ],
-      "description": "A prerelease the tool explicitly includes is interpreted, not refused. No conclusion is asserted: the corpus has no text for that draft.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.2.0-rc.1",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "interpreted"
-      },
-      "requiresSupports": "0.2.0-rc.1"
-    },
-    {
-      "id": "T04-S-29",
-      "clauses": [
-        "OBI-T-04/c4.p3",
-        "OBI-T-04/c6",
-        "OBI-T-04/c7"
-      ],
-      "description": "T04-S-18 with the members' order reversed, so a duplicate-blind parser reads the other value.",
-      "action": "validate-document",
-      "given": {
-        "documentText": "{\"openbindings\":\"999.0.0\",\"openbindings\":\"0.2.0\",\"operations\":{}}"
-      },
-      "expected": {
-        "outcome": "non-conformant",
-        "violates": [
-          "OBI-D-01"
-        ],
-        "duplicateBlind": {
-          "0.2.0": "conformance-undetermined",
-          "999.0.0": "version-refusal"
-        }
-      },
-      "requiresSupports": "0.2.0",
-      "requiresUnsupported": "999.0.0"
-    },
-    {
-      "id": "T04-S-30",
-      "clauses": [
-        "OBI-T-04/c6"
-      ],
-      "description": "A processor that is not a validator makes no refusal for a text that declares no version; one that continues resolves the name.",
-      "action": "resolve-operation",
-      "given": {
-        "document": {
-          "openbindings": "999.0",
-          "operations": {
-            "a": {}
-          }
-        },
-        "nonConformant": [
-          "OBI-D-09"
-        ],
-        "name": "a"
-      },
-      "expected": {
-        "outcome": "resolved",
-        "operationKey": "a",
-        "bindingKeys": []
-      }
-    },
-    {
-      "id": "T04-S-31",
-      "clauses": [
-        "OBI-T-04/c1a"
-      ],
-      "description": "A patch published after the tool is read under its line: a tool supporting the line interprets it.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.2.99",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "conformant"
-      },
-      "requiresSupports": "0.2.0"
-    },
-    {
-      "id": "T04-S-32",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "An unsupported major line with a non-zero minor is refused, not judged.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.5.0"
-    },
-    {
-      "id": "T04-S-33",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "An unsupported pre-1.0 minor line with a patch component is refused.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.999.5",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "0.999.5"
-    },
-    {
-      "id": "T04-S-34",
-      "clauses": [
-        "OBI-T-04/c2"
-      ],
-      "description": "A lower line below the tool's lowest supported version is refused, not processed under the wrong rules.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "0.1.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresMinSupported": "0.2.0",
-      "requiresUnsupported": "0.1.0"
-    },
-    {
-      "id": "T04-S-35",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line that lacks members the current version requires is refused, not judged non-conformant.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "futureOperations": {}
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.5.0"
-    },
-    {
-      "id": "T04-S-36",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused, not judged non-conformant.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "operations": []
-        }
-      },
-      "expected": {
-        "outcome": "version-refusal"
-      },
-      "requiresUnsupported": "999.5.0"
-    },
-    {
-      "id": "T04-S-37",
-      "clauses": [
-        "OBI-T-04/c1a"
-      ],
-      "description": "A release of another line the tool declares is interpreted, not refused. No conclusion is asserted: the corpus has no text for that line.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "1.0.0",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "interpreted"
-      },
-      "requiresSupports": "1.0.0"
-    },
-    {
-      "id": "T04-S-38",
-      "clauses": [
-        "OBI-T-04/c1a",
-        "OBI-T-04/c9.i3"
-      ],
-      "description": "Build metadata is ignored in the decision for another line the tool declares. No conclusion is asserted: the corpus has no text for that line.",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "1.0.0+build.123",
-          "operations": {}
-        }
-      },
-      "expected": {
-        "outcome": "interpreted"
-      },
-      "requiresSupports": "1.0.0"
-    },
-    {
-      "id": "T04-S-39",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c9.i4"
-      ],
-      "description": "Comparing kinds is interpretation (section 8.1): an unsupported line is refused, not compared.",
-      "action": "check-dependency-kind",
-      "given": {
-        "document": {
-          "openbindings": "999.0.0",
-          "operations": {
-            "a": {}
-          },
-          "sources": {
-            "s": {
-              "kind": "example.test@1"
-            }
-          },
-          "bindings": {
-            "a.s": {
-              "operation": "a",
-              "source": "s"
-            }
-          },
-          "dependencies": {
-            "d": {
-              "operation": "a",
-              "kinds": [
-                "example.test@1"
-              ]
-            }
-          }
-        },
-        "dependency": "d",
-        "binding": "a.s"
-      },
-      "requiresUnsupported": "999.0.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-40",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line whose dependencies member has a type the current version forbids is refused when kinds are compared, not judged non-conformant.",
-      "action": "check-dependency-kind",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "dependencies": []
-        },
-        "dependency": "d",
-        "binding": "a.s"
-      },
-      "requiresUnsupported": "999.5.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-41",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c9.i4"
-      ],
-      "description": "Checking examples validates values (section 8.1): an unsupported line is refused, not checked.",
-      "action": "check-examples",
-      "given": {
-        "document": {
-          "openbindings": "999.0.0",
-          "operations": {
-            "a": {
-              "input": {
-                "type": "string"
-              },
-              "examples": {
-                "e": {
-                  "input": 1
-                }
-              }
-            }
-          }
-        },
-        "operation": "a"
-      },
-      "requiresUnsupported": "999.0.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-42",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when examples are checked, not judged non-conformant.",
-      "action": "check-examples",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "operations": []
-        },
-        "operation": "a"
-      },
-      "requiresUnsupported": "999.5.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-43",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when a name is resolved, not judged non-conformant.",
-      "action": "resolve-operation",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "operations": []
-        },
-        "name": "a"
-      },
-      "requiresUnsupported": "999.5.0",
-      "expected": {
-        "outcome": "version-refusal"
-      }
-    },
-    {
-      "id": "T04-S-44",
-      "clauses": [
-        "OBI-T-04/c2",
-        "OBI-T-04/c3"
-      ],
-      "description": "A document on an unsupported line whose operations member has a type the current version forbids is refused when values are validated, not judged non-conformant.",
-      "action": "validate-operation-values",
-      "given": {
-        "document": {
-          "openbindings": "999.5.0",
-          "operations": []
-        },
-        "operation": "a",
-        "side": "input",
-        "values": [
-          1
+        "probeVerdicts": [
+          "valid",
+          "instance-mismatch"
         ]
-      },
-      "requiresUnsupported": "999.5.0",
-      "expected": {
-        "outcome": "version-refusal"
       }
     }
   ]

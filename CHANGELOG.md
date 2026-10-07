@@ -42,17 +42,17 @@ contracts, context-free references, and numbered conformance rules arrive.
   kind or by tool policy. It lists the document's author claims (examples, a
   binding's realization claim and its `idempotent`, a dependency's
   consumption claim, and correspondence); their truth is outside document
-  conformance (OBI-T-10).
+  conformance (OBI-T-09).
 - **Value validation.** A tool that claims to validate a value against
   `input` or `output` evaluates each value separately under the schema's
   dialect, reads patterns as ECMA-262 with Unicode semantics, and gives no
   verdict where the result depends on a reference or capability it lacks, on
-  a result JSON Schema leaves undefined, or on an absent schema (OBI-T-08). A
+  a result JSON Schema leaves undefined, or on an absent schema (OBI-T-07). A
   tool that derives another form from a schema, such as a generated type,
-  does not claim it preserves meaning it cannot represent (OBI-T-05).
+  does not claim it preserves meaning it cannot represent (OBI-T-04).
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   judges conformance by document rules OBI-D-01 to OBI-D-13 and tool rules
-  OBI-T-01 to OBI-T-11 alone, and a tool's obligations follow what it does
+  OBI-T-01 to OBI-T-10 alone, and a tool's obligations follow what it does
   and claims ([§10.1](openbindings.md#101-tool-obligations)). Every document
   rule is decidable offline from the document, the derived schema, and the
   JSON Schema 2020-12 meta-schemas (invariant 5). Rule-level evidence is
@@ -60,9 +60,9 @@ contracts, context-free references, and numbered conformance rules arrive.
   lacks a capability a rule needs leaves it inconclusive, which is not a
   violation. A conclusion is conformant, non-conformant, or conformance
   undetermined ([§10.4](openbindings.md#104-conformance-conclusions)), and
-  the tool reporting it names the text it applied: a patch release, an
-  included prerelease, or, before a first release, the working draft and its
-  source-control revision (OBI-T-09).
+  the tool reporting it names the text it applied: a patch release, a
+  prerelease, or, before a first release, the working draft and its
+  source-control revision (OBI-T-08).
 - **Media type and canonical serialization.**
   [§11](openbindings.md#11-iana-considerations) gives registration details
   for `application/vnd.openbindings+json`.
@@ -117,7 +117,7 @@ contracts, context-free references, and numbered conformance rules arrive.
 - **Aliases form one namespace and carry correspondence.** Keys and aliases
   form one flat, document-unique namespace (OBI-D-04). A name resolves only by
   exact match, keys and aliases with equal standing, and a resolved
-  operation's bindings are found by its key (OBI-T-07). Carrying a shared
+  operation's bindings are found by its key (OBI-T-06). Carrying a shared
   contract's published name as a key or alias claims correspondence with that
   contract's operation, as a consumer holding the contract reads it
   ([§5.1](openbindings.md#51-operations)); no rule verifies the claim, and it
@@ -153,22 +153,24 @@ contracts, context-free references, and numbered conformance rules arrive.
   each must identify a schema at an OBI position (OBI-D-12). No plain name is
   declared twice in the document resource, and no `$id` by two schemas
   (OBI-D-13). A schema that declares `$id` begins its own resource, resolved
-  as JSON Schema defines. Reference cycles are permitted (OBI-T-06), and
+  as JSON Schema defines. Reference cycles are permitted (OBI-T-05), and
   declining an external resource never affects conformance. In 0.1, relative
   references resolved against the document's location and cycles failed
   closed.
-- **Versions are read by line.** A document is read under the `major.minor`
-  line its `openbindings` value names
+- **Versions are read by line.** A document means what the text of the
+  `major.minor` line its `openbindings` value names says, or of the
+  prerelease it names
   ([§8.1](openbindings.md#81-openbindings-field-specification-version)). The
   patch number carries no meaning, build metadata is ignored, and a
-  prerelease is outside its line unless a processor explicitly includes it. A
-  processor decides the line before any interpretation, including judging
-  conformance, and gives a version refusal, reported apart from
-  non-conformance, for a line it does not support (OBI-T-04). A text that
-  declares no version is non-conformant under OBI-D-01 or OBI-D-09 rather
-  than refused, apart from a latitude for parsers that cannot see a repeated
-  `openbindings` member. 0.1 required refusal only for a higher major
-  version.
+  prerelease names itself, not its line. §8.1 defines when a text declares a
+  version; a text that declares none is non-conformant under OBI-D-01 or
+  OBI-D-09. The tool rules govern work done by applying a line's text to
+  documents that declare that line
+  ([§10.3](openbindings.md#103-tool-rules)). Whether a tool proceeds with,
+  warns about, or declines a document of another line is its own choice, and
+  applying another line's text establishes none of that document's rules
+  ([§10.4](openbindings.md#104-conformance-conclusions)). 0.1 required
+  refusal for a higher major version.
 - **`version` is an opaque label.** It is a non-empty string with no
   ordering, compatibility, or identity meaning
   ([§8.2](openbindings.md#82-version-field-interface-version-label)); 0.1
@@ -181,7 +183,7 @@ contracts, context-free references, and numbered conformance rules arrive.
   and the prose governed.
 - **Examples are author claims.** Each example `input` and `output` is one
   caller-facing value the author claims satisfies the corresponding schema; a
-  mismatch is a false claim, never an exception to the schema (OBI-T-11). An
+  mismatch is a false claim, never an exception to the schema (OBI-T-10). An
   explicit `null` member is the JSON value `null`. In 0.1, examples were
   documentation that SHOULD validate.
 - **Security considerations mandate no mitigation.**
@@ -224,16 +226,15 @@ contracts, context-free references, and numbered conformance rules arrive.
 - **HTTP Discovery companion.** [`http-discovery.md`](http-discovery.md),
   version 0.1.0, is an optional, independently versioned specification. A
   service MAY publish its OBI at `/.well-known/openbindings`; DISC-S-01 to
-  DISC-S-04 bind servers and DISC-C-01 to DISC-C-04 bind clients, as separate
+  DISC-S-04 bind servers and DISC-C-01 to DISC-C-03 bind clients, as separate
   conformance classes. It gives registration details for the well-known URI
-  suffix `openbindings`. Fetching supplies the document no base URI, and a
-  client does not report a version refusal as "no OBI published" (DISC-C-04).
+  suffix `openbindings`. Fetching supplies the document no base URI.
 - **Core conformance corpus.** `conformance/` replaces 0.1's
   schema-comparison, normalization, and operation-matching fixtures.
   `document/` has one validity-fixture file per document rule; each case
   carries exactly one of `document`, `documentText`, or `documentBase64`, an
   expected verdict, and optional `violates` and `notViolated` rule lists.
-  `tool/` holds validity fixtures for OBI-T-03 and OBI-T-10, and `scenarios/`
+  `tool/` holds validity fixtures for OBI-T-03 and OBI-T-09, and `scenarios/`
   holds tool scenarios in format `openbindings.core-tool-scenarios@2`
   (`tool-scenario.schema.json`). A scenario names an action
   (`validate-document`, `resolve-operation`, `validate-operation-values`,

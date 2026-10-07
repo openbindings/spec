@@ -15,7 +15,8 @@ This repo uses **immutable snapshots** for released spec versions, and regular p
   diverge breakingly from the latest released snapshot, the draft's
   self-declared version (the `openbindings.md` heading, the CHANGELOG
   section) must already be the next version. Two normative texts under one
-  identifier is exactly the divergence OBI-T-04 exists to prevent.
+  identifier would leave the declared version naming no single text, which
+  is what it exists to name (§8.1).
 - **Releases are dated by their tags.** Release tags are annotated
   (`git tag -a vX.Y.Z -m ...`; from 0.2.0 on — the v0.1.0 tag predates
   this convention and is lightweight). The CHANGELOG's in-progress
@@ -126,11 +127,11 @@ entry states the result.
 | Row | State |
 |---|---|
 | Scope | Met. |
-| Tested rules | Not met. No deliberately wrong tool is published or run in CI. Nine of the 61 obligation clauses hold a status short of tested: OBI-T-11's four (composition only), OBI-T-04/c9.i2 and OBI-T-09/c3b (contrast tools only), OBI-T-05/c1 and OBI-T-09/c3a (no executor), and OBI-T-07/c2 (not portably testable). No case observes `preference`, `deprecated`, or content presence under OBI-T-02/c1, and `check-dependency-kind` and `check-examples` cannot express a version refusal. Document-rule cases still lack an `$id` below a top-level position (OBI-D-05), near-miss keys that differ only in case (OBI-D-08, OBI-D-11), an empty prerelease (OBI-D-09), and `$id` values that differ only in percent-encoding (OBI-D-13). |
+| Tested rules | Not met. No deliberately wrong tool is published or run in CI. Eight of the 52 obligation clauses hold a status short of tested: OBI-T-10's four (composition only), OBI-T-08/c3b (contrast tools only), OBI-T-04/c1 and OBI-T-08/c3a (no executor), and OBI-T-06/c2 (not portably testable). |
 | Two implementations | Not met: the Go SDK passes the corpus. The TypeScript SDK's runner reads the retired scenario format, and spec CI runs no TypeScript implementation on the core corpus. |
-| Implementable from the text | Not met: no blind implementation run since the kind, pruning, value-contract, and OBI-T-09 changes. |
-| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; OBI-T-05 rests on undefined terms ("semantically significant", "the schema's meaning"); `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
-| One vocabulary | Not met: "applicable" names both a line's set of rules and an evidence status, and "patch release" both any release and a correcting one; "format conventions" and "described component" are used without definition, and §3 does not index terms defined in place; four Go SDK names (`Reference.Target`, `Position`, `ValidationReport.Version`, `ErrInconclusive`) await a ruling. |
+| Implementable from the text | Not met: no blind implementation run since the kind, pruning, value-contract, and OBI-T-08 changes, and the removal of the version-refusal rule. |
+| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; OBI-T-04 rests on undefined terms ("semantically significant", "the schema's meaning"); `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
+| One vocabulary | Not met: "applicable" names both a line's set of rules and an evidence status, and "patch release" both any release and a correcting one; "format conventions" and "described component" are used without definition, and §3 does not index terms defined in place. |
 
 Peer ranking (2026-10-06, core text at 581382f, one reviewer): 3rd of 8,
 unchanged, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, Protocol

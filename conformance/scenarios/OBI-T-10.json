@@ -1,13 +1,13 @@
 {
   "format": "openbindings.core-tool-scenarios@2",
-  "rule": "OBI-T-11",
+  "rule": "OBI-T-10",
   "section": "10.3",
   "description": "When checking examples, a mismatch is a false claim against an authoritative schema; examples never widen, narrow, or override it.",
   "scenarios": [
     {
-      "id": "T11-S-01",
+      "id": "T10-S-01",
       "clauses": [
-        "OBI-T-11/c1",
+        "OBI-T-10/c1",
         "OBI-T-02/c2"
       ],
       "description": "Each example value is checked against its schema; a mismatch is a false claim, and an explicit null is a value.",
@@ -60,9 +60,9 @@
       }
     },
     {
-      "id": "T11-S-06",
+      "id": "T10-S-06",
       "clauses": [
-        "OBI-T-11/c2a"
+        "OBI-T-10/c2a"
       ],
       "description": "An example the schema rejects is a false claim; the checker does not widen the schema to admit it.",
       "action": "check-examples",
@@ -100,9 +100,9 @@
       }
     },
     {
-      "id": "T11-S-07",
+      "id": "T10-S-07",
       "clauses": [
-        "OBI-T-11/c2b"
+        "OBI-T-10/c2b"
       ],
       "description": "Each example is checked against the schema alone; other examples do not narrow it.",
       "action": "check-examples",
@@ -157,9 +157,9 @@
       }
     },
     {
-      "id": "T11-S-08",
+      "id": "T10-S-08",
       "clauses": [
-        "OBI-T-11/c2c"
+        "OBI-T-10/c2c"
       ],
       "description": "An example outside an enum is a false claim; the example does not override the enum.",
       "action": "check-examples",

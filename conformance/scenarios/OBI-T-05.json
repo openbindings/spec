@@ -2,147 +2,388 @@
   "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-05",
   "section": "10.3",
-  "description": "A tool that claims a derived form preserves a schema's meaning must have a form that agrees with the schema on every probe; otherwise it must not make that claim.",
+  "description": "References resolve as sections 5.2 and 7 define, same-document references in the document resource against the OBI document, and a cycle alone is neither an invalid reference nor a mismatch.",
   "scenarios": [
     {
       "id": "T05-S-01",
       "clauses": [
-        "OBI-T-05/c1"
+        "OBI-T-05/c2a",
+        "OBI-T-05/c2b"
       ],
-      "description": "A derived form that cannot represent pattern must not be claimed to preserve the schema.",
-      "action": "derive-form",
+      "description": "A productive recursive schema accepts a finite matching value.",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "op": {
+            "cycle": {
               "input": {
-                "type": "string",
-                "pattern": "^[0-9]+$"
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
+          "schemas": {
+            "Node": {
+              "type": "object",
+              "properties": {
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
               }
             }
           }
         },
-        "operation": "op",
+        "operation": "cycle",
         "side": "input",
-        "probes": [
-          "123",
-          "abc"
+        "values": [
+          {
+            "next": {}
+          }
         ]
       },
       "expected": {
-        "probeVerdicts": [
-          "valid",
-          "instance-mismatch"
+        "results": [
+          "valid"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
     {
       "id": "T05-S-02",
       "clauses": [
-        "OBI-T-05/c1"
+        "OBI-T-05/c2a",
+        "OBI-T-05/c2b"
       ],
-      "description": "A derived form whose numbers cannot carry an exact const must not be claimed to preserve the schema.",
-      "action": "derive-form",
+      "description": "A productive recursive object schema rejects a finite mismatching value.",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "op": {
+            "walk": {
               "input": {
-                "type": "integer",
-                "const": 9007199254740993
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
+          "schemas": {
+            "Node": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
               }
             }
           }
         },
-        "operation": "op",
+        "operation": "walk",
         "side": "input",
-        "probes": [
-          9007199254740993,
-          9007199254740992
+        "values": [
+          {
+            "value": "root",
+            "next": {
+              "value": 7
+            }
+          }
         ]
       },
       "expected": {
-        "probeVerdicts": [
-          "valid",
+        "results": [
           "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
     {
       "id": "T05-S-03",
       "clauses": [
-        "OBI-T-05/c1"
+        "OBI-T-05/c2a",
+        "OBI-T-05/c2b"
       ],
-      "description": "A derived form that admits unknown members must not be claimed to preserve unevaluatedProperties: false.",
-      "action": "derive-form",
+      "description": "Mutual recursion between two schemas keeps its meaning.",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "type": "object",
+              "properties": {
+                "b": {
+                  "$ref": "#/schemas/B"
+                }
+              }
+            },
+            "B": {
+              "type": "object",
+              "properties": {
+                "a": {
+                  "$ref": "#/schemas/A"
+                }
+              }
+            }
+          },
           "operations": {
-            "op": {
+            "m": {
               "input": {
-                "type": "object",
-                "properties": {
-                  "a": {
-                    "type": "string"
-                  }
-                },
-                "unevaluatedProperties": false
+                "$ref": "#/schemas/A"
               }
             }
           }
         },
-        "operation": "op",
+        "operation": "m",
         "side": "input",
-        "probes": [
+        "values": [
           {
-            "a": "x"
+            "b": {
+              "a": {}
+            }
           },
           {
-            "a": "x",
-            "b": 1
+            "b": {
+              "a": 5
+            }
           }
         ]
       },
       "expected": {
-        "probeVerdicts": [
+        "results": [
           "valid",
           "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
         ]
       }
     },
     {
       "id": "T05-S-04",
       "clauses": [
-        "OBI-T-05/c1"
+        "OBI-T-05/c1b",
+        "OBI-T-05/c2a",
+        "OBI-T-05/c2b"
       ],
-      "description": "A derived form using binary floating point must not be claimed to preserve a decimal multipleOf.",
-      "action": "derive-form",
+      "description": "Inside a schema that declares $id, # names that schema (section 7.5), so a tree recurses through it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "https://e.example.test/tree.json"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": [
+              {
+                "children": []
+              }
+            ]
+          },
+          {
+            "children": [
+              5
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T05-S-05",
+      "clauses": [
+        "OBI-T-05/c1a",
+        "OBI-T-07/c7"
+      ],
+      "description": "In the document resource, # names the OBI document, not the containing schema; the result is undefined, so no verdict.",
+      "action": "validate-operation-values",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
+            "r": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "next": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "r",
+        "side": "input",
+        "values": [
+          {
+            "next": {}
+          },
+          {
+            "next": 5
+          }
+        ],
+        "nonConformant": [
+          "OBI-D-12"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-verdict",
+          "no-verdict"
+        ]
+      }
+    },
+    {
+      "id": "T05-S-06",
+      "clauses": [
+        "OBI-T-05/c1a",
+        "OBI-T-05/c2a"
+      ],
+      "description": "A pointer that lands on a schema declaring $id resolves to that schema; its recursion, never evaluated here, is no invalid reference.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "#/schemas/Tree"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": []
+          },
+          {
+            "children": 5
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "valid",
+          "instance-mismatch"
+        ],
+        "forbidReasons": [
+          "invalid-reference",
+          "undefined-result"
+        ]
+      }
+    },
+    {
+      "id": "T05-S-07",
+      "clauses": [
+        "OBI-T-05/c1a",
+        "OBI-T-07/c7"
+      ],
+      "description": "Only an $anchor matching the JSON Schema Core section 8.2.2 grammar declares a plain name (section 7.3), so #bad/name identifies no schema and no verdict is defined.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "$anchor": "bad/name",
+              "type": "string"
+            }
+          },
+          "operations": {
             "op": {
               "input": {
-                "type": "number",
-                "multipleOf": 0.01
+                "$ref": "#bad/name"
               }
             }
           }
         },
         "operation": "op",
         "side": "input",
-        "probes": [
-          0.07,
-          0.075
+        "values": [
+          "x",
+          5
+        ],
+        "nonConformant": [
+          "OBI-D-10",
+          "OBI-D-12"
         ]
       },
       "expected": {
-        "probeVerdicts": [
-          "valid",
-          "instance-mismatch"
+        "results": [
+          "no-verdict",
+          "no-verdict"
         ]
       }
     }

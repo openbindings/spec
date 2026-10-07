@@ -2,389 +2,498 @@
   "format": "openbindings.core-tool-scenarios@2",
   "rule": "OBI-T-06",
   "section": "10.3",
-  "description": "References resolve as sections 5.2 and 7 define, same-document references in the document resource against the OBI document, and a cycle alone is neither an invalid reference nor a mismatch.",
+  "description": "Operation-name resolution against the flat key-plus-alias namespace, exact and unprivileged, with bindings found by the canonical key.",
   "scenarios": [
     {
       "id": "T06-S-01",
       "clauses": [
-        "OBI-T-06/c2a",
-        "OBI-T-06/c2b"
+        "OBI-T-06/c1"
       ],
-      "description": "A productive recursive schema accepts a finite matching value.",
-      "action": "validate-operation-values",
+      "description": "A primary operation key resolves to itself and selects bindings by that key.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "cycle": {
-              "input": {
-                "$ref": "#/schemas/Node"
-              }
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
             }
           },
-          "schemas": {
-            "Node": {
-              "type": "object",
-              "properties": {
-                "next": {
-                  "$ref": "#/schemas/Node"
-                }
-              }
+          "bindings": {
+            "primary": {
+              "operation": "createTask",
+              "source": "s"
             }
           }
         },
-        "operation": "cycle",
-        "side": "input",
-        "values": [
-          {
-            "next": {}
-          }
-        ]
+        "name": "createTask"
       },
       "expected": {
-        "results": [
-          "valid"
-        ],
-        "dependsOn": [
-          "recursive-references"
-        ],
-        "forbidReasons": [
-          "invalid-reference",
-          "undefined-result"
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "primary"
         ]
       }
     },
     {
       "id": "T06-S-02",
       "clauses": [
-        "OBI-T-06/c2a",
-        "OBI-T-06/c2b"
+        "OBI-T-06/c1",
+        "OBI-T-06/c4"
       ],
-      "description": "A productive recursive object schema rejects a finite mismatching value.",
-      "action": "validate-operation-values",
+      "description": "An alias has equal authority and resolves to the operation's canonical key; bindings are never selected by the alias spelling.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "walk": {
-              "input": {
-                "$ref": "#/schemas/Node"
-              }
+            "createTask": {
+              "aliases": [
+                "tasks.create",
+                "addTask"
+              ]
             }
           },
-          "schemas": {
-            "Node": {
-              "type": "object",
-              "required": [
-                "value"
-              ],
-              "properties": {
-                "value": {
-                  "type": "string"
-                },
-                "next": {
-                  "$ref": "#/schemas/Node"
-                }
-              }
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "canonical": {
+              "operation": "createTask",
+              "source": "s"
             }
           }
         },
-        "operation": "walk",
-        "side": "input",
-        "values": [
-          {
-            "value": "root",
-            "next": {
-              "value": 7
-            }
-          }
-        ]
+        "name": "tasks.create"
       },
       "expected": {
-        "results": [
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "recursive-references"
-        ],
-        "forbidReasons": [
-          "invalid-reference",
-          "undefined-result"
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "canonical"
         ]
       }
     },
     {
       "id": "T06-S-03",
       "clauses": [
-        "OBI-T-06/c2a",
-        "OBI-T-06/c2b"
+        "OBI-T-06/c3"
       ],
-      "description": "Mutual recursion between two schemas keeps its meaning.",
-      "action": "validate-operation-values",
+      "description": "A name matching no key or alias does not resolve.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "schemas": {
-            "A": {
-              "type": "object",
-              "properties": {
-                "b": {
-                  "$ref": "#/schemas/B"
-                }
-              }
-            },
-            "B": {
-              "type": "object",
-              "properties": {
-                "a": {
-                  "$ref": "#/schemas/A"
-                }
-              }
-            }
-          },
           "operations": {
-            "m": {
-              "input": {
-                "$ref": "#/schemas/A"
-              }
+            "createTask": {
+              "aliases": [
+                "tasks.create"
+              ]
             }
           }
         },
-        "operation": "m",
-        "side": "input",
-        "values": [
-          {
-            "b": {
-              "a": {}
-            }
-          },
-          {
-            "b": {
-              "a": 5
-            }
-          }
-        ]
+        "name": "tasks.delete"
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "recursive-references"
-        ],
-        "forbidReasons": [
-          "invalid-reference",
-          "undefined-result"
-        ]
+        "outcome": "not-found"
       }
     },
     {
       "id": "T06-S-04",
       "clauses": [
-        "OBI-T-06/c1b",
-        "OBI-T-06/c2a",
-        "OBI-T-06/c2b"
+        "OBI-T-06/c3"
       ],
-      "description": "Inside a schema that declares $id, # names that schema (section 7.5), so a tree recurses through it.",
-      "action": "validate-operation-values",
+      "description": "A host-language prototype name is not an operation unless the document defines it.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "schemas": {
-            "Tree": {
-              "$id": "https://e.example.test/tree.json",
-              "type": "object",
-              "properties": {
-                "children": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#"
-                  }
-                }
-              }
-            }
-          },
           "operations": {
-            "t": {
-              "output": {
-                "$ref": "https://e.example.test/tree.json"
-              }
-            }
+            "ordinary": {}
           }
         },
-        "operation": "t",
-        "side": "output",
-        "values": [
-          {
-            "children": [
-              {
-                "children": []
-              }
-            ]
-          },
-          {
-            "children": [
-              5
-            ]
-          }
-        ]
+        "name": "constructor"
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "dependsOn": [
-          "recursive-references"
-        ],
-        "forbidReasons": [
-          "invalid-reference",
-          "undefined-result"
-        ]
+        "outcome": "not-found"
       }
     },
     {
       "id": "T06-S-05",
       "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c7"
+        "OBI-T-06/c1"
       ],
-      "description": "In the document resource, # names the OBI document, not the containing schema; the result is undefined, so no verdict.",
-      "action": "validate-operation-values",
+      "description": "A document may genuinely define an operation with a host-language prototype name.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
           "operations": {
-            "r": {
-              "input": {
-                "type": "object",
-                "properties": {
-                  "next": {
-                    "$ref": "#"
-                  }
-                }
-              }
-            }
+            "constructor": {}
           }
         },
-        "operation": "r",
-        "side": "input",
-        "values": [
-          {
-            "next": {}
-          },
-          {
-            "next": 5
-          }
-        ],
-        "nonConformant": [
-          "OBI-D-12"
-        ]
+        "name": "constructor"
       },
       "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
-        ]
+        "outcome": "resolved",
+        "operationKey": "constructor",
+        "bindingKeys": []
       }
     },
     {
       "id": "T06-S-06",
       "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-06/c2a"
+        "OBI-T-06/c3"
       ],
-      "description": "A pointer that lands on a schema declaring $id resolves to that schema; its recursion, never evaluated here, is no invalid reference.",
-      "action": "validate-operation-values",
+      "description": "No case folding: a lower-cased key does not resolve.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "schemas": {
-            "Tree": {
-              "$id": "https://e.example.test/tree.json",
-              "type": "object",
-              "properties": {
-                "children": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#"
-                  }
-                }
-              }
-            }
-          },
           "operations": {
-            "t": {
-              "output": {
-                "$ref": "#/schemas/Tree"
-              }
-            }
+            "createTask": {}
           }
         },
-        "operation": "t",
-        "side": "output",
-        "values": [
-          {
-            "children": []
-          },
-          {
-            "children": 5
-          }
-        ]
+        "name": "createtask"
       },
       "expected": {
-        "results": [
-          "valid",
-          "instance-mismatch"
-        ],
-        "forbidReasons": [
-          "invalid-reference",
-          "undefined-result"
-        ]
+        "outcome": "not-found"
       }
     },
     {
       "id": "T06-S-07",
       "clauses": [
-        "OBI-T-06/c1a",
-        "OBI-T-08/c7"
+        "OBI-T-06/c3"
       ],
-      "description": "Only an $anchor matching the JSON Schema Core section 8.2.2 grammar declares a plain name (section 7.3), so #bad/name identifies no schema and no verdict is defined.",
-      "action": "validate-operation-values",
+      "description": "No trimming: surrounding white space is part of the name.",
+      "action": "resolve-operation",
       "given": {
         "document": {
           "openbindings": "0.2.0",
-          "schemas": {
-            "A": {
-              "$anchor": "bad/name",
-              "type": "string"
-            }
-          },
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": " createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-08",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "No trimming: a trailing newline is part of the name.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "createTask\n"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-09",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "No approximate matching: a prefix of a key does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "create"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-10",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "Dots carry no structure: a trailing segment of a qualified alias does not resolve.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
           "operations": {
             "op": {
-              "input": {
-                "$ref": "#bad/name"
-              }
+              "aliases": [
+                "acme.tasks.createTask"
+              ]
             }
           }
         },
-        "operation": "op",
-        "side": "input",
-        "values": [
-          "x",
-          5
-        ],
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-11",
+      "clauses": [
+        "OBI-T-06/c3",
+        "OBI-T-06/c1"
+      ],
+      "description": "An alias that differs only in case from another operation's key resolves to the alias's operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "Task": {},
+            "other": {
+              "aliases": [
+                "task"
+              ]
+            }
+          }
+        },
+        "name": "task"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "other",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "T06-S-12",
+      "clauses": [
+        "OBI-T-06/c2",
+        "OBI-T-06/c1"
+      ],
+      "description": "Advisory group T06-G-01, document 1: the key match (a) is the shorter, lexically smaller, earlier candidate. Every result is allowed; the harness records which candidate a tool chooses in each document and never fails it.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "a": {},
+            "bb": {
+              "aliases": [
+                "a"
+              ]
+            }
+          }
+        },
+        "name": "a",
         "nonConformant": [
-          "OBI-D-10",
-          "OBI-D-12"
+          "OBI-D-04"
         ]
       },
       "expected": {
-        "results": [
-          "no-verdict",
-          "no-verdict"
+        "outcome": "collision",
+        "keyMatch": "a",
+        "aliasMatch": "bb",
+        "group": "T06-G-01"
+      }
+    },
+    {
+      "id": "T06-S-13",
+      "clauses": [
+        "OBI-T-06/c4"
+      ],
+      "description": "A binding whose operation member spells the alias is not the resolved operation's binding (an OBI-D-07 violation).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "aliases": [
+                "tasks.create"
+              ]
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "canonical": {
+              "operation": "createTask",
+              "source": "s"
+            },
+            "byAlias": {
+              "operation": "tasks.create",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.create",
+        "nonConformant": [
+          "OBI-D-07"
         ]
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "canonical"
+        ]
+      }
+    },
+    {
+      "id": "T06-S-14",
+      "clauses": [
+        "OBI-T-06/c2",
+        "OBI-T-06/c1"
+      ],
+      "description": "Advisory group T06-G-01, document 2: the key match (zz) is the longer, lexically larger, later candidate.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "a": {
+              "aliases": [
+                "zz"
+              ]
+            },
+            "zz": {}
+          }
+        },
+        "name": "zz",
+        "nonConformant": [
+          "OBI-D-04"
+        ]
+      },
+      "expected": {
+        "outcome": "collision",
+        "keyMatch": "zz",
+        "aliasMatch": "a",
+        "group": "T06-G-01"
+      }
+    },
+    {
+      "id": "T06-S-15",
+      "clauses": [
+        "OBI-T-06/c1"
+      ],
+      "description": "A map key beginning with x- names an ordinary operation in the flat operation namespace, not an extension field (section 12).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "x-internal": {}
+          }
+        },
+        "name": "x-internal"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "x-internal",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "T06-S-16",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "A binding key is not an operation identifier: a name equal to one resolves to nothing.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "tasks.http": {
+              "operation": "createTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.http"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-17",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "A dependency key is not an operation identifier: a name equal to one resolves to nothing, not to the operation it consumes.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "dependencies": {
+            "taskSink": {
+              "operation": "createTask"
+            }
+          }
+        },
+        "name": "taskSink"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "T06-S-18",
+      "clauses": [
+        "OBI-T-06/c3"
+      ],
+      "description": "Source and schema keys are not operation identifiers: a name equal to both resolves to nothing.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "Task": {
+              "kind": "example.test@1"
+            }
+          },
+          "schemas": {
+            "Task": {
+              "type": "object"
+            }
+          }
+        },
+        "name": "Task"
+      },
+      "expected": {
+        "outcome": "not-found"
       }
     }
   ]

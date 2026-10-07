@@ -2,7 +2,7 @@
   "rule": "OBI-D-09",
   "section": "10.2",
   "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
-  "notes": "Pre-release openbindings values are not exercised as positive cases here: per §8.1 a tool refuses a pre-release it does not declare support for (OBI-T-04), so a pre-release document is not globally valid even though the pre-release syntax is valid SemVer 2.0.0. SemVer's acceptance of pre-release syntax is covered at the SDK unit level. The leading-zero pre-release case below is a negative SemVer-pattern test and is unaffected. Every positive here is on the 0.2 line, the only line whose text this corpus has: a fixture asserts a verdict, and a version on another line is judged only under that line's text. Versions of other lines are OBI-T-04 scenarios with the outcome interpreted (T04-S-37, T04-S-38).",
+  "notes": "Prerelease openbindings values are not exercised as positive cases here: a document declaring a prerelease means what that draft's text says, not this line's (section 8.1), so this line's fixtures assert no verdict on it. The leading-zero prerelease case below is a negative SemVer test and is unaffected. Every positive here is on the 0.2 line, the only line whose text this corpus has: a fixture asserts a verdict, and a version on another line is judged only under that line's text. Texts that declare no version are judged under this line (section 8.1, Version declaration), including ones whose openbindings value looks like another line's.",
   "tests": [
     {
       "description": "current released spec version",
@@ -146,6 +146,63 @@
       },
       "valid": false,
       "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "a value that is not SemVer declares no version, so this line's rules judge the text, though the value looks like another line's",
+      "document": {
+        "openbindings": "999.0",
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "a non-string openbindings value declares no version",
+      "document": {
+        "openbindings": 2,
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "a text with no openbindings member declares no version",
+      "document": {
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "only the root object's openbindings member declares a version; a nested one does not",
+      "document": {
+        "operations": {},
+        "x-meta": {
+          "openbindings": "999.0.0"
+        }
+      },
+      "valid": false,
+      "violates": [
+        "OBI-D-09"
+      ]
+    },
+    {
+      "description": "a text that is not an object declares no version",
+      "document": [
+        "openbindings",
+        "999.0.0"
+      ],
+      "valid": false,
+      "violates": [
+        "OBI-D-02",
         "OBI-D-09"
       ]
     }

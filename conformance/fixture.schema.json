@@ -88,15 +88,10 @@
             },
             "description": "When valid is false, document rules a tool must not report violated, where it reports violated rules at all: the mirror of violates. It records where a rule holds, holds vacuously, or does not govern the document, so a tool that reports it violated misreads the rule. Harness semantics, not a report shape. Disjoint from violates."
           },
-          "requiresMinSupported": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-            "description": "When set, the test applies only to tools whose declared lowest supported version (the first release of the lowest declared line) is at least this SemVer 2.0.0 version. Used for downward OBI-T-04 refusal tests. Derived from the declaration, never from refusal code; runners skip otherwise, reporting skips separately."
-          },
           "requiresSupports": {
             "type": "string",
             "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-            "description": "When set, administer this test only to tools whose declared support set includes this SemVer 2.0.0 version: a release whose major.minor line the tool declares, or a prerelease it declares it includes (section 8.1). The harness derives the set from the tool's declaration, never from the tool's acceptance or refusal code, so a defect in that code cannot gate its own tests out. Otherwise runners skip the test, reporting the skip separately (skips are never failures)."
+            "description": "Administer this test only to tools that apply the text of this version's line, or of this prerelease (section 8.1), as the tool declares, never as its acceptance code decides."
           },
           "clauses": {
             "type": "array",

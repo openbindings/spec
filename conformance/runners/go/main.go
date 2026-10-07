@@ -14,7 +14,7 @@
 // Usage:
 //
 //	go run .                                   # every case, human summary
-//	go run . -rule OBI-T-08                    # one rule's cases
+//	go run . -rule OBI-T-07                    # one rule's cases
 //	go run . -verbose                          # every case's category
 //	go run . -json -pin <SDK commit SHA>       # results for scripts/check-runner-results.mjs,
 //	                                           # with the declared applied text
@@ -56,9 +56,7 @@ type Case struct {
 
 // Gates are a case's version gates (corpus README, "Version gates").
 type Gates struct {
-	RequiresSupports     string `json:"requiresSupports"`
-	RequiresUnsupported  string `json:"requiresUnsupported"`
-	RequiresMinSupported string `json:"requiresMinSupported"`
+	RequiresSupports string `json:"requiresSupports"`
 }
 
 // Result is one case's run category, with a one-line description: for a
@@ -83,7 +81,7 @@ func main() {
 		strict     bool
 	)
 	flag.StringVar(&corpusDir, "corpus", findDefaultCorpus(), "path to the conformance/ directory")
-	flag.StringVar(&ruleFilter, "rule", "", "run only this rule's cases (e.g. OBI-T-08); disables reconciliation")
+	flag.StringVar(&ruleFilter, "rule", "", "run only this rule's cases (e.g. OBI-T-07); disables reconciliation")
 	flag.BoolVar(&verbose, "verbose", false, "print every case's category")
 	flag.BoolVar(&jsonOutput, "json", false, "print the results as JSON for scripts/check-runner-results.mjs")
 	flag.StringVar(&pin, "pin", "", "the full commit SHA of the SDK under test, recorded in the JSON results")

@@ -68,7 +68,7 @@
       "clauses": [
         "OBI-T-03/c2"
       ],
-      "description": "An x-openbindings extension does not change the version decision (supported declared, unsupported extension).",
+      "description": "An x-openbindings extension does not change the line a document declares.",
       "action": "validate-document",
       "given": {
         "document": {
@@ -77,30 +77,8 @@
           "operations": {}
         }
       },
-      "requiresSupports": "0.2.0",
-      "requiresUnsupported": "999.0.0",
       "expected": {
         "outcome": "conformant"
-      }
-    },
-    {
-      "id": "T03-S-04",
-      "clauses": [
-        "OBI-T-03/c2",
-        "OBI-T-04/c2"
-      ],
-      "description": "An x-openbindings extension does not change the version decision (unsupported declared, supported extension).",
-      "action": "validate-document",
-      "given": {
-        "document": {
-          "openbindings": "999.0.0",
-          "x-openbindings": "0.2.0",
-          "operations": {}
-        }
-      },
-      "requiresUnsupported": "999.0.0",
-      "expected": {
-        "outcome": "version-refusal"
       }
     },
     {
