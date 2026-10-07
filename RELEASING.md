@@ -128,14 +128,17 @@ entry states the result.
 | Tested rules | Not met. No deliberately wrong implementation is published or run in CI. |
 | Two implementations | Not met: the Go SDK passes the corpus. The TypeScript SDK's runner reads the retired scenario format, and spec CI runs no TypeScript implementation on the core corpus. |
 | Implementable from the text | Not met: no blind implementation run since the kind, pruning, and value-contract changes, and the restructure into a document model only. |
-| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
-| One vocabulary | Not met: "described component" is used without definition, and §3 does not index terms defined in place. |
+| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; invariant 5 reads as if conformance depended only on the two schemas, not on the rules the prose states; what a 2020-12 `$schema` where JSON Schema does not permit it does to evaluation is unstated; §1 falls outside "From §2 on, the text is normative", and §14 is not marked informative; the derived schema's descriptions still say aliases are "equal in standing" to the key and "some valid repetition"; "recommended" in §5.1 and "implementers must not infer one" in the License and intellectual property section read as requirements without key words; `agent-primer.md` describes the draft before kinds. |
+| One vocabulary | Not met: "described component", "consumer", and "provider" are used without definition; "Source artifact" is defined but unused; §3 does not index terms defined in place. |
 
-Peer ranking (2026-10-06, core text at 581382f, one reviewer): 3rd of 8,
-unchanged, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, Protocol
-Buffers with gRPC, AsyncAPI 3.1, WSDL 2.0, and TypeSpec. First on scope
-discipline and the conformance model, second on precision, seventh on
-economy and readability.
+Peer ranking (2026-10-07, core text at 349e67b, three independent
+reviewers): 2nd of 8 in all three, behind GraphQL and ahead of Smithy 2.0
+(3rd in all three), OpenAPI 3.2, Protocol Buffers with gRPC, WSDL 2.0,
+AsyncAPI 3.1, and TypeSpec. First on scope discipline, precision, and the
+conformance model; second on implementability; third on evolution; fifth on
+economy; seventh on readability. Up from 3rd on 2026-10-06 (one reviewer,
+text at 581382f), when it was second on precision, fourth on
+implementability, fifth on evolution, and seventh on economy.
 
 ## Errata
 
