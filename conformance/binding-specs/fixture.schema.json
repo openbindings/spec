@@ -62,7 +62,7 @@
             "description": "When valid is false, the set of rules the document is intended to test as violated — family D-rules and only genuine current-core overlaps; the former location/OBI-D-05 overlap no longer applies. Minimum-set semantics, exactly as the core corpus defines them: a tool that reports violated rules at all must report at least these; supersets are never a defect.",
             "items": {
               "type": "string",
-              "pattern": "^((USAGE|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+|OBI-[DT]-[0-9]+)$"
+              "pattern": "^((USAGE|MCP|GRPC|CONN|ASYNC|GQL)-D-[0-9]+|OBI-[0-9]{2})$"
             }
           }
         }

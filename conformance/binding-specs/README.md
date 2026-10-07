@@ -24,10 +24,10 @@ six standalone brownfield synthesis binding specifications, keyed to each specif
 | graphql  | `openbindings.graphql@1`  | [`graphql/openbindings.graphql.md`](../../binding-specs/graphql/openbindings.graphql.md)     | GQL-D-01..05   | GQL-P-01..09      |
 
 This is a per-family subcorpus, governed by the family binding
-specifications, not by the core OBI-D / OBI-T rules. It lives alongside the
-core corpus but is verified separately: the core tooling
+specifications, not by the core rules (OBI-01 to OBI-13). It lives alongside
+the core corpus but is verified separately: the core tooling
 (`verify-corpus.mjs`, `generate-conformance-manifest.mjs`) scans only
-`document/` and `tool/`, so it neither picks up nor is broken by this
+`document/` and `scenarios/`, so it neither picks up nor is broken by this
 directory. The dedicated verifier is `scripts/verify-binding-specs.mjs`
 (run in CI). The six specifications share one source-fixture shape in
 [`fixture.schema.json`](fixture.schema.json), one portable behavior shape in
@@ -79,7 +79,7 @@ Two boundaries keep the verdicts honest:
   usage, a protobuf compiler for grpc/connect, an AsyncAPI processor
   for that family. A validator without the capability reports those tests
   inconclusive rather than passing or failing them, mirroring the core
-  posture that an undecided rule is undetermined, not violated (§10.4). Type-level and grammar-level tests
+  posture that an undecided rule is undetermined, not violated. Type-level and grammar-level tests
   (content JSON type, address form, selector spelling) are decidable by any
   validator.
 

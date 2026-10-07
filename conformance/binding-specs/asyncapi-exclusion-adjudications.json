@@ -177,7 +177,7 @@
             "jeffmikels/ProPresenter-API",
             "superheromeZzh/pi-mono-java-design"
           ],
-          "detail": "AsyncAPI 2.x Schema Objects are Draft-07-based. Copied verbatim they carry $schema: draft-07 (OBI-D-06) and draft tuple-form 'items' arrays (OBI-D-10, 2020-12 spells this prefixItems)."
+          "detail": "AsyncAPI 2.x Schema Objects are Draft-07-based. Copied verbatim they carry $schema: draft-07 (OBI-09) and draft tuple-form 'items' arrays (OBI-10, 2020-12 spells this prefixItems)."
         },
         "C-draft07-plain-name-id": {
           "artifacts": [
@@ -186,7 +186,7 @@
             "Reya-Labs/reya-api-specs",
             "ripple/rippled-api-spec"
           ],
-          "detail": "Draft-07 plain-name and pointer-form $id values ('GeneralReply', '#MassCancelResponse', '#/properties/driver') copied into OBI positions, where OBI-D-05 requires an absolute URI. Note: the standalone Go client already carries an isDraft07PlainNameID grammar, so the knowledge exists but is not applied on the copy path."
+          "detail": "Draft-07 plain-name and pointer-form $id values ('GeneralReply', '#MassCancelResponse', '#/properties/driver') copied into OBI positions, where OBI-11 requires an absolute URI. Note: the standalone Go client already carries an isDraft07PlainNameID grammar, so the knowledge exists but is not applied on the copy path."
         },
         "D-unresolved-nested-ref": {
           "artifacts": [

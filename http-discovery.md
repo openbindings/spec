@@ -4,13 +4,13 @@
 
 This companion specification defines configuration-free discovery of an OpenBindings interface document (OBI) over HTTP: a service publishes its OBI at the well-known URI path `/.well-known/openbindings`, and unconfigured clients retrieve it from there. It normatively defines the server and client obligations at that endpoint.
 
-This document is a **companion** to the OpenBindings core specification (`openbindings.md`). It is normative for implementations that claim conformance to it, and optional for everyone else: a conformant OBI producer, consumer, or processor is not required to implement HTTP discovery, an OBI may be obtained through any mechanism without changing its meaning (core §1.4), and other discovery mechanisms (registries, configuration, service meshes) remain valid. Conformance to this specification is claimed and versioned separately from core conformance.
+This document is a **companion** to the OpenBindings core specification (`openbindings.md`). It is normative for implementations that claim conformance to it, and optional for everyone else: software that produces or consumes OBI documents is not required to implement HTTP discovery, an OBI may be obtained through any mechanism without changing its meaning (core §1.3), and other discovery mechanisms (registries, configuration, service meshes) remain valid. Conformance to this specification is claimed and versioned separately from core conformance.
 
 Retrieving an OBI through this endpoint retrieves the complete document, including any Core `dependencies` declarations. Discovery does not register, wire, select, or satisfy those dependencies; those composition behaviors remain outside both this companion and the Core specification.
 
 ## Status of this document
 
-This is version 0.1.0 of OpenBindings HTTP Discovery. It versions independently of the core specification; the OBI documents it serves declare their own `openbindings` version, and this specification is agnostic to that value. Citations of core sections and rules in this document refer to the core specification at version 0.2.0; core rule identifiers are stable across core versions, and a core release that changes the substance of a cited section is adopted here by a revision of this specification.
+This is version 0.1.0 of OpenBindings HTTP Discovery. It versions independently of the core specification; the OBI documents it serves declare their own `openbindings` version, and this specification is agnostic to that value. Citations of core sections and rules in this document refer to the core specification at version 0.2.0; core rule identifiers are stable within a core line, and a core release that changes the substance of a cited section is adopted here by a revision of this specification.
 
 ## Notational conventions
 
@@ -22,13 +22,13 @@ A service MAY publish its OBI at the URI path `/.well-known/openbindings` on its
 
 This convention addresses the one-interface-per-origin case. Origins that host multiple distinct interfaces (gateways, monorepos, multi-tenant platforms) are out of scope for the well-known convention and rely on other discovery mechanisms. A `404` at this path simply means "no OBI here"; it is not an error condition.
 
-Discovery is publication behavior, not document semantics: fetching an OBI from this path supplies no base URI to the document and changes nothing about how it resolves — the core's context-free reference model governs regardless of acquisition (core §7). Any identity or cache key a client derives from the fetched URI is its own concern.
+Discovery is publication behavior, not document semantics: fetching an OBI from this path supplies no base URI to the document and changes nothing about how it resolves: the core's location-independent references govern regardless of acquisition (core invariant 4, §7). Any identity or cache key a client derives from the fetched URI is its own concern.
 
 ## 2. Server contract
 
 A conformant **discovery server** (a service serving an OBI at the well-known path):
 
-- **DISC-S-01**: MUST answer a `GET` to `/.well-known/openbindings` with `200 OK` and a body that is a conformant OBI document (core §10.2), and MUST NOT refuse the request solely because the `Accept` header is absent or omits an OBI media type. The OBI is the path's default representation: a request without an `Accept` header receives it. Content negotiation at this path is otherwise ordinary HTTP ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)); a publisher may serve, for example, an HTML page to a browser that prefers one, and a client sending the Accept header of DISC-C-01 always receives the OBI.
+- **DISC-S-01**: MUST answer a `GET` to `/.well-known/openbindings` with `200 OK` and a body that is a conformant OBI document (core §10), and MUST NOT refuse the request solely because the `Accept` header is absent or omits an OBI media type. The OBI is the path's default representation: a request without an `Accept` header receives it. Content negotiation at this path is otherwise ordinary HTTP ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)); a publisher may serve, for example, an HTML page to a browser that prefers one, and a client sending the Accept header of DISC-C-01 always receives the OBI.
 - **DISC-S-02**: SHOULD set the response `Content-Type` to `application/vnd.openbindings+json`; `application/json` MAY be used.
 - **DISC-S-03**: Where the service would serve the request but publishes no OBI at the path, MUST respond `404 Not Found`. An endpoint that gates discovery behind authentication or authorization MAY instead respond `401`/`403` and need not reveal whether an OBI exists behind it; the `404` expectation applies to a request the endpoint would otherwise serve. Whether to publish an OBI to unauthenticated clients is a deployment decision; this specification does not mandate public discovery.
 - **DISC-S-04**: For endpoints intended for public consumption, SHOULD set permissive CORS response headers (for example, `Access-Control-Allow-Origin: *`). Cross-origin discovery is a primary use case; omitting CORS silently breaks browser-side clients. Publishers restricting discovery to specific origins MAY set CORS headers accordingly.
@@ -38,8 +38,8 @@ A conformant **discovery server** (a service serving an OBI at the well-known pa
 A conformant **discovery client** (a tool fetching an OBI from the well-known path):
 
 - **DISC-C-01**: MUST accept a `200 OK` response served as `application/json` as well as one served as `application/vnd.openbindings+json`, and SHOULD send `Accept: application/vnd.openbindings+json, application/json`.
-- **DISC-C-02**: SHOULD follow `3xx` redirects (`301`, `302`, `303`, `307`, `308`), subject to its own redirect policy and limits. Redirects are routine deployment artifacts (HTTP-to-HTTPS upgrades, trailing-slash normalization, CDN frontends); a client that treated them as "no OBI published" would silently disagree with one that followed them. Because an OBI's references are context-free, following a redirect does not change how the document resolves.
-- **DISC-C-03**: MAY treat any response that is not a `200 OK` carrying an OBI document as "no OBI published at this path": a `404`, another `4xx`/`5xx` other than `401`/`403`, or a `200 OK` whose body the client establishes is not an OBI document — unparseable JSON, or a violation of a core document rule the client checks (an established violation, not a merely inconclusive rule; core §10.4). A `401`/`403` is gated discovery, not absence: DISC-S-03 lets publishers gate the endpoint without revealing whether an OBI exists behind it, so collapsing those statuses into "no OBI published" would discard the one signal a caller can act on (present credentials). How gated discovery is surfaced is tool-defined.
+- **DISC-C-02**: SHOULD follow `3xx` redirects (`301`, `302`, `303`, `307`, `308`), subject to its own redirect policy and limits. Redirects are routine deployment artifacts (HTTP-to-HTTPS upgrades, trailing-slash normalization, CDN frontends); a client that treated them as "no OBI published" would silently disagree with one that followed them. Because an OBI's references are location-independent, following a redirect does not change how the document resolves.
+- **DISC-C-03**: MAY treat any response that is not a `200 OK` carrying an OBI document as "no OBI published at this path": a `404`, another `4xx`/`5xx` other than `401`/`403`, or a `200 OK` whose body the client establishes is not an OBI document: unparseable JSON, or a violation of a core rule (core §10) that the client has established. A rule the client could not decide, for lack of a resource or a capability, is not an established violation. A `401`/`403` is gated discovery, not absence: DISC-S-03 lets publishers gate the endpoint without revealing whether an OBI exists behind it, so collapsing those statuses into "no OBI published" would discard the one signal a caller can act on (present credentials). How gated discovery is surfaced is tool-defined.
 
 ## 4. Security considerations
 
@@ -60,7 +60,7 @@ Registration of the well-known URI suffix per [RFC 8615](https://www.rfc-editor.
 
 ## 6. Conformance
 
-Server and client obligations are independent conformance classes: an implementation may claim either or both, and each claim is distinct from any core OpenBindings conformance claim. The rules above carry stable identifiers (`DISC-S-##`, `DISC-C-##`) under the same stability discipline as the core's rules: identifiers are never reused or renumbered.
+Server and client obligations are independent conformance classes: an implementation may claim either or both, and each claim is distinct from any core OpenBindings conformance claim. The rules above carry stable identifiers (`DISC-S-##`, `DISC-C-##`) under the same discipline as the core's rules: within a line, an identifier is never reused or renumbered.
 
 ## 7. References
 

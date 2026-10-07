@@ -33,10 +33,10 @@ A release snapshot captures the normative core spec at the time of release:
 - `EDITORS.md` — editors list
 - `LICENSE` and `IPR.md` — the exact copyright and patent posture represented
   by the release
-- `conformance/` — the **core** conformance test corpus only: `document/`,
-  `tool/`, `scenarios/`, both core fixture/scenario meta-schemas, the manifest,
+- `conformance/` — the **core** test corpus only: `document/`,
+  `scenarios/`, both core fixture/scenario meta-schemas, the manifest,
   README, and core runner. Snapshotted because the corpus is keyed to the
-  OBI-D-##/OBI-T-## rule identifiers in the snapshotted spec; a rule
+  `OBI-##` rule identifiers and the sections of the snapshotted spec; a rule
   identifier means what the snapshotted spec says it means
   ([§10](openbindings.md#10-conformance)), so the corpus and spec must be
   reachable together at the snapshot version. (The 0.1.0 snapshot predates
@@ -78,11 +78,9 @@ A release snapshot captures the normative core spec at the time of release:
      - Core conformance artifacts → `versions/<next>/conformance/`:
        - `conformance/README.md`
        - `conformance/manifest.json`
-       - `conformance/clauses.json`
        - `conformance/fixture.schema.json`
-       - `conformance/tool-scenario.schema.json`
+       - `conformance/scenario.schema.json`
        - `conformance/document/`
-       - `conformance/tool/`
        - `conformance/scenarios/`
        - `conformance/runners/`
    - Update `versions/README.md` to include the new version.
@@ -109,8 +107,8 @@ waive it with a reason recorded in the release's CHANGELOG entry.
 
 | Row | Met when |
 |---|---|
-| Scope | Every rule governs the OBI document or a claim a tool makes about one. The core defines no invocation, synthesis, discovery, or protocol interpretation; those belong to companion specifications and tools. |
-| Tested rules | Every document rule and tool rule has fixtures or scenarios that tell a conforming tool from a non-conforming one, shown by deliberately wrong tools that CI runs against them: no obligation clause in `conformance/clauses.json` holds a status short of tested. |
+| Scope | Every rule governs the OBI document, and the text specifies the document model only. The core defines no tool behavior, invocation, synthesis, discovery, or protocol interpretation; those belong to companion specifications and to the software that uses documents. |
+| Tested rules | Every rule, and every section whose meaning the corpus can exercise, has fixtures or scenarios that tell a correct answer from a wrong one, shown by deliberately wrong implementations that CI runs against them. |
 | Two implementations | Two implementations with separate code bases pass the whole core corpus at the release's revision. |
 | Implementable from the text | Someone who has not worked on the specification builds a document validator from the text alone, and every disagreement between it and the corpus is resolved. |
 | No open defects | No known contradiction, ambiguity, or error in the text is unresolved. |
@@ -122,16 +120,16 @@ specifications (OpenAPI, AsyncAPI, Smithy, TypeSpec, GraphQL, Protocol
 Buffers with gRPC, WSDL 2.0) on named criteria, and the release's CHANGELOG
 entry states the result.
 
-### Readiness of the 0.2.0 working draft (2026-10-06)
+### Readiness of the 0.2.0 working draft (2026-10-07)
 
 | Row | State |
 |---|---|
 | Scope | Met. |
-| Tested rules | Not met. No deliberately wrong tool is published or run in CI. Eight of the 52 obligation clauses hold a status short of tested: OBI-T-10's four (composition only), OBI-T-08/c3b (contrast tools only), OBI-T-04/c1 and OBI-T-08/c3a (no executor), and OBI-T-06/c2 (not portably testable). |
+| Tested rules | Not met. No deliberately wrong implementation is published or run in CI. |
 | Two implementations | Not met: the Go SDK passes the corpus. The TypeScript SDK's runner reads the retired scenario format, and spec CI runs no TypeScript implementation on the core corpus. |
-| Implementable from the text | Not met: no blind implementation run since the kind, pruning, value-contract, and OBI-T-08 changes, and the removal of the version-refusal rule. |
-| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; OBI-T-04 rests on undefined terms ("semantically significant", "the schema's meaning"); `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
-| One vocabulary | Not met: "format conventions" and "described component" are used without definition, and §3 does not index terms defined in place. |
+| Implementable from the text | Not met: no blind implementation run since the kind, pruning, and value-contract changes, and the restructure into a document model only. |
+| No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
+| One vocabulary | Not met: "described component" is used without definition, and §3 does not index terms defined in place. |
 
 Peer ranking (2026-10-06, core text at 581382f, one reviewer): 3rd of 8,
 unchanged, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, Protocol

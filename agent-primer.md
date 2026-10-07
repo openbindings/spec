@@ -6,7 +6,7 @@
 `kind` and `kinds` and defines no binding-specification conformance rules.
 The orientation below still describes the earlier `bindingSpec` draft and
 should not be used to decide current core semantics. Read
-[`openbindings.md`](openbindings.md) for the current document and tool rules;
+[`openbindings.md`](openbindings.md) for the current document model and its rules;
 binding-specification completeness and revision guidance is project policy.
 
 This is an informative orientation to OpenBindings for language models and
@@ -177,8 +177,8 @@ the binding specification.
 
 ### Processor, synthesizer, invoker, and bridge
 
-- A **processor** is any tool that reads or acts on an OBI. Its obligations
-  follow the capabilities it claims and exercises.
+- A **processor** is any software that reads or acts on an OBI. The core
+  specifies documents, not processors.
 - A **synthesizer** creates an OBI projection from one or more governed sources.
 - An **invoker** acts on a selected binding. The core enables invocation but
   does not prescribe one universal invoker API.
@@ -271,9 +271,9 @@ they are not copied into the OBI. Operation capabilities consumed by the
 described component may be declared as dependencies, without prescribing how a
 runtime supplies them.
 
-Core document conformance is offline-decidable. If validation needs a binding
-specification the processor does not have, the binding-specific conclusion is
-inconclusive rather than automatically non-conformant. Do not confuse “this
+Core document conformance depends only on the document and the resources the
+core specification pins (its invariant 5); whether a binding specification's
+rules hold is outside it. Do not confuse “this
 tool cannot check or invoke this binding” with “this OBI is non-conformant.”
 
 ## When OpenBindings is relevant
