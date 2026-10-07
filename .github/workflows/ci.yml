@@ -237,7 +237,7 @@ jobs:
     name: Go core conformance runner (pinned)
     runs-on: ubuntu-latest
     env:
-      GO_CORE_PIN: "9532a227093f226d15bcd13b3ce73fd700e50309"
+      GO_CORE_PIN: "d8c367d2e9c934ff9e07791a46d44faafad1ba93"
     steps:
       # The spec at path: spec and the SDK at path: openbindings-go, so the
       # runner's go.mod replace directives (../../../../openbindings-go)
