@@ -1,0 +1,280 @@
+{
+  "format": "openbindings.core-scenarios@3",
+  "section": "5.1",
+  "description": "What an operation's examples claim: that each value an example provides satisfies the corresponding value contract, where one is stated (section 5.1, Examples). For each value the claim is true or false, or its truth is undefined or rests on a resource the document does not contain; a value where no contract is stated makes no claim.",
+  "scenarios": [
+    {
+      "id": "EXAMPLES-01",
+      "description": "An explicit null example member is a value that satisfies type null; an example value where no contract is stated makes no claim (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "loose": {
+              "output": {
+                "type": "null"
+              },
+              "examples": {
+                "anyInput": {
+                  "input": {
+                    "free": true
+                  },
+                  "output": null
+                }
+              }
+            }
+          }
+        },
+        "operation": "loose"
+      },
+      "expected": {
+        "examples": {
+          "anyInput": {
+            "input": "no-claim",
+            "output": "true"
+          }
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-02",
+      "description": "Where whether an example value satisfies its contract rests on a resource the document does not contain, so does the claim's truth (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://absent.example.test/x.json"
+              },
+              "examples": {
+                "e": {
+                  "input": 1
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "e": {
+            "input": "external"
+          }
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-03",
+      "description": "Where whether an example value satisfies its contract is undefined (a cycle that consumes none of the instance), so is the claim's truth (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Loop": {
+              "$ref": "#/schemas/Loop"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#/schemas/Loop"
+              },
+              "examples": {
+                "e": {
+                  "input": 1
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "e": {
+            "input": "undefined"
+          }
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-04",
+      "description": "Each value an example provides is claimed to satisfy its contract: a value that fails it makes the claim false, an explicit null is a value, and an example with no values claims nothing (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string"
+              },
+              "output": {
+                "type": "integer"
+              },
+              "examples": {
+                "good": {
+                  "input": "a",
+                  "output": 1
+                },
+                "badInput": {
+                  "input": 42
+                },
+                "nullOutput": {
+                  "output": null
+                },
+                "describedOnly": {
+                  "description": "no values"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "good": {
+            "input": "true",
+            "output": "true"
+          },
+          "badInput": {
+            "input": "false"
+          },
+          "nullOutput": {
+            "output": "false"
+          },
+          "describedOnly": {}
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-05",
+      "description": "An example value that fails its contract makes the claim false; an example never changes the contract its schema states (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "maxLength": 3
+              },
+              "examples": {
+                "long": {
+                  "input": "abcdef"
+                },
+                "short": {
+                  "input": "ab"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "long": {
+            "input": "false"
+          },
+          "short": {
+            "input": "true"
+          }
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-06",
+      "description": "Each example's claim is read against the schema alone; other examples do not narrow the contract (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  }
+                }
+              },
+              "examples": {
+                "one": {
+                  "input": {
+                    "id": "a"
+                  }
+                },
+                "two": {
+                  "input": {
+                    "id": 7
+                  }
+                },
+                "three": {
+                  "input": {}
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "one": {
+            "input": "true"
+          },
+          "two": {
+            "input": "true"
+          },
+          "three": {
+            "input": "true"
+          }
+        }
+      }
+    },
+    {
+      "id": "EXAMPLES-07",
+      "description": "An example value outside an enum makes the claim false; the example does not change the contract (section 5.1).",
+      "action": "check-examples",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "enum": [
+                  "a"
+                ]
+              },
+              "examples": {
+                "other": {
+                  "input": "b"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op"
+      },
+      "expected": {
+        "examples": {
+          "other": {
+            "input": "false"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
-  "rule": "OBI-D-04",
-  "section": "10.2",
-  "description": "Has no collision between any two operation identifiers within the document, where an operation's identifiers are its key plus any entries in its aliases array.",
+  "rule": "OBI-05",
+  "section": "10",
+  "description": "Has no string occurring more than once among all operations' keys and aliases entries taken together.",
   "tests": [
     {
       "description": "operations with distinct keys and distinct aliases",
@@ -24,7 +24,7 @@
         }
       },
       "valid": false,
-      "violates": ["OBI-D-04"]
+      "violates": ["OBI-05"]
     },
     {
       "description": "two operations sharing an alias",
@@ -36,7 +36,7 @@
         }
       },
       "valid": false,
-      "violates": ["OBI-D-04"]
+      "violates": ["OBI-05"]
     },
     {
       "description": "operation with duplicate aliases in its own array",
@@ -47,7 +47,7 @@
         }
       },
       "valid": false,
-      "violates": ["OBI-D-04"]
+      "violates": ["OBI-05"]
     },
     {
       "description": "operation whose alias matches its own key",
@@ -58,7 +58,7 @@
         }
       },
       "valid": false,
-      "violates": ["OBI-D-04"]
+      "violates": ["OBI-05"]
     },
     {
       "description": "operation keys that differ only in case are distinct identifiers: names are equal only as exact strings (section 5)",

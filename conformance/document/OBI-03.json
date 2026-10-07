@@ -1,8 +1,8 @@
 {
-  "rule": "OBI-D-09",
-  "section": "10.2",
+  "rule": "OBI-03",
+  "section": "10",
   "description": "Has an openbindings field whose value is a valid Semantic Versioning 2.0.0 string.",
-  "notes": "Prerelease openbindings values are not exercised as positive cases here: a document declaring a prerelease means what that draft's text says, not this line's (section 8.1), so this line's fixtures assert no verdict on it. The leading-zero prerelease case below is a negative SemVer test and is unaffected. Every positive here is on the 0.2 line, the only line whose text this corpus has: a fixture asserts a verdict, and a version on another line is judged only under that line's text. Texts that declare no version are judged under this line (section 8.1, Version declaration), including ones whose openbindings value looks like another line's.",
+  "notes": "Prerelease openbindings values are not exercised as positive cases here: a document declaring a prerelease means what that draft's text says, not this line's (section 8.1), so these rules do not govern it. The leading-zero prerelease case below is a negative SemVer test and is unaffected. Every positive here declares a version on the 0.2 line, the only line whose text this corpus has: a text declaring another line is governed by that line's text (section 10). A text that declares no version is governed by these rules (section 8.1, Version declaration), including one whose openbindings value looks like another line's.",
   "tests": [
     {
       "description": "current released spec version",
@@ -36,7 +36,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -47,7 +47,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -58,7 +58,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -69,7 +69,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -80,7 +80,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -91,7 +91,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -102,7 +102,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -113,7 +113,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -124,7 +124,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -135,7 +135,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -146,18 +146,18 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
-      "description": "a value that is not SemVer declares no version, so this line's rules judge the text, though the value looks like another line's",
+      "description": "a value that is not SemVer declares no version, so these rules govern the text, though the value looks like another line's",
       "document": {
         "openbindings": "999.0",
         "operations": {}
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -168,7 +168,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -178,7 +178,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -191,7 +191,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-09"
+        "OBI-03"
       ]
     },
     {
@@ -202,8 +202,8 @@
       ],
       "valid": false,
       "violates": [
-        "OBI-D-02",
-        "OBI-D-09"
+        "OBI-02",
+        "OBI-03"
       ]
     }
   ]

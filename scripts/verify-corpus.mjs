@@ -2,28 +2,27 @@
 // Verifies the core conformance corpus against the spec.
 //
 // Checks performed:
-//   1. The clause inventory (conformance/clauses.json) partitions every tool
-//      rule's complete text in openbindings.md §10.3, and every incorporated
-//      passage it names by anchor, into clauses: in order, with only white
-//      space and punctuation between segments. Clause IDs are unique, well
-//      formed, classed, and given a status the inventory defines; their
-//      references resolve.
-//   2. The README's clause table lists exactly the inventory's clauses, with
-//      the same class and status.
-//   3. Every fixture and scenario file validates against its published JSON
-//      Schema (scenario files must declare format @2) and passes the
-//      semantic checks below: rule and section
-//      references, violates and notViolated (document rules only, disjoint,
-//      only on a negative fixture), case IDs (unique, of the file's rule),
-//      clause tags (defined, at least one of the file's rule), version gates (consistent by support unit, §8.1), per-action
-//      consistency (one result per value, one verdict per probe, named
-//      operations, bindings, and dependencies present unless the document is
-//      marked non-conformant, absolute resource URIs, complete example
-//      expectations, retrieval sentinels present), collision groups, and
-//      conclusions that follow from their evidence (a rule the evidence omits
-//      is not established).
-//   4. Every spec rule has a fixture or scenario file or is deferred in the
-//      README, and every clause whose status claims cases has at least one.
+//   1. Every fixture file (conformance/document/) and scenario file
+//      (conformance/scenarios/, format @3) validates against its published
+//      JSON Schema.
+//   2. Citations: a rule file cites a rule openbindings.md section 10 defines,
+//      with section "10", and is named after it; every other file cites a
+//      section that is a heading of openbindings.md and is named after it
+//      (document/section-<N>.json, scenarios/<N>-<topic>.json). Every rule
+//      identifier the files mention is defined, and none uses an older
+//      numbering.
+//   3. Fixtures: exactly one input carriage, canonical base64, violates and
+//      notViolated only on a negative test, naming defined rules, disjoint.
+//   4. Scenarios: case IDs unique in the corpus, one prefix per file and a
+//      prefix no other file uses; per action, one result per value, absolute
+//      resource URIs, named operations, dependencies, and bindings present,
+//      no-contract and no-claim exactly where no contract is stated, complete
+//      example expectations, which operation a string identifies and whether
+//      a binding meets a kinds constraint as the document says (sections 5.1,
+//      5.5, and 6), and violates only on a non-conformant outcome.
+//   5. The README's coverage table has one row per cited rule or section,
+//      listing exactly the files that cite it; every rule has a row, and a
+//      rule row without files is marked deferred.
 //
 // Exits 0 on success, 1 on any drift, 2 on usage/IO error.
 //
@@ -49,10 +48,9 @@ for (let i = 0; i < argv.length; i++) {
 const SPEC_MD = join(SPEC_ROOT, "openbindings.md");
 const CONFORMANCE_ROOT = join(SPEC_ROOT, "conformance");
 const README = join(CONFORMANCE_ROOT, "README.md");
-const CLAUSES = join(CONFORMANCE_ROOT, "clauses.json");
 const FIXTURE_SCHEMA = join(CONFORMANCE_ROOT, "fixture.schema.json");
 const SCENARIO_SCHEMAS = {
-  "openbindings.core-tool-scenarios@2": join(CONFORMANCE_ROOT, "tool-scenario.schema.json"),
+  "openbindings.core-scenarios@3": join(CONFORMANCE_ROOT, "scenario.schema.json"),
 };
 
 const errors = [];
@@ -106,196 +104,37 @@ function runSchemaJobs() {
 
 // ---------------------------------------------------------------- spec text
 
+// Rule lines in section 10: "- **OBI-01**: Is valid UTF-8 ...".
 function extractSpecRules(md) {
-  // Lines like "- **OBI-D-01**: Is valid UTF-8 ..." and "- **OBI-T-01** (applies when interpreting a kind string ...): ...".
   const rules = new Map();
-  const re = /^\s*-\s*\*\*(OBI-[DT]-\d+)\*\*[^:]*:\s*(.*)$/gm;
+  const re = /^\s*-\s*\*\*(OBI-\d{2})\*\*[^:]*:\s*(.*)$/gm;
   let m;
   while ((m = re.exec(md)) !== null) rules.set(m[1], m[2].trim());
   return rules;
 }
 
-const inferSectionForRule = (ruleId) => (ruleId.startsWith("OBI-D-") ? "10.2" : "10.3");
-
-// The normalization and block extraction the clause inventory is written
-// against: markdown links reduced to their text, "**" removed, "*Note:*"
-// read as "Note:", and a block made of a bullet or paragraph line with every
-// continuation line (lazy continuations, indented lines, indented paragraphs
-// after a blank line), until the next top-level bullet, heading, or
-// unindented paragraph, its white space runs collapsed.
-function normalizeMarkdown(text) {
-  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replaceAll("**", "").replaceAll("*Note:*", "Note:");
+// Heading numbers: "## 5. Document model" gives 5, "### 5.1. Operations" gives 5.1.
+function extractSections(md) {
+  const out = new Set();
+  const re = /^#{2,6}\s+(\d+(?:\.\d+)*)\.\s/gm;
+  let m;
+  while ((m = re.exec(md)) !== null) out.add(m[1]);
+  return out;
 }
 
-function block(lines, start) {
-  const out = [lines[start]];
-  let i = start + 1;
-  while (i < lines.length) {
-    const line = lines[i];
-    if (!line.trim()) {
-      let j = i + 1;
-      while (j < lines.length && !lines[j].trim()) j++;
-      if (j < lines.length && /^\s{2,}\S/.test(lines[j])) {
-        i = j;
-        continue;
-      }
-      break;
-    }
-    if (/^(- |#)/.test(line)) break;
-    out.push(line);
-    i++;
-  }
-  return out.map((x) => x.trim()).join(" ").replace(/\s+/g, " ").trim();
-}
+// ---------------------------------------------------------------- README
 
-function partition(body, segments, label) {
-  let cursor = 0;
-  for (const [i, seg] of segments.entries()) {
-    const idx = body.indexOf(seg.text, cursor);
-    if (idx < 0) {
-      err(`${label}: segment ${i} not found in order: ${JSON.stringify(seg.text.slice(0, 60))}`);
-      return;
-    }
-    const gap = body.slice(cursor, idx);
-    if ((i === 0 && gap) || !/^[\s,;:.]*$/.test(gap)) {
-      err(`${label}: text the inventory does not account for before segment ${i}: ${JSON.stringify(gap)}`);
-    }
-    cursor = idx + seg.text.length;
-  }
-  const rest = body.slice(cursor);
-  if (rest.trim()) err(`${label}: text the inventory does not account for after the last segment: ${JSON.stringify(rest)}`);
-}
-
-// ---------------------------------------------------------------- versions
-
-const SEMVER =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-
-// A version gate names a SemVer 2.0.0 version: the line or prerelease whose
-// text a tool must apply for the case to be administered (§8.1).
-function checkGates(item, label) {
-  const sup = item.requiresSupports;
-  if (sup !== undefined && (typeof sup !== "string" || !SEMVER.test(sup))) err(`${label}: requiresSupports ${JSON.stringify(sup)} is not a SemVer 2.0.0 version`);
-}
-
-// ---------------------------------------------------------------- inventory
-
-const CLAUSE_ID = /^(OBI-T-\d\d)\/c\d+[a-z]?(?:\.[pi]\d+)?$/;
-const CLASSES = new Set(["obligation", "specialization", "alternative", "definition", "permission", "incorporation"]);
-const UNIT_CLASSES = new Set(["obligation", "specialization", "alternative"]);
-// Statuses that claim at least one case cites the clause.
-const STATUSES_WITH_CASES = new Set(["tested", "tested (adapter)", "composition only", "contrast tools only", "expressible, no executor"]);
-// Statuses that a parent obligation earns through its alternatives or specializations.
-const STATUSES_THROUGH_CHILDREN = new Set([
-  "tested through its alternatives",
-  "tested through its specializations",
-  "tested through its exercised alternative",
-]);
-
-function verifyInventory(md, inventory, specRules) {
-  const lines = normalizeMarkdown(md).split("\n");
-  const bodies = new Map();
-  for (const [n, line] of lines.entries()) {
-    const m = /^- (OBI-T-\d\d) /.exec(line);
-    if (m) bodies.set(m[1], block(lines, n).slice(m[0].length));
-  }
-  const toolRules = [...specRules.keys()].filter((r) => r.startsWith("OBI-T-")).sort();
-  const inventoried = (inventory.rules || []).map((r) => r.rule).sort();
-  if (JSON.stringify(inventoried) !== JSON.stringify(toolRules)) {
-    err(`clauses.json: inventoried rules ${inventoried.join(", ")} differ from the spec's tool rules ${toolRules.join(", ")}`);
-  }
-  const statuses = new Set(Object.keys(inventory.statuses || {}));
-  if (statuses.size === 0) err("clauses.json: no statuses defined");
-  const items = new Map();
-  const define = (item, rule, label) => {
-    if (!CLAUSE_ID.test(item.id ?? "")) {
-      err(`${label}: clause ID ${JSON.stringify(item.id)} is not of the form OBI-T-NN/cK`);
-      return;
-    }
-    if (CLAUSE_ID.exec(item.id)[1] !== rule) err(`${label}: clause ${item.id} is not a clause of ${rule}`);
-    if (items.has(item.id)) err(`clauses.json: duplicate clause ID ${item.id}`);
-    items.set(item.id, item);
-    if (!CLASSES.has(item.class)) err(`${item.id}: unknown class ${JSON.stringify(item.class)}`);
-    if (!statuses.has(item.status)) err(`${item.id}: status ${JSON.stringify(item.status)} is not one clauses.json defines`);
-    const nonUnit = { definition: "definition", permission: "permission", incorporation: "incorporation" }[item.class];
-    if (nonUnit && item.status !== nonUnit) err(`${item.id}: a ${item.class} has status ${nonUnit}, not ${JSON.stringify(item.status)}`);
-    if (UNIT_CLASSES.has(item.class) && ["definition", "permission", "incorporation"].includes(item.status)) {
-      err(`${item.id}: an ${item.class} cannot have status ${item.status}`);
-    }
-  };
-  for (const rule of inventory.rules || []) {
-    const name = rule.rule;
-    const body = bodies.get(name);
-    if (body === undefined) continue;
-    partition(body, rule.segments || [], name);
-    if (rule.segments?.[0]?.kind !== "trigger") err(`${name}: the first segment is not the trigger`);
-    const placed = new Set();
-    for (const seg of rule.segments || []) {
-      if (seg.kind === "clause") {
-        if (!seg.clauses?.length) err(`${name}: a clause segment names no clause`);
-        for (const c of seg.clauses || []) placed.add(c);
-      } else if (!["trigger", "note"].includes(seg.kind)) {
-        err(`${name}: unknown segment kind ${JSON.stringify(seg.kind)}`);
-      }
-    }
-    const defined = new Set();
-    for (const c of rule.clauses || []) {
-      define(c, name, name);
-      defined.add(c.id);
-    }
-    const unplaced = [...placed].filter((c) => !defined.has(c)).concat([...defined].filter((c) => !placed.has(c)));
-    if (unplaced.length) err(`${name}: clause IDs ${unplaced.join(", ")} are not both defined and placed in a segment`);
-    for (const inc of rule.incorporations || []) {
-      const starts = lines.flatMap((l, n) => (l.startsWith(inc.anchor) ? [n] : []));
-      if (starts.length !== 1) {
-        err(`${name}: incorporation anchor ${JSON.stringify(inc.anchor)} found ${starts.length} times`);
-        continue;
-      }
-      let passage = block(lines, starts[0]);
-      if (passage.startsWith("- ")) passage = passage.slice(2);
-      partition(passage, inc.segments || [], `${name} ${inc.source}`);
-      for (const seg of inc.segments || []) {
-        if (seg.kind === "context") continue;
-        define(seg, name, `${name} ${inc.source}`);
-      }
-    }
-  }
-  for (const item of items.values()) {
-    for (const ref of [item.of, ...(item.incorporates || []), item.claim].filter(Boolean)) {
-      if (!items.has(ref)) err(`${item.id}: refers to unknown clause ${ref}`);
-    }
-  }
-  return { items };
-}
-
-// README clause table: | OBI-T-NN/cK | class | status | notes |
-function verifyReadmeTable(readme, items) {
+// Coverage rows: | `OBI-01` or `5.1` | `document/OBI-01.json`, ... or none | coverage |
+function extractCoverageRows(readme) {
   const rows = new Map();
-  const re = /^\|\s*(OBI-T-\d\d\/c[0-9a-z.]+)\s*\|\s*([a-z]+)\s*\|\s*([^|]+?)\s*\|/gm;
+  const re = /^\|\s*`?(OBI-\d{2}|\d+(?:\.\d+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|\s*$/gm;
   let m;
   while ((m = re.exec(readme)) !== null) {
-    if (rows.has(m[1])) err(`README clause table: ${m[1]} appears twice`);
-    rows.set(m[1], { cls: m[2], status: m[3] });
+    if (rows.has(m[1])) err(`README coverage table: ${m[1]} has two rows`);
+    const files = m[2] === "none" ? [] : m[2].split(",").map((f) => f.trim().replace(/^`|`$/g, ""));
+    rows.set(m[1], { files, coverage: m[3] });
   }
-  for (const [id, item] of items) {
-    const row = rows.get(id);
-    if (!row) {
-      err(`README clause table: ${id} is missing`);
-      continue;
-    }
-    if (row.cls !== item.class) err(`README clause table: ${id} has class ${row.cls}; clauses.json says ${item.class}`);
-    if (row.status !== item.status) err(`README clause table: ${id} has status "${row.status}"; clauses.json says "${item.status}"`);
-  }
-  for (const id of rows.keys()) if (!items.has(id)) err(`README clause table: ${id} is not in clauses.json`);
-  return rows.size;
-}
-
-function extractDeferredRules(readme) {
-  const out = new Set();
-  const re = /\|\s*(OBI-[DT]-\d+(?:\s*,\s*OBI-[DT]-\d+)*)\s*\|\s*\*\*Deferred/g;
-  let m;
-  while ((m = re.exec(readme)) !== null) for (const id of m[1].split(/\s*,\s*/)) out.add(id);
-  return out;
+  return rows;
 }
 
 // ---------------------------------------------------------------- corpus files
@@ -319,37 +158,43 @@ function loadJSON(absPath, relPath) {
 }
 
 const isObject = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+const own = (o, k) => isObject(o) && Object.hasOwn(o, k);
 
-function checkClauseTags(tags, fileRule, label, ctx) {
-  if (!Array.isArray(tags) || tags.length === 0) {
-    err(`${label}: names no clause`);
-    return;
+// Every rule identifier a file mentions is defined, and none uses an older numbering.
+function checkMentions(text, relPath, ctx) {
+  for (const m of text.matchAll(/OBI-[A-Z]-\d+/g)) err(`${relPath}: mentions ${m[0]}, an identifier this text does not use`);
+  for (const id of new Set(text.match(/OBI-\d{2}(?!\d)/g) || [])) {
+    if (!ctx.specRules.has(id)) err(`${relPath}: mentions ${id}, which openbindings.md section 10 does not define`);
   }
-  for (const c of tags) {
-    if (!ctx.items.has(c)) err(`${label}: cites undefined clause ${c}`);
-    ctx.citations.set(c, (ctx.citations.get(c) || 0) + 1);
-  }
-  if (!tags.some((c) => c.startsWith(`${fileRule}/`))) err(`${label}: names no clause of ${fileRule}`);
+}
+
+function cite(ctx, citation, relPath) {
+  if (!ctx.citations.has(citation)) ctx.citations.set(citation, []);
+  ctx.citations.get(citation).push(relPath);
 }
 
 function verifyFixture(fixture, relPath, ctx) {
-  for (const f of ["rule", "section", "description", "tests"]) if (!(f in fixture)) err(`${relPath}: missing required field '${f}'`);
-  if (!/^OBI-[DT]-\d+$/.test(fixture.rule ?? "")) {
-    err(`${relPath}: rule '${fixture.rule}' does not match OBI-[DT]-NN`);
-    return;
+  const name = relPath.split("/").at(-1);
+  if ("rule" in fixture) {
+    if (!/^OBI-\d{2}$/.test(fixture.rule ?? "") || !ctx.specRules.has(fixture.rule)) {
+      err(`${relPath}: rule ${JSON.stringify(fixture.rule)} is not defined in openbindings.md section 10`);
+    } else {
+      if (fixture.section !== "10") err(`${relPath}: section is ${JSON.stringify(fixture.section)}; a rule file cites section "10"`);
+      if (name !== `${fixture.rule}.json`) err(`${relPath}: a file for ${fixture.rule} is named ${fixture.rule}.json`);
+      cite(ctx, fixture.rule, relPath);
+    }
+  } else {
+    if (!ctx.sections.has(fixture.section)) err(`${relPath}: section ${JSON.stringify(fixture.section)} is not a heading of openbindings.md`);
+    if (name !== `section-${fixture.section}.json`) err(`${relPath}: a file citing section ${fixture.section} is named section-${fixture.section}.json`);
+    cite(ctx, fixture.section, relPath);
   }
-  if (!ctx.specRules.has(fixture.rule)) err(`${relPath}: rule '${fixture.rule}' is not defined in openbindings.md §10`);
-  if (fixture.section !== inferSectionForRule(fixture.rule)) {
-    err(`${relPath}: section is '${fixture.section}', expected '${inferSectionForRule(fixture.rule)}' for ${fixture.rule}`);
-  }
-  const isTool = relPath.startsWith("tool/");
-  if (isTool !== fixture.rule.startsWith("OBI-T-")) err(`${relPath}: a ${isTool ? "tool" : "document"} fixture file names ${fixture.rule}`);
   if (!Array.isArray(fixture.tests) || fixture.tests.length === 0) {
     err(`${relPath}: tests must be a non-empty array`);
     return;
   }
   fixture.tests.forEach((t, i) => {
     const label = `${relPath}#/tests/${i}`;
+    if (!isObject(t)) return;
     const inputs = ["document", "documentText", "documentBase64"].filter((f) => f in t);
     if (inputs.length !== 1) err(`${label}: exactly one of document, documentText, or documentBase64 is required`);
     if ("documentBase64" in t && !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(t.documentBase64)) {
@@ -359,57 +204,54 @@ function verifyFixture(fixture, relPath, ctx) {
       if (!(member in t)) continue;
       if (t.valid !== false) err(`${label}: ${member} is meaningful only when valid is false`);
       for (const v of t[member] || []) {
-        if (!/^OBI-D-\d+$/.test(v)) err(`${label}: ${member} names ${v}; a tool rule is never a document violation`);
-        else if (!ctx.specRules.has(v)) err(`${label}: ${member} names ${v}, which openbindings.md §10 does not define`);
+        if (!ctx.specRules.has(v)) err(`${label}: ${member} names ${v}, which openbindings.md section 10 does not define`);
       }
     }
     const both = (t.violates || []).filter((v) => (t.notViolated || []).includes(v));
     if (both.length) err(`${label}: ${both.join(", ")} is listed both in violates and in notViolated`);
-    checkGates(t, label);
-    if (isTool) checkClauseTags(t.clauses, fixture.rule, label, ctx);
-    else if ("clauses" in t) err(`${label}: clauses are tool-rule tags; document fixtures are keyed by rule`);
     ctx.fixtureCases.set(label, t);
   });
 }
 
-// ---- @2 ------------------------------------------------------------------------
-
-function recordCaseId(id, rule, label, ctx) {
-  const expected = new RegExp(`^${rule.replace("OBI-T-", "T")}-S-[0-9]{2}$`);
-  if (typeof id !== "string" || !expected.test(id)) err(`${label}: case ID ${JSON.stringify(id)} does not match ${rule}`);
-  else if (ctx.caseIds.has(id)) err(`${label}: duplicate case ID ${id} (also ${ctx.caseIds.get(id)})`);
-  else ctx.caseIds.set(id, label);
+// What the document says a string identifies (section 5.1): the operation
+// whose key or one of whose aliases equals it, and that operation's bindings.
+function identify(d, name) {
+  const operations = isObject(d.operations) ? d.operations : {};
+  const matches = Object.keys(operations).filter((k) => k === name || (Array.isArray(operations[k]?.aliases) && operations[k].aliases.includes(name)));
+  if (matches.length !== 1) return { outcome: "not-found", matches };
+  const key = matches[0];
+  const bindings = isObject(d.bindings) ? d.bindings : {};
+  return { outcome: "resolved", operationKey: key, bindingKeys: Object.keys(bindings).filter((b) => bindings[b]?.operation === key) };
 }
 
-function checkConclusion(evidence, conclusion, label, ctx) {
-  const drules = [...ctx.specRules.keys()].filter((r) => r.startsWith("OBI-D-"));
-  for (const [id, status] of Object.entries(evidence)) {
-    if (!ctx.specRules.has(id) || !id.startsWith("OBI-D-")) err(`${label}: evidence names ${id}, not a document rule of §10.2`);
-    if (!["satisfied", "violated", "inconclusive", "not-applicable"].includes(status)) err(`${label}: evidence ${id}=${JSON.stringify(status)}`);
-  }
-  // OBI-T-08: a violation establishes non-conformance; otherwise any rule not
-  // established, inconclusive or absent from the evidence, leaves it undetermined.
-  const statuses = drules.map((r) => evidence[r] ?? "absent");
-  const want = statuses.includes("violated")
-    ? "non-conformant"
-    : statuses.some((s) => s === "inconclusive" || s === "absent")
-      ? "conformance-undetermined"
-      : "conformant";
-  if (conclusion !== want) err(`${label}: expected conclusion ${conclusion} does not follow from the evidence (OBI-T-08 gives ${want})`);
+// Whether a binding meets a dependency's kinds constraint (sections 5.5 and 6).
+function meets(d, dependency, binding) {
+  const dep = d.dependencies[dependency];
+  if (!own(dep, "kinds")) return true;
+  const kind = d.sources?.[d.bindings[binding].source]?.kind;
+  return dep.kinds.some((k) => k === kind);
 }
 
-function verifyScenarioV2(file, relPath, ctx) {
+function verifyScenarios(file, relPath, ctx) {
+  const name = relPath.split("/").at(-1);
+  if (!ctx.sections.has(file.section)) err(`${relPath}: section ${JSON.stringify(file.section)} is not a heading of openbindings.md`);
+  else if (!name.startsWith(`${file.section}-`)) err(`${relPath}: a file citing section ${file.section} is named ${file.section}-<topic>.json`);
+  cite(ctx, file.section, relPath);
+  const prefixes = new Set();
   for (const [i, s] of (file.scenarios || []).entries()) {
-    const label = `${relPath}#${s.id ?? i}`;
-    recordCaseId(s.id, file.rule, label, ctx);
-    checkClauseTags(s.clauses, file.rule, label, ctx);
-    checkGates(s, label);
-    ctx.scenarioCases.set(s.id, { scenario: s, file: relPath, format: "@2" });
+    const label = `${relPath}#${s?.id ?? i}`;
+    if (!isObject(s)) continue;
+    const m = /^([A-Z]+)-\d{2}$/.exec(s.id ?? "");
+    if (!m) err(`${label}: case ID ${JSON.stringify(s.id)} is not of the form PREFIX-NN`);
+    else {
+      prefixes.add(m[1]);
+      if (ctx.caseIds.has(s.id)) err(`${label}: duplicate case ID ${s.id} (also ${ctx.caseIds.get(s.id)})`);
+      else ctx.caseIds.set(s.id, label);
+    }
+    ctx.scenarioCases.set(s.id, { scenario: s, file: relPath });
     const g = isObject(s.given) ? s.given : {};
     const e = isObject(s.expected) ? s.expected : {};
     const d = isObject(g.document) ? g.document : null;
-    const nonConformant = Array.isArray(g.nonConformant) && g.nonConformant.length > 0;
-    for (const r of g.nonConformant || []) if (!ctx.specRules.has(r)) err(`${label}: nonConformant names ${r}, which §10.2 does not define`);
     const operations = d && isObject(d.operations) ? d.operations : {};
     switch (s.action) {
       case "validate-operation-values": {
@@ -421,15 +263,18 @@ function verifyScenarioV2(file, relPath, ctx) {
         for (const u of uris) {
           if (!/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u) || u.replace(/#$/, "").includes("#")) err(`${label}: resource URI ${JSON.stringify(u)} is not absolute without a fragment`);
         }
-        if (d && !nonConformant && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
+        if (!own(operations, g.operation)) {
+          err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
+          break;
+        }
+        const stated = own(operations[g.operation], g.side);
+        for (const [j, r] of (e.results || []).entries()) {
+          if ((r === "no-contract") === stated) err(`${label}: result ${j} is ${JSON.stringify(r)}, but the operation ${stated ? "states" : "states no"} ${g.side} contract (section 5.2)`);
+        }
         break;
       }
-      case "derive-form":
-        if ((e.probeVerdicts || []).length !== (g.probes || []).length) err(`${label}: probe and verdict counts differ`);
-        if (d && !(g.operation in operations)) err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
-        break;
       case "check-examples": {
-        const op = operations[g.operation];
+        const op = own(operations, g.operation) ? operations[g.operation] : null;
         if (!isObject(op)) {
           err(`${label}: operation ${JSON.stringify(g.operation)} is not in the document`);
           break;
@@ -438,44 +283,50 @@ function verifyScenarioV2(file, relPath, ctx) {
         const want = Object.keys(examples).sort();
         const have = Object.keys(e.examples || {}).sort();
         if (JSON.stringify(want) !== JSON.stringify(have)) err(`${label}: expectations cover ${have.join(", ")}; the operation's examples are ${want.join(", ")}`);
-        for (const [name, ex] of Object.entries(examples)) {
-          const sides = ["input", "output"].filter((k) => k in ex);
-          const expectedSides = Object.keys(e.examples?.[name] || {}).sort();
-          if (JSON.stringify(sides) !== JSON.stringify(expectedSides)) err(`${label}: example ${name} supplies ${sides.join(", ") || "no value"}; expectations cover ${expectedSides.join(", ") || "none"}`);
+        for (const [exName, ex] of Object.entries(examples)) {
+          const sides = ["input", "output"].filter((k) => own(ex, k));
+          const expectedSides = Object.keys(e.examples?.[exName] || {}).sort();
+          if (JSON.stringify(sides) !== JSON.stringify(expectedSides)) err(`${label}: example ${exName} supplies ${sides.join(", ") || "no value"}; expectations cover ${expectedSides.join(", ") || "none"}`);
+          for (const side of sides) {
+            const r = e.examples?.[exName]?.[side];
+            if (r !== undefined && (r === "no-claim") === own(op, side)) err(`${label}: example ${exName} ${side} is ${JSON.stringify(r)}, but the operation ${own(op, side) ? "states" : "states no"} ${side} contract (section 5.1)`);
+          }
         }
         break;
       }
       case "check-dependency-kind": {
-        if (d && !nonConformant && (!isObject(d.dependencies) || !(g.dependency in d.dependencies) || !isObject(d.bindings) || !(g.binding in d.bindings))) {
+        if (!d || !own(d.dependencies, g.dependency) || !own(d.bindings, g.binding)) {
           err(`${label}: the named dependency or binding is not in the document`);
+          break;
         }
-        const text = JSON.stringify(g.document);
-        for (const channel of ["file", "http"]) {
-          const token = `{retrieval-sentinel:${channel}}`;
-          const listed = (g.retrievalSentinels || []).includes(channel);
-          if (listed !== text.includes(token)) err(`${label}: retrieval sentinel ${channel} is ${listed ? "listed but not in the document" : "in the document but not listed"}`);
+        const want = meets(d, g.dependency, g.binding) ? "meets" : "does-not-meet";
+        if (e.outcome !== want) err(`${label}: expected ${e.outcome}, but the document says ${want} (sections 5.5 and 6)`);
+        break;
+      }
+      case "resolve-operation": {
+        if (!d) break;
+        const got = identify(d, g.name);
+        if (got.matches?.length > 1) err(`${label}: ${JSON.stringify(g.name)} is an identifier of ${got.matches.join(" and ")}, which OBI-05 forbids`);
+        if (got.outcome !== e.outcome) err(`${label}: expected ${e.outcome}, but the document says ${got.outcome} (section 5.1)`);
+        else if (got.outcome === "resolved") {
+          if (e.operationKey !== got.operationKey) err(`${label}: expected operation ${e.operationKey}, but the string identifies ${got.operationKey}`);
+          const a = [...(e.bindingKeys || [])].sort(), b = [...got.bindingKeys].sort();
+          if (JSON.stringify(a) !== JSON.stringify(b)) err(`${label}: expected bindings ${a.join(", ")}; the operation's bindings are ${b.join(", ")}`);
         }
         break;
       }
-      case "resolve-operation":
-        if (e.outcome === "collision") {
-          if (!nonConformant || !g.nonConformant.includes("OBI-D-04")) err(`${label}: a collision document violates OBI-D-04 and is marked so`);
-          if (!(e.keyMatch in operations) || !(operations[e.aliasMatch]?.aliases || []).includes(g.name) || e.keyMatch !== g.name) {
-            err(`${label}: the collision's keyMatch and aliasMatch do not match the document`);
-          }
-          (ctx.groups.get(e.group) || ctx.groups.set(e.group, []).get(e.group)).push(s.id);
-        }
-        break;
       case "validate-document":
         if ("violates" in e && e.outcome !== "non-conformant") err(`${label}: violates without a non-conformant outcome`);
-        for (const r of e.violates || []) if (!ctx.specRules.has(r)) err(`${label}: violates names ${r}, which §10.2 does not define`);
-        break;
-      case "conclude-conformance":
-        checkConclusion(g.evidence || {}, e.conclusion, label, ctx);
+        for (const r of e.violates || []) if (!ctx.specRules.has(r)) err(`${label}: violates names ${r}, which openbindings.md section 10 does not define`);
         break;
       default:
         err(`${label}: unknown action ${JSON.stringify(s.action)}`);
     }
+  }
+  if (prefixes.size > 1) err(`${relPath}: case IDs use several prefixes (${[...prefixes].join(", ")})`);
+  for (const p of prefixes) {
+    if (ctx.prefixes.has(p)) err(`${relPath}: prefix ${p} is also used by ${ctx.prefixes.get(p)}`);
+    else ctx.prefixes.set(p, relPath);
   }
 }
 
@@ -484,38 +335,32 @@ function verifyScenarioV2(file, relPath, ctx) {
 const md = readText(SPEC_MD);
 const readme = readText(README);
 const specRules = extractSpecRules(md);
-const inventory = JSON.parse(readText(CLAUSES));
-const { items } = verifyInventory(md, inventory, specRules);
-const tableRows = verifyReadmeTable(readme, items);
-const deferredRules = extractDeferredRules(readme);
+const sections = extractSections(md);
+if (specRules.size === 0) err("openbindings.md: no rule lines (- **OBI-NN**: ...) found in section 10");
 
 const ctx = {
   specRules,
-  items,
+  sections,
   citations: new Map(),
   caseIds: new Map(),
-  groups: new Map(),
+  prefixes: new Map(),
   fixtureCases: new Map(),
   scenarioCases: new Map(),
 };
 
-const fixtureRules = new Map();
-const fixtures = [...listJSON("document"), ...listJSON("tool")];
+const fixtures = listJSON("document");
 for (const { relPath, absPath } of fixtures) {
   validateAgainstSchema(FIXTURE_SCHEMA, absPath, relPath);
+  checkMentions(readFileSync(absPath, "utf8"), relPath, ctx);
   const fixture = loadJSON(absPath, relPath);
   if (!isObject(fixture)) continue;
   verifyFixture(fixture, relPath, ctx);
-  if (/^OBI-[DT]-\d+$/.test(fixture.rule ?? "")) {
-    if (fixtureRules.has(fixture.rule)) err(`Multiple fixture files declare rule ${fixture.rule}: ${fixtureRules.get(fixture.rule)} and ${relPath}`);
-    else fixtureRules.set(fixture.rule, relPath);
-  }
 }
 
-const scenarioRules = new Map();
 const formats = new Map();
 const scenarioFiles = listJSON("scenarios");
 for (const { relPath, absPath } of scenarioFiles) {
+  checkMentions(readFileSync(absPath, "utf8"), relPath, ctx);
   const file = loadJSON(absPath, relPath);
   if (!isObject(file)) continue;
   const schema = SCENARIO_SCHEMAS[file.format];
@@ -525,61 +370,37 @@ for (const { relPath, absPath } of scenarioFiles) {
   }
   validateAgainstSchema(schema, absPath, relPath);
   formats.set(file.format, (formats.get(file.format) || 0) + 1);
-  if (!/^OBI-T-\d+$/.test(file.rule ?? "") || !specRules.has(file.rule)) {
-    err(`${relPath}: rule '${file.rule}' is not a tool rule defined in openbindings.md §10`);
-    continue;
-  }
-  if (file.section !== "10.3") err(`${relPath}: section is '${file.section}', expected '10.3'`);
-  if (relPath.split("/").at(-1) !== `${file.rule}.json`) err(`${relPath}: filename must be '${file.rule}.json'`);
-  if (scenarioRules.has(file.rule)) err(`Multiple scenario files declare rule ${file.rule}: ${scenarioRules.get(file.rule)} and ${relPath}`);
-  else scenarioRules.set(file.rule, relPath);
   if (!Array.isArray(file.scenarios) || file.scenarios.length === 0) {
     err(`${relPath}: scenarios must be a non-empty array`);
     continue;
   }
-  verifyScenarioV2(file, relPath, ctx);
+  verifyScenarios(file, relPath, ctx);
 }
-
-for (const [group, members] of ctx.groups) if (members.length < 2) err(`collision group ${group} has ${members.length} member`);
 
 runSchemaJobs();
 
-// Rule coverage: every spec rule has a file or is deferred in the README.
-for (const ruleId of specRules.keys()) {
-  if (!fixtureRules.has(ruleId) && !scenarioRules.has(ruleId) && !deferredRules.has(ruleId)) {
-    err(`Spec rule ${ruleId} has no fixture or scenario file and is not listed as deferred in conformance/README.md`);
+// README coverage table: one row per citation, listing exactly its files.
+const rows = extractCoverageRows(readme);
+for (const [citation, row] of rows) {
+  if (/^OBI-/.test(citation) ? !specRules.has(citation) : !sections.has(citation)) {
+    err(`README coverage table: ${citation} is neither a rule of section 10 nor a heading of openbindings.md`);
   }
-}
-for (const ruleId of deferredRules) {
-  if (fixtureRules.has(ruleId) || scenarioRules.has(ruleId)) warn(`Rule ${ruleId} is listed as deferred in README but also has a corpus file`);
-}
-
-// Clause coverage: a status that claims cases has them; a parent's status
-// rests on children that are themselves covered.
-const children = new Map();
-for (const item of items.values()) if (item.of && ["alternative", "specialization"].includes(item.class)) (children.get(item.of) || children.set(item.of, []).get(item.of)).push(item.id);
-for (const item of items.values()) {
-  if (STATUSES_WITH_CASES.has(item.status) && !ctx.citations.get(item.id)) err(`${item.id}: status "${item.status}" but no case cites it`);
-  if (STATUSES_THROUGH_CHILDREN.has(item.status)) {
-    const kids = children.get(item.id) || [];
-    if (kids.length === 0) err(`${item.id}: status "${item.status}" but it has no alternatives or specializations`);
-    const tested = kids.filter((k) => items.get(k).status.startsWith("tested"));
-    if (item.status !== "tested through its exercised alternative" && tested.length !== kids.length) {
-      err(`${item.id}: status "${item.status}" but ${kids.filter((k) => !tested.includes(k)).join(", ")} ${kids.length - tested.length === 1 ? "is" : "are"} not tested`);
-    }
-    if (item.status === "tested through its exercised alternative" && tested.length === 0) err(`${item.id}: no alternative is tested`);
+  const want = [...(ctx.citations.get(citation) || [])].sort();
+  const have = [...row.files].sort();
+  if (JSON.stringify(want) !== JSON.stringify(have)) {
+    err(`README coverage table: ${citation} lists ${have.join(", ") || "none"}; the files citing it are ${want.join(", ") || "none"}`);
   }
+  if (have.length === 0 && !row.coverage.startsWith("**Deferred")) err(`README coverage table: ${citation} lists no file and is not marked **Deferred**`);
 }
+for (const citation of ctx.citations.keys()) if (!rows.has(citation)) err(`README coverage table: no row for ${citation}, which ${ctx.citations.get(citation).join(", ")} cite`);
+for (const rule of specRules.keys()) if (!rows.has(rule)) err(`README coverage table: no row for ${rule}`);
+const deferred = [...rows].filter(([, r]) => r.files.length === 0).map(([c]) => c);
 
 // Report
-const units = [...items.values()].filter((i) => UNIT_CLASSES.has(i.class));
-console.log(`Spec rules found in §10: ${specRules.size}`);
-console.log(`Clause inventory: ${items.size} clause IDs (${units.length} obligation-type units) partitioning ${inventory.rules?.length ?? 0} tool rules; README clause table rows: ${tableRows}`);
-console.log(`Fixture files: ${fixtures.length} (${ctx.fixtureCases.size} tests); rules covered by fixtures: ${fixtureRules.size}`);
-console.log(`Tool scenario files: ${scenarioFiles.length} (${[...formats].map(([f, n]) => `${n} ${f}`).join(", ")}; ${ctx.scenarioCases.size} scenarios); rules covered by tool scenarios: ${scenarioRules.size}`);
-console.log(`Rules deferred per README: ${deferredRules.size}`);
-const accounted = new Set([...fixtureRules.keys(), ...scenarioRules.keys(), ...deferredRules]);
-console.log(`Rules accounted for: ${accounted.size} of ${specRules.size}`);
+console.log(`Spec rules found in section 10: ${specRules.size}; headings: ${sections.size}`);
+console.log(`Fixture files: ${fixtures.length} (${ctx.fixtureCases.size} tests)`);
+console.log(`Scenario files: ${scenarioFiles.length} (${[...formats].map(([f, n]) => `${n} ${f}`).join(", ")}; ${ctx.scenarioCases.size} scenarios)`);
+console.log(`Citations: ${ctx.citations.size} (${[...ctx.citations.keys()].join(", ")}); README coverage rows: ${rows.size}; deferred: ${deferred.length}`);
 if (warnings.length > 0) {
   console.log(`\nWarnings (${warnings.length}):`);
   for (const w of warnings) console.log(`  - ${w}`);

@@ -1,8 +1,8 @@
 {
-  "rule": "OBI-D-10",
-  "section": "10.2",
-  "description": "Has every operation input and output and every entry in schemas valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn, with format as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1), and the meta-schemas' pattern values read as ECMA-262 regular expressions, the dialect JSON Schema names (JSON Schema Core §6.4). Note: the pinned meta-schemas make the rule decidable offline; it resolves none of the document's references and evaluates no value against the document's schemas.",
-  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; the meta-schemas validate subschemas recursively. 0.2.0 admits boolean schemas at every schema position (true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is meta-schema validity only: an unparseable pattern, an unresolvable reference, and in-place recursion pass, because whether a schema can be evaluated is JSON Schema's and surfaces when a tool uses it. Negative cases list OBI-D-10 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-D-02 suppression convention.",
+  "rule": "OBI-10",
+  "section": "10",
+  "description": "Has every operation input and output and every entry in schemas valid against the JSON Schema 2020-12 meta-schemas (the dialect meta-schema https://json-schema.org/draft/2020-12/schema and the vocabulary meta-schemas it references, as published with JSON Schema Core), which validate its subschemas in turn (§5.2). The meta-schemas apply with format as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1), and with their pattern values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).",
+  "notes": "Schema positions are operation input, operation output, and entries in the top-level schemas map; the meta-schemas validate subschemas recursively. 0.2.0 admits boolean schemas at every schema position (true accepts every value, false accepts none, {} is equivalent to true), so the positive cases exercise boolean form at top-level and nested positions alongside object form. The rule is meta-schema validity only: an unparseable pattern, an unresolvable reference, and in-place recursion pass, because what such a schema gives a value is for JSON Schema and section 5.2 to say, not a rule. Negative cases list OBI-10 alone even where the derived document schema would also reject the value structurally, per this corpus's OBI-02 suppression convention.",
   "tests": [
     {
       "description": "object schemas with nested subschemas at operation input and output are valid schemas",
@@ -142,7 +142,7 @@
       "valid": true
     },
     {
-      "description": "an unparseable pattern passes the meta-schemas: whether an engine compiles it is JSON Schema's, surfacing when a tool uses the schema",
+      "description": "an unparseable pattern passes the meta-schemas: a value's result that depends on it is undefined (section 5.2), which no rule concerns",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -189,7 +189,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -206,7 +206,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -221,7 +221,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -237,7 +237,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -265,7 +265,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -286,7 +286,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -305,7 +305,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -327,11 +327,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
-      "description": "a schema that applies itself in place passes the meta-schemas: JSON Schema leaves such recursion undefined at evaluation (section 9.4.1), not a document rule",
+      "description": "a schema that applies itself in place passes the meta-schemas: JSON Schema leaves such recursion undefined at evaluation (JSON Schema Core section 9.4.1), which no rule concerns",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -390,11 +390,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
-      "description": "count keywords take a non-negative integer, judged by exact value (section 10), so minLength 1.0 and maxProperties 0 are valid",
+      "description": "count keywords take a non-negative integer, compared at its exact value (section 5), so minLength 1.0 and maxProperties 0 are valid",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -413,7 +413,7 @@
       "valid": true
     },
     {
-      "description": "an object at a schema position is a schema whether or not the meta-schemas accept it, so a pointer to one satisfies OBI-D-12 while OBI-D-10 reports the schema (section 7)",
+      "description": "an object at a schema position is a schema whether or not the meta-schemas accept it, so a pointer to one meets OBI-12 while the schema violates OBI-10 (section 7)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -431,14 +431,14 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ],
       "notViolated": [
-        "OBI-D-12"
+        "OBI-12"
       ]
     },
     {
-      "description": "an $anchor value outside the JSON Schema Core section 8.2.2 grammar declares no plain name, so two of them declare nothing twice and OBI-D-13 holds (section 7.3)",
+      "description": "an $anchor value outside the JSON Schema Core section 8.2.2 grammar declares no plain name, so two of them declare nothing twice and OBI-13 holds (section 7.3)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -453,10 +453,10 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ],
       "notViolated": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -478,7 +478,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -526,7 +526,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     },
     {
@@ -544,7 +544,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10"
+        "OBI-10"
       ]
     }
   ]

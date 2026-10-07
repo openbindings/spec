@@ -1,0 +1,103 @@
+{
+  "format": "openbindings.core-scenarios@3",
+  "section": "10",
+  "description": "Whether a text conforms: a text that section 10's rules govern conforms when it meets every rule (section 10).",
+  "scenarios": [
+    {
+      "id": "CONFORMANCE-01",
+      "description": "The version field is an interface label (section 8.2): it does not change the version the document declares, so the document conforms.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "version": "999.0.0",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "conformant"
+      }
+    },
+    {
+      "id": "CONFORMANCE-02",
+      "description": "An x-openbindings extension does not change the version a document declares (section 12), so the document conforms.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "x-openbindings": "999.0.0",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "conformant"
+      }
+    },
+    {
+      "id": "CONFORMANCE-03",
+      "description": "A minimal document declaring 0.2.0 conforms (section 10).",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "conformant"
+      }
+    },
+    {
+      "id": "CONFORMANCE-04",
+      "description": "The patch number a document declares carries no meaning (section 8.1), so a document declaring 0.2.5 is governed by section 10's rules and conforms.",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.5",
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "conformant"
+      }
+    },
+    {
+      "id": "CONFORMANCE-05",
+      "description": "A binding naming a missing operation and a missing source violates OBI-06 and OBI-07 (section 10).",
+      "action": "validate-document",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "bindings": {
+            "b": {
+              "operation": "missing",
+              "source": "missing"
+            }
+          },
+          "operations": {}
+        }
+      },
+      "expected": {
+        "outcome": "non-conformant",
+        "violates": [
+          "OBI-06",
+          "OBI-07"
+        ]
+      }
+    },
+    {
+      "id": "CONFORMANCE-06",
+      "description": "A string holding an escaped lone surrogate is a sequence of code units (section 5; RFC 8259 section 8.2), so the text conforms.",
+      "action": "validate-document",
+      "given": {
+        "documentText": "{\"openbindings\":\"0.2.0\",\"description\":\"\\ud800\",\"operations\":{}}"
+      },
+      "expected": {
+        "outcome": "conformant",
+        "dependsOn": [
+          "exact-lone-surrogate-strings"
+        ]
+      }
+    }
+  ]
+}

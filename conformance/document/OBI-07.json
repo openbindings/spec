@@ -1,6 +1,6 @@
 {
-  "rule": "OBI-D-08",
-  "section": "10.2",
+  "rule": "OBI-07",
+  "section": "10",
   "description": "Has every bindings[*].source value present as a key in the document's sources map.",
   "tests": [
     {
@@ -25,7 +25,7 @@
       "valid": true
     },
     {
-      "description": "binding references source \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "description": "binding references source \"constructor\", a valid OBI-04 identifier that is also a built-in object property name, with no such source defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -45,7 +45,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-08"
+        "OBI-07"
       ]
     },
     {
@@ -69,7 +69,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-08"
+        "OBI-07"
       ]
     },
     {
@@ -93,7 +93,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-08"
+        "OBI-07"
       ]
     }
   ]

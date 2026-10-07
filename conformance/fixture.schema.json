@@ -2,10 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbindings.com/conformance/fixture.schema.json",
   "title": "OpenBindings Conformance Fixture",
-  "description": "JSON Schema describing the format of a conformance fixture file (one OBI-D-## or OBI-T-## rule per file). Document fixtures (document/) are keyed by rule. Tool fixtures (tool/) may name the clauses each test exercises (clauses.json). violates names document rules only: a tool rule is never a document violation.",
+  "description": "JSON Schema describing the format of a conformance fixture file. A file cites either one rule of openbindings.md section 10 (rule, with section \"10\") or a section whose text answers its tests (section, with no rule). Each test gives a text and whether it conforms.",
   "type": "object",
   "required": [
-    "rule",
     "section",
     "description",
     "tests"
@@ -14,21 +13,22 @@
   "properties": {
     "rule": {
       "type": "string",
-      "pattern": "^OBI-[DT]-[0-9]+$",
-      "description": "The OBI-D-## or OBI-T-## identifier this fixture covers, as defined in §10 of the OpenBindings spec."
+      "pattern": "^OBI-[0-9]{2}$",
+      "description": "The rule this file covers, as openbindings.md section 10 identifies it. A file that cites a rule has section \"10\"."
     },
     "section": {
       "type": "string",
-      "description": "The spec section the rule is defined in (e.g., '10.2' for document rules, '10.3' for tool rules)."
+      "pattern": "^[1-9][0-9]*(\\.[1-9][0-9]*)*$",
+      "description": "The number of the openbindings.md heading whose text answers the file's tests: \"10\" for a rule file, otherwise the section the file cites (for example \"12\")."
     },
     "description": {
       "type": "string",
       "minLength": 1,
-      "description": "Human-readable description of the rule, ideally byte-faithful to the spec text."
+      "description": "Human-readable description of the rule or section, ideally byte-faithful to the spec text."
     },
     "notes": {
       "type": "string",
-      "description": "Optional file-level rationale text about the rule's coverage in this corpus, e.g. why some test cases are intentionally out of format. Informational; not consumed by harnesses."
+      "description": "Optional file-level rationale text about the file's coverage in this corpus, e.g. why some test cases are intentionally out of format. Informational; not consumed by harnesses."
     },
     "coverage": {
       "type": "string",
@@ -40,7 +40,7 @@
     "tests": {
       "type": "array",
       "minItems": 1,
-      "description": "Test cases for this rule. Each case bundles an OBI document with the expected validity verdict.",
+      "description": "Test cases for this rule or section. Each case bundles an OBI input with whether it conforms.",
       "items": {
         "type": "object",
         "required": [
@@ -55,27 +55,27 @@
             "description": "Description of what this specific case tests."
           },
           "document": {
-            "description": "An OBI document embedded as a parsed JSON value. Exactly one of document, documentText, or documentBase64 is present."
+            "description": "An OBI document embedded as a parsed JSON value, standing for its serialization as UTF-8 JSON text with no byte-order mark, each number at its exact value. Exactly one of document, documentText, or documentBase64 is present."
           },
           "documentText": {
             "type": "string",
-            "description": "Exact Unicode text handed to the document parser. Preserves duplicate keys and malformed JSON that an embedded JSON value cannot carry. Exactly one input carriage is present."
+            "description": "Exact Unicode text of the input. Preserves duplicate keys and malformed JSON that an embedded JSON value cannot carry. Exactly one input carriage is present."
           },
           "documentBase64": {
             "type": "string",
             "contentEncoding": "base64",
-            "description": "Base64 encoding of the exact bytes handed to the document parser. Carries malformed UTF-8 and byte-order marks. Exactly one input carriage is present."
+            "description": "Base64 encoding of the exact bytes of the input. Carries malformed UTF-8 and byte-order marks. Exactly one input carriage is present."
           },
           "valid": {
             "type": "boolean",
-            "description": "true if the document satisfies the rule (a conformant tool should accept it); false if the document violates the rule (a conformant tool should reject it)."
+            "description": "true if the text conforms to this specification (it meets every rule of section 10); false if it does not."
           },
           "violates": {
             "type": "array",
-            "description": "When valid is false, the minimum set of document rules the document is intended to exercise as violated: a tool that reports violated rules reports at least these. A tool rule is never a document violation. Harness semantics, not a report shape.",
+            "description": "When valid is false, the minimum set of rules the text violates: it violates at least these, and may violate others.",
             "items": {
               "type": "string",
-              "pattern": "^OBI-D-[0-9]+$"
+              "pattern": "^OBI-[0-9]{2}$"
             }
           },
           "notViolated": {
@@ -84,24 +84,9 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^OBI-D-[0-9]+$"
+              "pattern": "^OBI-[0-9]{2}$"
             },
-            "description": "When valid is false, document rules a tool must not report violated, where it reports violated rules at all: the mirror of violates. It records where a rule holds, holds vacuously, or does not govern the document, so a tool that reports it violated misreads the rule. Harness semantics, not a report shape. Disjoint from violates."
-          },
-          "requiresSupports": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
-            "description": "Administer this test only to tools that apply the text of this version's line, or of this prerelease (section 8.1), as the tool declares, never as its acceptance code decides."
-          },
-          "clauses": {
-            "type": "array",
-            "minItems": 1,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^OBI-T-[0-9]{2}/c[0-9]+[a-z]?(\\.[pi][0-9]+)?$"
-            },
-            "description": "Tool-rule clause IDs (corpus-owned, defined in clauses.json) this test exercises. Allowed only in tool/ fixtures, where every test names at least one clause of the file's rule (the verifier checks both)."
+            "description": "When valid is false, rules the text does not violate although it violates another: the rule holds, holds vacuously, or does not apply to the text. The mirror of violates, and disjoint from it."
           }
         },
         "oneOf": [
@@ -121,6 +106,18 @@
             ]
           }
         ]
+      }
+    }
+  },
+  "if": {
+    "required": [
+      "rule"
+    ]
+  },
+  "then": {
+    "properties": {
+      "section": {
+        "const": "10"
       }
     }
   }
