@@ -167,10 +167,10 @@ arrive. The specification specifies the document model only.
   ordering, compatibility, or identity meaning
   ([§8.2](openbindings.md#82-version-field-interface-version-label)); 0.1
   recommended SemVer.
-- **The derived schema decides OBI-02.** `openbindings.schema.json` has the
+- **The derived schema governs OBI-02.** `openbindings.schema.json` has the
   `$id` `https://openbindings.com/schema/openbindings-0.2.json`, which names
   the line (0.1: `openbindings-0.1.0.json`), and a title naming the patch
-  release. Where it and the prose disagree, it decides OBI-02 until a patch
+  release. Where it and the prose disagree, it governs OBI-02 until a patch
   release corrects it under the same `$id`. In 0.1 the schema was descriptive
   and the prose governed.
 - **Examples are author claims.** Each example `input` and `output` is one
