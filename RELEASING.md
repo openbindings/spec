@@ -131,7 +131,7 @@ entry states the result.
 | Two implementations | Not met: the Go SDK passes the corpus. The TypeScript SDK's runner reads the retired scenario format, and spec CI runs no TypeScript implementation on the core corpus. |
 | Implementable from the text | Not met: no blind implementation run since the kind, pruning, value-contract, and OBI-T-08 changes, and the removal of the version-refusal rule. |
 | No open defects | Not met: the files in `examples/` name this project's kinds with content those kinds' texts reject; OBI-T-04 rests on undefined terms ("semantically significant", "the schema's meaning"); `agent-primer.md` describes the draft before kinds; "implementers must not infer one" in the License and intellectual property section reads as a requirement. |
-| One vocabulary | Not met: "applicable" names both a line's set of rules and an evidence status, and "patch release" both any release and a correcting one; "format conventions" and "described component" are used without definition, and §3 does not index terms defined in place. |
+| One vocabulary | Not met: "format conventions" and "described component" are used without definition, and §3 does not index terms defined in place. |
 
 Peer ranking (2026-10-06, core text at 581382f, one reviewer): 3rd of 8,
 unchanged, behind GraphQL and Smithy 2.0 and ahead of OpenAPI 3.2, Protocol
