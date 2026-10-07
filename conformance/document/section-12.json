@@ -1,8 +1,7 @@
 {
-  "rule": "OBI-T-03",
-  "section": "10.3",
-  "description": "A processor treats fields whose names begin with x- as extensions, and an x- field changes the meaning of no core field.",
-  "notes": "These validity fixtures exercise OBI-T-03/c1 for validators: a document carrying x- members is judged as the same document without them, so it stays conformant. OBI-T-03/c2 (no x- field changes a core field's meaning) is exercised by the scenarios in scenarios/OBI-T-03.json, which observe resolution, the version decision, value validation, and kind comparison.",
+  "section": "12",
+  "description": "A field (section 3) whose name begins with x- is an extension; OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning of a core field; its own meaning, if any, is defined outside this specification.",
+  "notes": "A document carrying x- fields means what the same document without them means, so the positives conform; a member beginning X- is not an extension, so the negative violates OBI-02. The scenarios observe that an extension changes no core field's meaning: an operation's identifiers and a binding's operation (5.1-names.json), a value contract (5.2-value-contracts.json), a kinds constraint (6-kinds.json), and the version a text declares (10-conformance.json).",
   "tests": [
     {
       "description": "document with x- extension at the root level",
@@ -18,10 +17,7 @@
           "createTask": {}
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-03/c1"
-      ]
+      "valid": true
     },
     {
       "description": "document with x- extensions on operation, binding, and source",
@@ -46,10 +42,7 @@
           }
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-03/c1"
-      ]
+      "valid": true
     },
     {
       "description": "an x- member named like a core field (x-operations) is an extension, so the document stays conformant",
@@ -62,10 +55,7 @@
           "spurious": "should be ignored as extension, not interpreted as the operations map"
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-03/c1"
-      ]
+      "valid": true
     },
     {
       "description": "x- extension nested deeply inside an operation",
@@ -85,13 +75,10 @@
           }
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-03/c1"
-      ]
+      "valid": true
     },
     {
-      "description": "a member beginning X- is not an extension: names compare exactly, so it is an unknown field",
+      "description": "a member beginning X- is not an extension: names compare exactly, so it is a field the operation's table does not list (section 5)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -102,10 +89,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
-      ],
-      "clauses": [
-        "OBI-T-03/c1"
+        "OBI-02"
       ]
     }
   ]

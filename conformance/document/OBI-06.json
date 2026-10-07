@@ -1,6 +1,6 @@
 {
-  "rule": "OBI-D-07",
-  "section": "10.2",
+  "rule": "OBI-06",
+  "section": "10",
   "description": "Has every bindings[*].operation value present as a key in the document's operations map.",
   "tests": [
     {
@@ -45,11 +45,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-07"
+        "OBI-06"
       ]
     },
     {
-      "description": "binding references operation \"constructor\", a valid OBI-D-03 identifier that is also a built-in object property name, with no such operation defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
+      "description": "binding references operation \"constructor\", a valid OBI-04 identifier that is also a built-in object property name, with no such operation defined (guards against an implementation resolving the reference through a language object's prototype chain rather than the document's own map)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -69,7 +69,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-07"
+        "OBI-06"
       ]
     },
     {
@@ -97,7 +97,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-07"
+        "OBI-06"
       ]
     },
     {
@@ -121,7 +121,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-07"
+        "OBI-06"
       ]
     }
   ]

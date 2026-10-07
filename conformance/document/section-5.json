@@ -1,11 +1,10 @@
 {
-  "rule": "OBI-T-09",
-  "section": "10.3",
-  "description": "A tool does not treat the apparent inaccuracy of an author claim, as section 5 lists them (examples, a binding's claim to realize its operation and its idempotent, a dependency's claim to consume its operation, and correspondence), as a document-rule violation.",
-  "notes": "All tests are positive (valid: true). Each document carries a claim that a plausibility heuristic would doubt; such heuristics cannot establish a document-rule violation. The fixtures discriminate only heuristics over the document: a validator judging a claim against a real target, consuming component, or shared contract is outside any document fixture. Tools remain free to use the claims in their own decisions.",
+  "section": "5",
+  "description": "Some of what a document says is its author's claim: an operation's examples (section 5.1), a binding's claim to realize its operation and its idempotent claim (section 5.3), a dependency's claim to consume its operation within its value contracts (section 5.5), and correspondence (section 5.1). This specification defines what each asserts; whether it is true is outside conformance.",
+  "notes": "All tests are positive (valid: true). Each document carries an author claim that a plausibility heuristic would doubt; whether the claim is true is outside conformance, so the document conforms. The fixtures concern only the document: whether a claim holds against a real target, consuming component, or shared contract is outside any document fixture.",
   "tests": [
     {
-      "description": "write-shaped binding claims idempotent: true — plausibility cannot determine document validity",
+      "description": "a write-shaped binding claims idempotent: true; plausibility has no bearing on conformance",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -24,13 +23,10 @@
           }
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-09/c1c"
-      ]
+      "valid": true
     },
     {
-      "description": "read-shaped binding claims idempotent: false — apparent inaccuracy in the other direction",
+      "description": "a read-shaped binding claims idempotent: false, an apparent inaccuracy in the other direction",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -49,13 +45,10 @@
           }
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-09/c1c"
-      ]
+      "valid": true
     },
     {
-      "description": "mass-delete operation’s binding claims idempotent: true — bait for a method-name heuristic, though §5.3 itself notes repeated deletion can be idempotent; either way the attestation stands",
+      "description": "a mass-delete operation's binding claims idempotent: true, bait for a method-name heuristic, though section 5.3 itself notes repeated deletion can be idempotent; either way the claim stands",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -74,16 +67,10 @@
           }
         }
       },
-      "valid": true,
-      "clauses": [
-        "OBI-T-09/c1c"
-      ]
+      "valid": true
     },
     {
-      "description": "an example whose input does not satisfy the input schema is a false claim, not a document-rule violation",
-      "clauses": [
-        "OBI-T-09/c1a"
-      ],
+      "description": "an example whose input does not satisfy the input schema is a false claim, not a rule violation",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -103,9 +90,6 @@
     },
     {
       "description": "an explicitly null example output against a string output is a false claim, not a violation",
-      "clauses": [
-        "OBI-T-09/c1a"
-      ],
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -125,9 +109,6 @@
     },
     {
       "description": "a binding whose opaque content looks, to a heuristic, like another operation's target is an unverified realization claim",
-      "clauses": [
-        "OBI-T-09/c1b"
-      ],
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -154,9 +135,6 @@
     },
     {
       "description": "a dependency on an operation whose description its consumption seems to contradict is an unverified claim",
-      "clauses": [
-        "OBI-T-09/c1d"
-      ],
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -177,9 +155,6 @@
     },
     {
       "description": "an alias adopting a published name the description seems to contradict is an unverified correspondence claim",
-      "clauses": [
-        "OBI-T-09/c1e"
-      ],
       "document": {
         "openbindings": "0.2.0",
         "operations": {

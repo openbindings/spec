@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -17,12 +15,14 @@ import (
 	"github.com/openbindings/openbindings-go/schemaeval"
 )
 
-// caseBound bounds one case: OBI-T-05 leaves termination strategy to the
-// tool, and the corpus's recursive cases are finite.
+// caseBound bounds one case. The corpus's recursive cases are finite, so a
+// case that runs past it has not answered.
 const caseBound = 10 * time.Second
 
-// profile is the capability profile the SDK with schemaeval declares for the
-// features the corpus's cases depend on (corpus README, "Capabilities").
+// profile is what the SDK with schemaeval declares for each feature the
+// corpus's cases depend on (corpus README, "Features"): supported or
+// unsupported. A case whose dependsOn names a feature the profile does not
+// declare fails, so the profile follows the corpus's feature list.
 var profile = map[string]bool{
 	"recursive-references":            true,
 	"document-resource-dynamic-scope": true,
@@ -33,47 +33,22 @@ var profile = map[string]bool{
 	"repeated-member-detection":        true,
 	"draft-07-dialect":                 false,
 	"exact-numbers":                    true,
+	// The Go core does not carry a string escaping a lone UTF-16 surrogate,
+	// so it concludes nothing about a text holding one.
+	"exact-lone-surrogate-strings": false,
 }
+
+// unimplemented maps each action this SDK does not implement to the reason,
+// which the runner reports as OMITTED. The Go core implements every action
+// the scenario format defines.
+var unimplemented = map[string]string{}
 
 type run struct {
-	lines, prereleases []string
-	evaluator          openbindings.SchemaEvaluator
-	release, revision  string // the declared applied text
-	verified           bool
-	unverified         string
-	strict             bool
+	evaluator openbindings.SchemaEvaluator
 }
 
-// newRun reads the SDK's support declaration from SupportedVersions ("0.2.x":
-// the 0.2 line; "1.0.x": the 1.0 line) and verifies the declared applied text (see
-// verifyApplied). The declaration has been parsed by parseApplied.
-func newRun(corpusDir string, applied appliedText, strict bool) *run {
-	r := &run{evaluator: schemaeval.New(schemaeval.Options{}), strict: strict, release: applied.release, revision: applied.revision}
-	r.lines = []string{strings.TrimSuffix(openbindings.SupportedVersions, ".x")}
-	r.verified, r.unverified = verifyApplied(corpusDir, applied)
-	return r
-}
-
-var semverRE = regexp.MustCompile(`^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
-
-// supports judges whether the declared texts include a version's line or
-// prerelease, never against the SDK's version decision.
-func (r *run) supports(v string) bool {
-	m := semverRE.FindStringSubmatch(v)
-	if m == nil {
-		return false
-	}
-	if m[4] != "" {
-		return slices.Contains(r.prereleases, m[1]+"."+m[2]+"."+m[3]+"-"+m[4])
-	}
-	return slices.Contains(r.lines, m[1]+"."+m[2])
-}
-
-func (r *run) gate(g Gates) (string, bool) {
-	if v := g.RequiresSupports; v != "" && !r.supports(v) {
-		return "gate: requires a tool applying the text of " + v, true
-	}
-	return "", false
+func newRun() *run {
+	return &run{evaluator: schemaeval.New(schemaeval.Options{})}
 }
 
 func failed(format string, a ...any) (string, string) { return Fail, fmt.Sprintf(format, a...) }
@@ -81,7 +56,7 @@ func failed(format string, a ...any) (string, string) { return Fail, fmt.Sprintf
 // judge runs one case under a time bound and returns its category and
 // detail.
 func (r *run) judge(c Case) (status, detail string) {
-	if reason, skip := r.gate(c.Gates); skip {
+	if reason, omitted := unimplemented[c.Action]; omitted {
 		return Omitted, reason
 	}
 	type answer struct{ status, detail string }
@@ -94,22 +69,18 @@ func (r *run) judge(c Case) (status, detail string) {
 		}()
 		var a answer
 		switch c.Action {
-		case "validity":
+		case fixtureAction:
 			a.status, a.detail = judgeFixture(c)
 		case "validate-document":
-			a.status, a.detail = r.judgeDocument(c)
+			a.status, a.detail = judgeDocument(c)
 		case "resolve-operation":
 			a.status, a.detail = judgeResolve(c)
-		case "conclude-conformance":
-			a.status, a.detail = judgeConclude(c)
 		case "check-dependency-kind":
 			a.status, a.detail = judgeKind(c)
 		case "validate-operation-values":
 			a.status, a.detail = r.judgeValues(c)
 		case "check-examples":
 			a.status, a.detail = r.judgeExamples(c)
-		case "derive-form":
-			a.status, a.detail = Omitted, "this SDK derives no forms from a schema (OBI-T-04 has no executor here)"
 		default:
 			a.status, a.detail = failed("unknown action %q", c.Action)
 		}
@@ -123,170 +94,208 @@ func (r *run) judge(c Case) (status, detail string) {
 	}
 }
 
+// declines reports whether err is one of the SDK's answers that give no
+// verdict or conclusion: a no-verdict, an inconclusive call, or a version
+// refusal. Why the SDK declined is its own reporting, which the corpus does
+// not test, so every decline is judged alike.
+func declines(err error) bool {
+	return errors.Is(err, openbindings.ErrNoVerdict) ||
+		errors.Is(err, openbindings.ErrInconclusive) ||
+		errors.As(err, new(*openbindings.VersionRefusalError))
+}
+
+// unsupported returns a feature in features that the profile declares
+// unsupported, or "" when it declares every one supported, and an error for
+// a feature the profile does not declare.
+func unsupported(features []string) (string, error) {
+	lacking := ""
+	for _, f := range features {
+		supported, declared := profile[f]
+		if !declared {
+			return "", fmt.Errorf("the profile does not declare %s", f)
+		}
+		if !supported && lacking == "" {
+			lacking = f
+		}
+	}
+	return lacking, nil
+}
+
 type carriage struct {
 	Document       json.RawMessage `json:"document"`
 	DocumentText   *string         `json:"documentText"`
-	DocumentBase64 string          `json:"documentBase64"`
+	DocumentBase64 *string         `json:"documentBase64"`
 }
 
+// bytes returns the input the carriage holds, unnormalized: a document given
+// as a JSON value stands for its serialization as UTF-8 JSON text, which the
+// corpus file's own bytes for it are.
 func (g carriage) bytes() ([]byte, error) {
+	n := 0
+	for _, present := range []bool{g.Document != nil, g.DocumentText != nil, g.DocumentBase64 != nil} {
+		if present {
+			n++
+		}
+	}
 	switch {
+	case n != 1:
+		return nil, fmt.Errorf("%d document carriages; a case has exactly one", n)
 	case g.Document != nil:
 		return g.Document, nil
 	case g.DocumentText != nil:
 		return []byte(*g.DocumentText), nil
-	case g.DocumentBase64 != "":
-		return base64.StdEncoding.DecodeString(g.DocumentBase64)
 	}
-	return nil, errors.New("no document carriage")
+	return base64.StdEncoding.DecodeString(*g.DocumentBase64)
 }
 
-func isRefusal(err error) bool { return errors.As(err, new(*openbindings.VersionRefusalError)) }
+// textAnswer is what ValidateDocument concluded about a text: conformant,
+// non-conformant, or no conclusion (a decline).
+type textAnswer struct {
+	conclusion openbindings.ConformanceConclusion // "" for a decline
+	report     openbindings.ValidationReport
+}
 
-// The sentinel starter is a variable, so the runner's controls can stand in
-// for an SDK that retrieves and hold judgeKind's call site to its check.
-var sentinelStarter = startSentinels
+// validateText asks ValidateDocument whether a text conforms. A conclusion of
+// conformance undetermined and a version refusal are declines; an error
+// that is neither, or that disagrees with the report, is no answer.
+func validateText(data []byte) (textAnswer, error) {
+	_, report, err := openbindings.ValidateDocument(data)
+	if declines(err) {
+		return textAnswer{}, nil
+	}
+	var violation *openbindings.ValidationError
+	if err != nil && !errors.As(err, &violation) {
+		return textAnswer{}, fmt.Errorf("ValidateDocument: unexpected error %v", err)
+	}
+	if (violation != nil) != (report.Conclusion == openbindings.ConclusionNonConformant) {
+		return textAnswer{}, fmt.Errorf("the error %v disagrees with the conclusion %s", err, report.Conclusion)
+	}
+	switch report.Conclusion {
+	case openbindings.ConclusionConformant, openbindings.ConclusionNonConformant:
+		return textAnswer{conclusion: report.Conclusion, report: report}, nil
+	case openbindings.ConclusionConformanceUndetermined:
+		return textAnswer{report: report}, nil
+	}
+	return textAnswer{}, fmt.Errorf("ValidateDocument: an unknown conclusion %q", report.Conclusion)
+}
 
-// judgeFixture holds a validity fixture to ValidateDocument: a conforming
-// case is not refused and establishes no violation (it may be undetermined);
-// a violating case is non-conformant, with every rule violates names
-// violated and none notViolated names.
+// judgeConclusion holds a text's answer to the case (corpus README,
+// "Judging"). A conforming text passes when concluded conformant, or when
+// declined under a dependsOn feature the profile declares unsupported; a
+// decline under declared support is a SHORTFALL. A non-conforming text
+// passes only when concluded non-conformant with every rule in violates
+// (a minimum set) violated and none in notViolated; a decline on it fails.
+func judgeConclusion(data []byte, conforms bool, violates, notViolated, dependsOn []string) (string, string) {
+	lacking, err := unsupported(dependsOn)
+	if err != nil {
+		return failed("%v", err)
+	}
+	a, err := validateText(data)
+	if err != nil {
+		return failed("%v", err)
+	}
+	switch {
+	case conforms && a.conclusion == openbindings.ConclusionConformant:
+		return Pass, "conformant"
+	case conforms && a.conclusion == openbindings.ConclusionNonConformant:
+		return failed("concluded non-conformant (violated: %v) for a conforming text", a.report.Violated)
+	case conforms && lacking != "":
+		return Pass, "declined under " + lacking + ", which the profile declares unsupported"
+	case conforms:
+		return Shortfall, "declined on a conforming text where the profile supports every feature the case depends on"
+	case a.conclusion == openbindings.ConclusionConformant:
+		return failed("concluded conformant for a non-conforming text")
+	case a.conclusion == "":
+		return failed("declined on a non-conforming text")
+	}
+	for _, rule := range violates {
+		if a.report.Evidence[rule] != openbindings.EvidenceViolated {
+			return failed("%s is %q, not violated (violated: %v)", rule, a.report.Evidence[rule], a.report.Violated)
+		}
+	}
+	for _, rule := range notViolated {
+		if a.report.Evidence[rule] == openbindings.EvidenceViolated {
+			return failed("%s reported violated; the case lists it notViolated (violated: %v)", rule, a.report.Violated)
+		}
+	}
+	return Pass, "non-conformant"
+}
+
+// judgeFixture holds a validity fixture to ValidateDocument. Fixtures carry
+// no dependsOn, so a decline on a conforming text is always a SHORTFALL.
 func judgeFixture(c Case) (string, string) {
 	var t struct {
 		carriage
-		Valid       bool     `json:"valid"`
+		Valid       *bool    `json:"valid"`
 		Violates    []string `json:"violates"`
 		NotViolated []string `json:"notViolated"`
 	}
 	if err := json.Unmarshal(c.Raw, &t); err != nil {
 		return failed("unreadable fixture: %v", err)
 	}
+	if t.Valid == nil {
+		return failed("the fixture states no valid")
+	}
 	data, err := t.bytes()
 	if err != nil {
 		return failed("%v", err)
 	}
-	_, report, err := openbindings.ValidateDocument(data)
-	refused := isRefusal(err)
-	var violation *openbindings.ValidationError
-	if err != nil && !refused && !errors.As(err, &violation) {
-		return failed("ValidateDocument: unexpected error %v", err)
-	}
-	if refused {
-		return failed("version-refusal; expected a conclusion")
-	}
-	if (violation != nil) != (report.Conclusion == openbindings.ConclusionNonConformant) {
-		return failed("the error %v disagrees with the conclusion %s", err, report.Conclusion)
-	}
-	if t.Valid {
-		if report.Conclusion == openbindings.ConclusionNonConformant {
-			return failed("established violations %v for a conforming case", report.Violated)
-		}
-		return Pass, string(report.Conclusion)
-	}
-	if report.Conclusion != openbindings.ConclusionNonConformant {
-		return failed("concluded %s for a violating case", report.Conclusion)
-	}
-	for _, rule := range t.Violates {
-		if report.Evidence[rule] != openbindings.EvidenceViolated {
-			return failed("%s is %q, not violated (violated: %v)", rule, report.Evidence[rule], report.Violated)
-		}
-	}
-	for _, rule := range t.NotViolated {
-		if report.Evidence[rule] == openbindings.EvidenceViolated {
-			return failed("%s reported violated; the fixture lists it notViolated (violated: %v)", rule, report.Violated)
-		}
-	}
-	return Pass, "non-conformant"
+	return judgeConclusion(data, *t.Valid, t.Violates, t.NotViolated, nil)
 }
 
-func (r *run) judgeDocument(c Case) (string, string) {
+func judgeDocument(c Case) (string, string) {
 	var s struct {
 		Given    carriage `json:"given"`
 		Expected struct {
-			Outcome          string   `json:"outcome"`
-			Violates         []string `json:"violates"`
-			NamesAppliedText bool     `json:"namesAppliedText"`
+			Outcome   string   `json:"outcome"`
+			Violates  []string `json:"violates"`
+			DependsOn []string `json:"dependsOn"`
 		} `json:"expected"`
 	}
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
+	}
+	if o := s.Expected.Outcome; o != "conformant" && o != "non-conformant" {
+		return failed("unknown outcome %q", o)
 	}
 	data, err := s.Given.bytes()
 	if err != nil {
 		return failed("%v", err)
 	}
-	_, report, err := openbindings.ValidateDocument(data)
-	if isRefusal(err) {
-		return failed("version-refusal; expected %s", s.Expected.Outcome)
-	}
-	var violation *openbindings.ValidationError
-	if err != nil && !errors.As(err, &violation) {
-		return failed("ValidateDocument: unexpected error %v", err)
-	}
-	if (violation != nil) != (report.Conclusion == openbindings.ConclusionNonConformant) {
-		return failed("the error %v disagrees with the conclusion %s", err, report.Conclusion)
-	}
-	switch want := s.Expected.Outcome; {
-	case want == "interpreted":
-		if report.Conclusion == "" {
-			return failed("no conclusion")
-		}
-	case want == "conformant" && report.Conclusion == openbindings.ConclusionConformanceUndetermined:
-	case string(report.Conclusion) != want:
-		return failed("concluded %s; expected %s", report.Conclusion, want)
-	}
-	for _, rule := range s.Expected.Violates {
-		if report.Evidence[rule] != openbindings.EvidenceViolated {
-			return failed("%s is %q, not violated (violated: %v)", rule, report.Evidence[rule], report.Violated)
-		}
-	}
-	if s.Expected.NamesAppliedText {
-		return r.judgeNaming(report)
-	}
-	return Pass, string(report.Conclusion)
+	return judgeConclusion(data, s.Expected.Outcome == "conformant", s.Expected.Violates, nil, s.Expected.DependsOn)
+}
+
+// model asks ValidateDocument for the document's model; nil when the SDK
+// declines to carry it.
+func model(document json.RawMessage) *openbindings.Document {
+	doc, _, _ := openbindings.ValidateDocument(document)
+	return doc
 }
 
 func judgeResolve(c Case) (string, string) {
 	var s struct {
 		Given struct {
-			Document      json.RawMessage `json:"document"`
-			NonConformant []string        `json:"nonConformant"`
-			Name          string          `json:"name"`
+			Document json.RawMessage `json:"document"`
+			Name     string          `json:"name"`
 		} `json:"given"`
 		Expected struct {
 			Outcome      string   `json:"outcome"`
 			OperationKey string   `json:"operationKey"`
 			BindingKeys  []string `json:"bindingKeys"`
-			KeyMatch     string   `json:"keyMatch"`
-			AliasMatch   string   `json:"aliasMatch"`
 		} `json:"expected"`
 	}
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
 	}
-	doc, _, err := openbindings.ValidateDocument(s.Given.Document)
-	if isRefusal(err) {
-		return failed("version-refusal; expected %s", s.Expected.Outcome)
+	if o := s.Expected.Outcome; o != "resolved" && o != "not-found" {
+		return failed("unknown outcome %q", o)
 	}
+	doc := model(s.Given.Document)
 	if doc == nil {
-		if len(s.Given.NonConformant) == 0 {
-			return failed("the model does not carry a conformant document (%v)", err)
-		}
-		return Omitted, "the model cannot carry this non-conformant document, so the SDK does not continue with it"
+		return failed("declined to carry the document; expected %s", s.Expected.Outcome)
 	}
 	key, _, found := doc.ResolveOperation(s.Given.Name)
-	switch s.Expected.Outcome {
-	case "collision":
-		switch {
-		case !found:
-			return Advisory, "no single resolution"
-		case key == s.Expected.KeyMatch:
-			return Advisory, "key match " + key
-		case key == s.Expected.AliasMatch:
-			return Advisory, "alias match " + key
-		}
-		return failed("resolved to %q, neither candidate", key)
-	case "not-found":
+	if s.Expected.Outcome == "not-found" {
 		if found {
 			return failed("resolved to %q; expected not-found", key)
 		}
@@ -295,44 +304,22 @@ func judgeResolve(c Case) (string, string) {
 	if !found || key != s.Expected.OperationKey {
 		return failed("resolved (%q, %v); expected %q", key, found, s.Expected.OperationKey)
 	}
-	bindings := doc.OperationBindings(key)
+	got := slices.Clone(doc.OperationBindings(key))
 	want := slices.Clone(s.Expected.BindingKeys)
+	sort.Strings(got)
 	sort.Strings(want)
-	if !slices.Equal(bindings, want) && !(len(bindings) == 0 && len(want) == 0) {
-		return failed("binding keys %v; expected %v", bindings, want)
+	if !slices.Equal(got, want) {
+		return failed("binding keys %v; expected %v", got, want)
 	}
 	return Pass, "resolved " + key
-}
-
-func judgeConclude(c Case) (string, string) {
-	var s struct {
-		Given struct {
-			Evidence map[string]openbindings.RuleEvidenceStatus `json:"evidence"`
-		} `json:"given"`
-		Expected struct {
-			Conclusion string `json:"conclusion"`
-		} `json:"expected"`
-	}
-	if err := json.Unmarshal(c.Raw, &s); err != nil {
-		return failed("unreadable scenario: %v", err)
-	}
-	got := openbindings.ConcludeConformance(s.Given.Evidence).Conclusion
-	// This action receives the evidence, rather than performing checks that
-	// may be incomplete. Its reported conclusion must mean what §10.4 says.
-	if string(got) != s.Expected.Conclusion {
-		return failed("concluded %s; expected %s", got, s.Expected.Conclusion)
-	}
-	return Pass, string(got)
 }
 
 func judgeKind(c Case) (string, string) {
 	var s struct {
 		Given struct {
-			Document      json.RawMessage `json:"document"`
-			NonConformant []string        `json:"nonConformant"`
-			Dependency    string          `json:"dependency"`
-			Binding       string          `json:"binding"`
-			Sentinels     []string        `json:"retrievalSentinels"`
+			Document   json.RawMessage `json:"document"`
+			Dependency string          `json:"dependency"`
+			Binding    string          `json:"binding"`
 		} `json:"given"`
 		Expected struct {
 			Outcome string `json:"outcome"`
@@ -341,195 +328,262 @@ func judgeKind(c Case) (string, string) {
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
 	}
-	data := []byte(s.Given.Document)
-	var observe *sentinels
-	if len(s.Given.Sentinels) > 0 {
-		var err error
-		if observe, err = sentinelStarter(s.Given.Sentinels); err != nil {
-			return Omitted, err.Error()
-		}
-		data = observe.substitute(data)
+	if o := s.Expected.Outcome; o != "meets" && o != "does-not-meet" {
+		return failed("unknown outcome %q", o)
 	}
-	doc, _, err := openbindings.ValidateDocument(data)
-	meets := false
-	if doc != nil {
-		binding := doc.Bindings[s.Given.Binding]
-		meets = doc.Dependencies[s.Given.Dependency].AcceptsKind(doc.Sources[binding.Source].Kind)
+	doc := model(s.Given.Document)
+	if doc == nil {
+		return failed("declined to carry the document; expected %s", s.Expected.Outcome)
 	}
-	if observe != nil {
-		if seen := observe.stop(); seen != "" {
-			return failed("%s", seen)
-		}
+	dependency, found := doc.Dependencies[s.Given.Dependency]
+	if !found {
+		return failed("the model holds no dependency %q", s.Given.Dependency)
 	}
-	switch {
-	case isRefusal(err):
-		return failed("version-refusal; expected %s", s.Expected.Outcome)
-	case doc == nil && len(s.Given.NonConformant) == 0:
-		return failed("the model does not carry a conformant document (%v)", err)
-	case doc == nil:
-		return Omitted, "the model cannot carry this non-conformant document, so the SDK does not continue with it"
+	binding, found := doc.Bindings[s.Given.Binding]
+	if !found {
+		return failed("the model holds no binding %q", s.Given.Binding)
 	}
-	got := map[bool]string{true: "meets", false: "does-not-meet"}[meets]
+	source, found := doc.Sources[binding.Source]
+	if !found {
+		return failed("the model holds no source %q for binding %q", binding.Source, s.Given.Binding)
+	}
+	got := "does-not-meet"
+	if dependency.AcceptsKind(source.Kind) {
+		got = "meets"
+	}
 	if got != s.Expected.Outcome {
 		return failed("%s; expected %s", got, s.Expected.Outcome)
 	}
 	return Pass, got
 }
 
-// contracts decodes the document into the model and resolves its value
-// contracts.
-func (r *run) contracts(document json.RawMessage, resources []openbindings.Resource) (*openbindings.ValueContracts, *openbindings.Document, bool, error) {
+// The SDK's answer about one value.
+const (
+	satisfies = "satisfies"
+	fails     = "fails"
+	declined  = "declines"
+)
+
+// classify reads ValueContract.ValidateJSON's answer: nil satisfies, a
+// mismatch fails, and a no-verdict declines. Any other error is no answer:
+// the corpus's values are JSON values, which the SDK must judge or decline.
+func classify(err error) (string, error) {
+	mismatch := errors.Is(err, openbindings.ErrMismatch)
+	switch {
+	case err == nil:
+		return satisfies, nil
+	case mismatch && declines(err):
+		return "", fmt.Errorf("an answer that both fails and declines: %v", err)
+	case mismatch:
+		return fails, nil
+	case declines(err):
+		return declined, nil
+	}
+	return "", fmt.Errorf("an answer that neither judges nor declines: %v", err)
+}
+
+// valueContracts decodes the document into the model and resolves its value
+// contracts. It returns nil contracts and no error when the SDK declines the
+// document, so every value it would have judged is declined.
+func (r *run) valueContracts(document json.RawMessage, resources []openbindings.Resource) (*openbindings.ValueContracts, *openbindings.Document, error) {
 	var doc openbindings.Document
 	if err := json.Unmarshal(document, &doc); err != nil {
-		return nil, nil, false, err
+		if declines(err) {
+			return nil, nil, nil
+		}
+		return nil, nil, fmt.Errorf("the model does not carry the document: %v", err)
 	}
 	compiler, err := openbindings.NewValueContractCompiler(r.evaluator, resources...)
 	if err != nil {
-		return nil, &doc, true, err
+		return nil, &doc, fmt.Errorf("the supplied resources: %v", err)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
 	defer cancel()
 	contracts, err := compiler.Resolve(ctx, &doc)
-	return contracts, &doc, true, err
-}
-
-type observed struct{ verdict, reason string }
-
-func observe(err error) (observed, error) {
-	mismatch, noVerdict := errors.Is(err, openbindings.ErrMismatch), errors.Is(err, openbindings.ErrNoVerdict)
 	switch {
-	case err == nil:
-		return observed{verdict: "valid"}, nil
-	case mismatch && noVerdict:
-		return observed{}, fmt.Errorf("an answer matches both ErrMismatch and ErrNoVerdict: %v", err)
-	case mismatch:
-		return observed{verdict: "instance-mismatch"}, nil
-	case noVerdict:
-		reason := ""
-		switch {
-		case errors.Is(err, openbindings.ErrNoValueContract):
-			reason = "no-contract"
-		case errors.Is(err, openbindings.ErrUndefined):
-			reason = "undefined-result"
-		}
-		return observed{verdict: "no-verdict", reason: reason}, nil
+	case declines(err):
+		return nil, &doc, nil
+	case err != nil:
+		return nil, &doc, fmt.Errorf("the document's value contracts: %v", err)
 	}
-	return observed{}, fmt.Errorf("an answer that is neither outcome: %v", err)
+	return contracts, &doc, nil
 }
+
+// answer compiles one side's contract and gives the SDK's answer for each
+// value. Nil contracts decline every value.
+func answer(ctx context.Context, contracts *openbindings.ValueContracts, operation, side string, values []json.RawMessage) ([]string, error) {
+	got := make([]string, len(values))
+	if contracts == nil {
+		for i := range got {
+			got[i] = declined
+		}
+		return got, nil
+	}
+	compile := contracts.CompileInput
+	if side == "output" {
+		compile = contracts.CompileOutput
+	}
+	contract, err := compile(ctx, operation)
+	if err != nil {
+		return nil, fmt.Errorf("compiling %s's %s contract: %v", operation, side, err)
+	}
+	for i, v := range values {
+		if got[i], err = classify(contract.ValidateJSON(ctx, v)); err != nil {
+			return nil, fmt.Errorf("value %d: %v", i, err)
+		}
+	}
+	return got, nil
+}
+
+// expectation is one value's expected result: satisfies, fails, undefined,
+// external, or no-contract; orNoVerdict and dependsOn admit a decline of
+// satisfies or fails.
+type expectation struct {
+	result      string
+	orNoVerdict bool
+	dependsOn   []string
+}
+
+// readExpectation reads one entry of expected.results: a token, or the
+// object forms carrying orNoVerdict or a per-value dependsOn that replaces
+// the case's.
+func readExpectation(raw json.RawMessage, caseDependsOn []string) (expectation, error) {
+	var token string
+	if json.Unmarshal(raw, &token) == nil {
+		switch token {
+		case satisfies, fails, "undefined", "external", "no-contract":
+			return expectation{result: token, dependsOn: caseDependsOn}, nil
+		}
+		return expectation{}, fmt.Errorf("unknown result %q", token)
+	}
+	var form struct {
+		Result      string    `json:"result"`
+		OrNoVerdict bool      `json:"orNoVerdict"`
+		DependsOn   *[]string `json:"dependsOn"`
+	}
+	if err := json.Unmarshal(raw, &form); err != nil {
+		return expectation{}, fmt.Errorf("unreadable result %s: %v", raw, err)
+	}
+	if form.Result != satisfies && form.Result != fails {
+		return expectation{}, fmt.Errorf("unknown result %q in %s", form.Result, raw)
+	}
+	e := expectation{result: form.Result, orNoVerdict: form.OrNoVerdict, dependsOn: caseDependsOn}
+	if form.DependsOn != nil {
+		e.dependsOn = *form.DependsOn
+	}
+	return e, nil
+}
+
+// judgeAnswer holds one answer to its expectation (corpus README, "Judging")
+// and returns its category. satisfies and fails pass the same result, or a
+// decline where the value carries orNoVerdict or depends on a feature the
+// profile declares unsupported; another result fails, and a decline under
+// declared support is a SHORTFALL. undefined, external, and no-contract pass
+// any decline, and fail any result. The error names a dependsOn feature the
+// profile does not declare.
+func judgeAnswer(want expectation, got string) (string, error) {
+	lacking, err := unsupported(want.dependsOn)
+	if err != nil {
+		return Fail, err
+	}
+	switch {
+	case got == declined && (want.result == satisfies || want.result == fails):
+		if want.orNoVerdict || lacking != "" {
+			return Pass, nil
+		}
+		return Shortfall, nil
+	case got == declined, got == want.result:
+		return Pass, nil
+	}
+	return Fail, nil
+}
+
+const shortfallReason = "declined where the profile supports every feature it depends on"
 
 func (r *run) judgeValues(c Case) (string, string) {
 	var s struct {
 		Given struct {
-			Document      json.RawMessage   `json:"document"`
-			NonConformant []string          `json:"nonConformant"`
-			Operation     string            `json:"operation"`
-			Side          string            `json:"side"`
-			Values        []json.RawMessage `json:"values"`
-			Resources     []struct {
+			Document  json.RawMessage   `json:"document"`
+			Operation string            `json:"operation"`
+			Side      string            `json:"side"`
+			Values    []json.RawMessage `json:"values"`
+			Resources []struct {
 				URI      string          `json:"uri"`
 				Document json.RawMessage `json:"document"`
 			} `json:"resources"`
 		} `json:"given"`
 		Expected struct {
-			Outcome       string            `json:"outcome"`
-			Results       []json.RawMessage `json:"results"`
-			DependsOn     []string          `json:"dependsOn"`
-			ForbidReasons []string          `json:"forbidReasons"`
+			Results   []json.RawMessage `json:"results"`
+			DependsOn []string          `json:"dependsOn"`
 		} `json:"expected"`
 	}
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
 	}
-	var resources []openbindings.Resource
-	for _, res := range s.Given.Resources {
-		resources = append(resources, openbindings.Resource{URI: res.URI, Document: res.Document})
-	}
-	contracts, _, carried, err := r.contracts(s.Given.Document, resources)
-	switch {
-	case !carried && len(s.Given.NonConformant) == 0:
-		return failed("the model does not carry a conformant document: %v", err)
-	case !carried:
-		return Omitted, "the model cannot carry this non-conformant document, so the SDK does not continue with it"
-	case isRefusal(err):
-		return failed("version-refusal; expected value results")
-	case err != nil:
-		return failed("the document's value contracts: %v", err)
-	}
-	compile := contracts.CompileInput
-	if s.Given.Side == "output" {
-		compile = contracts.CompileOutput
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
-	defer cancel()
-	contract, err := compile(ctx, s.Given.Operation)
-	if err != nil {
-		return failed("compiling %s's %s contract: %v", s.Given.Operation, s.Given.Side, err)
+	if s.Given.Side != "input" && s.Given.Side != "output" {
+		return failed("unknown side %q", s.Given.Side)
 	}
 	if len(s.Expected.Results) != len(s.Given.Values) {
 		return failed("%d expected results for %d values", len(s.Expected.Results), len(s.Given.Values))
 	}
-	var got []string
-	shortfall, omission := "", ""
-	for i, v := range s.Given.Values {
-		o, err := observe(contract.ValidateJSON(ctx, v))
-		if err != nil {
+	wants := make([]expectation, len(s.Expected.Results))
+	for i, raw := range s.Expected.Results {
+		var err error
+		if wants[i], err = readExpectation(raw, s.Expected.DependsOn); err != nil {
 			return failed("value %d: %v", i, err)
 		}
-		got = append(got, o.verdict)
-		if o.reason != "" && slices.Contains(s.Expected.ForbidReasons, o.reason) {
-			return failed("value %d: reason %s is forbidden here", i, o.reason)
-		}
-		var form struct {
-			Verdict     string   `json:"verdict"`
-			OrNoVerdict bool     `json:"orNoVerdict"`
-			DependsOn   []string `json:"dependsOn"`
-		}
-		var token string
-		if json.Unmarshal(s.Expected.Results[i], &token) == nil {
-			form.Verdict = token
-		} else if err := json.Unmarshal(s.Expected.Results[i], &form); err != nil {
-			return failed("unreadable expected result: %v", err)
-		}
-		depends := s.Expected.DependsOn
-		if form.DependsOn != nil {
-			depends = form.DependsOn
-		}
-		lacking := ""
-		for _, f := range depends {
-			supported, declared := profile[f]
-			if !declared {
-				return failed("the profile does not declare %s", f)
-			}
-			if !supported {
-				lacking = f
-			}
-		}
+	}
+	var resources []openbindings.Resource
+	for _, res := range s.Given.Resources {
+		resources = append(resources, openbindings.Resource{URI: res.URI, Document: res.Document})
+	}
+	contracts, _, err := r.valueContracts(s.Given.Document, resources)
+	if err != nil {
+		return failed("%v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
+	defer cancel()
+	got, err := answer(ctx, contracts, s.Given.Operation, s.Given.Side, s.Given.Values)
+	if err != nil {
+		return failed("%v", err)
+	}
+	shortfall := ""
+	for i, want := range wants {
+		status, err := judgeAnswer(want, got[i])
 		switch {
-		case form.Verdict == "no-verdict" || (lacking != "" && !form.OrNoVerdict):
-			if o.verdict != "no-verdict" {
-				return failed("value %d: no verdict is required (%s); got %s", i, map[bool]string{true: "the profile declares " + lacking + " unsupported", false: "an undefined result or no contract"}[lacking != ""], o.verdict)
-			}
-		case o.verdict == form.Verdict:
-		case o.verdict == "no-verdict" && form.OrNoVerdict:
-		case o.verdict == "no-verdict" && o.reason == "resource-limit":
-			omission = fmt.Sprintf("value %d: no verdict at a reported resource limit", i)
-		case o.verdict == "no-verdict":
-			shortfall = fmt.Sprintf("value %d: no verdict where the profile supports every feature the case depends on", i)
-		default:
-			return failed("value %d: got %s; expected %s", i, o.verdict, string(s.Expected.Results[i]))
+		case err != nil:
+			return failed("value %d: %v", i, err)
+		case status == Fail:
+			return failed("value %d: got %s; expected %s %v", i, got[i], want.result, got)
+		case status == Shortfall && shortfall == "":
+			shortfall = fmt.Sprintf("value %d: %s %v", i, shortfallReason, got)
 		}
 	}
-	switch {
-	case shortfall != "":
-		return Shortfall, fmt.Sprintf("%s %v", shortfall, got)
-	case omission != "":
-		return Omitted, fmt.Sprintf("%s %v", omission, got)
+	if shortfall != "" {
+		return Shortfall, shortfall
 	}
 	return Pass, fmt.Sprint(got)
 }
 
+// claims maps an example result to the value result it follows (corpus
+// README, "Example results"): a true claim is a value that satisfies its
+// contract, a false one a value that fails it, and no-claim is a value where
+// no contract is stated.
+var claims = map[string]string{"true": satisfies, "false": fails, "undefined": "undefined", "external": "external", "no-claim": "no-contract"}
+
+// claimOf names an answer in the example vocabulary.
+var claimOf = map[string]string{satisfies: "true", fails: "false", declined: "declines"}
+
+// exampleValue is one value an example supplies, with its expected result.
+type exampleValue struct {
+	example, side string
+	value         json.RawMessage
+	want          string
+}
+
 // judgeExamples checks an operation's examples by composing value
-// validation: the SDK has no example checker.
+// validation: the Go core has no example checker. Every example of the
+// operation, and every side it supplies, has exactly one expected result.
 func (r *run) judgeExamples(c Case) (string, string) {
 	var s struct {
 		Given struct {
@@ -543,50 +597,96 @@ func (r *run) judgeExamples(c Case) (string, string) {
 	if err := json.Unmarshal(c.Raw, &s); err != nil {
 		return failed("unreadable scenario: %v", err)
 	}
-	contracts, doc, carried, err := r.contracts(s.Given.Document, nil)
-	switch {
-	case carried && isRefusal(err):
-		return failed("version-refusal; expected example results")
-	case !carried || err != nil:
-		return failed("the document's value contracts: %v", err)
+	for _, name := range sortedKeys(s.Expected.Examples) {
+		for side, want := range s.Expected.Examples[name] {
+			if side != "input" && side != "output" {
+				return failed("example %q: unknown side %q", name, side)
+			}
+			if _, known := claims[want]; !known {
+				return failed("example %q %s: unknown result %q", name, side, want)
+			}
+		}
 	}
-	key, operation, found := doc.ResolveOperation(s.Given.Operation)
-	if !found {
-		return failed("operation %q not found", s.Given.Operation)
+	contracts, doc, err := r.valueContracts(s.Given.Document, nil)
+	if err != nil {
+		return failed("%v", err)
+	}
+	var values []exampleValue
+	key := s.Given.Operation
+	if doc == nil {
+		// The SDK declined to carry the document, so it declines every
+		// value the corpus expects a result for.
+		for _, name := range sortedKeys(s.Expected.Examples) {
+			for _, side := range sortedKeys(s.Expected.Examples[name]) {
+				values = append(values, exampleValue{example: name, side: side, want: s.Expected.Examples[name][side]})
+			}
+		}
+	} else {
+		var operation openbindings.Operation
+		var found bool
+		if key, operation, found = doc.ResolveOperation(s.Given.Operation); !found {
+			return failed("operation %q not found", s.Given.Operation)
+		}
+		for _, name := range sortedKeys(s.Expected.Examples) {
+			if _, has := operation.Examples[name]; !has {
+				return failed("example %q is expected; the operation has none by that name", name)
+			}
+		}
+		for _, name := range sortedKeys(operation.Examples) {
+			expected, has := s.Expected.Examples[name]
+			if !has {
+				return failed("example %q has no expected results", name)
+			}
+			example := operation.Examples[name]
+			for _, side := range []struct {
+				name  string
+				value json.RawMessage
+			}{{"input", example.Input}, {"output", example.Output}} {
+				want, expectedSide := expected[side.name]
+				switch supplied := len(side.value) > 0; {
+				case supplied && expectedSide:
+					values = append(values, exampleValue{example: name, side: side.name, value: side.value, want: want})
+				case supplied:
+					return failed("example %q supplies an %s with no expected result", name, side.name)
+				case expectedSide:
+					return failed("example %q supplies no %s; a result is expected for it", name, side.name)
+				}
+			}
+		}
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), caseBound)
 	defer cancel()
-	got := map[string]map[string]string{}
-	for name, example := range operation.Examples {
-		got[name] = map[string]string{}
-		for _, side := range []struct {
-			name    string
-			value   json.RawMessage
-			schema  openbindings.JSONSchema
-			compile func(context.Context, string) (*openbindings.ValueContract, error)
-		}{{"input", example.Input, operation.Input, contracts.CompileInput}, {"output", example.Output, operation.Output, contracts.CompileOutput}} {
-			if side.value == nil {
-				continue
+	var answers []string
+	shortfall := ""
+	for _, v := range values {
+		got := []string{declined}
+		if doc != nil {
+			if got, err = answer(ctx, contracts, key, v.side, []json.RawMessage{v.value}); err != nil {
+				return failed("example %q %s: %v", v.example, v.side, err)
 			}
-			if side.schema == nil {
-				got[name][side.name] = "no-claim"
-				continue
-			}
-			contract, err := side.compile(ctx, key)
-			if err != nil {
-				return failed("compiling %s's %s contract: %v", key, side.name, err)
-			}
-			o, err := observe(contract.ValidateJSON(ctx, side.value))
-			if err != nil {
-				return failed("example %s %s: %v", name, side.name, err)
-			}
-			got[name][side.name] = map[string]string{"valid": "holds", "instance-mismatch": "false-claim", "no-verdict": "no-verdict"}[o.verdict]
+		}
+		answers = append(answers, fmt.Sprintf("%s.%s=%s", v.example, v.side, claimOf[got[0]]))
+		status, err := judgeAnswer(expectation{result: claims[v.want]}, got[0])
+		switch {
+		case err != nil:
+			return failed("example %q %s: %v", v.example, v.side, err)
+		case status == Fail:
+			return failed("example %q %s: got %s; expected %s", v.example, v.side, claimOf[got[0]], v.want)
+		case status == Shortfall && shortfall == "":
+			shortfall = fmt.Sprintf("example %q %s: %s", v.example, v.side, shortfallReason)
 		}
 	}
-	a, _ := json.Marshal(got)
-	b, _ := json.Marshal(s.Expected.Examples)
-	if !bytes.Equal(a, b) {
-		return failed("got %s; expected %s", a, b)
+	if shortfall != "" {
+		return Shortfall, shortfall
 	}
-	return Pass, "composition"
+	return Pass, strings.Join(answers, " ")
+}
+
+func sortedKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

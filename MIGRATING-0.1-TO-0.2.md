@@ -136,20 +136,20 @@ Before considering a document migrated:
 1. Parse it with a 0.2 parser that rejects malformed JSON, duplicate keys, a
    byte-order mark, and invalid UTF-8.
 2. Validate it against [`openbindings.schema.json`](openbindings.schema.json)
-   and the normative document rules in
+   and the rules in
    [`openbindings.md` §10](openbindings.md#10-conformance).
 3. Check source and binding `content` with the intended kind-specific tool, if one is available; this is separate from document conformance.
-4. Exercise every named operation and alias through the 0.2 resolution rules.
+4. Check that every name you rely on identifies the operation you expect
+   ([`openbindings.md` §5.1](openbindings.md#51-operations)).
 5. Validate representative values in both directions, through any value
    adaptation the intended tool performs.
 6. Confirm runtime context requirements, binding selection, errors,
    cancellation, ordering, and stream behavior with the implementation that
    will invoke the document.
 
-The 0.2 conformance model permits an honest `conformance undetermined` result
-when a validator lacks a capability needed for a document rule. Kind-specific
-behavior and external schema availability are not document-conformance checks.
-Partial validation must not be presented as unqualified conformance.
+Kind-specific behavior and external schema availability are not part of
+document conformance. A validation that could not decide every rule has not
+shown that a document conforms.
 
 ## Minimal shape comparison
 

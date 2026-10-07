@@ -1,11 +1,11 @@
 {
-  "rule": "OBI-D-05",
-  "section": "10.2",
-  "description": "Has every schema $ref and $dynamicRef in the document resource an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI, all of them well-formed URI-references per RFC 3986 §4.1.",
-  "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the source's kind, and the positives below pin that no core rule judges it.",
+  "rule": "OBI-11",
+  "section": "10",
+  "description": "Has every schema $ref and $dynamicRef in the document resource (§3) an absolute URI or a same-document reference, and every schema $id at an OBI position an absolute URI, all of them well-formed URI-references per RFC 3986 §4.1 (§7.1).",
+  "notes": "Nothing within a source's or binding's content is an OBI-defined reference, whatever its spelling: a relative address or a member named $ref there is read under the source's kind, and the positives below pin that no core rule governs it.",
   "tests": [
     {
-      "description": "a relative address inside a source's content is read under the source's kind (out of D-05's scope)",
+      "description": "a relative address inside a source's content is read under the source's kind (outside OBI-11)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -23,7 +23,7 @@
       "valid": true
     },
     {
-      "description": "a member named $ref inside a source's or binding's content is not a schema reference (out of D-05's scope)",
+      "description": "a member named $ref inside a source's or binding's content is not a schema reference (outside OBI-11)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -82,7 +82,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     },
     {
@@ -104,7 +104,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     },
     {
@@ -197,7 +197,7 @@
       "valid": true
     },
     {
-      "description": "a same-document $dynamicRef at an OBI position (JSON Schema 2020-12 resolves it; its form is all this rule judges)",
+      "description": "a same-document $dynamicRef at an OBI position (JSON Schema 2020-12 resolves it; its form is all this rule concerns)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -361,7 +361,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     },
     {
@@ -394,7 +394,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     },
     {
@@ -435,11 +435,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     },
     {
-      "description": "a string that is not a well-formed URI-reference (a raw space) is not a reference of any form: OBI-D-05 reports it and OBI-D-12 does not govern it (section 7.1)",
+      "description": "a string that is not a well-formed URI-reference (a raw space) is not a reference of any form: it violates OBI-11, and OBI-12 does not govern it (section 7.1)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -462,14 +462,14 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ],
       "notViolated": [
-        "OBI-D-12"
+        "OBI-12"
       ]
     },
     {
-      "description": "a fragment with a broken percent escape (#%ZZ) is not a well-formed URI-reference, so OBI-D-12 does not govern it (section 7.1)",
+      "description": "a fragment with a broken percent escape (#%ZZ) is not a well-formed URI-reference, so OBI-12 does not govern it (section 7.1)",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -482,10 +482,10 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ],
       "notViolated": [
-        "OBI-D-12"
+        "OBI-12"
       ]
     },
     {
@@ -509,7 +509,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-05"
+        "OBI-11"
       ]
     }
   ]

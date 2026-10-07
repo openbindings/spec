@@ -4,8 +4,8 @@
 // Each control copies the spec text and the core corpus into a temporary
 // spec root, applies one mutation, runs the verifier on it, and checks the
 // result: a negative control must fail with an error naming the defect; a
-// positive control must pass, or fail only in the way it states. A verifier
-// that stops catching a defect fails this script.
+// positive control must pass. A verifier that stops catching a defect fails
+// this script.
 //
 // Exits 0 when every control behaves as stated, 1 otherwise.
 //
@@ -23,11 +23,9 @@ const VERIFIER = join(__dirname, "verify-corpus.mjs");
 const COPIED = [
   "openbindings.md",
   "conformance/README.md",
-  "conformance/clauses.json",
   "conformance/fixture.schema.json",
-  "conformance/tool-scenario.schema.json",
+  "conformance/scenario.schema.json",
   "conformance/document",
-  "conformance/tool",
   "conformance/scenarios",
 ];
 
@@ -40,7 +38,8 @@ function freshRoot() {
   return root;
 }
 
-const readJSON = (root, p) => JSON.parse(readFileSync(join(root, p), "utf8"));
+// Numbers are kept at their source text, so a control changes only what it names.
+const readJSON = (root, p) => JSON.parse(readFileSync(join(root, p), "utf8"), (k, v, ctx) => (typeof v === "number" ? JSON.rawJSON(ctx.source) : v));
 const writeJSON = (root, p, v) => writeFileSync(join(root, p), JSON.stringify(v, null, 2) + "\n");
 const editJSON = (p, f) => (root) => {
   const v = readJSON(root, p);
@@ -49,95 +48,123 @@ const editJSON = (p, f) => (root) => {
 };
 const editText = (p, f) => (root) => writeFileSync(join(root, p), f(readFileSync(join(root, p), "utf8")));
 const scenario = (file, id) => file.scenarios.find((s) => s.id === id);
+const NAMES = "conformance/scenarios/5.1-names.json";
+const EXAMPLES = "conformance/scenarios/5.1-examples.json";
+const VALUES = "conformance/scenarios/5.2-value-contracts.json";
+const KINDS = "conformance/scenarios/6-kinds.json";
+const CONFORMANCE = "conformance/scenarios/10-conformance.json";
+const OBI02 = "conformance/document/OBI-02.json";
 
 const NEGATIVE = [
-  ["a reworded tool rule breaks the clause partition", "not found in order",
-    editText("openbindings.md", (t) => t.replace("It MUST NOT privilege key matches over alias matches", "It MUST NOT prefer key matches over alias matches"))],
-  ["a sentence added to a tool rule is unaccounted for", "does not account for",
-    editText("openbindings.md", (t) => t.replace("treating key and alias matches as equally authoritative.", "treating key and alias matches as equally authoritative. A tool MUST log every resolution."))],
-  ["a duplicate clause ID", "duplicate clause ID",
-    editJSON("conformance/clauses.json", (c) => { c.rules[0].clauses[1].id = "OBI-T-01/c1"; })],
-  ["a clause status the inventory does not define", "is not one clauses.json defines",
-    editJSON("conformance/clauses.json", (c) => { c.rules[0].clauses[0].status = "complete"; })],
-  ["the README clause table disagrees with the inventory", "README clause table",
-    editText("conformance/README.md", (t) => t.replace("| OBI-T-01/c4 | obligation | tested |", "| OBI-T-01/c4 | obligation | composition only |"))],
-  ["the README clause table omits a clause", "is missing",
-    editText("conformance/README.md", (t) => t.replace(/^\| OBI-T-03\/c2 \|.*\n/m, ""))],
-  ["a case cites an undefined clause", "cites undefined clause",
-    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-06").clauses.push("OBI-T-06/c9"); })],
-  ["a case names no clause of its file's rule", "names no clause of OBI-T-06",
-    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-06").clauses = ["OBI-T-07/c1"]; })],
-  ["a duplicate case ID", "duplicate case ID",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-54").id = "T07-S-53"; })],
-  ["an outcome token outside the specification's vocabulary", "does not match tool-scenario.schema.json",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-13").expected.results[0] = "graph-unavailable"; })],
-  ["an old action in format @2", "does not match tool-scenario.schema.json",
-    editJSON("conformance/scenarios/OBI-T-05.json", (f) => { scenario(f, "T05-S-01").action = "resolve-schema-cycle"; })],
-  ["a gate that is not SemVer 2.0.0", "requiresSupports",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-09").requiresSupports = "0.2.0-01"; })],
-  ["one result too few for the values", "results for",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-06").expected.results.pop(); })],
-  ["evidence missing two rules still expected conformant (the old T08-S-01)", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => {
-      const s = scenario(f, "T08-S-01");
-      delete s.given.evidence["OBI-D-12"];
-      delete s.given.evidence["OBI-D-13"];
-    })],
-  ["complete evidence incorrectly expected undetermined", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-01").expected.conclusion = "conformance-undetermined"; })],
-  ["a conclusion that ignores a violation", "does not follow from the evidence",
-    editJSON("conformance/scenarios/OBI-T-08.json", (f) => { scenario(f, "T08-S-05").expected.conclusion = "conformance-undetermined"; })],
-  ["a validity fixture that names a tool rule as violated", "OBI-T-04",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[1].violates = ["OBI-T-04"]; })],
+  // Spec text and citations
+  ["a rule removed from section 10", "OBI-13",
+    editText("openbindings.md", (t) => t.replace(/^- \*\*OBI-13\*\*.*\n/m, ""))],
+  ["a heading renumbered away from a cited section", "is not a heading of openbindings.md",
+    editText("openbindings.md", (t) => t.replace("## 12. Extensions", "## 12a. Extensions"))],
+  ["a rule file citing a section other than 10", "a rule file cites section \"10\"",
+    editJSON("conformance/document/OBI-05.json", (f) => { f.section = "10.2"; })],
+  ["a rule file named after another rule", "is named OBI-06.json",
+    editJSON("conformance/document/OBI-05.json", (f) => { f.rule = "OBI-06"; })],
+  ["a section file citing a section that is not a heading", "is not a heading of openbindings.md",
+    editJSON("conformance/document/section-12.json", (f) => { f.section = "12.9"; })],
+  ["a section file named after another section", "is named section-5.5.json",
+    editJSON("conformance/document/section-5.json", (f) => { f.section = "5.5"; })],
+  ["a scenario file named after another section", "is named 5.5-<topic>.json",
+    editJSON(KINDS, (f) => { f.section = "5.5"; })],
+  ["a description mentioning an older identifier", "mentions OBI-T-07",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-37").description += " (OBI-T-07)"; })],
+  ["a note mentioning a rule section 10 does not define", "mentions OBI-14",
+    editJSON(OBI02, (f) => { f.notes += " See OBI-14."; })],
+  // Fixtures
+  ["a removed fixture field (clauses)", "does not match fixture.schema.json",
+    editJSON(OBI02, (f) => { f.tests[0].clauses = ["OBI-T-02/c1"]; })],
+  ["a removed fixture field (requiresSupports)", "does not match fixture.schema.json",
+    editJSON(OBI02, (f) => { f.tests[0].requiresSupports = "0.2.0"; })],
+  ["a validity fixture that names an older identifier as violated", "does not match fixture.schema.json",
+    editJSON(OBI02, (f) => { f.tests[1].violates = ["OBI-D-02"]; })],
+  ["violates naming a rule the spec does not define", "violates names OBI-14",
+    editJSON(OBI02, (f) => { f.tests[1].violates = ["OBI-14"]; })],
   ["violates on a positive fixture", "violates is meaningful only when valid is false",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].violates = ["OBI-D-02"]; })],
+    editJSON(OBI02, (f) => { f.tests[0].violates = ["OBI-02"]; })],
   ["notViolated on a positive fixture", "notViolated is meaningful only when valid is false",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].notViolated = ["OBI-D-07"]; })],
+    editJSON(OBI02, (f) => { f.tests[0].notViolated = ["OBI-06"]; })],
   ["a rule both in violates and in notViolated", "listed both in violates and in notViolated",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-07", "OBI-D-02"]; })],
-  ["notViolated naming a tool rule", "notViolated names OBI-T-06",
-    (root) => {
-      editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-T-06"]; })(root);
-    }],
-  ["notViolated naming a rule the spec does not define", "notViolated names OBI-D-14",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = ["OBI-D-14"]; })],
+    editJSON(OBI02, (f) => { f.tests[4].notViolated = ["OBI-02", "OBI-06"]; })],
+  ["notViolated naming a rule the spec does not define", "notViolated names OBI-14",
+    editJSON(OBI02, (f) => { f.tests[4].notViolated = ["OBI-14"]; })],
   ["an empty notViolated", "does not match fixture.schema.json",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[4].notViolated = []; })],
-  ["a tool fixture test with no clause", "names no clause",
-    editJSON("conformance/tool/OBI-T-09.json", (f) => { delete f.tests[0].clauses; })],
-  ["clause tags on a document fixture", "clauses are tool-rule tags",
-    editJSON("conformance/document/OBI-D-02.json", (f) => { f.tests[0].clauses = ["OBI-T-02/c1"]; })],
-  ["a collision group of one", "collision group",
-    editJSON("conformance/scenarios/OBI-T-06.json", (f) => { scenario(f, "T06-S-14").expected.group = "T06-G-02"; })],
-  ["example expectations that miss an example", "expectations cover",
-    editJSON("conformance/scenarios/OBI-T-10.json", (f) => { delete scenario(f, "T10-S-01").expected.examples.good; })],
-  ["a named operation the document lacks", "is not in the document",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-01").given.operation = "missing"; })],
-  ["a relative resource URI", "is not absolute",
-    editJSON("conformance/scenarios/OBI-T-07.json", (f) => { scenario(f, "T07-S-37").given.resources[0].uri = "s.json"; })],
-  ["a retrieval sentinel listed but absent from the document", "retrieval sentinel",
-    editJSON("conformance/scenarios/OBI-T-01.json", (f) => { scenario(f, "T01-S-12").given.retrievalSentinels = ["http"]; })],
-  ["a status that claims cases where none cites the clause", "no case cites it",
-    (root) => {
-      for (const id of ["T01-S-10", "T01-S-15"]) {
-        editJSON("conformance/scenarios/OBI-T-01.json", (f) => { scenario(f, id).clauses = ["OBI-T-01/c1"]; })(root);
-      }
-    }],
-  ["a parent tested through an alternative that is not tested", "is not tested",
-    (root) => {
-      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-05").clauses.find((x) => x.id === "OBI-T-05/c1b").status = "contrast tools only"; })(root);
-      editText("conformance/README.md", (t) => t.replace("| OBI-T-05/c1b | alternative | tested |", "| OBI-T-05/c1b | alternative | contrast tools only |"))(root);
-    }],
+    editJSON(OBI02, (f) => { f.tests[4].notViolated = []; })],
+  ["two input carriages", "exactly one of document, documentText, or documentBase64",
+    editJSON(OBI02, (f) => { f.tests[0].documentText = "{}"; })],
+  // Scenarios: format and vocabulary
   ["an unknown scenario format", "unsupported format",
-    editJSON("conformance/scenarios/OBI-T-04.json", (f) => { f.format = "openbindings.core-tool-scenarios@3"; })],
-  ["a definition given a unit status", "a definition has status definition",
-    (root) => {
-      editJSON("conformance/clauses.json", (c) => { c.rules.find((r) => r.rule === "OBI-T-09").incorporations[0].segments.find((x) => x.id === "OBI-T-09/c1.i1").status = "tested"; })(root);
-      editText("conformance/README.md", (t) => t.replace("| OBI-T-09/c1.i1 | definition | definition |", "| OBI-T-09/c1.i1 | definition | tested |"))(root);
-    }],
+    editJSON(KINDS, (f) => { f.format = "openbindings.core-tool-scenarios@2"; })],
+  ["a value result outside the vocabulary (the old valid)", "does not match scenario.schema.json",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-37").expected.results[0] = "valid"; })],
+  ["the old no-verdict token", "does not match scenario.schema.json",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-19").expected.results[0] = "no-verdict"; })],
+  ["the old verdict member in an orNoVerdict result", "does not match scenario.schema.json",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-20").expected.results[0] = { verdict: "satisfies", orNoVerdict: true }; })],
+  ["a retired action (conclude-conformance)", "does not match scenario.schema.json",
+    editJSON(CONFORMANCE, (f) => { scenario(f, "CONFORMANCE-03").action = "conclude-conformance"; })],
+  ["a retired outcome (conformance-undetermined)", "does not match scenario.schema.json",
+    editJSON(CONFORMANCE, (f) => { scenario(f, "CONFORMANCE-03").expected.outcome = "conformance-undetermined"; })],
+  ["a retired field (namesAppliedText)", "does not match scenario.schema.json",
+    editJSON(CONFORMANCE, (f) => { scenario(f, "CONFORMANCE-03").expected.namesAppliedText = true; })],
+  ["a retired field (forbidReasons)", "does not match scenario.schema.json",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-04").expected.forbidReasons = ["undefined-result"]; })],
+  ["a retired field (nonConformant)", "does not match scenario.schema.json",
+    editJSON(NAMES, (f) => { scenario(f, "NAMES-02").given.nonConformant = ["OBI-02"]; })],
+  ["a retired field (clauses)", "does not match scenario.schema.json",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").clauses = ["OBI-T-01/c1"]; })],
+  ["a feature outside the enum", "does not match scenario.schema.json",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-04").expected.dependsOn = ["recursion"]; })],
+  ["violates naming a rule the spec does not define", "violates names OBI-14",
+    editJSON(CONFORMANCE, (f) => { scenario(f, "CONFORMANCE-05").expected.violates = ["OBI-14"]; })],
+  // Scenarios: identity
+  ["a duplicate case ID", "duplicate case ID",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-41").id = "VALUES-40"; })],
+  ["two prefixes in one file", "several prefixes",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-02").id = "KIND-02"; })],
+  ["a prefix another file uses", "is also used by",
+    editJSON(EXAMPLES, (f) => { f.scenarios.forEach((s, i) => { s.id = `NAMES-${String(90 + i)}`; }); })],
+  // Scenarios: what the document says
+  ["one result too few for the values", "results for",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-37").expected.results.pop(); })],
+  ["no-contract where a contract is stated", "but the operation states input contract",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-37").expected.results[0] = "no-contract"; })],
+  ["a result where no contract is stated", "but the operation states no input contract",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-15").expected.results[0] = "satisfies"; })],
+  ["a claim where no contract is stated", "but the operation states no input contract",
+    editJSON(EXAMPLES, (f) => { scenario(f, "EXAMPLES-01").expected.examples.anyInput.input = "true"; })],
+  ["example expectations that miss an example", "expectations cover",
+    editJSON(EXAMPLES, (f) => { delete scenario(f, "EXAMPLES-04").expected.examples.good; })],
+  ["a named operation the document lacks", "is not in the document",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-37").given.operation = "missing"; })],
+  ["a relative resource URI", "is not absolute",
+    editJSON(VALUES, (f) => { scenario(f, "VALUES-43").given.resources[0].uri = "s.json"; })],
+  ["an operation the string does not identify", "expected operation",
+    editJSON(NAMES, (f) => { scenario(f, "NAMES-01").expected.operationKey = "op.alias"; })],
+  ["bindings that are not the operation's", "expected bindings",
+    editJSON(NAMES, (f) => { scenario(f, "NAMES-01").expected.bindingKeys = ["b1"]; })],
+  ["not-found for a string that identifies an operation", "but the document says resolved",
+    editJSON(NAMES, (f) => { scenario(f, "NAMES-03").expected = { outcome: "not-found" }; })],
+  ["a kinds outcome the document contradicts", "but the document says does-not-meet",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-02").expected.outcome = "meets"; })],
+  ["a named dependency the document lacks", "the named dependency or binding is not in the document",
+    editJSON(KINDS, (f) => { scenario(f, "KINDS-01").given.dependency = "missing"; })],
+  // README coverage table
+  ["a coverage row listing a file that does not cite it", "README coverage table: 5.1 lists",
+    editText("conformance/README.md", (t) => t.replace("| 5.1 | `scenarios/5.1-names.json`, `scenarios/5.1-examples.json` |", "| 5.1 | `scenarios/5.1-names.json` |"))],
+  ["a rule with no coverage row", "no row for OBI-05",
+    editText("conformance/README.md", (t) => t.replace(/^\| OBI-05 \|.*\n/m, ""))],
+  ["a rule row without files that is not deferred", "is not marked **Deferred**",
+    editText("conformance/README.md", (t) => t.replace("| OBI-05 | `document/OBI-05.json` |", "| OBI-05 | none |"))],
+  ["a cited section with no coverage row", "no row for 12",
+    editText("conformance/README.md", (t) => t.replace(/^\| 12 \|.*\n/m, ""))],
 ];
 
-const POSITIVE = [["the unmodified corpus passes", null, () => {}]];
+const POSITIVE = [["the unmodified corpus passes", () => {}]];
 
 function run(root) {
   const r = spawnSync(process.execPath, [VERIFIER, "--spec-root", root], { encoding: "utf8" });
@@ -155,24 +182,17 @@ for (const [label, needle, mutate] of NEGATIVE) {
   try {
     mutate(root);
     const { status, out } = run(root);
-    report(status === 1 && out.includes(needle), `negative: ${label}`, status === 1 ? (out.includes(needle) ? "" : `failed without "${needle}"`) : `exit ${status}`);
+    report(status === 1 && out.includes(needle), `negative: ${label}`, status === 1 ? (out.includes(needle) ? "" : `failed without "${needle}"\n${out}`) : `exit ${status}`);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 }
-for (const [label, allowed, mutate] of POSITIVE) {
+for (const [label, mutate] of POSITIVE) {
   const root = freshRoot();
   try {
     mutate(root);
     const { status, out } = run(root);
-    if (allowed === null) {
-      report(status === 0, `positive: ${label}`, status === 0 ? "" : `exit ${status}\n${out}`);
-    } else {
-      const errorLines = out.split("\n").filter((l) => l.startsWith("  - "));
-      const unexpected = errorLines.filter((l) => !allowed.test(l));
-      report(status === 1 && errorLines.length > 0 && unexpected.length === 0, `positive: ${label}`,
-        unexpected.length ? `unexpected errors:\n${unexpected.join("\n")}` : `${errorLines.length} expected coverage errors only`);
-    }
+    report(status === 0, `positive: ${label}`, status === 0 ? "" : `exit ${status}\n${out}`);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

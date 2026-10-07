@@ -204,7 +204,7 @@ function extractFamilyPRules(md, prefix) {
 
 function extractCoreRules(md) {
   const rules = new Set();
-  const re = /^\s*-\s*\*\*(OBI-[BDT]-\d+)\*\*[^:]*:/gm;
+  const re = /^\s*-\s*\*\*(OBI-\d{2})\*\*[^:]*:/gm;
   let m;
   while ((m = re.exec(md)) !== null) rules.add(m[1]);
   return rules;

@@ -62,16 +62,17 @@ source's kind; they are not core fields or built-in protocol support.
 
 ## The specification
 
-The spec defines what an OBI document **is**: its shape, reference resolution, versioning, and exact kind comparison, plus a thin conformance floor for tools. Higher-level tool behavior beyond the [§10](openbindings.md#10-conformance) floor is deliberately left to implementations: comparison and matching, dependency composition, provider and binding selection, and credential and context resolution. How a binding reaches its target and adapts values between the operation and that target is read under its source's kind, outside the core. [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
+The spec defines what an OBI document **is** and means: its shape, reference resolution, value contracts, versioning, exact kind comparison, and the rules a conformant document meets ([§10](openbindings.md#10-conformance)). It is a document model: how software uses documents, such as comparing them, composing dependencies with providers, choosing bindings, or resolving credentials, is outside it. How a binding reaches its target and adapts values between the operation and that target is read under its source's kind, outside the core. [HTTP Discovery](http-discovery.md) is an independently versioned, optional specification, not part of the core document model.
 
-The core defines no authentication protocol or invoker. Context, such as a
-credential used to access a target, is supplied under a source's kind or tool
-policy ([§5](openbindings.md#5-document-model)).
+The core defines no authentication field or invocation behavior. Context, such
+as a credential used to access a target, is carried in content under a source's
+kind or comes from outside the document
+([§5](openbindings.md#5-document-model)).
 
 ## Guides and tutorials
 
 This repository contains the working core specification, its derived schema,
-core conformance corpus, and worked examples. The core specification is
+core test corpus, and worked examples. The core specification is
 self-contained; the separately scoped specifications and informative material
 listed below do not add core requirements.
 

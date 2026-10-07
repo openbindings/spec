@@ -1,7 +1,7 @@
 {
-  "rule": "OBI-D-06",
-  "section": "10.2",
-  "description": "Has every $schema in a schema the document contains identifying the 2020-12 meta-schema: https://json-schema.org/draft/2020-12/schema, with or without an empty fragment. A $schema member of an example value or of a source's or binding's content is data, not a schema keyword.",
+  "rule": "OBI-09",
+  "section": "10",
+  "description": "Has every $schema keyword in a schema the document contains (§3) equal to https://json-schema.org/draft/2020-12/schema or https://json-schema.org/draft/2020-12/schema#.",
   "tests": [
     {
       "description": "schema with explicit 2020-12 $schema",
@@ -41,7 +41,7 @@
         "operations": { "createTask": {} }
       },
       "valid": false,
-      "violates": ["OBI-D-06"]
+      "violates": ["OBI-09"]
     },
     {
       "description": "schema with draft-07 $schema value",
@@ -57,7 +57,7 @@
         "operations": { "createTask": {} }
       },
       "valid": false,
-      "violates": ["OBI-D-06"]
+      "violates": ["OBI-09"]
     },
     {
       "description": "operation input schema with wrong $schema",
@@ -74,7 +74,7 @@
         }
       },
       "valid": false,
-      "violates": ["OBI-D-06"]
+      "violates": ["OBI-09"]
     },
     {
       "description": "a $schema member inside an example value or a source's content is data, not a schema keyword",
@@ -127,7 +127,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-06"
+        "OBI-09"
       ]
     },
     {
@@ -171,11 +171,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-06"
+        "OBI-09"
       ]
     },
     {
-      "description": "a $schema naming the 2020-12 meta-schema with the http scheme is neither permitted value; nested, it is OBI-D-06's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
+      "description": "a $schema naming the 2020-12 meta-schema with the http scheme is neither permitted value; nested, it is OBI-09's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -196,14 +196,14 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-06"
+        "OBI-09"
       ],
       "notViolated": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
-      "description": "a $schema naming the 2020-12 meta-schema with a trailing slash is neither permitted value; nested, it is OBI-D-06's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
+      "description": "a $schema naming the 2020-12 meta-schema with a trailing slash is neither permitted value; nested, it is OBI-09's alone, since the derived schema checks $schema only at the top of each schema position (section 10)",
       "document": {
         "openbindings": "0.2.0",
         "schemas": {
@@ -224,10 +224,10 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-06"
+        "OBI-09"
       ],
       "notViolated": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     }
   ]

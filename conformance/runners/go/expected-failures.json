@@ -1,34 +1,6 @@
 {
-  "description": "Cases the reference Go runner is expected to fail or to omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, unverified case, or omission, an unknown status, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, a pin other than the one the job checked out, and an applied text other than the one recorded here all fail CI: a changed declaration forces the failures and omissions to be re-justified. The pin is the Go commit that adopts this text, and the applied text is the one it names; the failures and omissions are keyed to both, and a later Go commit reaches CI only by re-keying this file with the job's pin.",
-  "pin": "d8c367d2e9c934ff9e07791a46d44faafad1ba93",
-  "applied": "0.2.0@1d5f08c2c2f2bf9822536ac5e6083edfd0831944",
-  "appliedSHA256": "b1ce701f53acdbc79b2526e0257de3a54c1eed0e143b15c1e72a1e0825ece9e8",
+  "description": "Cases the reference Go runner is expected to fail, fall short on, or omit against the Go core commit named by pin, each with the signature the runner prints and the reason. Spec CI compares the runner's results with this file and the corpus (scripts/check-runner-results.mjs): an unexpected failure, shortfall, or omission, a status outside the four run categories, an expected failure or omission that is executed or not run, a changed signature, a missing or extra case, and a pin other than the one the job checked out all fail CI. The pin is the Go commit that adopts this text; the failures and omissions are keyed to it, and a later Go commit reaches CI only by re-keying this file with the job's pin.",
+  "pin": "e570c4de368cfd703696c5b670226b09791b8177",
   "failures": [],
-  "omissions": [
-    {
-      "case": "T04-S-01",
-      "signature": "this SDK derives no forms from a schema (OBI-T-04 has no executor here)",
-      "reason": "The Go core derives no forms from a schema: OBI-T-04 has no executor (corpus README, Designated executors)."
-    },
-    {
-      "case": "T04-S-02",
-      "signature": "this SDK derives no forms from a schema (OBI-T-04 has no executor here)",
-      "reason": "The Go core derives no forms from a schema: OBI-T-04 has no executor (corpus README, Designated executors)."
-    },
-    {
-      "case": "T04-S-03",
-      "signature": "this SDK derives no forms from a schema (OBI-T-04 has no executor here)",
-      "reason": "The Go core derives no forms from a schema: OBI-T-04 has no executor (corpus README, Designated executors)."
-    },
-    {
-      "case": "T04-S-04",
-      "signature": "this SDK derives no forms from a schema (OBI-T-04 has no executor here)",
-      "reason": "The Go core derives no forms from a schema: OBI-T-04 has no executor (corpus README, Designated executors)."
-    },
-    {
-      "case": "T08-S-09",
-      "signature": "gate: requires a tool applying the text of 0.2.0-rc.1",
-      "reason": "Gated out by the texts the core declares it applies (SupportedVersions, which names no prerelease and only the 0.2 line), never by its version decision (corpus README, Version gates)."
-    }
-  ]
+  "omissions": []
 }

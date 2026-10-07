@@ -1,0 +1,550 @@
+{
+  "format": "openbindings.core-scenarios@3",
+  "section": "5.1",
+  "description": "Which operation a string identifies, and that operation's bindings: a string identifies an operation exactly when it equals the operation's key or one of its aliases, and the operation's bindings are those whose operation member holds its key (section 5.1, Aliases).",
+  "scenarios": [
+    {
+      "id": "NAMES-01",
+      "description": "An alias identifies its operation, whose bindings are those whose operation member holds its key (section 5.1, Aliases).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "aliases": [
+                "op.alias"
+              ]
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "k@1"
+            }
+          },
+          "bindings": {
+            "b1": {
+              "operation": "op",
+              "source": "s"
+            },
+            "b2": {
+              "operation": "op",
+              "source": "s"
+            }
+          }
+        },
+        "name": "op.alias"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "op",
+        "bindingKeys": [
+          "b1",
+          "b2"
+        ]
+      }
+    },
+    {
+      "id": "NAMES-02",
+      "description": "The document's name is a label, not an identifier (section 5): it identifies no operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "name": "createTask",
+          "operations": {
+            "other": {}
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-03",
+      "description": "Deprecation is a hint to migrate away (section 5.1), not a removal: a deprecated operation's key still identifies it, with its bindings.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "legacyTask": {
+              "deprecated": true
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "legacy": {
+              "operation": "legacyTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "legacyTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "legacyTask",
+        "bindingKeys": [
+          "legacy"
+        ]
+      }
+    },
+    {
+      "id": "NAMES-04",
+      "description": "A binding's deprecated, preference, and content members do not remove it from its operation's bindings (section 5.3): deprecation recommends migrating away, preference expresses author preference among them, and content's presence and value carry no core meaning.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "deprecated": {
+              "operation": "createTask",
+              "source": "s",
+              "deprecated": true
+            },
+            "nullContent": {
+              "operation": "createTask",
+              "source": "s",
+              "content": null
+            },
+            "noContent": {
+              "operation": "createTask",
+              "source": "s"
+            },
+            "zeroPreference": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": 0
+            },
+            "negativePreference": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": -5
+            },
+            "preferred": {
+              "operation": "createTask",
+              "source": "s",
+              "preference": 10
+            }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "deprecated",
+          "negativePreference",
+          "noContent",
+          "nullContent",
+          "preferred",
+          "zeroPreference"
+        ]
+      }
+    },
+    {
+      "id": "NAMES-05",
+      "description": "An x-aliases extension adds no identifier: an extension never changes the meaning of a core field (section 12).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "x-aliases": [
+                "tasks.create"
+              ]
+            }
+          }
+        },
+        "name": "tasks.create"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-06",
+      "description": "An x-operation extension on a binding does not move the binding to another operation (section 12).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {},
+            "other": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "k@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "createTask",
+              "source": "s",
+              "x-operation": "other"
+            }
+          }
+        },
+        "name": "other"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "other",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "NAMES-07",
+      "description": "An operation's key identifies it, and its bindings are those whose operation member holds that key (section 5.1).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "primary": {
+              "operation": "createTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "id": "NAMES-08",
+      "description": "An alias identifies its operation as its key does; the operation's bindings are those whose operation member holds the key, never the alias (section 5.1).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "aliases": [
+                "tasks.create",
+                "addTask"
+              ]
+            }
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "canonical": {
+              "operation": "createTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.create"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "createTask",
+        "bindingKeys": [
+          "canonical"
+        ]
+      }
+    },
+    {
+      "id": "NAMES-09",
+      "description": "A string equal to no key or alias identifies no operation (section 5.1).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {
+              "aliases": [
+                "tasks.create"
+              ]
+            }
+          }
+        },
+        "name": "tasks.delete"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-10",
+      "description": "A host-language prototype name identifies no operation unless the document defines one by that name.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "ordinary": {}
+          }
+        },
+        "name": "constructor"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-11",
+      "description": "A document may define an operation whose key is a host-language prototype name, and that key identifies it.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "constructor": {}
+          }
+        },
+        "name": "constructor"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "constructor",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "NAMES-12",
+      "description": "Strings are equal only when their code units are (section 5): a lower-cased key identifies no operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "createtask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-13",
+      "description": "Leading white space is part of the string, so it identifies no operation (section 5).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": " createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-14",
+      "description": "A trailing newline is part of the string, so it identifies no operation (section 5).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "createTask\n"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-15",
+      "description": "A prefix of a key identifies no operation: only an equal string does (section 5.1).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          }
+        },
+        "name": "create"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-16",
+      "description": "Dots carry no structure (section 5): a trailing segment of a qualified alias identifies no operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "aliases": [
+                "acme.tasks.createTask"
+              ]
+            }
+          }
+        },
+        "name": "createTask"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-17",
+      "description": "An alias that differs only in case from another operation's key identifies the alias's operation (section 5).",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "Task": {},
+            "other": {
+              "aliases": [
+                "task"
+              ]
+            }
+          }
+        },
+        "name": "task"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "other",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "NAMES-18",
+      "description": "A map key beginning with x- names an ordinary operation, not an extension field (section 12), and identifies it.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "x-internal": {}
+          }
+        },
+        "name": "x-internal"
+      },
+      "expected": {
+        "outcome": "resolved",
+        "operationKey": "x-internal",
+        "bindingKeys": []
+      }
+    },
+    {
+      "id": "NAMES-19",
+      "description": "A binding key is not an operation identifier: a string equal to one identifies no operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "example.test@1"
+            }
+          },
+          "bindings": {
+            "tasks.http": {
+              "operation": "createTask",
+              "source": "s"
+            }
+          }
+        },
+        "name": "tasks.http"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-20",
+      "description": "A dependency key is not an operation identifier: a string equal to one identifies no operation, not even the one the dependency consumes.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "dependencies": {
+            "taskSink": {
+              "operation": "createTask"
+            }
+          }
+        },
+        "name": "taskSink"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    },
+    {
+      "id": "NAMES-21",
+      "description": "Source and schema keys are not operation identifiers: a string equal to both identifies no operation.",
+      "action": "resolve-operation",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "createTask": {}
+          },
+          "sources": {
+            "Task": {
+              "kind": "example.test@1"
+            }
+          },
+          "schemas": {
+            "Task": {
+              "type": "object"
+            }
+          }
+        },
+        "name": "Task"
+      },
+      "expected": {
+        "outcome": "not-found"
+      }
+    }
+  ]
+}

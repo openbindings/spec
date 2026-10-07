@@ -61,13 +61,12 @@ try {
       "IPR.md",
       "conformance/README.md",
       "conformance/manifest.json",
-      "conformance/clauses.json",
       "conformance/fixture.schema.json",
-      "conformance/tool-scenario.schema.json",
-      "conformance/document/OBI-D-01.json",
-      "conformance/tool/OBI-T-03.json",
-      "conformance/scenarios/OBI-T-05.json",
-      "conformance/scenarios/OBI-T-08.json",
+      "conformance/scenario.schema.json",
+      "conformance/document/OBI-01.json",
+      "conformance/document/section-12.json",
+      "conformance/scenarios/5.2-value-contracts.json",
+      "conformance/scenarios/10-conformance.json",
       "conformance/runners/go/main.go",
     ];
     const excluded = [

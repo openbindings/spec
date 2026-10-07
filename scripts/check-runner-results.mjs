@@ -4,38 +4,33 @@
 //
 // Results (written by the runner's -json mode):
 //   {"pin": "<full commit SHA of the implementation run>",
-//    "applied": "<the -applied the runner was given>", "appliedSHA256": "<its -applied-sha256>",
 //    "reconciliation": ["<a problem the runner found reconciling its cases with the manifest>"],
 //    "cases": [{"id": "<case ID or fixture path#/tests/N>",
-//               "status": "pass" | "FAIL" | "SHORTFALL" | "OMITTED" | "ADVISORY" | "UNVERIFIED",
+//               "status": "pass" | "FAIL" | "SHORTFALL" | "OMITTED",
 //               "signature": "<a stable one-line description of a failure or omission>"}]}
 //
 // Expected results (conformance/runners/go/expected-failures.json):
-//   {"pin": "<the same SHA>", "applied": "<the same>", "appliedSHA256": "<the same>",
-//    "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" | "UNVERIFIED" (default FAIL),
+//   {"pin": "<the same SHA>",
+//    "failures": [{"case": "...", "status": "FAIL" | "SHORTFALL" (default FAIL),
 //                  "signature": "...", "reason": "..."}],
 //    "omissions": [{"case": "...", "signature": "...", "reason": "..."}]}
 //
 // The corpus (its conformance/ directory) gives the complete set of case IDs,
 // from the manifest's files, each holding the number of cases the manifest
-// counts, and its collision cases (an expected outcome of "collision").
+// counts.
 //
-// It fails when the pins differ, or the declared applied texts (a changed
-// declaration forces the keyed failures and omissions to be re-justified);
-// when the runner reported a reconciliation problem; when the corpus's case
-// set and the reported one differ; when a case is reported twice; when a
-// status is absent or not one of the six run categories; when ADVISORY is
-// reported for a case that is not a collision case, or pass for one that is
-// (a collision case allows only ADVISORY, or a keyed failure or omission);
-// when a case is not a pass and gives no reason; when a case fails,
-// falls short, is unverified, or is omitted and is not keyed to that status;
-// when a keyed case has another status or is not run; and when a keyed
-// signature differs. A case is identified by its ID, never by a whole job,
-// so an unrelated failure cannot hide behind a known one. A SHORTFALL is no
-// verdict where the profile the implementation declares supports every
-// feature the case depends on: the declaration is the implementation's own,
-// so falling short of it is unexpected unless keyed. Omissions are keyed per
-// pin as failures are, so a run that stops executing cases cannot pass.
+// It fails when the pins differ; when the runner reported a reconciliation
+// problem; when the corpus's case set and the reported one differ; when a
+// case is reported twice; when a status is absent or not one of the four run
+// categories; when a case is not a pass and gives no reason; when a case
+// fails, falls short, or is omitted and is not keyed to that status; when a
+// keyed case has another status or is not run; and when a keyed signature
+// differs. A case is identified by its ID, never by a whole job, so an
+// unrelated failure cannot hide behind a known one. A SHORTFALL is a decline
+// where the profile the implementation declares supports every feature the
+// case depends on: the declaration is the implementation's own, so falling
+// short of it is unexpected unless keyed. Omissions are keyed per pin as
+// failures are, so a run that stops executing cases cannot pass.
 //
 // Exits 0 when the results match, 1 on a mismatch, 2 on usage or IO error.
 //
@@ -44,8 +39,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const CATEGORIES = new Set(["pass", "FAIL", "SHORTFALL", "OMITTED", "ADVISORY", "UNVERIFIED"]);
-const KEYED = new Set(["FAIL", "SHORTFALL", "UNVERIFIED", "OMITTED"]);
+const CATEGORIES = new Set(["pass", "FAIL", "SHORTFALL", "OMITTED"]);
+const KEYED = new Set(["FAIL", "SHORTFALL", "OMITTED"]);
 
 function args() {
   const out = {};
@@ -73,12 +68,11 @@ function load(path) {
 }
 
 // corpusCases reads the manifest under dir and returns every case ID the
-// files it lists hold, the collision cases among them, and any disagreement
-// between a file and the manifest's count of it.
+// files it lists hold, and any disagreement between a file and the
+// manifest's count of it.
 export function corpusCases(dir) {
   const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
   const ids = [];
-  const collisions = [];
   const problems = [];
   for (const f of manifest.files || []) {
     const tests = JSON.parse(readFileSync(join(dir, f.path), "utf8")).tests || [];
@@ -88,22 +82,15 @@ export function corpusCases(dir) {
   for (const f of manifest.scenarioFiles || []) {
     const scenarios = JSON.parse(readFileSync(join(dir, f.path), "utf8")).scenarios || [];
     if (scenarios.length !== f.scenarios) problems.push(`${f.path}: the manifest counts ${f.scenarios} cases, the file holds ${scenarios.length}`);
-    for (const s of scenarios) {
-      ids.push(s.id);
-      if (s.expected?.outcome === "collision") collisions.push(s.id);
-    }
+    for (const s of scenarios) ids.push(s.id);
   }
-  return { ids, collisions, problems };
+  return { ids, problems };
 }
 
 export function compare(results, expected, corpus) {
   const problems = [...corpus.problems];
   if (!/^[0-9a-f]{40}$/.test(results.pin ?? "")) problems.push(`the results name no full commit SHA (pin ${JSON.stringify(results.pin)})`);
   if (results.pin !== expected.pin) problems.push(`the results are for ${results.pin}; the expected failures are keyed to ${expected.pin}`);
-  for (const field of ["applied", "appliedSHA256"]) {
-    if (!expected[field]) problems.push(`the expected results record no ${field}`);
-    else if (results[field] !== expected[field]) problems.push(`the results declare ${field} ${JSON.stringify(results[field])}; the expected results are keyed to ${JSON.stringify(expected[field])}`);
-  }
   if (!Array.isArray(results.reconciliation)) problems.push("the results carry no reconciliation");
   for (const r of results.reconciliation || []) problems.push(`reconciliation: ${r}`);
   const byCase = new Map();
@@ -124,14 +111,11 @@ export function compare(results, expected, corpus) {
     if (expectedByCase.has(o.case)) problems.push(`${o.case}: expected twice`);
     expectedByCase.set(o.case, { ...o, status: "OMITTED" });
   }
-  const collisions = new Set(corpus.collisions || []);
   for (const c of byCase.values()) {
     if (!CATEGORIES.has(c.status)) {
       problems.push(`${c.id}: status ${JSON.stringify(c.status)} is not a run category`);
       continue;
     }
-    if (c.status === "ADVISORY" && !collisions.has(c.id)) problems.push(`${c.id}: ADVISORY on a case that is not a collision case`);
-    if (c.status === "pass" && collisions.has(c.id)) problems.push(`${c.id}: pass on a collision case, whose expectation allows only ADVISORY`);
     if (c.status !== "pass" && !c.signature) problems.push(`${c.id}: ${c.status} with no reason`);
     if (!KEYED.has(c.status)) continue;
     const f = expectedByCase.get(c.id);

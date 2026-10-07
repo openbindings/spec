@@ -1,7 +1,7 @@
 {
-  "rule": "OBI-D-13",
-  "section": "10.2",
-  "description": "Has no plain name declared more than once in the document resource, each $anchor and each $dynamicAnchor that declares it counting once (JSON Schema Core §8.2.2), and no $id declared by two schemas the document contains, each $id resolved to an absolute URI per RFC 3986 §5.2, which removes dot segments, with any empty fragment removed, and compared character for character. An $id is compared only when it is a well-formed URI-reference that is either an absolute URI or resolves against the $id of the nearest enclosing schema that declares one, itself compared; every other $id is left out of the comparison.",
+  "rule": "OBI-13",
+  "section": "10",
+  "description": "Has no plain name (§7.3) declared more than once in the document resource, each $anchor and each $dynamicAnchor that declares it counting once (JSON Schema Core §8.2.2), and no $id declared by two schemas the document contains. For that comparison, each $id is resolved to an absolute URI per RFC 3986 §5.2 (which removes dot segments), stripped of any empty fragment, and compared as a string (§5). An $id is compared only when it is a well-formed URI-reference that is either an absolute URI or resolves against the $id of the nearest enclosing schema that declares one, when that $id is itself compared; every other $id is left out of the comparison (§7.4).",
   "notes": "The schemas at OBI positions that declare no $id share the document's resource (section 7.2), so a plain name declared in two schemas entries collides there, where separate schema files would not. A plain name inside a schema that declares $id belongs to that schema's resource. $id values are compared as strings after resolution, so spellings a URI library might normalize to one identifier are distinct here. A name counts once per declaring keyword, so one schema that declares a name with both $anchor and $dynamicAnchor declares it twice, as JSON Schema Core §8.2.2 treats it. A malformed nested $id has no resolved value to compare, so repeating one is not a collision under this rule; JSON Schema governs it when the schema is used.",
   "tests": [
     {
@@ -157,7 +157,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -184,7 +184,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -205,7 +205,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -229,7 +229,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -256,7 +256,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -277,7 +277,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -303,7 +303,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -324,7 +324,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-13"
+        "OBI-13"
       ]
     },
     {
@@ -351,8 +351,8 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-10",
-        "OBI-D-13"
+        "OBI-10",
+        "OBI-13"
       ]
     },
     {

@@ -1,0 +1,523 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbindings.com/conformance/scenario.schema.json",
+  "title": "OpenBindings core scenarios, format @3",
+  "description": "Portable scenarios for what an OpenBindings document means. Each file is grouped by the section of openbindings.md that answers its cases; each case names an action, the given input, and what the document means for it. Outcomes are corpus terms, never SDK API or report shapes: an adapter translates its implementation's native surface to them. The features a case depends on are declared by the software under test as supported or unsupported.",
+  "type": "object",
+  "required": [
+    "format",
+    "section",
+    "description",
+    "scenarios"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "openbindings.core-scenarios@3"
+    },
+    "section": {
+      "description": "The number of the openbindings.md heading whose text answers the file's cases, such as 5.2 or 10.",
+      "type": "string",
+      "pattern": "^[1-9][0-9]*(\\.[1-9][0-9]*)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/resolveOperation"
+          },
+          {
+            "$ref": "#/$defs/validateValues"
+          },
+          {
+            "$ref": "#/$defs/checkDependencyKind"
+          },
+          {
+            "$ref": "#/$defs/checkExamples"
+          },
+          {
+            "$ref": "#/$defs/validateDocument"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "common": {
+      "type": "object",
+      "required": [
+        "id",
+        "description",
+        "action",
+        "given",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "description": "The file's prefix and a two-digit number, unique within the corpus and never reused (for example VALUES-07).",
+          "type": "string",
+          "pattern": "^[A-Z]+-[0-9]{2}$"
+        },
+        "description": {
+          "description": "What the document means for this case, citing the section or rule that says so.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "documentRule": {
+      "type": "string",
+      "pattern": "^OBI-[0-9]{2}$"
+    },
+    "feature": {
+      "description": "A feature a case's answer depends on. The software under test declares each feature the cases depend on as supported or unsupported. The enum lists the features this corpus's cases depend on; it does not list every limitation software may have.",
+      "enum": [
+        "recursive-references",
+        "document-resource-dynamic-scope",
+        "supplied-resources",
+        "ecma262-unicode-property-escapes",
+        "repeated-member-detection",
+        "draft-07-dialect",
+        "exact-numbers",
+        "exact-lone-surrogate-strings"
+      ]
+    },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    },
+    "obiDocument": {
+      "description": "An OBI document given as a JSON value: it stands for its serialization as UTF-8 JSON text with no byte-order mark, each number at its exact value.",
+      "type": "object"
+    },
+    "verdict": {
+      "enum": [
+        "satisfies",
+        "fails"
+      ]
+    },
+    "valueResult": {
+      "oneOf": [
+        {
+          "description": "satisfies or fails: the value satisfies or fails the contract (section 5.2). undefined: whether it satisfies the contract is undefined. external: the result rests on a resource the document does not contain and the case does not supply. no-contract: no contract is stated, so the value neither satisfies nor fails one.",
+          "enum": [
+            "satisfies",
+            "fails",
+            "undefined",
+            "external",
+            "no-contract"
+          ]
+        },
+        {
+          "description": "The result, which software may also decline: the schema holds an undefined or external part that this value's result does not depend on, and software that evaluates the whole schema may decline.",
+          "type": "object",
+          "required": [
+            "result",
+            "orNoVerdict"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "result": {
+              "$ref": "#/$defs/verdict"
+            },
+            "orNoVerdict": {
+              "const": true
+            }
+          }
+        },
+        {
+          "description": "The result, with a per-value dependence that replaces the case's dependsOn (an empty array: this value's result depends on no feature).",
+          "type": "object",
+          "required": [
+            "result",
+            "dependsOn"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "result": {
+              "$ref": "#/$defs/verdict"
+            },
+            "dependsOn": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/feature"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exampleResult": {
+      "description": "true or false: the example's claim for that value is true or false (section 5.1). undefined: its truth is undefined. external: its truth rests on a resource the document does not contain. no-claim: no contract is stated for that side, so the value makes no claim.",
+      "enum": [
+        "true",
+        "false",
+        "undefined",
+        "external",
+        "no-claim"
+      ]
+    },
+    "resolveOperation": {
+      "description": "Which operation a string identifies, and that operation's bindings (section 5.1).",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "resolve-operation"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "name"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "name": {
+              "type": "string"
+            }
+          }
+        },
+        "expected": {
+          "oneOf": [
+            {
+              "description": "The string identifies the operation under operationKey, whose bindings are bindingKeys, in any order.",
+              "type": "object",
+              "required": [
+                "outcome",
+                "operationKey",
+                "bindingKeys"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "const": "resolved"
+                },
+                "operationKey": {
+                  "type": "string"
+                },
+                "bindingKeys": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "description": "The string identifies no operation.",
+              "type": "object",
+              "required": [
+                "outcome"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "outcome": {
+                  "const": "not-found"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "validateValues": {
+      "description": "Whether each value satisfies or fails the contract an operation's input or output schema states, or is undefined, external, or meets no contract (section 5.2).",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "validate-operation-values"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "operation",
+            "side",
+            "values"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "operation": {
+              "type": "string"
+            },
+            "side": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "values": {
+              "type": "array",
+              "minItems": 1
+            },
+            "resources": {
+              "description": "Schema documents the case supplies for external references, each at its absolute URI without a fragment; the expected results are what JSON Schema gives with them (section 5.2). Software that does not accept supplied resources declares supplied-resources unsupported.",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "uri",
+                  "document"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "uri": {
+                    "type": "string"
+                  },
+                  "document": {}
+                }
+              }
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": [
+            "results"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "results": {
+              "description": "One result per value, in order.",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/valueResult"
+              }
+            },
+            "dependsOn": {
+              "$ref": "#/$defs/features"
+            }
+          }
+        }
+      }
+    },
+    "checkDependencyKind": {
+      "description": "Whether a binding meets a dependency's kinds constraint (sections 5.5 and 6).",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "check-dependency-kind"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "dependency",
+            "binding"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "dependency": {
+              "type": "string"
+            },
+            "binding": {
+              "type": "string"
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": [
+            "outcome"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {
+              "enum": [
+                "meets",
+                "does-not-meet"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "checkExamples": {
+      "description": "What each of an operation's examples claims for each value it provides (section 5.1).",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "check-examples"
+        },
+        "given": {
+          "type": "object",
+          "required": [
+            "document",
+            "operation"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/obiDocument"
+            },
+            "operation": {
+              "type": "string"
+            }
+          }
+        },
+        "expected": {
+          "description": "One entry per example of the operation, with one member per side the example supplies (the verifier checks completeness).",
+          "type": "object",
+          "required": [
+            "examples"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "examples": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "input": {
+                    "$ref": "#/$defs/exampleResult"
+                  },
+                  "output": {
+                    "$ref": "#/$defs/exampleResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "validateDocument": {
+      "description": "Whether a text conforms (section 10).",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "action": {
+          "const": "validate-document"
+        },
+        "given": {
+          "description": "Exactly one carriage: document (a JSON value, standing for its serialization as UTF-8 JSON text with no byte-order mark), documentText (exact Unicode text), or documentBase64 (exact bytes).",
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            {
+              "required": [
+                "document"
+              ]
+            },
+            {
+              "required": [
+                "documentText"
+              ]
+            },
+            {
+              "required": [
+                "documentBase64"
+              ]
+            }
+          ],
+          "properties": {
+            "document": {},
+            "documentText": {
+              "type": "string"
+            },
+            "documentBase64": {
+              "type": "string",
+              "contentEncoding": "base64"
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "required": [
+            "outcome"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {
+              "enum": [
+                "conformant",
+                "non-conformant"
+              ]
+            },
+            "violates": {
+              "description": "The minimum set of rules the text violates: it violates at least these.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/documentRule"
+              }
+            },
+            "dependsOn": {
+              "$ref": "#/$defs/features"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "required": [
+                  "violates"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "outcome": {
+                    "const": "non-conformant"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -20,9 +20,9 @@ observationally indistinguishable from direct invocation of `y`) is pinned by
 its own fixture suite.
 
 This is a per-specification subcorpus, governed by the operation-graph binding specification, not
-by the core OBI-D / OBI-T conformance rules. It lives alongside the core corpus
+by the core rules (OBI-01 to OBI-13). It lives alongside the core corpus
 but is governed separately: the core verifiers (`verify-corpus.mjs`,
-`generate-conformance-manifest.mjs`) only scan `document/` and `tool/`, so they
+`generate-conformance-manifest.mjs`) only scan `document/` and `scenarios/`, so they
 neither pick up nor are broken by this directory. The dedicated verifier is
 `scripts/verify-operation-graph.mjs`.
 

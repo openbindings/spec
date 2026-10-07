@@ -1,15 +1,11 @@
 {
-  "format": "openbindings.core-tool-scenarios@2",
-  "rule": "OBI-T-01",
-  "section": "10.3",
-  "description": "Kind comparison for a dependency's kinds constraint is exact, with no normalization, case folding, decomposition, inferred compatibility or order, or retrieval.",
+  "format": "openbindings.core-scenarios@3",
+  "section": "6",
+  "description": "Whether a binding meets a dependency's kinds constraint: exactly when its source's kind is the same kind as one listed, two kinds being the same exactly when their strings are equal (section 5.5; section 6, Comparison).",
   "scenarios": [
     {
-      "id": "T01-S-01",
-      "clauses": [
-        "OBI-T-01/c1"
-      ],
-      "description": "An identical kind string meets the constraint.",
+      "id": "KINDS-01",
+      "description": "An identical kind string meets the constraint (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -45,11 +41,8 @@
       }
     },
     {
-      "id": "T01-S-02",
-      "clauses": [
-        "OBI-T-01/c2b"
-      ],
-      "description": "A kind differing only in letter case does not meet it.",
+      "id": "KINDS-02",
+      "description": "A kind differing only in letter case is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -85,11 +78,8 @@
       }
     },
     {
-      "id": "T01-S-03",
-      "clauses": [
-        "OBI-T-01/c2a"
-      ],
-      "description": "Trailing white space is part of the kind; no trimming.",
+      "id": "KINDS-03",
+      "description": "Trailing white space is part of the kind, so the kinds differ (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -125,11 +115,8 @@
       }
     },
     {
-      "id": "T01-S-04",
-      "clauses": [
-        "OBI-T-01/c2a"
-      ],
-      "description": "Canonically equivalent Unicode spellings (NFC and NFD) are different kinds.",
+      "id": "KINDS-04",
+      "description": "Canonically equivalent Unicode spellings (NFC and NFD) are different kinds (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -165,12 +152,8 @@
       }
     },
     {
-      "id": "T01-S-05",
-      "clauses": [
-        "OBI-T-01/c2c",
-        "OBI-T-01/c3a"
-      ],
-      "description": "A finer version spelling is a different kind, not a compatible one.",
+      "id": "KINDS-05",
+      "description": "A finer version spelling is a different kind, not a compatible one (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -206,12 +189,8 @@
       }
     },
     {
-      "id": "T01-S-06",
-      "clauses": [
-        "OBI-T-01/c3b",
-        "OBI-T-01/c3a"
-      ],
-      "description": "A version suffix read as higher is not thereby compatible.",
+      "id": "KINDS-06",
+      "description": "No part of a kind's spelling implies order: a version suffix read as higher is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -247,11 +226,8 @@
       }
     },
     {
-      "id": "T01-S-07",
-      "clauses": [
-        "OBI-T-01/c2c"
-      ],
-      "description": "The kind is not decomposed into a base name that could match.",
+      "id": "KINDS-07",
+      "description": "A kind is compared whole: its base name without the version suffix is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -287,11 +263,8 @@
       }
     },
     {
-      "id": "T01-S-08",
-      "clauses": [
-        "OBI-T-01/c2a"
-      ],
-      "description": "URI-shaped kinds are not URI-normalized (trailing slash).",
+      "id": "KINDS-08",
+      "description": "A URI-shaped kind is a string, not a URI: a trailing slash makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -327,12 +300,8 @@
       }
     },
     {
-      "id": "T01-S-09",
-      "clauses": [
-        "OBI-T-01/c2a",
-        "OBI-T-01/c2b"
-      ],
-      "description": "URI-shaped kinds are not case-normalized in scheme or host.",
+      "id": "KINDS-09",
+      "description": "A URI-shaped kind is a string, not a URI: case in the scheme and host makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -368,11 +337,8 @@
       }
     },
     {
-      "id": "T01-S-10",
-      "clauses": [
-        "OBI-T-01/c4"
-      ],
-      "description": "An http-URI-shaped kind is compared, never retrieved; the harness observes the http channel for the whole action.",
+      "id": "KINDS-10",
+      "description": "A kind is not an address, even when it is an http URI: it meets a constraint that lists the identical string (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -382,7 +348,7 @@
           },
           "sources": {
             "s": {
-              "kind": "{retrieval-sentinel:http}"
+              "kind": "http://kinds.example.test/openapi"
             }
           },
           "bindings": {
@@ -395,28 +361,21 @@
             "d": {
               "operation": "op",
               "kinds": [
-                "{retrieval-sentinel:http}"
+                "http://kinds.example.test/openapi"
               ]
             }
           }
         },
         "dependency": "d",
-        "binding": "b",
-        "retrievalSentinels": [
-          "http"
-        ]
+        "binding": "b"
       },
       "expected": {
         "outcome": "meets"
       }
     },
     {
-      "id": "T01-S-11",
-      "clauses": [
-        "OBI-T-01/c2a",
-        "OBI-T-01/c2b"
-      ],
-      "description": "A URN-shaped kind is not normalized by URN rules (NID case).",
+      "id": "KINDS-11",
+      "description": "A URN-shaped kind is a string, not a URN: case in the namespace identifier makes a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -452,11 +411,8 @@
       }
     },
     {
-      "id": "T01-S-12",
-      "clauses": [
-        "OBI-T-01/c1"
-      ],
-      "description": "An unfamiliar kind compares exactly like any other; support plays no part.",
+      "id": "KINDS-12",
+      "description": "An unfamiliar kind compares like any other (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -492,12 +448,8 @@
       }
     },
     {
-      "id": "T01-S-13",
-      "clauses": [
-        "OBI-T-01/c1",
-        "OBI-T-02/c2"
-      ],
-      "description": "An absent kinds member states no constraint.",
+      "id": "KINDS-13",
+      "description": "Without kinds, the dependency places no constraint on kind (section 5.5).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -530,11 +482,8 @@
       }
     },
     {
-      "id": "T01-S-14",
-      "clauses": [
-        "OBI-T-01/c1"
-      ],
-      "description": "kinds is an any-of constraint: one exact match suffices.",
+      "id": "KINDS-14",
+      "description": "kinds is an any-of constraint: one exact match suffices (section 5.5).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -571,11 +520,8 @@
       }
     },
     {
-      "id": "T01-S-15",
-      "clauses": [
-        "OBI-T-01/c4"
-      ],
-      "description": "A file-URI-shaped kind is compared, never opened; the harness observes the file channel for the whole action.",
+      "id": "KINDS-15",
+      "description": "A kind is not an address, even when it is a file URI: it meets a constraint that lists the identical string (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -585,7 +531,7 @@
           },
           "sources": {
             "s": {
-              "kind": "file://{retrieval-sentinel:file}"
+              "kind": "file:///kinds/openapi"
             }
           },
           "bindings": {
@@ -598,27 +544,21 @@
             "d": {
               "operation": "op",
               "kinds": [
-                "file://{retrieval-sentinel:file}"
+                "file:///kinds/openapi"
               ]
             }
           }
         },
         "dependency": "d",
-        "binding": "b",
-        "retrievalSentinels": [
-          "file"
-        ]
+        "binding": "b"
       },
       "expected": {
         "outcome": "meets"
       }
     },
     {
-      "id": "T01-S-16",
-      "clauses": [
-        "OBI-T-01/c3b"
-      ],
-      "description": "A version suffix read as lower is not thereby compatible (no backward-compatibility order).",
+      "id": "KINDS-16",
+      "description": "No part of a kind's spelling implies order: a version suffix read as lower is a different kind (section 6).",
       "action": "check-dependency-kind",
       "given": {
         "document": {
@@ -651,6 +591,43 @@
       },
       "expected": {
         "outcome": "does-not-meet"
+      }
+    },
+    {
+      "id": "KINDS-17",
+      "description": "An x-kinds extension on a dependency imposes no kind constraint (section 12).",
+      "action": "check-dependency-kind",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {}
+          },
+          "sources": {
+            "s": {
+              "kind": "b@1"
+            }
+          },
+          "bindings": {
+            "b": {
+              "operation": "op",
+              "source": "s"
+            }
+          },
+          "dependencies": {
+            "d": {
+              "operation": "op",
+              "x-kinds": [
+                "a@1"
+              ]
+            }
+          }
+        },
+        "dependency": "d",
+        "binding": "b"
+      },
+      "expected": {
+        "outcome": "meets"
       }
     }
   ]

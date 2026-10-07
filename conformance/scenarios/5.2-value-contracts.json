@@ -1,0 +1,2307 @@
+{
+  "format": "openbindings.core-scenarios@3",
+  "section": "5.2",
+  "description": "Whether a value satisfies or fails the contract an operation's input or output schema states, read as JSON Schema 2020-12 with format as an annotation, pattern values and patternProperties names as ECMA-262 regular expressions with Unicode semantics, and references resolved as section 7 defines; or whether the result is undefined, rests on a resource the document does not contain, or meets no contract because none is stated (section 5.2, Value contracts).",
+  "scenarios": [
+    {
+      "id": "VALUES-01",
+      "description": "Extension fields on an operation do not change its input contract (section 12).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string"
+              },
+              "x-input": true,
+              "x-nullable": true
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          null,
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "fails",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-02",
+      "description": "A pattern is part of the input contract: a string of digits satisfies it and a string of letters fails it (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^[0-9]+$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "123",
+          "abc"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-03",
+      "description": "unevaluatedProperties: false is part of the input contract: an object with an undeclared member fails it (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "a": {
+                    "type": "string"
+                  }
+                },
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": "x"
+          },
+          {
+            "a": "x",
+            "b": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-04",
+      "description": "A recursive schema that consumes the instance as it recurses has a defined result: a finite matching value satisfies it (sections 5.2 and 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "cycle": {
+              "input": {
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
+          "schemas": {
+            "Node": {
+              "type": "object",
+              "properties": {
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
+              }
+            }
+          }
+        },
+        "operation": "cycle",
+        "side": "input",
+        "values": [
+          {
+            "next": {}
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-05",
+      "description": "A recursive object schema that consumes the instance as it recurses has a defined result: a finite value that does not match fails it (sections 5.2 and 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "walk": {
+              "input": {
+                "$ref": "#/schemas/Node"
+              }
+            }
+          },
+          "schemas": {
+            "Node": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "next": {
+                  "$ref": "#/schemas/Node"
+                }
+              }
+            }
+          }
+        },
+        "operation": "walk",
+        "side": "input",
+        "values": [
+          {
+            "value": "root",
+            "next": {
+              "value": 7
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-06",
+      "description": "Mutual recursion between two schemas keeps its meaning (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "type": "object",
+              "properties": {
+                "b": {
+                  "$ref": "#/schemas/B"
+                }
+              }
+            },
+            "B": {
+              "type": "object",
+              "properties": {
+                "a": {
+                  "$ref": "#/schemas/A"
+                }
+              }
+            }
+          },
+          "operations": {
+            "m": {
+              "input": {
+                "$ref": "#/schemas/A"
+              }
+            }
+          }
+        },
+        "operation": "m",
+        "side": "input",
+        "values": [
+          {
+            "b": {
+              "a": {}
+            }
+          },
+          {
+            "b": {
+              "a": 5
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-07",
+      "description": "Inside a schema that declares $id, # names that schema (section 7.5), so a tree recurses through it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "https://e.example.test/tree.json"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": [
+              {
+                "children": []
+              }
+            ]
+          },
+          {
+            "children": [
+              5
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-08",
+      "description": "A pointer that reaches a schema declaring $id identifies that schema (section 7.3); these values never reach the recursion inside it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/tree.json",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "t": {
+              "output": {
+                "$ref": "#/schemas/Tree"
+              }
+            }
+          }
+        },
+        "operation": "t",
+        "side": "output",
+        "values": [
+          {
+            "children": []
+          },
+          {
+            "children": 5
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-09",
+      "description": "A value valid against the input schema satisfies the contract (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "input": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "input",
+        "values": [
+          "hello"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-10",
+      "description": "A value invalid against the input schema fails the contract (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "echo": {
+              "output": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "echo",
+        "side": "output",
+        "values": [
+          42
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-11",
+      "description": "format is an annotation in a value contract (section 5.2), so a string that is not an email address satisfies format: email.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "acceptContact": {
+              "input": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "operation": "acceptContact",
+        "side": "input",
+        "values": [
+          "not-an-email"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-12",
+      "description": "A value contract applies to each value separately, never to several values taken together (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "events": {
+              "output": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "events",
+        "side": "output",
+        "values": [
+          "first",
+          2,
+          "third"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-13",
+      "description": "A reference to a URI that an $id in the document declares resolves within the document (section 7), so the contract needs no outside resource.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Contact": {
+              "$id": "https://schemas.example.test/contact.json",
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "operations": {
+            "acceptContact": {
+              "input": {
+                "$ref": "https://schemas.example.test/contact.json"
+              }
+            }
+          }
+        },
+        "operation": "acceptContact",
+        "side": "input",
+        "values": [
+          {
+            "name": "Ada"
+          },
+          {
+            "name": 7
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-14",
+      "description": "Same-document references resolve against the OBI document when a value is evaluated (sections 7.2 and 7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "tree": {
+              "output": {
+                "$ref": "#/operations/tree/output/$defs/Node",
+                "$defs": {
+                  "Node": {
+                    "type": "object",
+                    "required": [
+                      "value"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      },
+                      "next": {
+                        "$ref": "#/operations/tree/output/$defs/Node"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "tree",
+        "side": "output",
+        "values": [
+          {
+            "value": "root",
+            "next": {
+              "value": "leaf"
+            }
+          },
+          {
+            "value": "root",
+            "next": {
+              "value": 7
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-15",
+      "description": "An absent input states no value contract, so a value neither satisfies nor fails one (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "output": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          null,
+          {}
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-contract",
+          "no-contract",
+          "no-contract"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-16",
+      "description": "An absent output states no value contract, so a value neither satisfies nor fails one (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "output",
+        "values": [
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "no-contract"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-17",
+      "description": "input: true is a stated contract every value satisfies (section 5.1).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": true
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          null,
+          {}
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "satisfies",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-18",
+      "description": "input: false is a stated contract no value satisfies (section 5.1).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": false
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          null
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-19",
+      "description": "Where a value's result depends on a resource the document does not contain, the document alone does not settle it (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://absent.example.test/value.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "external",
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-20",
+      "description": "A string satisfies anyOf through its first branch whatever the external branch gives; a number's result rests on the external resource (section 5.2). Software that evaluates the whole schema may decline the first.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "https://absent.example.test/alt.json"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "s",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "result": "satisfies",
+            "orNoVerdict": true
+          },
+          "external"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-21",
+      "description": "A cycle that recurses without consuming any of the instance has an undefined result (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Loop": {
+              "$ref": "#/schemas/Loop"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#/schemas/Loop"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-22",
+      "description": "Within an $id resource, a pointer that reaches no schema has an undefined result (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "R": {
+              "$id": "https://r.example.test/r.json",
+              "$ref": "#/$defs/missing"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://r.example.test/r.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-23",
+      "description": "Within an $id resource, a plain name declared twice has an undefined result (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "R": {
+              "$id": "https://r.example.test/dup.json",
+              "$ref": "#dup",
+              "$defs": {
+                "a": {
+                  "$anchor": "dup",
+                  "type": "string"
+                },
+                "b": {
+                  "$anchor": "dup",
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://r.example.test/dup.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "s"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-24",
+      "description": "An inline modifier group is not an ECMA-262 (11th edition) pattern, so the result is undefined (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "(?i)^abc$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "ABC",
+          "abc"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined",
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-25",
+      "description": "An identity escape the u flag forbids is not a valid pattern, so the result is undefined (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\a$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-26",
+      "description": "An invalid patternProperties name makes the result undefined wherever it applies (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "patternProperties": {
+                  "(?i)^a$": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "A": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-27",
+      "description": "ECMA-262 \\s matches Unicode white space and line terminators.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\s$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\u00a0",
+          "\ufeff",
+          "\u2028",
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "satisfies",
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-28",
+      "description": "ECMA-262 \\d matches ASCII digits only.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "123",
+          "\u0661\u0662\u0663"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-29",
+      "description": "With the u flag, . matches one code point outside the Basic Multilingual Plane.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^.$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\ud83d\ude00",
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-30",
+      "description": "$ matches only at the end of input, not before a trailing newline.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^abc$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "abc",
+          "abc\n"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-31",
+      "description": "A pattern is not anchored: it matches anywhere in the string.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "b"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "abc",
+          "xyz"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-32",
+      "description": "patternProperties names are ECMA-262 patterns with Unicode semantics.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "patternProperties": {
+                  "^\\s$": {
+                    "type": "integer"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "\u00a0": 1
+          },
+          {
+            "\u00a0": "x"
+          },
+          {
+            "x": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-33",
+      "description": "A Unicode property escape matches under the u flag (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\p{L}+$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\u00e9t\u00e9",
+          "123"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "ecma262-unicode-property-escapes"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-34",
+      "description": "OpenAPI 3.0's nullable is an unknown keyword under 2020-12 (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          null,
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-35",
+      "description": "The legacy dependencies keyword is not a 2020-12 assertion: the 2020-12 meta-schema keeps it only to validate its form.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "dependencies": {
+                  "a": [
+                    "b"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-36",
+      "description": "Content keywords are annotations under 2020-12 (JSON Schema Validation, content vocabulary).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "contentMediaType": "application/json",
+                "contentEncoding": "base64"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "%%% not base64 %%%"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-37",
+      "description": "A plain name declared in the document resource identifies the schema that declares it (section 7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Task": {
+              "$anchor": "task",
+              "type": "string"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#task"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-38",
+      "description": "A fragment is percent-decoded once, so a percent-encoded plain name identifies the schema that declares the decoded name (section 7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Task": {
+              "$anchor": "task",
+              "type": "string"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#t%61sk"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-39",
+      "description": "A percent-encoded JSON Pointer is decoded before it is evaluated (section 7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Task": {
+              "type": "string"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#%2Fschemas%2FTask"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-40",
+      "description": "A relative reference inside an $id resource resolves against its base (section 7.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "A": {
+              "$id": "https://e.example.test/dir/a.json",
+              "$ref": "b.json"
+            },
+            "B": {
+              "$id": "https://e.example.test/dir/b.json",
+              "type": "integer"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.example.test/dir/a.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          1,
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-41",
+      "description": "A $dynamicRef inside an $id resource resolves through the dynamic scope to the document resource's $dynamicAnchor (section 7.5).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Tree": {
+              "$id": "https://e.example.test/dyn-tree.json",
+              "$dynamicAnchor": "node",
+              "type": "object",
+              "properties": {
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "$dynamicRef": "#node"
+                  }
+                }
+              }
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$dynamicAnchor": "node",
+                "$ref": "https://e.example.test/dyn-tree.json",
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "children": [
+              {
+                "children": []
+              }
+            ]
+          },
+          {
+            "children": [
+              {
+                "extra": 1
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "document-resource-dynamic-scope",
+          "recursive-references"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-42",
+      "description": "An array schema applies to each value, never to the values as one array (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "output": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "output",
+        "values": [
+          "a",
+          "b"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-43",
+      "description": "With the external resource the case supplies, the result is what JSON Schema gives with that resource (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://ext.example.test/s.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          1
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/s.json",
+            "document": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-44",
+      "description": "format: regex is an annotation, separate from the pattern keyword.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "format": "regex"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "("
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-45",
+      "description": "An example outside the schema does not widen the contract (section 5.1).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "maxLength": 3
+              },
+              "examples": {
+                "long": {
+                  "input": "abcdef"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "abcdef",
+          "ab"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-46",
+      "description": "Examples do not narrow the contract to themselves (section 5.1).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string"
+              },
+              "examples": {
+                "only": {
+                  "input": "a"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "zzz"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-47",
+      "description": "An example does not change an enum's contract (section 5.1).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "enum": [
+                  "a"
+                ]
+              },
+              "examples": {
+                "other": {
+                  "input": "b"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "b"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-48",
+      "description": "anyOf's result rests on the first branch's type alone, whatever the second branch's invalid pattern gives: a string satisfies it and a number fails it (section 5.2). Software that evaluates the whole schema may decline.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "(?i)x"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "s",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "result": "satisfies",
+            "orNoVerdict": true
+          },
+          {
+            "result": "fails",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "VALUES-49",
+      "description": "A value that lacks the property satisfies the contract whatever the property schema's invalid pattern gives (section 5.2). Software that evaluates the whole schema may decline.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "a": {
+                    "type": "string",
+                    "pattern": "(?i)x"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "b": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "result": "satisfies",
+            "orNoVerdict": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "VALUES-50",
+      "description": "Numbers are compared at their exact value (section 5): 2^53 + 1 is not 2^53.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "integer",
+                "const": 9007199254740993
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          9007199254740993,
+          9007199254740992
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ],
+        "dependsOn": [
+          "exact-numbers"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-51",
+      "description": "multipleOf is decided on exact decimal values (section 5).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "number",
+                "multipleOf": 0.01
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          0.07,
+          0.075
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "result": "satisfies",
+            "dependsOn": [
+              "exact-numbers"
+            ]
+          },
+          {
+            "result": "fails",
+            "dependsOn": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "VALUES-52",
+      "description": "An external schema follows the dialect JSON Schema assigns it (section 5.2): the supplied resource declares draft-07, where dependencies asserts.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://ext.example.test/d7.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": 1
+          },
+          {
+            "a": 1,
+            "b": 2
+          }
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/d7.json",
+            "document": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "type": "object",
+              "dependencies": {
+                "a": [
+                  "b"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "satisfies"
+        ],
+        "dependsOn": [
+          "supplied-resources",
+          "draft-07-dialect"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-53",
+      "description": "A percent-encoded pointer is decoded before lookup even when the literal spelling also names a property: my%20type means 'my type' (section 7.3).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "Holder": {
+              "type": "object",
+              "properties": {
+                "my type": {
+                  "type": "string"
+                },
+                "my%20type": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "#/schemas/Holder/properties/my%20type"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          1
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-54",
+      "description": "A modifier group (?i:...) is not a pattern under the pinned ECMA-262 11th edition (section 13.1), so the result is undefined (section 5.2), even where a newer engine accepts it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^(?i:a)$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          "A"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined",
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-55",
+      "description": "Within an $id resource, a pointer that reaches a map rather than a schema has an undefined result (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "R": {
+              "$id": "https://r.example.test/map.json",
+              "$ref": "#/$defs",
+              "$defs": {
+                "a": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://r.example.test/map.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-56",
+      "description": "A reference to a URI that an $id in the document declares resolves within the document (section 7): an $id that claims the 2020-12 meta-schema's URI names the document's schema, not the meta-schema.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "schemas": {
+            "S": {
+              "$id": "https://json-schema.org/draft/2020-12/schema",
+              "type": "string"
+            }
+          },
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://json-schema.org/draft/2020-12/schema"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-57",
+      "description": "Inside an $id resource, a $ref that is not a well-formed URI-reference (a raw space) has an undefined result (section 7.4).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.com/t"
+              }
+            }
+          },
+          "schemas": {
+            "T": {
+              "$id": "https://e.com/t",
+              "$ref": "#/$defs/a b",
+              "$defs": {
+                "a b": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-58",
+      "description": "\\p{EBase} names no property in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 section 21.2.1.1, Table 56): the pattern is invalid, so the result is undefined (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "pattern": "\\p{EBase}"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-59",
+      "description": "Script=Kawi is not a script value in the pinned ECMA-262 11th edition (section 13.1; ECMA-262 Table 58): the pattern is invalid, so the result is undefined (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "pattern": "\\p{Script=Kawi}"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x"
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-60",
+      "description": "ECMA-262's dot matches no line terminator: not \\n, \\r, U+2028, or U+2029.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^.$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\n",
+          "\r",
+          "\u2028",
+          "\u2029",
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "fails",
+          "fails",
+          "fails",
+          "satisfies"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-61",
+      "description": "Without the i flag, ECMA-262's \\w is ASCII only, even with the u flag: neither e with an acute accent nor the Kelvin sign is a word character.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^\\w$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a",
+          "_",
+          "\u00e9",
+          "\u212a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "satisfies",
+          "fails",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-62",
+      "description": "ECMA-262's \\b is a boundary between an ASCII word character and anything else, so a letter outside ASCII ends a word.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^a\\b"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "a-",
+          "a\u00e9",
+          "a_"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-63",
+      "description": "With the u flag, an escaped surrogate pair is one code point, so a class holding it matches the one character outside the Basic Multilingual Plane.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "type": "string",
+                "pattern": "^[\\uD83D\\uDE00]$"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "\ud83d\ude00",
+          "a"
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    },
+    {
+      "id": "VALUES-64",
+      "description": "A schema nested in an $id resource that declares $id of its own is a resource too, resolved against its parent's base (section 7.2): https://e.example.test/inner.json names it.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://e.example.test/inner.json"
+              }
+            }
+          },
+          "schemas": {
+            "Outer": {
+              "$id": "https://e.example.test/outer.json",
+              "$defs": {
+                "inner": {
+                  "$id": "inner.json",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          "x",
+          5
+        ]
+      },
+      "expected": {
+        "results": [
+          "satisfies",
+          "fails"
+        ]
+      }
+    }
+  ]
+}

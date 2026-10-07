@@ -1,8 +1,8 @@
 {
-  "rule": "OBI-D-02",
-  "section": "10.2",
-  "description": "Validates against the JSON Schema at openbindings.schema.json.",
-  "notes": "OBI-D-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema catches but no more specific OBI-D rule names. Violations the schema catches that DO have a specific semantic rule (e.g., OBI-D-03 identifier pattern, OBI-D-09 SemVer) are listed under the semantic rule, not OBI-D-02. A reference outside the name grammar lists OBI-D-02 beside the rule that checks the reference: the schema carries the name syntax of the references OBI-D-07, OBI-D-08, and OBI-D-11 check, and those rules check only that the reference names a key (section 10). Every constraint of the derived schema has a negative that breaks it alone, here or, for the name patterns, in OBI-D-03's file, so a validator that drops any single constraint fails a case; removing additionalProperties: true from the schema object form changes nothing, since true is JSON Schema's default.",
+  "rule": "OBI-02",
+  "section": "10",
+  "description": "Is valid against the derived JSON Schema published with this text (openbindings.schema.json, $id https://openbindings.com/schema/openbindings-0.2.json), its pattern values read as ECMA-262 regular expressions. Where the schema and the prose disagree, the schema governs this rule until a patch release corrects the erratum; a patch release that corrects the schema republishes it under the same $id.",
+  "notes": "OBI-02 covers structural failures (missing required fields, wrong value types, malformed sub-objects) that the schema expresses but no more specific rule names. Violations the schema expresses that DO have a specific rule (e.g., OBI-04 name pattern, OBI-03 SemVer) are listed under that rule, not OBI-02. A reference outside the name grammar lists OBI-02 beside the rule the reference concerns: the schema expresses the name syntax of the references OBI-06, OBI-07, and OBI-08 concern, and those rules require only that the reference names a key (section 10). Every constraint of the derived schema has a negative that breaks it alone, here or, for the name patterns, in OBI-04's file, so a validator that drops any single constraint fails a case; removing additionalProperties: true from the schema object form changes nothing, since true is JSON Schema's default.",
   "tests": [
     {
       "description": "minimal valid document",
@@ -19,7 +19,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -29,7 +29,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -44,7 +44,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -67,10 +67,10 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ],
       "notViolated": [
-        "OBI-D-07"
+        "OBI-06"
       ]
     },
     {
@@ -88,7 +88,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -106,7 +106,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -233,7 +233,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -286,7 +286,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -298,7 +298,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -314,7 +314,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -334,10 +334,10 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ],
       "notViolated": [
-        "OBI-D-11"
+        "OBI-08"
       ]
     },
     {
@@ -355,7 +355,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -374,7 +374,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -393,7 +393,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -436,7 +436,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -457,7 +457,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -478,7 +478,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -498,7 +498,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -523,7 +523,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -542,7 +542,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -559,7 +559,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -580,7 +580,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -596,7 +596,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -612,7 +612,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -649,7 +649,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -841,7 +841,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -853,7 +853,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -865,7 +865,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -877,7 +877,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -889,7 +889,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -900,7 +900,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -912,7 +912,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -924,7 +924,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -937,7 +937,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -952,7 +952,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -967,7 +967,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -985,7 +985,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1000,7 +1000,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1017,7 +1017,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1036,7 +1036,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1055,7 +1055,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1071,7 +1071,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1089,7 +1089,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1108,7 +1108,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1129,7 +1129,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1153,11 +1153,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
-      "description": "binding operation value outside the name grammar fails the derived schema, which carries the name syntax OBI-D-07 checks, and names no operation key",
+      "description": "binding operation value outside the name grammar fails the derived schema, which carries the name syntax OBI-06 checks, and names no operation key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1177,8 +1177,8 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02",
-        "OBI-D-07"
+        "OBI-02",
+        "OBI-06"
       ]
     },
     {
@@ -1202,11 +1202,11 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
-      "description": "binding source value outside the name grammar fails the derived schema, which carries the name syntax OBI-D-08 checks, and names no source key",
+      "description": "binding source value outside the name grammar fails the derived schema, which carries the name syntax OBI-07 checks, and names no source key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1226,12 +1226,12 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02",
-        "OBI-D-08"
+        "OBI-02",
+        "OBI-07"
       ]
     },
     {
-      "description": "dependency operation value outside the name grammar fails the derived schema, which carries the name syntax OBI-D-11 checks, and names no operation key",
+      "description": "dependency operation value outside the name grammar fails the derived schema, which carries the name syntax OBI-08 checks, and names no operation key",
       "document": {
         "openbindings": "0.2.0",
         "operations": {
@@ -1245,8 +1245,8 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02",
-        "OBI-D-11"
+        "OBI-02",
+        "OBI-08"
       ]
     },
     {
@@ -1271,7 +1271,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1296,7 +1296,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1321,7 +1321,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1346,7 +1346,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1371,7 +1371,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1396,7 +1396,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     },
     {
@@ -1408,7 +1408,7 @@
       },
       "valid": false,
       "violates": [
-        "OBI-D-02"
+        "OBI-02"
       ]
     }
   ]
