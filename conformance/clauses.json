@@ -573,7 +573,7 @@
         },
         {
           "kind": "clause",
-          "text": "a patch release,",
+          "text": "a published release,",
           "clauses": [
             "OBI-T-08/c3a"
           ]
@@ -632,9 +632,9 @@
           "id": "OBI-T-08/c3a",
           "class": "alternative",
           "of": "OBI-T-08/c3",
-          "part": "a patch release",
+          "part": "a published release",
           "status": "expressible, no executor",
-          "limits": "Applies to a tool that declares a patch release; none does before 0.2.0 is released."
+          "limits": "Applies to a tool that declares a published release; none does before 0.2.0 is released."
         },
         {
           "id": "OBI-T-08/c3b",

@@ -239,7 +239,7 @@ A clause whose status is short of tested is incomplete coverage, and is recorded
 | OBI-T-08/c5 | obligation | tested | Complete evidence cannot be reported as undetermined. |
 | OBI-T-08/c2 | obligation | tested |  |
 | OBI-T-08/c3 | obligation | tested through its exercised alternative | A tool names one kind of text; the Go core declares a working draft and its revision (c3c). |
-| OBI-T-08/c3a | alternative | expressible, no executor | Applies to a tool that declares a patch release; none does before 0.2.0 is released. |
+| OBI-T-08/c3a | alternative | expressible, no executor | Applies to a tool that declares a published release; none does before 0.2.0 is released. |
 | OBI-T-08/c3b | alternative | contrast tools only | No executor in the Go core, which applies no prerelease's text. |
 | OBI-T-08/c3c | alternative | tested | Credited only when the applied text is verified: the named identity is compared first, then the text at the named revision, read from the specification repository's history, against the hash the tool declares. |
 | OBI-T-09/c1 | obligation | tested through its specializations |  |
