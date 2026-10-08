@@ -51,8 +51,8 @@ arrive. The specification specifies the document model only.
   defines when a value satisfies or fails a contract: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
   expressions with Unicode semantics, references resolved as §7 defines, and
-  a schema whose root declares no `$schema` read as 2020-12, one value at a
-  time. Where validity depends on a result JSON Schema leaves
+  a schema document whose root declares no `$schema` read as 2020-12, one
+  value at a time. Where validity depends on a result JSON Schema leaves
   undefined, satisfaction is undefined; where it depends on a resource the
   document does not contain, it depends on that resource. Validity depends on
   such a part only when the part's outcome, with the annotations that follow
