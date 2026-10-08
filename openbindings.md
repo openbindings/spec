@@ -794,18 +794,16 @@ Common measures against these exposures, where documents come from untrusted ori
 
 ## 10. Conformance
 
-The rules below govern two kinds of text:
+The rules below govern these texts:
 
 - a text that declares a version of the 0.2 line (in a prerelease of this specification, instead, one that declares that prerelease);
 - a text that declares no version ([§8.1](#81-openbindings-field-specification-version)).
 
 A text declaring another line or prerelease is governed by the text of that line or prerelease. A text these rules govern conforms to this specification exactly when it meets every rule below. OBI-02 to OBI-13 apply only to the JSON value of a text that meets OBI-01.
 
-The rules use the terms the other sections define for every text they govern. Such terms include the version a text declares, a schema at an OBI position, what a same-document reference identifies, and a declared plain name. The meaning those sections give a document's members holds only for a conformant document. Text marked *Note* in a rule, which runs to the rule's end, explains it and adds no requirement.
+For every text they govern, the rules use the terms the other sections define. Such terms include the version a text declares, a schema at an OBI position, what a same-document reference identifies, and a declared plain name. The meaning those sections give a document's members holds only for a conformant document. Text marked *Note* in a rule, which runs to the rule's end, explains it and adds no requirement.
 
-**Note.** No rule depends on evaluating a value against the document's schemas.
-
-The prose defines the document model. The schema `openbindings.schema.json` expresses the model's structural part in JSON Schema, and the structural requirements of [§5](#5-document-model) take effect through OBI-02. The schema's `$id` names the line, and its title the release. The schema also expresses OBI-03, OBI-04, and the name syntax of the references OBI-06 to OBI-08 concern. For OBI-05 it expresses only an alias repeated within one operation's `aliases`. For OBI-09 it expresses only the value of a `$schema` at the top of each operation `input` and `output` and each `schemas` entry. A document violating those parts violates OBI-02 as well. The other rules apply beyond what the schema expresses.
+The prose defines the document model. The schema `openbindings.schema.json` expresses the model's structural part in JSON Schema, and the structural requirements of [§5](#5-document-model) take effect through OBI-02. The schema's `$id` names the line, and its title the release. The schema also expresses OBI-03, OBI-04, and the name syntax of the references OBI-06 to OBI-08 concern. For OBI-05 it expresses only an alias repeated within one operation's `aliases`. For OBI-09 it expresses only the value of a `$schema` at the top of each operation `input` and `output` and each `schemas` entry. A document violating those parts of the rules violates OBI-02 as well. The other rules apply beyond what the schema expresses.
 
 Each rule carries an identifier for test suites and errata to cite. A rule is cited under a line ([§8.1](#81-openbindings-field-specification-version)). An identifier means what that line's text says, and another line may number its rules differently. A patch release adds and renumbers no rule.
 
@@ -820,10 +818,10 @@ A conformant OBI document:
 - **OBI-07**: Has every `bindings[*].source` value present as a key in the document's `sources` map.
 - **OBI-08**: Has every `dependencies[*].operation` value present as a key in the document's `operations` map.
 - **OBI-09**: Has every `$schema` keyword in a schema the document contains ([§3](#3-terminology)) equal to `https://json-schema.org/draft/2020-12/schema` or `https://json-schema.org/draft/2020-12/schema#`.
-- **OBI-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). Their `pattern` values are read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
+- **OBI-10**: Has every operation `input` and `output` and every entry in `schemas` valid against the JSON Schema 2020-12 meta-schemas, which validate its subschemas in turn ([§5.2](#52-schemas)). The meta-schemas are the dialect meta-schema `https://json-schema.org/draft/2020-12/schema` and the vocabulary meta-schemas it references, as published with [JSON Schema Core](#131-normative-references). They apply with `format` as an annotation, JSON Schema's default (JSON Schema Validation §7.2.1). They also apply with their `pattern` values read as ECMA-262 regular expressions, the regular-expression dialect JSON Schema names (JSON Schema Core §6.4).
 - **OBI-11**: Has every schema `$ref` and `$dynamicRef` in the document resource ([§3](#3-terminology)) an absolute URI or a same-document reference, and every schema `$id` at an OBI position an absolute URI. All of them are also well-formed URI-references per [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) §4.1 ([§7.1](#71-reference-forms)).
 - **OBI-12**: Has every same-document schema `$ref` and `$dynamicRef` in the document resource identifying a schema at an OBI position ([§7.3](#73-same-document-references)).
-- **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two schemas the document contains. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and one of these holds:
+- **OBI-13**: Has no plain name ([§7.3](#73-same-document-references)) declared more than once in the document resource, and no `$id` declared by two schemas the document contains. In counting a plain name's declarations, each `$anchor` and each `$dynamicAnchor` that declares it counts once (JSON Schema Core §8.2.2). An `$id` is compared only when it is a well-formed URI-reference and at least one of these holds:
   - it is an absolute URI;
   - it resolves against the `$id` of the nearest enclosing schema that declares one, and that `$id` is itself compared.
 
@@ -832,6 +830,8 @@ A conformant OBI document:
   1. resolved to an absolute URI per RFC 3986 §5.2 (which removes dot segments);
   2. stripped of any empty fragment;
   3. compared as a string ([§5](#5-document-model)).
+
+**Note.** No rule depends on evaluating a value against the document's schemas.
 
 ---
 
