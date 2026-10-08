@@ -560,7 +560,7 @@ Nothing else in the document is a schema it contains. Wherever this specificatio
 
 ### 7.1. Reference forms
 
-The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference is not a reference of any form.
+The **OBI-defined references** are the `$ref` and `$dynamicRef` keywords in the [document resource](#3-terminology). [OBI-11](#10-conformance) fixes their form, and that of each schema `$id` at an OBI position. A same-document reference is empty or a fragment alone (RFC 3986 §4.4). A string that is not a well-formed URI-reference (RFC 3986 §4.1) is not a reference of any form.
 
 ### 7.2. The document as embedding
 
@@ -568,18 +568,20 @@ JSON Schema lets the format that embeds a schema determine its initial base URI 
 
 - **Base URI.** The document is its schemas' embedding document, with a base URI unique to it and drawn from nowhere else (RFC 3986 §5.1.4). In the document resource, a same-document reference initially resolves to what [§7.3](#73-same-document-references) says it identifies, with dynamic resolution then following JSON Schema ([§7.4](#74-other-references)).
 - **Document resource.** The schemas at OBI positions that declare no `$id` are subschemas of one schema resource, the **document resource**. The plain names those schemas declare with `$anchor` or `$dynamicAnchor` belong to the document resource. An evaluation that begins at one of those schemas begins in it, making the document resource the outermost in the evaluation's dynamic scope.
-- **`$id` resources.** A schema that declares `$id` begins a resource of its own, as does a schema nested in it that declares `$id`. A reference to the URI such an `$id` declares resolves to that schema within the document. Within a schema that declares `$id`, its own keywords other than `$id` included, references, anchors, and nested `$id`s take any form JSON Schema allows. They resolve against its base. A plain name declared only inside a schema that declares `$id` belongs to that schema's resource.
+- **`$id` resources.** A schema that declares `$id` begins a resource of its own, as does a schema nested in it that declares `$id`. A reference to the URI such an `$id` declares resolves to that schema within the document. The references, anchors, and nested `$id`s within a schema that declares `$id`, including its own keywords other than `$id`, take any form JSON Schema allows. They resolve against its base. A plain name declared only inside a schema that declares `$id` belongs to that schema's resource.
 
 ### 7.3. Same-document references
 
 In the document resource, a same-document reference identifies as follows:
 
-1. **Decoding.** Its fragment is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
+1. **Decoding.** Its fragment, if any, is percent-decoded once. A fragment that does not decode to valid UTF-8 identifies nothing.
 2. **Empty reference or fragment.** An empty reference or an empty fragment, such as `#`, identifies the OBI document itself, not the schema that contains it.
 3. **JSON Pointer.** A decoded fragment that begins with `/`, such as that of `#/schemas/Task`, is a JSON Pointer evaluated per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901) §4 from the document root. A valid pointer identifies the location it reaches. One that is not valid, or reaches no location, identifies nothing.
-4. **Plain name.** Any other fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)). An `$anchor` or `$dynamicAnchor` declares a plain name only when its value is a string that wholly matches the grammar of JSON Schema Core §8.2.2. One whose value does not match violates [OBI-10](#10-conformance).
+4. **Plain name.** Any other fragment is a plain name, and identifies a schema in the document resource that declares it ([§7.2](#72-the-document-as-embedding)).
 
-What a same-document reference identifies depends only on the document.
+An `$anchor` or `$dynamicAnchor` declares a plain name only when its value is a string matching, as a whole, the grammar of JSON Schema Core §8.2.2. One whose value does not match violates [OBI-10](#10-conformance).
+
+In the document resource, what a same-document reference identifies depends only on the document.
 
 A pointer can reach locations that are not schemas at OBI positions. Such locations include an operation object, a map, a string, an extension's value ([§12](#12-extensions)), a source's or binding's `content`, and an example value. Another is a location inside a schema that declares `$id`, whose contents are reached through that `$id`. [§7.5](#75-notes-and-examples-informative) tabulates cases.
 
@@ -591,9 +593,9 @@ Beyond what [§7.2](#72-the-document-as-embedding) and [§7.3](#73-same-document
 - references within a schema resource that declares `$id` (its plain names included);
 - references to external schemas.
 
-Spellings that RFC 3986 §6 normalization would equate stay distinct for [OBI-13](#10-conformance), which compares `$id`s only after the resolution and empty-fragment removal it names. Whether they name one resource is for JSON Schema to say.
+[OBI-13](#10-conformance) compares `$id`s only after the resolution and empty-fragment removal it names, and that resolution removes dot segments. So spellings that RFC 3986 §6 normalization would equate stay distinct for that rule. Whether they name one resource is for JSON Schema to say.
 
-Within a schema resource that declares `$id`, each of these has an undefined result ([§5.2](#52-schemas)):
+Within a schema resource that declares `$id`, each of the following has an undefined result ([§5.2](#52-schemas)):
 
 - a JSON Pointer that reaches no schema (JSON Schema Core §9.4.2);
 - a plain name declared twice in that resource (JSON Schema Core §8.2.2), or nowhere in it;
