@@ -1806,7 +1806,7 @@
     },
     {
       "id": "VALUES-51",
-      "description": "multipleOf is decided on exact decimal values (section 5).",
+      "description": "multipleOf is decided on exact decimal values, the arbitrary-precision numbers of JSON Schema's data model (section 5.2; JSON Schema Core section 4.2.1).",
       "action": "validate-operation-values",
       "given": {
         "document": {
