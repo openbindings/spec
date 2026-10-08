@@ -35,22 +35,24 @@ arrive. The specification specifies the document model only.
   [§5.1](openbindings.md#51-operations)). Absent, `{}` or `true`, `false`,
   and `{"type": "null"}` are four distinct states, and boolean schemas are
   valid. §5.1 recommends `{"type": "object", "maxProperties": 0}` for an
-  operation that takes, or returns, nothing meaningful.
+  operation that takes, or returns, nothing meaningful. An operation's
+  contract is the capability its identifiers name and its description
+  conveys, with its value contracts ([§3](openbindings.md#3-terminology)).
 - **Context and author claims.** [§5](openbindings.md#5-document-model)
   defines context: what a realization needs that the operation is not about,
   such as a credential, a target's address, or a deadline, carried in content
   under the source's kind or coming from outside the document. A credential
   is caller-facing only when the author describes it in `input` or `output`.
-  An operation's contract is the capability its identifiers name and its
-  description conveys, with its value contracts. It lists the
+  It lists the
   document's author claims (examples, a binding's realization claim and its
   `idempotent`, a dependency's consumption claim, and correspondence); their
   truth is outside conformance.
 - **Satisfying a value contract.** [§5.2](openbindings.md#52-schemas)
   defines when a value satisfies or fails a contract: under JSON Schema
   2020-12, with `format` as an annotation, patterns as ECMA-262 regular
-  expressions with Unicode semantics, and references resolved as §7 defines,
-  one value at a time. Where validity depends on a result JSON Schema leaves
+  expressions with Unicode semantics, references resolved as §7 defines, and
+  a schema whose root declares no `$schema` read as 2020-12, one value at a
+  time. Where validity depends on a result JSON Schema leaves
   undefined, satisfaction is undefined; where it depends on a resource the
   document does not contain, it depends on that resource. Validity depends on
   such a part only when the part's outcome, with the annotations that follow
@@ -60,9 +62,11 @@ arrive. The specification specifies the document model only.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
-  document conforms depends only on the document, the derived schema, and the
-  JSON Schema 2020-12 meta-schemas (invariant 5). The specification gives
-  meaning only to conformant documents.
+  document conforms depends only on the document and that release's text,
+  derived schema, and normative references, the JSON Schema 2020-12
+  meta-schemas among them (invariant 5). The specification gives meaning only
+  to conformant documents. Text marked *Note* in a rule, and a paragraph that
+  begins with **Note**, is informative.
 - **Media type and canonical serialization.**
   [§11](openbindings.md#11-iana-considerations) gives registration details
   for `application/vnd.openbindings+json`.

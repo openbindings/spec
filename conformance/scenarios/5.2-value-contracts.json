@@ -2697,6 +2697,55 @@
           "supplied-resources"
         ]
       }
+    },
+    {
+      "id": "VALUES-74",
+      "description": "A supplied resource whose root declares no $schema is read as 2020-12, so its dependentRequired, which draft-07 does not define, applies: a value with a but not b fails (section 5.2).",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$ref": "https://ext.example.test/dep.json"
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "a": 1
+          },
+          {
+            "a": 1,
+            "b": 2
+          }
+        ],
+        "resources": [
+          {
+            "uri": "https://ext.example.test/dep.json",
+            "document": {
+              "dependentRequired": {
+                "a": [
+                  "b"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "fails",
+          "satisfies"
+        ],
+        "dependsOn": [
+          "supplied-resources"
+        ]
+      }
     }
   ]
 }
