@@ -838,7 +838,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - **Interoperability considerations:** see [§10. Conformance](#10-conformance)
 - **Published specification:** this specification
 - **Applications that use this media type:** tools that produce or consume OpenBindings documents
-- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` or `$dynamicAnchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation; the document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.2](#72-the-document-as-embedding))
+- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` or `$dynamicAnchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation. The document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.2](#72-the-document-as-embedding))
 - **Additional information:** deprecated alias names, magic numbers, file extensions, and Macintosh file type codes: none
 - **Person and email address to contact for further information:** the OpenBindings maintainers, hello@openbindings.com; see also [github.com/openbindings](https://github.com/openbindings)
 - **Intended usage:** COMMON
@@ -850,9 +850,9 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 ## 12. Extensions
 
-A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**; OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning of a core field; its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
+A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**. OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning of a core field. Its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
 
-Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindings`, `schemas`, and an operation's `examples`) are entry names, not fields: an `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key, and in `operations` it enters the identifier namespace (OBI-05).
+Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindings`, `schemas`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` it enters the identifier namespace (OBI-05).
 
 ---
 
