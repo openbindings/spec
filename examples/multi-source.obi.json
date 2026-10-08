@@ -102,7 +102,7 @@
       }
     },
     "listUsers": {
-      "description": "List all users. Only available through the admin API.",
+      "description": "List all users.",
       "input": {
         "type": "object",
         "maxProperties": 0

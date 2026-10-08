@@ -115,12 +115,14 @@ arrive. The specification specifies the document model only.
   operation's bindings are those whose `operation` holds its key
   ([§5.1](openbindings.md#51-operations)). Carrying a shared
   contract's published name as a key or alias claims correspondence with that
-  contract's operation, as a consumer holding the contract reads it
+  contract's operation, as a reader holding the contract reads it
   ([§5.1](openbindings.md#51-operations)); the claim demonstrates no schema
-  compatibility.
+  compatibility. The order of `aliases` carries no meaning, nor does that of
+  `tags`, where a repeated tag adds nothing.
 - **Names have a grammar.** Operation, dependency, binding, source, schema,
   and example keys, and aliases, match `^[A-Za-z0-9_][A-Za-z0-9_.-]*$` and
-  compare as exact strings (OBI-04). 0.1 left operation keys unconstrained.
+  compare as exact strings (OBI-04); strings are equal when their UTF-16 code
+  units are ([§5](openbindings.md#5-document-model)). 0.1 left operation keys unconstrained.
 - **Objects are closed except for `x-` fields.** Each OBI-defined object
   carries only the fields its table lists and fields beginning with `x-`; any
   other field violates OBI-02 ([§12](openbindings.md#12-extensions)), so a
