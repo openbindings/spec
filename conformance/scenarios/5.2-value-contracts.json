@@ -2806,7 +2806,7 @@
     },
     {
       "id": "VALUES-76",
-      "description": "Which schema a $ref reaches is one of the ways an undefined result can come out, not only whether it is valid: a plain name declared twice in an $id resource gives two targets with the same validity but different annotations, so an object with x depends on which one unevaluatedProperties sees (section 5.2). Without x, or with a property neither target evaluates, every way gives the same validity. Software that evaluates the whole schema may decline those.",
+      "description": "Which schema a $ref reaches is one of the ways an undefined result can come out, beside whether the reference comes out valid at all: a plain name declared twice in an $id resource gives two targets with the same validity but different annotations, so an object with x depends on which one unevaluatedProperties sees, and an empty object on whether the reference comes out valid (section 5.2). With a property neither target evaluates, every way gives the same validity, invalid. Software that evaluates the whole schema may decline that one.",
       "action": "validate-operation-values",
       "given": {
         "document": {
@@ -2854,10 +2854,7 @@
       "expected": {
         "results": [
           "undefined",
-          {
-            "result": "satisfies",
-            "orNoVerdict": true
-          },
+          "undefined",
           {
             "result": "fails",
             "orNoVerdict": true

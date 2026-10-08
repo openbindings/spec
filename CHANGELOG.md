@@ -56,9 +56,9 @@ arrive. The specification specifies the document model only.
   undefined, satisfaction is undefined; where it depends on a resource the
   document does not contain, it depends on that resource. Validity depends on
   such a part only when the part's outcome, with the annotations that follow
-  it, would change it; a value that depends on both is undefined only if it
-  would be undefined whatever the resource holds, and with the resource the
-  same rules decide. An absent schema states no
+  it, would change it; a value that depends on both is, from the document
+  alone, undefined only if it would be undefined whatever the resource holds,
+  and with the resource the same rules decide. An absent schema states no
   contract.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
