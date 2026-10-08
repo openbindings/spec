@@ -706,15 +706,26 @@ OBI documents carry two independent version concepts: the specification version 
 
 The `openbindings` field identifies the version of this specification the document declares: a [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string ([OBI-03](#10-conformance)).
 
-**Lines.** A document's members mean what a release of the line its declared version names (its `major.minor`) says they mean, or, where it declares a prerelease, what that prerelease's text says (below); until a line's first release, its working draft stands in for that release wherever this text speaks of a release of the line. Each line or prerelease is its own document model. A patch release corrects errors in its line's text and adds no field: a document that conforms under an earlier and a later release of its line means the same under each, though a correction can change which documents conform (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning: `0.2.0` and `0.2.1` are read alike, under any release of the 0.2 line. From 1.0.0 onward, a document that conforms to one minor would conform to the next if it declared it, and keep its meaning; pre-1.0 minors may break (release policy, below).
+**Lines.** A document's members mean what a release of the line its declared version names (its `major.minor`) says they mean. Where it declares a prerelease, they mean instead what that prerelease's text says (below). Until a line's first release, its working draft stands in for that release wherever this text speaks of a release of the line. Each line or prerelease is its own document model.
 
-- A prerelease (`0.2.0-rc.1`) is a distinct, potentially incompatible draft outside its line, identified by its full version apart from build metadata; a document declaring it means what that draft's text says.
+A patch release corrects errors in its line's text and adds no field. A document that conforms under an earlier and a later release of its line means the same under each. But a correction can change which documents conform (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning. For instance, `0.2.0` and `0.2.1` are read alike, under any release of the 0.2 line.
+
+From 1.0.0 onward, a document that conforms to one minor would conform to the next if it declared it, and keep its meaning. Pre-1.0 minors may break (release policy, below).
+
+- A prerelease (`0.2.0-rc.1`) is a distinct, potentially incompatible draft outside its line, identified by its full version apart from build metadata.
+- A document declaring a prerelease means what that draft's text says.
 - Build metadata is permitted and has no OpenBindings semantics: `0.2.0+build.1` denotes the same line as `0.2.0`, and `0.2.0-rc.1+build.1` the same prerelease as `0.2.0-rc.1`.
 - Declaring the earliest line sufficient for a document's content lets the most software read the document.
 
-**Version declaration.** A text **declares a version** exactly when it is UTF-8 ([RFC 3629](https://www.rfc-editor.org/rfc/rfc3629)) with no leading byte-order mark and parses under the JSON grammar (RFC 8259 §2) as an object with exactly one `openbindings` member ([§5](#5-document-model)) whose value is a string that is a SemVer version; that value is the version it declares. Repeated names elsewhere do not stop a declaration; the declared line's rules govern them. Any other text declares no version, and violates OBI-01 or OBI-03 ([§10](#10-conformance)).
+**Version declaration.** A text **declares a version** exactly when all of these hold:
 
-**Version declaration examples (informative).** What each text below declares, and what follows under the 0.2 line's rules, where `<FF>` stands for a single byte 0xFF and `<BOM>` for the UTF-8 byte-order mark:
+- it is UTF-8 ([RFC 3629](https://www.rfc-editor.org/rfc/rfc3629)) with no leading byte-order mark;
+- it parses under the JSON grammar (RFC 8259 §2) as an object with exactly one `openbindings` member ([§5](#5-document-model));
+- that member's value is a string that is a SemVer version.
+
+That value is the version it declares. Repeated names elsewhere do not stop a declaration. The declared line's rules govern them. Any other text declares no version, and violates OBI-01 or OBI-03 ([§10](#10-conformance)).
+
+**Version declaration examples (informative).** What each text below declares, and what follows under the 0.2 line's rules. In the texts, `<FF>` stands for a single byte 0xFF and `<BOM>` for the UTF-8 byte-order mark.
 
 | Text | Declared version | Under 0.2's rules |
 | ---- | ---------------- | ----------------- |
@@ -732,11 +743,13 @@ The `openbindings` field identifies the version of this specification the docume
 | `{"openbindings":2,"operations":{}}` | None | Violates OBI-02 and OBI-03. |
 | `{"operations":{}}` | None | Violates OBI-02 and OBI-03. |
 
-**Release policy.** While pre-1.0, minor versions may include breaking changes, per pre-1.0 SemVer convention. Changes to the provisions [§6](#6-kinds) lists as those a kind stands on are recorded in the changelog as breaking, whether or not a particular kind's definition is affected.
+**Release policy.** While pre-1.0, minor versions may include breaking changes, per pre-1.0 SemVer convention. Changes to the provisions [§6](#6-kinds) lists as those a kind stands on are breaking. They are recorded in the changelog as breaking, whether or not a particular kind's definition is affected.
 
 ### 8.2. `version` field (interface-version label)
 
-The optional `version` field is the author's label for the described interface: an opaque non-empty string, the same label as another exactly when their strings are equal ([§5](#5-document-model)). This specification gives it no other meaning: no order, compatibility, or identity, and no effect on how a reference resolves or on the line or prerelease a document declares. Authors MAY follow SemVer, dates, or any other convention; any stronger reading comes from an external catalog, registry, or organizational policy.
+The optional `version` field is the author's label for the described interface. It is an opaque non-empty string, the same label as another exactly when their strings are equal ([§5](#5-document-model)). This specification gives it no other meaning. Authors MAY follow SemVer, dates, or any other convention. Any stronger reading comes from an external catalog, registry, or organizational policy.
+
+**Note.** The `version` field has no order, compatibility, or identity. It has no effect on how a reference resolves or on the line or prerelease a document declares.
 
 ---
 
