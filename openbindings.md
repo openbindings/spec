@@ -706,7 +706,7 @@ OBI documents carry two independent version concepts: the specification version 
 
 The `openbindings` field identifies the version of this specification the document declares: a [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) string ([OBI-03](#10-conformance)).
 
-**Lines.** A document's members mean what a release of the line its declared version names (its `major.minor`) says they mean. Where it declares a prerelease, they mean instead what that prerelease's text says (below). Until a line's first release, its working draft stands in for that release wherever this text speaks of a release of the line. Each line or prerelease is its own document model.
+**Lines.** A document's members mean what a release of the line its declared version names (its `major.minor`) says they mean. Where a document declares a prerelease, its members mean instead what that prerelease's text says (below). Until a line's first release, its working draft stands in for that release wherever this text speaks of a release of the line. Each line or prerelease is its own document model.
 
 A patch release corrects errors in its line's text and adds no field. A document that conforms under an earlier and a later release of its line means the same under each. But a correction can change which documents conform (invariant 5). A patch release's corrections apply to the whole line, so the patch number a document declares carries no meaning. For instance, `0.2.0` and `0.2.1` are read alike, under any release of the 0.2 line.
 
@@ -749,7 +749,7 @@ That value is the version it declares. Repeated names elsewhere do not stop a de
 
 The optional `version` field is the author's label for the described interface. It is an opaque non-empty string, the same label as another exactly when their strings are equal ([§5](#5-document-model)). This specification gives it no other meaning. Authors MAY follow SemVer, dates, or any other convention. Any stronger reading comes from an external catalog, registry, or organizational policy.
 
-**Note.** The `version` field has no order, compatibility, or identity. It has no effect on how a reference resolves or on the line or prerelease a document declares.
+**Note.** This specification gives the `version` field no order, compatibility, or identity. The field has no effect on how a reference resolves or on the line or prerelease a document declares.
 
 ---
 
