@@ -864,7 +864,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 
 A field ([§3](#3-terminology)) whose name begins with `x-` is an **extension**. OBI documents MAY include extensions in any OBI-defined object. An extension never changes the meaning of a core field. Its own meaning, if any, is defined outside this specification. Unprefixed field names are reserved ([§5](#5-document-model), [OBI-02](#10-conformance)) so this specification can add fields without colliding with a document's own data.
 
-Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindings`, `schemas`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` it enters the identifier namespace (OBI-05).
+Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindings`, `schemas`, and an operation's `examples`) are entry names, not fields. An `x-`-prefixed key there names an ordinary entry, subject to OBI-04 like any other key. In `operations` such a key enters the identifier namespace (OBI-05).
 
 ---
 
@@ -908,7 +908,7 @@ Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindi
 
 Some applications need a stable byte representation of an OBI document: content addressing, integrity attestation, signature systems, cache keys, prompt-cache stability.
 
-Take an OBI whose parsed JSON value satisfies the input requirements of [RFC 8785 (JSON Canonicalization Scheme)](https://www.rfc-editor.org/rfc/rfc8785). Its JCS serialization provides deterministic bytes for the carried JSON value. It carries that value exactly when every number's exact decimal value survives JCS's binary64 rendering (below). The facility is **partial**. RFC 8785 constrains its input to the I-JSON subset ([RFC 7493](https://www.rfc-editor.org/rfc/rfc7493): numbers representable in IEEE 754 binary64, strings expressible as Unicode). But this specification pins RFC 8259 JSON and JSON Schema 2020-12, which bound neither. So a conformant OBI may have no JCS serialization.
+Take an OBI whose parsed JSON value satisfies the input requirements of [RFC 8785 (JSON Canonicalization Scheme)](https://www.rfc-editor.org/rfc/rfc8785). Its JCS serialization provides deterministic bytes for the carried JSON value. The serialization carries that value exactly when every number's exact decimal value survives JCS's binary64 rendering (below). The facility is **partial**. RFC 8785 constrains its input to the I-JSON subset ([RFC 7493](https://www.rfc-editor.org/rfc/rfc7493): numbers representable in IEEE 754 binary64, strings expressible as Unicode). But this specification pins RFC 8259 JSON and JSON Schema 2020-12, which bound neither. So a conformant OBI may have no JCS serialization.
 
 The facility is JCS over the value exactly as carried. Rounding, coercing, repairing, or otherwise changing a value to manufacture compatible input yields the serialization of some other value. RFC 8785 rejects incompatible input. JCS also serializes each number from its binary64 value. So a number whose exact decimal value differs from the shortest rendering of that value is not carried exactly. For example, `1000000000000000128` is serialized as `1000000000000000100`. Under this specification's reading of numbers ([§5](#5-document-model)), such an OBI has no JCS serialization that carries its value exactly. Yet RFC 8785 itself does not reject it.
 
