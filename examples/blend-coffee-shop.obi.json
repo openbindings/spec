@@ -213,7 +213,7 @@
       }
     },
     "orderUpdates": {
-      "description": "Stream of order state transitions. Emitted whenever an order changes status.",
+      "description": "Reports each change in an order's status.",
       "input": {
         "type": "object",
         "maxProperties": 0

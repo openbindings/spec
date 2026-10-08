@@ -169,10 +169,10 @@ The model rests on six invariants, cited elsewhere by number; most of their term
 - **Dependency**: a named point where the described component consumes a realization of an operation, optionally limited to declared kinds, under a key in `dependencies` ([§5.5](#55-dependencies)).
 - **OBI position**: a place where the document model puts a schema; the **schemas the document contains** extend these through the resources declared there, nested resources included ([§7](#7-reference-resolution) defines both).
 - **Document resource**: the schema resource every schema at an OBI position that declares no `$id` belongs to; a schema that declares `$id` begins a resource of its own ([§7.2](#72-the-document-as-embedding)).
-- **Field**: a property of an OBI-defined object (the document root, and operation, dependency, source, binding, and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
+- **Field**: a member of an OBI-defined object (the document root, and operation, dependency, source, binding, and example objects). Keys inside the document's maps and property names inside JSON Schema objects are not fields ([§12](#12-extensions), [OBI-04](#10-conformance)).
 - **Absolute URI**: a URI with a scheme (RFC 3986 §3), fragment permitted; not RFC 3986's `absolute-URI` production, which excludes fragments.
 
-Other terms are defined where they are used: an operation's identifiers and published names ([§5.1](#51-operations)); satisfying and failing a value contract, and an undefined result ([§5.2](#52-schemas)); an any-of constraint ([§5.5](#55-dependencies)); OBI-defined references ([§7.1](#71-reference-forms)); a plain name ([§7.3](#73-same-document-references)); declaring a version ([§8.1](#81-openbindings-field-specification-version)); and an extension ([§12](#12-extensions)).
+Other terms are defined where they are used: an operation's identifiers ([§5.1](#51-operations)); satisfying and failing a value contract, and an undefined result ([§5.2](#52-schemas)); an any-of constraint ([§5.5](#55-dependencies)); OBI-defined references ([§7.1](#71-reference-forms)); a plain name ([§7.3](#73-same-document-references)); declaring a version ([§8.1](#81-openbindings-field-specification-version)); and an extension ([§12](#12-extensions)).
 
 ---
 
@@ -320,7 +320,7 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 
 **Names.** The map keys this specification defines (operation, dependency, binding, source, schema, and example keys) and operation aliases are names: opaque ASCII tokens matching `^[A-Za-z0-9_][A-Za-z0-9_.-]*$`, an [ECMA-262](#131-normative-references) pattern matched against the whole name, so a name ending in a newline does not match it ([OBI-04](#10-conformance)). Names are equal only as exact strings, case included (below). Dots and hyphens carry no structure: a dot may qualify a published name by convention ([§5.1](#51-operations)), but nothing in this specification parses the segments. A name shaped like a URI, a path, or a programming-language identifier is only a name, which is why the grammar admits a leading digit (`2fa.verify`). Keys within one map are distinct ([OBI-01](#10-conformance)).
 
-**Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3), and two numbers when their exact decimal values are.
+**Strings and numbers.** Two strings, member names included, are equal exactly when they denote the same sequence of UTF-16 code units after unescaping ([RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) §8.3), and two numbers when their exact decimal values are.
 
 **Value representation.** Operation inputs and outputs are described in the JSON data model of [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259): a caller-facing value is one JSON value crossing the operation boundary (invariant 1). Which interaction data forms one value, and how it corresponds to JSON, is read under the kind of each binding's source: an array returned in one HTTP response can be one value, the items of a gRPC stream several. A value need not travel as JSON text.
 
@@ -328,7 +328,7 @@ An OBI document is a JSON text ([RFC 8259](https://www.rfc-editor.org/rfc/rfc825
 
 **Fields and extensions.** Each OBI-defined object carries only the fields its table lists and extension fields whose names begin with `x-` ([OBI-02](#10-conformance), [§12](#12-extensions)).
 
-**Presence.** For every optional member, presence is distinct from value: a member present with the JSON value `null` is present, and a member is absent only when omitted.
+**Presence.** For every optional field, presence is distinct from value: a field present with the JSON value `null` is present, and a field is absent only when omitted.
 
 **Author claims.** Some of what a document says is its author's claim: an operation's `examples` ([§5.1](#51-operations)), a binding's claim to realize its operation and its `idempotent` claim ([§5.3](#53-bindings)), a dependency's claim to consume its operation within its value contracts ([§5.5](#55-dependencies)), and correspondence ([§5.1](#51-operations)). This specification defines what each asserts; whether it is true is outside conformance.
 
@@ -338,14 +338,14 @@ An operation's name and its optional schemas for each caller-facing input and ou
 
 `output` describes every value the operation returns, whatever it means to the caller (several event types, a union of representations, a result or an error); any JSON Schema construct can express the variation, such as `oneOf`, `anyOf`, or a `type` array. Which results of an interaction a binding returns as output values is read under its source's kind.
 
-An operation object's members are all optional:
+An operation object's fields are all optional:
 
 | Field         | Type                  | Purpose                                                            |
 | ------------- | --------------------- | ------------------------------------------------------------------ |
 | `description` | string                | Human-readable description of the capability, which bindings claim to carry out ([§5.3](#53-bindings)). |
 | `deprecated`  | boolean               | Author recommends migration away from the operation.               |
-| `tags`        | array of strings      | Documentation labels for grouping/filtering.                       |
-| `aliases`     | array of strings      | Additional names, identifying the operation exactly as its key does. |
+| `tags`        | array of strings      | Documentation labels for grouping and filtering, in no meaningful order; a repeated tag adds nothing. |
+| `aliases`     | array of strings      | Additional names, in no meaningful order, each identifying the operation exactly as its key does. |
 | `input`       | JSON Schema or absent | States the input contract, which governs each caller-facing input value. |
 | `output`      | JSON Schema or absent | States the output contract, which governs each caller-facing output value. |
 | `examples`    | object                | Map of example names to example objects; see below.                |
@@ -371,7 +371,7 @@ For an operation that takes no meaningful input, a schema that admits only the e
 
 **Publishing names (informative).** Two adopted names that collide cannot coexist in one document; publishers of names intended for adoption avoid this, and keep claims intentional, by qualifying them under a namespace they control with enough interface scope (`acme.tasks.createTask` rather than `create`). A published name stays useful for correspondence while it names one continuing semantic operation, so an intentionally incompatible replacement is best given a new name.
 
-**Examples.** `examples` maps names to author-supplied samples. An example object's members are all optional:
+**Examples.** `examples` maps names to author-supplied samples. An example object's fields are all optional:
 
 | Field         | Type           | Purpose                              |
 | ------------- | -------------- | ------------------------------------ |
@@ -379,7 +379,7 @@ For an operation that takes no meaningful input, a schema that admits only the e
 | `input`       | any JSON value | One caller-facing input value.       |
 | `output`      | any JSON value | One caller-facing output value.      |
 
-Examples are **positive** author claims ([§5](#5-document-model)): the author claims that each value an example provides satisfies the corresponding value contract, where one is stated ([§5.2](#52-schemas)). A value that fails it makes the claim false; an example never changes what the operation's schema states. Where whether a value satisfies its value contract is undefined, so is the claim's truth; where it rests on a resource the document does not contain, so does the claim's truth. Example members are values, not schemas, so an explicitly `null` member supplies the JSON value `null` ([§5](#5-document-model), Presence), which the claim covers like any other value, and an operation whose `output` is `{"type": "null"}` can carry an example. Examples claim only that each value satisfies its value contract: an example is tied to no binding, and pairing an input with an output does not claim the output can result from it.
+Examples are **positive** author claims ([§5](#5-document-model)): the author claims that each value an example provides satisfies the corresponding value contract, where one is stated ([§5.2](#52-schemas)). A value that fails it makes the claim false; an example never changes what the operation's schema states. Where whether a value satisfies its value contract is undefined, so is the claim's truth; where it rests on a resource the document does not contain, so does the claim's truth. An example's `input` and `output` are values, not schemas, so an explicitly `null` one supplies the JSON value `null` ([§5](#5-document-model), Presence), which the claim covers like any other value, and an operation whose `output` is `{"type": "null"}` can carry an example. Examples claim only that each value satisfies its value contract: an example is tied to no binding, and pairing an input with an output does not claim the output can result from it.
 
 ### 5.2. Schemas
 
@@ -387,7 +387,7 @@ The top-level `schemas` map holds named JSON Schemas, which operations reference
 
 Every schema the document contains ([§3](#3-terminology)) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) schema in object or boolean form, valid against the 2020-12 meta-schemas ([OBI-10](#10-conformance)); an invalid schema the document contains, such as `{"type": 42}`, violates that rule.
 
-**Dialect.** Each schema the document contains is read as JSON Schema 2020-12; a `$schema` other than 2020-12 violates [OBI-09](#10-conformance). JSON Schema permits `$schema` only at a resource root (JSON Schema Core §8.1.1), which in an OBI is a schema that declares `$id`, the only resource root in an OBI that is itself a schema ([§7.2](#72-the-document-as-embedding)), so authors write it only there and remove it from a pasted schema that declares no `$id`. Wherever a `$schema` the document contains appears, it names the dialect the schema is already read in and has no other effect: a value's validity is the same as without it. A schema reached through an external URI follows the dialect JSON Schema assigns it (JSON Schema Core §8.1.1).
+**Dialect.** Each schema the document contains is read as JSON Schema 2020-12; a `$schema` other than 2020-12 violates [OBI-09](#10-conformance). Wherever a `$schema` the document contains appears, it names the dialect the schema is already read in and has no other effect: a value's validity is the same as without it. JSON Schema permits `$schema` only at a resource root (JSON Schema Core §8.1.1), which in an OBI is a schema that declares `$id`, the only resource root in an OBI that is itself a schema ([§7.2](#72-the-document-as-embedding)); one elsewhere breaks that requirement but still changes nothing. A schema reached through an external URI follows the dialect JSON Schema assigns it (JSON Schema Core §8.1.1).
 
 Beyond this section and [§7](#7-reference-resolution), JSON Schema 2020-12 governs the document's schemas: their meaning, reference resolution, and value evaluation. This specification defines no keyword and no evaluation of its own, beyond the three provisions **Value contracts** (below) sets among JSON Schema's options. OBI-09 to OBI-13 concern schemas ([§7.5](#75-notes-and-examples-informative)); OBI-01 and OBI-02 apply to them as part of the whole document. A schema that breaks another of JSON Schema's requirements does not by that alone violate a rule; where JSON Schema then leaves a result undefined, so does this specification (**Value contracts**, below).
 
@@ -395,11 +395,11 @@ Beyond this section and [§7](#7-reference-resolution), JSON Schema 2020-12 gove
 
 An **undefined result** is one JSON Schema leaves undefined (such as evaluating a cycle that recurses without consuming any of the instance, JSON Schema Core §9.4.1), one [§7.4](#74-other-references) names, or one that depends on a keyword value these provisions make invalid (such as a pattern that is not a valid ECMA-262 regular expression with Unicode semantics). Where a value's validity depends on an undefined result, whether it satisfies the value contract is undefined. Where it depends on a resource the document does not contain, the document alone does not settle it: it is what JSON Schema, read with these provisions, gives with that resource, including the dialect JSON Schema assigns an external schema. A value's validity depends on an undefined result exactly when it would differ between two ways that result could come out (a keyword valid or invalid, a property name matching a pattern or not), and on such a resource exactly when it would differ between two contents the resource could have, with the annotations JSON Schema collects following each. Where every way gives the same validity, that validity stands: a value that satisfies one branch of an `anyOf` satisfies it whatever another branch's undefined result would be. Where `input` or `output` is absent, no value contract is stated, and a value neither satisfies nor fails one.
 
-**Schemas from other dialects (informative).** Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores, so a `null` the service returns fails `{"type": "string", "nullable": true}`, and draft-07's array form of `items` violates OBI-10. Translating such schemas to 2020-12 when bringing them in, `$schema` included, keeps their meaning.
+**Schemas from other dialects (informative).** Under a 2020-12 reading, OpenAPI 3.0's `nullable: true` is an unknown keyword, which JSON Schema ignores, so a `null` the service returns fails `{"type": "string", "nullable": true}`, and draft-07's array form of `items` violates OBI-10. Translating such schemas to 2020-12 when bringing them in keeps their meaning; a `$schema` kept from them belongs on a schema that declares `$id`, the only place JSON Schema permits it.
 
 ### 5.3. Bindings
 
-A binding object has these members ([OBI-02](#10-conformance)):
+A binding object has these fields ([OBI-02](#10-conformance)):
 
 | Field         | Type           | Required | Purpose                                                                   |
 | ------------- | -------------- | -------- | ------------------------------------------------------------------------- |
@@ -428,7 +428,7 @@ The operation's tags, deprecation, and examples are not part of the claim. Each 
 
 ### 5.4. Sources
 
-A source object has these members ([OBI-02](#10-conformance)):
+A source object has these fields ([OBI-02](#10-conformance)):
 
 | Field         | Type           | Required | Purpose                               |
 | ------------- | -------------- | -------- | ------------------------------------- |
@@ -444,7 +444,7 @@ The content can embed a [source artifact](#3-terminology), address one or a live
 
 A dependency's map key identifies its consumption point ([§3](#3-terminology)) for configuration, wiring, and diagnostics; the dependency names no realization to serve it, not even one of this document's own bindings, creates no operation, and does not enter the operation-identifier namespace.
 
-A dependency object has these members ([OBI-02](#10-conformance)):
+A dependency object has these fields ([OBI-02](#10-conformance)):
 
 | Field         | Type             | Required | Purpose                                     |
 | ------------- | ---------------- | -------- | ------------------------------------------- |
@@ -485,7 +485,7 @@ A kind in turn stands on these core provisions, changes to which are breaking ([
 - caller-facing values are JSON values, and an operation's schemas apply to each value ([§5](#5-document-model), invariant 1);
 - a binding claims that its target realizes its operation as the document describes it, taking any value that satisfies `input`, without promising success on each, and returning only values that satisfy `output`, each where the operation states the corresponding value contract ([§5.3](#53-bindings)).
 
-**Sharing a kind (informative).** A kind is portable as far as its meaning is shared. Authors who want a kind read alike everywhere describe it in writing and give an incompatible meaning a new kind, since nothing in a document distinguishes two meanings of one kind. A kind meant to circulate widely can be qualified under a name its publisher controls. This project's kind definitions ([§14](#14-see-also-informative)) have no special standing here, and matching a kind establishes neither provenance nor authorization ([§9](#9-security-considerations)).
+**Sharing a kind (informative).** A kind is portable as far as its meaning is shared. Authors who want a kind read alike everywhere describe it in writing and give an incompatible meaning a new kind, since nothing in a document distinguishes two meanings of one kind. A kind meant to circulate widely can be qualified under a name its publisher controls. The kind definitions this project drafts ([§14](#14-see-also-informative)) have no special standing here, and matching a kind establishes neither provenance nor authorization ([§9](#9-security-considerations)).
 
 A kind used only privately needs no qualification; a source for a locally built CLI, described by a private `usage.kdl` file, might be:
 
@@ -727,7 +727,7 @@ Per [RFC 6838](https://www.rfc-editor.org/rfc/rfc6838), under the vendor tree:
 - **Interoperability considerations:** see [§10. Conformance](#10-conformance)
 - **Published specification:** this specification
 - **Applications that use this media type:** tools that produce or consume OpenBindings documents
-- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` or `$dynamicAnchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation; the document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.5](#75-notes-and-examples-informative))
+- **Fragment identifier considerations:** JSON Pointer per [RFC 6901](https://www.rfc-editor.org/rfc/rfc6901), or a plain name declared by `$anchor` or `$dynamicAnchor` in the document resource ([§7.3](#73-same-document-references); JSON Schema Core §8.2.2). Such a fragment identifies a location in the representation; the document resource itself has no portable, externally nameable base, so its schemas cannot be addressed from outside the document as schema resources ([§7.2](#72-the-document-as-embedding))
 - **Additional information:** deprecated alias names, magic numbers, file extensions, and Macintosh file type codes: none
 - **Person and email address to contact for further information:** the OpenBindings maintainers, hello@openbindings.com; see also [github.com/openbindings](https://github.com/openbindings)
 - **Intended usage:** COMMON
@@ -771,7 +771,7 @@ Keys inside the document's maps (`operations`, `dependencies`, `sources`, `bindi
 
 - `openbindings.schema.json`: derived JSON Schema for structural document validity.
 - The openbindings project's shared-contract interfaces, published at [openbindings.com/interfaces](https://openbindings.com/interfaces).
-- `binding-specs/`: this project's kind definitions, with authoring guidance ([§6](#6-kinds)).
+- `binding-specs/`: candidate kind definitions this project is drafting, with authoring guidance ([§6](#6-kinds)).
 - `conformance/`: test corpus keyed to rule identifiers and sections.
 - `examples/`: example OBI documents; like this text's examples, their kinds (`example.*`) and the shapes of their `content` are illustrative.
 - `CHANGELOG.md`: version history and diffs between specification versions.
