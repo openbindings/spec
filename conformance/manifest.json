@@ -10,7 +10,7 @@
     "fixtureFiles": 15,
     "scenarioFiles": 5,
     "tests": 308,
-    "scenarios": 126,
+    "scenarios": 127,
     "positives": 120,
     "negatives": 188,
     "rulesCoveredDocument": 13,
@@ -29,7 +29,7 @@
     "check-examples": 7,
     "resolve-operation": 21,
     "validate-document": 6,
-    "validate-operation-values": 75,
+    "validate-operation-values": 76,
     "validity fixture": 308
   },
   "files": [
@@ -184,9 +184,9 @@
       "path": "scenarios/5.2-value-contracts.json",
       "section": "5.2",
       "format": "openbindings.core-scenarios@3",
-      "scenarios": 75,
+      "scenarios": 76,
       "actions": {
-        "validate-operation-values": 75
+        "validate-operation-values": 76
       }
     },
     {

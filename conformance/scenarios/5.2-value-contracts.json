@@ -2803,6 +2803,67 @@
           "draft-07-dialect"
         ]
       }
+    },
+    {
+      "id": "VALUES-76",
+      "description": "Which schema a $ref reaches is one of the ways an undefined result can come out, not only whether it is valid: a plain name declared twice in an $id resource gives two targets with the same validity but different annotations, so an object with x depends on which one unevaluatedProperties sees (section 5.2). Without x, or with a property neither target evaluates, every way gives the same validity. Software that evaluates the whole schema may decline those.",
+      "action": "validate-operation-values",
+      "given": {
+        "document": {
+          "openbindings": "0.2.0",
+          "operations": {
+            "op": {
+              "input": {
+                "$id": "https://e.test/r.json",
+                "$defs": {
+                  "a": {
+                    "$anchor": "t",
+                    "properties": {
+                      "x": true
+                    }
+                  },
+                  "b": {
+                    "$anchor": "t",
+                    "properties": {
+                      "y": true
+                    }
+                  }
+                },
+                "allOf": [
+                  {
+                    "$ref": "#t"
+                  }
+                ],
+                "unevaluatedProperties": false
+              }
+            }
+          }
+        },
+        "operation": "op",
+        "side": "input",
+        "values": [
+          {
+            "x": 1
+          },
+          {},
+          {
+            "z": 1
+          }
+        ]
+      },
+      "expected": {
+        "results": [
+          "undefined",
+          {
+            "result": "satisfies",
+            "orNoVerdict": true
+          },
+          {
+            "result": "fails",
+            "orNoVerdict": true
+          }
+        ]
+      }
     }
   ]
 }
