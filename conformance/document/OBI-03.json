@@ -205,6 +205,11 @@
         "OBI-02",
         "OBI-03"
       ]
+    },
+    {
+      "description": "a member name written with an escape, \\u006fpenbindings, is the openbindings member once unescaped, so the text declares 0.2.0 (section 8.1, Version declaration; section 5, Strings and numbers)",
+      "documentText": "{\"\\u006fpenbindings\":\"0.2.0\",\"operations\":{}}",
+      "valid": true
     }
   ]
 }

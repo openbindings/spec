@@ -395,6 +395,61 @@
         }
       },
       "valid": true
+    },
+    {
+      "description": "a relative $id is compared only when the nearest enclosing schema that declares $id is itself compared: under a $id that is not a well-formed URI-reference, x.json is left out, so it does not collide with the absolute https://e.test/x.json (section 10, OBI-13)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://e.test/a.json",
+            "$defs": {
+              "p": {
+                "$id": "bad id",
+                "$defs": {
+                  "c": {
+                    "$id": "x.json"
+                  }
+                }
+              },
+              "q": {
+                "$id": "https://e.test/x.json"
+              }
+            }
+          }
+        },
+        "operations": {}
+      },
+      "valid": true
+    },
+    {
+      "description": "under a compared enclosing $id, the nested relative x.json resolves to https://e.test/x.json and collides with another schema's $id (section 10, OBI-13)",
+      "document": {
+        "openbindings": "0.2.0",
+        "schemas": {
+          "A": {
+            "$id": "https://e.test/a.json",
+            "$defs": {
+              "p": {
+                "$id": "https://e.test/",
+                "$defs": {
+                  "c": {
+                    "$id": "x.json"
+                  }
+                }
+              },
+              "q": {
+                "$id": "https://e.test/x.json"
+              }
+            }
+          }
+        },
+        "operations": {}
+      },
+      "valid": false,
+      "violates": [
+        "OBI-13"
+      ]
     }
   ]
 }

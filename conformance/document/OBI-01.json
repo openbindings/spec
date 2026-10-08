@@ -324,6 +324,14 @@
       "violates": [
         "OBI-01"
       ]
+    },
+    {
+      "description": "openbindings and an escaped \\u006fpenbindings are one name repeated, so the text declares no version and violates OBI-01 (section 8.1, Version declaration)",
+      "documentText": "{\"openbindings\":\"0.2.0\",\"\\u006fpenbindings\":\"0.2.0\",\"operations\":{}}",
+      "valid": false,
+      "violates": [
+        "OBI-01"
+      ]
     }
   ]
 }
