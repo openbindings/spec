@@ -665,10 +665,10 @@ each reference below, written in the document resource (as the `$ref` of an oper
 
 The `{"$ref": "#"}` inside `Tree` resolves against Tree's `$id`, names `Tree` itself, and is outside OBI-12.
 
-Schemas pasted in from standalone files are the usual source of mistakes. Such a schema often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`; embedded without an `$id`, both are read from the OBI document root, where the first identifies the OBI document and the second nothing, and both violate OBI-12. There are two remedies:
+Schemas pasted in from standalone files are the usual source of mistakes. Such a schema often recurses with `{"$ref": "#"}` or points into its own `$defs` with `#/$defs/Node`. Embedded without an `$id`, both are read from the OBI document root. The first then identifies the OBI document and the second nothing, and both violate OBI-12. There are two remedies:
 
-- Rewrite the pointers to the schema's place in the document (`#/schemas/Tree`, `#/schemas/Tree/$defs/Node`). A name that needs encoding, such as `my type`, is written percent-encoded (`#/schemas/Tree/$defs/my%20type`), since a reference must be a well-formed URI-reference (OBI-11), and the fragment is read after percent-decoding ([§7.3](#73-same-document-references)).
-- Give the embedded schema an absolute `$id`, which keeps its internal references resolving as they did standalone, resolved as JSON Schema defines (pointers per RFC 6901 §6). The `$id` also moves those references outside OBI-12, so a pointer inside it that reaches nothing no longer violates OBI-12; its result is undefined ([§7.4](#74-other-references)).
+- **Rewrite the pointers.** Rewrite the pointers to the schema's place in the document (`#/schemas/Tree`, `#/schemas/Tree/$defs/Node`). A name that needs encoding, such as `my type`, is written percent-encoded (`#/schemas/Tree/$defs/my%20type`).
+- **Give it an `$id`.** Give the embedded schema an absolute `$id`. That keeps its internal references resolving as they did standalone, resolved as JSON Schema defines (pointers per RFC 6901 §6). The `$id` also moves those references outside OBI-12, so a pointer inside it that reaches nothing no longer violates OBI-12. Its result is undefined ([§7.4](#74-other-references)).
 
 The second remedy looks like this:
 
@@ -693,11 +693,9 @@ The second remedy looks like this:
 }
 ```
 
-An `$anchor` declared inside `Tree` belongs to Tree's resource, not the document resource. The operation reaches `Tree` through its `$id`.
+Addressing works in one direction. The document's base URI is drawn from nowhere a reference can name ([§7.2](#72-the-document-as-embedding)). So a schema with its own `$id` cannot address by URI the schemas that belong to the document resource. Any shared schema it references must therefore be reachable through an identified resource. Either the shared schema has its own `$id`, or a pointer or anchor within a resource that has one reaches it. The same holds across documents: `$id` is the portable handle for a schema meant to be referenced from elsewhere. A reference into a document that is not a schema lands in a structure JSON Schema does not recognize. Its result there is undefined (JSON Schema Core §9.4.2). Examples are `#/components/schemas/Task` in an OpenAPI document and `#/schemas/Task` in another OBI. An author instead copies such a schema in, translating it as [§5.2](#52-schemas) describes, or references a schema published as a schema document of its own.
 
-Addressing works in one direction: a schema with its own `$id` cannot address by URI the schemas that belong to the document resource, since the document's base URI is drawn from nowhere a reference can name ([§7.2](#72-the-document-as-embedding)). Any shared schema it references must therefore be reachable through an identified resource: its own `$id`, or a pointer or anchor within a resource that has one. The same holds across documents: `$id` is the portable handle for a schema meant to be referenced from elsewhere. A reference into a document that is not a schema, such as `#/components/schemas/Task` in an OpenAPI document or `#/schemas/Task` in another OBI, lands in a structure JSON Schema does not recognize, where its result is undefined (JSON Schema Core §9.4.2). An author instead copies such a schema in, translating it as [§5.2](#52-schemas) describes, or references a schema published as a schema document of its own.
-
-Dynamic resolution can still cross back. When evaluation begins in the document resource, a `$dynamicRef` inside an `$id` resource whose initially resolved fragment was created by `$dynamicAnchor` can resolve, through the dynamic scope, to a `$dynamicAnchor` of the document resource (JSON Schema Core §8.2.3.2). A `$dynamicAnchor` declared anywhere in the document resource can therefore capture such a reference in a schema written without it in mind.
+Dynamic resolution can still cross back. Consider a `$dynamicRef` inside an `$id` resource whose initially resolved fragment was created by `$dynamicAnchor`. When evaluation begins in the document resource, it can resolve, through the dynamic scope, to a `$dynamicAnchor` of the document resource (JSON Schema Core §8.2.3.2). A `$dynamicAnchor` declared anywhere in the document resource can therefore capture such a reference in a schema written without it in mind.
 
 ---
 
