@@ -89,7 +89,7 @@ Conceptual guides, getting-started walkthroughs, and how-to tutorials live on **
 | [`ABSTRACTION-FIDELITY.md`](ABSTRACTION-FIDELITY.md) | Informative doctrine for protocol-blind synthesis and invocation work |
 | [`MIGRATING-0.1-TO-0.2.md`](MIGRATING-0.1-TO-0.2.md) | Practical migration guide for 0.1 documents |
 | [`binding-specs/`](binding-specs/) | Unreleased first-`@1` binding-specification candidates and authoring guidance |
-| [`examples/`](examples/) | Worked example OBI documents |
+| [`examples/`](examples/) | Example OBI documents, with illustrative kinds and `content` |
 | [`conformance/`](conformance/) | Conformance test corpus + reference runner |
 | [`versions/`](versions/) | Immutable released snapshots |
 | [`history/`](history/) | Archived, non-normative design records; not current requirements or issue lists |

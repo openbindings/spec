@@ -2,7 +2,7 @@
   "openbindings": "0.2.0",
   "name": "OpenBlendings",
   "version": "1.0.0",
-  "description": "A coffee shop with bindings across six families: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six binding specifications.",
+  "description": "A coffee shop with bindings across six families: REST (OpenAPI), events (AsyncAPI/SSE), AI tools (MCP), internal RPC (gRPC), Connect (Buf), and GraphQL. One interface, six kinds.",
   "schemas": {
     "MenuItem": {
       "type": "object",
@@ -177,6 +177,10 @@
   "operations": {
     "getMenu": {
       "description": "Returns the full menu with drinks, sizes, and prices.",
+      "input": {
+        "type": "object",
+        "maxProperties": 0
+      },
       "output": {
         "$ref": "#/schemas/Menu"
       }
@@ -210,6 +214,10 @@
     },
     "orderUpdates": {
       "description": "Stream of order state transitions. Emitted whenever an order changes status.",
+      "input": {
+        "type": "object",
+        "maxProperties": 0
+      },
       "output": {
         "$ref": "#/schemas/OrderUpdate"
       }
@@ -217,46 +225,46 @@
   },
   "sources": {
     "rest": {
-      "kind": "openbindings.openapi-3.1@1",
+      "kind": "example.openapi@1",
       "content": {
         "location": "https://blend.openbindings.com/openapi.json"
       },
       "description": "REST API for the ordering app"
     },
     "events": {
-      "kind": "openbindings.asyncapi@1",
+      "kind": "example.asyncapi@1",
       "content": {
         "location": "https://blend.openbindings.com/asyncapi.json"
       },
       "description": "SSE event stream for the barista dashboard"
     },
     "mcp": {
-      "kind": "openbindings.mcp@1",
+      "kind": "example.mcp@1",
       "content": {
         "location": "https://blend.openbindings.com/mcp"
       },
       "description": "MCP tools for AI assistants"
     },
     "grpc": {
-      "kind": "openbindings.grpc@1",
+      "kind": "example.grpc@1",
       "content": {
         "location": "blend.openbindings.com:9090"
       },
       "description": "gRPC service for backend microservices"
     },
     "connect": {
-      "kind": "openbindings.connect@1",
+      "kind": "example.connect@1",
       "content": {
         "location": "https://blend.openbindings.com"
       },
-      "description": "Connect (Buf) — same protobuf service over HTTP/1.1 + JSON"
+      "description": "Connect (Buf): the same protobuf service over HTTP/1.1 and JSON"
     },
     "graphql": {
-      "kind": "openbindings.graphql@1",
+      "kind": "example.graphql@1",
       "content": {
         "location": "https://blend.openbindings.com/graphql"
       },
-      "description": "GraphQL API — flexible queries and subscriptions"
+      "description": "GraphQL API with queries and subscriptions"
     }
   },
   "bindings": {
@@ -324,7 +332,7 @@
       "operation": "getOrderStatus",
       "source": "rest",
       "content": {
-        "target": "#/paths/~1api~1orders~1{orderId}/get"
+        "target": "#/paths/~1api~1orders~1%7BorderId%7D/get"
       },
       "idempotent": true
     },
@@ -356,7 +364,7 @@
       "operation": "cancelOrder",
       "source": "rest",
       "content": {
-        "target": "#/paths/~1api~1orders~1{orderId}~1cancel/post"
+        "target": "#/paths/~1api~1orders~1%7BorderId%7D~1cancel/post"
       }
     },
     "cancelOrder.mcp": {

@@ -49,8 +49,9 @@ arrive. The specification specifies the document model only.
   expressions with Unicode semantics, and references resolved as §7 defines,
   one value at a time. Where validity depends on a result JSON Schema leaves
   undefined, satisfaction is undefined; where it depends on a resource the
-  document does not contain, it depends on that resource; an absent schema
-  states no contract.
+  document does not contain, it depends on that resource. Validity depends on
+  such a part only when the part's outcome, with the annotations that follow
+  it, would change it. An absent schema states no contract.
 - **Numbered conformance rules.** [§10](openbindings.md#10-conformance)
   defines conformance by rules OBI-01 to OBI-13, ordered by subject, which
   govern texts that declare a version of the 0.2 line or none. Whether a
@@ -134,7 +135,8 @@ arrive. The specification specifies the document model only.
   is a 2020-12 schema in object or boolean form, valid against the 2020-12
   meta-schemas with `format` as an annotation (OBI-10). A `$schema`, where
   present, names 2020-12 (OBI-09), and every schema the document contains is
-  read as 2020-12 ([§5.2](openbindings.md#52-schemas)). Beyond §5.2 and §7, JSON
+  read as 2020-12 ([§5.2](openbindings.md#52-schemas)), so a `$schema` has no
+  other effect, even where JSON Schema does not permit one. Beyond §5.2 and §7, JSON
   Schema governs meaning, resolution, and evaluation; the core defines no
   keyword or evaluation of its own. In 0.1, tools declared the dialects they
   supported, with 2020-12 the recommended default.
